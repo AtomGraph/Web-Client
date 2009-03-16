@@ -1,0 +1,17 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT *
+WHERE
+{
+	?company rdfs:label ?label .
+	?company <http://dbpedia.org/ontology/numberOfEmployees> ?employees .
+	?company <http://dbpedia.org/ontology/revenue> ?revenue
+	FILTER (DATATYPE(?revenue) = <http://dbpedia.org/ontology/euro>)
+	FILTER (xsd:integer(?revenue) > 10000000000)
+	FILTER (xsd:integer(?employees) > 0)
+	FILTER (LANG(?label) = 'en')
+}
+# ORDER BY DESC(xsd:integer(?revenue)) DESC(xsd:integer(?employees))

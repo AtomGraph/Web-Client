@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT DISTINCT *
+WHERE
+{
+	?city rdfs:label ?label .
+	?city <http://dbpedia.org/property/populationMetro> ?population .
+	?city <http://dbpedia.org/property/areaTotalKm> ?area
+	FILTER (DATATYPE(?area) = xsd:double)
+	FILTER (DATATYPE(?population) = xsd:integer)
+	FILTER (LANG(?label) = 'en')
+	FILTER (xsd:integer(?population) > 3000000)
+}
