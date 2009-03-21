@@ -72,22 +72,22 @@ public class XMLSerializer
 	    queryStringElem.appendChild(document.createTextNode(form.getQueryString()));
 	    formElem.appendChild(queryStringElem);
 	}
-	if (form.getXAxis() != null)
+	if (form.getXAxisVariable() != null)
 	{
-	    Element xAxisElem = document.createElement("XAxis");
-	    xAxisElem.appendChild(document.createTextNode(form.getXAxis()));
+	    Element xAxisElem = document.createElement("XVariable");
+	    xAxisElem.appendChild(document.createTextNode(form.getXAxisVariable()));
 	    formElem.appendChild(xAxisElem);
 	}
-	if (form.getYAxis() != null)
+	if (form.getYAxisVariable() != null)
 	{
-	    Element yAxisElem = document.createElement("YAxis");
-	    yAxisElem.appendChild(document.createTextNode(form.getYAxis()));
+	    Element yAxisElem = document.createElement("YVariable");
+	    yAxisElem.appendChild(document.createTextNode(form.getYAxisVariable()));
 	    formElem.appendChild(yAxisElem);
 	}
-	if (form.getLabel() != null)
+	if (form.getLabelVariable() != null)
 	{
-	    Element labelElem = document.createElement("Label");
-	    labelElem.appendChild(document.createTextNode(form.getLabel()));
+	    Element labelElem = document.createElement("LabelVariable");
+	    labelElem.appendChild(document.createTextNode(form.getLabelVariable()));
 	    formElem.appendChild(labelElem);
 	}	
 	if (form.getType() != null)
@@ -96,7 +96,13 @@ public class XMLSerializer
 	    typeElem.appendChild(document.createTextNode(form.getType()));
 	    formElem.appendChild(typeElem);
 	}
-
+	if (form.getTitle() != null)
+	{
+	    Element titleElem = document.createElement("Title");
+	    titleElem.appendChild(document.createTextNode(form.getTitle()));
+	    formElem.appendChild(titleElem);
+	}
+	
 	return serialize(document);
     }
 

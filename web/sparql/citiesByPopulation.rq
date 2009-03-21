@@ -7,7 +7,8 @@ WHERE
 {
 	?city rdfs:label ?label .
 	?city <http://dbpedia.org/property/populationMetro> ?population .
-	?city <http://dbpedia.org/property/areaTotalKm> ?area
+	?city <http://dbpedia.org/property/areaTotalKm> ?area .
+	?city <http://dbpedia.org/property/subdivisionName> <http://dbpedia.org/resource/United_States>
 	FILTER (DATATYPE(?area) = xsd:double)
 	FILTER (DATATYPE(?population) = xsd:integer)
 	FILTER (LANG(?label) = 'en')

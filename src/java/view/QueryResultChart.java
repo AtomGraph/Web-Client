@@ -33,7 +33,7 @@ import java.util.List;
 public class QueryResultChart
 {
     //public static String getURL(ResultSet results)
-    public static String getURL(Iterator<QuerySolution> results, String labelBinding, String xBinding, String yBinding)
+    public static String getURL(Iterator<QuerySolution> results, String labelVariable, String xVariable, String yVariable, String title)
     {
 	double minXValue = 0;
 	double maxXValue = 0;
@@ -58,21 +58,21 @@ public class QueryResultChart
 	    double x = 0;
 	    double y = 0;
 
-	    if (solution.contains(labelBinding) && solution.get(labelBinding).isLiteral())
+	    if (solution.contains(labelVariable) && solution.get(labelVariable).isLiteral())
 	    {
-		Literal labelLiteral = solution.getLiteral(labelBinding);
+		Literal labelLiteral = solution.getLiteral(labelVariable);
 		label = labelLiteral.getLexicalForm();
 	    }
-	    if (solution.contains(xBinding) && solution.get(xBinding).isLiteral())
+	    if (solution.contains(xVariable) && solution.get(xVariable).isLiteral())
 	    {
-		Literal xLiteral = solution.getLiteral(xBinding);
+		Literal xLiteral = solution.getLiteral(xVariable);
 		x = Double.parseDouble(xLiteral.getLexicalForm());
 		if (x > maxXValue) maxXValue = x;
 		if (x < minXValue) minXValue = x;
 	    }
-	    if (solution.contains(yBinding) && solution.get(yBinding).isLiteral())
+	    if (solution.contains(yVariable) && solution.get(yVariable).isLiteral())
 	    {
-		Literal yLiteral = solution.getLiteral(yBinding);
+		Literal yLiteral = solution.getLiteral(yVariable);
 		y = Double.parseDouble(yLiteral.getLexicalForm());
 		if (y > maxYValue) maxYValue = y;
 		if (y < minYValue) minYValue = y;
@@ -100,16 +100,20 @@ public class QueryResultChart
         chart.setSize(600, 450);
         chart.setGrid(20, 20, 3, 2);
 
-        AxisLabels xAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(minXValue, maxXValue);
-        AxisLabels yAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(minYValue, maxYValue);
+        AxisLabels xAxisLabelsNumeric = AxisLabelsFactory.newNumericRangeAxisLabels(minXValue, maxXValue);
+        AxisLabels yAxisLabelsNumeric = AxisLabelsFactory.newNumericRangeAxisLabels(minYValue, maxYValue);
+	xAxisLabelsNumeric.setAxisStyle(AxisStyle.newAxisStyle(Color.BLACK, 13, AxisTextAlignment.CENTER));
+	yAxisLabelsNumeric.setAxisStyle(AxisStyle.newAxisStyle(Color.BLACK, 13, AxisTextAlignment.CENTER));
 
-	xAxisLabels.setAxisStyle(AxisStyle.newAxisStyle(Color.BLACK, 13, AxisTextAlignment.CENTER));
-	yAxisLabels.setAxisStyle(AxisStyle.newAxisStyle(Color.BLACK, 13, AxisTextAlignment.CENTER));
+        AxisLabels xAxisLabelsText = AxisLabelsFactory.newAxisLabels(xVariable, 50);
+        AxisLabels yAxisLabelsText = AxisLabelsFactory.newAxisLabels(yVariable, 50);
 
-        chart.addXAxisLabels(xAxisLabels);
-        chart.addYAxisLabels(yAxisLabels);
+        chart.addXAxisLabels(xAxisLabelsNumeric);
+        chart.addYAxisLabels(yAxisLabelsNumeric);
+        chart.addXAxisLabels(xAxisLabelsText);
+        chart.addYAxisLabels(yAxisLabelsText);
 
-        chart.setTitle("Scatter Plot", Color.BLACK, 16);
+        if (title != null) chart.setTitle(title, Color.BLACK, 16);
         //chart.setBackgroundFill(Fills.newSolidFill(Color.newColor("2F3E3E")));
         //LinearGradientFill fill = Fills.newLinearGradientFill(0, Color.newColor("3783DB"), 100);
 	//fill.addColorAndOffset(Color.newColor("9BD8F5"), 0);

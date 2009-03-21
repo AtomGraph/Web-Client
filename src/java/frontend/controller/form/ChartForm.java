@@ -20,19 +20,21 @@ public class ChartForm extends Form
     public final static String TYPE_SCATTER = "s";
     
     private String queryString = null;
-    private String xAxis = null;
-    private String yAxis = null;
-    private String label = null;
+    private String xVariable = null;
+    private String yVariable = null;
+    private String labelVariable = null;
     private String type = null;
+    private String title = null;
     
     public ChartForm(HttpServletRequest request)
     {
 	super(request);
 	queryString = request.getParameter("query-string");
-	xAxis = request.getParameter("x-axis");
-	yAxis = request.getParameter("y-axis");
-	label = request.getParameter("label");
+	xVariable = request.getParameter("x-variable");
+	yVariable = request.getParameter("y-variable");
+	labelVariable = request.getParameter("label-variable");
 	type = request.getParameter("type");
+	title = request.getParameter("title");
     }
 
     public String getQueryString()
@@ -40,14 +42,19 @@ public class ChartForm extends Form
 	return queryString;
     }
 
-    public String getXAxis()
+    public String getXAxisVariable()
     {
-	return xAxis;
+	return xVariable;
     }
 
-    public String getYAxis()
+    public String getYAxisVariable()
     {
-	return yAxis;
+	return yVariable;
+    }
+    
+    public String getLabelVariable()
+    {
+	return labelVariable;
     }
     
     public String getType()
@@ -55,9 +62,9 @@ public class ChartForm extends Form
 	return type;
     }
 
-    public String getLabel()
+    public String getTitle()
     {
-	return label;
+	return title;
     }
     
     @Override

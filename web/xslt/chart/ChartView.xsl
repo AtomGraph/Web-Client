@@ -24,6 +24,9 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:param name="query-result"/>
 	<xsl:param name="chart-result"/>
 	<xsl:param name="query-string" select="''"/>
+	<xsl:param name="x-variable-default"/>
+	<xsl:param name="y-variable-default"/>
+	<xsl:param name="label-variable-default" select="'label'"/>
 	<xsl:param name="chart-url"/>
 
 	<xsl:template name="title">
@@ -66,33 +69,55 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<h3>Chart</h3>
 				<form action="" method="get" accept-charset="UTF-8" >
 					<p>
-						<label for="x-axis">X axis</label>
-						<select name="x-axis" id="x-axis">
+						<label for="x-variable">X axis</label>
+						<select name="x-variable" id="x-variable">
 							<xsl:variable name="selected">
-								<xsl:if test="$chart-result">
-									<xsl:value-of select="document('arg://chart-form')//XAxis"/>
-								</xsl:if>
+								<xsl:choose>
+									<xsl:when test="$chart-result">
+										<xsl:value-of select="document('arg://chart-form')//XVariable"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$x-variable-default"/>
+									</xsl:otherwise>
+								</xsl:choose>
 							</xsl:variable>
-							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="variable-option">
+							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="numeric-option">
 								<xsl:with-param name="selected" select="$selected"/>
 							</xsl:apply-templates>
 						</select>
 						<br/>
-						<label for="y-axis">Y axis</label>
-						<select name="y-axis" id="y-axis">
+						<label for="y-variable">Y axis</label>
+						<select name="y-variable" id="y-variable">
 							<xsl:variable name="selected">
-								<xsl:if test="$chart-result">
-									<xsl:value-of select="document('arg://chart-form')//YAxis"/>
-								</xsl:if>
+								<xsl:choose>
+									<xsl:when test="$chart-result">
+										<xsl:value-of select="document('arg://chart-form')//YVariable"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$y-variable-default"/>
+									</xsl:otherwise>
+								</xsl:choose>
 							</xsl:variable>
-							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="variable-option">
+							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="numeric-option">
 								<xsl:with-param name="selected" select="$selected"/>
 							</xsl:apply-templates>
 						</select>
 						<br/>
-						<label for="label">Label</label>
-						<select name="label" id="label">
-							<option value="label">label</option>
+						<label for="label-variable">Label</label>
+						<select name="label-variable" id="label-variable">
+							<xsl:variable name="selected">
+								<xsl:choose>
+									<xsl:when test="$chart-result">
+										<xsl:value-of select="document('arg://chart-form')//LabelVariable"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$label-variable-default"/>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
+							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="string-option">
+								<xsl:with-param name="selected" select="$selected"/>
+							</xsl:apply-templates>
 						</select>
 						<br/>
 						<label for="chart-type">Chart type</label>
@@ -101,7 +126,11 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 						</select>
 						<br/>
 						<label for="chart-title">Chart title</label>
-						<input type="text" name="title"/>
+						<input type="text" name="title">
+							<xsl:if test="$chart-result">
+								<xsl:attribute name="value"><xsl:value-of select="document('arg://chart-form')//Title"/></xsl:attribute>
+							</xsl:if>
+						</input>
 						<br/>
 						<button type="submit">Set</button>
 						<input type="hidden" name="query-string" value="{$query-string}"/>
@@ -115,16 +144,24 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 		</div>
 	</xsl:template>
 
-	<xsl:template match="sparql:variable" mode="variable-option">
+	<xsl:template match="sparql:variable[//sparql:binding[@name = current()/@name]/sparql:literal[string(number(.)) != 'NaN']]" mode="numeric-option">
 		<xsl:param name="selected"/>
-		<xsl:if test="//sparql:binding[@name = current()/@name]/sparql:literal[string(number(.)) != 'NaN']">
-			<option value="{@name}">
-				<xsl:if test="@name = $selected">
-					<xsl:attribute name="selected">selected</xsl:attribute>
-				</xsl:if>
-				<xsl:value-of select="@name"/>
-			</option>
-		</xsl:if>
+		<option value="{@name}">
+			<xsl:if test="@name = $selected">
+				<xsl:attribute name="selected">selected</xsl:attribute>
+			</xsl:if>
+			<xsl:value-of select="@name"/>
+		</option>
+	</xsl:template>
+
+	<xsl:template match="sparql:variable[//sparql:binding[@name = current()/@name]/sparql:literal[string(number(.)) = 'NaN']]" mode="string-option">
+		<xsl:param name="selected"/>
+		<option value="{@name}">
+			<xsl:if test="@name = $selected">
+				<xsl:attribute name="selected">selected</xsl:attribute>
+			</xsl:if>
+			<xsl:value-of select="@name"/>
+		</option>
 	</xsl:template>
 
 	<xsl:template match="sparql:result" mode="results-table-body">

@@ -59,19 +59,25 @@ public class ChartView extends FrontEndView
 
 	List variables = resultSet.getResultVars();
 	
-	String xBinding = (String)variables.get(2); // QUIRK
-	if (form.getXAxis() != null) xBinding = form.getXAxis();
-	String yBinding = (String)variables.get(3); // QUIRK
-	if (form.getYAxis() != null) yBinding = form.getYAxis();
+	String xVariable = (String)variables.get(2); // QUIRK
+	if (form.getXAxisVariable() != null) xVariable = form.getXAxisVariable();
+	String yVariable = (String)variables.get(3); // QUIRK
+	if (form.getYAxisVariable() != null) yVariable = form.getYAxisVariable();
+	String labelVariable = "label"; // QUIRK
+	if (form.getLabelVariable() != null) labelVariable = form.getLabelVariable();
 
 	String results = QueryXMLResult.query(resultSet);
-	String chartUrl = QueryResultChart.getURL(resultIterator, "label", xBinding, yBinding);
+	String chartUrl = QueryResultChart.getURL(resultIterator, labelVariable, xVariable, yVariable, form.getTitle());
 	
 	setDocument(results);
 
 	getTransformer().setParameter("query-string", queryString);
-	getTransformer().setParameter("chart-url", chartUrl);
 	getTransformer().setParameter("query-result", true);
+	getTransformer().setParameter("chart-url", chartUrl);
+	getTransformer().setParameter("x-variable-default", xVariable);
+	getTransformer().setParameter("y-variable-default", yVariable);
+	getTransformer().setParameter("label-variable-default", labelVariable);
+
 	if (form.getType() != null) getTransformer().setParameter("chart-result", true); // QUIRK
 	
 	getResolver().setArgument("results", results);
