@@ -9,7 +9,6 @@
 
 package lt.xml.diy.view;
 
-import lt.xml.diy.controller.ResourceImpl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -25,6 +24,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import lt.xml.diy.controller.Resource;
 
 /**
  *
@@ -41,7 +41,7 @@ public class XSLTView extends View
     private ArgURIResolver resolver = new ArgURIResolver();
 
     /** Creates a new instance of XSLTView */
-    public XSLTView(ResourceImpl resource)
+    public XSLTView(Resource resource)
     {
 	super(resource);
 	System.setProperty("javax.xml.transform.TransformerFactory","net.sf.saxon.TransformerFactoryImpl");

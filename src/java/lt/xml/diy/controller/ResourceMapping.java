@@ -15,5 +15,5 @@ package lt.xml.diy.controller;
  */
 abstract public class ResourceMapping
 {
-    abstract public ResourceImpl findByURI(String URI);
+    abstract public Resource findByURI(String URI);
 }

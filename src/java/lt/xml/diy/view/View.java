@@ -1,6 +1,5 @@
 package lt.xml.diy.view;
 
-import lt.xml.diy.controller.ResourceImpl;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -8,23 +7,24 @@ import java.io.*;
 import javax.xml.parsers.ParserConfigurationException;
 
 import javax.xml.transform.*;
+import lt.xml.diy.controller.Resource;
 
 public abstract class View
 {
     private Servlet servlet = null;
-    private ResourceImpl resource = null;
+    private Resource resource = null;
     
-    public View(ResourceImpl resource)
+    public View(Resource resource)
     {
 	this.resource = resource;
     }
 
-    public ResourceImpl getResource()
+    public Resource getResource()
     {
 	return resource;
     }
 
-    public void setResource(ResourceImpl resource)
+    public void setResource(Resource resource)
     {
 	this.resource = resource;
     }

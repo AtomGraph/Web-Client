@@ -13,7 +13,7 @@ import javax.servlet.http.*;
 
 abstract public class Controller extends HttpServlet
 {
-    private ResourceImpl resource = null;
+    private Resource resource = null;
     private View view = null;
     private ResourceMapping mapping = null;
     
@@ -73,7 +73,7 @@ abstract public class Controller extends HttpServlet
 	this.resource = resource;
     }
     
-    public ResourceImpl getResource()
+    public Resource getResource()
     {
 	return resource;
     }

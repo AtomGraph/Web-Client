@@ -10,6 +10,7 @@
 package controller;
 
 import frontend.controller.resource.chart.ChartResource;
+import lt.xml.diy.controller.Resource;
 import lt.xml.diy.controller.ResourceImpl;
 
 /**
@@ -19,7 +20,7 @@ import lt.xml.diy.controller.ResourceImpl;
 public class ResourceMapping extends lt.xml.diy.controller.ResourceMapping
 {    
     @Override
-    public ResourceImpl findByURI(String uri)
+    public Resource findByURI(String uri)
     {
         ResourceImpl resource = null;
         System.out.println(uri);
