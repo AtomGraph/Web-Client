@@ -5,7 +5,7 @@
 
 package frontend.controller;
 
-import lt.xml.diy.controller.ResourceImpl;
+import dk.semantic_web.diy.controller.ResourceImpl;
 
 /**
  *

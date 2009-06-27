@@ -9,7 +9,7 @@ import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lt.xml.diy.view.View;
+import dk.semantic_web.diy.view.View;
 
 /**
  *

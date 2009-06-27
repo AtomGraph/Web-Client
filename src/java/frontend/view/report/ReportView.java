@@ -85,6 +85,6 @@ public class ReportView extends FrontEndView
 
 	super.display(request, response);
 
-	response.setStatus(HttpServletResponse.SC_OK);	    
+	response.setStatus(HttpServletResponse.SC_OK);    
     }
 }

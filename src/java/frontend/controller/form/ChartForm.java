@@ -7,8 +7,8 @@ package frontend.controller.form;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import lt.xml.diy.controller.Error;
-import lt.xml.diy.controller.Form;
+import dk.semantic_web.diy.controller.Error;
+import dk.semantic_web.diy.controller.Form;
 
 /**
  *

@@ -6,7 +6,7 @@
 package frontend.view;
 
 import frontend.controller.FrontEndResource;
-import lt.xml.diy.view.XSLTView;
+import dk.semantic_web.diy.view.XSLTView;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

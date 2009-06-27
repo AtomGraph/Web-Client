@@ -5,22 +5,20 @@
 
 package frontend.view.datasource;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
+import dk.semantic_web.diy.http.HttpClient;
+import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.resource.datasource.DataSourceResource;
 import frontend.view.FrontEndView;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import view.QueryStringBuilder;
-import view.QueryXMLResult;
 
 /**
  *
@@ -39,22 +37,30 @@ public class DataSourceView extends FrontEndView
     {
 	setStyleSheet(new File(getServlet().getServletConfig().getServletContext().getRealPath("/xslt/sparql2google-wire.xsl")));
 
-	String queryString = null;
-	if (request.getParameter("sparql-result") != null) queryString = request.getParameter("query-string");
-	else queryString = QueryStringBuilder.build(getServlet().getServletConfig().getServletContext().getRealPath("/sparql/companiesByRevenue.rq"));
+	String resultUrlString = request.getParameter("result-url");
+        URL resultUrl = new URL(resultUrlString);
 	
-        Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
-        QueryExecution qe = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
-        ResultSet resultSet = qe.execSelect();
-	//qe.close();
-
-	String results = QueryXMLResult.query(resultSet);
-	
-	setDocument(results);
+	dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
+	remoteRequest.setMethod("get");
+	remoteRequest.setServerName(resultUrl.getHost());
+	remoteRequest.setPathInfo(resultUrl.getPath());
+	remoteRequest.setPathInfo(resultUrl.getPath());	
+	//remoteRequest.setParameter("center", lat + "," + lng);
+	//remoteRequest.setParameter("span", spanHeight + "," + spanWidth);
+	HttpResponse remoteResponse = HttpClient.send(remoteRequest);
+	//InputStreamReader reader = new InputStreamReader(;
+	InputStream stream = remoteResponse.getInputStream();
+	BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+	StringBuilder sb = new StringBuilder();
+	String line = null;
+	while ((line = reader.readLine()) != null) sb.append(line + "\n");
+	stream.close();
+	String responseString = sb.toString();
+    	
+	setDocument(responseString);
 
 	//getTransformer().setParameter("query-string", queryString);
-
-	getResolver().setArgument("results", results);
+	//getResolver().setArgument("result", result);
 
 	super.display(request, response);
 	

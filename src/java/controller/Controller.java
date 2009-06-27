@@ -13,7 +13,7 @@ import view.*;
  Fills {@link controller.ActionForm ActionForms}, performs {@link controller.Action Actions} and displays {@link view.View Views}.
  */
 
-public class Controller extends lt.xml.diy.controller.Controller
+public class Controller extends dk.semantic_web.diy.controller.Controller
 {
     @Override
     public void init()

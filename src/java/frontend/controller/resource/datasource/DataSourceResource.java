@@ -8,13 +8,14 @@ package frontend.controller.resource.datasource;
 import frontend.controller.FrontEndResource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lt.xml.diy.view.View;
+import dk.semantic_web.diy.view.View;
+import frontend.view.datasource.DataSourceView;
 
 /**
  *
  * @author Pumba
  */
-public class DataSourceResource
+public class DataSourceResource extends FrontEndResource
 {
     private View view = null;
     

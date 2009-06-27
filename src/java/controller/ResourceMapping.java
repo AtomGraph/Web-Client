@@ -10,14 +10,14 @@
 package controller;
 
 import frontend.controller.resource.report.ReportResource;
-import lt.xml.diy.controller.Resource;
-import lt.xml.diy.controller.ResourceImpl;
+import dk.semantic_web.diy.controller.Resource;
+import dk.semantic_web.diy.controller.ResourceImpl;
 
 /**
  *
  * @author Pumba
  */
-public class ResourceMapping extends lt.xml.diy.controller.ResourceMapping
+public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapping
 {    
     @Override
     public Resource findByURI(String uri)
