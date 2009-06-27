@@ -19,7 +19,7 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
-	<xsl:include href="../master.xsl"/>
+	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="query-result"/>
 	<xsl:param name="chart-result"/>
@@ -53,11 +53,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<table>
 						<thead>
 							<tr>
-								<xsl:for-each select="document('arg://results')//sparql:variable">
-									<td>
-										<xsl:value-of select="@name"/>
-									</td>
-								</xsl:for-each>
+								<xsl:apply-templates select="document('arg://results')//sparql:variable" mode="table-header"/>
 							</tr>
 						</thead>
 						<tbody>
@@ -142,6 +138,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				</p>
 			</xsl:if>
 		</div>
+	</xsl:template>
+
+	<xsl:template select="sparql:variable" mode="table-header">
+		<td>
+			<xsl:value-of select="@name"/>
+		</td>
 	</xsl:template>
 
 	<xsl:template match="sparql:variable[//sparql:binding[@name = current()/@name]/sparql:literal[string(number(.)) != 'NaN']]" mode="numeric-option">

@@ -9,7 +9,7 @@
 
 package controller;
 
-import frontend.controller.resource.chart.ChartResource;
+import frontend.controller.resource.report.ReportResource;
 import lt.xml.diy.controller.Resource;
 import lt.xml.diy.controller.ResourceImpl;
 
@@ -25,8 +25,8 @@ public class ResourceMapping extends lt.xml.diy.controller.ResourceMapping
         ResourceImpl resource = null;
         System.out.println(uri);
 
-	//if (uri.equals("")) resource = new ChartResource(null);
-resource = new ChartResource(null);
+	//if (uri.equals("")) resource = new ReportResource(null);
+resource = new ReportResource(null);
         /*
 	if (uri.matches("^emneplan/$")) resource = new MainGroupListResource(uri);
         if (uri.matches("^facetter/(?:[A-Z]|%C3%86|%C3%98|%C3%85)/$"))	

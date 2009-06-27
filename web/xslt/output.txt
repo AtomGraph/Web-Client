@@ -1,0 +1,855 @@
+
+{
+	
+	rows [ 
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Heraeus'
+			}
+			,
+		
+			{
+				v: 'Heraeus'
+			}
+			,
+		
+			{
+				v: 11275
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Schneider_Electric'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 120
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Philips'
+			}
+			,
+		
+			{
+				v: 'Philips'
+			}
+			,
+		
+			{
+				v: 125500
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Soci%C3%A9t%C3%A9_G%C3%A9n%C3%A9rale'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 130100
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Grupo_Santander'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 131153
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Delhaize_Group'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 142500
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Electrabel'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 15794
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/TNT_N.V.'
+			}
+			,
+		
+			{
+				v: 'TNT N.V.'
+			}
+			,
+		
+			{
+				v: 161000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Unilever'
+			}
+			,
+		
+			{
+				v: 'Unilever'
+			}
+			,
+		
+			{
+				v: 174
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Mitsubishi_Fuso_Truck_and_Bus_Corporation'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 18200
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Auchan'
+			}
+			,
+		
+			{
+				v: 'Auchan'
+			}
+			,
+		
+			{
+				v: 186000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/France_T%C3%A9l%C3%A9com'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 187331
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/ThyssenKrupp'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 195
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Fiat'
+			}
+			,
+		
+			{
+				v: 'Fiat'
+			}
+			,
+		
+			{
+				v: 200701
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Mapfre'
+			}
+			,
+		
+			{
+				v: 'Mapfre'
+			}
+			,
+		
+			{
+				v: 21500
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Gruppo_Riva'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 24684
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Telef%C3%B3nica'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 248487
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Edeka'
+			}
+			,
+		
+			{
+				v: 'Edeka'
+			}
+			,
+		
+			{
+				v: 250000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Bayer_Schering_Pharma'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 26000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Adidas'
+			}
+			,
+		
+			{
+				v: 'Adidas'
+			}
+			,
+		
+			{
+				v: 27000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Veolia_Environnement'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 300000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/AGF_%28company%29'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 32000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Repsol_YPF'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 36
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Munich_Re'
+			}
+			,
+		
+			{
+				v: 'Munich Re'
+			}
+			,
+		
+			{
+				v: 37210
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Astaldi'
+			}
+			,
+		
+			{
+				v: 'Astaldi'
+			}
+			,
+		
+			{
+				v: 4709
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/SAP_AG'
+			}
+			,
+		
+			{
+				v: 'SAP AG'
+			}
+			,
+		
+			{
+				v: 51447
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Henkel'
+			}
+			,
+		
+			{
+				v: 'Henkel'
+			}
+			,
+		
+			{
+				v: 52
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Deutsche_Post'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 520112
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Strabag'
+			}
+			,
+		
+			{
+				v: 'Strabag'
+			}
+			,
+		
+			{
+				v: 52791
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Safran'
+			}
+			,
+		
+			{
+				v: 'Safran'
+			}
+			,
+		
+			{
+				v: 57000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Deutsche_Bank'
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+			,
+		
+			{
+				v: 68849
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Enel'
+			}
+			,
+		
+			{
+				v: 'Enel'
+			}
+			,
+		
+			{
+				v: 73500
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/Arcelor'
+			}
+			,
+		
+			{
+				v: 'Arcelor'
+			}
+			,
+		
+			{
+				v: 94000
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		,
+		
+	}
+	
+	{
+		c: [ 
+			{
+				v: 'http://dbpedia.org/resource/BASF'
+			}
+			,
+		
+			{
+				v: 'BASF'
+			}
+			,
+		
+			{
+				v: 95200
+			}
+			,
+		
+			{
+				v: new Date(2009, 07, 01);
+			}
+		 ]
+		
+	}
+	 ]
+}
+	

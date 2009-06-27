@@ -13,7 +13,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import frontend.controller.form.ChartForm;
-import frontend.controller.resource.chart.ChartResource;
+import frontend.controller.resource.report.ReportResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import view.XMLSerializer;
 public class ChartView extends FrontEndView
 {
 
-    public ChartView(ChartResource resource)
+    public ChartView(ReportResource resource)
     {
 	super(resource);
     }

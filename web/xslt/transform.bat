@@ -1,0 +1,1 @@
+java -jar saxon9.jar -s:sparql.xml -xsl:sparql2google-wire.xsl -o:output.txt

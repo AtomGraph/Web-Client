@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package frontend.controller.resource.chart;
+package frontend.controller.resource.report;
 
 import frontend.controller.FrontEndResource;
 import frontend.view.chart.ChartView;
@@ -15,11 +15,11 @@ import lt.xml.diy.view.View;
  *
  * @author Pumba
  */
-public class ChartResource extends FrontEndResource
+public class ReportResource extends FrontEndResource
 {
     private View view = null;
     
-    public ChartResource(FrontEndResource parent)
+    public ReportResource(FrontEndResource parent)
     {
 	super(parent);
     }
