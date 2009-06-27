@@ -6,7 +6,7 @@
 package frontend.controller.resource.report;
 
 import frontend.controller.FrontEndResource;
-import frontend.view.report.ChartView;
+import frontend.view.report.ReportView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lt.xml.diy.view.View;
@@ -34,7 +34,7 @@ public class ReportResource extends FrontEndResource
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) view = parent;
-	else view = new ChartView(this);
+	else view = new ReportView(this);
 
 	return view;
     }
