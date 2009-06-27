@@ -140,7 +140,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 		</div>
 	</xsl:template>
 
-	<xsl:template select="sparql:variable" mode="table-header">
+	<xsl:template match="sparql:variable" mode="table-header">
 		<td>
 			<xsl:value-of select="@name"/>
 		</td>

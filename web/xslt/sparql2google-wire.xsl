@@ -24,6 +24,8 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 	<xsl:strip-space elements="*"/>
 
 	<!-- 
+	http://dbpedia.org/sparql/?query=PREFIX+rdf%3A+<http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23>%0D%0APREFIX+rdfs%3A+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%0D%0APREFIX+owl%3A+<http%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23>%0D%0APREFIX+xsd%3A+<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%0D%0A%0D%0ASELECT+DISTINCT+*%0D%0AWHERE%0D%0A{%0D%0A%09%3Fcompany+rdfs%3Alabel+%3Flabel+.%0D%0A%09%3Fcompany+<http%3A%2F%2Fdbpedia.org%2Fontology%2FnumberOfEmployees>+%3Femployees+.%0D%0A%09%3Fcompany+<http%3A%2F%2Fdbpedia.org%2Fontology%2Frevenue>+%3Frevenue%0D%0A%09FILTER+(DATATYPE(%3Frevenue)+%3D+<http%3A%2F%2Fdbpedia.org%2Fontology%2Feuro>)%0D%0A%09FILTER+(xsd%3Ainteger(%3Frevenue)+>+10000000000)%0D%0A%09FILTER+(xsd%3Ainteger(%3Femployees)+>+0)%0D%0A%09FILTER+(LANG(%3Flabel)+%3D+'en')%0D%0A}%0D%0A%23+ORDER+BY+DESC(xsd%3Ainteger(%3Frevenue))+DESC(xsd%3Ainteger(%3Femployees))%0D%0A&format=application/sparql-results+xml
+
 	http://code.google.com/apis/visualization/documentation/reference.html#dataparam
 	http://code.google.com/apis/visualization/documentation/dev/implementing_data_source.html#responseformat
 
@@ -81,7 +83,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 	</xsl:template>
 
 	<!-- date -->
-	<xsl:template match="sparql:binding[date:date(sparql:literal) != '']">
+	<xsl:template match="sparql:binding[date:date(sparql:literal) != '']" priority="1">
 			{
 				v: new Date(2009, 07, 01);
 			}

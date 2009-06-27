@@ -38,32 +38,36 @@ public class DataSourceView extends FrontEndView
 	setStyleSheet(new File(getServlet().getServletConfig().getServletContext().getRealPath("/xslt/sparql2google-wire.xsl")));
 
 	String resultUrlString = request.getParameter("result-url");
-        URL resultUrl = new URL(resultUrlString);
-	
-	dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
-	remoteRequest.setMethod("get");
-	remoteRequest.setServerName(resultUrl.getHost());
-	remoteRequest.setPathInfo(resultUrl.getPath());
-	remoteRequest.setPathInfo(resultUrl.getPath());	
-	//remoteRequest.setParameter("center", lat + "," + lng);
-	//remoteRequest.setParameter("span", spanHeight + "," + spanWidth);
-	HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	//InputStreamReader reader = new InputStreamReader(;
-	InputStream stream = remoteResponse.getInputStream();
-	BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-	StringBuilder sb = new StringBuilder();
-	String line = null;
-	while ((line = reader.readLine()) != null) sb.append(line + "\n");
-	stream.close();
-	String responseString = sb.toString();
-    	
-	setDocument(responseString);
+	if (resultUrlString != null)
+	{
+	    URL resultUrl = new URL(resultUrlString);
 
-	//getTransformer().setParameter("query-string", queryString);
-	//getResolver().setArgument("result", result);
+	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
+	    remoteRequest.setMethod("get");
+	    remoteRequest.setServerName(resultUrl.getHost());
+	    remoteRequest.setPathInfo(resultUrl.getPath());
+	    remoteRequest.setPathInfo(resultUrl.getPath());	
+	    //remoteRequest.setParameter("center", lat + "," + lng);
+	    //remoteRequest.setParameter("span", spanHeight + "," + spanWidth);
+	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
+	    //InputStreamReader reader = new InputStreamReader(;
+	    InputStream stream = remoteResponse.getInputStream();
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+	    StringBuilder sb = new StringBuilder();
+	    String line = null;
+	    while ((line = reader.readLine()) != null) sb.append(line + "\n");
+	    stream.close();
+	    String responseString = sb.toString();
 
-	super.display(request, response);
+	    setDocument(responseString);
+
+	    //getTransformer().setParameter("query-string", queryString);
+	    //getResolver().setArgument("result", result);
+
+	    super.display(request, response);
 	
-	response.setStatus(HttpServletResponse.SC_OK);	
+	    response.setStatus(HttpServletResponse.SC_OK);
+	}
+	else response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 }

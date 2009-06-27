@@ -45,7 +45,7 @@ public class ReportView extends FrontEndView
     {
 	ChartForm form = new ChartForm(request);
 	
-	setStyleSheet(new File(getServlet().getServletConfig().getServletContext().getRealPath("/xslt/chart/ChartView.xsl")));
+	setStyleSheet(new File(getServlet().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportView.xsl")));
 
 	String queryString = null;
 	if (request.getParameter("query-string") != null) queryString = request.getParameter("query-string");
