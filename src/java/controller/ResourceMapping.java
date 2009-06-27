@@ -9,9 +9,10 @@
 
 package controller;
 
-import frontend.controller.resource.report.ReportResource;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import dk.semantic_web.diy.controller.Resource;
-import dk.semantic_web.diy.controller.ResourceImpl;
+import frontend.controller.resource.datasource.DataSourceResource;
+import frontend.controller.resource.report.ReportResource;
 
 /**
  *
@@ -22,18 +23,28 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
     @Override
     public Resource findByURI(String uri)
     {
-        ResourceImpl resource = null;
-        System.out.println(uri);
-
-	//if (uri.equals("")) resource = new ReportResource(null);
-resource = new ReportResource(null);
-        /*
-	if (uri.matches("^emneplan/$")) resource = new MainGroupListResource(uri);
-        if (uri.matches("^facetter/(?:[A-Z]|%C3%86|%C3%98|%C3%85)/$"))	
-        if (uri.matches("^emneplan/\\d+/$"))
-	if (uri.matches("^s%C3%B8gning$")) resource = new SearchResource(uri);
-        if (uri.matches("^admin$")) resource = new AdminResource(uri);
-	*/
+	Resource resource = null;
+	//Individual instance = Ontology.getJointOntology().getIndividual(URI);
+	String[] relativeUris = uri.split("/");
+	// urldecode all URIs
+	ResIterator iter = null;
+	
+	//if (relativeUris.length == 0) return FrontPageResource.getInstance();
+	
+	if (relativeUris.length == 1)
+	{
+	    if (relativeUris[0].equals(DataSourceResource.RELATIVE_URI))
+	    {
+		resource = DataSourceResource.getInstance();
+		return resource;
+	    }
+	    if (relativeUris[0].equals(ReportResource.RELATIVE_URI))
+	    {
+		resource = ReportResource.getInstance();
+		return resource;
+	    }
+	    
+	}
 
         return resource;
     }

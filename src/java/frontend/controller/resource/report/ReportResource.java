@@ -5,28 +5,39 @@
 
 package frontend.controller.resource.report;
 
+import dk.semantic_web.diy.controller.Resource;
+import dk.semantic_web.diy.controller.Singleton;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
+import frontend.controller.resource.FrontPageResource;
 
 /**
  *
  * @author Pumba
  */
-public class ReportResource extends FrontEndResource
+public class ReportResource extends FrontEndResource implements Singleton
 {
+    public static final String RELATIVE_URI = "report";
+    private static final ReportResource INSTANCE = new ReportResource(FrontPageResource.getInstance());
+    
     private View view = null;
     
-    public ReportResource(FrontEndResource parent)
+    public ReportResource(FrontPageResource parent)
     {
 	super(parent);
     }
 
+    public static Resource getInstance()
+    {
+	return INSTANCE;
+    }
+    
     public String getRelativeURI()
     {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return RELATIVE_URI;
     }
 
     @Override
@@ -38,4 +49,5 @@ public class ReportResource extends FrontEndResource
 
 	return view;
     }
+    
 }
