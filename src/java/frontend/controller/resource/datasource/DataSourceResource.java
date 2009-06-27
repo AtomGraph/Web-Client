@@ -3,10 +3,9 @@
  * and open the template in the editor.
  */
 
-package frontend.controller.resource.report;
+package frontend.controller.resource.datasource;
 
 import frontend.controller.FrontEndResource;
-import frontend.view.report.ChartView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lt.xml.diy.view.View;
@@ -15,11 +14,11 @@ import lt.xml.diy.view.View;
  *
  * @author Pumba
  */
-public class ReportResource extends FrontEndResource
+public class DataSourceResource
 {
     private View view = null;
     
-    public ReportResource(FrontEndResource parent)
+    public DataSourceResource(FrontEndResource parent)
     {
 	super(parent);
     }
@@ -34,7 +33,7 @@ public class ReportResource extends FrontEndResource
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) view = parent;
-	else view = new ChartView(this);
+	else view = new DataSourceView(this);
 
 	return view;
     }

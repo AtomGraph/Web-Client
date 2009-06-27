@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package frontend.view.chart;
+package frontend.view.report;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
