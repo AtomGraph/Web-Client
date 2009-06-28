@@ -59,14 +59,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 			{
 				id: '<xsl:value-of select="generate-id()"/>', label: '<xsl:value-of select="@name"/>', type: 
 				<xsl:choose>
-					<!--
-					<xsl:when test="key('binding-by-name', @name)/sparql:uri">
-					'string'
-					</xsl:when>
-					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[starts-with(sparql:literal, 'http://')])">
-					'string'
-					</xsl:when>
-					-->
 					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[string(number(sparql:literal)) != 'NaN'])">
 					'number'
 					</xsl:when>
@@ -101,18 +93,22 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 	</xsl:template>
 
 	<!-- string -->
-	<xsl:template match="sparql:literal | sparql:uri">
+	<xsl:template match="sparql:literal">
+		<xsl:choose>
+			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[string(number(sparql:literal)) != 'NaN'])">
+				<xsl:value-of select="."/>
+			</xsl:when>
+			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[date:date(sparql:literal) = sparql:literal])">
+				new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
+			</xsl:when>
+			<xsl:otherwise>
+				'<xsl:value-of select="."/>'			
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="sparql:uri">
 		'<xsl:value-of select="."/>'
-	</xsl:template>
-
-	<!-- number -->
-	<xsl:template match="sparql:literal[string(number(.)) != 'NaN']">
-		<xsl:value-of select="."/>
-	</xsl:template>
-
-	<!-- date -->
-	<xsl:template match="sparql:literal[date:date(.) = .]" priority="1">
-		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
 	</xsl:template>
 
 </xsl:stylesheet>

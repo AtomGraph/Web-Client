@@ -33,15 +33,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Heraeus'
-	
+				'http://dbpedia.org/resource/Heraeus'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Heraeus'
-	
+				'Heraeus'			
+			
 			}
 			,
 		
@@ -61,15 +61,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Schneider_Electric'
-	
+				'http://dbpedia.org/resource/Schneider_Electric'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Schneider Electric'
-	
+				'Schneider Electric'			
+			
 			}
 			,
 		
@@ -89,15 +89,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Philips'
-	
+				'http://dbpedia.org/resource/Philips'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Philips'
-	
+				'Philips'			
+			
 			}
 			,
 		
@@ -117,15 +117,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Soci%C3%A9t%C3%A9_G%C3%A9n%C3%A9rale'
-	
+				'http://dbpedia.org/resource/Soci%C3%A9t%C3%A9_G%C3%A9n%C3%A9rale'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Société Générale'
-	
+				'Société Générale'			
+			
 			}
 			,
 		
@@ -145,15 +145,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Grupo_Santander'
-	
+				'http://dbpedia.org/resource/Grupo_Santander'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Grupo Santander'
-	
+				'Grupo Santander'			
+			
 			}
 			,
 		
@@ -173,15 +173,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Delhaize_Group'
-	
+				'http://dbpedia.org/resource/Delhaize_Group'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Delhaize Group'
-	
+				'Delhaize Group'			
+			
 			}
 			,
 		
@@ -201,15 +201,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Electrabel'
-	
+				'http://dbpedia.org/resource/Electrabel'			
+			
 			}
 			,
 		
 			{
 				v: 
-		new Date(NaN, NaN, NaN, 0, 31, 26)
-	
+				'Electrabel'			
+			
 			}
 			,
 		
@@ -229,15 +229,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/TNT_N.V.'
-	
+				'http://dbpedia.org/resource/TNT_N.V.'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'TNT N.V.'
-	
+				'TNT N.V.'			
+			
 			}
 			,
 		
@@ -257,15 +257,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Unilever'
-	
+				'http://dbpedia.org/resource/Unilever'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Unilever'
-	
+				'Unilever'			
+			
 			}
 			,
 		
@@ -285,15 +285,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Mitsubishi_Fuso_Truck_and_Bus_Corporation'
-	
+				'http://dbpedia.org/resource/Mitsubishi_Fuso_Truck_and_Bus_Corporation'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Mitsubishi Fuso Truck and Bus Corporation'
-	
+				'Mitsubishi Fuso Truck and Bus Corporation'			
+			
 			}
 			,
 		
@@ -313,15 +313,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Auchan'
-	
+				'http://dbpedia.org/resource/Auchan'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Auchan'
-	
+				'Auchan'			
+			
 			}
 			,
 		
@@ -341,15 +341,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/France_T%C3%A9l%C3%A9com'
-	
+				'http://dbpedia.org/resource/France_T%C3%A9l%C3%A9com'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'France Télécom'
-	
+				'France Télécom'			
+			
 			}
 			,
 		
@@ -369,15 +369,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/ThyssenKrupp'
-	
+				'http://dbpedia.org/resource/ThyssenKrupp'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'ThyssenKrupp'
-	
+				'ThyssenKrupp'			
+			
 			}
 			,
 		
@@ -397,15 +397,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Fiat'
-	
+				'http://dbpedia.org/resource/Fiat'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Fiat'
-	
+				'Fiat'			
+			
 			}
 			,
 		
@@ -425,15 +425,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Mapfre'
-	
+				'http://dbpedia.org/resource/Mapfre'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Mapfre'
-	
+				'Mapfre'			
+			
 			}
 			,
 		
@@ -453,15 +453,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Gruppo_Riva'
-	
+				'http://dbpedia.org/resource/Gruppo_Riva'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Gruppo Riva'
-	
+				'Gruppo Riva'			
+			
 			}
 			,
 		
@@ -481,15 +481,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Telef%C3%B3nica'
-	
+				'http://dbpedia.org/resource/Telef%C3%B3nica'			
+			
 			}
 			,
 		
 			{
 				v: 
-		new Date(NaN, NaN, NaN, 0, 31, 26)
-	
+				'Telefónica'			
+			
 			}
 			,
 		
@@ -509,15 +509,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Edeka'
-	
+				'http://dbpedia.org/resource/Edeka'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Edeka'
-	
+				'Edeka'			
+			
 			}
 			,
 		
@@ -537,15 +537,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Bayer_Schering_Pharma'
-	
+				'http://dbpedia.org/resource/Bayer_Schering_Pharma'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Bayer Schering Pharma'
-	
+				'Bayer Schering Pharma'			
+			
 			}
 			,
 		
@@ -565,15 +565,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Adidas'
-	
+				'http://dbpedia.org/resource/Adidas'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Adidas'
-	
+				'Adidas'			
+			
 			}
 			,
 		
@@ -593,15 +593,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Veolia_Environnement'
-	
+				'http://dbpedia.org/resource/Veolia_Environnement'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Veolia Environnement'
-	
+				'Veolia Environnement'			
+			
 			}
 			,
 		
@@ -621,15 +621,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/AGF_%28company%29'
-	
+				'http://dbpedia.org/resource/AGF_%28company%29'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'AGF (company)'
-	
+				'AGF (company)'			
+			
 			}
 			,
 		
@@ -649,15 +649,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Repsol_YPF'
-	
+				'http://dbpedia.org/resource/Repsol_YPF'			
+			
 			}
 			,
 		
 			{
 				v: 
-		new Date(NaN, NaN, NaN, 0, 31, 26)
-	
+				'Repsol YPF'			
+			
 			}
 			,
 		
@@ -677,15 +677,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Munich_Re'
-	
+				'http://dbpedia.org/resource/Munich_Re'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Munich Re'
-	
+				'Munich Re'			
+			
 			}
 			,
 		
@@ -705,15 +705,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Astaldi'
-	
+				'http://dbpedia.org/resource/Astaldi'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Astaldi'
-	
+				'Astaldi'			
+			
 			}
 			,
 		
@@ -733,15 +733,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/SAP_AG'
-	
+				'http://dbpedia.org/resource/SAP_AG'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'SAP AG'
-	
+				'SAP AG'			
+			
 			}
 			,
 		
@@ -761,15 +761,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Henkel'
-	
+				'http://dbpedia.org/resource/Henkel'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Henkel'
-	
+				'Henkel'			
+			
 			}
 			,
 		
@@ -789,15 +789,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Deutsche_Post'
-	
+				'http://dbpedia.org/resource/Deutsche_Post'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Deutsche Post'
-	
+				'Deutsche Post'			
+			
 			}
 			,
 		
@@ -817,15 +817,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Strabag'
-	
+				'http://dbpedia.org/resource/Strabag'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Strabag'
-	
+				'Strabag'			
+			
 			}
 			,
 		
@@ -845,15 +845,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Safran'
-	
+				'http://dbpedia.org/resource/Safran'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Safran'
-	
+				'Safran'			
+			
 			}
 			,
 		
@@ -873,15 +873,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Deutsche_Bank'
-	
+				'http://dbpedia.org/resource/Deutsche_Bank'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Deutsche Bank'
-	
+				'Deutsche Bank'			
+			
 			}
 			,
 		
@@ -901,15 +901,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Enel'
-	
+				'http://dbpedia.org/resource/Enel'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Enel'
-	
+				'Enel'			
+			
 			}
 			,
 		
@@ -929,15 +929,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/Arcelor'
-	
+				'http://dbpedia.org/resource/Arcelor'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'Arcelor'
-	
+				'Arcelor'			
+			
 			}
 			,
 		
@@ -957,15 +957,15 @@
 		c: [ 
 			{
 				v: 
-		'http://dbpedia.org/resource/BASF'
-	
+				'http://dbpedia.org/resource/BASF'			
+			
 			}
 			,
 		
 			{
 				v: 
-		'BASF'
-	
+				'BASF'			
+			
 			}
 			,
 		
