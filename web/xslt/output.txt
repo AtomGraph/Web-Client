@@ -1,16 +1,47 @@
 
 {
-	
-	rows [ 
-	{
-		c: [ 
+	cols: [ 
 			{
-				v: new Date(2009, 07, 01);
+				id: 'd1e4', label: 'company', type: 
+				'string'
 			}
 			,
 		
 			{
-				v: 'Heraeus'
+				id: 'd1e5', label: 'label', type: 
+				'string'
+			}
+			,
+		
+			{
+				id: 'd1e6', label: 'employees', type: 
+				
+					'number'
+					
+			}
+			,
+		
+			{
+				id: 'd1e7', label: 'revenue', type: 
+				
+					'number'
+					
+			}
+		 ],
+	rows: [ 
+	{
+		c: [ 
+			{
+				v: 
+		'http://dbpedia.org/resource/Heraeus'
+	
+			}
+			,
+		
+			{
+				v: 
+		'Heraeus'
+	
 			}
 			,
 		
@@ -20,22 +51,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 12080000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Schneider_Electric'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Schneider Electric'
+	
 			}
 			,
 		
@@ -45,22 +79,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 17300000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Philips'
+	
 			}
 			,
 		
 			{
-				v: 'Philips'
+				v: 
+		'Philips'
+	
 			}
 			,
 		
@@ -70,22 +107,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 26976000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Soci%C3%A9t%C3%A9_G%C3%A9n%C3%A9rale'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Société Générale'
+	
 			}
 			,
 		
@@ -95,22 +135,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 21923000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Grupo_Santander'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Grupo Santander'
+	
 			}
 			,
 		
@@ -120,22 +163,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 27068000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Delhaize_Group'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Delhaize Group'
+	
 			}
 			,
 		
@@ -145,22 +191,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 19200000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Electrabel'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		new Date(NaN, NaN, NaN, 0, 31, 26)
+	
 			}
 			,
 		
@@ -170,22 +219,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 12218000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/TNT_N.V.'
+	
 			}
 			,
 		
 			{
-				v: 'TNT N.V.'
+				v: 
+		'TNT N.V.'
+	
 			}
 			,
 		
@@ -195,22 +247,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 11000000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Unilever'
+	
 			}
 			,
 		
 			{
-				v: 'Unilever'
+				v: 
+		'Unilever'
+	
 			}
 			,
 		
@@ -220,22 +275,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 40187000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Mitsubishi_Fuso_Truck_and_Bus_Corporation'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Mitsubishi Fuso Truck and Bus Corporation'
+	
 			}
 			,
 		
@@ -245,22 +303,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 30368000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Auchan'
+	
 			}
 			,
 		
 			{
-				v: 'Auchan'
+				v: 
+		'Auchan'
+	
 			}
 			,
 		
@@ -270,22 +331,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 36710000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/France_T%C3%A9l%C3%A9com'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'France Télécom'
+	
 			}
 			,
 		
@@ -295,22 +359,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 52959000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/ThyssenKrupp'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'ThyssenKrupp'
+	
 			}
 			,
 		
@@ -320,22 +387,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 51700000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Fiat'
+	
 			}
 			,
 		
 			{
-				v: 'Fiat'
+				v: 
+		'Fiat'
+	
 			}
 			,
 		
@@ -345,22 +415,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 58529000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Mapfre'
+	
 			}
 			,
 		
 			{
-				v: 'Mapfre'
+				v: 
+		'Mapfre'
+	
 			}
 			,
 		
@@ -370,22 +443,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 13600000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Gruppo_Riva'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Gruppo Riva'
+	
 			}
 			,
 		
@@ -395,22 +471,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 10100000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Telef%C3%B3nica'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		new Date(NaN, NaN, NaN, 0, 31, 26)
+	
 			}
 			,
 		
@@ -420,22 +499,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 56441000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Edeka'
+	
 			}
 			,
 		
 			{
-				v: 'Edeka'
+				v: 
+		'Edeka'
+	
 			}
 			,
 		
@@ -445,22 +527,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 38000000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Bayer_Schering_Pharma'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Bayer Schering Pharma'
+	
 			}
 			,
 		
@@ -470,22 +555,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 10267000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Adidas'
+	
 			}
 			,
 		
 			{
-				v: 'Adidas'
+				v: 
+		'Adidas'
+	
 			}
 			,
 		
@@ -495,22 +583,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 10299000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Veolia_Environnement'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Veolia Environnement'
+	
 			}
 			,
 		
@@ -520,22 +611,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 32600000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/AGF_%28company%29'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'AGF (company)'
+	
 			}
 			,
 		
@@ -545,22 +639,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 17300000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Repsol_YPF'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		new Date(NaN, NaN, NaN, 0, 31, 26)
+	
 			}
 			,
 		
@@ -570,22 +667,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 55923000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Munich_Re'
+	
 			}
 			,
 		
 			{
-				v: 'Munich Re'
+				v: 
+		'Munich Re'
+	
 			}
 			,
 		
@@ -595,22 +695,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 37400000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Astaldi'
+	
 			}
 			,
 		
 			{
-				v: 'Astaldi'
+				v: 
+		'Astaldi'
+	
 			}
 			,
 		
@@ -620,22 +723,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 19300000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/SAP_AG'
+	
 			}
 			,
 		
 			{
-				v: 'SAP AG'
+				v: 
+		'SAP AG'
+	
 			}
 			,
 		
@@ -645,22 +751,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 10250000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Henkel'
+	
 			}
 			,
 		
 			{
-				v: 'Henkel'
+				v: 
+		'Henkel'
+	
 			}
 			,
 		
@@ -670,22 +779,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 13070000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Deutsche_Post'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Deutsche Post'
+	
 			}
 			,
 		
@@ -695,22 +807,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 63500000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Strabag'
+	
 			}
 			,
 		
 			{
-				v: 'Strabag'
+				v: 
+		'Strabag'
+	
 			}
 			,
 		
@@ -720,22 +835,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 10400000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Safran'
+	
 			}
 			,
 		
 			{
-				v: 'Safran'
+				v: 
+		'Safran'
+	
 			}
 			,
 		
@@ -745,22 +863,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 12000000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Deutsche_Bank'
+	
 			}
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'Deutsche Bank'
+	
 			}
 			,
 		
@@ -770,22 +891,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 67706000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Enel'
+	
 			}
 			,
 		
 			{
-				v: 'Enel'
+				v: 
+		'Enel'
+	
 			}
 			,
 		
@@ -795,22 +919,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 42700000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/Arcelor'
+	
 			}
 			,
 		
 			{
-				v: 'Arcelor'
+				v: 
+		'Arcelor'
+	
 			}
 			,
 		
@@ -820,22 +947,25 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 32611000000
 			}
 		 ]
-		,
-		
 	}
+	,
 	
 	{
 		c: [ 
 			{
-				v: new Date(2009, 07, 01);
+				v: 
+		'http://dbpedia.org/resource/BASF'
+	
 			}
 			,
 		
 			{
-				v: 'BASF'
+				v: 
+		'BASF'
+	
 			}
 			,
 		
@@ -845,10 +975,9 @@
 			,
 		
 			{
-				v: new Date(2009, 07, 01);
+				v: 57950000000
 			}
 		 ]
-		
 	}
 	 ]
 }

@@ -23,6 +23,9 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 	<xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="application/json"/>
 	<xsl:strip-space elements="*"/>
 
+	<xsl:key name="binding-by-name" match="sparql:binding" use="@name"/> 
+	<xsl:variable name="numeric-variables" select="sparql:variable[count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[string(number(sparql:literal)) != 'NaN'])]"/> 
+
 	<!-- 
 	http://dbpedia.org/sparql/?query=PREFIX+rdf%3A+<http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23>%0D%0APREFIX+rdfs%3A+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%0D%0APREFIX+owl%3A+<http%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23>%0D%0APREFIX+xsd%3A+<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%0D%0A%0D%0ASELECT+DISTINCT+*%0D%0AWHERE%0D%0A{%0D%0A%09%3Fcompany+rdfs%3Alabel+%3Flabel+.%0D%0A%09%3Fcompany+<http%3A%2F%2Fdbpedia.org%2Fontology%2FnumberOfEmployees>+%3Femployees+.%0D%0A%09%3Fcompany+<http%3A%2F%2Fdbpedia.org%2Fontology%2Frevenue>+%3Frevenue%0D%0A%09FILTER+(DATATYPE(%3Frevenue)+%3D+<http%3A%2F%2Fdbpedia.org%2Fontology%2Feuro>)%0D%0A%09FILTER+(xsd%3Ainteger(%3Frevenue)+>+10000000000)%0D%0A%09FILTER+(xsd%3Ainteger(%3Femployees)+>+0)%0D%0A%09FILTER+(LANG(%3Flabel)+%3D+'en')%0D%0A}%0D%0A%23+ORDER+BY+DESC(xsd%3Ainteger(%3Frevenue))+DESC(xsd%3Ainteger(%3Femployees))%0D%0A&format=application/sparql-results+xml
 
@@ -44,37 +47,52 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 
 	<xsl:template match="sparql:sparql">
 {
-	<!-- cols: [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="data-header"/> ], -->
-	rows [ <xsl:apply-templates select="sparql:results/sparql:result"/> ]
+	cols: [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="data-header"/> ],
+	rows: [ <xsl:apply-templates select="sparql:results/sparql:result"/> ]
 }
 	</xsl:template>
 
 	<!--  DATA TABLE HEADER -->
 
+	<!-- string -->
+	<xsl:template match="sparql:variable" mode="data-header">
+			{
+				id: '<xsl:value-of select="generate-id()"/>', label: '<xsl:value-of select="@name"/>', type: 
+				<xsl:choose>
+					<!--
+					<xsl:when test="key('binding-by-name', @name)/sparql:uri">
+					'string'
+					</xsl:when>
+					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[starts-with(sparql:literal, 'http://')])">
+					'string'
+					</xsl:when>
+					-->
+					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[string(number(sparql:literal)) != 'NaN'])">
+					'number'
+					</xsl:when>
+					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[date:date(sparql:literal) = sparql:literal])">
+					'date'
+					</xsl:when>
+					<xsl:otherwise>'string'</xsl:otherwise>
+				</xsl:choose>
+			}
+		<xsl:if test="position() != last()">	,
+		</xsl:if>
+	</xsl:template>
 
 	<!--  DATA TABLE ROW -->
 
 	<xsl:template match="sparql:result">
 	{
 		c: [ <xsl:apply-templates/> ]
-		<xsl:if test="position() != last()">,
-		</xsl:if>
 	}
+	<xsl:if test="position() != last()">,
+	</xsl:if>
 	</xsl:template>
 
 	<!--  DATA TABLE CELLS -->
 
-	<!-- string -->
 	<xsl:template match="sparql:binding">
-			{
-				v: '<xsl:apply-templates/>'
-			}
-		<xsl:if test="position() != last()">	,
-		</xsl:if>
-	</xsl:template>
-
-	<!-- number -->
-	<xsl:template match="sparql:binding[string(number(sparql:literal)) != 'NaN']">
 			{
 				v: <xsl:apply-templates/>
 			}
@@ -82,13 +100,19 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		</xsl:if>
 	</xsl:template>
 
+	<!-- string -->
+	<xsl:template match="sparql:literal | sparql:uri">
+		'<xsl:value-of select="."/>'
+	</xsl:template>
+
+	<!-- number -->
+	<xsl:template match="sparql:literal[string(number(.)) != 'NaN']">
+		<xsl:value-of select="."/>
+	</xsl:template>
+
 	<!-- date -->
-	<xsl:template match="sparql:binding[date:date(sparql:literal) != '']" priority="1">
-			{
-				v: new Date(2009, 07, 01);
-			}
-		<xsl:if test="position() != last()">	,
-		</xsl:if>
+	<xsl:template match="sparql:literal[date:date(.) = .]" priority="1">
+		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
 	</xsl:template>
 
 </xsl:stylesheet>
