@@ -46,9 +46,7 @@ public class DataSourceView extends FrontEndView
 	    remoteRequest.setMethod("get");
 	    remoteRequest.setServerName(resultUrl.getHost());
 	    remoteRequest.setPathInfo(resultUrl.getPath());
-	    remoteRequest.setPathInfo(resultUrl.getPath());	
-	    //remoteRequest.setParameter("center", lat + "," + lng);
-	    //remoteRequest.setParameter("span", spanHeight + "," + spanWidth);
+	    remoteRequest.setQueryString(resultUrl.getQuery());
 	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
 	    //InputStreamReader reader = new InputStreamReader(;
 	    InputStream stream = remoteResponse.getInputStream();
@@ -58,7 +56,7 @@ public class DataSourceView extends FrontEndView
 	    while ((line = reader.readLine()) != null) sb.append(line + "\n");
 	    stream.close();
 	    String responseString = sb.toString();
-
+System.out.println("RESPONSE: " + responseString);
 	    setDocument(responseString);
 
 	    //getTransformer().setParameter("query-string", queryString);
