@@ -45,17 +45,21 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 
 	-->
 
-	<xsl:template match="sparql:sparql">
+	<xsl:template match="/" mode="sparql2wire">
+		<xsl:apply-templates mode="sparql2wire"/>
+	</xsl:template>
+	
+	<xsl:template match="sparql:sparql" mode="sparql2wire">
 {
-	cols: [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="data-header"/> ],
-	rows: [ <xsl:apply-templates select="sparql:results/sparql:result"/> ]
+	cols: [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="sparql2wire"/> ],
+	rows: [ <xsl:apply-templates select="sparql:results/sparql:result" mode="sparql2wire"/> ]
 }
 	</xsl:template>
 
 	<!--  DATA TABLE HEADER -->
 
 	<!-- string -->
-	<xsl:template match="sparql:variable" mode="data-header">
+	<xsl:template match="sparql:variable" mode="sparql2wire">
 			{
 				id: '<xsl:value-of select="generate-id()"/>', label: '<xsl:value-of select="@name"/>', type: 
 				<xsl:choose>
@@ -74,9 +78,9 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 
 	<!--  DATA TABLE ROW -->
 
-	<xsl:template match="sparql:result">
+	<xsl:template match="sparql:result" mode="sparql2wire">
 	{
-		c: [ <xsl:apply-templates/> ]
+		c: [ <xsl:apply-templates mode="sparql2wire"/> ]
 	}
 	<xsl:if test="position() != last()">,
 	</xsl:if>
@@ -84,16 +88,16 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 
 	<!--  DATA TABLE CELLS -->
 
-	<xsl:template match="sparql:binding">
+	<xsl:template match="sparql:binding" mode="sparql2wire">
 			{
-				v: <xsl:apply-templates/>
+				v: <xsl:apply-templates mode="sparql2wire"/>
 			}
 		<xsl:if test="position() != last()">	,
 		</xsl:if>
 	</xsl:template>
 
 	<!-- string -->
-	<xsl:template match="sparql:literal">
+	<xsl:template match="sparql:literal" mode="sparql2wire">
 		<xsl:choose>
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[string(number(sparql:literal)) != 'NaN'])">
 				<xsl:value-of select="."/>
@@ -107,7 +111,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="sparql:uri">
+	<xsl:template match="sparql:uri" mode="sparql2wire">
 		'<xsl:value-of select="."/>'
 	</xsl:template>
 

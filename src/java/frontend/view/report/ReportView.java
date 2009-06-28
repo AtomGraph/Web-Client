@@ -56,7 +56,9 @@ public class ReportView extends FrontEndView
         ResultSet resultSet = qe.execSelect();
 	Iterator<QuerySolution> resultIterator = qe.execSelect();
 	//qe.close();
+	String results = QueryXMLResult.query(resultSet);
 
+	/*
 	List variables = resultSet.getResultVars();
 	
 	String xVariable = (String)variables.get(2); // QUIRK
@@ -66,22 +68,22 @@ public class ReportView extends FrontEndView
 	String labelVariable = "label"; // QUIRK
 	if (form.getLabelVariable() != null) labelVariable = form.getLabelVariable();
 
-	String results = QueryXMLResult.query(resultSet);
 	String chartUrl = QueryResultChart.getURL(resultIterator, labelVariable, xVariable, yVariable, form.getTitle());
+	*/
 	
 	setDocument(results);
 
 	getTransformer().setParameter("query-string", queryString);
 	getTransformer().setParameter("query-result", true);
-	getTransformer().setParameter("chart-url", chartUrl);
-	getTransformer().setParameter("x-variable-default", xVariable);
-	getTransformer().setParameter("y-variable-default", yVariable);
-	getTransformer().setParameter("label-variable-default", labelVariable);
+	//getTransformer().setParameter("chart-url", chartUrl);
+	//getTransformer().setParameter("x-variable-default", xVariable);
+	//getTransformer().setParameter("y-variable-default", yVariable);
+	//getTransformer().setParameter("label-variable-default", labelVariable);
 
 	if (form.getType() != null) getTransformer().setParameter("chart-result", true); // QUIRK
 	
 	getResolver().setArgument("results", results);
-	getResolver().setArgument("chart-form", XMLSerializer.serialize(form));
+	//getResolver().setArgument("chart-form", XMLSerializer.serialize(form));
 
 	super.display(request, response);
 

@@ -3,7 +3,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT DISTINCT *
+SELECT DISTINCT ?label ?revenue ?employees
 WHERE
 {
 	?company rdfs:label ?label .
@@ -14,4 +14,4 @@ WHERE
 	FILTER (xsd:integer(?employees) > 0)
 	FILTER (LANG(?label) = 'en')
 }
-# ORDER BY DESC(xsd:integer(?revenue)) DESC(xsd:integer(?employees))
+ORDER BY DESC(xsd:integer(?revenue)) DESC(xsd:integer(?employees))
