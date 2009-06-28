@@ -56,6 +56,7 @@ public class DataSourceView extends FrontEndView
 	    while ((line = reader.readLine()) != null) sb.append(line + "\n");
 	    stream.close();
 	    String responseString = sb.toString();
+System.out.println("QUERY: " + resultUrl.getQuery());
 System.out.println("RESPONSE: " + responseString);
 	    setDocument(responseString);
 
