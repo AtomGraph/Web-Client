@@ -115,6 +115,24 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 	</xsl:template>
 
 	<xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="sparql2wire">
+		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
+	</xsl:template>
+
+	<xsl:template match="sparql:literal[@datatype = '&xsd;string']" mode="sparql2wire">
+		<xsl:text>"</xsl:text>
+		<!-- <xsl:value-of select="."/> -->
+		<!--
+		<xsl:call-template name="markup">
+			<xsl:with-param name="text" select="." />
+			<xsl:with-param name="phrases" select="$special-json-chars" />
+			<xsl:with-param name="first-only" select="false()" />
+			<xsl:with-param name="words-only" select="false()" />
+		</xsl:call-template>
+		-->
+		<xsl:call-template name="escape-bs-string">
+			<xsl:with-param name="s" select="."/>
+		</xsl:call-template>
+		<xsl:text>"</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="sparql:literal" mode="sparql2wire">
