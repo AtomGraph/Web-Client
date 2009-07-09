@@ -9,7 +9,7 @@
  <results distinct="false" ordered="true">
   <result>
    <binding name="company"><literal>http://dbpedia.org/resource/Heraeus</literal></binding>
-   <binding name="label"><literal xml:lang="en">Heraeus</literal></binding>
+   <binding name="label"><literal xml:lang="en">Her'aeu\s</literal></binding>
    <binding name="employees"><literal>11275</literal></binding>
    <binding name="revenue"><literal datatype="http://dbpedia.org/ontology/euro">12080000000</literal></binding>
   </result>

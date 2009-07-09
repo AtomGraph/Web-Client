@@ -141,7 +141,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<p>
 				    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 					<script type="text/javascript">
-google.load('visualization', '1',  {'packages': ["table", "scatterchart", "linechart"]});
+google.load('visualization', '1',  {'packages': ["table", "scatterchart", "linechart",  "map"]});
 
 function drawTable() {
   var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
@@ -175,12 +175,25 @@ function drawLine() {
   table.draw(view, { width: 800, height: 400 } );
 }
 
+function drawMap() {
+  var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
+  var data = new google.visualization.DataTable(table, 0.6);
+  var view = new google.visualization.DataView(data);
+  view.setColumns([3,4]);
+
+  var table = new google.visualization.Map(document.getElementById('chart_map'));
+  table.draw(view, { width: 800, height: 400 } );
+}
 					</script>
+<script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script>
+
 					<button onclick="drawTable();">table!</button>
 					<div id="table_div"></div>
 					<button onclick="drawScatter();">scatter!</button>
 					<button onclick="drawLine();">line!</button>
 					<div id="chart_div"></div>
+					<button onclick="drawMap();">map!</button>
+					<div id="chart_map" style="width: 800px; height: 400px;"></div>
 				</p>
 			</xsl:if>
 		</div>

@@ -20,8 +20,12 @@ xmlns:sparql="&sparql;"
 xmlns:date="http://exslt.org/dates-and-times"
 exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 
+	<xsl:import href="markup.xsl" />
+
 	<xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="application/json"/>
 	<xsl:strip-space elements="*"/>
+	
+	<xsl:param name="special-json-chars" select="document('special-json-chars.xml')//character"/>
 
 	<xsl:key name="binding-by-name" match="sparql:binding" use="@name"/> 
 	<xsl:variable name="numeric-variables" select="sparql:variable[count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[string(number(sparql:literal)) != 'NaN'])]"/> 
@@ -45,6 +49,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 
 	-->
 
+	<xsl:template match="character" mode="markup">
+		<xsl:param name="word" />
+		<xsl:text>\</xsl:text>
+		<xsl:value-of select="$word"/>
+	</xsl:template>
+
 	<xsl:template match="/" mode="sparql2wire">
 		<xsl:apply-templates mode="sparql2wire"/>
 	</xsl:template>
@@ -61,15 +71,15 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 	<!-- string -->
 	<xsl:template match="sparql:variable" mode="sparql2wire">
 			{
-				id: '<xsl:value-of select="generate-id()"/>', label: '<xsl:value-of select="@name"/>', type: 
+				id: "<xsl:value-of select="generate-id()"/>", label: "<xsl:value-of select="@name"/>", type: 
 				<xsl:choose>
 					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[string(number(sparql:literal)) != 'NaN'])">
-					'number'
+					"number"
 					</xsl:when>
 					<xsl:when test="count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[date:date(sparql:literal) = sparql:literal])">
-					'date'
+					"date"
 					</xsl:when>
-					<xsl:otherwise>'string'</xsl:otherwise>
+					<xsl:otherwise>"string"</xsl:otherwise>
 				</xsl:choose>
 			}
 		<xsl:if test="position() != last()">	,
@@ -96,23 +106,118 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		</xsl:if>
 	</xsl:template>
 
-	<!-- string -->
+	<xsl:template match="sparql:literal[@datatype = '&xsd;boolean']" mode="sparql2wire">
+		<xsl:value-of select="."/>
+	</xsl:template>
+
+	<xsl:template match="sparql:literal[@datatype = '&xsd;integer'] | sparql:literal[@datatype = '&xsd;decimal'] | sparql:literal[@datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float']" mode="sparql2wire">
+		<xsl:value-of select="."/>
+	</xsl:template>
+
+	<xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="sparql2wire">
+	</xsl:template>
+
 	<xsl:template match="sparql:literal" mode="sparql2wire">
 		<xsl:choose>
+			<!-- number -->
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[string(number(sparql:literal)) != 'NaN'])">
 				<xsl:value-of select="."/>
 			</xsl:when>
+			<!-- date -->
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[date:date(sparql:literal) = sparql:literal])">
 				new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
 			</xsl:when>
+			<!-- string -->
 			<xsl:otherwise>
-				'<xsl:value-of select="."/>'			
+				<xsl:text>"</xsl:text>
+				<!-- <xsl:value-of select="."/> -->
+				<!--
+				<xsl:call-template name="markup">
+					<xsl:with-param name="text" select="." />
+					<xsl:with-param name="phrases" select="$special-json-chars" />
+					<xsl:with-param name="first-only" select="false()" />
+					<xsl:with-param name="words-only" select="false()" />
+				</xsl:call-template>
+				-->
+				<xsl:call-template name="escape-bs-string">
+					<xsl:with-param name="s" select="."/>
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="sparql:uri" mode="sparql2wire">
-		'<xsl:value-of select="."/>'
+		"<xsl:value-of select="."/>"
+	</xsl:template>
+
+	<!-- Escape the backslash (\) before everything else. -->
+	<xsl:template name="escape-bs-string">
+		<xsl:param name="s"/>
+		<xsl:choose>
+			<xsl:when test="contains($s,'\')">
+				<xsl:call-template name="escape-quot-string">
+					<xsl:with-param name="s" select="concat(substring-before($s,'\'),'\\')"/>
+				</xsl:call-template>
+				<xsl:call-template name="escape-bs-string">
+					<xsl:with-param name="s" select="substring-after($s,'\')"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="escape-quot-string">
+					<xsl:with-param name="s" select="$s"/>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Escape the double quote ("). -->
+	<xsl:template name="escape-quot-string">
+		<xsl:param name="s"/>
+		<xsl:choose>
+			<xsl:when test="contains($s,'&quot;')">
+				<xsl:call-template name="encode-string">
+					<xsl:with-param name="s" select="concat(substring-before($s,'&quot;'),'\&quot;')"/>
+				</xsl:call-template>
+				<xsl:call-template name="escape-quot-string">
+					<xsl:with-param name="s" select="substring-after($s,'&quot;')"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="encode-string">
+					<xsl:with-param name="s" select="$s"/>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Replace tab, line feed and/or carriage return by its matching escape code. Can't escape backslash
+	or double quote here, because they don't replace characters (&#x0; becomes \t), but they prefix 
+	characters (\ becomes \\). Besides, backslash should be seperate anyway, because it should be 
+	processed first. This function can't do that. -->
+	<xsl:template name="encode-string">
+		<xsl:param name="s"/>
+		<xsl:choose>
+			<!-- tab -->
+			<xsl:when test="contains($s,'&#x9;')">
+				<xsl:call-template name="encode-string">
+					<xsl:with-param name="s" select="concat(substring-before($s,'&#x9;'),'\t',substring-after($s,'&#x9;'))"/>
+				</xsl:call-template>
+			</xsl:when>
+			<!-- line feed -->
+			<xsl:when test="contains($s,'&#xA;')">
+				<xsl:call-template name="encode-string">
+					<xsl:with-param name="s" select="concat(substring-before($s,'&#xA;'),'\n',substring-after($s,'&#xA;'))"/>
+				</xsl:call-template>
+			</xsl:when>
+			<!-- carriage return -->
+			<xsl:when test="contains($s,'&#xD;')">
+				<xsl:call-template name="encode-string">
+					<xsl:with-param name="s" select="concat(substring-before($s,'&#xD;'),'\r',substring-after($s,'&#xD;'))"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise><xsl:value-of select="$s"/></xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 </xsl:stylesheet>
