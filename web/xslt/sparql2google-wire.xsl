@@ -114,49 +114,29 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		<xsl:value-of select="."/>
 	</xsl:template>
 
-	<xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="sparql2wire">
+	<xsl:template match="sparql:literal[@datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;dateTime']" mode="sparql2wire">
 		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
 	</xsl:template>
 
-	<xsl:template match="sparql:literal[@datatype = '&xsd;string']" mode="sparql2wire">
+	<xsl:template match="sparql:literal[@datatype = '&xsd;string'] | sparql:literal" mode="sparql2wire">
 		<xsl:text>"</xsl:text>
-		<!-- <xsl:value-of select="."/> -->
-		<!--
-		<xsl:call-template name="markup">
-			<xsl:with-param name="text" select="." />
-			<xsl:with-param name="phrases" select="$special-json-chars" />
-			<xsl:with-param name="first-only" select="false()" />
-			<xsl:with-param name="words-only" select="false()" />
-		</xsl:call-template>
-		-->
 		<xsl:call-template name="escape-bs-string">
 			<xsl:with-param name="s" select="."/>
 		</xsl:call-template>
 		<xsl:text>"</xsl:text>
 	</xsl:template>
 
+	<!--
 	<xsl:template match="sparql:literal" mode="sparql2wire">
 		<xsl:choose>
-			<!-- number -->
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[string(number(sparql:literal)) != 'NaN'])">
 				<xsl:value-of select="."/>
 			</xsl:when>
-			<!-- date -->
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[date:date(sparql:literal) = sparql:literal])">
 				new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
 			</xsl:when>
-			<!-- string -->
 			<xsl:otherwise>
 				<xsl:text>"</xsl:text>
-				<!-- <xsl:value-of select="."/> -->
-				<!--
-				<xsl:call-template name="markup">
-					<xsl:with-param name="text" select="." />
-					<xsl:with-param name="phrases" select="$special-json-chars" />
-					<xsl:with-param name="first-only" select="false()" />
-					<xsl:with-param name="words-only" select="false()" />
-				</xsl:call-template>
-				-->
 				<xsl:call-template name="escape-bs-string">
 					<xsl:with-param name="s" select="."/>
 				</xsl:call-template>
@@ -164,6 +144,16 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	-->
+
+	<!--
+				<xsl:call-template name="markup">
+					<xsl:with-param name="text" select="." />
+					<xsl:with-param name="phrases" select="$special-json-chars" />
+					<xsl:with-param name="first-only" select="false()" />
+					<xsl:with-param name="words-only" select="false()" />
+				</xsl:call-template>
+	-->
 
 	<xsl:template match="sparql:uri" mode="sparql2wire">
 		"<xsl:value-of select="."/>"
