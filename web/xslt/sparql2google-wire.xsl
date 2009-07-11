@@ -114,8 +114,16 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		<xsl:value-of select="."/>
 	</xsl:template>
 
-	<xsl:template match="sparql:literal[@datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;dateTime']" mode="sparql2wire">
-		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, 0, 31, 26)
+	<xsl:template match="sparql:literal[@datatype = '&xsd;date']" mode="sparql2wire">
+		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>)
+	</xsl:template>
+
+	<xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="sparql2wire">
+		new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
+	</xsl:template>
+
+	<xsl:template match="sparql:literal[@datatype = '&xsd;time']" mode="sparql2wire">
+		???
 	</xsl:template>
 
 	<xsl:template match="sparql:literal[@datatype = '&xsd;string'] | sparql:literal" mode="sparql2wire">
