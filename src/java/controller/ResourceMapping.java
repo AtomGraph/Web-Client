@@ -29,7 +29,7 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 	// urldecode all URIs
 	ResIterator iter = null;
 	
-	//if (relativeUris.length == 0) return FrontPageResource.getInstance();
+	//if (relativeUris.length == 0) return ReportResource.getInstance();
 	
 	if (relativeUris.length == 1)
 	{

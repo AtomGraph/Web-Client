@@ -134,7 +134,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		<xsl:text>"</xsl:text>
 	</xsl:template>
 
-	<!--
 	<xsl:template match="sparql:literal" mode="sparql2wire">
 		<xsl:choose>
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[string(number(sparql:literal)) != 'NaN'])">
@@ -152,7 +151,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	-->
 
 	<!--
 				<xsl:call-template name="markup">

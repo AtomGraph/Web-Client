@@ -20,7 +20,7 @@ import frontend.controller.resource.FrontPageResource;
  */
 public class ReportResource extends FrontEndResource implements Singleton
 {
-    public static final String RELATIVE_URI = "report";
+    public static final String RELATIVE_URI = "";
     private static final ReportResource INSTANCE = new ReportResource(FrontPageResource.getInstance());
     
     private View view = null;

@@ -49,6 +49,15 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					thead { font-weight: bold; text-align: center; }
 				</style>
 
+				<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+				<script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script>
+				<script type="text/javascript">
+google.load('visualization', '1',  {'packages': ["table", "scatterchart", "linechart",  "map"]});
+
+var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
+				</script>
+				<script type="text/javascript" src="static/js/report.js"></script>
+
 			</head>
 			<body>
 

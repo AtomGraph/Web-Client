@@ -140,20 +140,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				-->
 				<p>
 
-					<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-					<script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script>
-					<script type="text/javascript">
-google.load('visualization', '1',  {'packages': ["table", "scatterchart", "linechart",  "map"]});
-
-var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
-					</script>
-					<script type="text/javascript" src="static/js/report.js"></script>
-
 					<button onclick="drawTable();">table!</button>
 					<div id="table"></div>
 					<button onclick="drawScatter();">scatter!</button>
+					<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
 					<button onclick="drawLine();">line!</button>
-					<div id="scatter-chart"></div>
+					<div id="line-chart" style="width: 800px; height: 400px;"></div>
 					<button onclick="drawMap();">map!</button>
 					<div id="map" style="width: 800px; height: 400px;"></div>
 				</p>
