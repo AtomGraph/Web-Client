@@ -20,7 +20,7 @@ function init()
 	visualizations.push(visualization);
 	table.draw(data, {showRowNumber: true});
 	
-	if (numericColumns.length >= 2) // scatter
+	if (numericColumns.length > 1) // scatter
 	{
 		var view = new google.visualization.DataView(data);
 		var columns = numericColumns;
@@ -34,7 +34,7 @@ function init()
 		visualization.draw(view, options);
 	}
 	
-	if (stringColumns.length >= 1 && numericColumns.length > 0) // line
+	if (stringColumns.length > 0 && numericColumns.length > 0) // line
 	{
 		var view = new google.visualization.DataView(data);
 		var columns = new Array();
@@ -52,6 +52,19 @@ function init()
 		visualization.draw(view, options);
 	}
 
+	if (stringColumns.length > 0 && numericColumns.length > 0) // pie
+	{
+		var view = new google.visualization.DataView(data);
+		var columns = new Array();
+		columns[0] = stringColumns[0];
+		columns[1] = numericColumns[1];
+		view.setColumns(columns);
+		var container = document.getElementById("pie-chart");
+		var visualization = new google.visualization.PieChart(container);
+		var options = new Array();
+		visualizations.push(visualization);
+		visualization.draw(view, options);
+	}
 }
 
 function drawTable()
