@@ -35,7 +35,7 @@ public class DataSourceView extends FrontEndView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getServlet().getServletConfig().getServletContext().getRealPath("/xslt/sparql2google-wire.xsl")));
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/sparql2google-wire.xsl")));
 
 	String resultUrlString = request.getParameter("result-url");
 	if (resultUrlString != null)

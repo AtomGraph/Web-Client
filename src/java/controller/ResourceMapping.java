@@ -48,5 +48,5 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 
         return resource;
     }
-    
+
 }

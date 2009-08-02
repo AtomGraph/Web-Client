@@ -5,7 +5,6 @@
 
 package frontend.controller.resource;
 
-import dk.semantic_web.diy.controller.Resource;
 import dk.semantic_web.diy.controller.Singleton;
 import frontend.controller.FrontEndResource;
 

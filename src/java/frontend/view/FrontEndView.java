@@ -32,7 +32,7 @@ public class FrontEndView extends XSLTView
 
 	String hostUri = "http://" + (String) request.getHeader("host") + request.getContextPath() + "/";
 
-	getTransformer().setParameter("uri", (String) request.getAttribute("uri"));
+	getTransformer().setParameter("uri", (String)request.getAttribute("uri"));
 	getTransformer().setParameter("host-uri", hostUri);
 	getTransformer().setParameter("view", this.getClass().getName());
 	getTransformer().setParameter("browser", request.getHeader("User-Agent"));

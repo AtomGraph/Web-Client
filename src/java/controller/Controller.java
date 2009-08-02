@@ -39,7 +39,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         if (getView() != null)
         try
         {
-            getView().setServlet(this);
+            getView().setController(this);
             getView().display(request, response);
         }
         catch (Exception ex)

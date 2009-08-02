@@ -44,100 +44,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 						<xsl:value-of select="$query-string"/>
 					</textarea>
 					<br/>
-					<!-- <input type="hidden" name="action" value="query"/> -->
-					<button type="submit">Query</button>
+					<button type="submit" name="action" value="query">Query</button>
+					<button type="submit" name="action" value="save">Save</button>
 				</p>
 			</form>
 
 			<xsl:if test="$query-result">
-				<!--
-				<h3>Results (<xsl:value-of select="count(document('arg://results')//sparql:result)"/>)</h3>
-				<xsl:if test="document('arg://results')//sparql:result">
-					<table>
-						<thead>
-							<tr>
-								<xsl:apply-templates select="document('arg://results')//sparql:variable" mode="table-header"/>
-							</tr>
-						</thead>
-						<tbody>
-							<xsl:apply-templates select="document('arg://results')//sparql:result" mode="results-table-body"/>
-						</tbody>
-					</table>
-				</xsl:if>
-				<h3>Chart</h3>
-				<form action="" method="get" accept-charset="UTF-8" >
-					<p>
-						<label for="x-variable">X axis</label>
-						<select name="x-variable" id="x-variable">
-							<xsl:variable name="selected">
-								<xsl:choose>
-									<xsl:when test="$chart-result">
-										<xsl:value-of select="document('arg://chart-form')//XVariable"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="$x-variable-default"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="numeric-option">
-								<xsl:with-param name="selected" select="$selected"/>
-							</xsl:apply-templates>
-						</select>
-						<br/>
-						<label for="y-variable">Y axis</label>
-						<select name="y-variable" id="y-variable">
-							<xsl:variable name="selected">
-								<xsl:choose>
-									<xsl:when test="$chart-result">
-										<xsl:value-of select="document('arg://chart-form')//YVariable"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="$y-variable-default"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="numeric-option">
-								<xsl:with-param name="selected" select="$selected"/>
-							</xsl:apply-templates>
-						</select>
-						<br/>
-						<label for="label-variable">Label</label>
-						<select name="label-variable" id="label-variable">
-							<xsl:variable name="selected">
-								<xsl:choose>
-									<xsl:when test="$chart-result">
-										<xsl:value-of select="document('arg://chart-form')//LabelVariable"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="$label-variable-default"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							<xsl:apply-templates select="document('arg://results')/sparql:sparql/sparql:head/sparql:variable" mode="string-option">
-								<xsl:with-param name="selected" select="$selected"/>
-							</xsl:apply-templates>
-						</select>
-						<br/>
-						<label for="chart-type">Chart type</label>
-						<select name="type" id="chart-type">
-							<option value="s">Scatter plot</option>	
-						</select>
-						<br/>
-						<label for="chart-title">Chart title</label>
-						<input type="text" name="title">
-							<xsl:if test="$chart-result">
-								<xsl:attribute name="value"><xsl:value-of select="document('arg://chart-form')//Title"/></xsl:attribute>
-							</xsl:if>
-						</input>
-						<br/>
-						<button type="submit">Set</button>
-						<input type="hidden" name="query-string" value="{$query-string}"/>
-					</p>
-				</form>
-				<p>
-					<img src="{$chart-url}" alt="Chart"/>
-				</p>
-				-->
 				<p>
 
 					<button onclick="drawTable();">table!</button>
