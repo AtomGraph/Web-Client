@@ -86,6 +86,7 @@ public class ReportResource extends FrontEndResource implements Singleton
 	try
 	{
 	    URL itemsUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/items");
+	    URL metaUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/meta");	    
 	    Authenticator.setDefault(new TalisAuthenticator());
 
 	    /*
@@ -100,8 +101,8 @@ public class ReportResource extends FrontEndResource implements Singleton
 
 	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
 	    remoteRequest.setMethod("post");
-	    remoteRequest.setServerName(itemsUrl.getHost());
-	    remoteRequest.setPathInfo(itemsUrl.getPath());
+	    remoteRequest.setServerName(metaUrl.getHost());
+	    remoteRequest.setPathInfo(metaUrl.getPath());
 	    remoteRequest.setHeader("Content-Type", "application/rdf+xml");
 	    //remoteRequest.setQueryString(queryString); // QUIRK - it's actually request body
 		    
@@ -115,7 +116,7 @@ public class ReportResource extends FrontEndResource implements Singleton
 	    model.write(remoteRequest.getOutputStream());
 	    
 	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);	    
-	    
+	    System.out.println(remoteResponse.getStatus());
 	} catch (IOException ex)
 	{
 	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
