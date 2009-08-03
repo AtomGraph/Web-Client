@@ -12,7 +12,7 @@ import java.net.PasswordAuthentication;
  *
  * @author Pumba
  */
-public class DigestAuthenticator extends Authenticator {
+public class TalisAuthenticator extends Authenticator {
 
     @Override
     public PasswordAuthentication getPasswordAuthentication()

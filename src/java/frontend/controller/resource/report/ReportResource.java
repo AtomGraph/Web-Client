@@ -5,6 +5,11 @@
 
 package frontend.controller.resource.report;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import dk.semantic_web.diy.controller.Resource;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.http.HttpClient;
@@ -20,8 +25,8 @@ import dk.semantic_web.diy.view.View;
 import frontend.controller.resource.FrontPageResource;
 import java.net.Authenticator;
 import java.net.URL;
-import org.apache.commons.codec.digest.DigestUtils;
-import util.DigestAuthenticator;
+import model.Namespaces;
+import util.TalisAuthenticator;
 
 /**
  *
@@ -77,89 +82,44 @@ public class ReportResource extends FrontEndResource implements Singleton
     private void save(HttpServletRequest request, HttpServletResponse response)
     {
 	String queryString = request.getParameter("query-string");
-	String username = "mjusevicius";
-	String password = "n7dx2grc";
 	
 	try
 	{
 	    URL itemsUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/items");
-
-	    Authenticator.setDefault(new DigestAuthenticator());
-	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
-	    remoteRequest.setMethod("post");
-	    remoteRequest.setServerName(itemsUrl.getHost());
-	    remoteRequest.setPathInfo(itemsUrl.getPath());
-	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	} catch (IOException ex)
-	{
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-    
-    private void save1(HttpServletRequest request, HttpServletResponse response)
-    {
-	String queryString = request.getParameter("query-string");
-	String username = "mjusevicius";
-	String password = "n7dx2grc";
-	
-	try
-	{
-	    URL itemsUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/items");
-
-	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
-	    remoteRequest.setMethod("post");
-	    remoteRequest.setServerName(itemsUrl.getHost());
-	    remoteRequest.setPathInfo(itemsUrl.getPath());
-	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	    
-	    String authHeader = remoteResponse.getHeader("WWW-Authenticate");
-	    authHeader = authHeader.substring("Digest ".length());
-	    System.out.println("STATUS: " + remoteResponse.getStatus());
-	    System.out.println("WWW-Authenticate: " + authHeader);
-	    
-	    String[] fields = authHeader.split(", ");
-	    String nonce = fields[2];
-	    nonce = nonce.substring("nonce=\"".length(), nonce.length() - 1);
-	    System.out.println("nonce: " + nonce);
-	    
-	    String realm = "bigfoot";
-	    String qop = "auth";
-	    String nc = "";
-	    String cnonce = "whatever";
-
-	    String ha1 = DigestUtils.md5Hex(username + ":" + realm + ":" + password);
-	    String ha2 = DigestUtils.md5Hex("POST:" + itemsUrl.getPath());
-	    String responseDigest = DigestUtils.md5Hex(ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2);
+	    Authenticator.setDefault(new TalisAuthenticator());
 
 	    /*
-	    remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
+	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
 	    remoteRequest.setMethod("post");
 	    remoteRequest.setServerName(itemsUrl.getHost());
 	    remoteRequest.setPathInfo(itemsUrl.getPath());
-	    remoteRequest.setQueryString(itemsUrl.getQuery());
 	    remoteRequest.setHeader("Content-Type", "text/plain");
-	    remoteRequest.setHeader("Authorization", "Digest ");
-	    String md5 = DigestUtils.md5Hex("mjusevicius:n7dx2grc");
-		    
+	    remoteRequest.setQueryString(queryString); // QUIRK - it's actually request body
 	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	     */
+	    */
+
+	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
+	    remoteRequest.setMethod("post");
+	    remoteRequest.setServerName(itemsUrl.getHost());
+	    remoteRequest.setPathInfo(itemsUrl.getPath());
+	    remoteRequest.setHeader("Content-Type", "application/rdf+xml");
+	    //remoteRequest.setQueryString(queryString); // QUIRK - it's actually request body
+		    
+	    OntModel model = ModelFactory.createOntologyModel();
+	    Individual reportInd = model.createIndividual(model.createClass(Namespaces.REPORT_NS + "Post"));
+	    DatatypeProperty queryStringProperty = model.createDatatypeProperty(Namespaces.REPORT_NS + "sparqlQueryString");
+	    DatatypeProperty dateProperty = model.createDatatypeProperty(Namespaces.REPORT_NS + "sparqlQueryString");
+	    Literal queryStringLiteral = model.createLiteral(queryString);
+	    reportInd.setPropertyValue(queryStringProperty, queryStringLiteral);
 	    
-	    /*
-	    InputStream stream = remoteResponse.getInputStream();
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-	    StringBuilder sb = new StringBuilder();
-	    String line = null;
-	    while ((line = reader.readLine()) != null) sb.append(line + "\n");
-	    stream.close();
-	    String responseString = sb.toString();
-	    System.out.println("QUERY: " + itemsUrl.getQuery());
-	    System.out.println("RESPONSE: " + responseString);
-	     */
+	    model.write(remoteRequest.getOutputStream());
+	    
+	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);	    
 	    
 	} catch (IOException ex)
 	{
 	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
-    
+   
 }
