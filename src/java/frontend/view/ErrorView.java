@@ -29,7 +29,7 @@ public class ErrorView extends FrontEndView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerConfigurationException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getServlet().getServletConfig().getServletContext().getRealPath("/xslt/ErrorView.xsl")));
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/ErrorView.xsl")));
 
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 	

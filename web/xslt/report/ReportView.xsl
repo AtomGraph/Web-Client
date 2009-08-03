@@ -45,6 +45,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					</textarea>
 					<br/>
 					<button type="submit" name="action" value="query">Query</button>
+				</p>
+			</form>
+
+			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
+				<p>
+					<input type="hidden" name="query-string" value="{$query-string}"/>
 					<button type="submit" name="action" value="save">Save</button>
 				</p>
 			</form>
