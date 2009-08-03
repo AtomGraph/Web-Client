@@ -38,6 +38,16 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:template name="content">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
+
+			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
+				<p>
+					<select>
+						<xsl:apply-templates select="document('arg://reports')" mode="report-list"/>
+					</select>
+					<button type="submit" name="action" value="load">Load</button>
+				</p>
+			</form>
+
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
 					<textarea cols="80" rows="20" name="query-string">
@@ -50,6 +60,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
+					<input type="text" name="title" value="Biggest cities by population, with area size and location"/>
 					<input type="hidden" name="query-string" value="{$query-string}"/>
 					<button type="submit" name="action" value="save">Save</button>
 				</p>
@@ -73,68 +84,10 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 		</div>
 	</xsl:template>
 
-	<xsl:template match="sparql:variable" mode="table-header">
-		<td>
-			<xsl:value-of select="@name"/>
-		</td>
-	</xsl:template>
-
-	<xsl:template match="sparql:variable[//sparql:binding[@name = current()/@name]/sparql:literal[string(number(.)) != 'NaN']]" mode="numeric-option">
-		<xsl:param name="selected"/>
-		<option value="{@name}">
-			<xsl:if test="@name = $selected">
-				<xsl:attribute name="selected">selected</xsl:attribute>
-			</xsl:if>
-			<xsl:value-of select="@name"/>
+	<xsl:template match="sparql:result" mode="report-list">
+		<option value="{sparql:binding[@name = 'report']/sparql:uri}">
+			<xsl:value-of select="sparql:binding[@name = 'title']/sparql:literal"/>
 		</option>
-	</xsl:template>
-
-	<xsl:template match="sparql:variable[//sparql:binding[@name = current()/@name]/sparql:literal[string(number(.)) = 'NaN']]" mode="string-option">
-		<xsl:param name="selected"/>
-		<option value="{@name}">
-			<xsl:if test="@name = $selected">
-				<xsl:attribute name="selected">selected</xsl:attribute>
-			</xsl:if>
-			<xsl:value-of select="@name"/>
-		</option>
-	</xsl:template>
-
-	<xsl:template match="sparql:result" mode="results-table-body">
-		<tr>
-			<xsl:variable name="current" select="."/>
-			<xsl:for-each select="document('arg://results')//sparql:variable">
-				<xsl:variable name="name" select="@name"/>
-				<xsl:choose>
-					<xsl:when test="$current/sparql:binding[@name=$name]">
-						<!-- apply template for the correct value type (bnode, uri, literal) -->
-						<xsl:apply-templates select="$current/sparql:binding[@name=$name]"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<!-- no binding available for this variable in this solution -->
-					  </xsl:otherwise>
-				</xsl:choose>
-			</xsl:for-each>
-		</tr>
-	</xsl:template>
-
-	<xsl:template match="sparql:binding">
-		<td>
-			<xsl:apply-templates/>
-		</td>
-	</xsl:template>
-
-	<xsl:template match="sparql:literal">
-		&quot;<xsl:value-of select="text()"/>&quot;
-	</xsl:template>
-
-	<xsl:template match="sparql:uri">
-		&lt;<a href="{text()}">
-				<xsl:value-of select="text()"/>
-			</a>&gt;
-	</xsl:template>
-
-	<xsl:template match="sparql:bnode">
-		_:<xsl:value-of select="text()"/>
 	</xsl:template>
 
 </xsl:stylesheet>

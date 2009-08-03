@@ -8,32 +8,28 @@ package model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
+import thewebsemantic.binding.RdfBean;
+import static model.DublinCore.*;
 
 /**
  *
  * @author Pumba
  */
 
-@Namespace("http://www.semantic-web.dk/report/")
-public class Report
+@Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
+public class Report extends RdfBean<Report>
 {
-    private int id;
+    //private int id;
     private String title = null;
     private String description = null;    
     private Date createdAt = null;
+    private Query query = null;
     private User creator = null;
     private Collection<Visualization> charts = new ArrayList<Visualization>();
 
-    @Id
-    public int getId()
-    {
-	return id;
-    }
-
-    @RdfProperty("http://purl.org/dc/elements/1.1/date")
+    @RdfProperty(DATE)
     public Date getCreatedAt()
     {
 	return createdAt;
@@ -44,7 +40,18 @@ public class Report
 	this.createdAt = createdAt;
     }
 
-    @RdfProperty("http://purl.org/dc/elements/1.1/creator")
+    @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/query")
+    public Query getQuery()
+    {
+	return query;
+    }
+
+    public void setQuery(Query query)
+    {
+	this.query = query;
+    }
+
+    @RdfProperty(CREATOR)
     public User getCreator()
     {
 	return creator;
@@ -55,7 +62,7 @@ public class Report
 	this.creator = creator;
     }
 
-    @RdfProperty("http://purl.org/dc/elements/1.1/description")
+    @RdfProperty(DESCRIPTION)
     public String getDescription()
     {
 	return description;
@@ -66,7 +73,7 @@ public class Report
 	this.description = description;
     }
 
-    @RdfProperty("http://purl.org/dc/elements/1.1/title")
+    @RdfProperty(TITLE)
     public String getTitle()
     {
 	return title;

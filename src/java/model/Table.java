@@ -5,10 +5,15 @@
 
 package model;
 
+import thewebsemantic.Namespace;
+
 /**
  *
  * @author Pumba
  */
-public class Table {
+
+@Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
+public class Table extends Visualization
+{
 
 }

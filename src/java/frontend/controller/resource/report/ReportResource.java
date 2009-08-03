@@ -17,6 +17,7 @@ import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportView;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,9 @@ import frontend.controller.resource.FrontPageResource;
 import java.net.Authenticator;
 import java.net.URL;
 import model.Namespaces;
+import model.Query;
+import model.Report;
+import thewebsemantic.binding.Jenabean;
 import util.TalisAuthenticator;
 
 /**
@@ -81,6 +85,41 @@ public class ReportResource extends FrontEndResource implements Singleton
 
     private void save(HttpServletRequest request, HttpServletResponse response)
     {
+	String title = request.getParameter("title");
+	String queryString = request.getParameter("query-string");
+	
+	OntModel model = ModelFactory.createOntologyModel();
+	Jenabean.instance().bind(model);
+
+	Query query = new Query();
+	query.setQueryString(queryString);
+
+	Report report = new Report();
+	report.setTitle(title);
+	report.setQuery(query);
+	report.save();
+
+	try
+	{
+	    URL metaUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/meta");
+	    Authenticator.setDefault(new TalisAuthenticator());
+
+	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
+	    remoteRequest.setMethod("post");
+	    remoteRequest.setServerName(metaUrl.getHost());
+	    remoteRequest.setPathInfo(metaUrl.getPath());
+	    remoteRequest.setHeader("Content-Type", "application/rdf+xml");
+	    
+	    model.write(remoteRequest.getOutputStream());
+	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
+	} catch (IOException ex)
+	{
+	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+    
+    private void save1(HttpServletRequest request, HttpServletResponse response)
+    {
 	String queryString = request.getParameter("query-string");
 	
 	try
@@ -115,7 +154,7 @@ public class ReportResource extends FrontEndResource implements Singleton
 	    
 	    model.write(remoteRequest.getOutputStream());
 	    
-	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);	    
+	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
 	    System.out.println(remoteResponse.getStatus());
 	} catch (IOException ex)
 	{
