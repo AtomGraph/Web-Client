@@ -11,6 +11,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.FileUtils;
 import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.FrontEndResource;
@@ -100,7 +101,8 @@ public class ReportResource extends FrontEndResource
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(xmodel, queryString);
 	ARQ2SPIN arq2SPIN = new ARQ2SPIN(xmodel);
 	Select spinQuery = (Select) arq2SPIN.createQuery(arqQuery, null);
-		
+	xmodel.write(System.out, FileUtils.langN3);
+
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
 
