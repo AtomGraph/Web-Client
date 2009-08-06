@@ -10,14 +10,12 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import dk.semantic_web.diy.controller.Resource;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.FrontEndResource;
-import frontend.view.report.ReportView;
+import frontend.view.report.ReportReadView;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -36,26 +34,30 @@ import util.TalisAuthenticator;
  *
  * @author Pumba
  */
-public class ReportResource extends FrontEndResource implements Singleton
+public class ReportResource extends FrontEndResource
 {
-    public static final String RELATIVE_URI = "";
-    private static final ReportResource INSTANCE = new ReportResource(FrontPageResource.getInstance());
-    
     private View view = null;
+    private Report report = null;
     
-    public ReportResource(FrontPageResource parent)
+    public ReportResource(Report report, ReportListResource parent)
     {
 	super(parent);
-    }
-
-    public static Resource getInstance()
-    {
-	return INSTANCE;
+	setReport(report);
     }
     
     public String getRelativeURI()
     {
-	return RELATIVE_URI;
+	return null;
+    }
+
+    public Report getReport()
+    {
+	return report;
+    }
+
+    public void setReport(Report report)
+    {
+	this.report = report;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class ReportResource extends FrontEndResource implements Singleton
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) view = parent;
-	else view = new ReportView(this);
+	else view = new ReportReadView(this);
 
 	return view;
     }
@@ -75,7 +77,7 @@ public class ReportResource extends FrontEndResource implements Singleton
 	if (parent != null) view = parent;
 	else
 	{
-	    view = new ReportView(this);
+	    view = new ReportReadView(this);
 	    
 	    if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
 	}

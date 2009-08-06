@@ -33,10 +33,10 @@ import view.QueryXMLResult;
  *
  * @author Pumba
  */
-public class ReportView extends FrontEndView
+public class ReportReadView extends FrontEndView
 {
 
-    public ReportView(ReportResource resource)
+    public ReportReadView(ReportResource resource)
     {
 	super(resource);
     }
