@@ -5,9 +5,15 @@
 
 package model;
 
+import frontend.controller.resource.report.ReportResource;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
 import thewebsemantic.binding.RdfBean;
@@ -21,6 +27,7 @@ import static model.DublinCore.*;
 @Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
 public class Report extends RdfBean<Report>
 {
+    private ReportResource resource = null;
     //private int id;
     private String title = null;
     private String description = null;    
@@ -29,6 +36,29 @@ public class Report extends RdfBean<Report>
     private User creator = null;
     private Collection<Visualization> charts = new ArrayList<Visualization>();
 
+    public ReportResource getFrontEndResource()
+    {
+	return resource;
+    }
+
+    public void setFrontEndResource(ReportResource resource)
+    {
+	this.resource = resource;
+    }
+
+    @Id
+    public URI getURI()
+    {
+	try
+	{
+	    return new URI(getFrontEndResource().getURI());
+	} catch (URISyntaxException ex)
+	{
+	    Logger.getLogger(Report.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return null;
+    }
+    
     @RdfProperty(DATE)
     public Date getCreatedAt()
     {

@@ -7,6 +7,7 @@ package model;
 
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfType;
+import thewebsemantic.binding.RdfBean;
 
 /**
  *
@@ -15,7 +16,7 @@ import thewebsemantic.RdfType;
 
 @Namespace("http://xmlns.com/foaf/0.1/")
 @RdfType("Person")
-public class User
+public class User extends RdfBean<User>
 {
 
 }

@@ -9,8 +9,8 @@ import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.FrontEndResource;
@@ -21,12 +21,15 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
-import frontend.controller.resource.FrontPageResource;
 import java.net.Authenticator;
 import java.net.URL;
 import model.Namespaces;
 import model.Query;
 import model.Report;
+import org.topbraid.spin.arq.ARQ2SPIN;
+import org.topbraid.spin.model.Select;
+import org.topbraid.spin.system.ARQFactory;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import thewebsemantic.binding.Jenabean;
 import util.TalisAuthenticator;
 
@@ -89,7 +92,15 @@ public class ReportResource extends FrontEndResource
     {
 	String title = request.getParameter("title");
 	String queryString = request.getParameter("query-string");
-	
+
+	SPINModuleRegistry.get().init();
+	Model xmodel = ModelFactory.createDefaultModel();
+	//xmodel.setNsPrefix("rdf", RDF.getURI());
+	//xmodel.setNsPrefix("ex", "http://example.org/demo#");
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(xmodel, queryString);
+	ARQ2SPIN arq2SPIN = new ARQ2SPIN(xmodel);
+	Select spinQuery = (Select) arq2SPIN.createQuery(arqQuery, null);
+		
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
 

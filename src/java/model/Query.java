@@ -6,13 +6,14 @@
 package model;
 
 import thewebsemantic.Namespace;
+import thewebsemantic.binding.RdfBean;
 
 /**
  *
  * @author Pumba
  */
 @Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
-public class Query
+public class Query extends RdfBean<Query>
 {
     private String queryString = null;
     private String endpoint = null;
