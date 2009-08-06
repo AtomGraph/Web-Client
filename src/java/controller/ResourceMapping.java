@@ -55,7 +55,7 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		    return null;
 		}
 		return resource;
-	    
+	    }
 	}
 
         return resource;

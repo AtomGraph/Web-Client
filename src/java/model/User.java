@@ -5,10 +5,17 @@
 
 package model;
 
+import thewebsemantic.Namespace;
+import thewebsemantic.RdfType;
+
 /**
  *
  * @author Pumba
  */
-public class User {
+
+@Namespace("http://xmlns.com/foaf/0.1/")
+@RdfType("Person")
+public class User
+{
 
 }

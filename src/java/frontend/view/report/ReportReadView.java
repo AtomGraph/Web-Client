@@ -44,10 +44,9 @@ public class ReportReadView extends FrontEndView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportView.xsl")));
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportReadView.xsl")));
 
 	setQueryResult(request, response);
-	setReports(request, response);
 	
 	super.display(request, response);
 
@@ -68,14 +67,5 @@ public class ReportReadView extends FrontEndView
 	getTransformer().setParameter("query-result", true);
 
 	getResolver().setArgument("results", results);
-    }
-    
-    private void setReports(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException    
-    {
-	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/reports.rq"));	
-	
-	String results = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", queryString);
-
-	getResolver().setArgument("reports", results);
     }
 }
