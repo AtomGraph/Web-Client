@@ -50,7 +50,7 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		resource = ReportListResource.getInstance();
 		if (relativeUris.length >= 2)
 		{
-		    Report report = null; //ConceptSchemePeer.retrieveByID(relativeUris[1]);
+		    Report report = null; // reader.load(Report.class, relativeUris[1]);
 		    if (report != null) return new ReportResource(report, (ReportListResource)resource);
 		    return null;
 		}
