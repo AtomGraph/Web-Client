@@ -22,8 +22,10 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
+import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.URL;
+import java.net.URLEncoder;
 import model.Namespaces;
 import model.Query;
 import model.Report;
@@ -47,11 +49,19 @@ public class ReportResource extends FrontEndResource
     {
 	super(parent);
 	setReport(report);
+	report.setFrontEndResource(this);
     }
     
     public String getRelativeURI()
     {
-	return null;
+	try
+	{
+	    return URLEncoder.encode(getReport().getTitle(), "UTF-8");
+	} catch (UnsupportedEncodingException ex)
+	{
+	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return getReport().getTitle();
     }
 
     public Report getReport()
@@ -95,13 +105,13 @@ public class ReportResource extends FrontEndResource
 	String queryString = request.getParameter("query-string");
 
 	SPINModuleRegistry.get().init();
-	Model xmodel = ModelFactory.createDefaultModel();
-	//xmodel.setNsPrefix("rdf", RDF.getURI());
-	//xmodel.setNsPrefix("ex", "http://example.org/demo#");
-	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(xmodel, queryString);
-	ARQ2SPIN arq2SPIN = new ARQ2SPIN(xmodel);
+	Model queryModel = ModelFactory.createDefaultModel();
+	//queryModel.setNsPrefix("rdf", RDF.getURI());
+	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(queryModel, queryString);
+	ARQ2SPIN arq2SPIN = new ARQ2SPIN(queryModel);
 	Select spinQuery = (Select) arq2SPIN.createQuery(arqQuery, null);
-	xmodel.write(System.out, FileUtils.langN3);
+	queryModel.write(System.out, FileUtils.langXMLAbbrev);
 
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
@@ -112,6 +122,7 @@ public class ReportResource extends FrontEndResource
 	Report report = new Report();
 	report.setTitle(title);
 	report.setQuery(query);
+	report.setFrontEndResource(this);
 	report.save();
 
 	try

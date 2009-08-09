@@ -19,7 +19,7 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
-	<xsl:include href="master.xsl"/>
+	<xsl:include href="FrontEndView.xsl"/>
 
 	<xsl:template name="title">
 		Page Not Found

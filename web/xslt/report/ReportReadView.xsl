@@ -41,15 +41,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
-					<select>
-						<xsl:apply-templates select="document('arg://reports')" mode="report-list"/>
-					</select>
-					<button type="submit" name="action" value="load">Load</button>
-				</p>
-			</form>
-
-			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
-				<p>
 					<textarea cols="80" rows="20" name="query-string">
 						<xsl:value-of select="$query-string"/>
 					</textarea>

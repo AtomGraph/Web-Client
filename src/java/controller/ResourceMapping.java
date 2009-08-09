@@ -9,6 +9,8 @@
 
 package controller;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import dk.semantic_web.diy.controller.Resource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
@@ -42,23 +44,28 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 	
 	//if (relativeUris.length == 0) return ReportResource.getInstance();
 	
-	if (relativeUris.length == 1)
+	if (relativeUris.length >= 1)
 	{
 	    if (relativeUris[0].equals(ReportListResource.RELATIVE_URI))
 	    {
-		//RDF2Bean reader = new RDF2Bean(myModel);
 		resource = ReportListResource.getInstance();
 		if (relativeUris.length >= 2)
 		{
-		    Report report = null; // reader.load(Report.class, relativeUris[1]);
+		    Model model = ModelFactory.createDefaultModel();
+		    model.read("http://api.talis.com/stores/mjusevicius-dev1/services/sparql?query=DESCRIBE+%3Fs+%3Fp+%3Fo%0D%0AWHERE+{+%3Fs+%3Fp+%3Fo+}", null);
+
+		    String fullUri = getHost() + resource.getURI() + relativeUris[1]; // relativeUris URL-decoded!!
+		    RDF2Bean reader = new RDF2Bean(model);
+		    Report report = reader.load(Report.class, fullUri);
+		    
 		    if (report != null) return new ReportResource(report, (ReportListResource)resource);
-		    return null;
+		    //return null;
 		}
 		return resource;
 	    }
 	}
 
-        return resource;
+        return null;
     }
 
 }

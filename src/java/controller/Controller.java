@@ -29,7 +29,8 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     {
         //System.out.println("Character encoding: " + request.getCharacterEncoding());
         request.setCharacterEncoding("UTF-8");
-
+	setHost(request, response);
+	
         super.process(request, response);
 
         //if (request.getAttribute("uri").equals("")) response.sendRedirect("s%C3%B8gning"); // make groups the default view
@@ -96,6 +97,15 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     throws ServletException, IOException
     {
         process(request, response);
+    }
+
+    private void setHost(HttpServletRequest request, HttpServletResponse response)
+    {
+	String host = "http://" + request.getServerName();
+	if (request.getServerPort() != 80) host += ":" + request.getServerPort();
+	host += request.getContextPath();
+	host += "/";	
+	getMapping().setHost(host);
     }
     
     // </editor-fold>

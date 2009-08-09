@@ -10,6 +10,10 @@ import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportListView;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ReportListResource extends FrontEndResource implements Singleton
 {
-    public static final String RELATIVE_URI = "";
+    public static final String RELATIVE_URI = "reports";
     private static final ReportListResource INSTANCE = new ReportListResource(FrontPageResource.getInstance());
     private View view = null;
     
@@ -35,7 +39,14 @@ public class ReportListResource extends FrontEndResource implements Singleton
     
     public String getRelativeURI()
     {
-	throw new UnsupportedOperationException("Not supported yet.");
+	try
+	{
+	    return URLEncoder.encode(RELATIVE_URI, "UTF-8");
+	} catch (UnsupportedEncodingException ex)
+	{
+	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return RELATIVE_URI;
     }
 
     @Override

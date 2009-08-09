@@ -6,13 +6,15 @@
 package model;
 
 import thewebsemantic.Namespace;
+import thewebsemantic.RdfType;
 import thewebsemantic.binding.RdfBean;
 
 /**
  *
  * @author Pumba
  */
-@Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
+@Namespace("http://spinrdf.org/sp#")
+@RdfType("Select")
 public class Query extends RdfBean<Query>
 {
     private String queryString = null;
