@@ -51,7 +51,7 @@ public class Report extends RdfBean<Report>
     {
 	try
 	{
-	    return new URI(getFrontEndResource().getController().getMapping().getHost() + getFrontEndResource().getURI());
+	    return new URI(getFrontEndResource().getAbsoluteURI());
 	} catch (URISyntaxException ex)
 	{
 	    Logger.getLogger(Report.class.getName()).log(Level.SEVERE, null, ex);

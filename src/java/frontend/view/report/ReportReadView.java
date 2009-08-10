@@ -5,26 +5,16 @@
 
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
-import frontend.controller.form.ChartForm;
 import frontend.controller.resource.report.ReportResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
@@ -42,10 +32,17 @@ public class ReportReadView extends FrontEndView
     }
 
     @Override
+    public ReportResource getResource()
+    {
+	return (ReportResource)super.getResource();
+    }
+
+    @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
 	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportReadView.xsl")));
 
+	setReport(request, response);
 	setQueryResult(request, response);
 	
 	super.display(request, response);
@@ -55,17 +52,32 @@ public class ReportReadView extends FrontEndView
     
     private void setQueryResult(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
-	String queryString = null;
-	if (request.getParameter("query-string") != null) queryString = request.getParameter("query-string");
-	else queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/companiesByRevenue.rq"));
+	String queryString = getResource().getReport().getQuery().getQueryString();
 	
 	String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
 
-	setDocument(results);
+	//setDocument(results);
 
 	getTransformer().setParameter("query-string", queryString);
 	getTransformer().setParameter("query-result", true);
 
 	getResolver().setArgument("results", results);
+    }
+
+    private void setReport(HttpServletRequest request, HttpServletResponse response)
+    {
+	try
+	{
+	    String report = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"))); // use resource URI !!!
+	    
+	    getResolver().setArgument("report", report);	    
+	} catch (FileNotFoundException ex)
+	{
+	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex)
+	{
+	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	
     }
 }

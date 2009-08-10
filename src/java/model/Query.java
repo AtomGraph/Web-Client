@@ -5,7 +5,9 @@
 
 package model;
 
+import java.net.URI;
 import thewebsemantic.Namespace;
+import thewebsemantic.RdfProperty;
 import thewebsemantic.RdfType;
 import thewebsemantic.binding.RdfBean;
 
@@ -18,18 +20,20 @@ import thewebsemantic.binding.RdfBean;
 public class Query extends RdfBean<Query>
 {
     private String queryString = null;
-    private String endpoint = null;
+    private URI endpoint = null;
 
-    public String getEndpoint()
+    @RdfProperty("from")
+    public URI getEndpoint()
     {
 	return endpoint;
     }
 
-    public void setEndpoint(String endpoint)
+    public void setEndpoint(URI endpoint)
     {
 	this.endpoint = endpoint;
     }
 
+    /* @RdfProperty("text") */
     public String getQueryString()
     {
 	return queryString;

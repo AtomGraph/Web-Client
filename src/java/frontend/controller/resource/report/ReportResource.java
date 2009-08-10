@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileUtils;
+import controller.LeafResource;
 import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.FrontEndResource;
@@ -40,7 +41,7 @@ import util.TalisAuthenticator;
  *
  * @author Pumba
  */
-public class ReportResource extends FrontEndResource
+public class ReportResource extends FrontEndResource implements LeafResource
 {
     private View view = null;
     private Report report = null;

@@ -31,22 +31,17 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 	Resource resource = null;
 	//Individual instance = Ontology.getJointOntology().getIndividual(URI);
 	String[] relativeUris = uri.split("/");
-	// urldecode all URIs
+	// urldecode all URIs -- or maybe not?
+	/*
 	for (int i = 0; i < relativeUris.length; i++)
-	    try
-	    {
-		relativeUris[i] = URLDecoder.decode(relativeUris[i], "UTF-8");
-	    }
-	    catch (UnsupportedEncodingException ex)
-	    {
-	
-	    }
+	    relativeUris[i] = urlDecode(relativeUris[i]);
+	*/
 	
 	//if (relativeUris.length == 0) return ReportResource.getInstance();
 	
 	if (relativeUris.length >= 1)
 	{
-	    if (relativeUris[0].equals(ReportListResource.RELATIVE_URI))
+	    if (relativeUris[0].equals(ReportListResource.getInstance().getRelativeURI()))
 	    {
 		resource = ReportListResource.getInstance();
 		if (relativeUris.length >= 2)
@@ -54,7 +49,8 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		    Model model = ModelFactory.createDefaultModel();
 		    model.read("http://api.talis.com/stores/mjusevicius-dev1/services/sparql?query=DESCRIBE+%3Fs+%3Fp+%3Fo%0D%0AWHERE+{+%3Fs+%3Fp+%3Fo+}", null);
 
-		    String fullUri = getHost() + resource.getURI() + relativeUris[1]; // relativeUris URL-decoded!!
+		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
+		    fullUri = "http://localhost:8080/semantic-reports/reports/Biggest+cities+by+population%2C+with+area+size+and+location/";
 		    RDF2Bean reader = new RDF2Bean(model);
 		    Report report = reader.load(Report.class, fullUri);
 		    
@@ -68,4 +64,20 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
         return null;
     }
 
+    public static String urlDecode(String url)
+    {
+	try
+	{
+	    return URLDecoder.decode(url, "UTF-8");
+	}
+	catch (UnsupportedEncodingException ex)
+	{
+
+	}
+	finally
+	{
+	    return url;
+	}
+
+    }
 }

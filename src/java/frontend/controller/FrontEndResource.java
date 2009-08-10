@@ -5,6 +5,7 @@
 
 package frontend.controller;
 
+import controller.LeafResource;
 import dk.semantic_web.diy.controller.ResourceImpl;
 
 /**
@@ -22,8 +23,7 @@ abstract public class FrontEndResource extends ResourceImpl
     public String getURI()
     {
 	String uri = getRelativeURI();
-	//if (!(this instanceof LeafResource || uri.equals(""))) uri += "/";
-	if (!uri.equals("")) uri += "/";
+	if (!(this instanceof LeafResource || uri.equals(""))) uri += "/";
 	if (hasParent()) return getParent().getURI() + uri;
 	else return uri;
     }
