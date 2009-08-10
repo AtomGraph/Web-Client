@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Date;
 import model.Namespaces;
 import model.Query;
 import model.Report;
@@ -50,7 +51,6 @@ public class ReportResource extends FrontEndResource implements LeafResource
     {
 	super(parent);
 	setReport(report);
-	report.setFrontEndResource(this);
     }
     
     public String getRelativeURI()
@@ -94,13 +94,13 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	{
 	    view = new ReportReadView(this);
 	    
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
+	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
 	}
 
 	return view;
     }
 
-    private void save(HttpServletRequest request, HttpServletResponse response)
+    private void update(HttpServletRequest request, HttpServletResponse response)
     {
 	String title = request.getParameter("title");
 	String queryString = request.getParameter("query-string");
@@ -123,6 +123,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	Report report = new Report();
 	report.setTitle(title);
 	report.setQuery(query);
+	report.setCreatedAt(new Date());
 	report.setFrontEndResource(this);
 	report.save();
 
@@ -136,7 +137,8 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	    remoteRequest.setServerName(metaUrl.getHost());
 	    remoteRequest.setPathInfo(metaUrl.getPath());
 	    remoteRequest.setHeader("Content-Type", "application/rdf+xml");
-	    
+
+System.out.println(model.toString());
 	    model.write(remoteRequest.getOutputStream());
 	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
 	} catch (IOException ex)

@@ -24,12 +24,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="query-result"/>
-	<xsl:param name="chart-result"/>
 	<xsl:param name="query-string" select="''"/>
-	<xsl:param name="x-variable-default"/>
-	<xsl:param name="y-variable-default"/>
-	<xsl:param name="label-variable-default" select="'label'"/>
-	<xsl:param name="chart-url"/>
 
 	<xsl:template name="title">
 		Query
@@ -38,6 +33,8 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:template name="content">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
+
+			<xsl:copy-of select="document('arg://report')"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
@@ -53,13 +50,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<p>
 					<input type="text" name="title" value="Biggest cities by population, with area size and location"/>
 					<input type="hidden" name="query-string" value="{$query-string}"/>
-					<button type="submit" name="action" value="save">Save</button>
+					<button type="submit" name="action" value="update">Save</button>
 				</p>
 			</form>
 
 			<xsl:if test="$query-result">
 				<p>
-
 					<button onclick="drawTable();">table!</button>
 					<div id="table"></div>
 					<button onclick="drawScatter();">scatter!</button>
@@ -73,12 +69,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				</p>
 			</xsl:if>
 		</div>
-	</xsl:template>
-
-	<xsl:template match="sparql:result" mode="report-list">
-		<option value="{sparql:binding[@name = 'report']/sparql:uri}">
-			<xsl:value-of select="sparql:binding[@name = 'title']/sparql:literal"/>
-		</option>
 	</xsl:template>
 
 </xsl:stylesheet>

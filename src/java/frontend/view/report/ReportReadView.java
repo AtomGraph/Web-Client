@@ -47,13 +47,14 @@ public class ReportReadView extends FrontEndView
 	
 	super.display(request, response);
 
-	response.setStatus(HttpServletResponse.SC_OK);    
+	response.setStatus(HttpServletResponse.SC_OK);
     }
     
     private void setQueryResult(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
 	String queryString = getResource().getReport().getQuery().getQueryString();
-	
+if (queryString == null) queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/citiesByPopulation.rq")); // QUIRK
+
 	String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
 
 	//setDocument(results);
@@ -68,7 +69,8 @@ public class ReportReadView extends FrontEndView
     {
 	try
 	{
-	    String report = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"))); // use resource URI !!!
+	    String report = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
+	    setDocument(report);
 	    
 	    getResolver().setArgument("report", report);	    
 	} catch (FileNotFoundException ex)

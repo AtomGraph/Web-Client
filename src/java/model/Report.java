@@ -8,8 +8,6 @@ package model;
 import frontend.controller.resource.report.ReportResource;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,14 +25,14 @@ import static model.DublinCore.*;
 @Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
 public class Report extends RdfBean<Report>
 {
-    private ReportResource resource = null;
+    private transient ReportResource resource = null;
     //private int id;
     private String title = null;
     private String description = null;    
     private Date createdAt = null;
     private Query query = null;
     private User creator = null;
-    private Collection<Visualization> charts = new ArrayList<Visualization>();
+    //private Collection<Visualization> charts = new ArrayList<Visualization>();
 
     public ReportResource getFrontEndResource()
     {
@@ -51,7 +49,8 @@ public class Report extends RdfBean<Report>
     {
 	try
 	{
-	    return new URI(getFrontEndResource().getAbsoluteURI());
+	    String uri = getFrontEndResource().getAbsoluteURI();
+	    return new URI(uri);
 	} catch (URISyntaxException ex)
 	{
 	    Logger.getLogger(Report.class.getName()).log(Level.SEVERE, null, ex);
@@ -114,6 +113,7 @@ public class Report extends RdfBean<Report>
 	this.title = title;
     }
 
+    /*
     public Collection<Visualization> getCharts()
     {
 	return charts;
@@ -128,4 +128,5 @@ public class Report extends RdfBean<Report>
     {
 	
     }
+    */
 }

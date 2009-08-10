@@ -22,7 +22,7 @@ public class Query extends RdfBean<Query>
     private String queryString = null;
     private URI endpoint = null;
 
-    @RdfProperty("from")
+    @RdfProperty("http://spinrdf.org/sp#from")
     public URI getEndpoint()
     {
 	return endpoint;
@@ -33,7 +33,7 @@ public class Query extends RdfBean<Query>
 	this.endpoint = endpoint;
     }
 
-    /* @RdfProperty("text") */
+    @RdfProperty("http://spinrdf.org/sp#text")
     public String getQueryString()
     {
 	return queryString;

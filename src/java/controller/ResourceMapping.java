@@ -49,9 +49,10 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		    Model model = ModelFactory.createDefaultModel();
 		    model.read("http://api.talis.com/stores/mjusevicius-dev1/services/sparql?query=DESCRIBE+%3Fs+%3Fp+%3Fo%0D%0AWHERE+{+%3Fs+%3Fp+%3Fo+}", null);
 
-		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
-		    fullUri = "http://localhost:8080/semantic-reports/reports/Biggest+cities+by+population%2C+with+area+size+and+location/";
+		    String fullUri = getHost() + resource.getURI() + relativeUris[1] + "/";
+		    fullUri = "http://www.semantic-web.dk/ontologies/semantic-reports/Report/28315727";
 		    RDF2Bean reader = new RDF2Bean(model);
+		    //String[] includes = { "title", "query", "createdAt" };
 		    Report report = reader.load(Report.class, fullUri);
 		    
 		    if (report != null) return new ReportResource(report, (ReportListResource)resource);

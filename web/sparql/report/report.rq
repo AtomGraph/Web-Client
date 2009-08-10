@@ -9,5 +9,5 @@ SELECT *
 	?report	dc:title		?title .
 	?report	semrep:query		?query .
 	?query	spin:queryString	?queryString
-	FILTER (?report = <http://localhost:8080/semantic-reports/reports/Biggest+cities+by+population%2C+with+area+size+and+location/>)
+	FILTER (?report = <%s>)
 }

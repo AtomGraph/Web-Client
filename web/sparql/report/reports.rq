@@ -5,5 +5,6 @@ PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 SELECT *
 {
 	?report	rdf:type	semrep:Report .
-	?report	dc:title	?title
+	?report	dc:title	?title .
+	?report dc:date		?date
 }
