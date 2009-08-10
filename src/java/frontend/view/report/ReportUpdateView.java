@@ -6,7 +6,7 @@
 package frontend.view.report;
 
 import frontend.controller.resource.report.ReportResource;
-import frontend.view.FrontEndView;
+import java.io.File;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,18 +17,31 @@ import javax.xml.transform.TransformerException;
  *
  * @author Pumba
  */
-public class ReportEditView extends FrontEndView
+public class ReportUpdateView extends ReportView
 {
 
-    public ReportEditView(ReportResource resource)
+    public ReportUpdateView(ReportResource resource)
     {
 	super(resource);
     }
 
     @Override
+    public ReportResource getResource()
+    {
+	return (ReportResource)super.getResource();
+    }
+    
+    @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportUpdateView.xsl")));
+
+	setReport(request, response);
+	setQueryResult(request, response);
+	
 	super.display(request, response);
+
+	response.setStatus(HttpServletResponse.SC_OK);
     }
 
 }

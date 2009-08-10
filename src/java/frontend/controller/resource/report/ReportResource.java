@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
+import frontend.view.report.ReportUpdateView;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.URL;
@@ -80,7 +81,12 @@ public class ReportResource extends FrontEndResource implements LeafResource
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) view = parent;
-	else view = new ReportReadView(this);
+	else
+	{
+	    view = new ReportReadView(this);
+	    
+	    if (request.getParameter("view") != null && request.getParameter("view").equals("update")) view = new ReportUpdateView(this);
+	}
 
 	return view;
     }

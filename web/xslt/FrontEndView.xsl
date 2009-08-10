@@ -60,7 +60,9 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 
 			</head>
 			<body>
-
+				<h1>
+					<a href="{$host-uri}">Semantic Reports</a>
+				</h1>
 				<!--
 				<div id="left">
 					<h1>whatsup</h1>

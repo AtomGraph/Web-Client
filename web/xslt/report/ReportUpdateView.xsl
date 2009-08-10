@@ -39,7 +39,19 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
-					<button type="submit" name="view" value="update">Edit</button>
+					<textarea cols="80" rows="20" name="query-string">
+						<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
+					</textarea>
+					<br/>
+					<button type="submit" name="action" value="query">Query</button>
+				</p>
+			</form>
+
+			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
+				<p>
+					<input type="text" name="title" value="{$report//sparql:binding[@name = 'title']/sparql:literal}"/>
+					<input type="hidden" name="query-string" value="{$report//sparql:binding[@name = 'queryString']/sparql:literal}"/>
+					<button type="submit" name="action" value="update">Save</button>
 				</p>
 			</form>
 

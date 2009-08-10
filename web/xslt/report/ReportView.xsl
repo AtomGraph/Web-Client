@@ -39,7 +39,19 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
-					<button type="submit" name="view" value="update">Edit</button>
+					<textarea cols="80" rows="20" name="query-string">
+						<xsl:value-of select="$query-string"/>
+					</textarea>
+					<br/>
+					<button type="submit" name="action" value="query">Query</button>
+				</p>
+			</form>
+
+			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
+				<p>
+					<input type="text" name="title" value="Biggest cities by population, with area size and location"/>
+					<input type="hidden" name="query-string" value="{$query-string}"/>
+					<button type="submit" name="action" value="update">Save</button>
 				</p>
 			</form>
 
