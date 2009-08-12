@@ -8,6 +8,8 @@ package model;
 import frontend.controller.resource.report.ReportResource;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +33,7 @@ public class Report extends RdfBean<Report>
     private Date createdAt = null;
     private Query query = null;
     private User creator = null;
-    //private Collection<Visualization> charts = new ArrayList<Visualization>();
+    private Collection<Visualization> visualizations = new ArrayList<Visualization>();
 
     /*
     public ReportResource getFrontEndResource()
@@ -116,20 +118,19 @@ public class Report extends RdfBean<Report>
 	this.title = title;
     }
 
-    /*
-    public Collection<Visualization> getCharts()
+    @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/visualizedBy")
+    public Collection<Visualization> getVisualizations()
     {
-	return charts;
+	return visualizations;
     }
 
-    public void setCharts(Collection<Visualization> charts)
+    public void setVisualizations(Collection<Visualization> visualizations)
     {
-	this.charts = charts;
+	this.visualizations = visualizations;
     }
-    
-    public void addChart(Visualization chart)
+
+    public void addVisualization(Visualization visualization)
     {
-	
+	visualizations.add(visualization);
     }
-    */
 }

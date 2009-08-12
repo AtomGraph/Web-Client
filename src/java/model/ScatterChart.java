@@ -14,7 +14,7 @@ import thewebsemantic.Namespace;
  * @author Pumba
  */
 
-@Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
+@Namespace("http://code.google.com/apis/visualization/")
 public class ScatterChart extends Visualization
 {
     private String xBinding = null;
@@ -38,6 +38,11 @@ public class ScatterChart extends Visualization
     public void setYBindings(Collection<String> yBindings)
     {
 	this.yBindings = yBindings;
+    }
+
+    public void addYBinding(String yBinding)
+    {
+	yBindings.add(yBinding);
     }
 
 }

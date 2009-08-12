@@ -1,12 +1,11 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
-PREFIX spin: <http://spinrdf.org/sp#>
 
 SELECT *
 {
 	?report		rdf:type		semrep:Report .
-	?report		semrep:visualization	?visualization .
+	?report		semrep:visualizations	?visualization .
 	?visualization	rdf:type		?type
 	FILTER (?report = <%s>)
 }

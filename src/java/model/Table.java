@@ -12,7 +12,7 @@ import thewebsemantic.Namespace;
  * @author Pumba
  */
 
-@Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
+@Namespace("http://code.google.com/apis/visualization/")
 public class Table extends Visualization
 {
 

@@ -12,6 +12,7 @@ import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
+import frontend.controller.form.ReportForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Query;
 import model.Report;
+import model.ScatterChart;
 import model.User;
 import thewebsemantic.binding.Jenabean;
 import util.TalisAuthenticator;
@@ -82,8 +84,9 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
     private void create(HttpServletRequest request, HttpServletResponse response)
     {
-	String title = request.getParameter("title");
-	String queryString = request.getParameter("query-string");
+	ReportForm form = new ReportForm(request);
+	//String title = request.getParameter("title");
+	//String queryString = request.getParameter("query-string");
 	
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
@@ -91,16 +94,22 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	User user = new User();
 	user.setName("RandomUserName");
 	user.setCreatedAt(new Date());
-	
+
+	//for (String visualization : form.getVisualizations());
+	ScatterChart chart = new ScatterChart();
+	chart.setXBinding("area");
+	chart.addYBinding("population");
+
 	Query query = new Query();
-	query.setQueryString(queryString);
+	query.setQueryString(form.getQueryString());
 
 	Report report = new Report();
-	report.setTitle(title);
+	report.setTitle(form.getTitle());
 	report.setQuery(query);
 	report.setCreatedAt(new Date());
 	report.setCreator(user);
-	
+	report.addVisualization(chart);
+		
 	ReportResource resource = new ReportResource(report, ReportListResource.getInstance());
 	resource.setController(getController());
 	report.resource = resource; // report.setFrontEndResource(resource);

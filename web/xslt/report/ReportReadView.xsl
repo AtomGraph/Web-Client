@@ -36,6 +36,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 			<h2><xsl:call-template name="title"/></h2>
 
 			<xsl:copy-of select="document('arg://report')"/>
+			<xsl:copy-of select="document('arg://visualizations')"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>

@@ -5,10 +5,13 @@
 
 package model;
 
+import thewebsemantic.Namespace;
+
 /**
  *
  * @author Pumba
  */
+@Namespace("http://code.google.com/apis/visualization/")
 abstract public class Visualization
 {
 

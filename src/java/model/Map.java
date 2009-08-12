@@ -5,10 +5,14 @@
 
 package model;
 
+import thewebsemantic.Namespace;
+
 /**
  *
  * @author Pumba
  */
+
+@Namespace("http://code.google.com/apis/visualization/")
 public class Map extends Visualization
 {
 
