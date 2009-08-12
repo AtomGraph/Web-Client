@@ -45,15 +45,10 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<xsl:if test="$query-result">
 				<p>
-					<button onclick="drawTable();">table!</button>
 					<div id="table"></div>
-					<button onclick="drawScatter();">scatter!</button>
 					<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
-					<button onclick="drawLine();">line!</button>
 					<div id="line-chart" style="width: 800px; height: 400px;"></div>
-					<button onclick="drawPie();">pie!</button>
 					<div id="pie-chart" style="width: 800px; height: 400px;"></div>
-					<button onclick="drawMap();">map!</button>
 					<div id="map" style="width: 800px; height: 400px;"></div>
 				</p>
 			</xsl:if>

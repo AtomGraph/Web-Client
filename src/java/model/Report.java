@@ -25,8 +25,7 @@ import static model.DublinCore.*;
 @Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
 public class Report extends RdfBean<Report>
 {
-    private transient ReportResource resource = null;
-    //private int id;
+    public transient ReportResource resource = null;
     private String title = null;
     private String description = null;    
     private Date createdAt = null;
@@ -34,6 +33,7 @@ public class Report extends RdfBean<Report>
     private User creator = null;
     //private Collection<Visualization> charts = new ArrayList<Visualization>();
 
+    /*
     public ReportResource getFrontEndResource()
     {
 	return resource;
@@ -43,13 +43,16 @@ public class Report extends RdfBean<Report>
     {
 	this.resource = resource;
     }
-
+     */
+    
     @Id
     public URI getURI()
     {
 	try
 	{
-	    String uri = getFrontEndResource().getAbsoluteURI();
+	    //String uri = getFrontEndResource().getAbsoluteURI();
+	    String uri = resource.getAbsoluteURI();
+	    
 	    return new URI(uri);
 	} catch (URISyntaxException ex)
 	{

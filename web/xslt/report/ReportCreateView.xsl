@@ -49,6 +49,32 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<button type="submit" name="action" value="query">Query</button>
 					<button type="submit" name="action" value="save">Save</button>
 				</p>
+				
+				<fieldset>
+					<legend>Visualizations</legend>
+					<ul>
+						<li>
+							<input type="checkbox" id="table" name="visualization" value="table" checked="checked"/>
+							<label for="table">Table</label>
+						</li>
+						<li>
+							<input type="checkbox" id="scatter-chart" name="visualization" value="scatter-chart"/>
+							<label for="scatter-chart">Scatter chart</label>
+						</li>
+						<li>
+							<input type="checkbox" id="line-chart" name="visualization" value="line-chart"/>
+							<label for="line-chart">Line chart</label>
+						</li>
+						<li>
+							<input type="checkbox" id="pie-chart" name="visualization" value="pie-chart"/>
+							<label for="pie-chart">Pie chart</label>
+						</li>
+						<li>
+							<input type="checkbox" id="map" name="visualization" value="map"/>
+							<label for="map">Map</label>
+						</li>
+					</ul>
+				</fieldset>
 			</form>
 
 			<!--

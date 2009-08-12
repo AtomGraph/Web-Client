@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Query;
 import model.Report;
+import model.User;
 import thewebsemantic.binding.Jenabean;
 import util.TalisAuthenticator;
 
@@ -87,6 +88,10 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
 
+	User user = new User();
+	user.setName("RandomUserName");
+	user.setCreatedAt(new Date());
+	
 	Query query = new Query();
 	query.setQueryString(queryString);
 
@@ -94,10 +99,11 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	report.setTitle(title);
 	report.setQuery(query);
 	report.setCreatedAt(new Date());
+	report.setCreator(user);
 	
 	ReportResource resource = new ReportResource(report, ReportListResource.getInstance());
 	resource.setController(getController());
-	report.setFrontEndResource(resource);
+	report.resource = resource; // report.setFrontEndResource(resource);
 	
 	report.save();
 

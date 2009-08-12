@@ -130,7 +130,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	report.setTitle(title);
 	report.setQuery(query);
 	report.setCreatedAt(new Date());
-	report.setFrontEndResource(this);
+	report.resource = this; //report.setFrontEndResource(this);
 	report.save();
 
 	try

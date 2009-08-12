@@ -38,7 +38,8 @@ public class ReportUpdateView extends ReportView
 
 	setReport(request, response);
 	setQueryResult(request, response);
-	
+	setVisualizations(request, response);
+
 	super.display(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);

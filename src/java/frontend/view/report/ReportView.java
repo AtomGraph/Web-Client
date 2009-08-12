@@ -53,10 +53,26 @@ if (queryString == null) queryString = QueryStringBuilder.build(getController().
     {
 	try
 	{
-	    String report = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), "http://localhost:8080/semantic-reports/reports/qqqqqqqqqqqqqqqq")); // getResource().getAbsoluteURI()
+	    String report = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
 	    setDocument(report);
 	    
-	    getResolver().setArgument("report", report);	    
+	    getResolver().setArgument("report", report);
+	} catch (FileNotFoundException ex)
+	{
+	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex)
+	{
+	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+    
+    protected void setVisualizations(HttpServletRequest request, HttpServletResponse response)
+    {
+	try
+	{
+	    String visualizations = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
+	    
+	    getResolver().setArgument("visualizations", visualizations);
 	} catch (FileNotFoundException ex)
 	{
 	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);

@@ -49,7 +49,8 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
-					<input type="text" name="title" value="{$report//sparql:binding[@name = 'title']/sparql:literal}"/>
+					<label for="title">Title</label>
+					<input type="text" id="title" name="title" value="{$report//sparql:binding[@name = 'title']/sparql:literal}"/>
 					<input type="hidden" name="query-string" value="{$report//sparql:binding[@name = 'queryString']/sparql:literal}"/>
 					<button type="submit" name="action" value="update">Save</button>
 				</p>

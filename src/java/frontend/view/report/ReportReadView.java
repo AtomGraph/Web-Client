@@ -32,6 +32,7 @@ public class ReportReadView extends ReportView
 
 	setReport(request, response);
 	setQueryResult(request, response);
+	setVisualizations(request, response);
 	
 	super.display(request, response);
 
