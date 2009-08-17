@@ -13,6 +13,7 @@ import dk.semantic_web.diy.http.HttpResponse;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.controller.form.ReportForm;
+import frontend.controller.form.ScatterChartForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
@@ -21,15 +22,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Query;
-import model.Report;
+import model.*;
 import model.ScatterChart;
-import model.User;
+import model.ScatterChart;
 import thewebsemantic.binding.Jenabean;
 import util.TalisAuthenticator;
 
@@ -77,6 +79,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	    if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
 
 	    if (request.getParameter("action") != null && request.getParameter("action").equals("save")) create(request, response);
+	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
 	}
 
 	return view;
@@ -95,22 +98,27 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	user.setName("RandomUserName");
 	user.setCreatedAt(new Date());
 
-	//for (String visualization : form.getVisualizations());
-	ScatterChart chart = new ScatterChart();
-	chart.setXBinding("area");
-	chart.addYBinding("population");
-
+	Collection<Visualization> visualizations = new ArrayList<Visualization>();
+	for (String visType : form.getVisualizations())
+	{
+	    if (visType.equals("table")) visualizations.add(new Table());
+	    if (visType.equals("scatter-chart")) visualizations.add(new ScatterChart());
+	    if (visType.equals("line-chart")) visualizations.add(new LineChart());
+	    if (visType.equals("pie-chart")) visualizations.add(new PieChart());
+	    if (visType.equals("map")) visualizations.add(new Map());
+	}
+	//ScatterChart chart = new ScatterChart();
+	//chart.setXBinding("area");
+	//chart.addYBinding("population");
+	
 	Query query = new Query();
 	query.setQueryString(form.getQueryString());
 
-	Report report = new Report();
-	report.setTitle(form.getTitle());
-	report.setQuery(query);
-	report.setCreatedAt(new Date());
-	report.setCreator(user);
-	report.addVisualization(chart);
+	Report report = new Report(form.getTitle(), query, user);
+	//report.addVisualization(chart);
+	report.setVisualizations(visualizations);
 		
-	ReportResource resource = new ReportResource(report, ReportListResource.getInstance());
+	ReportResource resource = new ReportResource(report, this);
 	resource.setController(getController());
 	report.resource = resource; // report.setFrontEndResource(resource);
 	
@@ -133,5 +141,12 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response)
+    {
+	ScatterChartForm form = new ScatterChartForm(request);
+	ScatterChart chart = new ScatterChart();
+	
     }
 }

@@ -22,15 +22,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="query-result"/>
-	<xsl:param name="chart-result"/>
+	<xsl:param name="visualization-result"/>
 	<xsl:param name="query-string" select="''"/>
-	<xsl:param name="x-variable-default"/>
-	<xsl:param name="y-variable-default"/>
-	<xsl:param name="label-variable-default" select="'label'"/>
-	<xsl:param name="chart-url"/>
+
 
 	<xsl:template name="title">
-		Query
+		Create report
 	</xsl:template>
 
 	<xsl:template name="content">
@@ -41,11 +38,14 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
-					<textarea cols="80" rows="20" name="query-string">
+					<label for="query-string">Query</label>
+					<br/>
+					<textarea cols="80" rows="20" id="query-string" name="query-string">
 						<xsl:value-of select="$query-string"/>
 					</textarea>
 					<br/>
-					<input type="text" name="title" value="whatever!!"/>
+					<label for="title">Title</label>
+					<input type="text" id="title" name="title" value="whatever!!"/>
 					<button type="submit" name="action" value="query">Query</button>
 					<button type="submit" name="action" value="save">Save</button>
 				</p>
@@ -77,15 +77,28 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				</fieldset>
 			</form>
 
-			<!--
-			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
-				<p>
-					<input type="text" name="title" value="Biggest cities by population, with area size and location"/>
-					<input type="hidden" name="query-string" value="{$query-string}"/>
-					<button type="submit" name="action" value="save">Save</button>
-				</p>
+			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
+				<fieldset>
+					<legend>Scatter chart</legend>
+					<p>
+						<label for="x-binding">X binding</label>
+						<select id="x-binding" name="x-binding">
+							<option value="population">population</option>
+							<option value="area">area</option>
+						</select>
+						<label for="y-binding">Y binding</label>
+						<select id="y-binding" name="y-binding" multiple="multiple">
+							<option value="population">population</option>
+							<option value="area">area</option>
+						</select>
+						<input type="hidden" name="visualization" value="scatter-chart"/>
+						<button type="submit" name="action" value="update">Update</button>
+					</p>
+				</fieldset>
 			</form>
-			-->
+
+			<h3>Line chart</h3>
+			<h3>Pie chart</h3>
 		</div>
 	</xsl:template>
 

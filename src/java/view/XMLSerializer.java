@@ -8,7 +8,7 @@
  */
 package view;
 
-import frontend.controller.form.ChartForm;
+import frontend.controller.form.ScatterChartForm;
 import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -57,7 +57,7 @@ public class XMLSerializer
 	return result.getWriter().toString();
     }
 
-    public static String serialize(ChartForm form) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+    public static String serialize(ScatterChartForm form) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
     {
 	XMLSerializer.init();
 
@@ -72,16 +72,16 @@ public class XMLSerializer
 	    queryStringElem.appendChild(document.createTextNode(form.getQueryString()));
 	    formElem.appendChild(queryStringElem);
 	}
-	if (form.getXAxisVariable() != null)
+	if (form.getXBinding() != null)
 	{
 	    Element xAxisElem = document.createElement("XVariable");
-	    xAxisElem.appendChild(document.createTextNode(form.getXAxisVariable()));
+	    xAxisElem.appendChild(document.createTextNode(form.getXBinding()));
 	    formElem.appendChild(xAxisElem);
 	}
-	if (form.getYAxisVariable() != null)
+	if (form.getYBinding() != null)
 	{
 	    Element yAxisElem = document.createElement("YVariable");
-	    yAxisElem.appendChild(document.createTextNode(form.getYAxisVariable()));
+	    yAxisElem.appendChild(document.createTextNode(form.getYBinding()));
 	    formElem.appendChild(yAxisElem);
 	}
 	if (form.getLabelVariable() != null)

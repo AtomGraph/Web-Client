@@ -35,6 +35,18 @@ public class Report extends RdfBean<Report>
     private User creator = null;
     private Collection<Visualization> visualizations = new ArrayList<Visualization>();
 
+    public Report()
+    {
+    }
+
+    public Report(String title, Query query, User creator)
+    {
+	setTitle(title);
+	setQuery(query);
+	setCreator(creator);
+	setCreatedAt(new Date());
+    }
+
     /*
     public ReportResource getFrontEndResource()
     {
