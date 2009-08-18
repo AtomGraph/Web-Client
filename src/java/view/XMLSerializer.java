@@ -66,41 +66,17 @@ public class XMLSerializer
 	Element formElem = document.createElement(form.getClass().getSimpleName());
 	document.appendChild(formElem);
 
-	if (form.getQueryString() != null)
-	{
-	    Element queryStringElem = document.createElement("QueryString");
-	    queryStringElem.appendChild(document.createTextNode(form.getQueryString()));
-	    formElem.appendChild(queryStringElem);
-	}
 	if (form.getXBinding() != null)
 	{
-	    Element xAxisElem = document.createElement("XVariable");
-	    xAxisElem.appendChild(document.createTextNode(form.getXBinding()));
-	    formElem.appendChild(xAxisElem);
+	    Element xBindingElem = document.createElement("XBinding");
+	    xBindingElem.appendChild(document.createTextNode(form.getXBinding()));
+	    formElem.appendChild(xBindingElem);
 	}
 	if (form.getYBinding() != null)
 	{
-	    Element yAxisElem = document.createElement("YVariable");
-	    yAxisElem.appendChild(document.createTextNode(form.getYBinding()));
-	    formElem.appendChild(yAxisElem);
-	}
-	if (form.getLabelVariable() != null)
-	{
-	    Element labelElem = document.createElement("LabelVariable");
-	    labelElem.appendChild(document.createTextNode(form.getLabelVariable()));
-	    formElem.appendChild(labelElem);
-	}	
-	if (form.getType() != null)
-	{
-	    Element typeElem = document.createElement("Type");
-	    typeElem.appendChild(document.createTextNode(form.getType()));
-	    formElem.appendChild(typeElem);
-	}
-	if (form.getTitle() != null)
-	{
-	    Element titleElem = document.createElement("Title");
-	    titleElem.appendChild(document.createTextNode(form.getTitle()));
-	    formElem.appendChild(titleElem);
+	    Element yBindingElem = document.createElement("YBinding(");
+	    yBindingElem.appendChild(document.createTextNode(form.getYBinding()));
+	    formElem.appendChild(yBindingElem);
 	}
 	
 	return serialize(document);
