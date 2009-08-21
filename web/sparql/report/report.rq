@@ -7,8 +7,10 @@ SELECT *
 {
 	?report	rdf:type	semrep:Report .
 	?report	dc:title	?title .
-	?report dc:date		?date .
+	?report	dc:date		?date .
 	?report	semrep:query	?query .
-	?query	spin:text	?queryString
+	?query	spin:text	?queryString .
+	?query	spin:from	?endpoint .
+	?report	dc:creator	?creator
 	FILTER (?report = <%s>)
 }

@@ -6,14 +6,15 @@
 package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.FileUtils;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.controller.form.ReportForm;
-import frontend.controller.form.ScatterChartForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
@@ -30,6 +31,10 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.*;
+import org.topbraid.spin.arq.ARQ2SPIN;
+import org.topbraid.spin.model.Select;
+import org.topbraid.spin.system.ARQFactory;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import thewebsemantic.binding.Jenabean;
 import util.TalisAuthenticator;
 
@@ -77,7 +82,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	    if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
 
 	    if (request.getParameter("action") != null && request.getParameter("action").equals("save")) create(request, response);
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
 	}
 
 	return view;
@@ -86,8 +90,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
     private void create(HttpServletRequest request, HttpServletResponse response)
     {
 	ReportForm form = new ReportForm(request);
-	//String title = request.getParameter("title");
-	//String queryString = request.getParameter("query-string");
 	
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
@@ -118,10 +120,24 @@ public class ReportListResource extends FrontEndResource implements Singleton
 		
 	ReportResource resource = new ReportResource(report, this);
 	resource.setController(getController());
-	report.resource = resource; // report.setFrontEndResource(resource);
-	
+	report.setFrontEndResource(resource);
 	report.save();
 
+	SPINModuleRegistry.get().init();
+	//Model queryModel = ModelFactory.createDefaultModel();
+	//queryModel.setNsPrefix("rdf", RDF.getURI());
+	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(model, form.getQueryString());
+	ARQ2SPIN arq2Spin = new ARQ2SPIN(model);
+	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
+	Select spinQuery = (Select) arq2Spin.createQuery(arqQuery, "http://spinrdf.org/sp#Select/" + query.hashCode());
+	model.write(System.out, FileUtils.langXMLAbbrev);
+	
+	ReportListResource.saveModel(model);
+    }
+
+    private static void saveModel(Model model)
+    {
 	try
 	{
 	    URL metaUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/meta");
@@ -139,12 +155,5 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
-    }
-
-    private void update(HttpServletRequest request, HttpServletResponse response)
-    {
-	ScatterChartForm form = new ScatterChartForm(request);
-	ScatterChart chart = new ScatterChart();
-	
     }
 }

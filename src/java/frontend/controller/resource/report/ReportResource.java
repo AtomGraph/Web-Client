@@ -5,39 +5,26 @@
 
 package frontend.controller.resource.report;
 
-import com.hp.hpl.jena.ontology.DatatypeProperty;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileUtils;
 import controller.LeafResource;
-import dk.semantic_web.diy.http.HttpClient;
-import dk.semantic_web.diy.http.HttpResponse;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportReadView;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
+import frontend.controller.form.ReportForm;
 import frontend.view.report.ReportUpdateView;
 import java.io.UnsupportedEncodingException;
-import java.net.Authenticator;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Date;
-import model.Namespaces;
-import model.Query;
 import model.Report;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
-import thewebsemantic.binding.Jenabean;
-import util.TalisAuthenticator;
 
 /**
  *
@@ -108,18 +95,19 @@ public class ReportResource extends FrontEndResource implements LeafResource
 
     private void update(HttpServletRequest request, HttpServletResponse response)
     {
-	String title = request.getParameter("title");
-	String queryString = request.getParameter("query-string");
+	ReportForm form = new ReportForm(request);
 
 	SPINModuleRegistry.get().init();
 	Model queryModel = ModelFactory.createDefaultModel();
 	//queryModel.setNsPrefix("rdf", RDF.getURI());
 	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
-	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(queryModel, queryString);
-	ARQ2SPIN arq2SPIN = new ARQ2SPIN(queryModel);
-	Select spinQuery = (Select) arq2SPIN.createQuery(arqQuery, null);
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(queryModel, form.getQueryString());
+	ARQ2SPIN arq2Spin = new ARQ2SPIN(queryModel);
+	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
+	Select spinQuery = (Select) arq2Spin.createQuery(arqQuery, "http://www.semanticreports.com/queries/");
 	queryModel.write(System.out, FileUtils.langXMLAbbrev);
 
+	/*
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
 
@@ -151,50 +139,7 @@ System.out.println(model.toString());
 	{
 	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
+	*/
     }
-    
-    private void save1(HttpServletRequest request, HttpServletResponse response)
-    {
-	String queryString = request.getParameter("query-string");
-	
-	try
-	{
-	    URL itemsUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/items");
-	    URL metaUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/meta");	    
-	    Authenticator.setDefault(new TalisAuthenticator());
 
-	    /*
-	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
-	    remoteRequest.setMethod("post");
-	    remoteRequest.setServerName(itemsUrl.getHost());
-	    remoteRequest.setPathInfo(itemsUrl.getPath());
-	    remoteRequest.setHeader("Content-Type", "text/plain");
-	    remoteRequest.setQueryString(queryString); // QUIRK - it's actually request body
-	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	    */
-
-	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
-	    remoteRequest.setMethod("post");
-	    remoteRequest.setServerName(metaUrl.getHost());
-	    remoteRequest.setPathInfo(metaUrl.getPath());
-	    remoteRequest.setHeader("Content-Type", "application/rdf+xml");
-	    //remoteRequest.setQueryString(queryString); // QUIRK - it's actually request body
-		    
-	    OntModel model = ModelFactory.createOntologyModel();
-	    Individual reportInd = model.createIndividual(model.createClass(Namespaces.REPORT_NS + "Post"));
-	    DatatypeProperty queryStringProperty = model.createDatatypeProperty(Namespaces.REPORT_NS + "sparqlQueryString");
-	    DatatypeProperty dateProperty = model.createDatatypeProperty(Namespaces.REPORT_NS + "sparqlQueryString");
-	    Literal queryStringLiteral = model.createLiteral(queryString);
-	    reportInd.setPropertyValue(queryStringProperty, queryStringLiteral);
-	    
-	    model.write(remoteRequest.getOutputStream());
-	    
-	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	    System.out.println(remoteResponse.getStatus());
-	} catch (IOException ex)
-	{
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-   
 }

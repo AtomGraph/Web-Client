@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Query;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
 
@@ -36,10 +37,12 @@ public class ReportView extends FrontEndView
     
     protected void setQueryResult(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
-	String queryString = getResource().getReport().getQuery().getQueryString();
-if (queryString == null) queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/citiesByPopulation.rq")); // QUIRK
+	Query query = getResource().getReport().getQuery();
+	String queryString = query.getQueryString();
+//if (queryString == null) queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/citiesByPopulation.rq")); // QUIRK
 
-	String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
+	//String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
+	String results = QueryXMLResult.queryRemote(query.getEndpoint().toString(), queryString);
 
 	//setDocument(results);
 

@@ -24,7 +24,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="query-result"/>
-	<xsl:param name="query-string" select="''"/>
 	<xsl:variable name="report" select="document('arg://report')"/>
 
 	<xsl:template name="title">
@@ -35,8 +34,17 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
-			<xsl:copy-of select="document('arg://report')"/>
-			<xsl:copy-of select="document('arg://visualizations')"/>
+			<xsl:copy-of select="document('arg://results')"/>
+			<!-- <xsl:copy-of select="document('arg://visualizations')"/> -->
+
+			<dl>
+				<dt>Endpoint</dt>
+				<dd>
+					<a href="{$report//sparql:binding[@name = 'endpoint']/sparql:uri}">
+						<xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
+					</a>
+				</dd>
+			</dl>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>

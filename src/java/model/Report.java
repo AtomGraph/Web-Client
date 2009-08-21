@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
+import thewebsemantic.Transient;
 import thewebsemantic.binding.RdfBean;
 import static model.DublinCore.*;
 
@@ -27,7 +28,7 @@ import static model.DublinCore.*;
 @Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
 public class Report extends RdfBean<Report>
 {
-    public transient ReportResource resource = null;
+    private ReportResource resource = null;
     private String title = null;
     private String description = null;    
     private Date createdAt = null;
@@ -47,7 +48,7 @@ public class Report extends RdfBean<Report>
 	setCreatedAt(new Date());
     }
 
-    /*
+    @Transient
     public ReportResource getFrontEndResource()
     {
 	return resource;
@@ -57,7 +58,6 @@ public class Report extends RdfBean<Report>
     {
 	this.resource = resource;
     }
-     */
     
     @Id
     public URI getURI()

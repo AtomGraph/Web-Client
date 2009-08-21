@@ -5,7 +5,7 @@ PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 SELECT *
 {
 	?report		rdf:type		semrep:Report .
-	?report		semrep:visualizations	?visualization .
+	?report		semrep:visualizedBy	?visualization .
 	?visualization	rdf:type		?type
 	FILTER (?report = <%s>)
 }

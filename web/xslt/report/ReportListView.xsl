@@ -48,6 +48,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<td>Title</td>
 					<td>Description</td>
 					<td>Keywords</td>
+					<td>Datasource</td>
 					<td>Creator</td>
 					<td>Date</td>
 				</thead>
@@ -73,6 +74,9 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 			</td>
 			<td>
 
+			</td>
+			<td>
+				<xsl:value-of select="sparql:binding[@name = 'creator']/sparql:uri"/>
 			</td>
 			<td>
 				<xsl:value-of select="sparql:binding[@name = 'date']/sparql:literal"/>

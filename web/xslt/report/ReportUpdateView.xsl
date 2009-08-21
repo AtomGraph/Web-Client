@@ -24,7 +24,6 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="query-result"/>
-	<xsl:param name="query-string" select="''"/>
 	<xsl:variable name="report" select="document('arg://report')"/>
 
 	<xsl:template name="title">
