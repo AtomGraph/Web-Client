@@ -18,6 +18,7 @@ public class ReportForm extends Form
 {
     String title = null;
     String queryString = null;
+    String endpoint = null;
     String[] visualizations = null;
     
     public ReportForm(HttpServletRequest request)
@@ -25,6 +26,7 @@ public class ReportForm extends Form
 	super(request);
 	title = request.getParameter("title");
 	queryString = request.getParameter("query-string");
+	endpoint = request.getParameter("endpoint");
 	visualizations = request.getParameterValues("visualization");
     }
 
@@ -36,6 +38,11 @@ public class ReportForm extends Form
     public String getQueryString()
     {
 	return queryString;
+    }
+
+    public String getEndpoint()
+    {
+	return endpoint;
     }
 
     public String[] getVisualizations()

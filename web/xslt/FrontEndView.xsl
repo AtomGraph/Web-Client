@@ -4,10 +4,9 @@
 	<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-	<!ENTITY dom "http://www.itu.dk/people/martynas/Thesis/whatsup.owl#">
-	<!ENTITY sys "http://www.xml.lt/system-ont.owl#">
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+	<!ENTITY vis "http://code.google.com/apis/visualization/">
 ]>
 <xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -60,6 +59,8 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 
 			</head>
 			<body>
+				<xsl:attribute name="onload">init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if>
+					</xsl:for-each>]);</xsl:attribute>
 				<h1>
 					<a href="{$host-uri}">Semantic Reports</a>
 				</h1>

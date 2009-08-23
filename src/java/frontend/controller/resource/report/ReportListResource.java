@@ -21,6 +21,8 @@ import frontend.view.report.ReportListView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -90,7 +92,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
     private void create(HttpServletRequest request, HttpServletResponse response)
     {
 	ReportForm form = new ReportForm(request);
-	
+
 	OntModel model = ModelFactory.createOntologyModel();
 	Jenabean.instance().bind(model);
 
@@ -101,30 +103,51 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	Collection<Visualization> visualizations = new ArrayList<Visualization>();
 	for (String visType : form.getVisualizations())
 	{
-	    if (visType.equals("table")) visualizations.add(new Table());
-	    if (visType.equals("scatter-chart")) visualizations.add(new ScatterChart());
-	    if (visType.equals("line-chart")) visualizations.add(new LineChart());
-	    if (visType.equals("pie-chart")) visualizations.add(new PieChart());
-	    if (visType.equals("map")) visualizations.add(new Map());
+	    if (visType.equals("table"))
+	    {
+		visualizations.add(new Table());
+	    }
+	    if (visType.equals("scatter-chart"))
+	    {
+		visualizations.add(new ScatterChart());
+	    }
+	    if (visType.equals("line-chart"))
+	    {
+		visualizations.add(new LineChart());
+	    }
+	    if (visType.equals("pie-chart"))
+	    {
+		visualizations.add(new PieChart());
+	    }
+	    if (visType.equals("map"))
+	    {
+		visualizations.add(new Map());
+	    }
 	}
 	//ScatterChart chart = new ScatterChart();
 	//chart.setXBinding("area");
 	//chart.addYBinding("population");
-	
 	Query query = new Query();
 	query.setQueryString(form.getQueryString());
-
-	Report report = new Report(form.getTitle(), query, user);
-	//report.addVisualization(chart);
+	
+	try
+	{
+	    query.setEndpoint(new URI(form.getEndpoint()));
+	} catch (URISyntaxException ex)
+	{
+	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	
+	Report report = new Report(form.getTitle(), query, user);   
 	report.setVisualizations(visualizations);
-		
+
 	ReportResource resource = new ReportResource(report, this);
 	resource.setController(getController());
 	report.setFrontEndResource(resource);
 	report.save();
 
 	SPINModuleRegistry.get().init();
-	//Model queryModel = ModelFactory.createDefaultModel();
+
 	//queryModel.setNsPrefix("rdf", RDF.getURI());
 	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(model, form.getQueryString());
@@ -132,7 +155,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
 	Select spinQuery = (Select) arq2Spin.createQuery(arqQuery, "http://spinrdf.org/sp#Select/" + query.hashCode());
 	model.write(System.out, FileUtils.langXMLAbbrev);
-	
+
 	ReportListResource.saveModel(model);
     }
 
