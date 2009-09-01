@@ -74,8 +74,9 @@ public class XMLSerializer
 	}
 	if (form.getYBinding() != null)
 	{
-	    Element yBindingElem = document.createElement("YBinding(");
-	    yBindingElem.appendChild(document.createTextNode(form.getYBinding()));
+	    Element yBindingElem = document.createElement("YBinding");
+	    for (String yBinding : form.getYBinding())
+		yBindingElem.appendChild(document.createTextNode(yBinding));
 	    formElem.appendChild(yBindingElem);
 	}
 	

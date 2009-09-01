@@ -59,8 +59,10 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 
 			</head>
 			<body>
-				<xsl:attribute name="onload">init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if>
-					</xsl:for-each>]);</xsl:attribute>
+				<!-- <xsl:attribute name="onload">init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if>
+					</xsl:for-each>]);</xsl:attribute> -->
+				<xsl:attribute name="onload">initEmpty();</xsl:attribute>
+
 				<h1>
 					<a href="{$host-uri}">Semantic Reports</a>
 				</h1>

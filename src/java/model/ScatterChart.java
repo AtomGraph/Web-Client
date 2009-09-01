@@ -5,8 +5,8 @@
 
 package model;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import thewebsemantic.Namespace;
 
 /**
@@ -18,7 +18,7 @@ import thewebsemantic.Namespace;
 public class ScatterChart extends Visualization
 {
     private String xBinding = null;
-    private Collection<String> yBindings = new ArrayList<String>();
+    private Collection<String> yBindings = new LinkedList<String>();
 
     public String getXBinding()
     {

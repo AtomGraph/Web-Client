@@ -17,13 +17,13 @@ import dk.semantic_web.diy.controller.Form;
 public class ScatterChartForm extends Form
 {
     private String xBinding = null;
-    private String yBinding = null;
+    private String[] yBindings = null;
     
     public ScatterChartForm(HttpServletRequest request)
     {
 	super(request);
 	xBinding = request.getParameter("x-binding");
-	yBinding = request.getParameter("y-variable");
+	yBindings = request.getParameterValues("y-binding");
     }
 
     public String getXBinding()
@@ -31,9 +31,9 @@ public class ScatterChartForm extends Form
 	return xBinding;
     }
 
-    public String getYBinding()
+    public String[] getYBinding()
     {
-	return yBinding;
+	return yBindings;
     }
     
     @Override

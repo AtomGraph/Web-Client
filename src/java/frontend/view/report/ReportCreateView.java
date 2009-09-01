@@ -33,6 +33,13 @@ public class ReportCreateView extends FrontEndView
 
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 	
+	if (request.getAttribute("query-result") != null)
+	{
+	    getResolver().setArgument("results", (String)request.getAttribute("query-results"));
+	    getTransformer().setParameter("query-result", true);
+	    getTransformer().setParameter("query-string", request.getParameter("query-string"));
+	}
+	
 	super.display(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);    

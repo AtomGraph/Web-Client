@@ -17,12 +17,13 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
+	<xsl:import href="../sparql2google-wire.xsl"/>
+
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="query-result"/>
 	<xsl:param name="visualization-result"/>
 	<xsl:param name="query-string" select="''"/>
-
 
 	<xsl:template name="title">
 		Create report
@@ -36,10 +37,13 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
+					<input type="hidden" name="view" value="create"/>
 					<label for="query-string">Query</label>
 					<br/>
 					<textarea cols="80" rows="20" id="query-string" name="query-string">
-						<xsl:value-of select="$query-string"/>
+						<xsl:if test="$query-result">
+							<xsl:value-of select="$query-string"/>
+						</xsl:if>
 					</textarea>
 					<br/>
 					<label for="title">Title</label>
@@ -56,32 +60,72 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<legend>Visualizations</legend>
 					<ul>
 						<li>
-							<input type="checkbox" id="table" name="visualization" value="table" checked="checked"/>
-							<label for="table">Table</label>
+							<input type="checkbox" id="table-option" name="visualization" value="table" checked="checked"/>
+							<label for="table-option">Table</label>
 						</li>
 						<li>
-							<input type="checkbox" id="scatter-chart" name="visualization" value="scatter-chart"/>
-							<label for="scatter-chart">Scatter chart</label>
+							<input type="checkbox" id="scatter-chart-option" name="visualization" value="scatter-chart"/>
+							<label for="scatter-chart-option">Scatter chart</label>
 						</li>
 						<li>
-							<input type="checkbox" id="line-chart" name="visualization" value="line-chart"/>
-							<label for="line-chart">Line chart</label>
+							<input type="checkbox" id="line-chart-option" name="visualization" value="line-chart"/>
+							<label for="line-chart-option">Line chart</label>
 						</li>
 						<li>
-							<input type="checkbox" id="pie-chart" name="visualization" value="pie-chart"/>
-							<label for="pie-chart">Pie chart</label>
+							<input type="checkbox" id="pie-chart-option" name="visualization" value="pie-chart"/>
+							<label for="pie-chart-option">Pie chart</label>
 						</li>
 						<li>
-							<input type="checkbox" id="map" name="visualization" value="map"/>
-							<label for="map">Map</label>
+							<input type="checkbox" id="map-option" name="visualization" value="map"/>
+							<label for="map-option">Map</label>
 						</li>
 					</ul>
 				</fieldset>
-			</form>
 
-			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
+		<div id="table"></div>
+
 				<fieldset>
 					<legend>Scatter chart</legend>
+					<p>
+						<label for="scatter-chart-x-binding">X binding</label>
+						<select id="scatter-chart-x-binding" name="x-binding">
+							<!-- <option value="population">population</option>
+							<option value="area">area</option> -->
+						</select>
+						<label for="scatter-chart-y-binding">Y binding</label>
+						<select id="scatter-chart-y-binding" name="y-binding" multiple="multiple">
+							<!-- <option value="population">population</option>
+							<option value="area">area</option> -->
+						</select>
+						<input type="hidden" name="visualization" value="scatter-chart"/>
+						<button type="submit" name="action" value="update">Update</button>
+					</p>
+				</fieldset>
+
+		<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
+
+				<fieldset>
+					<legend>Line chart</legend>
+					<p>
+						<label for="label-binding">Label binding</label>
+						<select id="label-binding" name="label-binding">
+							<option value="population">population</option>
+							<option value="area">area</option>
+						</select>
+						<label for="y-binding">Y binding</label>
+						<select id="y-binding" name="y-binding" multiple="multiple">
+							<option value="population">population</option>
+							<option value="area">area</option>
+						</select>
+						<input type="hidden" name="visualization" value="scatter-chart"/>
+						<button type="submit" name="action" value="update">Update</button>
+					</p>
+				</fieldset>
+
+		<div id="line-chart" style="width: 800px; height: 400px;"></div>
+
+				<fieldset>
+					<legend>Pie chart</legend>
 					<p>
 						<label for="x-binding">X binding</label>
 						<select id="x-binding" name="x-binding">
@@ -97,10 +141,8 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 						<button type="submit" name="action" value="update">Update</button>
 					</p>
 				</fieldset>
+			
 			</form>
-
-			<h3>Line chart</h3>
-			<h3>Pie chart</h3>
 		</div>
 	</xsl:template>
 
