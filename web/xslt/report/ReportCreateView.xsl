@@ -89,13 +89,11 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<p>
 						<label for="scatter-chart-x-binding">X binding</label>
 						<select id="scatter-chart-x-binding" name="x-binding">
-							<!-- <option value="population">population</option>
-							<option value="area">area</option> -->
+							<!-- filled out in JavaScript -->
 						</select>
 						<label for="scatter-chart-y-binding">Y binding</label>
 						<select id="scatter-chart-y-binding" name="y-binding" multiple="multiple">
-							<!-- <option value="population">population</option>
-							<option value="area">area</option> -->
+							<!-- filled out in JavaScript -->
 						</select>
 						<input type="hidden" name="visualization" value="scatter-chart"/>
 						<button type="submit" name="action" value="update">Update</button>
@@ -109,15 +107,13 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<p>
 						<label for="label-binding">Label binding</label>
 						<select id="label-binding" name="label-binding">
-							<option value="population">population</option>
-							<option value="area">area</option>
+							<!-- filled out in JavaScript -->
 						</select>
 						<label for="y-binding">Y binding</label>
 						<select id="y-binding" name="y-binding" multiple="multiple">
-							<option value="population">population</option>
-							<option value="area">area</option>
+							<!-- filled out in JavaScript -->
 						</select>
-						<input type="hidden" name="visualization" value="scatter-chart"/>
+						<input type="hidden" name="visualization" value="line-chart"/>
 						<button type="submit" name="action" value="update">Update</button>
 					</p>
 				</fieldset>
@@ -129,19 +125,37 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<p>
 						<label for="x-binding">X binding</label>
 						<select id="x-binding" name="x-binding">
-							<option value="population">population</option>
-							<option value="area">area</option>
+							<!-- filled out in JavaScript -->
 						</select>
 						<label for="y-binding">Y binding</label>
 						<select id="y-binding" name="y-binding" multiple="multiple">
-							<option value="population">population</option>
-							<option value="area">area</option>
+							<!-- filled out in JavaScript -->
 						</select>
-						<input type="hidden" name="visualization" value="scatter-chart"/>
+						<input type="hidden" name="visualization" value="pie-chart"/>
 						<button type="submit" name="action" value="update">Update</button>
 					</p>
 				</fieldset>
-			
+
+		<div id="pie-chart" style="width: 800px; height: 400px;"></div>
+
+				<fieldset>
+					<legend>Map</legend>
+					<p>
+						<label for="lat-binding">Latitude binding</label>
+						<select id="lat-binding" name="lat-binding">
+							<!-- filled out in JavaScript -->
+						</select>
+						<label for="lng-binding">Longitude binding</label>
+						<select id="lng-binding" name="lng-binding">
+							<!-- filled out in JavaScript -->
+						</select>
+						<input type="hidden" name="visualization" value="map"/>
+						<button type="submit" name="action" value="update">Update</button>
+					</p>
+				</fieldset>
+
+		<div id="map" style="width: 800px; height: 400px;"></div>
+
 			</form>
 		</div>
 	</xsl:template>

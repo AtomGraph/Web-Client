@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class FrontPageResource extends FrontEndResource implements Singleton
 {
-    public static final String RELATIVE_URI = "";    
+    private static final String RELATIVE_URI = "";    
     private static final FrontPageResource INSTANCE = new FrontPageResource(null);
 
     private FrontPageResource(FrontEndResource parent)

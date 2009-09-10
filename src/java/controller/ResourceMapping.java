@@ -74,12 +74,9 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 	}
 	catch (UnsupportedEncodingException ex)
 	{
-
+	    ex.printStackTrace(System.out);
 	}
-	finally
-	{
-	    return url;
-	}
+	return url;
 
     }
 }

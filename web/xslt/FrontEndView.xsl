@@ -23,6 +23,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 	<xsl:param name="uri"/>
 	<xsl:param name="host-uri"/>
+    <xsl:param name="view"/>
 
 	<xsl:variable name="resource" select="/"/>
 
@@ -59,9 +60,13 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 
 			</head>
 			<body>
-				<!-- <xsl:attribute name="onload">init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if>
-					</xsl:for-each>]);</xsl:attribute> -->
-				<xsl:attribute name="onload">initEmpty();</xsl:attribute>
+                <xsl:if test="$view = 'frontend.view.report.ReportReadView'">
+					<xsl:attribute name="onload">init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if>
+					</xsl:for-each>]);</xsl:attribute>
+				</xsl:if>
+                <xsl:if test="$view = 'frontend.view.report.ReportCreateView'">
+					<xsl:attribute name="onload">initEmpty();</xsl:attribute>
+				</xsl:if>
 
 				<h1>
 					<a href="{$host-uri}">Semantic Reports</a>
