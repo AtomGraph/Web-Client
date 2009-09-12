@@ -18,16 +18,16 @@ import thewebsemantic.Namespace;
 public class LineChart extends Visualization
 {
     private String labelBinding = null;
-    private Collection<String> bindings = new ArrayList<String>();
+    private Collection<String> valueBindings = new ArrayList<String>();
 
-    public Collection<String> getBindings()
+    public Collection<String> getValueBindings()
     {
-	return bindings;
+	return valueBindings;
     }
 
     public void setBindings(Collection<String> bindings)
     {
-	this.bindings = bindings;
+	this.valueBindings = bindings;
     }
 
     public String getLabelBinding()

@@ -16,9 +16,21 @@ function initEmpty()
 		initScatterChartControls(numericColumns, numericColumns);
 		drawScatterChart(numericColumns[0], numericColumns); // duplicate
 	}
-	if (stringColumns.length > 0 && numericColumns.length > 0) drawLineChart(stringColumns[0], numericColumns);
-	if (stringColumns.length > 0 && numericColumns.length > 0) drawPieChart(stringColumns[0], numericColumns[1]);
-	if (latColumns.length > 0 && lngColumns.length > 1) drawMap(latColumns[0], lngColumns[1]);
+	if (stringColumns.length > 0 && numericColumns.length > 0)
+	{
+		initLineChartControls(stringColumns, numericColumns);
+		drawLineChart(stringColumns[0], numericColumns);
+	}
+	if (stringColumns.length > 0 && numericColumns.length > 0)
+	{
+		initPieChartControls(stringColumns, numericColumns);
+		drawPieChart(stringColumns[0], numericColumns[1]);
+	}
+	if (latColumns.length > 0 && lngColumns.length > 0)
+	{
+		initMapControls(latColumns, lngColumns);
+		drawMap(latColumns[0], lngColumns[1]);
+	}
 }
 
 function init(visualizations)
@@ -125,9 +137,9 @@ function initScatterChartControls(xColumns, yColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(yColumns[i])));
+		option.setAttribute("selected", "selected");
 		ySelect.appendChild(option);
 	}
-
 }
 
 function drawScatterChart(xColumn, yColumns)
@@ -145,6 +157,26 @@ function drawScatterChart(xColumn, yColumns)
 	visualization.draw(view, options);
 }
 
+function initLineChartControls(labelColumns, valueColumns)
+{
+	var labelSelect = document.getElementById("line-chart-label-binding");
+	var valueSelect = document.getElementById("line-chart-value-binding");
+
+	for (var i = 0; i < labelColumns.length; i++)
+	{
+		var option = document.createElement("option");
+		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
+		labelSelect.appendChild(option);
+	}
+	for (var i = 0; i < valueColumns.length; i++)
+	{
+		var option = document.createElement("option");
+		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
+		option.setAttribute("selected", "selected");
+		valueSelect.appendChild(option);
+	}
+}
+
 function drawLineChart(labelColumn, valueColumns)
 {
 	var view = new google.visualization.DataView(data);
@@ -160,6 +192,26 @@ function drawLineChart(labelColumn, valueColumns)
 	visualization.draw(view, options);
 }
 
+function initPieChartControls(labelColumns, valueColumns)
+{
+	var labelSelect = document.getElementById("pie-chart-label-binding");
+	var valueSelect = document.getElementById("pie-chart-value-binding");
+
+	for (var i = 0; i < labelColumns.length; i++)
+	{
+		var option = document.createElement("option");
+		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
+		labelSelect.appendChild(option);
+	}
+	for (var i = 0; i < valueColumns.length; i++)
+	{
+		var option = document.createElement("option");
+		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
+		//option.setAttribute("selected", "selected");
+		valueSelect.appendChild(option);
+	}
+}
+
 function drawPieChart(labelColumn, valueColumn)
 {
 	var view = new google.visualization.DataView(data);
@@ -169,6 +221,26 @@ function drawPieChart(labelColumn, valueColumn)
 	var visualization = new google.visualization.PieChart(container);
 	var options = new Array();
 	visualization.draw(view, options);
+}
+
+function initMapControls(latColumns, lngColumns)
+{
+	var latSelect = document.getElementById("map-lat-binding");
+	var lngSelect = document.getElementById("map-lng-binding");
+
+	for (var i = 0; i < latColumns.length; i++)
+	{
+		var option = document.createElement("option");
+		option.appendChild(document.createTextNode(data.getColumnLabel(latColumns[i])));
+		latSelect.appendChild(option);
+	}
+	for (var i = 0; i < lngColumns.length; i++)
+	{
+		var option = document.createElement("option");
+		option.appendChild(document.createTextNode(data.getColumnLabel(lngColumns[i])));
+		//option.setAttribute("selected", "selected");
+		lngSelect.appendChild(option);
+	}
 }
 
 function drawMap(latColumn, lngColumn)

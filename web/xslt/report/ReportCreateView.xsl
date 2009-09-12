@@ -88,11 +88,11 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 					<legend>Scatter chart</legend>
 					<p>
 						<label for="scatter-chart-x-binding">X binding</label>
-						<select id="scatter-chart-x-binding" name="x-binding">
+						<select id="scatter-chart-x-binding" name="scatter-chart-x-binding">
 							<!-- filled out in JavaScript -->
 						</select>
-						<label for="scatter-chart-y-binding">Y binding</label>
-						<select id="scatter-chart-y-binding" name="y-binding" multiple="multiple">
+						<label for="scatter-chart-y-binding">Y bindings</label>
+						<select id="scatter-chart-y-binding" name="scatter-chart-y-binding" multiple="multiple">
 							<!-- filled out in JavaScript -->
 						</select>
 						<input type="hidden" name="visualization" value="scatter-chart"/>
@@ -105,12 +105,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<fieldset>
 					<legend>Line chart</legend>
 					<p>
-						<label for="label-binding">Label binding</label>
-						<select id="label-binding" name="label-binding">
+						<label for="line-chart-label-binding">Label binding</label>
+						<select id="line-chart-label-binding" name="line-chart-label-binding">
 							<!-- filled out in JavaScript -->
 						</select>
-						<label for="y-binding">Y binding</label>
-						<select id="y-binding" name="y-binding" multiple="multiple">
+						<label for="line-chart-value-binding">Value bindings</label>
+						<select id="line-chart-value-binding" name="line-chart-value-binding" multiple="multiple">
 							<!-- filled out in JavaScript -->
 						</select>
 						<input type="hidden" name="visualization" value="line-chart"/>
@@ -123,12 +123,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<fieldset>
 					<legend>Pie chart</legend>
 					<p>
-						<label for="x-binding">X binding</label>
-						<select id="x-binding" name="x-binding">
+						<label for="pie-chart-label-binding">Label binding</label>
+						<select id="pie-chart-label-binding" name="pie-chart-label-binding">
 							<!-- filled out in JavaScript -->
 						</select>
-						<label for="y-binding">Y binding</label>
-						<select id="y-binding" name="y-binding" multiple="multiple">
+						<label for="pie-chart-value-binding">Value binding</label>
+						<select id="pie-chart-value-binding" name="pie-chart-value-binding">
 							<!-- filled out in JavaScript -->
 						</select>
 						<input type="hidden" name="visualization" value="pie-chart"/>
@@ -141,12 +141,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<fieldset>
 					<legend>Map</legend>
 					<p>
-						<label for="lat-binding">Latitude binding</label>
-						<select id="lat-binding" name="lat-binding">
+						<label for="map-lat-binding">Latitude binding</label>
+						<select id="map-lat-binding" name="map-lat-binding">
 							<!-- filled out in JavaScript -->
 						</select>
-						<label for="lng-binding">Longitude binding</label>
-						<select id="lng-binding" name="lng-binding">
+						<label for="map-lng-binding">Longitude binding</label>
+						<select id="map-lng-binding" name="map-lng-binding">
 							<!-- filled out in JavaScript -->
 						</select>
 						<input type="hidden" name="visualization" value="map"/>
