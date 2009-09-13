@@ -64,7 +64,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 							<label for="table-option">Table</label>
 						</li>
 						<li>
-							<input type="checkbox" id="scatter-chart-option" name="visualization" value="scatter-chart"/>
+							<input type="checkbox" id="scatter-chart-option" name="visualization" value="scatter-chart" onclick="toggleScatterChart(this.checked);"/>
 							<label for="scatter-chart-option">Scatter chart</label>
 						</li>
 						<li>
@@ -84,15 +84,15 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 		<div id="table"></div>
 
-				<fieldset>
+				<fieldset id="scatter-chart-controls">
 					<legend>Scatter chart</legend>
 					<p>
 						<label for="scatter-chart-x-binding">X binding</label>
-						<select id="scatter-chart-x-binding" name="scatter-chart-x-binding">
+						<select id="scatter-chart-x-binding" name="scatter-chart-x-binding" onchange="drawScatterChart(getSelectedValues(this)[0], getSelectedValues(document.getElementById('scatter-chart-y-binding')));">
 							<!-- filled out in JavaScript -->
 						</select>
 						<label for="scatter-chart-y-binding">Y bindings</label>
-						<select id="scatter-chart-y-binding" name="scatter-chart-y-binding" multiple="multiple">
+						<select id="scatter-chart-y-binding" name="scatter-chart-y-binding" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
 							<!-- filled out in JavaScript -->
 						</select>
 						<input type="hidden" name="visualization" value="scatter-chart"/>

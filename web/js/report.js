@@ -5,9 +5,12 @@ var numericColumns = new Array();
 var dateColumns = new Array();
 var latColumns = new Array();
 var lngColumns = new Array();
+var scatterChart = null;
 
 function initEmpty()
 {
+	scatterChart = new google.visualization.ScatterChart(document.getElementById("scatter-chart")); // onLoad()
+
 	countColumns(data);
 
 	drawTable();
@@ -122,6 +125,20 @@ function drawTable()
 	table.draw(data, { showRowNumber: true });
 }
 
+function toggleScatterChart(show)
+{
+	if (show)
+	{
+		document.getElementById("scatter-chart-controls").style.display = "block";
+		document.getElementById("scatter-chart").style.display = "block";
+	}
+	else
+	{
+		document.getElementById("scatter-chart-controls").style.display = "none";
+		document.getElementById("scatter-chart").style.display = "none";
+	}
+}
+
 function initScatterChartControls(xColumns, yColumns)
 {
 	var xSelect = document.getElementById("scatter-chart-x-binding");
@@ -131,12 +148,14 @@ function initScatterChartControls(xColumns, yColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(xColumns[i])));
+		option.setAttribute("value", xColumns[i]);
 		xSelect.appendChild(option);
 	}
 	for (var i = 0; i < yColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(yColumns[i])));
+		option.setAttribute("value", yColumns[i]);
 		option.setAttribute("selected", "selected");
 		ySelect.appendChild(option);
 	}
@@ -144,17 +163,18 @@ function initScatterChartControls(xColumns, yColumns)
 
 function drawScatterChart(xColumn, yColumns)
 {
+//alert(xColumn);
+//alert(yColumns.toSource());
+
 	var view = new google.visualization.DataView(data);
 	var columns = new Array();
 	columns[0] = xColumn;
 	columns = columns.concat(yColumns);
 	view.setColumns(columns);
-	var container = document.getElementById("scatter-chart");
-	var visualization = new google.visualization.ScatterChart(container);
 	var options = new Array();
 	options["titleX"] = data.getColumnLabel(columns[0]);
 	options["titleY"] = data.getColumnLabel(columns[1]);
-	visualization.draw(view, options);
+	scatterChart.draw(view, options);
 }
 
 function initLineChartControls(labelColumns, valueColumns)
@@ -252,4 +272,14 @@ function drawMap(latColumn, lngColumn)
 	var visualization = new google.visualization.Map(container);
 	var options = new Array();
 	visualization.draw(view, options);
+}
+
+function getSelectedValues(select)
+{
+	var selectedValues = new Array();
+
+	for (var i = 0; i < select.options.length; i++)
+		if (select.options[i].selected) selectedValues.push(Number(select.options[i].value));
+
+	return selectedValues;
 }
