@@ -15,7 +15,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
-exclude-result-prefixes="owl rdf rdfs xsd sparql">
+exclude-result-prefixes="#all">
 
 	<xsl:include href="../FrontEndView.xsl"/>
 

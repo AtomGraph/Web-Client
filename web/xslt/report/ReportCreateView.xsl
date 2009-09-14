@@ -6,6 +6,7 @@
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+	<!ENTITY vis "http://code.google.com/apis/visualization/">
 ]>
 <xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -15,7 +16,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
-exclude-result-prefixes="owl rdf rdfs xsd sparql">
+exclude-result-prefixes="#all">
 
 	<xsl:import href="../sparql2google-wire.xsl"/>
 
@@ -64,19 +65,19 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 							<label for="table-option">Table</label>
 						</li>
 						<li>
-							<input type="checkbox" id="scatter-chart-option" name="visualization" value="scatter-chart" onclick="toggleScatterChart(this.checked);"/>
+							<input type="checkbox" id="scatter-chart-option" name="visualization" value="&vis;ScatterChart" onclick="toggleScatterChart(this.checked);"/>
 							<label for="scatter-chart-option">Scatter chart</label>
 						</li>
 						<li>
-							<input type="checkbox" id="line-chart-option" name="visualization" value="line-chart"/>
+							<input type="checkbox" id="line-chart-option" name="visualization" value="&vis;LineChart"/>
 							<label for="line-chart-option">Line chart</label>
 						</li>
 						<li>
-							<input type="checkbox" id="pie-chart-option" name="visualization" value="pie-chart"/>
+							<input type="checkbox" id="pie-chart-option" name="visualization" value="&vis;PieChart"/>
 							<label for="pie-chart-option">Pie chart</label>
 						</li>
 						<li>
-							<input type="checkbox" id="map-option" name="visualization" value="map"/>
+							<input type="checkbox" id="map-option" name="visualization" value="&vis;Map"/>
 							<label for="map-option">Map</label>
 						</li>
 					</ul>
@@ -87,19 +88,36 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				<fieldset id="scatter-chart-controls">
 					<legend>Scatter chart</legend>
 					<p>
+
+<input type="hidden" name="rdf"/>
+<input type="hidden" name="v" value="&vis;"/>
+<!-- <input type="hidden" name="n" value="rdf"/> -->
+<inout type="hidden" name="v" value="http://www.w3.org/1999/02/22-rdf-syntax-ns%23"/>
+<input type="hidden" name="sb" value="vis"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ov" value="ScatterChart"/>
+<input type="hidden" name="pv" value="xBinding"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+
 						<label for="scatter-chart-x-binding">X binding</label>
-						<select id="scatter-chart-x-binding" name="scatter-chart-x-binding" onchange="drawScatterChart(getSelectedValues(this)[0], getSelectedValues(document.getElementById('scatter-chart-y-binding')));">
+						<select id="scatter-chart-x-binding" name="ol" onchange="drawScatterChart(getSelectedValues(this)[0], getSelectedValues(document.getElementById('scatter-chart-y-binding')));">
 							<!-- filled out in JavaScript -->
 						</select>
 						<label for="scatter-chart-y-binding">Y bindings</label>
-						<select id="scatter-chart-y-binding" name="scatter-chart-y-binding" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
+<input type="hidden" name="pv" value="yBinding"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+
+						<select id="scatter-chart-y-binding" name="ol" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
 							<!-- filled out in JavaScript -->
 						</select>
+						<!--
 						<input type="hidden" name="visualization" value="scatter-chart"/>
 						<button type="submit" name="action" value="update">Update</button>
+						-->
 					</p>
 				</fieldset>
 
+<xsl:comment>
 		<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
 
 				<fieldset>
@@ -155,7 +173,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 				</fieldset>
 
 		<div id="map" style="width: 800px; height: 400px;"></div>
-
+</xsl:comment>
 			</form>
 		</div>
 	</xsl:template>

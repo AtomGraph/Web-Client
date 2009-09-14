@@ -14,6 +14,7 @@ import dk.semantic_web.diy.http.HttpClient;
 import dk.semantic_web.diy.http.HttpResponse;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
+import frontend.controller.form.RDFForm;
 import frontend.controller.form.ReportForm;
 import frontend.controller.form.ScatterChartForm;
 import frontend.controller.resource.FrontPageResource;
@@ -27,7 +28,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
@@ -111,6 +111,8 @@ public class ReportListResource extends FrontEndResource implements Singleton
     
     private void save(HttpServletRequest request, HttpServletResponse response)
     {
+	RDFForm rdfForm = new RDFForm(request);
+	
 	ReportForm reportForm = new ReportForm(request);
 
 	OntModel model = ModelFactory.createOntologyModel();
