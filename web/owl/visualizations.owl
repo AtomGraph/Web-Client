@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY visualization "http://code.google.com/apis/visualization/" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://code.google.com/apis/visualization/"
+     xml:base="http://code.google.com/apis/visualization/"
+     xmlns:visualization="http://code.google.com/apis/visualization/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://code.google.com/apis/visualization/binding -->
+
+    <owl:DatatypeProperty rdf:about="binding">
+        <rdfs:domain rdf:resource="Visualization"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/lineChartLabelBinding -->
+
+    <owl:DatatypeProperty rdf:about="lineChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:domain rdf:resource="LineChart"/>
+        <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/lineChartValueBinding -->
+
+    <owl:DatatypeProperty rdf:about="lineChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:domain rdf:resource="LineChart"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/mapLatBinding -->
+
+    <owl:DatatypeProperty rdf:about="mapLatBinding">
+        <rdfs:label
+            >Latitude binding</rdfs:label>
+        <rdfs:domain rdf:resource="Map"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/mapLngBinding -->
+
+    <owl:DatatypeProperty rdf:about="mapLngBinding">
+        <rdfs:label
+            >Longitude binding</rdfs:label>
+        <rdfs:domain rdf:resource="Map"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/numericBinding -->
+
+    <owl:DatatypeProperty rdf:about="numericBinding">
+        <rdfs:label>Numeric binding</rdfs:label>
+        <rdfs:domain rdf:resource="Visualization"/>
+        <rdfs:subPropertyOf rdf:resource="binding"/>
+        <owl:propertyDisjointWith rdf:resource="stringBinding"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/pieChartLabelBinding -->
+
+    <owl:DatatypeProperty rdf:about="pieChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:domain rdf:resource="PieChart"/>
+        <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/pieChartValueBinding -->
+
+    <owl:DatatypeProperty rdf:about="pieChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:domain rdf:resource="PieChart"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/scatterChartXBinding -->
+
+    <owl:DatatypeProperty rdf:about="scatterChartXBinding">
+        <rdfs:label>X binding</rdfs:label>
+        <rdfs:domain rdf:resource="ScatterChart"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/scatterChartYBinding -->
+
+    <owl:DatatypeProperty rdf:about="scatterChartYBinding">
+        <rdfs:label>Y binding</rdfs:label>
+        <rdfs:domain rdf:resource="ScatterChart"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/stringBinding -->
+
+    <owl:DatatypeProperty rdf:about="stringBinding">
+        <rdfs:label>String binding</rdfs:label>
+        <rdfs:domain rdf:resource="Visualization"/>
+        <rdfs:subPropertyOf rdf:resource="binding"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://code.google.com/apis/visualization/LineChart -->
+
+    <owl:Class rdf:about="LineChart">
+        <rdfs:label>Line chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Visualization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/Map -->
+
+    <owl:Class rdf:about="Map">
+        <rdfs:label>Map</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Visualization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/PieChart -->
+
+    <owl:Class rdf:about="PieChart">
+        <rdfs:label>Pie chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Visualization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/ScatterChart -->
+
+    <owl:Class rdf:about="ScatterChart">
+        <rdfs:label>Scatter chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Visualization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/Visualization -->
+
+    <owl:Class rdf:about="Visualization"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
+
