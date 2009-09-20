@@ -117,7 +117,6 @@ exclude-result-prefixes="#all">
 					</p>
 				</fieldset>
 
-<xsl:comment>
 		<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
 
 				<fieldset>
@@ -173,7 +172,7 @@ exclude-result-prefixes="#all">
 				</fieldset>
 
 		<div id="map" style="width: 800px; height: 400px;"></div>
-</xsl:comment>
+
 			</form>
 		</div>
 	</xsl:template>

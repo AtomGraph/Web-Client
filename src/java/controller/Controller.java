@@ -1,5 +1,9 @@
 package controller;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.store.DatasetStore;
 import frontend.view.NotFoundView;
 import java.io.*;
 
@@ -20,6 +24,9 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     {
         setMapping(new controller.ResourceMapping());
 	
+	Store store = SDBFactory.connectStore(getServletContext().getRealPath("sdb.ttl"));
+	Dataset ds = DatasetStore.create(store);
+	//SDBFactory.c
         //Ontology.init(getServletContext());
     }
     
