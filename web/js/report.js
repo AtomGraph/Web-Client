@@ -27,7 +27,7 @@ function initEmpty()
 	if (stringColumns.length > 0 && numericColumns.length > 0)
 	{
 		initPieChartControls(stringColumns, numericColumns);
-		drawPieChart(stringColumns[0], numericColumns[1]);
+		drawPieChart(stringColumns[0], numericColumns[0]);
 	}
 	if (latColumns.length > 0 && lngColumns.length > 0)
 	{
@@ -110,6 +110,7 @@ function countColumns(data)
 		if (data.getColumnType(i) == "string") stringColumns.push(i);
 		if (data.getColumnType(i) == "number") numericColumns.push(i);
 		if (data.getColumnType(i) == "date") dateColumns.push(i);
+		stringColumns = stringColumns.concat(dateColumns); // date columns also treated as strings
 	}
 	for (var i = 0; i < numericColumns.length; i++) // lat/lng columns
 	{
