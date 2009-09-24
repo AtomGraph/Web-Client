@@ -60,6 +60,9 @@ exclude-result-prefixes="#all">
 				<fieldset>
 					<legend>Visualizations</legend>
 					<ul>
+						<xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type"/>
+						
+						<!--
 						<li>
 							<input type="checkbox" id="table-option" name="visualization" value="table" checked="checked"/>
 							<label for="table-option">Table</label>
@@ -80,6 +83,7 @@ exclude-result-prefixes="#all">
 							<input type="checkbox" id="map-option" name="visualization" value="&vis;Map"/>
 							<label for="map-option">Map</label>
 						</li>
+						-->
 					</ul>
 				</fieldset>
 
@@ -176,5 +180,15 @@ exclude-result-prefixes="#all">
 			</form>
 		</div>
 	</xsl:template>
+
+	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type">
+		<li>
+			<input type="checkbox" id="{generate-id()}-option" name="visualization" value="{sparql:binding[@name = 'type']/sparql:uri}" checked="checked"/>
+			<label for="{generate-id()}-option">
+				<xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
+			</label>
+		</li>
+	</xsl:template>
+
 
 </xsl:stylesheet>

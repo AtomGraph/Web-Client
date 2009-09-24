@@ -35,7 +35,7 @@ public class ReportListView extends FrontEndView
 	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
 	
 	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/reports.rq"));		
-	String results = QueryXMLResult.query(SDB.getDataset(), queryString);
+	String results = QueryXMLResult.select(SDB.getDataset(), queryString);
 
 	setDocument(results);
 	

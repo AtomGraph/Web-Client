@@ -5,6 +5,7 @@ PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
 SELECT *
 {
-	?visualization	rdf:type	?type
-	?type		rdfs:subClassOf	vis:Visualization
+	?type	rdfs:subClassOf	vis:Visualization .
+	?type	rdfs:label	?label
 }
+ORDER BY ?label

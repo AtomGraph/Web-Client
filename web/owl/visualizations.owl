@@ -196,6 +196,14 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/Table -->
+
+    <owl:Class rdf:about="Table">
+        <rdfs:subClassOf rdf:resource="Visualization"/>
+    </owl:Class>
+    
+
+
     <!-- http://code.google.com/apis/visualization/Visualization -->
 
     <owl:Class rdf:about="Visualization"/>

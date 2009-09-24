@@ -22,21 +22,28 @@ public class SDB
 {
     private static Store store = null;
     private static Dataset dataset = null;
-    
+
     public static void init(ServletContext context)
     {
 	com.hp.hpl.jena.sdb.SDB.getContext().setTrue(com.hp.hpl.jena.sdb.SDB.unionDefaultGraph);
+	//com.hp.hpl.jena.sdb.SDB.getContext().setFalse(com.hp.hpl.jena.sdb.SDB.unionDefaultGraph);
+	
 	store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
 	dataset = DatasetStore.create(store);
-	//SDBFactory.c
+	//dataset = SDBFactory.connectDataset(storex);
 	//SDBFactory.connectNamedModel(store, arg1);
-	Model schemaModel = dataset.getNamedModel("http://temp.com/schema");
-
+	//Model schemaModel = dataset.getNamedModel("http://temp.com/schema");
+	//Model schemaModel = dataset.getDefaultModel();
+Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema");
 	String fileName = context.getRealPath("/owl/visualizations.owl");
 	InputStream in = FileManager.get().open(fileName);
 	if (in == null) throw new IllegalArgumentException("File: " + fileName + " not found");
-	schemaModel.read(in, null);
+	schemaModel.read(in, "http://code.google.com/apis/visualization/");
 	//schemaModel.write(System.out);
+	//System.out.print("Model size: " + schemaModel.size());
+	//if (dataset.containsNamedModel("http://temp.com/schema")) System.out.print("CONTAINS");
+	//while (dataset.listNames().hasNext())
+	    //System.out.print(dataset.listNames());
     }
     
     public static Store getStore()

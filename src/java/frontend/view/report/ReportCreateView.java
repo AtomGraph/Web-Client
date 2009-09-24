@@ -5,10 +5,16 @@
 
 package frontend.view.report;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.IOException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,7 +42,7 @@ public class ReportCreateView extends FrontEndView
 
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 
-	String visTypes = QueryXMLResult.query(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/visualization-types.rq")));
+	String visTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/visualization-types.rq")));
 
 	if (request.getAttribute("query-result") != null)
 	{
@@ -51,4 +57,5 @@ public class ReportCreateView extends FrontEndView
 
 	response.setStatus(HttpServletResponse.SC_OK);    
     }
+
 }

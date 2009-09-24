@@ -23,57 +23,75 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 /**
- * Static helper class, used to query a model using a SPARQL query string.
+ * Static helper class, used to select a model using a SPARQL select string.
  * @author Pumba
  */
 public class QueryXMLResult
 {
     
-    /** Queries model using SPARQL query string
+    /** Queries model using SPARQL select string
      @param model Model to be queried
-     @param queryString SPARQL query string (formatted beforehand)
+     @param queryString SPARQL select string (formatted beforehand)
      */
     public static String query(Model model, String queryString) throws IOException
     {
+	String resultString = null;
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
 	//model.enterCriticalSection(Lock.READ);
         QueryExecution qe = QueryExecutionFactory.create(query, model);
-        ResultSet results = qe.execSelect();
-	qe.close();
-	//model.leaveCriticalSection();
-        //ResultSetFormatter.outputAsXML(response.getOutputStream(), results);
-        return ResultSetFormatter.asXMLString(results);
+	try
+	{
+	    ResultSet resultSet = qe.execSelect();
+	    resultString = ResultSetFormatter.asXMLString(resultSet);
+	}
+	finally
+	{
+	    qe.close();
+	}
+        return resultString;
     }
 
-    public static String query(Dataset dataset, String queryString) throws IOException
+    public static String select(Dataset dataset, String queryString) throws IOException
     {
+	String resultString = null;
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
-	//model.enterCriticalSection(Lock.READ);
         QueryExecution qe = QueryExecutionFactory.create(query, dataset);
-        ResultSet results = qe.execSelect();
-	qe.close();
-	//model.leaveCriticalSection();
-        //ResultSetFormatter.outputAsXML(response.getOutputStream(), results);
-        return ResultSetFormatter.asXMLString(results);
+	try
+	{
+	    ResultSet resultSet = qe.execSelect();
+	    resultString = ResultSetFormatter.asXMLString(resultSet);
+	}
+	finally
+	{
+	    qe.close();
+	}
+        return resultString;
     }
-	
+
     public static String query(ResultSet results)
     {
        // System.out.println("Query: " + queryString);
         return ResultSetFormatter.asXMLString(results);
     }
+    
     public static String queryRemote(String endpointUri, String queryString) throws IOException
     {
+	String resultString = null;
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);
-        ResultSet results = qe.execSelect();
-	qe.close();
-	//model.leaveCriticalSection();
-        //ResultSetFormatter.outputAsXML(response.getOutputStream(), results);
-        return ResultSetFormatter.asXMLString(results);
+	try
+	{
+	    ResultSet resultSet = qe.execSelect();
+	    resultString = ResultSetFormatter.asXMLString(resultSet);
+	}
+	finally
+	{
+	    qe.close();
+	}
+        return resultString;
     }
     
     public static String describe(Model model, String queryString)
