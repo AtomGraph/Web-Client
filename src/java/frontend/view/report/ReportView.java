@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Query;
+import model.SDB;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
 
@@ -42,7 +43,7 @@ public class ReportView extends FrontEndView
 //if (queryString == null) queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/citiesByPopulation.rq")); // QUIRK
 
 	//String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
-	String results = QueryXMLResult.queryRemote(query.getEndpoint().toString(), queryString);
+	String results = QueryXMLResult.query(SDB.getDefaultModel(), queryString);
 
 	//setDocument(results);
 
@@ -56,7 +57,7 @@ public class ReportView extends FrontEndView
     {
 	try
 	{
-	    String report = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
+	    String report = QueryXMLResult.query(SDB.getDefaultModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
 	    setDocument(report);
 	    
 	    getResolver().setArgument("report", report);
@@ -73,7 +74,7 @@ public class ReportView extends FrontEndView
     {
 	try
 	{
-	    String visualizations = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
+	    String visualizations = QueryXMLResult.query(SDB.getDefaultModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
 	    
 	    getResolver().setArgument("visualizations", visualizations);
 	} catch (FileNotFoundException ex)

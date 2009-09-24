@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import model.SDB;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
 
@@ -34,7 +35,7 @@ public class ReportListView extends FrontEndView
 	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
 	
 	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/reports.rq"));		
-	String results = QueryXMLResult.queryRemote("http://api.talis.com/stores/mjusevicius-dev1/services/sparql", queryString);
+	String results = QueryXMLResult.query(SDB.getDefaultModel(), queryString);
 
 	setDocument(results);
 	

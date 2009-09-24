@@ -5,13 +5,8 @@
 
 package frontend.controller.resource.report;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileUtils;
 import dk.semantic_web.diy.controller.Singleton;
-import dk.semantic_web.diy.http.HttpClient;
-import dk.semantic_web.diy.http.HttpResponse;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.controller.form.RDFForm;
@@ -22,10 +17,8 @@ import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.Authenticator;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +33,6 @@ import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import thewebsemantic.binding.Jenabean;
-import util.TalisAuthenticator;
 import view.QueryXMLResult;
 
 /**
@@ -115,8 +107,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	
 	ReportForm reportForm = new ReportForm(request);
 
-	OntModel model = ModelFactory.createOntologyModel();
-	Jenabean.instance().bind(model);
+	Jenabean.instance().bind(SDB.getDefaultModel());
 
 	User user = new User();
 	user.setName("RandomUserName");
@@ -175,15 +166,15 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
 	//queryModel.setNsPrefix("rdf", RDF.getURI());
 	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
-	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(model, reportForm.getQueryString());
-	ARQ2SPIN arq2Spin = new ARQ2SPIN(model);
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(SDB.getDefaultModel(), reportForm.getQueryString());
+	ARQ2SPIN arq2Spin = new ARQ2SPIN(SDB.getDefaultModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
 	Select spinQuery = (Select) arq2Spin.createQuery(arqQuery, "http://spinrdf.org/sp#Select/" + query.hashCode());
-	model.write(System.out, FileUtils.langXMLAbbrev);
-
-	ReportListResource.saveModel(model);
+	SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
     }
 
+    /*
+    // Save model to Talis store
     private static void saveModel(Model model)
     {
 	try
@@ -204,4 +195,5 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
+    */
 }
