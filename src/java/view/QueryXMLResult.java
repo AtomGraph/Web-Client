@@ -9,6 +9,7 @@
 
 package view;
 
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -45,6 +46,19 @@ public class QueryXMLResult
         return ResultSetFormatter.asXMLString(results);
     }
 
+    public static String query(Dataset dataset, String queryString) throws IOException
+    {
+        System.out.println("Query: " + queryString);
+        Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
+	//model.enterCriticalSection(Lock.READ);
+        QueryExecution qe = QueryExecutionFactory.create(query, dataset);
+        ResultSet results = qe.execSelect();
+	qe.close();
+	//model.leaveCriticalSection();
+        //ResultSetFormatter.outputAsXML(response.getOutputStream(), results);
+        return ResultSetFormatter.asXMLString(results);
+    }
+	
     public static String query(ResultSet results)
     {
        // System.out.println("Query: " + queryString);

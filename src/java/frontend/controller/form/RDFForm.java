@@ -51,6 +51,7 @@ public class RDFForm extends Form
 	}	
     }
     
+    // http://www.lsrn.org/semweb/rdfpost.html
     private void initModel()
     {
 	for (int i = 0; i < keys.size(); i++)

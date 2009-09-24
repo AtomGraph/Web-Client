@@ -34,7 +34,7 @@ exclude-result-prefixes="#all">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
-			<xsl:copy-of select="document('arg://report')"/>
+			<xsl:copy-of select="document('arg://visualization-types')"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>

@@ -25,6 +25,7 @@ public class SDB
     
     public static void init(ServletContext context)
     {
+	com.hp.hpl.jena.sdb.SDB.getContext().setTrue(com.hp.hpl.jena.sdb.SDB.unionDefaultGraph);
 	store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
 	dataset = DatasetStore.create(store);
 	//SDBFactory.c

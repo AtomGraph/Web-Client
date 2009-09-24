@@ -43,7 +43,7 @@ public class ReportView extends FrontEndView
 //if (queryString == null) queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/citiesByPopulation.rq")); // QUIRK
 
 	//String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
-	String results = QueryXMLResult.query(SDB.getDefaultModel(), queryString);
+	String results = QueryXMLResult.query(SDB.getDataset(), queryString);
 
 	//setDocument(results);
 
@@ -57,7 +57,7 @@ public class ReportView extends FrontEndView
     {
 	try
 	{
-	    String report = QueryXMLResult.query(SDB.getDefaultModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
+	    String report = QueryXMLResult.query(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
 	    setDocument(report);
 	    
 	    getResolver().setArgument("report", report);
@@ -74,7 +74,7 @@ public class ReportView extends FrontEndView
     {
 	try
 	{
-	    String visualizations = QueryXMLResult.query(SDB.getDefaultModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
+	    String visualizations = QueryXMLResult.query(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
 	    
 	    getResolver().setArgument("visualizations", visualizations);
 	} catch (FileNotFoundException ex)

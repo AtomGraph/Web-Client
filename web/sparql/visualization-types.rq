@@ -1,0 +1,10 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX vis: <http://code.google.com/apis/visualization/>
+PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+
+SELECT *
+{
+	?visualization	rdf:type	?type
+	?type		rdfs:subClassOf	vis:Visualization
+}
