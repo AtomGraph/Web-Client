@@ -96,7 +96,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="rdf"/>
 <input type="hidden" name="v" value="&vis;"/>
 <!-- <input type="hidden" name="n" value="rdf"/> -->
-<inout type="hidden" name="v" value="http://www.w3.org/1999/02/22-rdf-syntax-ns%23"/>
+<inout type="hidden" name="v" value="&rdf;"/>
 <input type="hidden" name="sb" value="vis"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ov" value="ScatterChart"/>
@@ -121,6 +121,7 @@ exclude-result-prefixes="#all">
 					</p>
 				</fieldset>
 
+<xsl:comment>
 		<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
 
 				<fieldset>
@@ -176,7 +177,7 @@ exclude-result-prefixes="#all">
 				</fieldset>
 
 		<div id="map" style="width: 800px; height: 400px;"></div>
-
+</xsl:comment>
 			</form>
 		</div>
 	</xsl:template>
