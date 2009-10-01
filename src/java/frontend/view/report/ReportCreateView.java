@@ -2,19 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.IOException;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,16 +39,15 @@ public class ReportCreateView extends FrontEndView
 
 	if (request.getAttribute("query-result") != null)
 	{
-	    getResolver().setArgument("results", (String)request.getAttribute("query-results"));
+	    getResolver().setArgument("results", (String) request.getAttribute("query-results"));
 	    getTransformer().setParameter("query-result", true);
 	    getTransformer().setParameter("query-string", request.getParameter("query-string"));
 	}
 
 	getResolver().setArgument("visualization-types", visTypes);
-	    
+
 	super.display(request, response);
 
-	response.setStatus(HttpServletResponse.SC_OK);    
+	response.setStatus(HttpServletResponse.SC_OK);
     }
-
 }

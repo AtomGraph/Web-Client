@@ -22,4 +22,6 @@ public final class Namespaces
     public static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
     public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
     public static final String REPORT_NS = "http://www.semantic-web.dk/ontologies/report#";
+    public static final String VIS_NS = "http://code.google.com/apis/visualization/";
+    public static final String SPIN_NS = "http://spinrdf.org/sp#";
 }

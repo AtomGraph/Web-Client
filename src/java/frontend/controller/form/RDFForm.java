@@ -11,12 +11,14 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 import controller.ResourceMapping;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Form;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import model.Namespaces;
 
 /**
  *
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 public class RDFForm extends Form
 {
     Model model = ModelFactory.createDefaultModel();
+    //Resource visualization = null;
     //LinkedHashMap<String, String> paramMap = new LinkedHashMap<String, String>();
     List<String> keys = new ArrayList<String>();
     List<String> values = new ArrayList<String>();
@@ -71,6 +74,7 @@ public class RDFForm extends Form
 	    if (keys.get(i).equals("n") && keys.get(i + 1).equals("v")) model.setNsPrefix(values.get(i), values.get(i + 1)); // namespace with prefix
 	    if (keys.get(i).equals("sb") || keys.get(i).equals("su") || keys.get(i).equals("sv") || keys.get(i).equals("sn"))
 	    {
+		property = null; object = null;
 		if (keys.get(i).equals("sb")) subject = model.createResource(); // blank node
 		if (keys.get(i).equals("su")) subject = model.createResource(values.get(i)); // full URI
 		if (keys.get(i).equals("sv")) subject = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
@@ -78,6 +82,7 @@ public class RDFForm extends Form
 	    }
 	    if (keys.get(i).equals("pu") || keys.get(i).equals("pv") || keys.get(i).equals("pn") || keys.get(i).equals("sn"))
 	    {
+		object = null;
 		if (keys.get(i).equals("pu")) property = model.createProperty(values.get(i));
 		if (keys.get(i).equals("pv")) property = model.createProperty(model.getNsPrefixURI(""), values.get(i));
 		if (keys.get(i).equals("pn") && keys.get(i + 1).equals("pv")) property = model.createProperty(values.get(i), values.get(i + 1));
@@ -103,8 +108,16 @@ public class RDFForm extends Form
     
     public Model getModel()
     {
-	
-	return null;
+	return model;
+    }
+
+    public Resource getQueryResource()
+    {
+	Resource query = null;
+	Resource queryClass = getModel().createResource(Namespaces.SPIN_NS + "Query");
+	Statement stmt = getModel().getProperty(queryClass, RDF.type);
+	if (stmt.getObject() != null) query = (Resource)stmt.getObject();
+	return query;
     }
     
     @Override

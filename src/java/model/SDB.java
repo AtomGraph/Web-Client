@@ -30,11 +30,8 @@ public class SDB
 	
 	store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
 	dataset = DatasetStore.create(store);
-	//dataset = SDBFactory.connectDataset(storex);
-	//SDBFactory.connectNamedModel(store, arg1);
-	//Model schemaModel = dataset.getNamedModel("http://temp.com/schema");
-	//Model schemaModel = dataset.getDefaultModel();
-Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema");
+	Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema");
+	
 	String fileName = context.getRealPath("/owl/visualizations.owl");
 	InputStream in = FileManager.get().open(fileName);
 	if (in == null) throw new IllegalArgumentException("File: " + fileName + " not found");
@@ -59,5 +56,10 @@ Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema"
     public static Model getDefaultModel()
     {
 	return getDataset().getDefaultModel();
+    }
+    
+    public static Model getInstanceModel()
+    {
+	return getDataset().getNamedModel("http://temp.com/instances");
     }
 }

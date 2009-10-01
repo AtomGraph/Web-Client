@@ -87,7 +87,10 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
     private void query(HttpServletRequest request, HttpServletResponse response)
     {
-	ReportForm form = new ReportForm(request);
+	//ReportForm form = new ReportForm(request);
+	RDFForm form = new RDFForm(request);	
+//Jenabean.instance().bind(form.getModel());
+
 	String queryResults = null;
 	try
 	{
@@ -107,7 +110,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	
 	ReportForm reportForm = new ReportForm(request);
 
-	Jenabean.instance().bind(SDB.getDefaultModel());
+	Jenabean.instance().bind(SDB.getInstanceModel());
 
 	User user = new User();
 	user.setName("RandomUserName");
