@@ -9,7 +9,7 @@
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"

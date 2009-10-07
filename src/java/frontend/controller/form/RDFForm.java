@@ -9,6 +9,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -71,28 +72,44 @@ public class RDFForm extends Form
 	for (int i = 0; i < keys.size(); i++)
 	{
 	    if (keys.get(i).equals("v")) model.setNsPrefix("", values.get(i)); // default namespace
-	    if (keys.get(i).equals("n") && keys.get(i + 1).equals("v")) model.setNsPrefix(values.get(i), values.get(i + 1)); // namespace with prefix
+	    if (keys.get(i).equals("n") && keys.get(i + 1).equals("v")) 
+            {
+                model.setNsPrefix(values.get(i), values.get(i + 1));
+                i++;
+            } // namespace with prefix
 	    if (keys.get(i).equals("sb") || keys.get(i).equals("su") || keys.get(i).equals("sv") || keys.get(i).equals("sn"))
 	    {
 		property = null; object = null;
 		if (keys.get(i).equals("sb")) subject = model.createResource(); // blank node
 		if (keys.get(i).equals("su")) subject = model.createResource(values.get(i)); // full URI
 		if (keys.get(i).equals("sv")) subject = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
-		if (keys.get(i).equals("sn") && keys.get(i + 1).equals("sv")) subject = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+		if (keys.get(i).equals("sn") && keys.get(i + 1).equals("sv"))
+                {
+                    subject = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+                    i++;
+                }
 	    }
 	    if (keys.get(i).equals("pu") || keys.get(i).equals("pv") || keys.get(i).equals("pn") || keys.get(i).equals("sn"))
 	    {
 		object = null;
 		if (keys.get(i).equals("pu")) property = model.createProperty(values.get(i));
 		if (keys.get(i).equals("pv")) property = model.createProperty(model.getNsPrefixURI(""), values.get(i));
-		if (keys.get(i).equals("pn") && keys.get(i + 1).equals("pv")) property = model.createProperty(values.get(i), values.get(i + 1));
+		if (keys.get(i).equals("pn") && keys.get(i + 1).equals("pv"))
+                {
+                    property = model.createProperty(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+                    i++;
+                }
 	    }
 	    if (keys.get(i).equals("ob") || keys.get(i).equals("ou") || keys.get(i).equals("ov") || keys.get(i).equals("on") || keys.get(i).equals("ol"))
 	    {
 		if (keys.get(i).equals("ob")) object = model.createResource(); // blank node
 		if (keys.get(i).equals("ou")) object = model.createResource(values.get(i)); // full URI
 		if (keys.get(i).equals("ov")) object = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
-		if (keys.get(i).equals("on") && keys.get(i + 1).equals("ov")) object = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+		if (keys.get(i).equals("on") && keys.get(i + 1).equals("ov"))
+                {
+                    object = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+                    i++;
+                }
 		if (keys.get(i).equals("ol")) object = model.createLiteral(values.get(i)); // literal
 		
 	    }
@@ -115,8 +132,8 @@ public class RDFForm extends Form
     {
 	Resource query = null;
 	Resource queryClass = getModel().createResource(Namespaces.SPIN_NS + "Select");
-	Statement stmt = getModel().getProperty(queryClass, RDF.type);
-	if (stmt.getObject() != null) query = (Resource)stmt.getObject();
+	ResIterator iter = getModel().listResourcesWithProperty(RDF.type, queryClass);
+	if (iter.hasNext()) query = iter.next();
 	return query;
     }
     

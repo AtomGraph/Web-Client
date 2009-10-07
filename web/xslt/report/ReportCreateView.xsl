@@ -6,10 +6,11 @@
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-	<!ENTITY vis "http://code.google.com/apis/visualization/">
+        <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
+        <!ENTITY vis "http://code.google.com/apis/visualization/">
 	<!ENTITY spin "http://spinrdf.org/sp#">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
@@ -40,10 +41,12 @@ exclude-result-prefixes="#all">
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
 					<input type="hidden" name="view" value="create"/>
-<input type="hidden" name="rdf" value=" "/>
+<input type="hidden" name="rdf"/>
 <input type="hidden" name="v" value="&vis;"/>
 <input type="hidden" name="n" value="rdf"/>
 <input type="hidden" name="v" value="&rdf;"/>
+<input type="hidden" name="n" value="rep"/>
+<input type="hidden" name="v" value="&rep;"/>
 <input type="hidden" name="n" value="spin"/>
 <input type="hidden" name="v" value="&spin;"/>
 
@@ -67,8 +70,11 @@ exclude-result-prefixes="#all">
 					<label for="title">Title</label>
 					<input type="text" id="title" name="title" value="whatever!!"/>
 					<br/>
+<input type="hidden" name="pn" value="spin"/>
+<input type="hidden" name="pv" value="from"/>
+
 					<label for="endpoint">Endpoint</label>
-					<input type="text" id="endpoint" name="endpoint" value="http://dbpedia.org/sparql"/>
+					<input type="text" id="endpoint" name="ou" value="http://dbpedia.org/sparql"/>
 					<br/>
 					<button type="submit" name="action" value="query">Query</button>
 					<button type="submit" name="action" value="save">Save</button>
