@@ -10,6 +10,7 @@ import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,9 @@ public class ReportCreateView extends FrontEndView
 	    getTransformer().setParameter("query-result", true);
 	    //getTransformer().setParameter("query-string", request.getParameter("query-string"));
 	}
+
+        UUID id = UUID.randomUUID();
+        getTransformer().setParameter("report-id", String.valueOf(id));
 
 	super.display(request, response);
 

@@ -1,15 +1,18 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 PREFIX spin: <http://spinrdf.org/sp#>
 
 SELECT *
 {
-	?report	rdf:type	semrep:Report .
+	?report	rdf:type	rep:Report .
 	?report	dc:title	?title .
-	?report dc:date		?date .
-	?report	dc:creator	?creator .
-	?report	semrep:query	?query .
+	OPTIONAL
+        {
+            ?report dc:date	?date .
+            ?report dc:creator	?creator .
+        }
+	?report	rep:query	?query .
 	?query	spin:text	?queryString .
 	?query	spin:from	?endpoint
 }

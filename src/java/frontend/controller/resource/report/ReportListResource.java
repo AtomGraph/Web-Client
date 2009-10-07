@@ -90,7 +90,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
     {
 	//ReportForm form = new ReportForm(request);
 	ReportRDFForm form = new ReportRDFForm(request);
-//Jenabean.instance().bind(form.getModel());
 
 	String queryResults = null;
 	try
@@ -108,18 +107,17 @@ public class ReportListResource extends FrontEndResource implements Singleton
     
     private void save(HttpServletRequest request, HttpServletResponse response)
     {
-	RDFForm rdfForm = new RDFForm(request);
-	
-	ReportForm reportForm = new ReportForm(request);
+	ReportRDFForm form = new ReportRDFForm(request);
 
-	Jenabean.instance().bind(SDB.getInstanceModel());
+        /*
+	Jenabean.instance().bind(form.getModel());
 
 	User user = new User();
 	user.setName("RandomUserName");
 	user.setCreatedAt(new Date());
 
 	Collection<Visualization> visualizations = new ArrayList<Visualization>();
-	for (String visType : reportForm.getVisualizations())
+	for (String visType : form.getVisualizations())
 	{
 	    if (visType.equals("table"))
 	    {
@@ -149,17 +147,17 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	    }
 	}
 	Query query = new Query();
-	query.setQueryString(reportForm.getQueryString());
+	query.setQueryString(form.getQueryString());
 	
 	try
 	{
-	    query.setEndpoint(new URI(reportForm.getEndpoint()));
+	    query.setEndpoint(new URI(form.getEndpoint()));
 	} catch (URISyntaxException ex)
 	{
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	
-	Report report = new Report(reportForm.getTitle(), query, user);   
+	Report report = new Report(form.getTitle(), query, user);
 	report.setVisualizations(visualizations);
 
 	ReportResource resource = new ReportResource(report, this);
@@ -167,14 +165,19 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	report.setFrontEndResource(resource);
 	report.save();
 
+        */
+        
 	SPINModuleRegistry.get().init();
 
 	//queryModel.setNsPrefix("rdf", RDF.getURI());
 	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
-	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(SDB.getDefaultModel(), reportForm.getQueryString());
-	ARQ2SPIN arq2Spin = new ARQ2SPIN(SDB.getDefaultModel());
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
+	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
-	Select spinQuery = (Select) arq2Spin.createQuery(arqQuery, "http://spinrdf.org/sp#Select/" + query.hashCode());
+	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, null); // change to query URI
+
+
+        SDB.getInstanceModel().add(form.getModel()); // save report
 	SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
     }
 

@@ -9,14 +9,13 @@
 
 package controller;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import dk.semantic_web.diy.controller.Resource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import model.Report;
+import model.SDB;
 import thewebsemantic.RDF2Bean;
 
 /**
@@ -46,13 +45,9 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		resource = ReportListResource.getInstance();
 		if (relativeUris.length >= 2)
 		{
-		    Model model = ModelFactory.createDefaultModel();
-		    model.read("http://api.talis.com/stores/mjusevicius-dev1/services/sparql?query=DESCRIBE+%3Fs+%3Fp+%3Fo%0D%0AWHERE+{+%3Fs+%3Fp+%3Fo+}", null);
-		    //model.read("http://api.talis.com/stores/mjusevicius-dev1/services/sparql?query=CONSTRUCT+{+%3Fs+%3Fp+%3Fo+}%0D%0AWHERE%0D%0A{%0D%0A%3Fs+%3Fp+%3Fo%0D%0AFILTER+%28%3Fp+!%3D+%3Chttp%3A%2F%2Fwww.semantic-web.dk%2Fontologies%2Fsemantic-reports%2FfrontEndResource%3E%29%0D%0A}", null);
-
 		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
 		    //fullUri = "http://www.semantic-web.dk/ontologies/semantic-reports/Report/28315727";
-		    RDF2Bean reader = new RDF2Bean(model);
+		    RDF2Bean reader = new RDF2Bean(SDB.getInstanceModel());
 		    //String[] includes = { "title", "query", "createdAt" };
 		    Report report = reader.load(Report.class, fullUri);
 		    

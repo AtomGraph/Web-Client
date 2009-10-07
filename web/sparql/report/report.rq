@@ -7,13 +7,13 @@ SELECT *
 {
 	?report	rdf:type	rep:Report .
 	?report	dc:title	?title .
-	?report	rep:query	?query .
-	?query	spin:text	?queryString .
-	?query	spin:from	?endpoint .
         OPTIONAL
         {
             ?report	dc:creator	?creator .
             ?report	dc:date		?date .
         }
+	?report	rep:query	?query .
+	?query	spin:text	?queryString .
+	?query	spin:from	?endpoint .
 	FILTER (?report = <%s>)
 }
