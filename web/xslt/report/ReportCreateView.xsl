@@ -26,7 +26,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:param name="query-result"/>
 	<xsl:param name="visualization-result"/>
-	<xsl:param name="query-string" select="''"/>
+	<!-- <xsl:param name="query-string" select="''"/> -->
 
 	<xsl:template name="title">
 		Create report
@@ -37,6 +37,7 @@ exclude-result-prefixes="#all">
 			<h2><xsl:call-template name="title"/></h2>
 
 			<xsl:copy-of select="document('arg://visualization-types')"/>
+			<xsl:copy-of select="document('arg://report')"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>

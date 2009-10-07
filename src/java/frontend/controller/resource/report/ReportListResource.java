@@ -102,6 +102,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	}
 	
 	request.setAttribute("query-results", queryResults);
+	request.setAttribute("report-model", form.getModel());
 	request.setAttribute("query-result", Boolean.TRUE);
     }
     

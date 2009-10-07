@@ -33,7 +33,7 @@ public class QueryXMLResult
      @param model Model to be queried
      @param queryString SPARQL select string (formatted beforehand)
      */
-    public static String query(Model model, String queryString) throws IOException
+    public static String select(Model model, String queryString) throws IOException
     {
 	String resultString = null;
         System.out.println("Query: " + queryString);
