@@ -10,6 +10,7 @@ SELECT *
 	?report	rep:query	?query .
 	?query	spin:text	?queryString .
 	?query	spin:from	?endpoint .
+        OPTIONAL
         {
             ?report	dc:creator	?creator .
             ?report	dc:date		?date .
