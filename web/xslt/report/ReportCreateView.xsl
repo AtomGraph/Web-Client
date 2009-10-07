@@ -26,7 +26,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:param name="query-result"/>
 	<xsl:param name="visualization-result"/>
-	<!-- <xsl:param name="query-string" select="''"/> -->
+	<xsl:param name="query-string" select="''"/>
 
 	<xsl:template name="title">
 		Create report
