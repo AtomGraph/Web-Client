@@ -8,7 +8,8 @@
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
         <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
         <!ENTITY vis "http://code.google.com/apis/visualization/">
-	<!ENTITY spin "http://spinrdf.org/sp#">
+        <!ENTITY dc "http://purl.org/dc/elements/1.1/">
+        <!ENTITY spin "http://spinrdf.org/sp#">
 ]>
 <xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -48,6 +49,8 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="v" value="&rdf;"/>
 <input type="hidden" name="n" value="rep"/>
 <input type="hidden" name="v" value="&rep;"/>
+<input type="hidden" name="n" value="dc"/>
+<input type="hidden" name="v" value="&dc;"/>
 <input type="hidden" name="n" value="spin"/>
 <input type="hidden" name="v" value="&spin;"/>
 
@@ -76,7 +79,7 @@ exclude-result-prefixes="#all">
 					</textarea>
 					<br/>
 <input type="hidden" name="sb" value="report"/>
-<input type="hidden" name="pn" value="rep"/>
+<input type="hidden" name="pn" value="dc"/>
 <input type="hidden" name="pv" value="title"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
