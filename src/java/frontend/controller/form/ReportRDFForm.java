@@ -6,9 +6,7 @@
 package frontend.controller.form;
 
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.RDF;
 import javax.servlet.http.HttpServletRequest;
 import model.Namespaces;
 

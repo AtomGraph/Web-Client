@@ -8,7 +8,7 @@
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
@@ -16,14 +16,14 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
-exclude-result-prefixes="owl rdf rdfs xsd sparql">
+exclude-result-prefixes="#all">
 
 	<!-- <xsl:output method="xml" encoding="UTF-8" indent="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/> -->
 	<xsl:output method="html" encoding="UTF-8" indent="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="text/html"/>
 
 	<xsl:param name="uri"/>
 	<xsl:param name="host-uri"/>
-    <xsl:param name="view"/>
+        <xsl:param name="view"/>
 
 	<xsl:variable name="resource" select="/"/>
 

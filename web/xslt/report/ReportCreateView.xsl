@@ -9,7 +9,7 @@
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
 	<!ENTITY spin "http://spinrdf.org/sp#">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
@@ -40,12 +40,17 @@ exclude-result-prefixes="#all">
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
 					<input type="hidden" name="view" value="create"/>
-<input type="hidden" name="rdf"/>
+<input type="hidden" name="rdf" value=" "/>
 <input type="hidden" name="v" value="&vis;"/>
 <input type="hidden" name="n" value="rdf"/>
-<inout type="hidden" name="v" value="&rdf;"/>
+<input type="hidden" name="v" value="&rdf;"/>
 <input type="hidden" name="n" value="spin"/>
-<inout type="hidden" name="v" value="&spin;"/>
+<input type="hidden" name="v" value="&spin;"/>
+
+<input type="hidden" name="sb" value="query"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="on" value="spin"/>
+<input type="hidden" name="ov" value="Select"/>
 
 					<label for="query-string">Query</label>
 					<br/>

@@ -7,7 +7,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import model.SDB;
-import view.*;
 
 /**
  Central controller, single point of entry to the application.
@@ -75,8 +74,6 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
              */
         }
     }
-    
-   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /** Handles the HTTP <code>GET</code> method.
      * @param request servlet request
@@ -108,6 +105,4 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
 	host += "/";	
 	getMapping().setHost(host);
     }
-    
-    // </editor-fold>
 }

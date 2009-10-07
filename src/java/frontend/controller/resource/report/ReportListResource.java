@@ -11,6 +11,7 @@ import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.controller.form.RDFForm;
 import frontend.controller.form.ReportForm;
+import frontend.controller.form.ReportRDFForm;
 import frontend.controller.form.ScatterChartForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
@@ -88,7 +89,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
     private void query(HttpServletRequest request, HttpServletResponse response)
     {
 	//ReportForm form = new ReportForm(request);
-	RDFForm form = new RDFForm(request);	
+	ReportRDFForm form = new ReportRDFForm(request);
 //Jenabean.instance().bind(form.getModel());
 
 	String queryResults = null;

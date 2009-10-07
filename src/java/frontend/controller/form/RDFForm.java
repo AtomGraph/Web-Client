@@ -114,7 +114,7 @@ public class RDFForm extends Form
     public Resource getQueryResource()
     {
 	Resource query = null;
-	Resource queryClass = getModel().createResource(Namespaces.SPIN_NS + "Query");
+	Resource queryClass = getModel().createResource(Namespaces.SPIN_NS + "Select");
 	Statement stmt = getModel().getProperty(queryClass, RDF.type);
 	if (stmt.getObject() != null) query = (Resource)stmt.getObject();
 	return query;
