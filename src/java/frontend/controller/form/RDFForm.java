@@ -5,6 +5,7 @@
 
 package frontend.controller.form;
 
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -80,7 +81,7 @@ public class RDFForm extends Form
 	    if (keys.get(i).equals("sb") || keys.get(i).equals("su") || keys.get(i).equals("sv") || keys.get(i).equals("sn"))
 	    {
 		property = null; object = null;
-		if (keys.get(i).equals("sb")) subject = model.createResource(); // blank node
+		if (keys.get(i).equals("sb")) subject = model.createResource(new AnonId(values.get(i))); // blank node
 		if (keys.get(i).equals("su")) subject = model.createResource(values.get(i)); // full URI
 		if (keys.get(i).equals("sv")) subject = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
 		if (keys.get(i).equals("sn") && keys.get(i + 1).equals("sv"))
@@ -102,7 +103,7 @@ public class RDFForm extends Form
 	    }
 	    if (keys.get(i).equals("ob") || keys.get(i).equals("ou") || keys.get(i).equals("ov") || keys.get(i).equals("on") || keys.get(i).equals("ol"))
 	    {
-		if (keys.get(i).equals("ob")) object = model.createResource(); // blank node
+		if (keys.get(i).equals("ob")) object = model.createResource(new AnonId(values.get(i))); // blank node
 		if (keys.get(i).equals("ou")) object = model.createResource(values.get(i)); // full URI
 		if (keys.get(i).equals("ov")) object = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
 		if (keys.get(i).equals("on") && keys.get(i + 1).equals("ov"))

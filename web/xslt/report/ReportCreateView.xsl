@@ -50,6 +50,13 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="n" value="spin"/>
 <input type="hidden" name="v" value="&spin;"/>
 
+<input type="hidden" name="sb" value="report"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="on" value="rep"/>
+<input type="hidden" name="ov" value="Report"/>
+<input type="hidden" name="pu" value="&rep;query"/>
+<input type="hidden" name="ob" value="query"/>
+
 <input type="hidden" name="sb" value="query"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="on" value="spin"/>
@@ -67,9 +74,15 @@ exclude-result-prefixes="#all">
 						</xsl:if>
 					</textarea>
 					<br/>
+<input type="hidden" name="sb" value="report"/>
+<input type="hidden" name="pn" value="rep"/>
+<input type="hidden" name="pv" value="title"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+
 					<label for="title">Title</label>
-					<input type="text" id="title" name="title" value="whatever!!"/>
+					<input type="text" id="title" name="ol" value="whatever!!"/>
 					<br/>
+<input type="hidden" name="sb" value="query"/>
 <input type="hidden" name="pn" value="spin"/>
 <input type="hidden" name="pv" value="from"/>
 
@@ -115,6 +128,11 @@ exclude-result-prefixes="#all">
 				<fieldset id="scatter-chart-controls">
 					<legend>Scatter chart</legend>
 					<p>
+
+<input type="hidden" name="sb" value="report"/>
+<input type="hidden" name="pu" value="&rep;visualisedBy"/>
+<input type="hidden" name="ob" value="vis"/>
+
 <input type="hidden" name="sb" value="vis"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ov" value="ScatterChart"/>
@@ -206,6 +224,5 @@ exclude-result-prefixes="#all">
 			</label>
 		</li>
 	</xsl:template>
-
 
 </xsl:stylesheet>
