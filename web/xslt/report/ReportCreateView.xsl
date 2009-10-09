@@ -62,9 +62,11 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="on" value="rep"/>
 <input type="hidden" name="ov" value="Report"/>
 <input type="hidden" name="pu" value="&rep;query"/>
-<input type="hidden" name="ob" value="query"/>
+<!-- <input type="hidden" name="ob" value="query"/> -->
+<input type="hidden" name="ou" value="http://temp.com/query/123"/>
 
-<input type="hidden" name="sb" value="query"/>
+<!-- <input type="hidden" name="sb" value="query"/> -->
+<input type="hidden" name="su" value="http://temp.com/query/123"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="on" value="spin"/>
 <input type="hidden" name="ov" value="Select"/>
@@ -77,7 +79,7 @@ exclude-result-prefixes="#all">
 
 					<textarea cols="80" rows="20" id="query-string" name="ol">
 						<xsl:if test="$query-result">
-							<xsl:value-of select="$query-string"/>
+							<xsl:value-of select="document('arg://report')//sparql:binding[@name = 'queryString']/sparql:literal"/>
 						</xsl:if>
 					</textarea>
 					<br/>
@@ -87,14 +89,30 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 					<label for="title">Title</label>
-					<input type="text" id="title" name="ol" value="whatever!!"/>
+					<input type="text" id="title" name="ol" value="whatever!!">
+                                            <xsl:attribute name="value">
+						<xsl:if test="$query-result">
+							<xsl:value-of select="document('arg://report')//sparql:binding[@name = 'title']/sparql:literal"/>
+						</xsl:if>
+                                            </xsl:attribute>
+                                        </input>
 					<br/>
-<input type="hidden" name="sb" value="query"/>
+<!-- <input type="hidden" name="sb" value="query"/> -->
+<input type="hidden" name="su" value="http://temp.com/query/123"/>
 <input type="hidden" name="pn" value="spin"/>
 <input type="hidden" name="pv" value="from"/>
 
 					<label for="endpoint">Endpoint</label>
-					<input type="text" id="endpoint" name="ou" value="http://dbpedia.org/sparql"/>
+					<input type="text" id="endpoint" name="ou">
+                                            <xsl:attribute name="value">
+                                                <xsl:choose>
+                                                    <xsl:when test="$query-result">
+                                                            <xsl:value-of select="document('arg://report')//sparql:binding[@name = 'endpoint']/sparql:uri"/>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>http://dbpedia.org/sparql</xsl:otherwise>
+                                                </xsl:choose>
+                                            </xsl:attribute>
+                                        </input>
 					<br/>
 					<button type="submit" name="action" value="query">Query</button>
 					<button type="submit" name="action" value="save">Save</button>
@@ -137,10 +155,12 @@ exclude-result-prefixes="#all">
 					<p>
 
 <input type="hidden" name="su" value="{$report-uri}"/>
-<input type="hidden" name="pu" value="&rep;visualisedBy"/>
-<input type="hidden" name="ob" value="vis"/>
+<input type="hidden" name="pu" value="&rep;visualizedBy"/>
+<!-- <input type="hidden" name="ob" value="vis"/> -->
+<input type="hidden" name="ou" value="http://temp.com/visualization/123"/>
 
-<input type="hidden" name="sb" value="vis"/>
+<!-- <input type="hidden" name="sb" value="vis"/> -->
+<input type="hidden" name="su" value="http://temp.com/visualization/123"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ov" value="ScatterChart"/>
 <input type="hidden" name="pv" value="xBinding"/>

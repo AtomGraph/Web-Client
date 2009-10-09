@@ -71,8 +71,9 @@ public class ReportCreateView extends FrontEndView
 	try
 	{
             Model model = (Model)request.getAttribute("report-model");
-
-	    String report = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
+            String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
+            
+	    String report = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), reportId));
 	    setDocument(report);
 
 	    getResolver().setArgument("report", report);

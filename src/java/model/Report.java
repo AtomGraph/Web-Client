@@ -34,7 +34,7 @@ public class Report extends RdfBean<Report>
     private Date createdAt = null;
     private Query query = null;
     private User creator = null;
-    private Collection<Visualization> visualizations = new ArrayList<Visualization>();
+    //private Collection<Visualization> visualizations = new ArrayList<Visualization>();
 
     public Report()
     {
@@ -64,8 +64,7 @@ public class Report extends RdfBean<Report>
     {
 	try
 	{
-	    //String uri = getFrontEndResource().getAbsoluteURI();
-	    String uri = resource.getAbsoluteURI();
+	    String uri = getFrontEndResource().getAbsoluteURI();
 	    
 	    return new URI(uri);
 	} catch (URISyntaxException ex)
@@ -130,6 +129,7 @@ public class Report extends RdfBean<Report>
 	this.title = title;
     }
 
+    /*
     @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/visualizedBy")
     public Collection<Visualization> getVisualizations()
     {
@@ -145,4 +145,5 @@ public class Report extends RdfBean<Report>
     {
 	visualizations.add(visualization);
     }
+    */
 }

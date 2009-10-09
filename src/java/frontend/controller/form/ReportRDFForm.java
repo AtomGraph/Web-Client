@@ -36,7 +36,7 @@ public class ReportRDFForm extends RDFForm
 	String queryString = null;
 	Property textProperty = getModel().createProperty(Namespaces.SPIN_NS, "text");
 	Statement stmt = getModel().getProperty(getQueryResource(), textProperty);
-	if (stmt.getObject() != null) queryString = stmt.getObject().toString();
+	if (stmt.getObject() != null) queryString = stmt.getString();
 	return queryString;
     }
 }

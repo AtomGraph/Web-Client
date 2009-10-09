@@ -111,7 +111,7 @@ public class RDFForm extends Form
                     object = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
                     i++;
                 }
-		if (keys.get(i).equals("ol")) object = model.createLiteral(values.get(i)); // literal
+		if (keys.get(i).equals("ol")) object = model.createTypedLiteral(values.get(i)); // literal
 		
 	    }
 	    

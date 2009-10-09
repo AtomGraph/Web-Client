@@ -5,14 +5,10 @@
 
 package frontend.controller.resource.report;
 
-import com.hp.hpl.jena.util.FileUtils;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
-import frontend.controller.form.RDFForm;
-import frontend.controller.form.ReportForm;
 import frontend.controller.form.ReportRDFForm;
-import frontend.controller.form.ScatterChartForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
@@ -29,10 +25,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.*;
-import org.topbraid.spin.arq.ARQ2SPIN;
-import org.topbraid.spin.model.Select;
-import org.topbraid.spin.system.ARQFactory;
-import org.topbraid.spin.system.SPINModuleRegistry;
 import thewebsemantic.binding.Jenabean;
 import view.QueryXMLResult;
 
@@ -109,43 +101,19 @@ public class ReportListResource extends FrontEndResource implements Singleton
     {
 	ReportRDFForm form = new ReportRDFForm(request);
 
-        /*
-	Jenabean.instance().bind(form.getModel());
+/*
+	Jenabean.instance().bind(SDB.getInstanceModel());
 
 	User user = new User();
 	user.setName("RandomUserName");
 	user.setCreatedAt(new Date());
 
 	Collection<Visualization> visualizations = new ArrayList<Visualization>();
-	for (String visType : form.getVisualizations())
-	{
-	    if (visType.equals("table"))
-	    {
-		visualizations.add(new Table());
-	    }
-	    if (visType.equals("scatter-chart"))
-	    {
-		ScatterChartForm chartForm = new ScatterChartForm(request);
-		
-		ScatterChart chart = new ScatterChart();
-		chart.setXBinding(chartForm.getXBinding());
-		for (String yBinding : chartForm.getYBinding())
-		    chart.addYBinding(yBinding);
-		visualizations.add(chart);
-	    }
-	    if (visType.equals("line-chart"))
-	    {
-		visualizations.add(new LineChart());
-	    }
-	    if (visType.equals("pie-chart"))
-	    {
-		visualizations.add(new PieChart());
-	    }
-	    if (visType.equals("map"))
-	    {
-		visualizations.add(new Map());
-	    }
-	}
+        ScatterChart chart = new ScatterChart();
+        chart.setXBinding("1");
+        chart.addYBinding("2");
+        visualizations.add(chart);
+
 	Query query = new Query();
 	query.setQueryString(form.getQueryString());
 	
@@ -157,16 +125,17 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	
-	Report report = new Report(form.getTitle(), query, user);
-	report.setVisualizations(visualizations);
+	Report report = new Report("Whatever", query, user);
+	//report.setVisualizations(visualizations);
 
 	ReportResource resource = new ReportResource(report, this);
 	resource.setController(getController());
 	report.setFrontEndResource(resource);
 	report.save();
+*/
 
-        */
-        
+
+/*
 	SPINModuleRegistry.get().init();
 
 	//queryModel.setNsPrefix("rdf", RDF.getURI());
@@ -174,11 +143,11 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
-	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, null); // change to query URI
-
+	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, "http://temp.com/query/123"); // change to query URI
+*/
 
         SDB.getInstanceModel().add(form.getModel()); // save report
-	SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
     }
 
     /*
