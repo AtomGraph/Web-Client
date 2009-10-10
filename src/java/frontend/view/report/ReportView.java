@@ -38,16 +38,13 @@ public class ReportView extends FrontEndView
     
     protected void setQueryResult(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
-	Query query = getResource().getReport().getQuery();
-	String queryString = query.getQueryString();
-//if (queryString == null) queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/citiesByPopulation.rq")); // QUIRK
-
-	//String results = QueryXMLResult.queryRemote("http://dbpedia.org/sparql", queryString);
-	String results = QueryXMLResult.select(SDB.getDataset(), queryString);
+        String endpointUri = getResource().getReport().getQuery().getEndpoint().toString();
+        String queryString = getResource().getReport().getQuery().getQueryString();
+        String results = QueryXMLResult.queryRemote(endpointUri, queryString);
 
 	//setDocument(results);
 
-	getTransformer().setParameter("query-string", queryString);
+	//getTransformer().setParameter("query-string", queryString);
 	getTransformer().setParameter("query-result", true);
 
 	getResolver().setArgument("results", results);

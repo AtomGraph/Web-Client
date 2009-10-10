@@ -32,7 +32,8 @@ exclude-result-prefixes="#all">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
-			<!-- <xsl:copy-of select="document('arg://results')"/> -->
+			<!-- <xsl:copy-of select="document('arg://report')"/> -->
+                        <!-- <xsl:copy-of select="document('arg://results')"/> -->
 			<!-- <xsl:copy-of select="document('arg://visualizations')"/> -->
 
 			<dl>
