@@ -27,6 +27,7 @@ import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
+import thewebsemantic.RDF2Bean;
 import view.QueryXMLResult;
 
 /**
@@ -73,7 +74,8 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	    if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
 
 	    if (request.getParameter("action") != null && request.getParameter("action").equals("query")) query(request, response);
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
+	    // saving== should
+            if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
 	}
 
 	return view;
@@ -81,7 +83,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
     private void query(HttpServletRequest request, HttpServletResponse response)
     {
-	//ReportForm form = new ReportForm(request);
 	ReportRDFForm form = new ReportRDFForm(request);
 
 	String queryResults = null;
@@ -102,43 +103,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
     {
 	ReportRDFForm form = new ReportRDFForm(request);
 
-/*
-	Jenabean.instance().bind(SDB.getInstanceModel());
-
-	User user = new User();
-	user.setName("RandomUserName");
-	user.setCreatedAt(new Date());
-
-	Collection<Visualization> visualizations = new ArrayList<Visualization>();
-        ScatterChart chart = new ScatterChart();
-        chart.setXBinding("1");
-        chart.addYBinding("2");
-        visualizations.add(chart);
-
-	Query query = new Query();
-	query.setQueryString(form.getQueryString());
-	
-	try
-	{
-	    query.setEndpoint(new URI(form.getEndpoint()));
-	} catch (URISyntaxException ex)
-	{
-	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	
-	Report report = new Report("Whatever", query, user);
-	//report.setVisualizations(visualizations);
-
-	ReportResource resource = new ReportResource(report, this);
-	resource.setController(getController());
-	report.setFrontEndResource(resource);
-	report.save();
-*/
-
         SPINModuleRegistry.get().init();
-
-	//queryModel.setNsPrefix("rdf", RDF.getURI());
-	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
@@ -152,6 +117,14 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
         SDB.getInstanceModel().add(form.getModel()); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+
+        try {
+            // save report
+            //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+            response.sendRedirect(form.getReportResource().getURI());
+        } catch (IOException ex) {
+            Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /*
