@@ -66,6 +66,12 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pu" value="&rep;query"/>
 <!-- <input type="hidden" name="ob" value="query"/> -->
 <input type="hidden" name="ou" value="http://temp.com/query/123"/>
+<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="&vis;ScatterChartXBinding"/>
+<input type="hidden" name="su" value="http://temp.com/ybinding/123"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="&vis;ScatterChartYBinding"/>
 
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="http://temp.com/query/123"/>
@@ -165,7 +171,13 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="su" value="http://temp.com/visualization/123"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ov" value="ScatterChart"/>
-<input type="hidden" name="pv" value="xBinding"/>
+<input type="hidden" name="pv" value="binding"/>
+<input type="hidden" name="ou" value="http://temp.com/xbinding/123"/>
+<input type="hidden" name="pv" value="binding"/>
+<input type="hidden" name="ou" value="http://temp.com/ybinding/123"/>
+
+<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
+<input type="hidden" name="pv" value="variableName"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 						<label for="scatter-chart-x-binding">X binding</label>
@@ -173,7 +185,8 @@ exclude-result-prefixes="#all">
 							<!-- filled out in JavaScript -->
 						</select>
 						<label for="scatter-chart-y-binding">Y bindings</label>
-<input type="hidden" name="pv" value="yBinding"/>
+<input type="hidden" name="su" value="http://temp.com/ybinding/123"/>
+<input type="hidden" name="pv" value="variableName"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 						<select id="scatter-chart-y-binding" name="ol" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">

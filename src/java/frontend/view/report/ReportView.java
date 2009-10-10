@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Query;
 import model.SDB;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
@@ -72,9 +71,11 @@ public class ReportView extends FrontEndView
 	try
 	{
 	    String visualizations = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
+	    String variables = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/variables.rq"), getResource().getAbsoluteURI()));
 	    
 	    getResolver().setArgument("visualizations", visualizations);
-	} catch (FileNotFoundException ex)
+	    getResolver().setArgument("variables", variables);
+        } catch (FileNotFoundException ex)
 	{
 	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
 	} catch (IOException ex)
