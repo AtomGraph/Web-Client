@@ -28,6 +28,7 @@ import static model.DublinCore.*;
 @Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
 public class Report extends RdfBean<Report>
 {
+    private String id = null;
     private ReportResource resource = null;
     private String title = null;
     private String description = null;    
@@ -58,7 +59,18 @@ public class Report extends RdfBean<Report>
     {
 	this.resource = resource;
     }
-    
+
+    @Transient
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
     @Id
     public URI getURI()
     {

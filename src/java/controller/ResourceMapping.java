@@ -12,8 +12,6 @@ package controller;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import dk.semantic_web.diy.controller.Resource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
@@ -52,9 +50,9 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		{
 		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
 		    //fullUri = "http://www.semantic-web.dk/ontologies/semantic-reports/Report/28315727";
-OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, SDB.getInstanceModel());
-                    RDF2Bean reader = new RDF2Bean(model);
-model.write(System.out);
+//OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, SDB.getInstanceModel());
+                    RDF2Bean reader = new RDF2Bean(SDB.getInstanceModel());
+//model.write(System.out);
                     /*
 
 com.hp.hpl.jena.rdf.model.Resource res = model.createResource(fullUri);
@@ -68,7 +66,8 @@ com.hp.hpl.jena.rdf.model.Resource res = model.createResource(fullUri);
  */
 		    //String[] includes = { "title", "query", "createdAt" };
 		    Report report = reader.load(Report.class, fullUri);
-		    
+		    report.setId(relativeUris[1]);
+
 		    if (report != null) return new ReportResource(report, (ReportListResource)resource);
 		    //return null;
 		}

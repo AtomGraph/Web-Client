@@ -45,7 +45,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
     {
 	try
 	{
-	    return URLEncoder.encode(getReport().getTitle(), "UTF-8");
+	    return URLEncoder.encode(getReport().getId(), "UTF-8");
 	} catch (UnsupportedEncodingException ex)
 	{
 	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);

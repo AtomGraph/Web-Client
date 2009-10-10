@@ -5,6 +5,7 @@
 
 package frontend.controller.resource.report;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
@@ -14,18 +15,18 @@ import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.*;
-import thewebsemantic.binding.Jenabean;
+import org.topbraid.spin.arq.ARQ2SPIN;
+import org.topbraid.spin.model.Select;
+import org.topbraid.spin.system.ARQFactory;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import view.QueryXMLResult;
 
 /**
@@ -134,9 +135,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	report.save();
 */
 
-
-/*
-	SPINModuleRegistry.get().init();
+        SPINModuleRegistry.get().init();
 
 	//queryModel.setNsPrefix("rdf", RDF.getURI());
 	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
@@ -144,7 +143,12 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
 	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, "http://temp.com/query/123"); // change to query URI
-*/
+       
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        Model model = form.getModel();
+        model.add(form.getReportResource(), model.createProperty(DublinCore.DATE), model.createTypedLiteral(c));
+        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource("http://rdfs.org/sioc/ns#User/RandomUserName"));
 
         SDB.getInstanceModel().add(form.getModel()); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);

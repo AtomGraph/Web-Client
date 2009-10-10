@@ -40,6 +40,7 @@ exclude-result-prefixes="#all">
 					<button type="submit" name="view" value="create">Create</button>
 				</p>
 			</form>
+<!-- <xsl:copy-of select="document('arg://reports')"/> -->
 
 			<table>
 				<thead>

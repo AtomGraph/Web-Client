@@ -129,6 +129,15 @@ public class RDFForm extends Form
 	return model;
     }
 
+    public Resource getReportResource()
+    {
+	Resource report = null;
+	Resource reportClass = getModel().createResource(Namespaces.REPORT_NS + "Report");
+	ResIterator iter = getModel().listResourcesWithProperty(RDF.type, reportClass);
+	if (iter.hasNext()) report = iter.next();
+	return report;
+    }
+
     public Resource getQueryResource()
     {
 	Resource query = null;
