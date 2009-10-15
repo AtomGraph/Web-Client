@@ -7,60 +7,73 @@ var latColumns = new Array();
 var lngColumns = new Array();
 var scatterChart = null;
 
-function initEmpty()
+function initEmpty(container, visType, bindings)
 {
-	scatterChart = new google.visualization.ScatterChart(document.getElementById("scatter-chart")); // onLoad()
+	scatterChart = new google.visualization.ScatterChart(container); // onLoad()
 
 	countColumns(data);
 
-	drawTable();
-	if (numericColumns.length > 1)
-	{
-		initScatterChartControls(numericColumns, numericColumns);
-		drawScatterChart(numericColumns[0], numericColumns); // duplicate
-	}
-	if (stringColumns.length > 0 && numericColumns.length > 0)
-	{
-		initLineChartControls(stringColumns, numericColumns);
-		drawLineChart(stringColumns[0], numericColumns);
-	}
-	if (stringColumns.length > 0 && numericColumns.length > 0)
-	{
-		initPieChartControls(stringColumns, numericColumns);
-		drawPieChart(stringColumns[0], numericColumns[0]);
-	}
-	if (latColumns.length > 0 && lngColumns.length > 0)
-	{
-		initMapControls(latColumns, lngColumns);
-		drawMap(latColumns[0], lngColumns[1]);
-	}
+	if (visType.indexOf("Table") != -1)
+        {
+            drawTable(container);
+        }
+	if (visType.indexOf("ScatterChart") != -1)
+            if (numericColumns.length > 1)
+            {
+                    initScatterChartControls(bindings, numericColumns, numericColumns);
+                    drawScatterChart(numericColumns[0], numericColumns); // duplicate
+            }
+	if (visType.indexOf("LineChart") != -1)
+            if (stringColumns.length > 0 && numericColumns.length > 0)
+            {
+                    initLineChartControls(bindings, stringColumns, numericColumns);
+                    drawLineChart(container, stringColumns[0], numericColumns);
+            }
+	if (visType.indexOf("PieChart") != -1)
+            if (stringColumns.length > 0 && numericColumns.length > 0)
+            {
+                    initPieChartControls(bindings, stringColumns, numericColumns);
+                    drawPieChart(container, stringColumns[0], numericColumns[0]);
+            }
+	if (visType.indexOf("Map") != -1)
+            if (latColumns.length > 0 && lngColumns.length > 0)
+            {
+                    initMapControls(bindings, latColumns, lngColumns);
+                    drawMap(container, latColumns[0], lngColumns[1]);
+            }
 }
 
-function init(visualizations)
+function init(container, visUri, visType, variables)
 {
+    alert(variables.toSource());
+	//scatterChart = new google.visualization.ScatterChart(document.getElementById("scatter-chart")); // onLoad()
+	scatterChart = new google.visualization.ScatterChart(container); // onLoad()
+    
 	countColumns(data);
 
-	if (visualizations.indexOf("Table") != -1)
+	if (visType.indexOf("Table") != -1)
 	{
 		var table = new google.visualization.Table(document.getElementById('table'));
 		table.draw(data, {showRowNumber: true});
 	}
 
-	if (visualizations.indexOf("ScatterChart") != -1)
-		if (numericColumns.length > 1) // scatter
+	if (visType.indexOf("ScatterChart") != -1)
+		//if (numericColumns.length > 1) // scatter
 		{
-			var view = new google.visualization.DataView(data);
-			var columns = numericColumns;
-			view.setColumns(columns);
-			var container = document.getElementById("scatter-chart");
-			var visualization = new google.visualization.ScatterChart(container);
-			var options = new Array();
-			options["titleX"] = data.getColumnLabel(columns[0]);
-			options["titleY"] = data.getColumnLabel(columns[1]);
-			visualization.draw(view, options);
+			var xColumn = null; //numericColumns;
+                        var yColumns = new Array(); //numericColumns;
+
+                        for (var i = 0; i < variables.length; i++)
+                        {
+                            if (variables[i].type == "http://code.google.com/apis/visualization/ScatterChartXBinding") xColumn = variables[i].value;
+                            if (variables[i].type == "http://code.google.com/apis/visualization/ScatterChartYBinding") yColumns.push(variables[i].value);
+                        }
+//alert(columns.toSource());
+                        //initScatterChartControls(numericColumns, numericColumns);
+                        drawScatterChart(xColumn, yColumns);
 		}
 
-	if (visualizations.indexOf("LineChart") != -1)
+	if (visType.indexOf("LineChart") != -1)
 		if (stringColumns.length > 0 && numericColumns.length > 0) // line
 		{
 			var view = new google.visualization.DataView(data);
@@ -78,7 +91,7 @@ function init(visualizations)
 			visualization.draw(view, options);
 		}
 
-	if (visualizations.indexOf("PieChart") != -1)
+	if (visType.indexOf("PieChart") != -1)
 		if (stringColumns.length > 0 && numericColumns.length > 0) // pie
 		{
 			var view = new google.visualization.DataView(data);
@@ -90,7 +103,7 @@ function init(visualizations)
 			visualization.draw(view, options);
 		}
 
-	if (visualizations.indexOf("Map") != -1)
+	if (visType.indexOf("Map") != -1)
 		if (latColumns.length > 0 && lngColumns.length > 1) // map
 		{
 			var view = new google.visualization.DataView(data);
@@ -120,9 +133,9 @@ function countColumns(data)
 	}
 }
 
-function drawTable()
+function drawTable(container)
 {
-	var table = new google.visualization.Table(document.getElementById('table'));
+	var table = new google.visualization.Table(container);
 	table.draw(data, { showRowNumber: true });
 }
 
@@ -140,17 +153,14 @@ function toggleScatterChart(show)
 	}
 }
 
-function initScatterChartControls(xColumns, yColumns)
+function initScatterChartControls(bindingElements, xColumns, yColumns)
 {
-	var xSelect = document.getElementById("scatter-chart-x-binding");
-	var ySelect = document.getElementById("scatter-chart-y-binding");
-
 	for (var i = 0; i < xColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(xColumns[i])));
 		option.setAttribute("value", xColumns[i]);
-		xSelect.appendChild(option);
+		bindingElements[0].appendChild(option);
 	}
 	for (var i = 0; i < yColumns.length; i++)
 	{
@@ -158,11 +168,11 @@ function initScatterChartControls(xColumns, yColumns)
 		option.appendChild(document.createTextNode(data.getColumnLabel(yColumns[i])));
 		option.setAttribute("value", yColumns[i]);
 		option.setAttribute("selected", "selected");
-		ySelect.appendChild(option);
+		bindingElements[1].appendChild(option);
 	}
 }
 
-function drawScatterChart(xColumn, yColumns)
+function drawScatterChart(container, xColumn, yColumns)
 {
 //alert(xColumn);
 //alert(yColumns.toSource());
@@ -175,37 +185,33 @@ function drawScatterChart(xColumn, yColumns)
 	var options = new Array();
 	options["titleX"] = data.getColumnLabel(columns[0]);
 	options["titleY"] = data.getColumnLabel(columns[1]);
-	scatterChart.draw(view, options);
+	container.draw(view, options);
 }
 
-function initLineChartControls(labelColumns, valueColumns)
+function initLineChartControls(bindingElements, labelColumns, valueColumns)
 {
-	var labelSelect = document.getElementById("line-chart-label-binding");
-	var valueSelect = document.getElementById("line-chart-value-binding");
-
 	for (var i = 0; i < labelColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		labelSelect.appendChild(option);
+		bindingElements[0].appendChild(option);
 	}
 	for (var i = 0; i < valueColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
 		option.setAttribute("selected", "selected");
-		valueSelect.appendChild(option);
+		bindingElements[1].appendChild(option);
 	}
 }
 
-function drawLineChart(labelColumn, valueColumns)
+function drawLineChart(container, labelColumn, valueColumns)
 {
 	var view = new google.visualization.DataView(data);
 	var columns = new Array();
 	columns[0] = labelColumn;
 	columns = columns.concat(valueColumns);
 	view.setColumns(columns);
-	var container = document.getElementById("line-chart");
 	var visualization = new google.visualization.LineChart(container);
 	var options = new Array();
 	options["titleX"] = data.getColumnLabel(columns[0]);
@@ -213,63 +219,55 @@ function drawLineChart(labelColumn, valueColumns)
 	visualization.draw(view, options);
 }
 
-function initPieChartControls(labelColumns, valueColumns)
+function initPieChartControls(bindingElements, labelColumns, valueColumns)
 {
-	var labelSelect = document.getElementById("pie-chart-label-binding");
-	var valueSelect = document.getElementById("pie-chart-value-binding");
-
 	for (var i = 0; i < labelColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		labelSelect.appendChild(option);
+		bindingElements[0].appendChild(option);
 	}
 	for (var i = 0; i < valueColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
 		//option.setAttribute("selected", "selected");
-		valueSelect.appendChild(option);
+		bindingElements[1].appendChild(option);
 	}
 }
 
-function drawPieChart(labelColumn, valueColumn)
+function drawPieChart(container, labelColumn, valueColumn)
 {
 	var view = new google.visualization.DataView(data);
 	var columns = new Array(labelColumn, valueColumn);
 	view.setColumns(columns);
-	var container = document.getElementById("pie-chart");
 	var visualization = new google.visualization.PieChart(container);
 	var options = new Array();
 	visualization.draw(view, options);
 }
 
-function initMapControls(latColumns, lngColumns)
+function initMapControls(bindingElements, latColumns, lngColumns)
 {
-	var latSelect = document.getElementById("map-lat-binding");
-	var lngSelect = document.getElementById("map-lng-binding");
-
 	for (var i = 0; i < latColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(latColumns[i])));
-		latSelect.appendChild(option);
+		bindingElements[0].appendChild(option);
 	}
 	for (var i = 0; i < lngColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(lngColumns[i])));
 		//option.setAttribute("selected", "selected");
-		lngSelect.appendChild(option);
+		bindingElements[1].appendChild(option);
 	}
 }
 
-function drawMap(latColumn, lngColumn)
+function drawMap(container, latColumn, lngColumn)
 {
 	var view = new google.visualization.DataView(data);
 	var columns = new Array(latColumn, lngColumn);
 	view.setColumns(columns);
-	var container = document.getElementById("map");
 	var visualization = new google.visualization.Map(container);
 	var options = new Array();
 	visualization.draw(view, options);

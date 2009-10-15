@@ -26,6 +26,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="view"/>
 
 	<xsl:variable name="resource" select="/"/>
+<xsl:key name="variable-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
 
 	<xsl:template match="sparql:sparql">
 		<html xmlns="http://www.w3.org/1999/xhtml"> <!-- xml:base="{$base_url}" -->
@@ -60,12 +61,42 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 
 			</head>
 			<body>
-                <xsl:if test="$view = 'frontend.view.report.ReportReadView'">
-					<xsl:attribute name="onload">init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if>
-					</xsl:for-each>]);</xsl:attribute>
-				</xsl:if>
+
+                <xsl:if test="$view = 'frontend.view.report.ReportReadView' or $view = 'frontend.view.report.ReportUpdateView'">
+					<xsl:attribute name="onload">
+            <xsl:for-each select="document('arg://visualizations')//sparql:result">
+                <xsl:text>init(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-visualization'), '</xsl:text>
+                <xsl:value-of select="sparql:binding[@name = 'visualization']/sparql:uri"/>
+                <xsl:text>', '</xsl:text>
+                <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                <xsl:text>', [</xsl:text>
+                    <xsl:for-each select="key('variable-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, document('arg://variables'))">
+                        <xsl:text>{ type: '</xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
+                        <xsl:text>', value: </xsl:text>
+                        <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
+                        <xsl:text> }</xsl:text>
+                        <xsl:if test="position() != last()">,</xsl:if>
+                    </xsl:for-each>
+                <xsl:text>]);</xsl:text>
+            </xsl:for-each>
+                                        </xsl:attribute>
+<!-- <xsl:copy-of select="key('variable-by-visualization', 'http://temp.com/visualization/123', document('arg://variables'))"/> -->
+
+                                </xsl:if>
                 <xsl:if test="$view = 'frontend.view.report.ReportCreateView'">
-					<xsl:attribute name="onload">initEmpty();</xsl:attribute>
+                                    <xsl:attribute name="onload">
+            <xsl:for-each select="document('arg://visualization-types')//sparql:result">
+                <xsl:text>initEmpty(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-visualization'), '</xsl:text>
+                <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                <xsl:text>', [</xsl:text>
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding')</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>]);</xsl:text>
+            </xsl:for-each>
+                                    </xsl:attribute>
 				</xsl:if>
 
 				<h1>

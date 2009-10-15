@@ -31,6 +31,8 @@ exclude-result-prefixes="#all">
 	<xsl:param name="report-id"/>
 	<xsl:param name="report-uri" select="concat('http://localhost:8084/semantic-reports/reports/', $report-id)"/>
 
+<xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
+
 	<xsl:template name="title">
 		Create report
 	</xsl:template>
@@ -43,6 +45,7 @@ exclude-result-prefixes="#all">
                         <xsl:copy-of select="document('arg://visualization-types')"/>
 			<xsl:copy-of select="document('arg://report')"/>
                         -->
+                        <xsl:copy-of select="document('arg://binding-types')"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
@@ -66,12 +69,6 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pu" value="&rep;query"/>
 <!-- <input type="hidden" name="ob" value="query"/> -->
 <input type="hidden" name="ou" value="http://temp.com/query/123"/>
-<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ou" value="&vis;ScatterChartXBinding"/>
-<input type="hidden" name="su" value="http://temp.com/ybinding/123"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ou" value="&vis;ScatterChartYBinding"/>
 
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="http://temp.com/query/123"/>
@@ -129,8 +126,6 @@ exclude-result-prefixes="#all">
 				<fieldset>
 					<legend>Visualizations</legend>
 					<ul>
-						<xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type"/>
-						
 						<!--
 						<li>
 							<input type="checkbox" id="table-option" name="visualization" value="table" checked="checked"/>
@@ -153,112 +148,16 @@ exclude-result-prefixes="#all">
 							<label for="map-option">Map</label>
 						</li>
 						-->
-					</ul>
+                                                <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-item"/>
+                                        </ul>
 				</fieldset>
 
-		<div id="table"></div>
-
-				<fieldset id="scatter-chart-controls">
-					<legend>Scatter chart</legend>
-					<p>
-
-<input type="hidden" name="su" value="{$report-uri}"/>
-<input type="hidden" name="pu" value="&rep;visualizedBy"/>
-<!-- <input type="hidden" name="ob" value="vis"/> -->
-<input type="hidden" name="ou" value="http://temp.com/visualization/123"/>
-
-<!-- <input type="hidden" name="sb" value="vis"/> -->
-<input type="hidden" name="su" value="http://temp.com/visualization/123"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ov" value="ScatterChart"/>
-<input type="hidden" name="pv" value="binding"/>
-<input type="hidden" name="ou" value="http://temp.com/xbinding/123"/>
-<input type="hidden" name="pv" value="binding"/>
-<input type="hidden" name="ou" value="http://temp.com/ybinding/123"/>
-
-<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
-<input type="hidden" name="pv" value="variableName"/>
-<input type="hidden" name="lt" value="&xsd;string"/>
-
-						<label for="scatter-chart-x-binding">X binding</label>
-						<select id="scatter-chart-x-binding" name="ol" onchange="drawScatterChart(getSelectedValues(this)[0], getSelectedValues(document.getElementById('scatter-chart-y-binding')));">
-							<!-- filled out in JavaScript -->
-						</select>
-						<label for="scatter-chart-y-binding">Y bindings</label>
-<input type="hidden" name="su" value="http://temp.com/ybinding/123"/>
-<input type="hidden" name="pv" value="variableName"/>
-<input type="hidden" name="lt" value="&xsd;string"/>
-
-						<select id="scatter-chart-y-binding" name="ol" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
-							<!-- filled out in JavaScript -->
-						</select>
-						<!--
-						<input type="hidden" name="visualization" value="scatter-chart"/>
-						<button type="submit" name="action" value="update">Update</button>
-						-->
-					</p>
-				</fieldset>
-
-		<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
-
-				<fieldset>
-					<legend>Line chart</legend>
-					<p>
-						<label for="line-chart-label-binding">Label binding</label>
-						<select id="line-chart-label-binding" name="line-chart-label-binding">
-							<!-- filled out in JavaScript -->
-						</select>
-						<label for="line-chart-value-binding">Value bindings</label>
-						<select id="line-chart-value-binding" name="line-chart-value-binding" multiple="multiple">
-							<!-- filled out in JavaScript -->
-						</select>
-						<input type="hidden" name="visualization" value="line-chart"/>
-						<button type="submit" name="action" value="update">Update</button>
-					</p>
-				</fieldset>
-
-		<div id="line-chart" style="width: 800px; height: 400px;"></div>
-
-				<fieldset>
-					<legend>Pie chart</legend>
-					<p>
-						<label for="pie-chart-label-binding">Label binding</label>
-						<select id="pie-chart-label-binding" name="pie-chart-label-binding">
-							<!-- filled out in JavaScript -->
-						</select>
-						<label for="pie-chart-value-binding">Value binding</label>
-						<select id="pie-chart-value-binding" name="pie-chart-value-binding">
-							<!-- filled out in JavaScript -->
-						</select>
-						<input type="hidden" name="visualization" value="pie-chart"/>
-						<button type="submit" name="action" value="update">Update</button>
-					</p>
-				</fieldset>
-
-		<div id="pie-chart" style="width: 800px; height: 400px;"></div>
-
-				<fieldset>
-					<legend>Map</legend>
-					<p>
-						<label for="map-lat-binding">Latitude binding</label>
-						<select id="map-lat-binding" name="map-lat-binding">
-							<!-- filled out in JavaScript -->
-						</select>
-						<label for="map-lng-binding">Longitude binding</label>
-						<select id="map-lng-binding" name="map-lng-binding">
-							<!-- filled out in JavaScript -->
-						</select>
-						<input type="hidden" name="visualization" value="map"/>
-						<button type="submit" name="action" value="update">Update</button>
-					</p>
-				</fieldset>
-
-		<div id="map" style="width: 800px; height: 400px;"></div>
+                                <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-fieldset"/>
 			</form>
 		</div>
 	</xsl:template>
 
-	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type">
+	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
 		<li>
 			<input type="checkbox" id="{generate-id()}-option" name="visualization" value="{sparql:binding[@name = 'type']/sparql:uri}" checked="checked"/>
 			<label for="{generate-id()}-option">
@@ -266,5 +165,78 @@ exclude-result-prefixes="#all">
 			</label>
 		</li>
 	</xsl:template>
+
+        <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-fieldset">
+                <fieldset id="scatter-chart-controls">
+                        <legend>
+                            <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
+                        </legend>
+                        <p>
+<!-- <xsl:copy-of select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))"/> -->
+<xsl:variable name="visualization-uri" select="concat('http://temp.com/visualization/', generate-id())"/>
+
+<input type="hidden" name="su" value="{$report-uri}"/>
+<input type="hidden" name="pu" value="&rep;visualizedBy"/>
+<input type="hidden" name="ou" value="{$visualization-uri}"/>
+
+<input type="hidden" name="su" value="{$visualization-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+
+    <xsl:apply-templates select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))"  mode="binding-type-select">
+        <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
+    </xsl:apply-templates>
+
+<!--
+<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="&vis;ScatterChartXBinding"/>
+<input type="hidden" name="su" value="http://temp.com/ybinding/123"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="&vis;ScatterChartYBinding"/>
+
+<input type="hidden" name="su" value="http://temp.com/visualization/{generate-id()}"/>
+<input type="hidden" name="pv" value="binding"/>
+<input type="hidden" name="ou" value="http://temp.com/xbinding/123"/>
+
+<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
+<input type="hidden" name="pv" value="variableName"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+
+                                <label for="scatter-chart-x-binding">X binding</label>
+                                <select id="scatter-chart-x-binding" name="ol" onchange="drawScatterChart(getSelectedValues(this)[0], getSelectedValues(document.getElementById('scatter-chart-y-binding')));">
+                                </select>
+                                <label for="scatter-chart-y-binding">Y bindings</label>
+-->
+                        </p>
+                </fieldset>
+
+        <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
+        <xsl:param name="visualization-uri"/>
+
+<xsl:variable name="binding-uri" select="concat('http://temp.com/binding/', generate-id())"/>
+
+<input type="hidden" name="su" value="{$binding-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+
+<input type="hidden" name="su" value="{$visualization-uri}"/>
+<input type="hidden" name="pv" value="binding"/>
+<input type="hidden" name="ou" value="{$binding-uri}"/>
+
+<input type="hidden" name="su" value="{$binding-uri}"/>
+<input type="hidden" name="pv" value="variableName"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+
+        <label for="{generate-id()}-binding">
+            <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
+        </label>
+        <select id="{generate-id()}-binding" name="ol" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
+                <!-- filled out in JavaScript -->
+        </select>
+    </xsl:template>
 
 </xsl:stylesheet>

@@ -28,13 +28,30 @@ exclude-result-prefixes="#all">
 		<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 	</xsl:template>
 
+        <!--
+        <xsl:template name="onload">
+            init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]);
+        </xsl:template>
+        -->
+        
+        <xsl:template name="onload">
+            <xsl:for-each select="document('arg://visualizations')//sparql:result">init('<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>
+            {
+            <xsl:for-each select="document('arg://variables')//sparql:result[sparql:binding[@name = 'visualization']/sparql:uri = @current/sparql:binding[@name = 'visualization']/sparql:uri]">
+                <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
+                <xsl:if test="position() != last()">,</xsl:if>
+            </xsl:for-each>
+            }
+            );</xsl:for-each>
+        </xsl:template>
+
 	<xsl:template name="content">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
 			<!-- <xsl:copy-of select="document('arg://report')"/> -->
                         <!-- <xsl:copy-of select="document('arg://results')"/> -->
-			<!-- <xsl:copy-of select="document('arg://visualizations')"/> -->
+			<xsl:copy-of select="document('arg://visualizations')"/>
 			<xsl:copy-of select="document('arg://variables')"/>
 
 			<dl>

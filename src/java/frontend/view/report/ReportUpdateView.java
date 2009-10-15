@@ -34,7 +34,7 @@ public class ReportUpdateView extends ReportView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportUpdateView.xsl")));
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportCreateView.xsl")));
 
 	setReport(request, response);
 	setQueryResult(request, response);

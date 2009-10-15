@@ -43,6 +43,46 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/numericBinding -->
+
+    <owl:ObjectProperty rdf:about="numericBinding">
+        <rdfs:range rdf:resource="NumericBinding"/>
+        <rdfs:domain rdf:resource="Visualization"/>
+        <rdfs:subPropertyOf rdf:resource="binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/scatterChartXBinding -->
+
+    <owl:ObjectProperty rdf:about="scatterChartXBinding">
+        <rdfs:domain rdf:resource="ScatterChart"/>
+        <rdfs:range rdf:resource="ScatterChartXBinding"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/scatterChartYBinding -->
+
+    <owl:ObjectProperty rdf:about="scatterChartYBinding">
+        <rdfs:domain rdf:resource="ScatterChart"/>
+        <rdfs:range rdf:resource="ScatterChartYBinding"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/stringBinding -->
+
+    <owl:ObjectProperty rdf:about="stringBinding">
+        <rdfs:range rdf:resource="StringBinding"/>
+        <rdfs:domain rdf:resource="Visualization"/>
+        <rdfs:subPropertyOf rdf:resource="binding"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -92,6 +132,7 @@
     <!-- http://code.google.com/apis/visualization/LineChartLabelBinding -->
 
     <owl:Class rdf:about="LineChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="StringBinding"/>
     </owl:Class>
     
@@ -100,6 +141,7 @@
     <!-- http://code.google.com/apis/visualization/LineChartValueBinding -->
 
     <owl:Class rdf:about="LineChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
     </owl:Class>
     
@@ -117,6 +159,8 @@
     <!-- http://code.google.com/apis/visualization/MapLatBinding -->
 
     <owl:Class rdf:about="MapLatBinding">
+        <rdfs:label
+            >Latitude binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
     </owl:Class>
     
@@ -125,6 +169,8 @@
     <!-- http://code.google.com/apis/visualization/MapLngBinding -->
 
     <owl:Class rdf:about="MapLngBinding">
+        <rdfs:label
+            >Longitude binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
     </owl:Class>
     
@@ -150,6 +196,7 @@
     <!-- http://code.google.com/apis/visualization/PieChartLabelBinding -->
 
     <owl:Class rdf:about="PieChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="StringBinding"/>
     </owl:Class>
     
@@ -158,6 +205,7 @@
     <!-- http://code.google.com/apis/visualization/PieChartValueBinding -->
 
     <owl:Class rdf:about="PieChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
     </owl:Class>
     
@@ -175,6 +223,7 @@
     <!-- http://code.google.com/apis/visualization/ScatterChartXBinding -->
 
     <owl:Class rdf:about="ScatterChartXBinding">
+        <rdfs:label>X binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
     </owl:Class>
     
@@ -183,6 +232,7 @@
     <!-- http://code.google.com/apis/visualization/ScatterChartYBinding -->
 
     <owl:Class rdf:about="ScatterChartYBinding">
+        <rdfs:label>Y binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
     </owl:Class>
     
