@@ -3,7 +3,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
-SELECT *
+SELECT DISTINCT *
 {
 	?type	rdfs:subClassOf	vis:Visualization .
 	?type	rdfs:label	?label

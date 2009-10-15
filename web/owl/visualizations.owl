@@ -43,12 +43,72 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/lineChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="lineChartLabelBinding">
+        <rdfs:domain rdf:resource="LineChart"/>
+        <rdfs:range rdf:resource="LineChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/lineChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="lineChartValueBinding">
+        <rdfs:domain rdf:resource="LineChart"/>
+        <rdfs:range rdf:resource="LineChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/mapLatBinding -->
+
+    <owl:ObjectProperty rdf:about="mapLatBinding">
+        <rdfs:domain rdf:resource="Map"/>
+        <rdfs:range rdf:resource="MapLatBinding"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/mapLngBinding -->
+
+    <owl:ObjectProperty rdf:about="mapLngBinding">
+        <rdfs:domain rdf:resource="Map"/>
+        <rdfs:range rdf:resource="MapLngBinding"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://code.google.com/apis/visualization/numericBinding -->
 
     <owl:ObjectProperty rdf:about="numericBinding">
         <rdfs:range rdf:resource="NumericBinding"/>
         <rdfs:domain rdf:resource="Visualization"/>
         <rdfs:subPropertyOf rdf:resource="binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/pieChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="pieChartLabelBinding">
+        <rdfs:domain rdf:resource="PieChart"/>
+        <rdfs:range rdf:resource="PieChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/pieChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="pieChartValueBinding">
+        <rdfs:domain rdf:resource="PieChart"/>
+        <rdfs:range rdf:resource="PieChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="numericBinding"/>
     </owl:ObjectProperty>
     
 
