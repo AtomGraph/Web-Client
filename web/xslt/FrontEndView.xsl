@@ -63,7 +63,7 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 			<body>
 
                 <xsl:if test="$view = 'frontend.view.report.ReportReadView' or $view = 'frontend.view.report.ReportUpdateView'">
-					<xsl:attribute name="onload">
+					<xsl:attribute name="onload">countColumns(data);
             <xsl:for-each select="document('arg://visualizations')//sparql:result">
                 <xsl:text>init(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-visualization'), '</xsl:text>
                 <xsl:value-of select="sparql:binding[@name = 'visualization']/sparql:uri"/>
@@ -85,7 +85,7 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 
                                 </xsl:if>
                 <xsl:if test="$view = 'frontend.view.report.ReportCreateView'">
-                                    <xsl:attribute name="onload">
+                                    <xsl:attribute name="onload">countColumns(data); 
             <xsl:for-each select="document('arg://visualization-types')//sparql:result">
                 <xsl:text>initEmpty(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-visualization'), '</xsl:text>
                 <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>

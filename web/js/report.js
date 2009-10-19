@@ -1,18 +1,13 @@
-//google.setOnLoadCallback(ReportLoader.init);
+//google.setOnLoadCallback(countColumns(data));
 var data = new google.visualization.DataTable(table, 0.6);
 var stringColumns = new Array();
 var numericColumns = new Array();
 var dateColumns = new Array();
 var latColumns = new Array();
 var lngColumns = new Array();
-var scatterChart = null;
 
 function initEmpty(container, visType, bindings)
 {
-	scatterChart = new google.visualization.ScatterChart(container); // onLoad()
-
-	countColumns(data);
-
 	if (visType.indexOf("Table") != -1)
         {
             drawTable(container);
@@ -21,7 +16,7 @@ function initEmpty(container, visType, bindings)
             if (numericColumns.length > 1)
             {
                     initScatterChartControls(bindings, numericColumns, numericColumns);
-                    drawScatterChart(numericColumns[0], numericColumns); // duplicate
+                    drawScatterChart(container, numericColumns[0], numericColumns); // duplicate
             }
 	if (visType.indexOf("LineChart") != -1)
             if (stringColumns.length > 0 && numericColumns.length > 0)
@@ -49,8 +44,6 @@ function init(container, visUri, visType, variables)
 	//scatterChart = new google.visualization.ScatterChart(document.getElementById("scatter-chart")); // onLoad()
 	scatterChart = new google.visualization.ScatterChart(container); // onLoad()
     
-	countColumns(data);
-
 	if (visType.indexOf("Table") != -1)
 	{
 		var table = new google.visualization.Table(document.getElementById('table'));
@@ -70,7 +63,7 @@ function init(container, visUri, visType, variables)
                         }
 //alert(columns.toSource());
                         //initScatterChartControls(numericColumns, numericColumns);
-                        drawScatterChart(xColumn, yColumns);
+                        drawScatterChart(container, xColumn, yColumns);
 		}
 
 	if (visType.indexOf("LineChart") != -1)
@@ -83,7 +76,6 @@ function init(container, visUri, visType, variables)
 			columns = columns.concat(numericColumns);
 			//alert(numericColumns.toSource());
 			view.setColumns(columns);
-			var container = document.getElementById("line-chart");
 			var visualization = new google.visualization.LineChart(container);
 			var options = new Array();
 			options["titleX"] = data.getColumnLabel(columns[0]);
@@ -97,7 +89,6 @@ function init(container, visUri, visType, variables)
 			var view = new google.visualization.DataView(data);
 			var columns = new Array(stringColumns[0], numericColumns[1]);
 			view.setColumns(columns);
-			var container = document.getElementById("pie-chart");
 			var visualization = new google.visualization.PieChart(container);
 			var options = new Array();
 			visualization.draw(view, options);
@@ -109,7 +100,6 @@ function init(container, visUri, visType, variables)
 			var view = new google.visualization.DataView(data);
 			var columns = new Array(latColumns[0], lngColumns[1]);
 			view.setColumns(columns);
-			var container = document.getElementById("map");
 			var visualization = new google.visualization.Map(container);
 			var options = new Array();
 			visualization.draw(view, options);
@@ -182,10 +172,11 @@ function drawScatterChart(container, xColumn, yColumns)
 	columns[0] = xColumn;
 	columns = columns.concat(yColumns);
 	view.setColumns(columns);
-	var options = new Array();
+	var visualization = new google.visualization.ScatterChart(container);
+        var options = new Array();
 	options["titleX"] = data.getColumnLabel(columns[0]);
 	options["titleY"] = data.getColumnLabel(columns[1]);
-	container.draw(view, options);
+	visualization.draw(view, options);
 }
 
 function initLineChartControls(bindingElements, labelColumns, valueColumns)

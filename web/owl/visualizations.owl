@@ -143,6 +143,16 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/tableBinding -->
+
+    <owl:ObjectProperty rdf:about="tableBinding">
+        <rdfs:range rdf:resource="Binding"/>
+        <rdfs:domain rdf:resource="Table"/>
+        <rdfs:subPropertyOf rdf:resource="binding"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -309,6 +319,7 @@
     <!-- http://code.google.com/apis/visualization/Table -->
 
     <owl:Class rdf:about="Table">
+        <rdfs:label>Table</rdfs:label>
         <rdfs:subClassOf rdf:resource="Visualization"/>
     </owl:Class>
     

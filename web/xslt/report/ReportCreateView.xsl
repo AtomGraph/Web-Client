@@ -185,6 +185,7 @@ exclude-result-prefixes="#all">
 
     <xsl:apply-templates select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))"  mode="binding-type-select">
         <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
+        <xsl:with-param name="visualization" select="."/>
     </xsl:apply-templates>
 
 <!--
@@ -216,6 +217,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
         <xsl:param name="visualization-uri"/>
+        <xsl:param name="visualization"/>
 
 <xsl:variable name="binding-uri" select="concat('http://temp.com/binding/', generate-id())"/>
 
