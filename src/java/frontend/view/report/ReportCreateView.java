@@ -46,6 +46,7 @@ public class ReportCreateView extends FrontEndView
 	if (request.getAttribute("query-result") != null)
 	{
             setReport(request, response);
+            setVisualizations(request, response);
 
             getResolver().setArgument("results", (String) request.getAttribute("query-results"));
 	    getTransformer().setParameter("query-result", true);
@@ -91,6 +92,27 @@ public class ReportCreateView extends FrontEndView
 	} catch (IOException ex)
 	{
 	    Logger.getLogger(ReportCreateView.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    protected void setVisualizations(HttpServletRequest request, HttpServletResponse response)
+    {
+	try
+	{
+            Model model = (Model)request.getAttribute("report-model");
+            String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
+
+	    String visualizations = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), reportId));
+	    String variables = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/variables.rq"), reportId));
+
+	    getResolver().setArgument("visualizations", visualizations);
+	    getResolver().setArgument("variables", variables);
+        } catch (FileNotFoundException ex)
+	{
+	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex)
+	{
+	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
 

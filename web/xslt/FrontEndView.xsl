@@ -94,7 +94,7 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
                     <xsl:text>document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding')</xsl:text>
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
-                <xsl:text>]);</xsl:text>
+                <xsl:text>], numericColumns);</xsl:text>
             </xsl:for-each>
                                     </xsl:attribute>
 				</xsl:if>

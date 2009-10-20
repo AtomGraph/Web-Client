@@ -184,7 +184,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
 
     <xsl:apply-templates select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))"  mode="binding-type-select">
-        <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
+        <!-- <xsl:with-param name="visualization-uri" select="$visualization-uri"/> -->
         <xsl:with-param name="visualization" select="."/>
     </xsl:apply-templates>
 
@@ -216,8 +216,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
-        <xsl:param name="visualization-uri"/>
         <xsl:param name="visualization"/>
+<xsl:variable name="visualization-uri" select="concat('http://temp.com/visualization/', generate-id($visualization))"/>
 
 <xsl:variable name="binding-uri" select="concat('http://temp.com/binding/', generate-id())"/>
 
@@ -237,6 +237,21 @@ exclude-result-prefixes="#all">
             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
         </label>
         <select id="{generate-id()}-binding" name="ol" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
+            <xsl:attribute name="onchange">
+drawScatterChart(document.getElementById('<xsl:value-of select="generate-id($visualization)"/>-visualization'), getSelectedValues(this));
+</xsl:attribute>
+<!--
+                                <xsl:text>[</xsl:text>
+                    <xsl:for-each select="key('variable-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, document('arg://variables'))">
+                        <xsl:text>{ type: '</xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
+                        <xsl:text>', value: </xsl:text>
+                        <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
+                        <xsl:text> }</xsl:text>
+                        <xsl:if test="position() != last()">,</xsl:if>
+                    </xsl:for-each>
+                <xsl:text>]);</xsl:text>
+-->
                 <!-- filled out in JavaScript -->
         </select>
     </xsl:template>

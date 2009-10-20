@@ -6,7 +6,7 @@ var dateColumns = new Array();
 var latColumns = new Array();
 var lngColumns = new Array();
 
-function initEmpty(container, visType, bindings)
+function initEmpty(container, visType, bindings, columns)
 {
 	if (visType.indexOf("Table") != -1)
         {
@@ -16,7 +16,7 @@ function initEmpty(container, visType, bindings)
             if (numericColumns.length > 1)
             {
                     initScatterChartControls(bindings, numericColumns, numericColumns);
-                    drawScatterChart(container, numericColumns[0], numericColumns); // duplicate
+                    drawScatterChart(container, columns); // duplicate
             }
 	if (visType.indexOf("LineChart") != -1)
             if (stringColumns.length > 0 && numericColumns.length > 0)
@@ -63,7 +63,7 @@ function init(container, visUri, visType, variables)
                         }
 //alert(columns.toSource());
                         //initScatterChartControls(numericColumns, numericColumns);
-                        drawScatterChart(container, xColumn, yColumns);
+                        drawScatterChart(container, variables);
 		}
 
 	if (visType.indexOf("LineChart") != -1)
@@ -162,15 +162,17 @@ function initScatterChartControls(bindingElements, xColumns, yColumns)
 	}
 }
 
-function drawScatterChart(container, xColumn, yColumns)
+function drawScatterChart(container, columns)
 {
 //alert(xColumn);
 //alert(yColumns.toSource());
 
 	var view = new google.visualization.DataView(data);
-	var columns = new Array();
+	/*
+        var columns = new Array();
 	columns[0] = xColumn;
 	columns = columns.concat(yColumns);
+        */
 	view.setColumns(columns);
 	var visualization = new google.visualization.ScatterChart(container);
         var options = new Array();
@@ -269,7 +271,7 @@ function getSelectedValues(select)
 	var selectedValues = new Array();
 
 	for (var i = 0; i < select.options.length; i++)
-		if (select.options[i].selected) selectedValues.push(Number(select.options[i].value));
+            if (select.options[i].selected) selectedValues.push(Number(select.options[i].value));
 
 	return selectedValues;
 }
