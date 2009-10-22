@@ -8,7 +8,7 @@ package controller;
 import frontend.controller.form.RDFForm;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ import org.apache.commons.io.IOUtils;
 public class PostRequestWrapper extends HttpServletRequestWrapper
 {
     private String queryString = null;
-    Map paramMap = new Hashtable<String, String>();
+    Map paramMap = new HashMap<String, String>();
     
     public PostRequestWrapper(HttpServletRequest request)
     {
@@ -60,7 +60,7 @@ public class PostRequestWrapper extends HttpServletRequestWrapper
     private Map processParameters(String queryString)
     {
 	String[] params = queryString.split("&");
-        Hashtable<String, String> map = new Hashtable<String, String>();
+        HashMap<String, String> map = new HashMap<String, String>();
 
 	for (String param : params)
 	{

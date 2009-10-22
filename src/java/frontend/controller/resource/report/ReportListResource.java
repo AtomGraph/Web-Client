@@ -6,16 +6,15 @@
 package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import controller.PostRequestWrapper;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
-import frontend.controller.form.RDFForm;
 import frontend.controller.form.ReportRDFForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
 import frontend.view.report.ReportListView;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Calendar;
@@ -25,7 +24,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.*;
-import org.apache.commons.io.IOUtils;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
@@ -91,35 +89,21 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
 	    view = new ReportListView(this);
 
-            String requestBody = getRequestBody(request);
-            request.setAttribute("request-body", requestBody);
-	    /*
-            // can't use request.getParameter() -- destroys request input stream
+            request = new PostRequestWrapper(request); // IMPORTANT! otherwise one can only use request.getParameter() OR request.getInputStream(
+
+            if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
+
             if (request.getParameter("action") != null && request.getParameter("action").equals("query")) query(request, response);
             if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
-            */
+            /*
 	    if (requestBody.contains("view=create")) view = new ReportCreateView(this);
 
             if (requestBody.contains("action=query")) query(request, response);
             if (requestBody.contains("action=save")) save(request, response);
+            */
         }
 
 	return view;
-    }
-
-    private String getRequestBody(HttpServletRequest request)
-    {
-        String body = null;
-        StringWriter writer = new StringWriter();
-        try
-        {
-            //IOUtils.copy(request.getInputStream(), writer);
-            IOUtils.copy(request.getReader(), writer);
-            body = writer.toString();
-        } catch (IOException ex) {
-            Logger.getLogger(RDFForm.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return body;
     }
 
     private void query(HttpServletRequest request, HttpServletResponse response)
