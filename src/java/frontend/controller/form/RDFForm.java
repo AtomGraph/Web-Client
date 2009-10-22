@@ -17,10 +17,15 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import controller.ResourceMapping;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Form;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import model.Namespaces;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -44,7 +49,24 @@ public class RDFForm extends Form
 
     private void initParamMap(HttpServletRequest request)
     {
-	String queryString = request.getQueryString();
+	String queryString = null;
+        if (request.getMethod().equalsIgnoreCase("get")) queryString = request.getQueryString();
+        if (request.getMethod().equalsIgnoreCase("post"))
+        {
+            queryString = (String)request.getAttribute("request-body");
+            /*
+            StringWriter writer = new StringWriter();
+            try
+            {
+                //IOUtils.copy(request.getInputStream(), writer);
+                IOUtils.copy(request.getReader(), writer);
+                queryString = writer.toString();
+            } catch (IOException ex) {
+                Logger.getLogger(RDFForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             */
+        }
+
 	String[] params = queryString.split("&");
 
 	for (String param : params)

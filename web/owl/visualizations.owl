@@ -71,6 +71,16 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/mapLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="mapLabelBinding">
+        <rdfs:domain rdf:resource="Map"/>
+        <rdfs:range rdf:resource="MapLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://code.google.com/apis/visualization/mapLatBinding -->
 
     <owl:ObjectProperty rdf:about="mapLatBinding">

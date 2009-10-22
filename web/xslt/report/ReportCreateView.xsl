@@ -47,7 +47,7 @@ exclude-result-prefixes="#all">
                         -->
                         <xsl:copy-of select="document('arg://binding-types')"/>
 
-			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
+			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
 					<input type="hidden" name="view" value="create"/>
                                         <input type="hidden" name="report-id" value="{$report-id}"/>
