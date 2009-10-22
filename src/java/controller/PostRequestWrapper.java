@@ -85,4 +85,9 @@ public class PostRequestWrapper extends HttpServletRequestWrapper
         this.paramMap = paramMap;
     }
 
+    @Override
+    public String getParameter(String name)
+    {
+        return (String)getParameterMap().get(name);
+    }
 }

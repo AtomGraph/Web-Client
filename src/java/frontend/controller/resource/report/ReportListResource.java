@@ -89,8 +89,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
 	    view = new ReportListView(this);
 
-            request = new PostRequestWrapper(request); // IMPORTANT! otherwise one can only use request.getParameter() OR request.getInputStream(
-
             if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
 
             if (request.getParameter("action") != null && request.getParameter("action").equals("query")) query(request, response);

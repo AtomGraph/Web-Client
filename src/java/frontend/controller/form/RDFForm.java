@@ -49,24 +49,7 @@ public class RDFForm extends Form
 
     private void initParamMap(HttpServletRequest request)
     {
-	String queryString = null;
-        if (request.getMethod().equalsIgnoreCase("get")) queryString = request.getQueryString();
-        if (request.getMethod().equalsIgnoreCase("post"))
-        {
-            queryString = (String)request.getAttribute("request-body");
-            /*
-            StringWriter writer = new StringWriter();
-            try
-            {
-                //IOUtils.copy(request.getInputStream(), writer);
-                IOUtils.copy(request.getReader(), writer);
-                queryString = writer.toString();
-            } catch (IOException ex) {
-                Logger.getLogger(RDFForm.class.getName()).log(Level.SEVERE, null, ex);
-            }
-             */
-        }
-
+	String queryString = request.getQueryString();
 	String[] params = queryString.split("&");
 
 	for (String param : params)
@@ -79,8 +62,6 @@ public class RDFForm extends Form
 
 	    keys.add(key);
 	    values.add(value);
-	    //model.createResource(param)
-	    //model.set
 	}	
     }
     

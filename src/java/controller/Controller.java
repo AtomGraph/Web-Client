@@ -30,7 +30,9 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         //System.out.println("Character encoding: " + request.getCharacterEncoding());
         request.setCharacterEncoding("UTF-8");
 	setHost(request, response);
-	
+
+        if (request.getMethod().equalsIgnoreCase("post")) request = new PostRequestWrapper(request); // IMPORTANT! otherwise one can only use request.getParameter() OR request.getInputStream(
+
         super.process(request, response);
 
         //if (request.getAttribute("uri").equals("")) response.sendRedirect("s%C3%B8gning"); // make groups the default view
