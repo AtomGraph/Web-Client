@@ -91,7 +91,18 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
                 <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                 <xsl:text>', [</xsl:text>
                 <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>{ 'element' :</xsl:text>
                     <xsl:text>document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding')</xsl:text>
+                    <xsl:text>, 'bindingType' : '</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>' }</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>], [</xsl:text>
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>'</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>'</xsl:text>
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
                 <xsl:text>], numericColumns);</xsl:text>

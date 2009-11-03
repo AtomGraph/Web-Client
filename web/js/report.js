@@ -6,7 +6,7 @@ var dateColumns = new Array();
 var latColumns = new Array();
 var lngColumns = new Array();
 
-function initEmpty(container, visType, bindings, columns)
+function initEmpty(container, visType, bindingElements, bindings, columns)
 {
 	if (visType.indexOf("Table") != -1)
         {
@@ -15,19 +15,19 @@ function initEmpty(container, visType, bindings, columns)
 	if (visType.indexOf("ScatterChart") != -1)
             if (numericColumns.length > 1)
             {
-                    initScatterChartControls(bindings, numericColumns, numericColumns);
+                    initScatterChartControls(bindingElements, numericColumns, numericColumns);
                     drawScatterChart(container, columns); // duplicate
             }
 	if (visType.indexOf("LineChart") != -1)
             if (stringColumns.length > 0 && numericColumns.length > 0)
             {
-                    initLineChartControls(bindings, stringColumns, numericColumns);
+                    initLineChartControls(bindingElements, stringColumns, numericColumns);
                     drawLineChart(container, stringColumns[0], numericColumns);
             }
 	if (visType.indexOf("PieChart") != -1)
             if (stringColumns.length > 0 && numericColumns.length > 0)
             {
-                    initPieChartControls(bindings, stringColumns, numericColumns);
+                    initPieChartControls(bindingElements, stringColumns, numericColumns);
                     drawPieChart(container, stringColumns[0], numericColumns[0]);
             }
 	if (visType.indexOf("Map") != -1)
@@ -108,18 +108,21 @@ function init(container, visUri, visType, variables)
 
 function countColumns(data)
 {
+        var columns = new Array();
+        
 	for (var i = 0; i < data.getNumberOfColumns(); i++)
 	{
-		if (data.getColumnType(i) == "string") stringColumns.push(i);
-		if (data.getColumnType(i) == "number") numericColumns.push(i);
-		if (data.getColumnType(i) == "date") dateColumns.push(i);
-		stringColumns = stringColumns.concat(dateColumns); // date columns also treated as strings
-	}
-	for (var i = 0; i < numericColumns.length; i++) // lat/lng columns
-	{
-		var range = data.getColumnRange(numericColumns[i]);
-		if (range.min >= -90 && range.max <= 90) latColumns.push(numericColumns[i]);
-		if (range.min >= -180 && range.max <= 180) lngColumns.push(numericColumns[i]);
+            var types = [ data.getColumnType(i) ];
+            if (data.getColumnType(i) == "date") types.push("string"); // date columns also treated as strings
+            if (data.getColumnType(i) == "number") // lat/lng columns
+            {
+		var range = data.getColumnRange(i);
+		if (range.min >= -90 && range.max <= 90) types.push("lat");
+		if (range.min >= -180 && range.max <= 180) types.push("lng");
+            }
+
+            var column = { "index" : i, "types" : types };
+            columns.push(column);
 	}
 }
 
@@ -150,7 +153,7 @@ function initScatterChartControls(bindingElements, xColumns, yColumns)
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(xColumns[i])));
 		option.setAttribute("value", xColumns[i]);
-		bindingElements[0].appendChild(option);
+		bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < yColumns.length; i++)
 	{
@@ -158,7 +161,7 @@ function initScatterChartControls(bindingElements, xColumns, yColumns)
 		option.appendChild(document.createTextNode(data.getColumnLabel(yColumns[i])));
 		option.setAttribute("value", yColumns[i]);
 		option.setAttribute("selected", "selected");
-		bindingElements[1].appendChild(option);
+		bindingElements[1].element.appendChild(option);
 	}
 }
 
@@ -187,14 +190,14 @@ function initLineChartControls(bindingElements, labelColumns, valueColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		bindingElements[0].appendChild(option);
+		bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < valueColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
 		option.setAttribute("selected", "selected");
-		bindingElements[1].appendChild(option);
+		bindingElements[1].element.appendChild(option);
 	}
 }
 
@@ -218,14 +221,14 @@ function initPieChartControls(bindingElements, labelColumns, valueColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		bindingElements[0].appendChild(option);
+		bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < valueColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
 		//option.setAttribute("selected", "selected");
-		bindingElements[1].appendChild(option);
+		bindingElements[1].element.appendChild(option);
 	}
 }
 
@@ -245,14 +248,14 @@ function initMapControls(bindingElements, latColumns, lngColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(latColumns[i])));
-		bindingElements[0].appendChild(option);
+		bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < lngColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(lngColumns[i])));
 		//option.setAttribute("selected", "selected");
-		bindingElements[1].appendChild(option);
+		bindingElements[1].element.appendChild(option);
 	}
 }
 
