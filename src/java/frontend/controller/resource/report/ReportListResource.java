@@ -109,6 +109,8 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	}
         catch (IOException ex)
 	{
+            errors.add(new Error("ioError"));
+
             view.setErrors(errors);
             view.setSuccessful(false);
 
