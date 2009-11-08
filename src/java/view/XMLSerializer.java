@@ -8,8 +8,8 @@
  */
 package view;
 
-import frontend.controller.form.ScatterChartForm;
 import java.io.StringWriter;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,8 +20,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import model.Namespaces;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import dk.semantic_web.diy.controller.Error;
 
 /**
  *
@@ -57,29 +59,33 @@ public class XMLSerializer
 	return result.getWriter().toString();
     }
 
-    public static String serialize(ScatterChartForm form) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+    public static String serialize(List<Error> errors) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
     {
 	XMLSerializer.init();
 
-	Document document = builder.newDocument();
+        Document document = builder.newDocument();
 
-	Element formElem = document.createElement(form.getClass().getSimpleName());
-	document.appendChild(formElem);
+	Element sparql = document.createElementNS(Namespaces.SPARQL_NS, "sparql:sparql");
+	document.appendChild(sparql);
 
-	if (form.getXBinding() != null)
-	{
-	    Element xBindingElem = document.createElement("XBinding");
-	    xBindingElem.appendChild(document.createTextNode(form.getXBinding()));
-	    formElem.appendChild(xBindingElem);
-	}
-	if (form.getYBinding() != null)
-	{
-	    Element yBindingElem = document.createElement("YBinding");
-	    for (String yBinding : form.getYBinding())
-		yBindingElem.appendChild(document.createTextNode(yBinding));
-	    formElem.appendChild(yBindingElem);
-	}
-	
+	Element results = document.createElementNS(Namespaces.SPARQL_NS, "sparql:results");
+	sparql.appendChild(results);
+
+	if (errors != null)
+	    for (Error error : errors)
+	    {
+		Element result = document.createElementNS(Namespaces.SPARQL_NS, "sparql:result");
+		results.appendChild(result);
+
+		Element binding = document.createElementNS(Namespaces.SPARQL_NS, "sparql:binding");
+		result.appendChild(binding);
+		binding.setAttribute("name", "error");
+
+		Element uri = document.createElementNS(Namespaces.SPARQL_NS, "sparql:uri");
+		binding.appendChild(uri);
+		uri.appendChild(document.createTextNode(error.getURI()));
+	    }
+
 	return serialize(document);
     }
 

@@ -11,6 +11,7 @@ import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +23,8 @@ import model.SDB;
 import view.FormResultView;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
+import view.XMLSerializer;
+import dk.semantic_web.diy.controller.Error;
 
 /**
  *
@@ -30,6 +33,7 @@ import view.QueryXMLResult;
 public class ReportCreateView extends FrontEndView implements FormResultView
 {
     private Form form = null;
+    private List<Error> errors = null;
     private boolean successful;
     private String queryResults = null;
     private Model model = null;
@@ -55,9 +59,14 @@ public class ReportCreateView extends FrontEndView implements FormResultView
             setVisualizations(request, response);
 
             getResolver().setArgument("results", getQueryResults());
-	    getTransformer().setParameter("query-result", true);
+	    getTransformer().setParameter("query-result", "success");
 	    //getTransformer().setParameter("query-string", request.getParameter("query-string"));
 	}
+        else
+        {
+            getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
+            getTransformer().setParameter("query-result", "failure");
+        }
 
         UUID id = UUID.randomUUID();
         getTransformer().setParameter("report-id", String.valueOf(id));
@@ -158,6 +167,16 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     public void setModel(Model model)
     {
         this.model = model;
+    }
+
+    public List<Error> getErrors()
+    {
+        return errors;
+    }
+
+    public void setErrors(List<Error> errors)
+    {
+        this.errors = errors;
     }
 
 }

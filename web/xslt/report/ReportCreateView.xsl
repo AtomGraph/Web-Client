@@ -123,6 +123,16 @@ exclude-result-prefixes="#all">
 					<button type="submit" name="action" value="save">Save</button>
 				</p>
 
+                                <xsl:if test="$query-result = 'failure'">
+                                    <ul>
+                                        <xsl:for-each select="document('arg://query-errors')//sparql:binding">
+                                            <li>
+                                                <xsl:value-of select="."/>
+                                            </li>
+                                        </xsl:for-each>
+                                    </ul>
+                                </xsl:if>
+
                                 <xsl:if test="$query-result = 'success'">
                                     <fieldset>
                                             <legend>Visualizations</legend>

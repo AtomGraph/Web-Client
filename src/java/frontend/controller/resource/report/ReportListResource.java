@@ -104,14 +104,12 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
 	    String queryResults = QueryXMLResult.selectRemote(form.getEndpoint(), form.getQueryString());
 
-            //request.setAttribute("query-result", Boolean.TRUE);
             view.setQueryResults(queryResults);
             view.setSuccessful(true);
 	}
         catch (IOException ex)
 	{
-            //errors.add(new Error("invalidQuery"));
-            //request.setAttribute("query-result", Boolean.FALSE);
+            view.setErrors(errors);
             view.setSuccessful(false);
 
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
@@ -119,16 +117,13 @@ public class ReportListResource extends FrontEndResource implements Singleton
         catch (QueryException ex)
 	{
             errors.add(new Error("invalidQuery"));
-            //request.setAttribute("query-result", Boolean.FALSE);
+
+            view.setErrors(errors);
             view.setSuccessful(false);
 
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	
-	//request.setAttribute("query-results", queryResults);
-	//request.setAttribute("report-model", form.getModel());
-	//request.setAttribute("report-errors", errors);
-
         return view;
     }
     
