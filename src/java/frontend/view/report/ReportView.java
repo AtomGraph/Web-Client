@@ -39,7 +39,7 @@ public class ReportView extends FrontEndView
     {
         String endpointUri = getResource().getReport().getQuery().getEndpoint().toString();
         String queryString = getResource().getReport().getQuery().getQueryString();
-        String results = QueryXMLResult.queryRemote(endpointUri, queryString);
+        String results = QueryXMLResult.selectRemote(endpointUri, queryString);
 
 	//setDocument(results);
 

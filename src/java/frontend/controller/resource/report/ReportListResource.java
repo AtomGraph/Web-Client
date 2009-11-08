@@ -5,8 +5,9 @@
 
 package frontend.controller.resource.report;
 
+import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
-import controller.PostRequestWrapper;
+import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
@@ -19,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +40,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 {
     private static final String RELATIVE_URI = "reports";
     private static final ReportListResource INSTANCE = new ReportListResource(FrontPageResource.getInstance());
-    private View view = null;
+    //private View view = null;
     
     private ReportListResource(FrontPageResource parent)
     {
@@ -66,60 +68,68 @@ public class ReportListResource extends FrontEndResource implements Singleton
     public View doGet(HttpServletRequest request, HttpServletResponse response)
     {
 	View parent = super.doGet(request, response);
-	if (parent != null) view = parent;
-	else
-	{
-	    view = new ReportListView(this);
-	    
-	    if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
+	if (parent != null) return parent;
 
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("query")) query(request, response);
-            if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
-	}
+        if (isQueryAction(request)) return query(request, response);
+        if (isSaveAction(request)) save(request, response);
 
-	return view;
+        if (isCreateView(request)) return new ReportCreateView(this);
+
+	return new ReportListView(this);
     }
 
     @Override
     public View doPost(HttpServletRequest request, HttpServletResponse response)
     {
-	View parent = super.doGet(request, response);
-	if (parent != null) view = parent;
-	else
-	{
-	    view = new ReportListView(this);
+        View parent = super.doGet(request, response);
+	if (parent != null) return parent;
 
-            if (request.getParameter("view") != null && request.getParameter("view").equals("create")) view = new ReportCreateView(this);
+        if (isQueryAction(request)) return query(request, response);
+        if (isSaveAction(request)) save(request, response);
 
-            if (request.getParameter("action") != null && request.getParameter("action").equals("query")) query(request, response);
-            if (request.getParameter("action") != null && request.getParameter("action").equals("save")) save(request, response);
-            /*
-	    if (requestBody.contains("view=create")) view = new ReportCreateView(this);
+        if (isCreateView(request)) return new ReportCreateView(this);
 
-            if (requestBody.contains("action=query")) query(request, response);
-            if (requestBody.contains("action=save")) save(request, response);
-            */
-        }
-
-	return view;
+	return new ReportListView(this);
     }
 
-    private void query(HttpServletRequest request, HttpServletResponse response)
+    private ReportCreateView query(HttpServletRequest request, HttpServletResponse response)
     {
-	ReportRDFForm form = new ReportRDFForm(request);
+        ReportCreateView view = new ReportCreateView(this);
 
-	String queryResults = null;
+	ReportRDFForm form = new ReportRDFForm(request);
+        List<Error> errors = form.validate();
+        view.setForm(form);
+        
 	try
 	{
-	    queryResults = QueryXMLResult.queryRemote(form.getEndpoint(), form.getQueryString());
-	} catch (IOException ex)
+	    String queryResults = QueryXMLResult.selectRemote(form.getEndpoint(), form.getQueryString());
+
+            //request.setAttribute("query-result", Boolean.TRUE);
+            view.setQueryResults(queryResults);
+            view.setSuccessful(true);
+	}
+        catch (IOException ex)
 	{
+            //errors.add(new Error("invalidQuery"));
+            //request.setAttribute("query-result", Boolean.FALSE);
+            view.setSuccessful(false);
+
+	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+        catch (QueryException ex)
+	{
+            errors.add(new Error("invalidQuery"));
+            //request.setAttribute("query-result", Boolean.FALSE);
+            view.setSuccessful(false);
+
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	
-	request.setAttribute("query-results", queryResults);
-	request.setAttribute("report-model", form.getModel());
-	request.setAttribute("query-result", Boolean.TRUE);
+	//request.setAttribute("query-results", queryResults);
+	//request.setAttribute("report-model", form.getModel());
+	//request.setAttribute("report-errors", errors);
+
+        return view;
     }
     
     private void save(HttpServletRequest request, HttpServletResponse response)
@@ -173,4 +183,20 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	}
     }
     */
+
+    protected boolean isCreateView(HttpServletRequest request)
+    {
+        return (request.getParameter("view") != null && request.getParameter("view").equals("create"));
+    }
+
+    protected boolean isQueryAction(HttpServletRequest request)
+    {
+        return (request.getParameter("action") != null && request.getParameter("action").equals("query"));
+    }
+
+    protected boolean isSaveAction(HttpServletRequest request)
+    {
+        return (request.getParameter("action") != null && request.getParameter("action").equals("save"));
+    }
+
 }

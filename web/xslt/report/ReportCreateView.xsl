@@ -122,37 +122,17 @@ exclude-result-prefixes="#all">
 					<button type="submit" name="action" value="query">Query</button>
 					<button type="submit" name="action" value="save">Save</button>
 				</p>
-				
-				<fieldset>
-					<legend>Visualizations</legend>
-					<ul>
-						<!--
-						<li>
-							<input type="checkbox" id="table-option" name="visualization" value="table" checked="checked"/>
-							<label for="table-option">Table</label>
-						</li>
-						<li>
-							<input type="checkbox" id="scatter-chart-option" name="visualization" value="&vis;ScatterChart" onclick="toggleScatterChart(this.checked);"/>
-							<label for="scatter-chart-option">Scatter chart</label>
-						</li>
-						<li>
-							<input type="checkbox" id="line-chart-option" name="visualization" value="&vis;LineChart"/>
-							<label for="line-chart-option">Line chart</label>
-						</li>
-						<li>
-							<input type="checkbox" id="pie-chart-option" name="visualization" value="&vis;PieChart"/>
-							<label for="pie-chart-option">Pie chart</label>
-						</li>
-						<li>
-							<input type="checkbox" id="map-option" name="visualization" value="&vis;Map"/>
-							<label for="map-option">Map</label>
-						</li>
-						-->
-                                                <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-item"/>
-                                        </ul>
-				</fieldset>
 
-                                <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-fieldset"/>
+                                <xsl:if test="$query-result = 'success'">
+                                    <fieldset>
+                                            <legend>Visualizations</legend>
+                                            <ul>
+                                                    <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-item"/>
+                                            </ul>
+                                    </fieldset>
+
+                                    <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-fieldset"/>
+                                </xsl:if>
 			</form>
 		</div>
 	</xsl:template>
@@ -188,27 +168,6 @@ exclude-result-prefixes="#all">
         <xsl:with-param name="visualization" select="."/>
     </xsl:apply-templates>
 
-<!--
-<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ou" value="&vis;ScatterChartXBinding"/>
-<input type="hidden" name="su" value="http://temp.com/ybinding/123"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ou" value="&vis;ScatterChartYBinding"/>
-
-<input type="hidden" name="su" value="http://temp.com/visualization/{generate-id()}"/>
-<input type="hidden" name="pv" value="binding"/>
-<input type="hidden" name="ou" value="http://temp.com/xbinding/123"/>
-
-<input type="hidden" name="su" value="http://temp.com/xbinding/123"/>
-<input type="hidden" name="pv" value="variableName"/>
-<input type="hidden" name="lt" value="&xsd;string"/>
-
-                                <label for="scatter-chart-x-binding">X binding</label>
-                                <select id="scatter-chart-x-binding" name="ol" onchange="drawScatterChart(getSelectedValues(this)[0], getSelectedValues(document.getElementById('scatter-chart-y-binding')));">
-                                </select>
-                                <label for="scatter-chart-y-binding">Y bindings</label>
--->
                         </p>
                 </fieldset>
 

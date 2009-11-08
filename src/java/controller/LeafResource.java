@@ -9,6 +9,7 @@ package controller;
  *
  * @author Pumba
  */
-public interface LeafResource {
+public interface LeafResource
+{
 
 }

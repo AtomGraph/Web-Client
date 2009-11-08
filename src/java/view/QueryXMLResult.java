@@ -11,6 +11,7 @@ package view;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -33,7 +34,7 @@ public class QueryXMLResult
      @param model Model to be queried
      @param queryString SPARQL select string (formatted beforehand)
      */
-    public static String select(Model model, String queryString) throws IOException
+    public static String select(Model model, String queryString) throws IOException, QueryException
     {
 	String resultString = null;
         System.out.println("Query: " + queryString);
@@ -52,7 +53,7 @@ public class QueryXMLResult
         return resultString;
     }
 
-    public static String select(Dataset dataset, String queryString) throws IOException
+    public static String select(Dataset dataset, String queryString) throws IOException, QueryException
     {
 	String resultString = null;
         System.out.println("Query: " + queryString);
@@ -76,7 +77,7 @@ public class QueryXMLResult
         return ResultSetFormatter.asXMLString(results);
     }
     
-    public static String queryRemote(String endpointUri, String queryString) throws IOException
+    public static String selectRemote(String endpointUri, String queryString) throws IOException, QueryException
     {
 	String resultString = null;
         System.out.println("Query: " + queryString);

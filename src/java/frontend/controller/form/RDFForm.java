@@ -17,15 +17,10 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import controller.ResourceMapping;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Form;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import model.Namespaces;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -38,7 +33,8 @@ public class RDFForm extends Form
     //LinkedHashMap<String, String> paramMap = new LinkedHashMap<String, String>();
     List<String> keys = new ArrayList<String>();
     List<String> values = new ArrayList<String>();
-    
+    List<Error> errors = new ArrayList<Error>();
+
     public RDFForm(HttpServletRequest request)
     {
 	super(request);
@@ -153,7 +149,7 @@ public class RDFForm extends Form
     @Override
     public List<Error> validate()
     {
-	throw new UnsupportedOperationException("Not supported yet.");
+        return errors;
     }
 
 }

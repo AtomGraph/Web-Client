@@ -5,6 +5,7 @@
 package frontend.view.report;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import dk.semantic_web.diy.controller.Form;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import model.SDB;
+import view.FormResultView;
 import view.QueryStringBuilder;
 import view.QueryXMLResult;
 
@@ -25,9 +27,13 @@ import view.QueryXMLResult;
  *
  * @author Pumba
  */
-public class ReportCreateView extends FrontEndView
+public class ReportCreateView extends FrontEndView implements FormResultView
 {
-
+    private Form form = null;
+    private boolean successful;
+    private String queryResults = null;
+    private Model model = null;
+    
     public ReportCreateView(ReportListResource resource)
     {
 	super(resource);
@@ -43,12 +49,12 @@ public class ReportCreateView extends FrontEndView
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
         
-	if (request.getAttribute("query-result") != null)
+	if (isSuccessful())
 	{
             setReport(request, response);
             setVisualizations(request, response);
 
-            getResolver().setArgument("results", (String) request.getAttribute("query-results"));
+            getResolver().setArgument("results", getQueryResults());
 	    getTransformer().setParameter("query-result", true);
 	    //getTransformer().setParameter("query-string", request.getParameter("query-string"));
 	}
@@ -79,10 +85,9 @@ public class ReportCreateView extends FrontEndView
     {
 	try
 	{
-            Model model = (Model)request.getAttribute("report-model");
             String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
             
-	    String report = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), reportId));
+	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), reportId));
 	    setDocument(report);
 
 	    getResolver().setArgument("report", report);
@@ -99,10 +104,9 @@ public class ReportCreateView extends FrontEndView
     {
 	try
 	{
-            Model model = (Model)request.getAttribute("report-model");
             String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
 
-	    String visualizations = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), reportId));
+	    String visualizations = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), reportId));
 	    String variables = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/variables.rq"), reportId));
 
 	    getResolver().setArgument("visualizations", visualizations);
@@ -114,6 +118,46 @@ public class ReportCreateView extends FrontEndView
 	{
 	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
 	}
+    }
+
+    public Form getForm()
+    {
+        return form;
+    }
+
+    public void setForm(Form form)
+    {
+        this.form = form;
+    }
+
+    public boolean isSuccessful()
+    {
+        return successful;
+    }
+
+    public void setSuccessful(boolean successful)
+    {
+        this.successful = successful;
+    }
+
+    public String getQueryResults()
+    {
+        return queryResults;
+    }
+
+    public void setQueryResults(String queryResults)
+    {
+        this.queryResults = queryResults;
+    }
+
+    public Model getModel()
+    {
+        return model;
+    }
+
+    public void setModel(Model model)
+    {
+        this.model = model;
     }
 
 }
