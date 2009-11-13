@@ -104,6 +104,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
 	    String queryResults = QueryXMLResult.selectRemote(form.getEndpoint(), form.getQueryString());
 
+            view.setModel(form.getModel());
             view.setQueryResults(queryResults);
             view.setSuccessful(true);
 	}

@@ -1,10 +1,6 @@
 //google.setOnLoadCallback(countColumns(data));
 var data = new google.visualization.DataTable(table, 0.6);
-var stringColumns = new Array();
-var numericColumns = new Array();
-var dateColumns = new Array();
-var latColumns = new Array();
-var lngColumns = new Array();
+var typeColumns = new Array();
 
 function initEmpty(container, visType, bindingElements, bindings, columns)
 {
@@ -13,28 +9,28 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
             drawTable(container);
         }
 	if (visType.indexOf("ScatterChart") != -1)
-            if (numericColumns.length > 1)
+            if (typeColumns.number.length > 1)
             {
-                    initScatterChartControls(bindingElements, numericColumns, numericColumns);
+                    initScatterChartControls(bindingElements, typeColumns.number, typeColumns.number);
                     drawScatterChart(container, columns); // duplicate
             }
 	if (visType.indexOf("LineChart") != -1)
-            if (stringColumns.length > 0 && numericColumns.length > 0)
+            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    initLineChartControls(bindingElements, stringColumns, numericColumns);
-                    drawLineChart(container, stringColumns[0], numericColumns);
+                    initLineChartControls(bindingElements, typeColumns.string, typeColumns.number);
+                    drawLineChart(container, typeColumns.string[0], typeColumns.number);
             }
 	if (visType.indexOf("PieChart") != -1)
-            if (stringColumns.length > 0 && numericColumns.length > 0)
+            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    initPieChartControls(bindingElements, stringColumns, numericColumns);
-                    drawPieChart(container, stringColumns[0], numericColumns[0]);
+                    initPieChartControls(bindingElements, typeColumns.string, typeColumns.number);
+                    drawPieChart(container, typeColumns.string[0], typeColumns.number[0]);
             }
 	if (visType.indexOf("Map") != -1)
-            if (latColumns.length > 0 && lngColumns.length > 0)
+            if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             {
-                    initMapControls(bindings, latColumns, lngColumns);
-                    drawMap(container, latColumns[0], lngColumns[1]);
+                    initMapControls(bindingElements, typeColumns.lat, typeColumns.lng);
+                    drawMap(container, typeColumns.lat[0], typeColumns.lng[1]);
             }
 }
 
@@ -51,30 +47,30 @@ function init(container, visUri, visType, variables)
 	}
 
 	if (visType.indexOf("ScatterChart") != -1)
-		//if (numericColumns.length > 1) // scatter
+		//if (typeColumns.number.length > 1) // scatter
 		{
-			var xColumn = null; //numericColumns;
-                        var yColumns = new Array(); //numericColumns;
+			var xColumn = null; //typeColumns.number;
+                        var yColumns = new Array(); //typeColumns.number;
 
                         for (var i = 0; i < variables.length; i++)
                         {
                             if (variables[i].type == "http://code.google.com/apis/visualization/ScatterChartXBinding") xColumn = variables[i].value;
                             if (variables[i].type == "http://code.google.com/apis/visualization/ScatterChartYBinding") yColumns.push(variables[i].value);
                         }
-//alert(columns.toSource());
-                        //initScatterChartControls(numericColumns, numericColumns);
+//alert(typeColumns.toSource());
+                        //initScatterChartControls(typeColumns.number, typeColumns.number);
                         drawScatterChart(container, variables);
 		}
 
 	if (visType.indexOf("LineChart") != -1)
-		if (stringColumns.length > 0 && numericColumns.length > 0) // line
+		if (typeColumns.string.length > 0 && typeColumns.number.length > 0) // line
 		{
 			var view = new google.visualization.DataView(data);
 			var columns = new Array();
-			columns[0] = stringColumns[0];
+			columns[0] = typeColumns.string[0];
 			// alert(columns.toSource());
-			columns = columns.concat(numericColumns);
-			//alert(numericColumns.toSource());
+			columns = columns.concat(typeColumns.number);
+			//alert(typeColumns.number.toSource());
 			view.setColumns(columns);
 			var visualization = new google.visualization.LineChart(container);
 			var options = new Array();
@@ -84,10 +80,10 @@ function init(container, visUri, visType, variables)
 		}
 
 	if (visType.indexOf("PieChart") != -1)
-		if (stringColumns.length > 0 && numericColumns.length > 0) // pie
+		if (typeColumns.string.length > 0 && typeColumns.number.length > 0) // pie
 		{
 			var view = new google.visualization.DataView(data);
-			var columns = new Array(stringColumns[0], numericColumns[1]);
+			var columns = new Array(typeColumns.string[0], typeColumns.number[1]);
 			view.setColumns(columns);
 			var visualization = new google.visualization.PieChart(container);
 			var options = new Array();
@@ -95,10 +91,10 @@ function init(container, visUri, visType, variables)
 		}
 
 	if (visType.indexOf("Map") != -1)
-		if (latColumns.length > 0 && lngColumns.length > 1) // map
+		if (typeColumns.lat.length > 0 && typeColumns.lng.length > 1) // map
 		{
 			var view = new google.visualization.DataView(data);
-			var columns = new Array(latColumns[0], lngColumns[1]);
+			var columns = new Array(typeColumns.lat[0], typeColumns.lng[1]);
 			view.setColumns(columns);
 			var visualization = new google.visualization.Map(container);
 			var options = new Array();
@@ -108,22 +104,27 @@ function init(container, visUri, visType, variables)
 
 function countColumns(data)
 {
-        var columns = new Array();
+        typeColumns = { "string": [], "number": [], "date": [], "lat": [], "lng": [] };
         
 	for (var i = 0; i < data.getNumberOfColumns(); i++)
 	{
-            var types = [ data.getColumnType(i) ];
-            if (data.getColumnType(i) == "date") types.push("string"); // date columns also treated as strings
+            if (data.getColumnType(i) == "string") typeColumns.string.push(i);
+            if (data.getColumnType(i) == "date")
+            {
+                typeColumns.string.push(i); // date columns also treated as strings
+                typeColumns.date.push(i);
+            }
             if (data.getColumnType(i) == "number") // lat/lng columns
             {
+                typeColumns.number.push(i);
 		var range = data.getColumnRange(i);
-		if (range.min >= -90 && range.max <= 90) types.push("lat");
-		if (range.min >= -180 && range.max <= 180) types.push("lng");
+		if (range.min >= -90 && range.max <= 90) typeColumns.lat.push(i);
+		if (range.min >= -180 && range.max <= 180) typeColumns.lng.push(i);
             }
-
-            var column = { "index" : i, "types" : types };
-            columns.push(column);
 	}
+//alert(typeColumns.toSource());
+
+        //return typeColumns;
 }
 
 function drawTable(container)
