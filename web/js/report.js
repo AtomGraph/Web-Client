@@ -11,7 +11,7 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 	if (visType.indexOf("ScatterChart") != -1)
             if (typeColumns.number.length > 1)
             {
-                    initScatterChartControls(bindingElements, typeColumns.number, typeColumns.number);
+                    initScatterChartControls(bindingElements, columns);
                     drawScatterChart(container, columns); // duplicate
             }
 	if (visType.indexOf("LineChart") != -1)
@@ -147,41 +147,38 @@ function toggleScatterChart(show)
 	}
 }
 
-function initScatterChartControls(bindingElements, xColumns, yColumns)
+function initScatterChartControls(bindingElements, columns)
 {
-	for (var i = 0; i < xColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(xColumns[i])));
-		option.setAttribute("value", xColumns[i]);
-		bindingElements[0].element.appendChild(option);
-	}
-	for (var i = 0; i < yColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(yColumns[i])));
-		option.setAttribute("value", yColumns[i]);
-		option.setAttribute("selected", "selected");
-		bindingElements[1].element.appendChild(option);
-	}
+    for (var i = 0; i < bindingElements.length; i++)
+	for (var j = 0; j < columns.length; j++)
+            if (bindingElements[i].bindingType == columns[j].bindingType)
+                for (var k = 0; k < columns[j].columns.length; k++)
+                {
+                    var option = document.createElement("option");
+                    option.appendChild(document.createTextNode(data.getColumnLabel(columns[j].columns[k])));
+                    option.setAttribute("value", columns[j].columns[k]);
+                    option.setAttribute("selected", "selected");
+                    bindingElements[i].element.appendChild(option);
+                }
 }
 
 function drawScatterChart(container, columns)
 {
-//alert(xColumn);
-//alert(yColumns.toSource());
+//alert(columns);
+        var visColumns = new Array();
+
+        for (var i = 0; i < columns.length; i++)
+        {
+            if (columns[i].bindingType.indexOf("ScatterChartXBinding") != -1) visColumns[0] = columns[i].columns[0];
+            if (columns[i].bindingType.indexOf("ScatterChartYBinding") != -1) visColumns = visColumns.concat(columns[i].columns);
+        }
 
 	var view = new google.visualization.DataView(data);
-	/*
-        var columns = new Array();
-	columns[0] = xColumn;
-	columns = columns.concat(yColumns);
-        */
-	view.setColumns(columns);
+	view.setColumns(visColumns);
 	var visualization = new google.visualization.ScatterChart(container);
         var options = new Array();
-	options["titleX"] = data.getColumnLabel(columns[0]);
-	options["titleY"] = data.getColumnLabel(columns[1]);
+	options["titleX"] = data.getColumnLabel(visColumns[0]);
+	options["titleY"] = data.getColumnLabel(visColumns[1]);
 	visualization.draw(view, options);
 }
 
@@ -191,13 +188,15 @@ function initLineChartControls(bindingElements, labelColumns, valueColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
+		option.setAttribute("value", labelColumns[i]);
 		bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < valueColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
-		option.setAttribute("selected", "selected");
+		option.setAttribute("value", valueColumns[i]);
+                option.setAttribute("selected", "selected");
 		bindingElements[1].element.appendChild(option);
 	}
 }
@@ -222,13 +221,15 @@ function initPieChartControls(bindingElements, labelColumns, valueColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		bindingElements[0].element.appendChild(option);
+		option.setAttribute("value", labelColumns[i]);
+                bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < valueColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
-		//option.setAttribute("selected", "selected");
+		option.setAttribute("value", valueColumns[i]);
+                //option.setAttribute("selected", "selected");
 		bindingElements[1].element.appendChild(option);
 	}
 }
@@ -249,13 +250,15 @@ function initMapControls(bindingElements, latColumns, lngColumns)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(latColumns[i])));
-		bindingElements[0].element.appendChild(option);
+		option.setAttribute("value", latColumns[i]);
+                bindingElements[0].element.appendChild(option);
 	}
 	for (var i = 0; i < lngColumns.length; i++)
 	{
 		var option = document.createElement("option");
 		option.appendChild(document.createTextNode(data.getColumnLabel(lngColumns[i])));
-		//option.setAttribute("selected", "selected");
+		option.setAttribute("value", lngColumns[i]);
+                //option.setAttribute("selected", "selected");
 		bindingElements[1].element.appendChild(option);
 	}
 }

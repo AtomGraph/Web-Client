@@ -44,8 +44,8 @@ exclude-result-prefixes="#all">
                         <!--
                         <xsl:copy-of select="document('arg://visualization-types')"/>
 			<xsl:copy-of select="document('arg://report')"/>
-                        -->
                         <xsl:copy-of select="document('arg://binding-types')"/>
+                        -->
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
@@ -187,29 +187,38 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
         <xsl:param name="visualization"/>
-<xsl:variable name="visualization-uri" select="concat('http://temp.com/visualization/', generate-id($visualization))"/>
+        <xsl:variable name="visualization-uri" select="concat('http://temp.com/visualization/', generate-id($visualization))"/>
 
-<xsl:variable name="binding-uri" select="concat('http://temp.com/binding/', generate-id())"/>
+        <xsl:variable name="binding-uri" select="concat('http://temp.com/binding/', generate-id())"/>
 
-<input type="hidden" name="su" value="{$binding-uri}"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+        <input type="hidden" name="su" value="{$binding-uri}"/>
+        <input type="hidden" name="pu" value="&rdf;type"/>
+        <input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
 
-<input type="hidden" name="su" value="{$visualization-uri}"/>
-<input type="hidden" name="pv" value="binding"/>
-<input type="hidden" name="ou" value="{$binding-uri}"/>
+        <input type="hidden" name="su" value="{$visualization-uri}"/>
+        <input type="hidden" name="pv" value="binding"/>
+        <input type="hidden" name="ou" value="{$binding-uri}"/>
 
-<input type="hidden" name="su" value="{$binding-uri}"/>
-<input type="hidden" name="pv" value="variableName"/>
-<input type="hidden" name="lt" value="&xsd;string"/>
+        <input type="hidden" name="su" value="{$binding-uri}"/>
+        <input type="hidden" name="pv" value="variableName"/>
+        <input type="hidden" name="lt" value="&xsd;string"/>
 
         <label for="{generate-id()}-binding">
             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
         </label>
         <select id="{generate-id()}-binding" name="ol" multiple="multiple" onchange="drawScatterChart(getSelectedValues(document.getElementById('scatter-chart-x-binding'))[0], getSelectedValues(this));">
             <xsl:attribute name="onchange">
-drawScatterChart(document.getElementById('<xsl:value-of select="generate-id($visualization)"/>-visualization'), getSelectedValues(this));
-</xsl:attribute>
+                <xsl:text>drawScatterChart(document.getElementById('</xsl:text>
+                <xsl:value-of select="generate-id($visualization)"/><xsl:text>-visualization'), [</xsl:text>
+                <xsl:for-each select="key('binding-type-by-vis-type', $visualization/sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>{ 'columns' : getSelectedValues(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding'))</xsl:text>
+                    <xsl:text>, 'bindingType' : '</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>' }</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>]);</xsl:text>
+            </xsl:attribute>
 <!--
                                 <xsl:text>[</xsl:text>
                     <xsl:for-each select="key('variable-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, document('arg://variables'))">
