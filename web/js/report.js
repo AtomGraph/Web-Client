@@ -1,6 +1,7 @@
 //google.setOnLoadCallback(countColumns(data));
 var data = new google.visualization.DataTable(table, 0.6);
 var typeColumns = new Array();
+var visualizations = new Array();
 
 function initEmpty(container, visType, bindingElements, bindings, columns)
 {
@@ -9,17 +10,26 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
             drawTable(container);
         }
 	if (visType.indexOf("ScatterChart") != -1)
+        {
+            visualizations[visType] = new google.visualization.ScatterChart(container);
+
             if (typeColumns.number.length > 1)
             {
-                    initScatterChartControls(bindingElements, columns);
-                    drawScatterChart(container, columns); // duplicate
+                    initChartControls(bindingElements, columns);
+                    drawScatterChart(visualizations[visType], visType, columns);
             }
+        }
 	if (visType.indexOf("LineChart") != -1)
+        {
+            visualizations[visType] = new google.visualization.LineChart(container);
+
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    initLineChartControls(bindingElements, typeColumns.string, typeColumns.number);
-                    drawLineChart(container, typeColumns.string[0], typeColumns.number);
+
+                initChartControls(bindingElements, columns);
+                drawLineChart(visualizations[visType], visType, columns);
             }
+        }
 	if (visType.indexOf("PieChart") != -1)
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
@@ -59,7 +69,7 @@ function init(container, visUri, visType, variables)
                         }
 //alert(typeColumns.toSource());
                         //initScatterChartControls(typeColumns.number, typeColumns.number);
-                        drawScatterChart(container, variables);
+                        drawScatterChart(container, visType, variables);
 		}
 
 	if (visType.indexOf("LineChart") != -1)
@@ -133,21 +143,21 @@ function drawTable(container)
 	table.draw(data, { showRowNumber: true });
 }
 
-function toggleScatterChart(show)
+function toggleChart(container, fieldset, show)
 {
 	if (show)
 	{
-		document.getElementById("scatter-chart-controls").style.display = "block";
-		document.getElementById("scatter-chart").style.display = "block";
+		container.style.display = "block";
+		fieldset.style.display = "block";
 	}
 	else
 	{
-		document.getElementById("scatter-chart-controls").style.display = "none";
-		document.getElementById("scatter-chart").style.display = "none";
+		container.style.display = "none";
+		fieldset.style.display = "none";
 	}
 }
 
-function initScatterChartControls(bindingElements, columns)
+function initChartControls(bindingElements, columns)
 {
     for (var i = 0; i < bindingElements.length; i++)
 	for (var j = 0; j < columns.length; j++)
@@ -162,7 +172,7 @@ function initScatterChartControls(bindingElements, columns)
                 }
 }
 
-function drawScatterChart(container, columns)
+function drawScatterChart(visualization, visType, columns)
 {
 //alert(columns);
         var visColumns = new Array();
@@ -175,7 +185,6 @@ function drawScatterChart(container, columns)
 
 	var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
-	var visualization = new google.visualization.ScatterChart(container);
         var options = new Array();
 	options["titleX"] = data.getColumnLabel(visColumns[0]);
 	options["titleY"] = data.getColumnLabel(visColumns[1]);
@@ -201,17 +210,20 @@ function initLineChartControls(bindingElements, labelColumns, valueColumns)
 	}
 }
 
-function drawLineChart(container, labelColumn, valueColumns)
+function drawLineChart(visualization, visType, columns)
 {
-	var view = new google.visualization.DataView(data);
-	var columns = new Array();
-	columns[0] = labelColumn;
-	columns = columns.concat(valueColumns);
-	view.setColumns(columns);
-	var visualization = new google.visualization.LineChart(container);
+	var visColumns = new Array();
+        for (var i = 0; i < columns.length; i++)
+        {
+            if (columns[i].bindingType.indexOf("LineChartLabelBinding") != -1) visColumns[0] = columns[i].columns[0];
+            if (columns[i].bindingType.indexOf("LineChartValueBinding") != -1) visColumns = visColumns.concat(columns[i].columns);
+        }
+
+        var view = new google.visualization.DataView(data);
+	view.setColumns(visColumns);
 	var options = new Array();
-	options["titleX"] = data.getColumnLabel(columns[0]);
-	options["titleY"] = data.getColumnLabel(columns[1]);
+	options["titleX"] = data.getColumnLabel(visColumns[0]);
+	options["titleY"] = data.getColumnLabel(visColumns[1]);
 	visualization.draw(view, options);
 }
 
