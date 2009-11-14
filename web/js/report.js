@@ -7,7 +7,9 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 {
 	if (visType.indexOf("Table") != -1)
         {
-            drawTable(container);
+            visualizations[visType] = new google.visualization.Table(container);
+            
+            drawTable(visualizations[visType], visType, columns);
         }
 	if (visType.indexOf("ScatterChart") != -1)
         {
@@ -41,11 +43,15 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
             }
         }
 	if (visType.indexOf("Map") != -1)
+        {
+            visualizations[visType] = new google.visualization.Map(container);
+
             if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             {
-                    initMapControls(bindingElements, typeColumns.lat, typeColumns.lng);
-                    drawMap(container, typeColumns.lat[0], typeColumns.lng[1]);
+                    initChartControls(bindingElements, columns);
+                    drawMap(visualizations[visType], visType, columns);
             }
+        }
 }
 
 function init(container, visUri, visType, variables)
@@ -141,10 +147,9 @@ function countColumns(data)
         //return typeColumns;
 }
 
-function drawTable(container)
+function drawTable(visualization, visType, columns)
 {
-	var table = new google.visualization.Table(container);
-	table.draw(data, { showRowNumber: true });
+	visualization.draw(data, { showRowNumber: true });
 }
 
 function toggleChart(container, fieldset, show)
@@ -228,31 +233,18 @@ function drawPieChart(visualization, visType, columns)
 	visualization.draw(view, options);
 }
 
-function initMapControls(bindingElements, latColumns, lngColumns)
+function drawMap(visualization, visType, columns)
 {
-	for (var i = 0; i < latColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(latColumns[i])));
-		option.setAttribute("value", latColumns[i]);
-                bindingElements[0].element.appendChild(option);
-	}
-	for (var i = 0; i < lngColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(lngColumns[i])));
-		option.setAttribute("value", lngColumns[i]);
-                //option.setAttribute("selected", "selected");
-		bindingElements[1].element.appendChild(option);
-	}
-}
+        var visColumns = new Array();
 
-function drawMap(container, latColumn, lngColumn)
-{
+        for (var i = 0; i < columns.length; i++)
+        {
+            if (columns[i].bindingType.indexOf("MapLatBinding") != -1) visColumns[0] = columns[i].columns[0];
+            if (columns[i].bindingType.indexOf("MapLngBinding") != -1) visColumns[1] = columns[i].columns[0];
+        }
+
 	var view = new google.visualization.DataView(data);
-	var columns = new Array(latColumn, lngColumn);
-	view.setColumns(columns);
-	var visualization = new google.visualization.Map(container);
+	view.setColumns(visColumns);
 	var options = new Array();
 	visualization.draw(view, options);
 }
