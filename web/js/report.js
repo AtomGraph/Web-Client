@@ -31,11 +31,15 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
             }
         }
 	if (visType.indexOf("PieChart") != -1)
+        {
+            visualizations[visType] = new google.visualization.PieChart(container);
+
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    initPieChartControls(bindingElements, typeColumns.string, typeColumns.number);
-                    drawPieChart(container, typeColumns.string[0], typeColumns.number[0]);
+                    initChartControls(bindingElements, columns);
+                    drawPieChart(visualizations[visType], visType, columns);
             }
+        }
 	if (visType.indexOf("Map") != -1)
             if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             {
@@ -191,25 +195,6 @@ function drawScatterChart(visualization, visType, columns)
 	visualization.draw(view, options);
 }
 
-function initLineChartControls(bindingElements, labelColumns, valueColumns)
-{
-	for (var i = 0; i < labelColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		option.setAttribute("value", labelColumns[i]);
-		bindingElements[0].element.appendChild(option);
-	}
-	for (var i = 0; i < valueColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
-		option.setAttribute("value", valueColumns[i]);
-                option.setAttribute("selected", "selected");
-		bindingElements[1].element.appendChild(option);
-	}
-}
-
 function drawLineChart(visualization, visType, columns)
 {
 	var visColumns = new Array();
@@ -227,31 +212,18 @@ function drawLineChart(visualization, visType, columns)
 	visualization.draw(view, options);
 }
 
-function initPieChartControls(bindingElements, labelColumns, valueColumns)
+function drawPieChart(visualization, visType, columns)
 {
-	for (var i = 0; i < labelColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(labelColumns[i])));
-		option.setAttribute("value", labelColumns[i]);
-                bindingElements[0].element.appendChild(option);
-	}
-	for (var i = 0; i < valueColumns.length; i++)
-	{
-		var option = document.createElement("option");
-		option.appendChild(document.createTextNode(data.getColumnLabel(valueColumns[i])));
-		option.setAttribute("value", valueColumns[i]);
-                //option.setAttribute("selected", "selected");
-		bindingElements[1].element.appendChild(option);
-	}
-}
+        var visColumns = new Array();
 
-function drawPieChart(container, labelColumn, valueColumn)
-{
+        for (var i = 0; i < columns.length; i++)
+        {
+            if (columns[i].bindingType.indexOf("PieChartLabelBinding") != -1) visColumns[0] = columns[i].columns[0];
+            if (columns[i].bindingType.indexOf("PieChartValueBinding") != -1) visColumns[1] = columns[i].columns[0];
+        }
+
 	var view = new google.visualization.DataView(data);
-	var columns = new Array(labelColumn, valueColumn);
-	view.setColumns(columns);
-	var visualization = new google.visualization.PieChart(container);
+	view.setColumns(visColumns);
 	var options = new Array();
 	visualization.draw(view, options);
 }
