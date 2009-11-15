@@ -5,6 +5,7 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:template name="sort-page-numbers">
+		<xsl:param name="uri"/>
 		<xsl:param name="lang-param"/>
 		<xsl:param name="view-param"/>
 		<xsl:param name="item-count-param"/>
@@ -38,7 +39,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
                                                             </xsl:call-template>
                                                     </xsl:variable>
 
-                                                    <a class="grey" href="{$resource/*/@uri}{$number-query-string}">
+                                                    <a class="grey" href="{$uri}{$number-query-string}">
                                                             <xsl:value-of select="$page-number * $limit-param + 1"/>&#8211;<xsl:value-of select="($page-number  + 1) * $limit-param"/>
                                                     </a>
                                             </xsl:otherwise>
@@ -53,6 +54,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
                 </li>
 		<xsl:if test="$page-number + 1 &lt; $page-count">
 			<xsl:call-template name="sort-page-numbers">
+                                <xsl:with-param name="uri" select="$uri"/>
 				<xsl:with-param name="page-number" select="$page-number + 1"/>
 				<xsl:with-param name="lang-param" select="$lang-param"/>
 				<xsl:with-param name="view-param" select="$view-param"/>
@@ -67,7 +69,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	</xsl:template>
 
 	<xsl:template name="sort-paging-controls">
-		<xsl:param name="lang-param"/>
+		<xsl:param name="uri"/>
+                <xsl:param name="lang-param"/>
 		<xsl:param name="view-param"/>
 		<xsl:param name="item-count-param"/>
 		<xsl:param name="offset-param"/>
@@ -93,7 +96,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
                                                             </xsl:call-template>
                                                     </xsl:variable>
 
-                                                    <a class="grey" href="{$resource/*/@uri}{$previous-query-string}">&lt; Previous</a>
+                                                    <a class="grey" href="{$uri}{$previous-query-string}">&lt; Previous</a>
                                             </xsl:when>
                                             <xsl:otherwise>
                                                     <xsl:text>&lt; Previous</xsl:text>
@@ -103,6 +106,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
                                 <ol>
                                     <xsl:call-template name="sort-page-numbers">
+                                            <xsl:with-param name="uri" select="$uri"/>
                                             <xsl:with-param name="lang-param" select="$lang-param"/>
                                             <xsl:with-param name="view-param" select="$view-param"/>
                                             <xsl:with-param name="item-count-param" select="$item-count-param"/>
@@ -129,7 +133,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
                                                             </xsl:call-template>
                                                     </xsl:variable>
 
-                                                    <a class="grey" href="{$resource/*/@uri}{$next-query-string}">Next &gt;</a>
+                                                    <a class="grey" href="{$uri}{$next-query-string}">Next &gt;</a>
                                             </xsl:when>
                                             <xsl:otherwise>
                                                    <xsl:text>Next &gt;</xsl:text>

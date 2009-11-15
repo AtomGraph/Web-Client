@@ -21,13 +21,12 @@ exclude-result-prefixes="#all">
 	<xsl:include href="../query-string.xsl"/>
 	<xsl:include href="../page-numbers.xsl"/>
 
-	<xsl:param name="query-result"/>
-	<xsl:param name="chart-result"/>
-	<xsl:param name="query-string" select="''"/>
-	<xsl:param name="x-variable-default"/>
-	<xsl:param name="y-variable-default"/>
-	<xsl:param name="label-variable-default" select="'label'"/>
-	<xsl:param name="chart-url"/>
+       <xsl:param name="total-item-count"/>
+       <xsl:param name="offset" select="0"/>
+       <xsl:param name="limit" select="20"/>
+       <xsl:param name="order-by"/>
+       <xsl:param name="desc-default" select="true()"/>
+       <xsl:param name="desc" select="$desc-default"/>
 
 	<xsl:template name="title">
 		Reports
@@ -43,6 +42,16 @@ exclude-result-prefixes="#all">
 				</p>
 			</form>
 <!-- <xsl:copy-of select="document('arg://reports')"/> -->
+
+                        <xsl:call-template name="sort-paging-controls">
+                            <xsl:with-param name="uri" select="'reports'"/>
+                            <xsl:with-param name="item-count-param" select="$total-item-count"/>
+                            <xsl:with-param name="offset-param" select="$offset"/>
+                            <xsl:with-param name="limit-param" select="$limit"/>
+                            <xsl:with-param name="order-by-param" select="$order-by"/>
+                            <xsl:with-param name="desc-param" select="$desc"/>
+                            <xsl:with-param name="desc-default-param" select="$desc-default"/>
+                        </xsl:call-template>
 
 			<table>
 				<thead>

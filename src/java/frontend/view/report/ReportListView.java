@@ -10,7 +10,6 @@ import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,14 +24,14 @@ import view.QueryXMLResult;
  */
 public class ReportListView extends FrontEndView
 {
-    public static final int ITEMS_PER_PAGE = 20;
+    public static final int ITEMS_PER_PAGE = 1;
     //public static final List<String> sortableVariables = new ArrayList<String>();
-    public static enum SortableVariable { date, creator, endpoint }
+    public static enum SortableVariable { DATE, CREATOR, ENDPOINT }
     
     private Integer offset = 0;
     private Integer limit = ITEMS_PER_PAGE;
     private Boolean desc = true;
-    private SortableVariable orderBy = SortableVariable.date;
+    private SortableVariable orderBy = SortableVariable.DATE;
 
     public ReportListView(ReportListResource resource)
     {
@@ -46,13 +45,20 @@ public class ReportListView extends FrontEndView
         
 	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
 	
-	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/reports.rq"), orderBy, offset, limit);
+	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/reports.rq"), getOrderBy().toString().toLowerCase(), getOffset(), getLimit());
 	String results = QueryXMLResult.select(SDB.getDataset(), queryString);
 
 	setDocument(results);
 	
 	getResolver().setArgument("reports", results);
-	
+
+        getTransformer().setParameter("total-item-count", 2);
+        getTransformer().setParameter("offset", getOffset());
+        getTransformer().setParameter("limit", getLimit());
+        getTransformer().setParameter("order-by", getOrderBy().toString().toLowerCase());
+        getTransformer().setParameter("desc-default", true);
+        getTransformer().setParameter("desc", getDesc());
+
 	super.display(request, response);
     }
 
@@ -61,8 +67,48 @@ public class ReportListView extends FrontEndView
         if (form.getOffset() != null) offset = form.getOffset();
         if (form.getLimit() != null) limit = form.getLimit();
         // desc!!!
-        if (form.getOrderBy() != null
+        //if (form.getOrderBy() != null) orderBy = form.getOrderBy();
             //&& Arrays.asList(SortableVariables.values()).contains(SortableVariables.valueOf(form.getOrderBy()))
-                ) orderBy = form.getOrderBy();
     }
+
+    public Boolean getDesc()
+    {
+        return desc;
+    }
+
+    public void setDesc(Boolean desc)
+    {
+        this.desc = desc;
+    }
+
+    public Integer getLimit()
+    {
+        return limit;
+    }
+
+    public void setLimit(Integer limit)
+    {
+        this.limit = limit;
+    }
+
+    public Integer getOffset()
+    {
+        return offset;
+    }
+
+    public void setOffset(Integer offset)
+    {
+        this.offset = offset;
+    }
+
+    public SortableVariable getOrderBy()
+    {
+        return orderBy;
+    }
+
+    public void setOrderBy(SortableVariable orderBy)
+    {
+        this.orderBy = orderBy;
+    }
+
 }
