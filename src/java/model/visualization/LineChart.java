@@ -3,18 +3,17 @@
  * and open the template in the editor.
  */
 
-package model;
+package model.visualization;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import thewebsemantic.Namespace;
 
 /**
  *
  * @author Pumba
  */
 
-@Namespace("http://code.google.com/apis/visualization/")
+//@Namespace("http://code.google.com/apis/visualization/")
 public class LineChart extends Visualization
 {
     private String labelBinding = null;

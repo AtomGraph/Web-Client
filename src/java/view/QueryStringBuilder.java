@@ -27,7 +27,7 @@ public class QueryStringBuilder
      @param args Arguments to fill placeholders
      @return Formatted query string
      */
-    public static String build(String queryFileName, String... args) throws FileNotFoundException, IOException
+    public static String build(String queryFileName, Object... args) throws FileNotFoundException, IOException
     {
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(queryFileName)));
         StringBuilder sb = new StringBuilder();
@@ -35,7 +35,7 @@ public class QueryStringBuilder
         while ((line = br.readLine()) != null) sb.append(line + "\n");
         br.close();
         String queryString = sb.toString();
-        return queryString.format(queryString, args);
+        return String.format(queryString, args);
     }
     
 }

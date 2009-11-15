@@ -36,7 +36,8 @@ public class User extends RdfBean<User>
 	this.createdAt = createdAt;
     }
 
-    @Id
+    //@Id
+    @RdfProperty("http://rdfs.org/sioc/ns#name")
     public String getName()
     {
 	return name;

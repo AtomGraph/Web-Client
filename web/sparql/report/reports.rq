@@ -16,4 +16,6 @@ SELECT *
 	?query	spin:text	?queryString .
 	?query	spin:from	?endpoint
 }
-ORDER BY DESC(?date)
+ORDER BY DESC(?%s)
+OFFSET %d
+LIMIT %d

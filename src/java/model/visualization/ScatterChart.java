@@ -3,18 +3,17 @@
  * and open the template in the editor.
  */
 
-package model;
+package model.visualization;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import thewebsemantic.Namespace;
 
 /**
  *
  * @author Pumba
  */
 
-@Namespace("http://code.google.com/apis/visualization/")
+//@Namespace("http://code.google.com/apis/visualization/")
 public class ScatterChart extends Visualization
 {
     private String xBinding = null;

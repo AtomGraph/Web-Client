@@ -7,6 +7,7 @@ package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.vocabulary.RDF;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
@@ -140,14 +141,18 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
 	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, "http://temp.com/query/123"); // change to query URI
        
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
         Model model = form.getModel();
-        model.add(form.getReportResource(), model.createProperty(DublinCore.DATE), model.createTypedLiteral(c));
-        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource("http://rdfs.org/sioc/ns#User/RandomUserName"));
+        model.add(form.getReportResource(), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource("http://temp.com/user/123"));
+        model.add(model.createResource("http://temp.com/user/123"), RDF.type, model.createResource("http://rdfs.org/sioc/ns#User"));
+        model.add(model.createResource("http://temp.com/user/123"), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        model.add(model.createResource("http://temp.com/user/123"), model.createProperty("http://rdfs.org/sioc/ns#name"), model.createTypedLiteral("RandomUserName"));
 
         SDB.getInstanceModel().add(form.getModel()); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+form.getModel().write(System.out);
 
         try {
             // save report

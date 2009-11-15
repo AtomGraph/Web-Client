@@ -3,16 +3,14 @@
  * and open the template in the editor.
  */
 
-package model;
-
-import thewebsemantic.Namespace;
+package model.visualization;
 
 /**
  *
  * @author Pumba
  */
 
-@Namespace("http://code.google.com/apis/visualization/")
+//@Namespace("http://code.google.com/apis/visualization/")
 public class Map extends Visualization
 {
 

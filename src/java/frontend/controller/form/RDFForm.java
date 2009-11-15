@@ -120,7 +120,7 @@ public class RDFForm extends Form
 		model.add(stmt);
 	    }
 	}
-	model.write(System.out);
+	//model.write(System.out);
     }
     
     public Model getModel()

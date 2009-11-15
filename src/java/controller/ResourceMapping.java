@@ -30,11 +30,6 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 	Resource resource = null;
 	//Individual instance = Ontology.getJointOntology().getIndividual(URI);
 	String[] relativeUris = uri.split("/");
-	// urldecode all URIs -- or maybe not?
-	/*
-	for (int i = 0; i < relativeUris.length; i++)
-	    relativeUris[i] = urlDecode(relativeUris[i]);
-	*/
 	
 	//if (relativeUris.length == 0) return ReportResource.getInstance();
 	
@@ -47,10 +42,14 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		{
 		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
                     RDF2Bean reader = new RDF2Bean(SDB.getInstanceModel());
+                    //reader.bindAll();
 		    Report report = reader.load(Report.class, fullUri);
-		    report.setId(relativeUris[1]);
 
-		    if (report != null) return new ReportResource(report, (ReportListResource)resource);
+		    if (report != null)
+                    {
+                        report.setId(relativeUris[1]);
+                        return new ReportResource(report, (ReportListResource)resource);
+                    }
 		    //return null;
 		}
 		return resource;
