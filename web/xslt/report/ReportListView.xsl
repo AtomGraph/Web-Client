@@ -18,6 +18,8 @@ xmlns:sparql="&sparql;"
 exclude-result-prefixes="#all">
 
 	<xsl:include href="../FrontEndView.xsl"/>
+	<xsl:include href="../query-string.xsl"/>
+	<xsl:include href="../page-numbers.xsl"/>
 
 	<xsl:param name="query-result"/>
 	<xsl:param name="chart-result"/>
