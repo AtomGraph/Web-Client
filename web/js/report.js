@@ -17,7 +17,7 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.number.length > 1)
             {
-                    initChartControls(bindingElements, columns);
+                    initVisualizationControls(bindingElements, columns);
                     drawScatterChart(visualizations[visType], visType, columns);
             }
         }
@@ -28,7 +28,7 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
 
-                initChartControls(bindingElements, columns);
+                initVisualizationControls(bindingElements, columns);
                 drawLineChart(visualizations[visType], visType, columns);
             }
         }
@@ -38,7 +38,7 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    initChartControls(bindingElements, columns);
+                    initVisualizationControls(bindingElements, columns);
                     drawPieChart(visualizations[visType], visType, columns);
             }
         }
@@ -48,7 +48,7 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             {
-                    initChartControls(bindingElements, columns);
+                    initVisualizationControls(bindingElements, columns);
                     drawMap(visualizations[visType], visType, columns);
             }
         }
@@ -152,7 +152,7 @@ function drawTable(visualization, visType, columns)
 	visualization.draw(data, { showRowNumber: true });
 }
 
-function toggleChart(container, fieldset, show)
+function toggleVisualization(container, fieldset, show)
 {
 	if (show)
 	{
@@ -166,7 +166,7 @@ function toggleChart(container, fieldset, show)
 	}
 }
 
-function initChartControls(bindingElements, columns)
+function initVisualizationControls(bindingElements, columns)
 {
     for (var i = 0; i < bindingElements.length; i++)
 	for (var j = 0; j < columns.length; j++)

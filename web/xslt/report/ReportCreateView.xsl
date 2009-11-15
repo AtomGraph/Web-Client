@@ -150,15 +150,15 @@ exclude-result-prefixes="#all">
 
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
 		<li>
-			<input type="checkbox" id="{generate-id()}-option" name="visualization" value="{sparql:binding[@name = 'type']/sparql:uri}" checked="checked"/>
-			<label for="{generate-id()}-option">
+			<input type="checkbox" id="{generate-id()}-toggle" name="visualization" value="{sparql:binding[@name = 'type']/sparql:uri}" checked="checked" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);"/>
+			<label for="{generate-id()}-toggle">
 				<xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
 			</label>
 		</li>
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-fieldset">
-                <fieldset id="scatter-chart-controls">
+                <fieldset id="{generate-id()}-controls">
                         <legend>
                             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
                         </legend>
