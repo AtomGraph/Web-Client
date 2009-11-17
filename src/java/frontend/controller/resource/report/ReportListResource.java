@@ -140,7 +140,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
 	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, "http://temp.com/query/123"); // change to query URI
-       
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model model = form.getModel();

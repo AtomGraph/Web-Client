@@ -42,7 +42,7 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		{
 		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
                     RDF2Bean reader = new RDF2Bean(SDB.getInstanceModel());
-                    //reader.bindAll();
+                    reader.bindAll("model");
 		    Report report = reader.load(Report.class, fullUri);
 
 		    if (report != null)

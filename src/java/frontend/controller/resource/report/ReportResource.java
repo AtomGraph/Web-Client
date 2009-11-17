@@ -50,7 +50,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	{
 	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
-	return getReport().getTitle();
+	return getReport().getId();
     }
 
     public Report getReport()

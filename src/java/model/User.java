@@ -5,7 +5,11 @@
 
 package model;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
@@ -47,5 +51,20 @@ public class User extends RdfBean<User>
     {
 	this.name = name;
     }
-    
+
+    @Id
+    public URI getURI()
+    {
+	try
+	{
+	    String uri = "http://temp.com/user/123";
+
+	    return new URI(uri);
+	} catch (URISyntaxException ex)
+	{
+	    Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return null;
+    }
+
 }

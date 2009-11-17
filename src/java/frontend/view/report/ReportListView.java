@@ -24,7 +24,7 @@ import view.QueryXMLResult;
  */
 public class ReportListView extends FrontEndView
 {
-    public static final int ITEMS_PER_PAGE = 1;
+    public static final int ITEMS_PER_PAGE = 20;
     //public static final List<String> sortableVariables = new ArrayList<String>();
     public static enum SortableVariable { DATE, CREATOR, ENDPOINT }
     
@@ -52,7 +52,7 @@ public class ReportListView extends FrontEndView
 	
 	getResolver().setArgument("reports", results);
 
-        getTransformer().setParameter("total-item-count", 2);
+        getTransformer().setParameter("total-item-count", 2); //    count = myOntClass.listInstances().toList().size();
         getTransformer().setParameter("offset", getOffset());
         getTransformer().setParameter("limit", getLimit());
         getTransformer().setParameter("order-by", getOrderBy().toString().toLowerCase());

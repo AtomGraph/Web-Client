@@ -140,7 +140,7 @@ public class Report extends RdfBean<Report>
     {
 	this.title = title;
     }
-
+    
     /*
     @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/visualizedBy")
     public Collection<Visualization> getVisualizations()
