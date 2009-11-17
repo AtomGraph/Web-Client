@@ -62,6 +62,7 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 			</head>
 			<body>
 
+<!--
                 <xsl:if test="$view = 'frontend.view.report.ReportReadView' or $view = 'frontend.view.report.ReportUpdateView'">
 					<xsl:attribute name="onload">countColumns(data);
             <xsl:for-each select="document('arg://visualizations')//sparql:result">
@@ -81,13 +82,16 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
                 <xsl:text>]);</xsl:text>
             </xsl:for-each>
                                         </xsl:attribute>
-<!-- <xsl:copy-of select="key('variable-by-visualization', 'http://temp.com/visualization/123', document('arg://variables'))"/> -->
 
                                 </xsl:if>
-                <xsl:if test="$view = 'frontend.view.report.ReportCreateView'">
+-->
+
+                <xsl:if test="$view = 'frontend.view.report.ReportCreateView' or $view = 'frontend.view.report.ReportReadView'">
                                     <xsl:attribute name="onload">countColumns(data);
             <xsl:for-each select="document('arg://visualization-types')//sparql:result">
-                <xsl:text>initEmpty(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-visualization'), '</xsl:text>
+                <xsl:if test="$view = 'frontend.view.report.ReportCreateView'">initEmpty</xsl:if>
+                <xsl:if test="$view = 'frontend.view.report.ReportReadView'">init</xsl:if>
+                <xsl:text>(document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-visualization'), '</xsl:text>
                 <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                 <xsl:text>', [</xsl:text>
                 <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">

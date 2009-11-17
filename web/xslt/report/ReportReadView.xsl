@@ -24,6 +24,8 @@ exclude-result-prefixes="#all">
 
 	<xsl:variable name="report" select="document('arg://report')"/>
 
+        <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
+
 	<xsl:template name="title">
 		<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 	</xsl:template>
@@ -32,7 +34,6 @@ exclude-result-prefixes="#all">
         <xsl:template name="onload">
             init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]);
         </xsl:template>
-        -->
         
         <xsl:template name="onload">
             <xsl:for-each select="document('arg://visualizations')//sparql:result">init('<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>
@@ -44,7 +45,8 @@ exclude-result-prefixes="#all">
             }
             );</xsl:for-each>
         </xsl:template>
-
+        -->
+        
 	<xsl:template name="content">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
@@ -69,33 +71,13 @@ exclude-result-prefixes="#all">
 				</p>
 			</form>
 
-			<xsl:apply-templates select="document('arg://visualizations')//sparql:result" mode="visualization"/>
+			<!-- <xsl:apply-templates select="document('arg://visualizations')//sparql:result" mode="vis-type-container"/> -->
+                        <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-container"/>
 		</div>
 	</xsl:template>
 
-	<xsl:template match="sparql:result[sparql:binding[@name = 'type']/sparql:uri = '&vis;Table']" mode="visualization">
-		<h3>Table</h3>
-		<div id="table"></div>
-	</xsl:template>
-
-	<xsl:template match="sparql:result[sparql:binding[@name = 'type']/sparql:uri = '&vis;ScatterChart']" mode="visualization">
-		<h3>Scatter chart</h3>
-		<div id="scatter-chart" style="width: 800px; height: 400px;"></div>
-	</xsl:template>
-
-	<xsl:template match="sparql:result[sparql:binding[@name = 'type']/sparql:uri = '&vis;LineChart']" mode="visualization">
-		<h3>Line chart</h3>
-		<div id="line-chart" style="width: 800px; height: 400px;"></div>
-	</xsl:template>
-
-	<xsl:template match="sparql:result[sparql:binding[@name = 'type']/sparql:uri = '&vis;PieChart']" mode="visualization">
-		<h3>Pie chart</h3>
-		<div id="pie-chart" style="width: 800px; height: 400px;"></div>
-	</xsl:template>
-
-	<xsl:template match="sparql:result[sparql:binding[@name = 'type']/sparql:uri = '&vis;Map']" mode="visualization">
-		<h3>Map</h3>
-		<div id="map" style="width: 800px; height: 400px;"></div>
-	</xsl:template>
+        <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-container">
+            <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
+        </xsl:template>
 
 </xsl:stylesheet>

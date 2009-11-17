@@ -54,72 +54,50 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
         }
 }
 
-function init(container, visUri, visType, variables)
+function init(container, visType, bindingElements, bindings, columns)
 {
-    alert(variables.toSource());
-	//scatterChart = new google.visualization.ScatterChart(document.getElementById("scatter-chart")); // onLoad()
-	scatterChart = new google.visualization.ScatterChart(container); // onLoad()
-    
 	if (visType.indexOf("Table") != -1)
-	{
-		var table = new google.visualization.Table(document.getElementById('table'));
-		table.draw(data, {showRowNumber: true});
-	}
+        {
+            visualizations[visType] = new google.visualization.Table(container);
 
+            drawTable(visualizations[visType], visType, columns);
+        }
 	if (visType.indexOf("ScatterChart") != -1)
-		//if (typeColumns.number.length > 1) // scatter
-		{
-			var xColumn = null; //typeColumns.number;
-                        var yColumns = new Array(); //typeColumns.number;
+        {
+            visualizations[visType] = new google.visualization.ScatterChart(container);
 
-                        for (var i = 0; i < variables.length; i++)
-                        {
-                            if (variables[i].type == "http://code.google.com/apis/visualization/ScatterChartXBinding") xColumn = variables[i].value;
-                            if (variables[i].type == "http://code.google.com/apis/visualization/ScatterChartYBinding") yColumns.push(variables[i].value);
-                        }
-//alert(typeColumns.toSource());
-                        //initScatterChartControls(typeColumns.number, typeColumns.number);
-                        drawScatterChart(container, visType, variables);
-		}
-
+            if (typeColumns.number.length > 1)
+            {
+                    drawScatterChart(visualizations[visType], visType, columns);
+            }
+        }
 	if (visType.indexOf("LineChart") != -1)
-		if (typeColumns.string.length > 0 && typeColumns.number.length > 0) // line
-		{
-			var view = new google.visualization.DataView(data);
-			var columns = new Array();
-			columns[0] = typeColumns.string[0];
-			// alert(columns.toSource());
-			columns = columns.concat(typeColumns.number);
-			//alert(typeColumns.number.toSource());
-			view.setColumns(columns);
-			var visualization = new google.visualization.LineChart(container);
-			var options = new Array();
-			options["titleX"] = data.getColumnLabel(columns[0]);
-			options["titleY"] = data.getColumnLabel(columns[1]);
-			visualization.draw(view, options);
-		}
+        {
+            visualizations[visType] = new google.visualization.LineChart(container);
 
+            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
+            {
+                drawLineChart(visualizations[visType], visType, columns);
+            }
+        }
 	if (visType.indexOf("PieChart") != -1)
-		if (typeColumns.string.length > 0 && typeColumns.number.length > 0) // pie
-		{
-			var view = new google.visualization.DataView(data);
-			var columns = new Array(typeColumns.string[0], typeColumns.number[1]);
-			view.setColumns(columns);
-			var visualization = new google.visualization.PieChart(container);
-			var options = new Array();
-			visualization.draw(view, options);
-		}
+        {
+            visualizations[visType] = new google.visualization.PieChart(container);
 
+            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
+            {
+                    drawPieChart(visualizations[visType], visType, columns);
+            }
+        }
 	if (visType.indexOf("Map") != -1)
-		if (typeColumns.lat.length > 0 && typeColumns.lng.length > 1) // map
-		{
-			var view = new google.visualization.DataView(data);
-			var columns = new Array(typeColumns.lat[0], typeColumns.lng[1]);
-			view.setColumns(columns);
-			var visualization = new google.visualization.Map(container);
-			var options = new Array();
-			visualization.draw(view, options);
-		}
+        {
+            visualizations[visType] = new google.visualization.Map(container);
+
+            if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
+            {
+                    drawMap(visualizations[visType], visType, columns);
+            }
+        }
 }
 
 function countColumns(data)
