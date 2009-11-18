@@ -19,6 +19,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:id="java:util.IDGenerator"
 exclude-result-prefixes="#all">
 
 	<xsl:import href="../sparql2google-wire.xsl"/>
@@ -28,8 +29,9 @@ exclude-result-prefixes="#all">
 	<xsl:param name="query-result"/>
 	<xsl:param name="visualization-result"/>
 	<xsl:param name="query-string" select="''"/>
-	<xsl:param name="report-id"/>
-	<xsl:param name="report-uri" select="concat('http://localhost:8084/semantic-reports/reports/', $report-id)"/>
+	<!-- <xsl:param name="report-id"/> -->
+	<xsl:param name="report-uri" select="concat($host-uri, 'reports/', id:generate())"/>
+	<xsl:param name="query-uri" select="concat($host-uri, 'queries/', id:generate())"/>
 
 <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -50,7 +52,7 @@ exclude-result-prefixes="#all">
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
 					<input type="hidden" name="view" value="create"/>
-                                        <input type="hidden" name="report-id" value="{$report-id}"/>
+                                        <input type="hidden" name="report-uri" value="{$report-uri}"/>
 <input type="hidden" name="rdf"/>
 <input type="hidden" name="v" value="&vis;"/>
 <input type="hidden" name="n" value="rdf"/>
@@ -68,10 +70,10 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="ov" value="Report"/>
 <input type="hidden" name="pu" value="&rep;query"/>
 <!-- <input type="hidden" name="ob" value="query"/> -->
-<input type="hidden" name="ou" value="http://temp.com/query/123"/>
+<input type="hidden" name="ou" value="{$query-uri}"/>
 
 <!-- <input type="hidden" name="sb" value="query"/> -->
-<input type="hidden" name="su" value="http://temp.com/query/123"/>
+<input type="hidden" name="su" value="{$query-uri}"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="on" value="spin"/>
 <input type="hidden" name="ov" value="Select"/>
@@ -103,7 +105,7 @@ exclude-result-prefixes="#all">
                                         </input>
 					<br/>
 <!-- <input type="hidden" name="sb" value="query"/> -->
-<input type="hidden" name="su" value="http://temp.com/query/123"/>
+<input type="hidden" name="su" value="{$query-uri}"/>
 <input type="hidden" name="pn" value="spin"/>
 <input type="hidden" name="pv" value="from"/>
 
@@ -121,7 +123,9 @@ exclude-result-prefixes="#all">
                                         </input>
 					<br/>
 					<button type="submit" name="action" value="query">Query</button>
-					<button type="submit" name="action" value="save">Save</button>
+                                        <xsl:if test="$query-result = 'success'">
+                                            <button type="submit" name="action" value="save">Save</button>
+                                        </xsl:if>
 				</p>
 
                                 <xsl:if test="$query-result = 'failure'">
@@ -158,13 +162,12 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-fieldset">
+                <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', id:generate())"/>
                 <fieldset id="{generate-id()}-controls">
                         <legend>
                             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
                         </legend>
                         <p>
-<!-- <xsl:copy-of select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))"/> -->
-<xsl:variable name="visualization-uri" select="concat('http://temp.com/visualization/', generate-id())"/>
 
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
@@ -175,7 +178,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
 
     <xsl:apply-templates select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))"  mode="binding-type-select">
-        <!-- <xsl:with-param name="visualization-uri" select="$visualization-uri"/> -->
+        <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
         <xsl:with-param name="visualization" select="."/>
     </xsl:apply-templates>
 
@@ -187,9 +190,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
         <xsl:param name="visualization"/>
-        <xsl:variable name="visualization-uri" select="concat('http://temp.com/visualization/', generate-id($visualization))"/>
-
-        <xsl:variable name="binding-uri" select="concat('http://temp.com/binding/', generate-id())"/>
+        <xsl:param name="visualization-uri"/>
+        <xsl:param name="binding-uri" select="concat($host-uri, 'bindings/', id:generate())"/>
 
         <input type="hidden" name="su" value="{$binding-uri}"/>
         <input type="hidden" name="pu" value="&rdf;type"/>
@@ -227,19 +229,7 @@ exclude-result-prefixes="#all">
                 </xsl:for-each>
                 <xsl:text>]);</xsl:text>
             </xsl:attribute>
-<!--
-                                <xsl:text>[</xsl:text>
-                    <xsl:for-each select="key('variable-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, document('arg://variables'))">
-                        <xsl:text>{ type: '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
-                        <xsl:text>', value: </xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
-                        <xsl:text> }</xsl:text>
-                        <xsl:if test="position() != last()">,</xsl:if>
-                    </xsl:for-each>
-                <xsl:text>]);</xsl:text>
--->
-                <!-- filled out in JavaScript -->
+
         </select>
     </xsl:template>
 

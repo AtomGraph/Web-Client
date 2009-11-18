@@ -68,8 +68,8 @@ public class ReportCreateView extends FrontEndView implements FormResultView
             getTransformer().setParameter("query-result", "failure");
         }
 
-        UUID id = UUID.randomUUID();
-        getTransformer().setParameter("report-id", String.valueOf(id));
+        //UUID id = UUID.randomUUID();
+        //getTransformer().setParameter("report-id", String.valueOf(id));
 
 	super.display(request, response);
 
@@ -94,9 +94,9 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     {
 	try
 	{
-            String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
+            String reportUri = request.getParameter("report-uri");
             
-	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), reportId));
+	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), reportUri));
 	    setDocument(report);
 
 	    getResolver().setArgument("report", report);

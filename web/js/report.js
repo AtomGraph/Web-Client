@@ -9,7 +9,7 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
         {
             visualizations[visType] = new google.visualization.Table(container);
             
-            drawTable(visualizations[visType], visType, columns);
+            drawTable(visualizations[visType], visType, bindings, columns);
         }
 	if (visType.indexOf("ScatterChart") != -1)
         {
@@ -17,8 +17,8 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.number.length > 1)
             {
-                    initVisualizationControls(bindingElements, columns);
-                    drawScatterChart(visualizations[visType], visType, columns);
+                    initVisualizationControls(bindingElements, bindings, columns);
+                    drawScatterChart(visualizations[visType], visType, bindings, columns);
             }
         }
 	if (visType.indexOf("LineChart") != -1)
@@ -28,8 +28,8 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
 
-                initVisualizationControls(bindingElements, columns);
-                drawLineChart(visualizations[visType], visType, columns);
+                initVisualizationControls(bindingElements, bindings, columns);
+                drawLineChart(visualizations[visType], visType, bindings, columns);
             }
         }
 	if (visType.indexOf("PieChart") != -1)
@@ -38,8 +38,8 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    initVisualizationControls(bindingElements, columns);
-                    drawPieChart(visualizations[visType], visType, columns);
+                    initVisualizationControls(bindingElements, bindings, columns);
+                    drawPieChart(visualizations[visType], visType, bindings, columns);
             }
         }
 	if (visType.indexOf("Map") != -1)
@@ -48,19 +48,19 @@ function initEmpty(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             {
-                    initVisualizationControls(bindingElements, columns);
-                    drawMap(visualizations[visType], visType, columns);
+                    initVisualizationControls(bindingElements, bindings, columns);
+                    drawMap(visualizations[visType], visType, bindings, columns);
             }
         }
 }
 
-function init(container, visType, bindingElements, bindings, columns)
+function draw(container, visType, bindings, columns)
 {
 	if (visType.indexOf("Table") != -1)
         {
             visualizations[visType] = new google.visualization.Table(container);
 
-            drawTable(visualizations[visType], visType, columns);
+            drawTable(visualizations[visType], visType, bindings, columns);
         }
 	if (visType.indexOf("ScatterChart") != -1)
         {
@@ -68,7 +68,7 @@ function init(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.number.length > 1)
             {
-                    drawScatterChart(visualizations[visType], visType, columns);
+                    drawScatterChart(visualizations[visType], visType, bindings, columns);
             }
         }
 	if (visType.indexOf("LineChart") != -1)
@@ -77,7 +77,7 @@ function init(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                drawLineChart(visualizations[visType], visType, columns);
+                drawLineChart(visualizations[visType], visType, bindings, columns);
             }
         }
 	if (visType.indexOf("PieChart") != -1)
@@ -86,7 +86,7 @@ function init(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
             {
-                    drawPieChart(visualizations[visType], visType, columns);
+                    drawPieChart(visualizations[visType], visType, bindings, columns);
             }
         }
 	if (visType.indexOf("Map") != -1)
@@ -95,7 +95,7 @@ function init(container, visType, bindingElements, bindings, columns)
 
             if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             {
-                    drawMap(visualizations[visType], visType, columns);
+                    drawMap(visualizations[visType], visType, bindings, columns);
             }
         }
 }
@@ -125,7 +125,7 @@ function countColumns(data)
         //return typeColumns;
 }
 
-function drawTable(visualization, visType, columns)
+function drawTable(visualization, visType, bindings, columns)
 {
 	visualization.draw(data, { showRowNumber: true });
 }
@@ -144,7 +144,7 @@ function toggleVisualization(container, fieldset, show)
 	}
 }
 
-function initVisualizationControls(bindingElements, columns)
+function initVisualizationControls(bindingElements, bindings, columns)
 {
     for (var i = 0; i < bindingElements.length; i++)
 	for (var j = 0; j < columns.length; j++)
@@ -159,7 +159,7 @@ function initVisualizationControls(bindingElements, columns)
                 }
 }
 
-function drawScatterChart(visualization, visType, columns)
+function drawScatterChart(visualization, visType, bindings, columns)
 {
 //alert(columns);
         var visColumns = new Array();
@@ -178,7 +178,7 @@ function drawScatterChart(visualization, visType, columns)
 	visualization.draw(view, options);
 }
 
-function drawLineChart(visualization, visType, columns)
+function drawLineChart(visualization, visType, bindings, columns)
 {
 	var visColumns = new Array();
         for (var i = 0; i < columns.length; i++)
@@ -195,7 +195,7 @@ function drawLineChart(visualization, visType, columns)
 	visualization.draw(view, options);
 }
 
-function drawPieChart(visualization, visType, columns)
+function drawPieChart(visualization, visType, bindings, columns)
 {
         var visColumns = new Array();
 
@@ -211,7 +211,7 @@ function drawPieChart(visualization, visType, columns)
 	visualization.draw(view, options);
 }
 
-function drawMap(visualization, visType, columns)
+function drawMap(visualization, visType, bindings, columns)
 {
         var visColumns = new Array();
 
