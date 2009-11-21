@@ -7,7 +7,6 @@ package frontend.controller.resource;
 
 import dk.semantic_web.diy.controller.Singleton;
 import frontend.controller.FrontEndResource;
-import frontend.controller.resource.report.ReportListResource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.logging.Level;
