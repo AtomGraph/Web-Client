@@ -53,8 +53,8 @@ exclude-result-prefixes="#all">
 
 			<!-- <xsl:copy-of select="document('arg://report')"/> -->
                         <!-- <xsl:copy-of select="document('arg://results')"/> -->
-			<xsl:copy-of select="document('arg://visualizations')"/>
-			<xsl:copy-of select="document('arg://variables')"/>
+			<!-- <xsl:copy-of select="document('arg://visualizations')"/>
+			<xsl:copy-of select="document('arg://variables')"/> -->
 
 			<dl>
 				<dt>Endpoint</dt>

@@ -3,101 +3,61 @@ var data = new google.visualization.DataTable(table, 0.6);
 var typeColumns = new Array();
 var visualizations = new Array();
 
-function initEmpty(container, visType, bindingElements, bindings, columns)
+function initVis(container, visType)
 {
-	if (visType.indexOf("Table") != -1)
-        {
-            visualizations[visType] = new google.visualization.Table(container);
-            
-            drawTable(visualizations[visType], visType, bindings, columns);
-        }
-	if (visType.indexOf("ScatterChart") != -1)
-        {
-            visualizations[visType] = new google.visualization.ScatterChart(container);
-
-            if (typeColumns.number.length > 1)
-            {
-                    initVisualizationControls(bindingElements, bindings, columns);
-                    drawScatterChart(visualizations[visType], visType, bindings, columns);
-            }
-        }
-	if (visType.indexOf("LineChart") != -1)
-        {
-            visualizations[visType] = new google.visualization.LineChart(container);
-
-            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            {
-
-                initVisualizationControls(bindingElements, bindings, columns);
-                drawLineChart(visualizations[visType], visType, bindings, columns);
-            }
-        }
-	if (visType.indexOf("PieChart") != -1)
-        {
-            visualizations[visType] = new google.visualization.PieChart(container);
-
-            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            {
-                    initVisualizationControls(bindingElements, bindings, columns);
-                    drawPieChart(visualizations[visType], visType, bindings, columns);
-            }
-        }
-	if (visType.indexOf("Map") != -1)
-        {
-            visualizations[visType] = new google.visualization.Map(container);
-
-            if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
-            {
-                    initVisualizationControls(bindingElements, bindings, columns);
-                    drawMap(visualizations[visType], visType, bindings, columns);
-            }
-        }
+    if (visType.indexOf("Table") != -1) visualizations[visType] = new google.visualization.Table(container);
+    if (visType.indexOf("ScatterChart") != -1) visualizations[visType] = new google.visualization.ScatterChart(container);
+    if (visType.indexOf("LineChart") != -1) visualizations[visType] = new google.visualization.LineChart(container);
+    if (visType.indexOf("PieChart") != -1) visualizations[visType] = new google.visualization.PieChart(container);
+    if (visType.indexOf("Map") != -1) visualizations[visType] = new google.visualization.Map(container);
 }
 
-function draw(container, visType, bindings, columns)
+function initControls(visType, bindingElements, bindings, columns)
 {
-	if (visType.indexOf("Table") != -1)
-        {
-            visualizations[visType] = new google.visualization.Table(container);
+    //if (visType.indexOf("Table") != -1)
+    if (visType.indexOf("ScatterChart") != -1)
+        if (typeColumns.number.length > 1)
+            initVisualizationControls(bindingElements, bindings, columns);
+    if (visType.indexOf("LineChart") != -1)
+        if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
+            initVisualizationControls(bindingElements, bindings, columns);
+    if (visType.indexOf("PieChart") != -1)
+        if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
+            initVisualizationControls(bindingElements, bindings, columns);
+    if (visType.indexOf("Map") != -1)
+        if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
+            initVisualizationControls(bindingElements, bindings, columns);
+}
 
-            drawTable(visualizations[visType], visType, bindings, columns);
-        }
-	if (visType.indexOf("ScatterChart") != -1)
-        {
-            visualizations[visType] = new google.visualization.ScatterChart(container);
+function initAndDraw(container, visType, bindings, columns)
+{
+    initVis(container, visType);
+    draw(visualizations[visType], visType, bindings, columns);
+}
 
-            if (typeColumns.number.length > 1)
-            {
-                    drawScatterChart(visualizations[visType], visType, bindings, columns);
-            }
-        }
-	if (visType.indexOf("LineChart") != -1)
-        {
-            visualizations[visType] = new google.visualization.LineChart(container);
+function initWithControlsAndDraw(container, visType, bindingElements, bindings, columns)
+{
+    initVis(container, visType);
+    initControls(visType, bindingElements, bindings, columns);
+    draw(visualizations[visType], visType, bindings, columns);
+}
 
-            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            {
-                drawLineChart(visualizations[visType], visType, bindings, columns);
-            }
-        }
-	if (visType.indexOf("PieChart") != -1)
-        {
-            visualizations[visType] = new google.visualization.PieChart(container);
-
-            if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            {
-                    drawPieChart(visualizations[visType], visType, bindings, columns);
-            }
-        }
-	if (visType.indexOf("Map") != -1)
-        {
-            visualizations[visType] = new google.visualization.Map(container);
-
-            if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
-            {
-                    drawMap(visualizations[visType], visType, bindings, columns);
-            }
-        }
+function draw(visualization, visType, bindings, columns)
+{
+    if (visType.indexOf("Table") != -1)
+        drawTable(visualization, visType, bindings, columns);
+    if (visType.indexOf("ScatterChart") != -1)
+        if (typeColumns.number.length > 1)
+            drawScatterChart(visualization, visType, bindings, columns);
+    if (visType.indexOf("LineChart") != -1)
+        if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
+            drawLineChart(visualization, visType, bindings, columns);
+    if (visType.indexOf("PieChart") != -1)
+        if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
+            drawPieChart(visualization, visType, bindings, columns);
+    if (visType.indexOf("Map") != -1)
+        if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
+            drawMap(visualization, visType, bindings, columns);
 }
 
 function countColumns(data)

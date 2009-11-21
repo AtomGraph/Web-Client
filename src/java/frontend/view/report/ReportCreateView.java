@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +33,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 {
     private Form form = null;
     private List<Error> errors = null;
-    private boolean successful;
+    private Boolean result = null;
     private String queryResults = null;
     private Model model = null;
     
@@ -53,23 +52,23 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
         
-	if (isSuccessful())
-	{
-            setReport(request, response);
-            setVisualizations(request, response);
-
-            getResolver().setArgument("results", getQueryResults());
-	    getTransformer().setParameter("query-result", "success");
-	    //getTransformer().setParameter("query-string", request.getParameter("query-string"));
-	}
-        else
+	if (getResult() != null)
         {
-            getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
-            getTransformer().setParameter("query-result", "failure");
-        }
+            if (getResult())
+            {
+                setReport(request, response);
+                setVisualizations(request, response);
 
-        //UUID id = UUID.randomUUID();
-        //getTransformer().setParameter("report-id", String.valueOf(id));
+                getResolver().setArgument("results", getQueryResults());
+                getTransformer().setParameter("query-result", "success");
+                //getTransformer().setParameter("query-string", request.getParameter("query-string"));
+            }
+            else
+            {
+                getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
+                getTransformer().setParameter("query-result", "failure");
+            }
+        }
 
 	super.display(request, response);
 
@@ -139,14 +138,14 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         this.form = form;
     }
 
-    public boolean isSuccessful()
+    public Boolean getResult()
     {
-        return successful;
+        return result;
     }
 
-    public void setSuccessful(boolean successful)
+    public void setResult(Boolean successful)
     {
-        this.successful = successful;
+        this.result = successful;
     }
 
     public String getQueryResults()

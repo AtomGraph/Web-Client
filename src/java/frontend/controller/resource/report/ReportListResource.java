@@ -107,14 +107,14 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
             view.setModel(form.getModel());
             view.setQueryResults(queryResults);
-            view.setSuccessful(true);
+            view.setResult(true);
 	}
         catch (IOException ex)
 	{
             errors.add(new Error("ioError"));
 
             view.setErrors(errors);
-            view.setSuccessful(false);
+            view.setResult(false);
 
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
@@ -123,7 +123,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
             errors.add(new Error("invalidQuery"));
 
             view.setErrors(errors);
-            view.setSuccessful(false);
+            view.setResult(false);
 
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}

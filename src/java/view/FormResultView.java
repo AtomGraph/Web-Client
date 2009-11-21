@@ -21,6 +21,6 @@ public interface FormResultView
     public void setErrors(List<Error> errors);
     public List<Error> getErrors();
 
-    public void setSuccessful(boolean successful);
-    public boolean isSuccessful();
+    public void setResult(Boolean successful);
+    public Boolean getResult();
 }
