@@ -8,7 +8,6 @@ SELECT *
 	?report		rep:visualizedBy	?visualization .
 	?visualization	rdf:type		?visType .
         ?visualization  vis:binding             ?binding .
-        ?binding        rdf:type                ?bindingType .
-        ?binding        vis:variableName        ?variable
+        ?binding        rdf:type                ?type
 	FILTER (?report = <%s>)
 }

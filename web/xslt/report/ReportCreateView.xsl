@@ -110,7 +110,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pv" value="from"/>
 
 					<label for="endpoint">Endpoint</label>
-                                        !<xsl:value-of select="$query-result"/>!
+                                        <!-- <xsl:value-of select="$query-result"/> -->
 					<input type="text" id="endpoint" name="ou">
                                             <xsl:attribute name="value">
                                                 <xsl:choose>

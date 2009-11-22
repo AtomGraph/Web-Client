@@ -39,6 +39,7 @@ public class ReportReadView extends ReportView
 	setVisualizations(request, response);
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
+        setBindings(request, response);
 
 	super.display(request, response);
 
@@ -57,5 +58,12 @@ public class ReportReadView extends ReportView
 	String bindingTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/binding-types.rq")));
 
 	getResolver().setArgument("binding-types", bindingTypes);
+    }
+
+    protected void setBindings(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String bindings = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/bindings.rq"), getResource().getAbsoluteURI()));
+
+	getResolver().setArgument("bindings", bindings);
     }
 }

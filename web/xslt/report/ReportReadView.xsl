@@ -53,8 +53,11 @@ exclude-result-prefixes="#all">
 
 			<!-- <xsl:copy-of select="document('arg://report')"/> -->
                         <!-- <xsl:copy-of select="document('arg://results')"/> -->
-			<!-- <xsl:copy-of select="document('arg://visualizations')"/>
-			<xsl:copy-of select="document('arg://variables')"/> -->
+			<!-- <xsl:copy-of select="document('arg://visualizations')"/> -->
+                        <!--
+			<xsl:copy-of select="document('arg://bindings')"/>
+                        <xsl:copy-of select="document('arg://variables')"/>
+                        -->
 
 			<dl>
 				<dt>Endpoint</dt>
@@ -71,12 +74,16 @@ exclude-result-prefixes="#all">
 				</p>
 			</form>
 
-			<!-- <xsl:apply-templates select="document('arg://visualizations')//sparql:result" mode="vis-type-container"/> -->
-                        <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-container"/>
+			<xsl:apply-templates select="document('arg://visualizations')//sparql:result" mode="vis-container"/>
+                        <!-- <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-container"/> -->
 		</div>
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-container">
+            <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
+        </xsl:template>
+
+        <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="vis-container">
             <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
         </xsl:template>
 
