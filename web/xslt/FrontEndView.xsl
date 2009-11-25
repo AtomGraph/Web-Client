@@ -53,7 +53,7 @@ exclude-result-prefixes="#all">
 				</style>
 
 				<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-				<script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script>
+				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript"></script>
 				<script type="text/javascript">
 google.load('visualization', '1',  {'packages': ["table", "scatterchart", "linechart", "piechart", "map"]});
 
