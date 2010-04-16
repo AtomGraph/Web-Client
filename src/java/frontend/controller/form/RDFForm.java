@@ -10,17 +10,14 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.RDF;
 import controller.ResourceMapping;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Form;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import model.Namespaces;
 
 /**
  *
@@ -29,8 +26,6 @@ import model.Namespaces;
 public class RDFForm extends Form
 {
     Model model = ModelFactory.createDefaultModel();
-    //Resource visualization = null;
-    //LinkedHashMap<String, String> paramMap = new LinkedHashMap<String, String>();
     List<String> keys = new ArrayList<String>();
     List<String> values = new ArrayList<String>();
     List<Error> errors = new ArrayList<Error>();
@@ -126,24 +121,6 @@ public class RDFForm extends Form
     public Model getModel()
     {
 	return model;
-    }
-
-    public Resource getReportResource()
-    {
-	Resource report = null;
-	Resource reportClass = getModel().createResource(Namespaces.REPORT_NS + "Report");
-	ResIterator iter = getModel().listResourcesWithProperty(RDF.type, reportClass);
-	if (iter.hasNext()) report = iter.next();
-	return report;
-    }
-
-    public Resource getQueryResource()
-    {
-	Resource query = null;
-	Resource queryClass = getModel().createResource(Namespaces.SPIN_NS + "Select");
-	ResIterator iter = getModel().listResourcesWithProperty(RDF.type, queryClass);
-	if (iter.hasNext()) query = iter.next();
-	return query;
     }
     
     @Override

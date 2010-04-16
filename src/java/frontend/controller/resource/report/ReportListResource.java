@@ -140,7 +140,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
-	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, "http://semantic-reports.com/queries/1"); // change to query URI
+	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI()); // change to query URI
 
         String userUri = getController().getMapping().getHost() + "users/pumba";
         Calendar calendar = Calendar.getInstance();
