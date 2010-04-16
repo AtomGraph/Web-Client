@@ -104,7 +104,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
                                     </xsl:choose>
                                 </p>
 
-                                <ol>
+                                <ol class="pagination">
                                     <xsl:call-template name="sort-page-numbers">
                                             <xsl:with-param name="uri" select="$uri"/>
                                             <xsl:with-param name="lang-param" select="$lang-param"/>

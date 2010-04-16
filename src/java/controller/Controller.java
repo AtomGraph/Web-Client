@@ -35,7 +35,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
 
         super.process(request, response);
 
-        if (request.getAttribute("uri").equals("")) response.sendRedirect("/reports/"); // make reports the default view
+        //if (request.getAttribute("uri").equals("")) response.sendRedirect("/reports/"); // make reports the default view
 
         if (getResource() == null) setView(new NotFoundView());
 
@@ -103,7 +103,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     {
 	String host = "http://" + request.getServerName();
 	if (request.getServerPort() != 80) host += ":" + request.getServerPort();
-	host += request.getContextPath();
+	//host += request.getContextPath();
 	host += "/";	
 	getMapping().setHost(host);
     }

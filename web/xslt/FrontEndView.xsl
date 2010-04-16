@@ -50,6 +50,7 @@ exclude-result-prefixes="#all">
 					span.red { color: red; }
 					table, td { border: 1px solid black; }
 					thead { font-weight: bold; text-align: center; }
+                                        ol.pagination li { display: inline; }
 				</style>
 
 				<script type="text/javascript" src="http://www.google.com/jsapi"></script>

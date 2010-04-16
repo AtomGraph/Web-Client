@@ -24,7 +24,7 @@ import view.QueryXMLResult;
  */
 public class ReportListView extends FrontEndView
 {
-    public static final int ITEMS_PER_PAGE = 20;
+    public static final int ITEMS_PER_PAGE = 15;
     //public static final List<String> sortableVariables = new ArrayList<String>();
     public static enum SortableVariable { DATE, CREATOR, ENDPOINT }
     
