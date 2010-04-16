@@ -95,7 +95,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	{
             String reportUri = request.getParameter("report-uri");
             
-	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), reportUri));
+	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri));
 	    setDocument(report);
 
 	    getResolver().setArgument("report", report);
@@ -114,8 +114,8 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	{
             String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
 
-	    String visualizations = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), reportId));
-	    String variables = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/variables.rq"), reportId));
+	    String visualizations = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportId));
+	    String variables = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportId));
 
 	    getResolver().setArgument("visualizations", visualizations);
 	    getResolver().setArgument("variables", variables);

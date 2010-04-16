@@ -53,7 +53,7 @@ public class ReportView extends FrontEndView
     {
 	try
 	{
-	    String report = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/report.rq"), getResource().getAbsoluteURI()));
+	    String report = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), getResource().getAbsoluteURI()));
 	    setDocument(report);
 	    
 	    getResolver().setArgument("report", report);
@@ -70,8 +70,8 @@ public class ReportView extends FrontEndView
     {
 	try
 	{
-	    String visualizations = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/visualizations.rq"), getResource().getAbsoluteURI()));
-	    String variables = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/variables.rq"), getResource().getAbsoluteURI()));
+	    String visualizations = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), getResource().getAbsoluteURI()));
+	    String variables = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI()));
 	    
 	    getResolver().setArgument("visualizations", visualizations);
 	    getResolver().setArgument("variables", variables);
