@@ -23,7 +23,7 @@ exclude-result-prefixes="#all">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:variable name="report" select="document('arg://report')"/>
-	<xsl:variable name="objects" select="document('arg://objects')"/>
+	<xsl:variable name="query-objects" select="document('arg://query-objects')"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -58,7 +58,7 @@ exclude-result-prefixes="#all">
                         <!--
 			<xsl:copy-of select="document('arg://bindings')"/>
                         <xsl:copy-of select="document('arg://variables')"/>
-			<xsl:copy-of select="document('arg://objects')"/>
+			<xsl:copy-of select="document('arg://query-objects')"/>
                         -->
 
 			<dl>
@@ -68,9 +68,9 @@ exclude-result-prefixes="#all">
 						<xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
 					</a>
 				</dd>
-                                <xsl:if test="$objects//sparql:binding[@name = 'object']/sparql:uri">
+                                <xsl:if test="$query-objects//sparql:binding[@name = 'object']/sparql:uri">
                                     <dt>Used types</dt>
-                                    <xsl:for-each select="$objects//sparql:binding[@name = 'object']/sparql:uri">
+                                    <xsl:for-each select="$query-objects//sparql:binding[@name = 'object']/sparql:uri">
                                         <dd>
                                                 <a href="{.}">
                                                     <xsl:value-of select="."/>

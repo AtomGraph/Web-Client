@@ -72,6 +72,6 @@ public class ReportReadView extends ReportView
     {
 	String objects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/objects.rq"), getResource().getAbsoluteURI()));
 
-	getResolver().setArgument("objects", objects);
+	getResolver().setArgument("query-objects", objects);
     }
 }

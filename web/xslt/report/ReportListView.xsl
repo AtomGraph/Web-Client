@@ -28,6 +28,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="desc-default" select="true()"/>
         <xsl:param name="desc" select="$desc-default"/>
 
+	<xsl:variable name="reports" select="document('arg://reports')"/>
+	<xsl:variable name="query-objects" select="document('arg://query-objects')"/>
+
 	<xsl:template name="title">
 		Reports
 	</xsl:template>
@@ -41,7 +44,7 @@ exclude-result-prefixes="#all">
 					<button type="submit" name="view" value="create">Create</button>
 				</p>
 			</form>
-<!-- <xsl:copy-of select="document('arg://reports')"/> -->
+<!-- <xsl:copy-of select="document('arg://query-objects')"/> -->
 
                         <xsl:call-template name="sort-paging-controls">
                             <xsl:with-param name="uri" select="'reports'"/>
@@ -53,17 +56,17 @@ exclude-result-prefixes="#all">
                             <xsl:with-param name="desc-default-param" select="$desc-default"/>
                         </xsl:call-template>
 
-			<table>
+			<table style="width: 100%;">
 				<thead>
 					<td>Title</td>
 					<td>Description</td>
-					<td>Keywords</td>
+					<td>Used types</td>
 					<td>Datasource</td>
 					<td>Creator</td>
 					<td>Date</td>
 				</thead>
 				<tbody>
-					<xsl:apply-templates select="document('arg://reports')" mode="report-table"/>
+					<xsl:apply-templates select="$reports" mode="report-table"/>
 				</tbody>
 			</table>
 
@@ -90,7 +93,18 @@ exclude-result-prefixes="#all">
 				<xsl:value-of select="sparql:binding[@name = 'description']/sparql:literal"/>
 			</td>
 			<td>
-
+                            <xsl:variable name="current-objects" select="$query-objects//sparql:result[sparql:binding[@name = 'report']/sparql:uri = current()/sparql:binding[@name = 'report']/sparql:uri]"/>
+                            <xsl:if test="$current-objects">
+                                <ul>
+                                    <xsl:for-each select="$current-objects">
+                                        <li>
+                                            <a href="{sparql:binding[@name = 'object']/sparql:uri}">
+                                                <xsl:value-of select="sparql:binding[@name = 'object']/sparql:uri"/>
+                                            </a>
+                                        </li>
+                                    </xsl:for-each>
+                                </ul>
+                             </xsl:if>
 			</td>
 			<td>
 				<a href="{sparql:binding[@name = 'endpoint']/sparql:uri}">

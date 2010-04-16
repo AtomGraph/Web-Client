@@ -59,6 +59,8 @@ public class ReportListView extends FrontEndView
         getTransformer().setParameter("desc-default", true);
         getTransformer().setParameter("desc", getDesc());
 
+        setQueryObjects(request, response);
+        
 	super.display(request, response);
     }
 
@@ -111,4 +113,10 @@ public class ReportListView extends FrontEndView
         this.orderBy = orderBy;
     }
 
+    protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+	String objects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/objects.rq")));
+
+	getResolver().setArgument("query-objects", objects);
+    }
 }
