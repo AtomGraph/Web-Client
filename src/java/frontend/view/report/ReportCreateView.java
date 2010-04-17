@@ -93,7 +93,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     {
 	try
 	{
-            String reportUri = request.getParameter("report-uri");
+            String reportUri = request.getParameter("report-uri");  // after 1st request ("Query" submit), $report-uri is known
             
 	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri));
 	    setDocument(report);
@@ -112,10 +112,10 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     {
 	try
 	{
-            String reportId = "http://localhost:8084/semantic-reports/reports/" + request.getParameter("report-id");
+            String reportUri = request.getParameter("report-uri"); // after 1st request ("Query" submit), $report-uri is known
 
-	    String visualizations = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportId));
-	    String variables = QueryXMLResult.select(model, QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportId));
+	    String visualizations = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportUri));
+	    String variables = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri));
 
 	    getResolver().setArgument("visualizations", visualizations);
 	    getResolver().setArgument("variables", variables);
@@ -128,21 +128,25 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	}
     }
 
+    @Override
     public Form getForm()
     {
         return form;
     }
 
+    @Override
     public void setForm(Form form)
     {
         this.form = form;
     }
 
+    @Override
     public Boolean getResult()
     {
         return result;
     }
 
+    @Override
     public void setResult(Boolean successful)
     {
         this.result = successful;
@@ -168,6 +172,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         this.model = model;
     }
 
+    @Override
     public List<Error> getErrors()
     {
         return errors;

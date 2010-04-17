@@ -33,6 +33,8 @@ exclude-result-prefixes="#all">
 	<xsl:param name="report-uri" select="concat($host-uri, 'reports/', id:generate())"/>
 	<xsl:param name="query-uri" select="concat($host-uri, 'queries/', id:generate())"/>
 
+       <xsl:variable name="report" select="document('arg://report')"/> <!-- only set after $query-result -->
+
 <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
 	<xsl:template name="title">
@@ -41,12 +43,15 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="content">
 		<div id="main">
-			<h2><xsl:call-template name="title"/></h2>
+			<h2>
+                            <xsl:call-template name="title"/>
+                        </h2>
 
                         <!--
                         <xsl:copy-of select="document('arg://visualization-types')"/>
 			<xsl:copy-of select="document('arg://report')"/>
                         <xsl:copy-of select="document('arg://binding-types')"/>
+                        <xsl:copy-of select="document('arg://visualizations')"/>
                         -->
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -86,7 +91,7 @@ exclude-result-prefixes="#all">
 
 					<textarea cols="80" rows="20" id="query-string" name="ol">
 						<xsl:if test="$query-result">
-							<xsl:value-of select="document('arg://report')//sparql:binding[@name = 'queryString']/sparql:literal"/>
+							<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
 						</xsl:if>
 					</textarea>
 					<br/>
@@ -99,7 +104,7 @@ exclude-result-prefixes="#all">
 					<input type="text" id="title" name="ol" value="whatever!!">
                                             <xsl:attribute name="value">
 						<xsl:if test="$query-result">
-							<xsl:value-of select="document('arg://report')//sparql:binding[@name = 'title']/sparql:literal"/>
+							<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 						</xsl:if>
                                             </xsl:attribute>
                                         </input>
@@ -115,7 +120,7 @@ exclude-result-prefixes="#all">
                                             <xsl:attribute name="value">
                                                 <xsl:choose>
                                                     <xsl:when test="$query-result">
-                                                            <xsl:value-of select="document('arg://report')//sparql:binding[@name = 'endpoint']/sparql:uri"/>
+                                                            <xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
                                                     </xsl:when>
                                                     <xsl:otherwise>http://dbpedia.org/sparql</xsl:otherwise>
                                                 </xsl:choose>
@@ -141,6 +146,8 @@ exclude-result-prefixes="#all">
                                 <xsl:if test="$query-result = 'success'">
                                     <fieldset>
                                             <legend>Visualizations</legend>
+<input type="hidden" name="su" value="{$report-uri}"/>
+<input type="hidden" name="pu" value="&rep;visualizedBy"/>
                                             <ul>
                                                     <xsl:apply-templates select="document('arg://visualization-types')" mode="vis-type-item"/>
                                             </ul>
@@ -153,8 +160,13 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
-		<li>
-			<input type="checkbox" id="{generate-id()}-toggle" name="visualization" value="{sparql:binding[@name = 'type']/sparql:uri}" checked="checked" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);"/>
+                <!-- <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', id:generate())"/> -->
+                <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                <li>
+<!-- $report rep:visualizedBy ou -->
+<input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle" checked="checked" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);"/>
+
+                        <!-- <input type="checkbox" id="{generate-id()}-toggle" name="visualization" value="{sparql:binding[@name = 'type']/sparql:uri}" checked="checked" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);"/> -->
 			<label for="{generate-id()}-toggle">
 				<xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
 			</label>
@@ -162,16 +174,19 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-fieldset">
-                <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', id:generate())"/>
+                <!-- <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', id:generate())"/> -->
+                <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
                 <fieldset id="{generate-id()}-controls">
                         <legend>
                             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
                         </legend>
                         <p>
 
+<!--
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
 <input type="hidden" name="ou" value="{$visualization-uri}"/>
+-->
 
 <input type="hidden" name="su" value="{$visualization-uri}"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
