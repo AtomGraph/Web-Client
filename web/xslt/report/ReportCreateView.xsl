@@ -55,7 +55,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="body-onload">
 countColumns(data);
-            <xsl:for-each select="document('arg://visualization-types')//sparql:result">
+            <xsl:for-each select="$visualization-types//sparql:result">
                 <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
                 <xsl:value-of select="generate-id()"/>
                 <xsl:text>-visualization'), '</xsl:text>

@@ -35,7 +35,6 @@ exclude-result-prefixes="#all">
 			<head>
 				<title>
 					<xsl:call-template name="title"/>
-					<!-- <xsl:copy-of select="document('arg://companies')"/> -->
 				</title>
 
 
