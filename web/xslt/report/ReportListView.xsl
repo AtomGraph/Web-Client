@@ -35,6 +35,9 @@ exclude-result-prefixes="#all">
 		Reports
 	</xsl:template>
 
+	<xsl:template name="body-onload">
+        </xsl:template>
+
 	<xsl:template name="content">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>

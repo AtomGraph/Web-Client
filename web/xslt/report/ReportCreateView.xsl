@@ -53,6 +53,45 @@ exclude-result-prefixes="#all">
             </xsl:choose>
 	</xsl:template>
 
+	<xsl:template name="body-onload">
+countColumns(data);
+            <xsl:for-each select="document('arg://visualization-types')//sparql:result">
+                <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
+                <xsl:value-of select="generate-id()"/>
+                <xsl:text>-visualization'), '</xsl:text>
+                <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                <xsl:text>', [</xsl:text>
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>{ 'element' :</xsl:text>
+                    <xsl:text>document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding')</xsl:text>
+                    <xsl:text>, 'bindingType' : '</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>' }</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>], [</xsl:text>
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>'</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>'</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>], [</xsl:text>
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                    <xsl:text>{ 'columns' : </xsl:text>
+                    <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
+                    <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
+                    <xsl:if test="exists(index-of(('&vis;MapLatBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lat</xsl:if>
+                    <xsl:if test="exists(index-of(('&vis;MapLngBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lng</xsl:if>
+                    <xsl:text>, 'bindingType' : '</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>' }</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>]);</xsl:text>
+            </xsl:for-each>
+        </xsl:template>
+
 	<xsl:template name="content">
 		<div id="main">
 			<h2>
@@ -174,7 +213,7 @@ exclude-result-prefixes="#all">
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
                 <!-- visualization of this type (might be non-existing) -->
                 <xsl:variable name="visualization" select="$visualizations//sparql:result[sparql:binding[@name = 'type']/sparql:uri = current()/sparql:binding[@name = 'type']/sparql:uri]"/>
-                <!-- reuse exiting visualization URI or generate a new one -->
+                <!-- reuse existing visualization URI or generate a new one -->
                 <xsl:variable name="visualization-uri">
                     <xsl:choose>
                         <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
@@ -211,8 +250,21 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-fieldset">
-                <!-- <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', id:generate())"/> -->
-                <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                <!-- visualization of this type (might be non-existing) -->
+                <xsl:variable name="visualization" select="$visualizations//sparql:result[sparql:binding[@name = 'type']/sparql:uri = current()/sparql:binding[@name = 'type']/sparql:uri]"/>
+                <!-- reuse existing visualization URI or generate a new one -->
+                <xsl:variable name="visualization-uri">
+                    <xsl:choose>
+                        <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
+                            <xsl:if test="$visualization">
+                                <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
+                            </xsl:if>
+                        </xsl:when>
+                        <xsl:otherwise> <!-- ReportCreateView -->
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
                 <fieldset id="{generate-id()}-controls">
                         <legend>
                             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>

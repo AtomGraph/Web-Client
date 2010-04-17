@@ -31,22 +31,35 @@ exclude-result-prefixes="#all">
 		<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 	</xsl:template>
 
-        <!--
-        <xsl:template name="onload">
-            init([<xsl:for-each select="document('arg://visualizations')//sparql:result">'<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>'<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]);
-        </xsl:template>
-        
-        <xsl:template name="onload">
-            <xsl:for-each select="document('arg://visualizations')//sparql:result">init('<xsl:value-of select="substring-after(sparql:binding[@name = 'type']/sparql:uri, '&vis;')"/>
-            {
-            <xsl:for-each select="document('arg://variables')//sparql:result[sparql:binding[@name = 'visualization']/sparql:uri = @current/sparql:binding[@name = 'visualization']/sparql:uri]">
-                <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
-                <xsl:if test="position() != last()">,</xsl:if>
+	<xsl:template name="body-onload">
+            countColumns(data);
+            <xsl:for-each select="document('arg://visualizations')//sparql:result">
+                <xsl:text>initAndDraw(document.getElementById('</xsl:text>
+                <xsl:value-of select="generate-id()"/>
+                <xsl:text>-visualization'), '</xsl:text>
+                <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                <xsl:text>', [</xsl:text>
+                <xsl:for-each select="key('binding-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, document('arg://bindings'))">
+                    <xsl:text>'</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>'</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>], [</xsl:text>
+                <xsl:for-each select="key('binding-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, document('arg://bindings'))">
+                    <xsl:text>{ 'columns' : [</xsl:text>
+                    <xsl:for-each select="key('variable-by-binding', sparql:binding[@name = 'binding']/sparql:uri, document('arg://variables'))">
+                        <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
+                        <xsl:if test="position() != last()">,</xsl:if>
+                    </xsl:for-each>
+                    <xsl:text>], 'bindingType' : '</xsl:text>
+                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                    <xsl:text>' }</xsl:text>
+                    <xsl:if test="position() != last()">,</xsl:if>
+                </xsl:for-each>
+                <xsl:text>]);</xsl:text>
             </xsl:for-each>
-            }
-            );</xsl:for-each>
         </xsl:template>
-        -->
         
 	<xsl:template name="content">
 		<div id="main">
