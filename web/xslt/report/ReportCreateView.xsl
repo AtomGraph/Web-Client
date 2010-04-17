@@ -43,7 +43,14 @@ exclude-result-prefixes="#all">
 <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
 	<xsl:template name="title">
-		Create report
+            <xsl:choose>
+                <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
+                    Edit report
+                </xsl:when>
+                <xsl:otherwise> <!-- ReportCreateView -->
+                    Create report
+                </xsl:otherwise>
+            </xsl:choose>
 	</xsl:template>
 
 	<xsl:template name="content">
@@ -165,20 +172,34 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
-                <!-- <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', id:generate())"/> -->
-                <xsl:param name="visualization-uri" select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                <!-- visualization of this type (might be non-existing) -->
+                <xsl:variable name="visualization" select="$visualizations//sparql:result[sparql:binding[@name = 'type']/sparql:uri = current()/sparql:binding[@name = 'type']/sparql:uri]"/>
+                <!-- reuse exiting visualization URI or generate a new one -->
+                <xsl:variable name="visualization-uri">
+                    <xsl:choose>
+                        <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
+                            <xsl:if test="$visualization">
+                                <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
+                            </xsl:if>
+                        </xsl:when>
+                        <xsl:otherwise> <!-- ReportCreateView -->
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+
                 <li>
 <!-- $report rep:visualizedBy ou -->
 <input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);">
     <xsl:choose>
         <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
-            <xsl:if test="$visualizations//sparql:result[sparql:binding[@name = 'type']/sparql:uri = current()/sparql:binding[@name = 'type']/sparql:uri]">
+            <xsl:if test="$visualization">
                 <xsl:attribute name="checked">checked</xsl:attribute>
             </xsl:if>
         </xsl:when>
-        <xsl:otherwise>
+        <xsl:otherwise> <!-- ReportCreateView -->
             <xsl:attribute name="checked">checked</xsl:attribute>
-        </xsl:otherwise> <!-- ReportCreateView -->
+        </xsl:otherwise>
     </xsl:choose>
 </input>
 
