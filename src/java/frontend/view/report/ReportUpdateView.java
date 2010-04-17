@@ -5,13 +5,19 @@
 
 package frontend.view.report;
 
+import model.SDB;
 import frontend.controller.resource.report.ReportResource;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import view.QueryStringBuilder;
+import view.QueryXMLResult;
 
 /**
  *
@@ -39,10 +45,26 @@ public class ReportUpdateView extends ReportView
 	setReport(request, response);
 	setQueryResult(request, response);
 	setVisualizations(request, response);
+setVisualizationTypes(request, response);
+setBindingTypes(request, response);
 
 	super.display(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    protected void setVisualizationTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String visTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq")));
+
+	getResolver().setArgument("visualization-types", visTypes);
+    }
+
+    protected void setBindingTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String bindingTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq")));
+
+	getResolver().setArgument("binding-types", bindingTypes);
     }
 
 }

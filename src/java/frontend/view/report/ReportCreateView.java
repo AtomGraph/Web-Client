@@ -178,6 +178,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         return errors;
     }
 
+    @Override
     public void setErrors(List<Error> errors)
     {
         this.errors = errors;
