@@ -198,10 +198,13 @@ exclude-result-prefixes="#all">
                                         </input>
 					<br/>
 					<button type="submit" name="action" value="query">Query</button>
-                                        <xsl:if test="$query-result = 'success'">
+                                        <xsl:if test="$view = $create-view and $query-result = 'success'">
                                             <button type="submit" name="action" value="save">Save</button>
                                         </xsl:if>
-				</p>
+                                        <xsl:if test="$view = $update-view">
+                                            <button type="submit" name="action" value="update">Save</button>
+                                        </xsl:if>
+                                </p>
 
                                 <xsl:if test="$query-result = 'failure'">
                                     <ul>
