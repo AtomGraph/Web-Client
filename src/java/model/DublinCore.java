@@ -26,4 +26,7 @@ public class DublinCore
 	public static final String SUBJECT = "http://purl.org/dc/elements/1.1/subject";  
 	public static final String TITLE = "http://purl.org/dc/elements/1.1/title";  
 	public static final String TYPE = "http://purl.org/dc/elements/1.1/type";
+
+        public static final String CREATED = "http://purl.org/dc/terms/created";
+	public static final String MODIFIED = "	http://purl.org/dc/terms/modified";
 }

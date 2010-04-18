@@ -6,8 +6,7 @@
 package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.FileUtils;
+import com.hp.hpl.jena.vocabulary.RDF;
 import controller.LeafResource;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportReadView;
@@ -16,11 +15,17 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
-import frontend.controller.form.ReportForm;
+import frontend.controller.form.ReportRDFForm;
 import frontend.view.report.ReportUpdateView;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Calendar;
+import java.util.Date;
+import model.DublinCore;
+import model.Namespaces;
 import model.Report;
+import model.SDB;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
@@ -95,51 +100,36 @@ public class ReportResource extends FrontEndResource implements LeafResource
 
     private void update(HttpServletRequest request, HttpServletResponse response)
     {
-	ReportForm form = new ReportForm(request);
+	ReportRDFForm form = new ReportRDFForm(request);
 
-	SPINModuleRegistry.get().init();
-	Model queryModel = ModelFactory.createDefaultModel();
-	//queryModel.setNsPrefix("rdf", RDF.getURI());
-	//queryModel.setNsPrefix("ex", "http://example.org/demo#");
-	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(queryModel, form.getQueryString());
-	ARQ2SPIN arq2Spin = new ARQ2SPIN(queryModel);
+        SPINModuleRegistry.get().init();
+	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
+	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
-	Select spinQuery = (Select) arq2Spin.createQuery(arqQuery, "http://www.semanticreports.com/queries/");
-	queryModel.write(System.out, FileUtils.langXMLAbbrev);
+	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI()); // change to query URI
 
-	/*
-	OntModel model = ModelFactory.createOntologyModel();
-	Jenabean.instance().bind(model);
+        // add some metadata
+        String userUri = getController().getMapping().getHost() + "users/pumba";
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        Model model = form.getModel();
+        model.add(form.getReportResource(), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
+        model.add(model.createResource(userUri), RDF.type, model.createResource(Namespaces.SIOC_NS + "User"));
+        model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        model.add(model.createResource(userUri), model.createProperty("http://rdfs.org/sioc/ns#name"), model.createTypedLiteral("RandomUserName"));
 
-	Query query = new Query();
-	query.setQueryString(queryString);
+        SDB.getInstanceModel().add(form.getModel()); // save report
+	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+form.getModel().write(System.out);
 
-	Report report = new Report();
-	report.setTitle(title);
-	report.setQuery(query);
-	report.setCreatedAt(new Date());
-	report.resource = this; //report.setFrontEndResource(this);
-	report.save();
-
-	try
-	{
-	    URL metaUrl = new URL("http://api.talis.com/stores/mjusevicius-dev1/meta");
-	    Authenticator.setDefault(new TalisAuthenticator());
-
-	    dk.semantic_web.diy.http.HttpRequest remoteRequest = new dk.semantic_web.diy.http.HttpRequest();
-	    remoteRequest.setMethod("post");
-	    remoteRequest.setServerName(metaUrl.getHost());
-	    remoteRequest.setPathInfo(metaUrl.getPath());
-	    remoteRequest.setHeader("Content-Type", "application/rdf+xml");
-
-System.out.println(model.toString());
-	    model.write(remoteRequest.getOutputStream());
-	    HttpResponse remoteResponse = HttpClient.send(remoteRequest);
-	} catch (IOException ex)
-	{
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	*/
+        try {
+            // save report
+            //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+            response.sendRedirect(form.getReportResource().getURI());
+        } catch (IOException ex) {
+            Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

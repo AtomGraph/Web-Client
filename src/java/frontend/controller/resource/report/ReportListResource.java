@@ -147,7 +147,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model model = form.getModel();
-        model.add(form.getReportResource(), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATED), model.createTypedLiteral(calendar));
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
         model.add(model.createResource(userUri), RDF.type, model.createResource(Namespaces.SIOC_NS + "User"));
         model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));

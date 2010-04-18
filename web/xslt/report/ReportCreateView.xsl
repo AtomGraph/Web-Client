@@ -11,7 +11,7 @@
         <!ENTITY dc "http://purl.org/dc/elements/1.1/">
         <!ENTITY spin "http://spinrdf.org/sp#">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
@@ -19,6 +19,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:id="java:util.IDGenerator"
 exclude-result-prefixes="#all">
 
@@ -26,19 +27,19 @@ exclude-result-prefixes="#all">
 
 	<xsl:include href="../FrontEndView.xsl"/>
 
-	<xsl:param name="query-result"/>
-	<xsl:param name="visualization-result"/>
-	<xsl:param name="query-string" select="''"/>
+	<xsl:param name="query-result" select="()" as="xs:boolean?"/>
+	<xsl:param name="visualization-result" select="()" as="xs:boolean?"/>
+	<xsl:param name="query-string" select="''" as="xs:string"/>
 	<!-- <xsl:param name="report-id"/> -->
-	<xsl:param name="create-view" select="'frontend.view.report.ReportCreateView'"/>
-	<xsl:param name="update-view" select="'frontend.view.report.ReportUpdateView'"/>
+	<xsl:param name="create-view" select="'frontend.view.report.ReportCreateView'" as="xs:string"/>
+	<xsl:param name="update-view" select="'frontend.view.report.ReportUpdateView'" as="xs:string"/>
 
-        <xsl:variable name="report">
-            <xsl:if test="($view = $create-view and $query-result) or $view = $update-view">
+        <xsl:variable name="report" as="document-node()?">
+            <xsl:if test="($view = $create-view and not(empty($query-result))) or $view = $update-view">
                 <xsl:copy-of select="document('arg://report')"/> <!-- only set after $query-result -->
             </xsl:if>
         </xsl:variable>
-	<xsl:variable name="report-uri">
+	<xsl:variable name="report-uri" as="xs:string">
             <xsl:choose>
                 <xsl:when test="$report">
                     <xsl:value-of select="$report//sparql:binding[@name = 'report']/sparql:uri"/>
@@ -48,7 +49,7 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-	<xsl:variable name="query-uri">
+	<xsl:variable name="query-uri" as="xs:string">
             <xsl:choose>
                 <xsl:when test="$report">
                     <xsl:value-of select="$report//sparql:binding[@name = 'query']/sparql:uri"/>
@@ -62,7 +63,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="visualization-types" select="document('arg://visualization-types')"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')"/>
 
-<xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
+        <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
 	<xsl:template name="title">
             <xsl:choose>
@@ -133,7 +134,7 @@ exclude-result-prefixes="#all">
                         <xsl:copy-of select="document('arg://visualization-types')"/>
 			<xsl:copy-of select="document('arg://report')"/>
                         -->
-                        <xsl:copy-of select="$report"/>
+                        <xsl:if test="$query-result eq false()">false!!</xsl:if>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
@@ -171,7 +172,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 					<textarea cols="80" rows="20" id="query-string" name="ol">
-						<xsl:if test="$query-result">
+						<xsl:if test="not(empty($query-result))">
 							<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
 						</xsl:if>
 					</textarea>
@@ -184,7 +185,7 @@ exclude-result-prefixes="#all">
 					<label for="title">Title</label>
 					<input type="text" id="title" name="ol" value="whatever!!">
                                             <xsl:attribute name="value">
-						<xsl:if test="$query-result">
+						<xsl:if test="not(empty($query-result))">
 							<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 						</xsl:if>
                                             </xsl:attribute>
@@ -200,7 +201,7 @@ exclude-result-prefixes="#all">
 					<input type="text" id="endpoint" name="ou">
                                             <xsl:attribute name="value">
                                                 <xsl:choose>
-                                                    <xsl:when test="$query-result">
+                                                    <xsl:when test="not(empty($query-result))">
                                                             <xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
                                                     </xsl:when>
                                                     <xsl:otherwise>http://dbpedia.org/sparql</xsl:otherwise>
@@ -209,7 +210,7 @@ exclude-result-prefixes="#all">
                                         </input>
 					<br/>
 					<button type="submit" name="action" value="query">Query</button>
-                                        <xsl:if test="$view = $create-view and $query-result = 'success'">
+                                        <xsl:if test="$view = $create-view and $query-result eq true()">
                                             <button type="submit" name="action" value="save">Save</button>
                                         </xsl:if>
                                         <xsl:if test="$view = $update-view">
@@ -217,7 +218,7 @@ exclude-result-prefixes="#all">
                                         </xsl:if>
                                 </p>
 
-                                <xsl:if test="$query-result = 'failure'">
+                                <xsl:if test="$query-result eq false()">
                                     <ul>
                                         <xsl:for-each select="document('arg://query-errors')//sparql:binding">
                                             <li>
@@ -227,7 +228,7 @@ exclude-result-prefixes="#all">
                                     </ul>
                                 </xsl:if>
 
-                                <xsl:if test="$query-result = 'success'">
+                                <xsl:if test="$query-result eq true()">
                                     <fieldset>
                                             <legend>Visualizations</legend>
 <input type="hidden" name="su" value="{$report-uri}"/>

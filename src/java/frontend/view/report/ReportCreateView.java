@@ -60,14 +60,14 @@ public class ReportCreateView extends FrontEndView implements FormResultView
                 setVisualizations(request, response);
 
                 getResolver().setArgument("results", getQueryResults());
-                getTransformer().setParameter("query-result", "success");
                 //getTransformer().setParameter("query-string", request.getParameter("query-string"));
             }
             else
             {
                 getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
-                getTransformer().setParameter("query-result", "failure");
+                //getTransformer().setParameter("query-result", "failure");
             }
+            getTransformer().setParameter("query-result", getResult());
         }
 
 	super.display(request, response);
