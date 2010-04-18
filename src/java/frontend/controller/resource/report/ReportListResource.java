@@ -132,7 +132,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
         return view;
     }
     
-    private void save(HttpServletRequest request, HttpServletResponse response)
+    public void save(HttpServletRequest request, HttpServletResponse response)
     {
 	ReportRDFForm form = new ReportRDFForm(request);
 

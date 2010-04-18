@@ -235,13 +235,11 @@ exclude-result-prefixes="#all">
                 <!-- reuse existing visualization URI or generate a new one -->
                 <xsl:variable name="visualization-uri">
                     <xsl:choose>
-                        <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
-                            <xsl:if test="$visualization">
-                                <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
-                            </xsl:if>
+                        <xsl:when test="$view = $update-view and $visualization"> <!-- ReportUpdateView -->
+                            <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
                         </xsl:when>
                         <xsl:otherwise> <!-- ReportCreateView -->
-                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id($visualization))"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
@@ -274,16 +272,15 @@ exclude-result-prefixes="#all">
                 <!-- reuse existing visualization URI or generate a new one -->
                 <xsl:variable name="visualization-uri">
                     <xsl:choose>
-                        <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
-                            <xsl:if test="$visualization">
-                                <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
-                            </xsl:if>
+                        <xsl:when test="$view = $update-view and $visualization"> <!-- ReportUpdateView -->
+                            <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
                         </xsl:when>
                         <xsl:otherwise> <!-- ReportCreateView -->
                             <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
+
                 <fieldset id="{generate-id()}-controls">
                         <legend>
                             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>

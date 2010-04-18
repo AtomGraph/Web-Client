@@ -87,7 +87,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	{
 	    view = new ReportReadView(this);
 	    
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
+	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) ReportListResource.getInstance().save(request, response);
 	}
 
 	return view;
