@@ -30,12 +30,34 @@ exclude-result-prefixes="#all">
 	<xsl:param name="visualization-result"/>
 	<xsl:param name="query-string" select="''"/>
 	<!-- <xsl:param name="report-id"/> -->
-	<xsl:param name="report-uri" select="concat($host-uri, 'reports/', id:generate())"/>
-	<xsl:param name="query-uri" select="concat($host-uri, 'queries/', id:generate())"/>
 	<xsl:param name="create-view" select="'frontend.view.report.ReportCreateView'"/>
 	<xsl:param name="update-view" select="'frontend.view.report.ReportUpdateView'"/>
 
-        <xsl:variable name="report" select="document('arg://report')"/> <!-- only set after $query-result -->
+        <xsl:variable name="report">
+            <xsl:if test="($view = $create-view and $query-result) or $view = $update-view">
+                <xsl:copy-of select="document('arg://report')"/> <!-- only set after $query-result -->
+            </xsl:if>
+        </xsl:variable>
+	<xsl:variable name="report-uri">
+            <xsl:choose>
+                <xsl:when test="$report">
+                    <xsl:value-of select="$report//sparql:binding[@name = 'report']/sparql:uri"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat($host-uri, 'reports/', id:generate())"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+	<xsl:variable name="query-uri">
+            <xsl:choose>
+                <xsl:when test="$report">
+                    <xsl:value-of select="$report//sparql:binding[@name = 'query']/sparql:uri"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat($host-uri, 'queries/', id:generate())"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:variable name="visualizations" select="document('arg://visualizations')"/> <!-- only set after $query-result -->
         <xsl:variable name="visualization-types" select="document('arg://visualization-types')"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')"/>
@@ -54,17 +76,6 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template name="body-onload">
-            <xsl:variable name="used-vis-types">
-                <xsl:choose>
-                    <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
-                        <xsl:copy-of select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
-                    </xsl:when>
-                    <xsl:otherwise> <!-- ReportCreateView -->
-                        <xsl:copy-of select="$visualization-types//sparql:result"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:variable>
-            
             <xsl:text>countColumns(data); </xsl:text>
             <xsl:for-each select="$visualization-types//sparql:result">
                 <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
@@ -122,7 +133,7 @@ exclude-result-prefixes="#all">
                         <xsl:copy-of select="document('arg://visualization-types')"/>
 			<xsl:copy-of select="document('arg://report')"/>
                         -->
-                        <xsl:copy-of select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
+                        <xsl:copy-of select="$report"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
