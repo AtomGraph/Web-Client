@@ -54,14 +54,25 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template name="body-onload">
-countColumns(data);
+            <xsl:variable name="used-vis-types">
+                <xsl:choose>
+                    <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
+                        <xsl:copy-of select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
+                    </xsl:when>
+                    <xsl:otherwise> <!-- ReportCreateView -->
+                        <xsl:copy-of select="$visualization-types//sparql:result"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            
+            <xsl:text>countColumns(data); </xsl:text>
             <xsl:for-each select="$visualization-types//sparql:result">
                 <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
                 <xsl:value-of select="generate-id()"/>
                 <xsl:text>-visualization'), '</xsl:text>
                 <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                 <xsl:text>', [</xsl:text>
-                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
                     <xsl:text>{ 'element' :</xsl:text>
                     <xsl:text>document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding')</xsl:text>
                     <xsl:text>, 'bindingType' : '</xsl:text>
@@ -70,14 +81,14 @@ countColumns(data);
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
                 <xsl:text>], [</xsl:text>
-                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
                     <xsl:text>'</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                     <xsl:text>'</xsl:text>
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
                 <xsl:text>], [</xsl:text>
-                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, document('arg://binding-types'))">
+                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
                     <xsl:text>{ 'columns' : </xsl:text>
                     <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
                     <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
@@ -90,6 +101,15 @@ countColumns(data);
                 </xsl:for-each>
                 <xsl:text>]);</xsl:text>
             </xsl:for-each>
+            <xsl:text> </xsl:text>
+            <!-- switch of Visualizations not included in the Report -->
+            <xsl:for-each select="$visualization-types//sparql:result[not(sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri)]">
+                <xsl:text>toggleVisualization(document.getElementById('</xsl:text>
+                <xsl:value-of select="generate-id()"/>
+                <xsl:text>-visualization'), document.getElementById('</xsl:text>
+                <xsl:value-of select="generate-id()"/>
+                <xsl:text>-controls'), false); </xsl:text>
+            </xsl:for-each>
         </xsl:template>
 
 	<xsl:template name="content">
@@ -101,10 +121,9 @@ countColumns(data);
                         <!--
                         <xsl:copy-of select="document('arg://visualization-types')"/>
 			<xsl:copy-of select="document('arg://report')"/>
-                        <xsl:copy-of select="$binding-types"/>
                         -->
-                        <xsl:copy-of select="$visualizations"/>
-<xsl:value-of select="$view"/>
+                        <xsl:copy-of select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
+
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
 					<input type="hidden" name="view" value="create"/>
@@ -222,7 +241,7 @@ countColumns(data);
                             </xsl:if>
                         </xsl:when>
                         <xsl:otherwise> <!-- ReportCreateView -->
-                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id($visualization))"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
