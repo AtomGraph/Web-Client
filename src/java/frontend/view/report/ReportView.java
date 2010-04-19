@@ -41,9 +41,6 @@ public class ReportView extends FrontEndView
         String queryString = getResource().getReport().getQuery().getQueryString();
         String results = QueryXMLResult.selectRemote(endpointUri, queryString);
 
-	//setDocument(results);
-
-	//getTransformer().setParameter("query-string", queryString);
 	getTransformer().setParameter("query-result", true);
 
 	getResolver().setArgument("results", results);
@@ -59,28 +56,50 @@ public class ReportView extends FrontEndView
 	    getResolver().setArgument("report", report);
 	} catch (FileNotFoundException ex)
 	{
-	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ReportView.class.getName()).log(Level.SEVERE, null, ex);
 	} catch (IOException ex)
 	{
-	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ReportView.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
-    
+
     protected void setVisualizations(HttpServletRequest request, HttpServletResponse response)
     {
 	try
 	{
 	    String visualizations = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), getResource().getAbsoluteURI()));
-	    String variables = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI()));
 	    
 	    getResolver().setArgument("visualizations", visualizations);
+        } catch (FileNotFoundException ex)
+	{
+	    Logger.getLogger(ReportView.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex)
+	{
+	    Logger.getLogger(ReportView.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    protected void setBindings(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String bindings = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), getResource().getAbsoluteURI()));
+
+	getResolver().setArgument("bindings", bindings);
+    }
+
+    protected void setVariables(HttpServletRequest request, HttpServletResponse response)
+    {
+	try
+	{
+	    String variables = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI()));
+
 	    getResolver().setArgument("variables", variables);
         } catch (FileNotFoundException ex)
 	{
-	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ReportView.class.getName()).log(Level.SEVERE, null, ex);
 	} catch (IOException ex)
 	{
-	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ReportView.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
+
 }

@@ -27,16 +27,18 @@ exclude-result-prefixes="#all">
 
 	<xsl:include href="../FrontEndView.xsl"/>
 
+        <!-- To use xsl:import-schema, you need the schema-aware version of Saxon -->
+        <!-- <xsl:import-schema namespace="&sparql;" schema-location="http://www.w3.org/TR/2007/CR-rdf-sparql-XMLres-20070925/result2.xsd"/> -->
+
 	<xsl:param name="query-result" select="()" as="xs:boolean?"/>
 	<xsl:param name="visualization-result" select="()" as="xs:boolean?"/>
 	<xsl:param name="query-string" select="''" as="xs:string"/>
-	<!-- <xsl:param name="report-id"/> -->
 	<xsl:param name="create-view" select="'frontend.view.report.ReportCreateView'" as="xs:string"/>
 	<xsl:param name="update-view" select="'frontend.view.report.ReportUpdateView'" as="xs:string"/>
 
         <xsl:variable name="report" as="document-node()?">
             <xsl:if test="($view = $create-view and not(empty($query-result))) or $view = $update-view">
-                <xsl:copy-of select="document('arg://report')"/> <!-- only set after $query-result -->
+                <xsl:sequence select="document('arg://report')"/> <!-- only set after $query-result -->
             </xsl:if>
         </xsl:variable>
 	<xsl:variable name="report-uri" as="xs:string">
@@ -59,9 +61,11 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:variable name="visualizations" select="document('arg://visualizations')"/> <!-- only set after $query-result -->
-        <xsl:variable name="visualization-types" select="document('arg://visualization-types')"/>
-        <xsl:variable name="binding-types" select="document('arg://binding-types')"/>
+        <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()?"/> <!-- only set after $query-result -->
+	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()?"/>
+	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()?"/>
+        <xsl:variable name="visualization-types" select="document('arg://visualization-types')" as="document-node()"/>
+        <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -82,9 +86,23 @@ exclude-result-prefixes="#all">
                 <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
                 <xsl:value-of select="generate-id()"/>
                 <xsl:text>-visualization'), '</xsl:text>
+
                 <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                 <xsl:text>', [</xsl:text>
-                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
+                <xsl:variable name="binding-types" select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
+                <xsl:variable name="used-binding-types" as="element(*)*">
+                    <xsl:choose>
+                        <xsl:when test="$bindings">
+                            <xsl:sequence select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)[sparql:binding[@name = 'type']/sparql:uri = $bindings//sparql:binding[@name = 'type']/sparql:uri]"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:sequence select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+<!-- <xsl:message terminate="yes"><xsl:if test="$bindings">YEAAH!!</xsl:if> <xsl:copy-of select="$used-binding-types"/></xsl:message> -->
+
+                <xsl:for-each select="$binding-types">
                     <xsl:text>{ 'element' :</xsl:text>
                     <xsl:text>document.getElementById('</xsl:text><xsl:value-of select="generate-id()"/><xsl:text>-binding')</xsl:text>
                     <xsl:text>, 'bindingType' : '</xsl:text>
@@ -92,20 +110,32 @@ exclude-result-prefixes="#all">
                     <xsl:text>' }</xsl:text>
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
+
                 <xsl:text>], [</xsl:text>
-                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
+                <xsl:for-each select="$binding-types">
                     <xsl:text>'</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                     <xsl:text>'</xsl:text>
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
+
                 <xsl:text>], [</xsl:text>
-                <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
+                <xsl:for-each select="$binding-types">
                     <xsl:text>{ 'columns' : </xsl:text>
-                    <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
-                    <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
-                    <xsl:if test="exists(index-of(('&vis;MapLatBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lat</xsl:if>
-                    <xsl:if test="exists(index-of(('&vis;MapLngBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lng</xsl:if>
+                    <xsl:choose>
+                        <xsl:when test="$variables">!!!!!!!!!11
+                            <xsl:for-each select="key('variable-by-binding', sparql:binding[@name = 'binding']/sparql:uri, $variables)">
+                                <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
+                                <xsl:if test="position() != last()">,</xsl:if>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
+                            <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
+                            <xsl:if test="exists(index-of(('&vis;MapLatBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lat</xsl:if>
+                            <xsl:if test="exists(index-of(('&vis;MapLngBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lng</xsl:if>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:text>, 'bindingType' : '</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                     <xsl:text>' }</xsl:text>
@@ -131,10 +161,9 @@ exclude-result-prefixes="#all">
                         </h2>
 
                         <!--
-                        <xsl:copy-of select="document('arg://visualization-types')"/>
-			<xsl:copy-of select="document('arg://report')"/>
+                        <xsl:copy-of select="$visualization-types"/>
                         -->
-                        <xsl:if test="$query-result eq false()">false!!</xsl:if>
+			!!<xsl:copy-of select="document('arg://bindings')"/>!!
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>

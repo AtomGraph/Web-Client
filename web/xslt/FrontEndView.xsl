@@ -27,9 +27,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="view"/>
 
 	<xsl:variable name="resource" select="/"/>
-<xsl:key name="binding-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
-<xsl:key name="variable-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
-<xsl:key name="variable-by-binding" match="sparql:result" use="sparql:binding[@name = 'binding']/sparql:uri"/>
+
+        <xsl:key name="binding-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
+        <xsl:key name="variable-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
+        <xsl:key name="variable-by-binding" match="sparql:result" use="sparql:binding[@name = 'binding']/sparql:uri"/>
 
 	<xsl:template match="sparql:sparql">
 		<html xmlns="http://www.w3.org/1999/xhtml"> <!-- xml:base="{$base_url}" -->
@@ -53,15 +54,16 @@ exclude-result-prefixes="#all">
                                         ol.pagination li { display: inline; }
 				</style>
 
-				<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript"></script>
+				<script type="text/javascript" src="http://www.google.com/jsapi">&#160;</script>
+				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript">&#160;</script>
 				<script type="text/javascript">
 google.load('visualization', '1',  {'packages': ["table", "scatterchart", "linechart", "piechart", "map"]});
 
 var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
 				</script>
-				<script type="text/javascript" src="static/js/report.js"></script>
-
+				<script type="text/javascript" src="static/js/report.js">&#160;</script>
+                                <meta name="author" content="http://semantic-web.dk"/>
+                                <meta name="DC.title" content="Semantic Reports" />
 			</head>
 			<body>
                                 <xsl:if test="$view = 'frontend.view.report.ReportCreateView' or $view = 'frontend.view.report.ReportUpdateView' or $view = 'frontend.view.report.ReportReadView'">

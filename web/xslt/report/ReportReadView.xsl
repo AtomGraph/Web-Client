@@ -8,7 +8,7 @@
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
@@ -22,11 +22,11 @@ exclude-result-prefixes="#all">
 
 	<xsl:include href="../FrontEndView.xsl"/>
 
-	<xsl:variable name="report" select="document('arg://report')"/>
-	<xsl:variable name="visualizations" select="document('arg://visualizations')"/>
-	<xsl:variable name="bindings" select="document('arg://bindings')"/>
-	<xsl:variable name="variables" select="document('arg://variables')"/>
-        <xsl:variable name="query-objects" select="document('arg://query-objects')"/>
+	<xsl:variable name="report" select="document('arg://report')" as="document-node()"/>
+	<xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
+	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
+	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
+        <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -68,13 +68,13 @@ exclude-result-prefixes="#all">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
-			<!-- <xsl:copy-of select="document('arg://report')"/> -->
-                        <!-- <xsl:copy-of select="document('arg://results')"/> -->
+			<!-- <xsl:copy-of select="$report"/> -->
+                        <!-- <xsl:copy-of select="$results"/> -->
 			<!-- <xsl:copy-of select="$visualizations"/> -->
                         <!--
-			<xsl:copy-of select="$bindings"/>
                         <xsl:copy-of select="$variables"/>
-			<xsl:copy-of select="document('arg://query-objects')"/>
+			<xsl:copy-of select="$query-objects"/>
+			<xsl:copy-of select="$bindings"/>
                         -->
 
 			<dl>
@@ -113,16 +113,11 @@ exclude-result-prefixes="#all">
 			</form>
 
 			<xsl:apply-templates select="$visualizations//sparql:result" mode="vis-container"/>
-                        <!-- <xsl:apply-templates select="$visualization-types" mode="vis-type-container"/> -->
 		</div>
 	</xsl:template>
 
-        <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-container">
-            <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
-        </xsl:template>
-
         <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="vis-container">
-            <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
+            <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;">&#160;</div>
         </xsl:template>
 
 </xsl:stylesheet>
