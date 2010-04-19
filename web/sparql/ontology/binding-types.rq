@@ -11,7 +11,8 @@ SELECT DISTINCT *
         ?type   rdfs:label      ?label .
         _:prop  rdfs:range      ?type .
         _:prop  rdfs:domain     ?visType .
-        _:super owl:onProperty  vis:dataType .
-        _:super owl:onClass     ?dataType
+        _:super rdfs:subClassOf _:rest .
+        _:rest  owl:onProperty  vis:dataType .
+        _:rest  owl:onClass     ?dataType
 }
 ORDER BY ?label

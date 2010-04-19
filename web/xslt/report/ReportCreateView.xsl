@@ -165,7 +165,7 @@ exclude-result-prefixes="#all">
                         <!--
                         <xsl:copy-of select="$visualization-types"/>
                         -->
-			<!-- !!<xsl:copy-of select="$variables"/>!! -->
+			!!<xsl:copy-of select="$binding-types"/>!!
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
