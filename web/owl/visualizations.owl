@@ -43,6 +43,14 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/dataType -->
+
+    <owl:ObjectProperty rdf:about="dataType">
+        <rdfs:domain rdf:resource="Binding"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://code.google.com/apis/visualization/dateBinding -->
 
     <owl:ObjectProperty rdf:about="dateBinding">
@@ -254,13 +262,13 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="mapLngBinding"/>
+                <owl:onProperty rdf:resource="mapLatBinding"/>
                 <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="mapLatBinding"/>
+                <owl:onProperty rdf:resource="mapLngBinding"/>
                 <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -301,6 +309,34 @@
 
     <owl:Class rdf:about="NumericBinding">
         <rdfs:subClassOf rdf:resource="Binding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="dataType"/>
+                <owl:onClass rdf:resource="&xsd;float"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="dataType"/>
+                <owl:onClass rdf:resource="&xsd;decimal"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="dataType"/>
+                <owl:onClass rdf:resource="&xsd;integer"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="dataType"/>
+                <owl:onClass rdf:resource="&xsd;double"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -351,14 +387,14 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="scatterChartYBinding"/>
-                <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minCardinality>
+                <owl:onProperty rdf:resource="scatterChartXBinding"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="scatterChartXBinding"/>
-                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+                <owl:onProperty rdf:resource="scatterChartYBinding"/>
+                <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -387,6 +423,13 @@
 
     <owl:Class rdf:about="StringBinding">
         <rdfs:subClassOf rdf:resource="Binding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="dataType"/>
+                <owl:onClass rdf:resource="&xsd;string"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -403,6 +446,92 @@
     <!-- http://code.google.com/apis/visualization/Visualization -->
 
     <owl:Class rdf:about="Visualization"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#anySimpleType -->
+
+    <owl:Class rdf:about="&xsd;anySimpleType">
+        <rdfs:subClassOf rdf:resource="&xsd;anyType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#anyType -->
+
+    <owl:Class rdf:about="&xsd;anyType"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#boolean -->
+
+    <owl:Class rdf:about="&xsd;boolean">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <owl:Class rdf:about="&xsd;date">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#dateTime -->
+
+    <owl:Class rdf:about="&xsd;dateTime">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#decimal -->
+
+    <owl:Class rdf:about="&xsd;decimal">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#double -->
+
+    <owl:Class rdf:about="&xsd;double">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#float -->
+
+    <owl:Class rdf:about="&xsd;float">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#integer -->
+
+    <owl:Class rdf:about="&xsd;integer">
+        <rdfs:subClassOf rdf:resource="&xsd;decimal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#string -->
+
+    <owl:Class rdf:about="&xsd;string">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#time -->
+
+    <owl:Class rdf:about="&xsd;time">
+        <rdfs:subClassOf rdf:resource="&xsd;anySimpleType"/>
+    </owl:Class>
     
 
 
