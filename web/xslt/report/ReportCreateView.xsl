@@ -123,13 +123,16 @@ exclude-result-prefixes="#all">
                 <xsl:for-each select="$binding-types">
                     <xsl:text>{ 'columns' : </xsl:text>
                     <xsl:choose>
-                        <xsl:when test="$variables">!!!!!!!!!11
-                            <xsl:for-each select="key('variable-by-binding', sparql:binding[@name = 'binding']/sparql:uri, $variables)">
+                        <xsl:when test="$variables"> <!-- saved columns (variables) -->
+                            <xsl:text>[</xsl:text>
+                            <xsl:variable name="binding" select="key('binding-by-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)"/>
+                            <xsl:for-each select="key('variable-by-binding', $binding//sparql:binding[@name = 'binding']/sparql:uri, $variables)">
                                 <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
                                 <xsl:if test="position() != last()">,</xsl:if>
                             </xsl:for-each>
+                            <xsl:text>]</xsl:text>
                         </xsl:when>
-                        <xsl:otherwise>
+                        <xsl:otherwise> <!-- all columns with matching data type -->
                             <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
                             <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
                             <xsl:if test="exists(index-of(('&vis;MapLatBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lat</xsl:if>
@@ -163,7 +166,7 @@ exclude-result-prefixes="#all">
                         <!--
                         <xsl:copy-of select="$visualization-types"/>
                         -->
-			!!<xsl:copy-of select="document('arg://bindings')"/>!!
+			<!-- !!<xsl:copy-of select="$variables"/>!! -->
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
@@ -334,15 +337,14 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
 
-    <xsl:apply-templates select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"  mode="binding-type-select">
-        <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
-        <xsl:with-param name="visualization" select="."/>
-    </xsl:apply-templates>
-
+                            <xsl:apply-templates select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"  mode="binding-type-select">
+                                <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
+                                <xsl:with-param name="visualization" select="."/>
+                            </xsl:apply-templates>
                         </p>
                 </fieldset>
 
-        <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;"></div>
+        <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;">&#160;</div>
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
@@ -415,6 +417,7 @@ exclude-result-prefixes="#all">
                 <xsl:text>]);</xsl:text>
 
                 -->
+                <xsl:text>&#160;</xsl:text>
         </select>
     </xsl:template>
 
