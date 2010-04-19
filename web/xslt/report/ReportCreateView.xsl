@@ -125,8 +125,7 @@ exclude-result-prefixes="#all">
                     <xsl:choose>
                         <xsl:when test="$variables"> <!-- saved columns (variables) -->
                             <xsl:text>[</xsl:text>
-                            <xsl:variable name="binding" select="key('binding-by-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)"/>
-                            <xsl:for-each select="key('variable-by-binding', $binding//sparql:binding[@name = 'binding']/sparql:uri, $variables)">
+                            <xsl:for-each select="key('variable-by-binding-type', sparql:binding[@name = 'type']/sparql:uri, $variables)">
                                 <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
                                 <xsl:if test="position() != last()">,</xsl:if>
                             </xsl:for-each>
