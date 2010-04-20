@@ -51,7 +51,8 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
-        
+        //setDataTypes(request, response);
+
 	if (getResult() != null)
         {
             if (getResult())
@@ -87,6 +88,13 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	String bindingTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq")));
 
 	getResolver().setArgument("binding-types", bindingTypes);
+    }
+
+    protected void setDataTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String dataTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq")));
+
+	getResolver().setArgument("data-types", dataTypes);
     }
 
     protected void setReport(HttpServletRequest request, HttpServletResponse response)

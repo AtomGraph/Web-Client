@@ -66,6 +66,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()?"/>
         <xsl:variable name="visualization-types" select="document('arg://visualization-types')" as="document-node()"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
+        <xsl:variable name="data-types" select="document('arg://data-types')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -165,7 +166,7 @@ exclude-result-prefixes="#all">
                         <!--
                         <xsl:copy-of select="$visualization-types"/>
                         -->
-			!!<xsl:copy-of select="$binding-types"/>!!
+			!!<xsl:copy-of select="$data-types"/>!!
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>

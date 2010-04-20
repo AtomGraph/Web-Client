@@ -47,6 +47,7 @@ setVariables(request, response);
 setBindings(request, response);
 setVisualizationTypes(request, response);
 setBindingTypes(request, response);
+setDataTypes(request, response);
 
 	super.display(request, response);
 
@@ -67,4 +68,10 @@ setBindingTypes(request, response);
 	getResolver().setArgument("binding-types", bindingTypes);
     }
 
+    protected void setDataTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String dataTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq")));
+
+	getResolver().setArgument("data-types", dataTypes);
+    }
 }
