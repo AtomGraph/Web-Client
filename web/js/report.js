@@ -2,6 +2,17 @@
 var data = new google.visualization.DataTable(table, 0.6);
 var typeColumns = new Array();
 var visualizations = new Array();
+var XSD_NS = 'http://www.w3.org/2001/XMLSchema#';
+var dataTypes = new Array();
+dataTypes[XSD_NS + 'boolean'] = 'boolean';
+dataTypes[XSD_NS + 'string'] = 'string';
+dataTypes[XSD_NS + 'integer'] = 'number';
+dataTypes[XSD_NS + 'decimal'] = 'number';
+dataTypes[XSD_NS + 'float'] = 'number';
+dataTypes[XSD_NS + 'double'] = 'number';
+dataTypes[XSD_NS + 'date'] = 'date';
+dataTypes[XSD_NS + 'dateTime'] = 'datetime';
+dataTypes[XSD_NS + 'time'] = 'timeofday';
 
 function initVis(container, visType)
 {
@@ -12,52 +23,52 @@ function initVis(container, visType)
     if (visType.indexOf("Map") != -1) visualizations[visType] = new google.visualization.Map(container);
 }
 
-function initControls(visType, bindingElements, bindings, columns)
+function initControls(visType, bindingElements, bindingTypes, variables)
 {
     //if (visType.indexOf("Table") != -1)
     if (visType.indexOf("ScatterChart") != -1)
         if (typeColumns.number.length > 1)
-            initVisualizationControls(bindingElements, bindings, columns);
+            initVisualizationControls(bindingElements, bindingTypes, variables);
     if (visType.indexOf("LineChart") != -1)
         if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            initVisualizationControls(bindingElements, bindings, columns);
+            initVisualizationControls(bindingElements, bindingTypes, variables);
     if (visType.indexOf("PieChart") != -1)
         if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            initVisualizationControls(bindingElements, bindings, columns);
+            initVisualizationControls(bindingElements, bindingTypes, variables);
     if (visType.indexOf("Map") != -1)
         if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
-            initVisualizationControls(bindingElements, bindings, columns);
+            initVisualizationControls(bindingElements, bindingTypes, variables);
 }
 
-function initAndDraw(container, visType, bindings, columns)
+function initAndDraw(container, visType, variables)
 {
     initVis(container, visType);
-    draw(visualizations[visType], visType, bindings, columns);
+    draw(visualizations[visType], visType, variables);
 }
 
-function initWithControlsAndDraw(container, visType, bindingElements, bindings, columns)
+function initWithControlsAndDraw(container, visType, bindingElements, bindingTypes, variables)
 {
     initVis(container, visType);
-    initControls(visType, bindingElements, bindings, columns);
-    draw(visualizations[visType], visType, bindings, columns);
+    initControls(visType, bindingElements, bindingTypes, variables);
+    draw(visualizations[visType], visType, variables);
 }
 
-function draw(visualization, visType, bindings, columns)
+function draw(container, visType, variables)
 {
     if (visType.indexOf("Table") != -1)
-        drawTable(visualization, visType, bindings, columns);
+        drawTable(container, variables);
     if (visType.indexOf("ScatterChart") != -1)
         if (typeColumns.number.length > 1)
-            drawScatterChart(visualization, visType, bindings, columns);
+            drawScatterChart(container, variables);
     if (visType.indexOf("LineChart") != -1)
         if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            drawLineChart(visualization, visType, bindings, columns);
+            drawLineChart(container, variables);
     if (visType.indexOf("PieChart") != -1)
         if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            drawPieChart(visualization, visType, bindings, columns);
+            drawPieChart(container, variables);
     if (visType.indexOf("Map") != -1)
         if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
-            drawMap(visualization, visType, bindings, columns);
+            drawMap(container, variables);
 }
 
 function countColumns(data)
@@ -85,9 +96,9 @@ function countColumns(data)
         //return typeColumns;
 }
 
-function drawTable(visualization, visType, bindings, columns)
+function drawTable(container, variables)
 {
-	visualization.draw(data, { showRowNumber: true });
+	container.draw(data, { showRowNumber: true });
 }
 
 function toggleVisualization(container, fieldset, show)
@@ -104,30 +115,55 @@ function toggleVisualization(container, fieldset, show)
 	}
 }
 
-function initVisualizationControls(bindingElements, bindings, columns)
+function initVisualizationControls(bindingElements, bindingTypes, variables)
 {
+    //alert(bindings[0].dataType.toSource());
     for (var i = 0; i < bindingElements.length; i++)
-	for (var j = 0; j < columns.length; j++)
-            if (bindingElements[i].bindingType == columns[j].bindingType)
-                for (var k = 0; k < columns[j].columns.length; k++)
+	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
+            if (bindingElements[i].bindingType == bindingTypes[j].type)
                 {
-                    var option = document.createElement("option");
-                    option.appendChild(document.createTextNode(data.getColumnLabel(columns[j].columns[k])));
-                    option.setAttribute("value", columns[j].columns[k]);
-                    option.setAttribute("selected", "selected");
-                    bindingElements[i].element.appendChild(option);
+                    var bindingDataTypes = new Array();
+                    var bindingColumns = new Array();
+                    for (var k = 0; k < bindingTypes[j].dataType.length; k++)
+                    {
+                        var xsdType = bindingTypes[j].dataType[k];
+                        var wireType = dataTypes[xsdType];
+                        var dataTypeColumns = typeColumns[wireType];
+                        if (bindingDataTypes.indexOf(wireType) == -1)
+                        {
+                            //alert(dataTypeColumns);
+                            bindingDataTypes.push(wireType);
+                            bindingColumns = bindingColumns.concat(dataTypeColumns);
+                        }
+                    }
+                    //alert(dataTypeColumns);
+
+                    for (var l = 0; l < bindingColumns.length; l++)
+
+                //for (var k = 0; k < variables.length; k++)
+                    //if (bindingTypes[j].type == variables[k].bindingType)
+                    {
+                        var option = document.createElement("option");
+                        option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
+                        option.setAttribute("value", bindingColumns[l]);
+                        for (var m = 0; m < variables.length; m++)
+                            if (variables[m].bindingType == bindingTypes[j].type && variables[m].columns.indexOf(bindingColumns[l]) != -1) // variables[m].columns.indexOf(bindingColumns[l]) != -1
+                                //alert(variables[m].columns + " | " + bindingColumns[l]);
+                                option.setAttribute("selected", "selected");
+                        bindingElements[i].element.appendChild(option);
+                    }
                 }
 }
 
-function drawScatterChart(visualization, visType, bindings, columns)
+function drawScatterChart(container, variables)
 {
 //alert(columns);
         var visColumns = new Array();
 
-        for (var i = 0; i < columns.length; i++)
+        for (var i = 0; i < variables.length; i++)
         {
-            if (columns[i].bindingType.indexOf("ScatterChartXBinding") != -1) visColumns[0] = columns[i].columns[0];
-            if (columns[i].bindingType.indexOf("ScatterChartYBinding") != -1) visColumns = visColumns.concat(columns[i].columns);
+            if (variables[i].bindingType.indexOf("ScatterChartXBinding") != -1) visColumns[0] = variables[i].columns[0];
+            if (variables[i].bindingType.indexOf("ScatterChartYBinding") != -1) visColumns = visColumns.concat(variables[i].columns);
         }
 
 	var view = new google.visualization.DataView(data);
@@ -135,16 +171,16 @@ function drawScatterChart(visualization, visType, bindings, columns)
         var options = new Array();
 	options["titleX"] = data.getColumnLabel(visColumns[0]);
 	options["titleY"] = data.getColumnLabel(visColumns[1]);
-	visualization.draw(view, options);
+	container.draw(view, options);
 }
 
-function drawLineChart(visualization, visType, bindings, columns)
+function drawLineChart(container, variables)
 {
 	var visColumns = new Array();
-        for (var i = 0; i < columns.length; i++)
+        for (var i = 0; i < variables.length; i++)
         {
-            if (columns[i].bindingType.indexOf("LineChartLabelBinding") != -1) visColumns[0] = columns[i].columns[0];
-            if (columns[i].bindingType.indexOf("LineChartValueBinding") != -1) visColumns = visColumns.concat(columns[i].columns);
+            if (variables[i].bindingType.indexOf("LineChartLabelBinding") != -1) visColumns[0] = variables[i].columns[0];
+            if (variables[i].bindingType.indexOf("LineChartValueBinding") != -1) visColumns = visColumns.concat(variables[i].columns);
         }
 
         var view = new google.visualization.DataView(data);
@@ -152,39 +188,39 @@ function drawLineChart(visualization, visType, bindings, columns)
 	var options = new Array();
 	options["titleX"] = data.getColumnLabel(visColumns[0]);
 	options["titleY"] = data.getColumnLabel(visColumns[1]);
-	visualization.draw(view, options);
+	container.draw(view, options);
 }
 
-function drawPieChart(visualization, visType, bindings, columns)
+function drawPieChart(container, variables)
 {
         var visColumns = new Array();
 
-        for (var i = 0; i < columns.length; i++)
+        for (var i = 0; i < variables.length; i++)
         {
-            if (columns[i].bindingType.indexOf("PieChartLabelBinding") != -1) visColumns[0] = columns[i].columns[0];
-            if (columns[i].bindingType.indexOf("PieChartValueBinding") != -1) visColumns[1] = columns[i].columns[0];
+            if (variables[i].bindingType.indexOf("PieChartLabelBinding") != -1) visColumns[0] = variables[i].columns[0];
+            if (variables[i].bindingType.indexOf("PieChartValueBinding") != -1) visColumns[1] = variables[i].columns[0];
         }
 
 	var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
 	var options = new Array();
-	visualization.draw(view, options);
+	container.draw(view, options);
 }
 
-function drawMap(visualization, visType, bindings, columns)
+function drawMap(container, variables)
 {
         var visColumns = new Array();
 
-        for (var i = 0; i < columns.length; i++)
+        for (var i = 0; i < variables.length; i++)
         {
-            if (columns[i].bindingType.indexOf("MapLatBinding") != -1) visColumns[0] = columns[i].columns[0];
-            if (columns[i].bindingType.indexOf("MapLngBinding") != -1) visColumns[1] = columns[i].columns[0];
+            if (variables[i].bindingType.indexOf("MapLatBinding") != -1) visColumns[0] = variables[i].columns[0];
+            if (variables[i].bindingType.indexOf("MapLngBinding") != -1) visColumns[1] = variables[i].columns[0];
         }
 
 	var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
 	var options = new Array();
-	visualization.draw(view, options);
+	container.draw(view, options);
 }
 
 function getSelectedValues(select)

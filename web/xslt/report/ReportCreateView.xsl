@@ -114,9 +114,16 @@ exclude-result-prefixes="#all">
 
                 <xsl:text>], [</xsl:text>
                 <xsl:for-each select="$binding-types">
-                    <xsl:text>'</xsl:text>
+                    <xsl:text>{ 'type': '</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                    <xsl:text>'</xsl:text>
+                    <xsl:text>', 'dataType': [</xsl:text>
+                    <xsl:for-each select="key('data-type-by-binding-type', sparql:binding[@name = 'type']/sparql:uri, $data-types)">
+                        <xsl:text> '</xsl:text>
+                        <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                        <xsl:text>' </xsl:text>
+                        <xsl:if test="position() != last()">,</xsl:if>
+                    </xsl:for-each>
+                    <xsl:text>] }</xsl:text>
                     <xsl:if test="position() != last()">,</xsl:if>
                 </xsl:for-each>
 
@@ -203,7 +210,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pv" value="text"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
-					<textarea cols="80" rows="20" id="query-string" name="ol">
+					<textarea cols="80" rows="20" id="query-string" name="ol">&#160;
 						<xsl:if test="not(empty($query-result))">
 							<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
 						</xsl:if>

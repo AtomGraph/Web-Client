@@ -4,11 +4,11 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
-SELECT DISTINCT *
+SELECT DISTINCT ?bindingType ?type
 {
-	_:super         rdfs:subClassOf vis:Binding .
-	?bindingType    rdfs:subClassOf _:super .
-        _:super         rdfs:subClassOf _:rest .
-        _:rest          owl:onProperty  vis:dataType .
-        _:rest          owl:onClass     ?type
+	?super         rdfs:subClassOf vis:Binding .
+	?bindingType    rdfs:subClassOf ?super .
+        ?super         rdfs:subClassOf ?rest .
+        ?rest          owl:onProperty  vis:dataType .
+        ?rest          owl:onClass     ?type
 }

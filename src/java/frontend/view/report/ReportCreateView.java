@@ -51,7 +51,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
-        //setDataTypes(request, response);
+        setDataTypes(request, response);
 
 	if (getResult() != null)
         {
