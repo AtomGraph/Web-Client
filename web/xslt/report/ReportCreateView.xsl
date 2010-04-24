@@ -146,7 +146,7 @@ exclude-result-prefixes="#all">
                         <xsl:text>],</xsl:text>
 
                         <xsl:choose>
-                            <xsl:when test="exists($variables)">
+                            <xsl:when test="$variables//sparql:result">
                                 <xsl:text>[</xsl:text>
                                 <xsl:for-each select="key('variable-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $variables)">
                                     <xsl:text>{ 'variable' : </xsl:text>
@@ -218,6 +218,7 @@ exclude-result-prefixes="#all">
                         <xsl:copy-of select="$visualization-types"/>
 			<xsl:copy-of select="$data-types"/>
                         -->
+			<xsl:copy-of select="$variables"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>

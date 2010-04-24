@@ -93,27 +93,34 @@ function countColumns(data)
 	}
 }
 
-function countVariablesByDataType(data, bindingTypes, xsdTypes)
+function countVariables(data, bindingTypes, xsdTypes)
 {
     var variables = new Array();
-    var wireType = dataTypes[xsdType];
-    for (var i = 0; i < bindingTypes.length; i++)
+
+    for (var j = 0; j < bindingTypes.length; j++)
     {
-        var variable = { };
-        variable.variable = 1;
-        //variable.
-        if (data.getColumnType(i) == "string") typeColumns.string.push(i);
-        if (data.getColumnType(i) == "date")
+        var bindingDataTypes = new Array();
+        var bindingColumns = new Array();
+        for (var k = 0; k < xsdTypes.length; k++)
+            if (bindingTypes[j].type == xsdTypes[k].bindingType) // join
+            {
+                var xsdType = xsdTypes[k].type;
+                var wireType = dataTypes[xsdType];
+                var dataTypeColumns = typeColumns[wireType];
+                if (bindingDataTypes.indexOf(wireType) == -1)
+                {
+                    //alert(dataTypeColumns);
+                    bindingDataTypes.push(wireType);
+                    bindingColumns = bindingColumns.concat(dataTypeColumns);
+                }
+            }
+
+        for (var l = 0; l < bindingColumns.length; l++)
         {
-            typeColumns.string.push(i); // date columns also treated as strings
-            typeColumns.date.push(i);
-        }
-        if (data.getColumnType(i) == "number") // lat/lng columns
-        {
-            typeColumns.number.push(i);
-            var range = data.getColumnRange(i);
-            if (range.min >= -90 && range.max <= 90) typeColumns.lat.push(i);
-            if (range.min >= -180 && range.max <= 180) typeColumns.lng.push(i);
+            var variable = { };
+            variable.variable = bindingColumns[l];
+            variable.bindingType = bindingTypes[j];
+            variables.push(variable);
         }
     }
 }
@@ -139,7 +146,6 @@ function toggleVisualization(container, fieldset, show)
 
 function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables)
 {
-    alert(xsdTypes.toSource());
     for (var i = 0; i < bindingElements.length; i++)
 	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
             if (bindingElements[i].bindingType == bindingTypes[j].type)
@@ -162,9 +168,6 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
                     //alert(dataTypeColumns);
 
                     for (var l = 0; l < bindingColumns.length; l++)
-
-                //for (var k = 0; k < variables.length; k++)
-                    //if (bindingTypes[j].type == variables[k].bindingType)
                     {
                         var option = document.createElement("option");
                         option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
