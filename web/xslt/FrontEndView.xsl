@@ -30,6 +30,7 @@ exclude-result-prefixes="#all">
 
         <xsl:key name="binding-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
         <xsl:key name="variable-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
+        <xsl:key name="variable-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
         <xsl:key name="variable-by-binding" match="sparql:result" use="sparql:binding[@name = 'binding']/sparql:uri"/>
         <xsl:key name="variable-by-binding-type" match="sparql:result" use="sparql:binding[@name = 'bindingType']/sparql:uri"/>
         <xsl:key name="data-type-by-binding-type" match="sparql:result" use="sparql:binding[@name = 'bindingType']/sparql:uri"/>
@@ -69,9 +70,7 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 			</head>
 			<body>
                                 <xsl:if test="$view = 'frontend.view.report.ReportCreateView' or $view = 'frontend.view.report.ReportUpdateView' or $view = 'frontend.view.report.ReportReadView'">
-                                    <xsl:attribute name="onload">
-                                        <xsl:call-template name="body-onload"/>
-                                    </xsl:attribute>
+                                    <xsl:call-template name="body-onload"/>
                                 </xsl:if>
 
 				<h1>
