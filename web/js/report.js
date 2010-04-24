@@ -119,10 +119,12 @@ function countVariables(data, bindingTypes, xsdTypes)
         {
             var variable = { };
             variable.variable = bindingColumns[l];
-            variable.bindingType = bindingTypes[j];
+            variable.bindingType = bindingTypes[j].type;
             variables.push(variable);
         }
+//alert(variables.toSource());
     }
+    return variables;
 }
 
 function drawTable(container, variables)
