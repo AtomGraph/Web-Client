@@ -157,54 +157,28 @@ exclude-result-prefixes="#all">
                                 <xsl:if test="exists(index-of(('&vis;MapLngBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lng</xsl:if>
                                 -->
                                 <xsl:text>countVariables(data, [</xsl:text>
-                        <xsl:for-each select="$binding-types">
-                            <xsl:text>{ 'type': '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                            <xsl:text>' }</xsl:text>
-                            <xsl:if test="position() != last()">,</xsl:if>
-                        </xsl:for-each>
+                                <xsl:for-each select="$binding-types">
+                                    <xsl:text>{ 'type': '</xsl:text>
+                                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                                    <xsl:text>' }</xsl:text>
+                                    <xsl:if test="position() != last()">,</xsl:if>
+                                </xsl:for-each>
 
-                        <xsl:text>], [</xsl:text>
-                        <xsl:for-each select="$data-types//sparql:result">
-                            <xsl:text>{ 'type' : '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                            <xsl:text>', 'bindingType' : '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
-                            <xsl:text>' }</xsl:text>
-                            <xsl:if test="position() != last()">, </xsl:if>
-                        </xsl:for-each>
-                        <xsl:text>]</xsl:text>
+                                <xsl:text>], [</xsl:text>
+                                <xsl:for-each select="$data-types//sparql:result">
+                                    <xsl:text>{ 'type' : '</xsl:text>
+                                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                                    <xsl:text>', 'bindingType' : '</xsl:text>
+                                    <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
+                                    <xsl:text>' }</xsl:text>
+                                    <xsl:if test="position() != last()">, </xsl:if>
+                                </xsl:for-each>
+                                <xsl:text>]</xsl:text>
 
                                 <xsl:text>)</xsl:text>
                             </xsl:otherwise>
                         </xsl:choose>
                         <xsl:text>);</xsl:text>
-
-                        <!--
-                        <xsl:for-each select="$binding-types">
-                            <xsl:text>{ 'columns' : </xsl:text>
-                            <xsl:choose>
-                                <xsl:when test="$variables">
-                                    <xsl:text>[</xsl:text>
-                                    <xsl:for-each select="key('variable-by-binding-type', sparql:binding[@name = 'type']/sparql:uri, $variables)">
-                                        <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
-                                        <xsl:if test="position() != last()">,</xsl:if>
-                                    </xsl:for-each>
-                                    <xsl:text>]</xsl:text>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
-                                    <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
-                                    <xsl:if test="exists(index-of(('&vis;MapLatBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lat</xsl:if>
-                                    <xsl:if test="exists(index-of(('&vis;MapLngBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lng</xsl:if>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                            <xsl:text>, 'bindingType' : '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                            <xsl:text>' }</xsl:text>
-                            <xsl:if test="position() != last()">,</xsl:if>
-                        </xsl:for-each>
-                        -->
                     </xsl:for-each>
                     <xsl:if test="$view = $update-view">
                         <xsl:text> </xsl:text>
@@ -231,7 +205,7 @@ exclude-result-prefixes="#all">
                         <xsl:copy-of select="$visualization-types"/>
 			<xsl:copy-of select="$data-types"/>
                         -->
-			<xsl:copy-of select="$variables"/>
+			<xsl:copy-of select="$binding-types"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>

@@ -6,9 +6,9 @@ PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
 SELECT DISTINCT ?bindingType ?type
 {
-	?super         rdfs:subClassOf vis:Binding .
+	?super          rdfs:subClassOf vis:Binding .
 	?bindingType    rdfs:subClassOf ?super .
-        ?super         rdfs:subClassOf ?rest .
-        ?rest          owl:onProperty  vis:dataType .
-        ?rest          owl:onClass     ?type
+        ?super          rdfs:subClassOf ?rest .
+        ?rest           owl:onProperty  vis:dataType .
+        ?rest           owl:onClass     ?type
 }

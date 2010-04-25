@@ -1,14 +1,33 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
-SELECT DISTINCT *
+SELECT DISTINCT ?type ?label ?visType ?cardinality ?minCardinality ?maxCardinality
 {
 	_:super rdfs:subClassOf vis:Binding .
 	?type   rdfs:subClassOf _:super .
         ?type   rdfs:label      ?label .
         _:prop  rdfs:range      ?type .
         _:prop  rdfs:domain     ?visType
+        OPTIONAL
+        {
+            ?visType    rdfs:subClassOf ?rest .
+            ?rest       owl:onProperty  vis:binding .
+            ?rest       owl:onClass     ?type
+            OPTIONAL
+            {
+                ?rest   owl:qualifiedCardinality    ?cardinality
+            }
+            OPTIONAL
+            {
+                ?rest   owl:minQualifiedCardinality ?minCardinality
+            }
+            OPTIONAL
+            {
+                ?rest   owl:maxQualifiedCardinality ?maxCardinality
+            }
+        }
 }
 ORDER BY ?label
