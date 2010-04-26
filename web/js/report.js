@@ -171,27 +171,25 @@ function variablesByBindingType(bindingType, variables)
     return bindingVariables;
 }
 
+function bindingElementsByType(bindingElements, bindingTypes)
+{
+    var elements = new Array();
+    
+    for (var i = 0; i < bindingElements.length; i++)
+	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
+            if (bindingElements[i].bindingType == bindingTypes[j].type)
+                elements.push(bindingElements[i]);
+
+    return elements;
+}
+
 function countVariables(data, bindingTypes, xsdTypes)
 {
     var variables = new Array();
 
     for (var j = 0; j < bindingTypes.length; j++)
     {
-        var bindingWireTypes = new Array();
-        var bindingColumns = new Array();
-        for (var k = 0; k < xsdTypes.length; k++)
-            if (bindingTypes[j].type == xsdTypes[k].bindingType) // join
-            {
-                var xsdType = xsdTypes[k].type;
-                var wireType = xsdTypeToWireType(xsdType);
-                var dataTypeColumns = columnsByWireType(wireType);
-                if (bindingWireTypes.indexOf(wireType) == -1)
-                {
-                    //alert(dataTypeColumns);
-                    bindingWireTypes.push(wireType);
-                    bindingColumns = bindingColumns.concat(dataTypeColumns);
-                }
-            }
+        var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
 
         for (var l = 0; l < bindingColumns.length; l++)
         {
@@ -230,22 +228,7 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
 	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
             if (bindingElements[i].bindingType == bindingTypes[j].type)
             {   
-                var bindingDataTypes = new Array();
-                var bindingColumns = new Array();
-                for (var k = 0; k < xsdTypes.length; k++)
-                    if (bindingTypes[j].type == xsdTypes[k].bindingType)
-                    {
-                        var xsdType = xsdTypes[k].type;
-                        var wireType = dataTypes[xsdType];
-                        var dataTypeColumns = typeColumns[wireType];
-                        if (bindingDataTypes.indexOf(wireType) == -1)
-                        {
-                            //alert(dataTypeColumns);
-                            bindingDataTypes.push(wireType);
-                            bindingColumns = bindingColumns.concat(dataTypeColumns);
-                        }
-                    }
-                //alert(dataTypeColumns);
+                var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
 
                 for (var l = 0; l < bindingColumns.length; l++)
                 {
@@ -253,9 +236,16 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
                     option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
                     option.setAttribute("value", bindingColumns[l]);
                     for (var m = 0; m < variables.length; m++)
+                    {
                         if (variables[m].bindingType == bindingTypes[j].type && variables[m].variable == bindingColumns[l]) // variables[m].columns.indexOf(bindingColumns[l]) != -1
+                        {
                             //alert(variables[m].columns + " | " + bindingColumns[l]);
+                            //if ("maxCardinality" in bindingTypes[j] && bindingTypes[j].maxCardinality > counter)
+                            if (!("cardinality" in bindingTypes[j]) || ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l))
+                            //{ alert(bindingTypes[j].toSource() + " <> " + l)}
                             option.setAttribute("selected", "selected");
+                        }
+                    }
                     bindingElements[i].element.appendChild(option);
                 }
             }
