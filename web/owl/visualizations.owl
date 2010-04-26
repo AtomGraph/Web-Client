@@ -265,14 +265,14 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="MapLatBinding"/>
+                <owl:onClass rdf:resource="MapLngBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="MapLngBinding"/>
+                <owl:onClass rdf:resource="MapLatBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -330,14 +330,14 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="dataType"/>
-                <owl:onClass rdf:resource="&xsd;float"/>
+                <owl:onClass rdf:resource="&xsd;double"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="dataType"/>
-                <owl:onClass rdf:resource="&xsd;double"/>
+                <owl:onClass rdf:resource="&xsd;float"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
