@@ -50,7 +50,7 @@ function initAndDraw(container, visType, variables)
 
 function initWithControlsAndDraw(container, visType, bindingElements, bindingTypes, xsdTypes, variables)
 {
-    if (hasSufficientColumns(bindingTypes, variables))
+    if (hasSufficientColumns(bindingTypes, xsdTypes))
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
@@ -59,16 +59,15 @@ function initWithControlsAndDraw(container, visType, bindingElements, bindingTyp
     //else toggleVisualization(container, fieldset, false); // switch off
 }
 
-function hasSufficientColumns(bindingTypes, variables)
+function hasSufficientColumns(bindingTypes, xsdTypes)
 {
     for (var i = 0; i < bindingTypes.length; i++)
     {
-        var columns = columnsByBindingType(bindingTypes[i], variables);
+        var columns = columnsByBindingType(bindingTypes[i], xsdTypes);
         var bindingType = bindingTypes[i];
-
-        if ("cardinality" in bindingType && bindingType.cardinality != columns.length) return false;
+//alert(bindingType.type + " Columns: " + columns.length + " Cardinality: " + bindingType.cardinality);
+        if ("cardinality" in bindingType && bindingType.cardinality > columns.length) return false;
         if ("minCardinality" in bindingType && bindingType.minCardinality > columns.length) return false;
-        if ("maxCardinality" in bindingType && bindingType.maxCardinality < columns.length) return false;
     }
     return true;
 }
@@ -118,7 +117,7 @@ function xsdTypeToWireType(xsdType)
     return dataTypes[xsdType];
 }
 
-function variablesByWireType(wireType, variables)
+function columnsByWireType(wireType)
 {
     return typeColumns[wireType];
 }
@@ -126,9 +125,9 @@ function variablesByWireType(wireType, variables)
 function xsdTypesByBindingType(bindingType, xsdTypes)
 {
     var bindingXsdTypes = new Array();
-
+//alert(bindingType.toSource());
     for (var k = 0; k < xsdTypes.length; k++)
-        if (bindingType == xsdTypes[k].bindingType) // join
+        if (bindingType.type == xsdTypes[k].bindingType) // join
             bindingXsdTypes.push(xsdTypes[k].type);
 
     return bindingXsdTypes;
@@ -138,7 +137,7 @@ function wireTypesByBindingType(bindingType, xsdTypes)
 {
     var wireTypes = new Array();
     var bindingXsdTypes = xsdTypesByBindingType(bindingType, xsdTypes);
-
+//alert(bindingXsdTypes.toSource());
     for (var k = 0; k < bindingXsdTypes.length; k++)
     {
         var wireType = xsdTypeToWireType(bindingXsdTypes[k]);
@@ -148,16 +147,28 @@ function wireTypesByBindingType(bindingType, xsdTypes)
     return wireTypes;
 }
 
-function columnsByBindingType(bindingType, variables)
+function columnsByBindingType(bindingType, xsdTypes)
+{
+
+    var bindingColumns = new Array();
+    var wireTypes = wireTypesByBindingType(bindingType, xsdTypes);
+
+    for (var k = 0; k < wireTypes.length; k++)
+        bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[k])); // add columns for each type
+
+    return bindingColumns;
+}
+
+function variablesByBindingType(bindingType, variables)
 {
 //alert(bindingType.toSource());
-    var bindingColumns = new Array();
+    var bindingVariables = new Array();
 
     for (var k = 0; k < variables.length; k++)
         if (bindingType.type == variables[k].bindingType) // join
-            bindingColumns.push(variables[k].variable);
+            bindingVariables.push(variables[k].variable);
 //alert(bindingColumns.toSource());
-    return bindingColumns;
+    return bindingVariables;
 }
 
 function countVariables(data, bindingTypes, xsdTypes)
@@ -173,12 +184,12 @@ function countVariables(data, bindingTypes, xsdTypes)
             {
                 var xsdType = xsdTypes[k].type;
                 var wireType = xsdTypeToWireType(xsdType);
-                var dataTypeColumns = variablesByWireType(wireType);
+                var dataTypeColumns = columnsByWireType(wireType);
                 if (bindingWireTypes.indexOf(wireType) == -1)
                 {
                     //alert(dataTypeColumns);
                     bindingWireTypes.push(wireType);
-                    bindingColumns = bindingColumns .concat(dataTypeColumns);
+                    bindingColumns = bindingColumns.concat(dataTypeColumns);
                 }
             }
 

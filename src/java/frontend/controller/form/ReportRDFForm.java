@@ -10,8 +10,10 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import model.Namespaces;
+import dk.semantic_web.diy.controller.Error;
 
 /**
  *
@@ -62,4 +64,15 @@ public class ReportRDFForm extends RDFForm
 	if (stmt.getObject() != null) queryString = stmt.getString();
 	return queryString;
     }
+
+    /*
+    @Override
+    public List<Error> validate()
+    {
+        // if (getTitle() == null || getTitle().equals("");
+        // if (getEndpoint() == null || getEndpoint().equals("");
+        // if (getQueryString() == null || getQueryString().equals("");
+	//throw new UnsupportedOperationException("Not supported yet.");
+    }
+     */
 }
