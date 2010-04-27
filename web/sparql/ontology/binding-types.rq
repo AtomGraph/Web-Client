@@ -33,9 +33,9 @@ SELECT DISTINCT ?type ?label ?visType ?cardinality ?minCardinality ?maxCardinali
         # order
         OPTIONAL
         {
-            ?type   rdfs:subClassOf ?rest .
-            ?rest   owl:onProperty  vis:order .
-            ?rest   owl:hasValue    ?order
+            ?type   rdfs:subClassOf ?x .
+            ?x   owl:onProperty  vis:order .
+            ?x   owl:hasValue    ?order
         }
 }
 ORDER BY ?label
