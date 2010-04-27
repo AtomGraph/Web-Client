@@ -132,6 +132,10 @@ exclude-result-prefixes="#all">
                                 <xsl:text>, 'maxCardinality': </xsl:text>
                                 <xsl:value-of select="sparql:binding[@name = 'maxCardinality']/sparql:literal"/>
                             </xsl:if>
+                            <xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+                                <xsl:text>, 'order': </xsl:text>
+                                <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+                            </xsl:if>
                             <xsl:text> }</xsl:text>
                             <xsl:if test="position() != last()">,</xsl:if>
                         </xsl:for-each>
@@ -218,7 +222,7 @@ exclude-result-prefixes="#all">
                         <xsl:copy-of select="$visualization-types"/>
 			<xsl:copy-of select="$data-types"/>
                         -->
-			!<xsl:copy-of select="$variables"/>!
+			<xsl:copy-of select="$binding-types"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
@@ -330,7 +334,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
                 <!-- visualization of this type (might be non-existing) -->
-                <xsl:variable name="visualization" select="$visualizations//sparql:result[sparql:binding[@name = 'type']/sparql:uri = current()/sparql:binding[@name = 'type']/sparql:uri]"/>
+                <xsl:variable name="visualization" select="key('visualization-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)"/>
                 <!-- reuse existing visualization URI or generate a new one -->
                 <xsl:variable name="visualization-uri">
                     <xsl:choose>
@@ -367,7 +371,7 @@ exclude-result-prefixes="#all">
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-fieldset">
                 <!-- visualization of this type (might be non-existing) -->
-                <xsl:variable name="visualization" select="$visualizations//sparql:result[sparql:binding[@name = 'type']/sparql:uri = current()/sparql:binding[@name = 'type']/sparql:uri]"/>
+                <xsl:variable name="visualization" select="key('visualization-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)"/>
                 <!-- reuse existing visualization URI or generate a new one -->
                 <xsl:variable name="visualization-uri">
                     <xsl:choose>
@@ -402,7 +406,20 @@ exclude-result-prefixes="#all">
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
         <xsl:param name="visualization"/>
         <xsl:param name="visualization-uri"/>
-        <xsl:param name="binding-uri" select="concat($host-uri, 'bindings/', id:generate())"/>
+        <!-- binding of this type (might be non-existing) -->
+        <xsl:variable name="binding" select="key('binding-by-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)"/>
+        <!-- reuse existing binding URI or generate a new one -->
+        <xsl:variable name="binding-uri">
+            <xsl:choose>
+                <xsl:when test="$view = $update-view and $binding"> <!-- ReportUpdateView -->
+                    <xsl:value-of select="$binding/sparql:binding[@name = 'binding']/sparql:uri"/>
+                </xsl:when>
+                <xsl:otherwise> <!-- ReportCreateView -->
+                    <xsl:value-of select="concat($host-uri, 'bindings/', id:generate())"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <!-- <xsl:param name="binding-uri" select="concat($host-uri, 'bindings/', id:generate())"/> -->
 
         <input type="hidden" name="su" value="{$binding-uri}"/>
         <input type="hidden" name="pu" value="&rdf;type"/>

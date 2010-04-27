@@ -5,6 +5,7 @@
 
 package frontend.controller.resource.report;
 
+import model.vocabulary.DublinCore;
 import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.*;
+import model.vocabulary.Sioc;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
@@ -149,14 +151,15 @@ public class ReportListResource extends FrontEndResource implements Singleton
         Model model = form.getModel();
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATED), model.createTypedLiteral(calendar));
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
-        model.add(model.createResource(userUri), RDF.type, model.createResource(Namespaces.SIOC_NS + "User"));
+        model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.USER));
         model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
-        model.add(model.createResource(userUri), model.createProperty("http://rdfs.org/sioc/ns#name"), model.createTypedLiteral("RandomUserName"));
+        model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
 
         SDB.getInstanceModel().add(form.getModel()); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-form.getModel().write(System.out);
+//form.getModel().write(System.out);
 
+System.out.print("INTERSECTION: " + SDB.getInstanceModel().intersection(form.getModel()));
         try {
             // save report
             //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);

@@ -47,7 +47,7 @@ exclude-result-prefixes="#all">
 					<button type="submit" name="view" value="create">Create</button>
 				</p>
 			</form>
-<!-- <xsl:copy-of select="document('arg://query-objects')"/> -->
+<xsl:copy-of select="$reports"/>
 
                         <xsl:call-template name="sort-paging-controls">
                             <xsl:with-param name="uri" select="'reports'"/>

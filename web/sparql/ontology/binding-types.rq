@@ -4,13 +4,14 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
-SELECT DISTINCT ?type ?label ?visType ?cardinality ?minCardinality ?maxCardinality
+SELECT DISTINCT ?type ?label ?visType ?cardinality ?minCardinality ?maxCardinality ?order
 {
 	_:super rdfs:subClassOf vis:Binding .
 	?type   rdfs:subClassOf _:super .
         ?type   rdfs:label      ?label .
         _:prop  rdfs:range      ?type .
         _:prop  rdfs:domain     ?visType
+        # cardinalities
         OPTIONAL
         {
             ?visType    rdfs:subClassOf ?rest .
@@ -28,6 +29,13 @@ SELECT DISTINCT ?type ?label ?visType ?cardinality ?minCardinality ?maxCardinali
             {
                 ?rest   owl:maxQualifiedCardinality ?maxCardinality
             }
+        }
+        # order
+        OPTIONAL
+        {
+            ?type   rdfs:subClassOf ?rest .
+            ?rest   owl:onProperty  vis:order .
+            ?rest   owl:hasValue    ?order
         }
 }
 ORDER BY ?label

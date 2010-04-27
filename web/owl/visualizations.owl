@@ -190,6 +190,12 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/order -->
+
+    <owl:DatatypeProperty rdf:about="order"/>
+    
+
+
     <!-- http://code.google.com/apis/visualization/variableName -->
 
     <owl:DatatypeProperty rdf:about="variableName">
@@ -224,15 +230,15 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="LineChartLabelBinding"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="LineChartValueBinding"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="LineChartValueBinding"/>
-                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="LineChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -244,6 +250,12 @@
     <owl:Class rdf:about="LineChartLabelBinding">
         <rdfs:label>Label binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -285,6 +297,12 @@
     <owl:Class rdf:about="MapLabelBinding">
         <rdfs:label>Label binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">3</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -295,6 +313,12 @@
         <rdfs:label
             >Latitude binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -305,6 +329,12 @@
         <rdfs:label
             >Longitude binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">2</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -323,7 +353,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="dataType"/>
-                <owl:onClass rdf:resource="&xsd;integer"/>
+                <owl:onClass rdf:resource="&xsd;float"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -337,7 +367,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="dataType"/>
-                <owl:onClass rdf:resource="&xsd;float"/>
+                <owl:onClass rdf:resource="&xsd;integer"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -353,14 +383,14 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="PieChartValueBinding"/>
+                <owl:onClass rdf:resource="PieChartLabelBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="PieChartLabelBinding"/>
+                <owl:onClass rdf:resource="PieChartValueBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -373,6 +403,12 @@
     <owl:Class rdf:about="PieChartLabelBinding">
         <rdfs:label>Label binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -382,6 +418,12 @@
     <owl:Class rdf:about="PieChartValueBinding">
         <rdfs:label>Value binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">2</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -394,15 +436,15 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="ScatterChartYBinding"/>
-                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="ScatterChartXBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="ScatterChartXBinding"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="ScatterChartYBinding"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -414,6 +456,12 @@
     <owl:Class rdf:about="ScatterChartXBinding">
         <rdfs:label>X binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 

@@ -18,7 +18,7 @@ import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
 import thewebsemantic.Transient;
 import thewebsemantic.binding.RdfBean;
-import static model.DublinCore.*;
+import static model.vocabulary.DublinCore.*;
 
 /**
  *

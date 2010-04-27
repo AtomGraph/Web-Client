@@ -22,10 +22,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
-import model.DublinCore;
-import model.Namespaces;
+import model.vocabulary.DublinCore;
 import model.Report;
 import model.SDB;
+import model.vocabulary.Sioc;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
@@ -113,11 +113,11 @@ public class ReportResource extends FrontEndResource implements LeafResource
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model model = form.getModel();
-        model.add(form.getReportResource(), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        model.add(form.getReportResource(), model.createProperty(DublinCore.MODIFIED), model.createTypedLiteral(calendar));
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
-        model.add(model.createResource(userUri), RDF.type, model.createResource(Namespaces.SIOC_NS + "User"));
+        model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.USER));
         model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
-        model.add(model.createResource(userUri), model.createProperty("http://rdfs.org/sioc/ns#name"), model.createTypedLiteral("RandomUserName"));
+        model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
 
         SDB.getInstanceModel().add(form.getModel()); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);

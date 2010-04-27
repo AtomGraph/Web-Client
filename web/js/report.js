@@ -74,17 +74,10 @@ function hasSufficientColumns(bindingTypes, xsdTypes)
 
 function draw(container, visType, variables)
 {
-    if (visType.indexOf("Table") != -1)
-        drawTable(container, variables);
-    if (visType.indexOf("ScatterChart") != -1)
-        //if (typeColumns.number.length > 1)
-            drawScatterChart(container, variables);
-    if (visType.indexOf("LineChart") != -1)
-        //if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            drawLineChart(container, variables);
-    if (visType.indexOf("PieChart") != -1)
-        //if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            drawPieChart(container, variables);
+    if (visType.indexOf("Table") != -1) drawTable(container, variables);
+    if (visType.indexOf("ScatterChart") != -1) drawScatterChart(container, variables);
+    if (visType.indexOf("LineChart") != -1) drawLineChart(container, variables);
+    if (visType.indexOf("PieChart") != -1) drawPieChart(container, variables);
     if (visType.indexOf("Map") != -1)
         if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             drawMap(container, variables);
@@ -149,7 +142,6 @@ function wireTypesByBindingType(bindingType, xsdTypes)
 
 function columnsByBindingType(bindingType, xsdTypes)
 {
-
     var bindingColumns = new Array();
     var wireTypes = wireTypesByBindingType(bindingType, xsdTypes);
 
@@ -181,6 +173,13 @@ function bindingElementsByType(bindingElements, bindingTypes)
                 elements.push(bindingElements[i]);
 
     return elements;
+}
+
+function variableExists(variables, bindingType, value)
+{
+    for (var m = 0; m < variables.length; m++)
+        if (variables[m].bindingType == bindingType.type && variables[m].variable == value) return true;
+    return false;
 }
 
 function countVariables(data, bindingTypes, xsdTypes)
@@ -235,17 +234,11 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
                     var option = document.createElement("option");
                     option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
                     option.setAttribute("value", bindingColumns[l]);
-                    for (var m = 0; m < variables.length; m++)
-                    {
-                        if (variables[m].bindingType == bindingTypes[j].type && variables[m].variable == bindingColumns[l]) // variables[m].columns.indexOf(bindingColumns[l]) != -1
-                        {
-                            //alert(variables[m].columns + " | " + bindingColumns[l]);
-                            //if ("maxCardinality" in bindingTypes[j] && bindingTypes[j].maxCardinality > counter)
-                            if (!("cardinality" in bindingTypes[j]) || ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l))
-                            //{ alert(bindingTypes[j].toSource() + " <> " + l)}
-                            option.setAttribute("selected", "selected");
-                        }
-                    }
+
+//if (!("cardinality" in bindingTypes[j]) || ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l))
+                    if (variableExists(variables, bindingTypes[j], bindingColumns[l]))
+                        option.setAttribute("selected", "selected");
+
                     bindingElements[i].element.appendChild(option);
                 }
             }
