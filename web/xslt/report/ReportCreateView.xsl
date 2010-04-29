@@ -437,7 +437,7 @@ exclude-result-prefixes="#all">
             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
         </label>
         <xsl:variable name="binding-type" select="sparql:binding[@name = 'type']/sparql:uri"/>
-        <select id="{generate-id()}-binding" name="ol" multiple="multiple">
+        <select id="{generate-id()}-binding" name="ol">
             <xsl:attribute name="onchange">
                 <xsl:for-each select="$visualization">
                     <xsl:text>draw(visualizations['</xsl:text>

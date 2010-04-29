@@ -54,7 +54,7 @@ function initWithControlsAndDraw(container, visType, bindingElements, bindingTyp
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
-        draw(visualizations[visType], visType, variables);
+        draw(visualizations[visType], visType, bindingTypes, variables);
     }
     //else toggleVisualization(container, fieldset, false); // switch off
 }
@@ -72,15 +72,15 @@ function hasSufficientColumns(bindingTypes, xsdTypes)
     return true;
 }
 
-function draw(container, visType, variables)
+function draw(container, visType, bindingTypes, variables)
 {
-    if (visType.indexOf("Table") != -1) drawTable(container, variables);
-    if (visType.indexOf("ScatterChart") != -1) drawScatterChart(container, variables);
-    if (visType.indexOf("LineChart") != -1) drawLineChart(container, variables);
-    if (visType.indexOf("PieChart") != -1) drawPieChart(container, variables);
+    if (visType.indexOf("Table") != -1) drawTable(container, bindingTypes, variables);
+    if (visType.indexOf("ScatterChart") != -1) drawScatterChart(container, bindingTypes, variables);
+    if (visType.indexOf("LineChart") != -1) drawLineChart(container, bindingTypes, variables);
+    if (visType.indexOf("PieChart") != -1) drawPieChart(container, bindingTypes, variables);
     if (visType.indexOf("Map") != -1)
         if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
-            drawMap(container, variables);
+            drawMap(container, bindingTypes, variables);
 }
 
 function countColumns(data)
@@ -163,6 +163,13 @@ function variablesByBindingType(bindingType, variables)
     return bindingVariables;
 }
 
+function bindingTypeByVariable(bindingTypes, variable)
+{
+    for (var k = 0; k < bindingTypes.length; k++)
+        if (bindingTypes[k].type == variable.bindingType) return bindingTypes[k];
+    return null;
+}
+
 function bindingElementsByType(bindingElements, bindingTypes)
 {
     var elements = new Array();
@@ -202,7 +209,7 @@ function countVariables(data, bindingTypes, xsdTypes)
     return variables;
 }
 
-function drawTable(container, variables)
+function drawTable(container, bindingTypes, variables)
 {
 	container.draw(data, { showRowNumber: true });
 }
@@ -226,7 +233,12 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
     for (var i = 0; i < bindingElements.length; i++)
 	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
             if (bindingElements[i].bindingType == bindingTypes[j].type)
-            {   
+            {
+                if (!("cardinality" in bindingTypes[j]) ||
+                        ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l) ||
+                        ("minCardinality" in bindingTypes[j] && bindingTypes[j].minCardinality > l))
+                    bindingElements[i].element.multiple = "multiple";
+
                 var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
 
                 for (var l = 0; l < bindingColumns.length; l++)
@@ -235,7 +247,6 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
                     option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
                     option.setAttribute("value", bindingColumns[l]);
 
-//if (!("cardinality" in bindingTypes[j]) || ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l))
                     if (variableExists(variables, bindingTypes[j], bindingColumns[l]))
                         option.setAttribute("selected", "selected");
 
@@ -244,15 +255,17 @@ function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, vari
             }
 }
 
-function drawScatterChart(container, variables)
+function drawScatterChart(container, bindingTypes, variables)
 {
-        var visColumns = new Array();
-
+	var orderColumns = new Array();
+        var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)
         {
-            if (variables[i].bindingType.indexOf("ScatterChartXBinding") != -1) visColumns[0] = variables[i].variable;
-            if (variables[i].bindingType.indexOf("ScatterChartYBinding") != -1) visColumns = visColumns.concat(variables[i].variable);
+            var bindingType = bindingTypeByVariable(bindingTypes, variables[i]);
+            if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
+            else restColumns = restColumns.concat(variables[i].variable);
         }
+        var visColumns = orderColumns.concat(restColumns);
 
 	var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
@@ -262,15 +275,17 @@ function drawScatterChart(container, variables)
 	container.draw(view, options);
 }
 
-function drawLineChart(container, variables)
+function drawLineChart(container, bindingTypes, variables)
 {
-	var visColumns = new Array();
+	var orderColumns = new Array();
+        var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)
         {
-            if (variables[i].bindingType.indexOf("LineChartLabelBinding") != -1) visColumns[0] = variables[i].variable;
-            if (variables[i].bindingType.indexOf("LineChartValueBinding") != -1) visColumns = visColumns.concat(variables[i].variable);
+            var bindingType = bindingTypeByVariable(bindingTypes, variables[i]);
+            if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
+            else restColumns = restColumns.concat(variables[i].variable);
         }
-
+        var visColumns = orderColumns.concat(restColumns);
         var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
 	var options = new Array();
@@ -279,15 +294,18 @@ function drawLineChart(container, variables)
 	container.draw(view, options);
 }
 
-function drawPieChart(container, variables)
+function drawPieChart(container, bindingTypes, variables)
 {
-        var visColumns = new Array();
-
+	var orderColumns = new Array();
+        var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)
         {
-            if (variables[i].bindingType.indexOf("PieChartLabelBinding") != -1) visColumns[0] = variables[i].variable;
-            if (variables[i].bindingType.indexOf("PieChartValueBinding") != -1) visColumns[1] = variables[i].variable;
+            var bindingType = bindingTypeByVariable(bindingTypes, variables[i]);
+            if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
+            else restColumns = restColumns.concat(variables[i].variable);
         }
+        var visColumns = orderColumns.concat(restColumns);
+
 
 	var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
@@ -295,15 +313,17 @@ function drawPieChart(container, variables)
 	container.draw(view, options);
 }
 
-function drawMap(container, variables)
+function drawMap(container, bindingTypes, variables)
 {
-        var visColumns = new Array();
-
+	var orderColumns = new Array();
+        var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)
         {
-            if (variables[i].bindingType.indexOf("MapLatBinding") != -1) visColumns[0] = variables[i].variable;
-            if (variables[i].bindingType.indexOf("MapLngBinding") != -1) visColumns[1] = variables[i].variable;
+            var bindingType = bindingTypeByVariable(bindingTypes, variables[i]);
+            if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
+            else restColumns = restColumns.concat(variables[i].variable);
         }
+        var visColumns = orderColumns.concat(restColumns);
 
 	var view = new google.visualization.DataView(data);
 	view.setColumns(visColumns);
