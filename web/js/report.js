@@ -42,10 +42,10 @@ function initControls(visType, bindingElements, bindingTypes, xsdTypes, variable
 */
 }
 
-function initAndDraw(container, visType, variables)
+function initAndDraw(container, visType, bindingTypes, variables)
 {
     initVis(container, visType);
-    draw(visualizations[visType], visType, variables);
+    draw(visualizations[visType], visType, bindingTypes, variables);
 }
 
 function initWithControlsAndDraw(container, visType, bindingElements, bindingTypes, xsdTypes, variables)

@@ -444,7 +444,33 @@ exclude-result-prefixes="#all">
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                     <xsl:text>'], '</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                    <xsl:text>', getVisualizationVariables([</xsl:text>
+                    <xsl:text>', [</xsl:text>
+
+                    <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
+                        <xsl:text>{ 'type': '</xsl:text>
+                        <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                        <xsl:text>'</xsl:text>
+                        <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
+                            <xsl:text>, 'cardinality': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'cardinality']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:if test="sparql:binding[@name = 'minCardinality']/sparql:literal">
+                            <xsl:text>, 'minCardinality': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'minCardinality']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:if test="sparql:binding[@name = 'maxCardinality']/sparql:literal">
+                            <xsl:text>, 'maxCardinality': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'maxCardinality']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+                            <xsl:text>, 'order': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:text> }</xsl:text>
+                        <xsl:if test="position() != last()">,</xsl:if>
+                    </xsl:for-each>
+
+                    <xsl:text>], getVisualizationVariables([</xsl:text>
                     <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
                         <xsl:text>document.getElementById('</xsl:text>
                         <xsl:value-of select="generate-id()"/>
