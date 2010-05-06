@@ -91,10 +91,10 @@ exclude-result-prefixes="#all">
                         <!-- <xsl:copy-of select="$results"/> -->
 			<!-- <xsl:copy-of select="$visualizations"/> -->
                         <!--
-                        <xsl:copy-of select="$variables"/>
 			<xsl:copy-of select="$query-objects"/>
 			<xsl:copy-of select="$bindings"/>
                         -->
+                        <xsl:copy-of select="$variables"/>
 
 			<dl>
 				<dt>Endpoint</dt>

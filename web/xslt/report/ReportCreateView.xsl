@@ -67,8 +67,20 @@ exclude-result-prefixes="#all">
         <xsl:variable name="visualization-types" select="document('arg://visualization-types')" as="document-node()"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
         <xsl:variable name="data-types" select="document('arg://data-types')" as="document-node()"/>
+        <xsl:variable name="visualization-ids" as="document-node()">
+            <xsl:document>
+                <ids xmlns="">
+                    <xsl:for-each select="$visualization-types//sparql:result">
+                        <id visType="{sparql:binding[@name = 'type']/sparql:uri}">
+                            <xsl:value-of select="id:generate()"/>
+                        </id>
+                    </xsl:for-each>
+                </ids>
+            </xsl:document>
+        </xsl:variable>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
+        <xsl:key name="id-by-vis-type" match="id" use="@visType"/>
 
 	<xsl:template name="title">
             <xsl:choose>
@@ -167,12 +179,6 @@ exclude-result-prefixes="#all">
                                 <xsl:text>]</xsl:text>
                             </xsl:when>
                             <xsl:otherwise>
-                                <!--
-                                <xsl:if test="exists(index-of(('&vis;LineChartLabelBinding', '&vis;MapLabelBinding', '&vis;PieChartLabelBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.string</xsl:if>
-                                <xsl:if test="exists(index-of(('&vis;LineChartValueBinding', '&vis;PieChartValueBinding', '&vis;ScatterChartXBinding', '&vis;ScatterChartYBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.number</xsl:if>
-                                <xsl:if test="exists(index-of(('&vis;MapLatBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lat</xsl:if>
-                                <xsl:if test="exists(index-of(('&vis;MapLngBinding'), sparql:binding[@name = 'type']/sparql:uri))">typeColumns.lng</xsl:if>
-                                -->
                                 <xsl:text>countVariables(data, [</xsl:text>
                                 <xsl:for-each select="$binding-types">
                                     <xsl:text>{ 'type': '</xsl:text>
@@ -221,8 +227,9 @@ exclude-result-prefixes="#all">
                         <!--
                         <xsl:copy-of select="$visualization-types"/>
 			<xsl:copy-of select="$data-types"/>
-                        -->
 			<xsl:copy-of select="$binding-types"/>
+                        -->
+<xsl:copy-of select="$visualization-ids"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
@@ -342,12 +349,13 @@ exclude-result-prefixes="#all">
                             <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
                         </xsl:when>
                         <xsl:otherwise> <!-- ReportCreateView -->
-                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
 
                 <li>
+
 <!-- $report rep:visualizedBy ou -->
 <input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);">
     <xsl:choose>
@@ -379,7 +387,7 @@ exclude-result-prefixes="#all">
                             <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
                         </xsl:when>
                         <xsl:otherwise> <!-- ReportCreateView -->
-                            <xsl:value-of select="concat($host-uri, 'visualizations/', generate-id())"/> <!-- QUIRK - because visualization IDs must be stable across all templates -->
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
@@ -421,17 +429,17 @@ exclude-result-prefixes="#all">
         </xsl:variable>
         <!-- <xsl:param name="binding-uri" select="concat($host-uri, 'bindings/', id:generate())"/> -->
 
-        <input type="hidden" name="su" value="{$binding-uri}"/>
-        <input type="hidden" name="pu" value="&rdf;type"/>
-        <input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+<input type="hidden" name="su" value="{$binding-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
 
-        <input type="hidden" name="su" value="{$visualization-uri}"/>
-        <input type="hidden" name="pv" value="binding"/>
-        <input type="hidden" name="ou" value="{$binding-uri}"/>
+<input type="hidden" name="su" value="{$visualization-uri}"/>
+<input type="hidden" name="pv" value="binding"/>
+<input type="hidden" name="ou" value="{$binding-uri}"/>
 
-        <input type="hidden" name="su" value="{$binding-uri}"/>
-        <input type="hidden" name="pv" value="variableName"/>
-        <input type="hidden" name="lt" value="&xsd;string"/>
+<input type="hidden" name="su" value="{$binding-uri}"/>
+<input type="hidden" name="pv" value="variableName"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
 
         <label for="{generate-id()}-binding">
             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>

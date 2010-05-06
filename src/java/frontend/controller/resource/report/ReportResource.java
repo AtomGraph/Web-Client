@@ -46,6 +46,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	setReport(report);
     }
     
+    @Override
     public String getRelativeURI()
     {
 	try
@@ -92,7 +93,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	{
 	    view = new ReportReadView(this);
 	    
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) ReportListResource.getInstance().save(request, response);
+	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
 	}
 
 	return view;
@@ -105,7 +106,6 @@ public class ReportResource extends FrontEndResource implements LeafResource
         SPINModuleRegistry.get().init();
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
-	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
 	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI()); // change to query URI
 
         // add some metadata
@@ -116,19 +116,23 @@ public class ReportResource extends FrontEndResource implements LeafResource
         model.add(form.getReportResource(), model.createProperty(DublinCore.MODIFIED), model.createTypedLiteral(calendar));
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
         model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.USER));
-        model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
+        //model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
         model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
 
-        SDB.getInstanceModel().add(form.getModel()); // save report
+        Model intersection = SDB.getInstanceModel().intersection(model);
+        System.out.print("INTERSECTION: " + intersection);
+        model = model.difference(intersection);
+        
+        SDB.getInstanceModel().add(model); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-form.getModel().write(System.out);
+//form.getModel().write(System.out);
 
         try {
             // save report
             //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
             response.sendRedirect(form.getReportResource().getURI());
         } catch (IOException ex) {
-            Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

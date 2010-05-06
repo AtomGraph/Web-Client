@@ -155,11 +155,11 @@ public class ReportListResource extends FrontEndResource implements Singleton
         model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
         model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
 
-        SDB.getInstanceModel().add(form.getModel()); // save report
+        SDB.getInstanceModel().add(model); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
 //form.getModel().write(System.out);
 
-System.out.print("INTERSECTION: " + SDB.getInstanceModel().intersection(form.getModel()));
+System.out.print("INTERSECTION: " + SDB.getInstanceModel().intersection(model));
         try {
             // save report
             //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
