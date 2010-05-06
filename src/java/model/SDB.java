@@ -31,6 +31,7 @@ public class SDB
 	store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
 	dataset = DatasetStore.create(store);
 	Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema");
+        schemaModel.removeAll(); // clean model
 	
 	String fileName = context.getRealPath("/owl/visualizations.owl");
 	InputStream in = FileManager.get().open(fileName);

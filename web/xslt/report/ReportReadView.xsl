@@ -27,6 +27,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
         <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/>
+        <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -40,24 +41,33 @@ exclude-result-prefixes="#all">
                 <xsl:for-each select="$visualizations//sparql:result">
                     <xsl:text>initAndDraw(document.getElementById('</xsl:text>
                     <xsl:value-of select="generate-id()"/>
-                    <!--
-                    <xsl:text>-visualization'), { 'visualization' : '</xsl:text>
-                    <xsl:value-of select="sparql:binding[@name = 'visualization']/sparql:uri"/>
-                    <xsl:text>', 'type' : '</xsl:text>
-                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                    <xsl:text>' }, [</xsl:text>
-                    <xsl:for-each select="key('binding-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $bindings)">
-                        <xsl:text>{ 'binding' : '</xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
-                        <xsl:text>', 'type' : '</xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                        <xsl:text>' }</xsl:text>
-                        <xsl:if test="position() != last()">,</xsl:if>
-                    </xsl:for-each>
-                    -->
                     <xsl:text>-visualization'), '</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                     <xsl:text>', [</xsl:text>
+                    <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
+                        <xsl:text>{ 'type': '</xsl:text>
+                        <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                        <xsl:text>'</xsl:text>
+                        <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
+                            <xsl:text>, 'cardinality': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'cardinality']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:if test="sparql:binding[@name = 'minCardinality']/sparql:literal">
+                            <xsl:text>, 'minCardinality': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'minCardinality']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:if test="sparql:binding[@name = 'maxCardinality']/sparql:literal">
+                            <xsl:text>, 'maxCardinality': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'maxCardinality']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+                            <xsl:text>, 'order': </xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+                        </xsl:if>
+                        <xsl:text> }</xsl:text>
+                        <xsl:if test="position() != last()">,</xsl:if>
+                    </xsl:for-each>
+                    <xsl:text>], [</xsl:text>
                     <xsl:for-each select="key('variable-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables)">
                         <xsl:text>{ 'variable' : </xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>

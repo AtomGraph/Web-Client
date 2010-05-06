@@ -52,7 +52,7 @@ public class PostRequestWrapper extends HttpServletRequestWrapper
             IOUtils.copy(getReader(), writer);
             body = writer.toString();
         } catch (IOException ex) {
-            Logger.getLogger(RDFForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PostRequestWrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return body;
     }
