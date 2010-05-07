@@ -97,7 +97,22 @@ exclude-result-prefixes="#all">
             <xsl:if test="not(empty($query-result))">
                 <xsl:attribute name="onload">
                     <xsl:text>countColumns(data); </xsl:text>
-                    <xsl:for-each select="$visualization-types//sparql:result">
+                    <xsl:variable name="used-visualization-types" as="element(*)*">
+                        <xsl:choose>
+                            <xsl:when test="exists($visualizations)">
+                                <xsl:sequence select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:sequence select="$visualization-types//sparql:result"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+<!--
+<xsl:message terminate="yes">
+<xsl:copy-of select="$used-visualization-types"/>
+</xsl:message>
+-->
+                    <xsl:for-each select="$used-visualization-types">
                         <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
                         <xsl:value-of select="generate-id()"/>
                         <xsl:text>-visualization'), '</xsl:text>
