@@ -107,12 +107,8 @@ exclude-result-prefixes="#all">
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
-<!--
-<xsl:message terminate="yes">
-<xsl:copy-of select="$used-visualization-types"/>
-</xsl:message>
--->
-                    <xsl:for-each select="$used-visualization-types">
+
+                    <xsl:for-each select="$visualization-types//sparql:result">
                         <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
                         <xsl:value-of select="generate-id()"/>
                         <xsl:text>-visualization'), '</xsl:text>
@@ -179,7 +175,8 @@ exclude-result-prefixes="#all">
                         <xsl:text>],</xsl:text>
 
                         <xsl:choose>
-                            <xsl:when test="$variables//sparql:result">
+                            <!-- if visualization of this type was saved, and there are variables -->
+                            <xsl:when test="$variables//sparql:result and key('visualization-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)">
                                 <xsl:text>[</xsl:text>
                                 <xsl:for-each select="key('variable-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $variables)">
                                     <xsl:text>{ 'variable' : </xsl:text>
@@ -244,7 +241,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-<xsl:copy-of select="$visualization-ids"/>
+<xsl:copy-of select="$binding-types"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
