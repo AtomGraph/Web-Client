@@ -120,7 +120,7 @@ exclude-result-prefixes="#all">
                                 </a>
 			</td>
 			<td>
-				<xsl:value-of select="sparql:binding[@name = 'date']/sparql:literal"/>
+				<xsl:value-of select="sparql:binding[@name = 'dateCreated']/sparql:literal"/>
 			</td>
 		</tr>
 	</xsl:template>

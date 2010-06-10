@@ -6,6 +6,9 @@
 package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.FileUtils;
+import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
 import controller.LeafResource;
 import frontend.controller.FrontEndResource;
@@ -112,18 +115,19 @@ public class ReportResource extends FrontEndResource implements LeafResource
         String userUri = getController().getMapping().getHost() + "users/pumba";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        Model model = form.getModel();
-        model.add(form.getReportResource(), model.createProperty(DublinCore.MODIFIED), model.createTypedLiteral(calendar));
-        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
-        model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.USER));
-        //model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
-        model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
+        Model newModel = form.getModel();
+        newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.MODIFIED), newModel.createTypedLiteral(calendar));
+        newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.CREATOR), newModel.createResource(userUri));
+        newModel.add(newModel.createResource(userUri), RDF.type, newModel.createResource(Sioc.USER));
+        newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.NAME), newModel.createTypedLiteral("RandomUserName"));
 
-        Model intersection = SDB.getInstanceModel().intersection(model);
-        System.out.print("INTERSECTION: " + intersection);
-        model = model.difference(intersection);
-        
-        SDB.getInstanceModel().add(model); // save report
+Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
+Model oldModel = ResourceUtils.reachableClosure(reportResource);
+//oldModel.write(System.out, FileUtils.langXMLAbbrev);
+        SDB.getInstanceModel().remove(oldModel);
+        SDB.getInstanceModel().add(newModel);
+
+        //SDB.getInstanceModel().add(model); // save report
 	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
 //form.getModel().write(System.out);
 

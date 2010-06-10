@@ -8,10 +8,17 @@ SELECT *
 {
 	?report	rdf:type	rep:Report .
 	?report	dc:title	?title .
-	OPTIONAL
+        OPTIONAL
         {
-            ?report dct:created	?date .
-            ?report dc:creator	?creator .
+            ?report	dct:created	?dateCreated .
+        }
+        OPTIONAL
+        {
+            ?report	dct:modified	?dateModified .
+        }
+        OPTIONAL
+        {
+            ?report	dc:creator	?creator .
         }
 	?report	rep:query	?query .
 	?query	spin:text	?queryString .

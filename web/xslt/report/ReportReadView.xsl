@@ -93,8 +93,8 @@ exclude-result-prefixes="#all">
                         <!--
 			<xsl:copy-of select="$query-objects"/>
 			<xsl:copy-of select="$bindings"/>
-                        -->
                         <xsl:copy-of select="$variables"/>
+                        -->
 
 			<dl>
 				<dt>Endpoint</dt>
@@ -121,7 +121,7 @@ exclude-result-prefixes="#all">
 				</dd>
 				<dt>Date</dt>
 				<dd>
-                                        <xsl:value-of select="$report//sparql:binding[@name = 'date']/sparql:literal"/>
+                                        <xsl:value-of select="$report//sparql:binding[@name = 'dateCreated']/sparql:literal"/>
 				</dd>
                         </dl>
 

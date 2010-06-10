@@ -241,7 +241,6 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-<xsl:copy-of select="$binding-types"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
@@ -278,7 +277,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pv" value="text"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
-					<textarea cols="80" rows="20" id="query-string" name="ol">&#160;
+					<textarea cols="80" rows="20" id="query-string" name="ol">
 						<xsl:if test="not(empty($query-result))">
 							<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
 						</xsl:if>

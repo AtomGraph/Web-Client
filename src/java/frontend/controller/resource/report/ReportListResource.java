@@ -152,7 +152,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATED), model.createTypedLiteral(calendar));
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
         model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.USER));
-        model.add(model.createResource(userUri), model.createProperty(DublinCore.DATE), model.createTypedLiteral(calendar));
         model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
 
         SDB.getInstanceModel().add(model); // save report

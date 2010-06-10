@@ -10,8 +10,15 @@ SELECT *
 	?report	dc:title	?title .
         OPTIONAL
         {
+            ?report	dct:created	?dateCreated .
+        }
+        OPTIONAL
+        {
+            ?report	dct:modified	?dateModified .
+        }
+        OPTIONAL
+        {
             ?report	dc:creator	?creator .
-            ?report	dct:created	?date .
         }
 	?report	rep:query	?query .
 	?query	spin:text	?queryString .
