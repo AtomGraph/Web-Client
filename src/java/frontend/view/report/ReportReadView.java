@@ -42,6 +42,7 @@ public class ReportReadView extends ReportView
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
         setQueryObjects(request, response);
+        setQuerySubjects(request, response);
 
 	super.display(request, response);
 
@@ -68,4 +69,12 @@ public class ReportReadView extends ReportView
 
 	getResolver().setArgument("query-objects", objects);
     }
+
+    protected void setQuerySubjects(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String subjects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/subjects.rq"), getResource().getAbsoluteURI()));
+
+	getResolver().setArgument("query-subjects", subjects);
+    }
+
 }

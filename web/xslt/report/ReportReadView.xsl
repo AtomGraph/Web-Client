@@ -27,6 +27,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
         <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/>
+        <xsl:variable name="query-subjects" select="document('arg://query-subjects')" as="document-node()"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
@@ -113,6 +114,16 @@ exclude-result-prefixes="#all">
                                         </dd>
                                     </xsl:for-each>
                                 </xsl:if>
+                                <xsl:if test="$query-subjects//sparql:binding[@name = 'subject']/sparql:uri">
+                                    <dt>Used instances</dt>
+                                    <xsl:for-each select="$query-subjects//sparql:binding[@name = 'subject']/sparql:uri">
+                                        <dd>
+                                                <a href="{.}">
+                                                    <xsl:value-of select="."/>
+                                                </a>
+                                        </dd>
+                                    </xsl:for-each>
+                                </xsl:if>
                                 <dt>Created by</dt>
 				<dd>
 					<a href="{$report//sparql:binding[@name = 'creator']/sparql:uri}">
@@ -123,7 +134,7 @@ exclude-result-prefixes="#all">
 				<dd>
                                         <xsl:value-of select="$report//sparql:binding[@name = 'dateCreated']/sparql:literal"/>
 				</dd>
-                                <xsl:if select="$report//sparql:binding[@name = 'dateModified']/sparql:literal">
+                                <xsl:if test="$report//sparql:binding[@name = 'dateModified']/sparql:literal">
                                     <dt>Modified</dt>
                                     <dd>
                                             <xsl:value-of select="$report//sparql:binding[@name = 'dateModified']/sparql:literal"/>

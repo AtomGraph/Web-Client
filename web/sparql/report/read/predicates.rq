@@ -10,5 +10,6 @@ SELECT ?predicate
 	?query	spin:where	?where .
 	?where	list:member	?member .
 	?member	spin:predicate	?predicate .
+	FILTER (isURI(?predicate))
 	FILTER (?report = <%s>)
 }
