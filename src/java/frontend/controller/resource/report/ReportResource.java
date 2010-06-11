@@ -7,7 +7,7 @@ package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.util.FileUtils;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
 import controller.LeafResource;
@@ -23,8 +23,10 @@ import frontend.view.report.ReportUpdateView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import model.vocabulary.DublinCore;
 import model.Report;
 import model.SDB;
@@ -123,6 +125,9 @@ public class ReportResource extends FrontEndResource implements LeafResource
 
 Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
 Model oldModel = ResourceUtils.reachableClosure(reportResource);
+List<Statement> keepStatements = new ArrayList<Statement>();
+keepStatements.add(oldModel.getProperty(reportResource, oldModel.createProperty(DublinCore.CREATED)));
+oldModel.remove(keepStatements); // do not delete creation date
 //oldModel.write(System.out, FileUtils.langXMLAbbrev);
         SDB.getInstanceModel().remove(oldModel);
         SDB.getInstanceModel().add(newModel);

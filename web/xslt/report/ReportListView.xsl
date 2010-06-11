@@ -66,8 +66,9 @@ exclude-result-prefixes="#all">
 					<td>Used types</td>
 					<td>Datasource</td>
 					<td>Creator</td>
-					<td>Date</td>
-				</thead>
+					<td>Created</td>
+					<td>Modified</td>
+                                </thead>
 				<tbody>
 					<xsl:apply-templates select="$reports" mode="report-table"/>
 				</tbody>
@@ -121,6 +122,9 @@ exclude-result-prefixes="#all">
 			</td>
 			<td>
 				<xsl:value-of select="sparql:binding[@name = 'dateCreated']/sparql:literal"/>
+			</td>
+			<td>
+				<xsl:value-of select="sparql:binding[@name = 'dateModified']/sparql:literal"/>
 			</td>
 		</tr>
 	</xsl:template>

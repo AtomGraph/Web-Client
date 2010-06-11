@@ -86,7 +86,7 @@ public class Report extends RdfBean<Report>
 	return null;
     }
     
-    @RdfProperty(DATE)
+    @RdfProperty(CREATED)
     public Date getCreatedAt()
     {
 	return createdAt;

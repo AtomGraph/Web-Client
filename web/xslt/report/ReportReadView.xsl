@@ -119,10 +119,16 @@ exclude-result-prefixes="#all">
 						<xsl:value-of select="$report//sparql:binding[@name = 'creator']/sparql:uri"/>
 					</a>
 				</dd>
-				<dt>Date</dt>
+				<dt>Created</dt>
 				<dd>
                                         <xsl:value-of select="$report//sparql:binding[@name = 'dateCreated']/sparql:literal"/>
 				</dd>
+                                <xsl:if select="$report//sparql:binding[@name = 'dateModified']/sparql:literal">
+                                    <dt>Modified</dt>
+                                    <dd>
+                                            <xsl:value-of select="$report//sparql:binding[@name = 'dateModified']/sparql:literal"/>
+                                    </dd>
+                                </xsl:if>
                         </dl>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
