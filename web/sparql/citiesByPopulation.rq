@@ -3,17 +3,18 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT DISTINCT ?label ?population ?area ?lat ?long
+SELECT DISTINCT *
 WHERE
 {
 	?city rdfs:label ?label .
 	?city <http://dbpedia.org/property/populationMetro> ?population .
 	?city <http://dbpedia.org/property/areaTotalKm> ?area .
-	# ?city <http://dbpedia.org/property/subdivisionName> <http://dbpedia.org/resource/United_States>
-	?city <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .
-	?city <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
+	?city <http://dbpedia.org/property/subdivisionName> <http://dbpedia.org/resource/United_States> .
+	#?city <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .
+	#?city <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
 	FILTER (DATATYPE(?area) = xsd:double)
-	FILTER (DATATYPE(?population) = xsd:integer)
+	#FILTER (DATATYPE(?population) = xsd:integer)
 	FILTER (LANG(?label) = 'en')
-	FILTER (xsd:integer(?population) > 10000000)
+	FILTER (xsd:integer(?population) > 2000000)
 }
+ORDER BY DESC(?population)

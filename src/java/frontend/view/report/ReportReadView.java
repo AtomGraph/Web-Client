@@ -41,8 +41,7 @@ public class ReportReadView extends ReportView
         setVariables(request, response);
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
-        setQueryObjects(request, response);
-        setQuerySubjects(request, response);
+        setQueryUris(request, response);
 
 	super.display(request, response);
 
@@ -63,6 +62,7 @@ public class ReportReadView extends ReportView
 	getResolver().setArgument("binding-types", bindingTypes);
     }
 
+    /*
     protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
 	String objects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/objects.rq"), getResource().getAbsoluteURI()));
@@ -75,6 +75,14 @@ public class ReportReadView extends ReportView
 	String subjects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/subjects.rq"), getResource().getAbsoluteURI()));
 
 	getResolver().setArgument("query-subjects", subjects);
+    }
+    */
+
+    protected void setQueryUris(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String uris = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/uris.rq"), getResource().getAbsoluteURI()));
+
+	getResolver().setArgument("query-uris", uris);
     }
 
 }

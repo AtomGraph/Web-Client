@@ -4,6 +4,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT *
+WHERE
 {
     ?country rdf:type <http://dbpedia.org/ontology/Country> .
     ?country <http://dbpedia.org/property/gdpNominalPerCapita> ?gdp

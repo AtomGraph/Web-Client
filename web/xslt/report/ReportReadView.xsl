@@ -26,8 +26,11 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
+        <xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
+        <!--
         <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/>
         <xsl:variable name="query-subjects" select="document('arg://query-subjects')" as="document-node()"/>
+        -->
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
@@ -104,19 +107,9 @@ exclude-result-prefixes="#all">
 						<xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
 					</a>
 				</dd>
-                                <xsl:if test="$query-objects//sparql:binding[@name = 'object']/sparql:uri">
-                                    <dt>Used types</dt>
-                                    <xsl:for-each select="$query-objects//sparql:binding[@name = 'object']/sparql:uri">
-                                        <dd>
-                                                <a href="{.}">
-                                                    <xsl:value-of select="."/>
-                                                </a>
-                                        </dd>
-                                    </xsl:for-each>
-                                </xsl:if>
-                                <xsl:if test="$query-subjects//sparql:binding[@name = 'subject']/sparql:uri">
-                                    <dt>Used instances</dt>
-                                    <xsl:for-each select="$query-subjects//sparql:binding[@name = 'subject']/sparql:uri">
+                                <xsl:if test="$query-uris//sparql:binding[@name = 'uri']/sparql:uri">
+                                    <dt>Used URIs</dt>
+                                    <xsl:for-each select="$query-uris//sparql:binding[@name = 'uri']/sparql:uri">
                                         <dd>
                                                 <a href="{.}">
                                                     <xsl:value-of select="."/>
