@@ -8,6 +8,6 @@ SELECT *
 	?report     sioc:container_of	?comment .
 	?comment    rdf:type		sioc:Post .
         ?comment    sioc:content        ?content .
-        ?comment    dct:created          ?dateCreated
+        ?comment    dct:created         ?dateCreated
 	FILTER (?report = <%s>)
 }

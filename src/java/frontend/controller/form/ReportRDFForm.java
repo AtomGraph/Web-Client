@@ -11,7 +11,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 import javax.servlet.http.HttpServletRequest;
-import model.Namespaces;
 import model.vocabulary.Reports;
 import model.vocabulary.Spin;
 

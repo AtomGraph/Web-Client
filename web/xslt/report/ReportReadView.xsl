@@ -8,9 +8,11 @@
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
         <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+        <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
         <!ENTITY dbpedia "http://dbpedia.org/resource/">
         <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
         <!ENTITY dbpprop "http://dbpedia.org/property/">
+        <!ENTITY category "http://dbpedia.org/resource/Category:">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -190,6 +192,12 @@ exclude-result-prefixes="#all">
                     </xsl:when>
                     <xsl:when test="starts-with($uri, '&owl;')">
                         <xsl:value-of select="concat('owl:', substring-after($uri, '&owl;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&skos;')">
+                        <xsl:value-of select="concat('skos:', substring-after($uri, '&skos;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&category;')">
+                        <xsl:value-of select="concat('category:', substring-after($uri, '&category;'))"/>
                     </xsl:when>
                     <xsl:when test="starts-with($uri, '&dbpedia;')">
                         <xsl:value-of select="concat('dbpedia:', substring-after($uri, '&dbpedia;'))"/>

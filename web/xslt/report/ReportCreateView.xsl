@@ -61,6 +61,15 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+        <xsl:variable name="endpoint-uri" as="xs:anyURI">
+            <xsl:choose>
+                <xsl:when test="not(empty($query-result))">
+                        <xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
+                </xsl:when>
+                <xsl:otherwise>http://dbpedia.org/sparql</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
         <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()?"/> <!-- only set after $query-result -->
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()?"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()?"/>
@@ -259,8 +268,7 @@ exclude-result-prefixes="#all">
 
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="on" value="rep"/>
-<input type="hidden" name="ov" value="Report"/>
+<input type="hidden" name="ou" value="&rep;Report"/>
 <input type="hidden" name="pu" value="&rep;query"/>
 <!-- <input type="hidden" name="ob" value="query"/> -->
 <input type="hidden" name="ou" value="{$query-uri}"/>
@@ -268,13 +276,11 @@ exclude-result-prefixes="#all">
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="{$query-uri}"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="on" value="spin"/>
-<input type="hidden" name="ov" value="Select"/>
+<input type="hidden" name="ou" value="&spin;Select"/>
 
 					<label for="query-string">Query</label>
 					<br/>
-<input type="hidden" name="pn" value="spin"/>
-<input type="hidden" name="pv" value="text"/>
+<input type="hidden" name="pu" value="&spin;text"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 					<textarea cols="80" rows="20" id="query-string" name="ol">
@@ -284,8 +290,7 @@ exclude-result-prefixes="#all">
 					</textarea>
 					<br/>
 <input type="hidden" name="su" value="{$report-uri}"/>
-<input type="hidden" name="pn" value="dc"/>
-<input type="hidden" name="pv" value="title"/>
+<input type="hidden" name="pu" value="&dc;title"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 					<label for="title">Title</label>
@@ -299,22 +304,20 @@ exclude-result-prefixes="#all">
 					<br/>
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="{$query-uri}"/>
-<input type="hidden" name="pn" value="spin"/>
-<input type="hidden" name="pv" value="from"/>
+<input type="hidden" name="pu" value="&spin;from"/>
 
 					<label for="endpoint">Endpoint</label>
                                         <!-- <xsl:value-of select="$query-result"/> -->
-					<input type="text" id="endpoint" name="ou">
-                                            <xsl:attribute name="value">
-                                                <xsl:choose>
-                                                    <xsl:when test="not(empty($query-result))">
-                                                            <xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
-                                                    </xsl:when>
-                                                    <xsl:otherwise>http://dbpedia.org/sparql</xsl:otherwise>
-                                                </xsl:choose>
-                                            </xsl:attribute>
-                                        </input>
-					<br/>
+					<input type="text" id="endpoint" name="ou" value="{$endpoint-uri}"/>
+
+<input type="hidden" name="su" value="{$endpoint-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="&rep;Endpoint"/>
+
+                                        <select>
+                                            <xsl:apply-templates select="$endpoints//sparql:result" mode="endpoint-option"/>
+                                        </select>
+                                        <br/>
 					<button type="submit" name="action" value="query">Query</button>
                                         <xsl:if test="$view = $create-view and $query-result eq true()">
                                             <button type="submit" name="action" value="save">Save</button>
@@ -510,6 +513,12 @@ exclude-result-prefixes="#all">
 
             <xsl:text>&#160;</xsl:text>
         </select>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'endpoint']]" mode="endpoint-option">
+        <option value="{sparql:binding[@name = 'endpoint']/sparql:uri}">
+            <xsl:value-of select="sparql:binding[@name = 'endpoint']/sparql:uri"/>
+        </option>
     </xsl:template>
 
 </xsl:stylesheet>

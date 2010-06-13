@@ -49,6 +49,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 
+        setEndpoints(request, response);
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
         setDataTypes(request, response);
@@ -74,6 +75,13 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	super.display(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    protected void setEndpoints(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String endpoints = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq")));
+
+	getResolver().setArgument("endpoints", endpoints);
     }
 
     protected void setVisualizationTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
