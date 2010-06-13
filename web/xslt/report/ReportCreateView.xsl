@@ -314,7 +314,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ou" value="&rep;Endpoint"/>
 
-                                        <select>
+                                        <select id="endpoint" name="ou" disabled="disabled">
                                             <xsl:apply-templates select="$endpoints//sparql:result" mode="endpoint-option"/>
                                         </select>
                                         <br/>
