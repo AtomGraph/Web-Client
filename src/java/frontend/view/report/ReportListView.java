@@ -59,8 +59,9 @@ public class ReportListView extends FrontEndView
         getTransformer().setParameter("desc-default", true);
         getTransformer().setParameter("desc", getDesc());
 
-        setQueryObjects(request, response);
-        
+//        setQueryObjects(request, response);
+        setQueryUris(request, response);
+
 	super.display(request, response);
     }
 
@@ -119,4 +120,12 @@ public class ReportListView extends FrontEndView
 
 	getResolver().setArgument("query-objects", objects);
     }
+
+    protected void setQueryUris(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+	String uris = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/uris.rq")));
+
+	getResolver().setArgument("query-uris", uris);
+    }
+
 }

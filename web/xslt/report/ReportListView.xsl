@@ -29,7 +29,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="desc" select="$desc-default" as="xsd:boolean"/>
 
 	<xsl:variable name="reports" select="document('arg://reports')"/>
-	<xsl:variable name="query-objects" select="document('arg://query-objects')"/>
+	<!-- <xsl:variable name="query-objects" select="document('arg://query-objects')"/> -->
+	<xsl:variable name="query-uris" select="document('arg://query-uris')"/>
 
 	<xsl:template name="title">
 		Reports
@@ -62,7 +63,7 @@ exclude-result-prefixes="#all">
 				<thead>
 					<td>Title</td>
 					<td>Description</td>
-					<td>Used types</td>
+					<td>Used URIs</td>
 					<td>Datasource</td>
 					<td>Creator</td>
 					<td>Created</td>
@@ -96,13 +97,13 @@ exclude-result-prefixes="#all">
 				<xsl:value-of select="sparql:binding[@name = 'description']/sparql:literal"/>
 			</td>
 			<td>
-                            <xsl:variable name="current-objects" select="$query-objects//sparql:result[sparql:binding[@name = 'report']/sparql:uri = current()/sparql:binding[@name = 'report']/sparql:uri]"/>
-                            <xsl:if test="$current-objects">
+                            <xsl:variable name="current-uris" select="$query-uris//sparql:result[sparql:binding[@name = 'report']/sparql:uri = current()/sparql:binding[@name = 'report']/sparql:uri]"/>
+                            <xsl:if test="$current-uris">
                                 <ul>
-                                    <xsl:for-each select="$current-objects">
+                                    <xsl:for-each select="$current-uris">
                                         <li>
-                                            <a href="{sparql:binding[@name = 'object']/sparql:uri}">
-                                                <xsl:value-of select="sparql:binding[@name = 'object']/sparql:uri"/>
+                                            <a href="{sparql:binding[@name = 'uri']/sparql:uri}">
+                                                <xsl:value-of select="sparql:binding[@name = 'uri']/sparql:uri"/>
                                             </a>
                                         </li>
                                     </xsl:for-each>

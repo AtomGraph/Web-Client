@@ -8,6 +8,9 @@
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
         <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+        <!ENTITY dbpedia "http://dbpedia.org/resource/">
+        <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
+        <!ENTITY dbpprop "http://dbpedia.org/property/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -114,13 +117,7 @@ exclude-result-prefixes="#all">
 				</dd>
                                 <xsl:if test="$query-uris//sparql:binding[@name = 'uri']/sparql:uri">
                                     <dt>Used URIs</dt>
-                                    <xsl:for-each select="$query-uris//sparql:binding[@name = 'uri']/sparql:uri">
-                                        <dd>
-                                                <a href="{.}">
-                                                    <xsl:value-of select="."/>
-                                                </a>
-                                        </dd>
-                                    </xsl:for-each>
+                                    <xsl:apply-templates select="$query-uris//sparql:result" mode="uri-list-item"/>
                                 </xsl:if>
                                 <dt>Created by</dt>
 				<dd>
@@ -181,6 +178,40 @@ exclude-result-prefixes="#all">
             <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;">&#160;</div>
         </xsl:template>
 
+        <xsl:template match="sparql:result[sparql:binding[@name = 'uri']]" mode="uri-list-item">
+            <xsl:variable name="uri" select="sparql:binding[@name = 'uri']/sparql:uri" as="xs:anyURI"/>
+            <xsl:variable name="uri-label" as="xs:string">
+                <xsl:choose>
+                    <xsl:when test="starts-with($uri, '&rdf;')">
+                        <xsl:value-of select="concat('rdf:', substring-after($uri, '&rdf;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&rdfs;')">
+                        <xsl:value-of select="concat('rdfs:', substring-after($uri, '&rdfs;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&owl;')">
+                        <xsl:value-of select="concat('owl:', substring-after($uri, '&owl;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&dbpedia;')">
+                        <xsl:value-of select="concat('dbpedia:', substring-after($uri, '&dbpedia;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&dbpedia-owl;')">
+                        <xsl:value-of select="concat('dbpedia-owl:', substring-after($uri, '&dbpedia-owl;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&dbpprop;')">
+                        <xsl:value-of select="concat('dbpprop:', substring-after($uri, '&dbpprop;'))"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$uri"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <dd>
+                <a href="{$uri}">
+                    <xsl:value-of select="$uri-label"/>
+                </a>
+            </dd>
+        </xsl:template>
+        
         <xsl:template match="sparql:result[sparql:binding[@name = 'comment']]" mode="comment">
             <li>
                 <xsl:value-of select="sparql:binding[@name = 'dateCreated']"/>
