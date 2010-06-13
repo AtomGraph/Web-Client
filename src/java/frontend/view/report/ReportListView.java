@@ -52,7 +52,7 @@ public class ReportListView extends FrontEndView
 	
 	getResolver().setArgument("reports", results);
 
-        getTransformer().setParameter("total-item-count", 2); //    count = myOntClass.listInstances().toList().size();
+        getTransformer().setParameter("total-item-count", 2); //    SDB.getReportClass().listInstances().toList().size()
         getTransformer().setParameter("offset", getOffset());
         getTransformer().setParameter("limit", getLimit());
         getTransformer().setParameter("order-by", getOrderBy().toString().toLowerCase());

@@ -10,10 +10,10 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import model.Namespaces;
-import dk.semantic_web.diy.controller.Error;
+import model.vocabulary.Reports;
+import model.vocabulary.Spin;
 
 /**
  *
@@ -30,7 +30,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getReportResource()
     {
         Resource report = null;
-        Resource reportClass = getModel().createResource(Namespaces.REPORT_NS + "Report");
+        Resource reportClass = getModel().createResource(Reports.REPORT);
         ResIterator iter = getModel().listResourcesWithProperty(RDF.type, reportClass);
         if (iter.hasNext())
             report = iter.next();
@@ -40,7 +40,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getQueryResource()
     {
         Resource query = null;
-        Resource queryClass = getModel().createResource(Namespaces.SPIN_NS + "Select");
+        Resource queryClass = getModel().createResource(Spin.SELECT);
         ResIterator iter = getModel().listResourcesWithProperty(RDF.type, queryClass);
         if (iter.hasNext())
             query = iter.next();
@@ -50,7 +50,7 @@ public class ReportRDFForm extends RDFForm
     public String getEndpoint()
     {
 	String endpoint = null;
-	Property fromProperty = getModel().createProperty(Namespaces.SPIN_NS, "from");
+	Property fromProperty = getModel().createProperty(Spin.FROM);
 	Statement stmt = getModel().getProperty(getQueryResource(), fromProperty);
 	if (stmt.getObject() != null) endpoint = stmt.getObject().toString();
 	return endpoint;
@@ -59,7 +59,7 @@ public class ReportRDFForm extends RDFForm
     public String getQueryString()
     {
 	String queryString = null;
-	Property textProperty = getModel().createProperty(Namespaces.SPIN_NS, "text");
+	Property textProperty = getModel().createProperty(Spin.TEXT);
 	Statement stmt = getModel().getProperty(getQueryResource(), textProperty);
 	if (stmt.getObject() != null) queryString = stmt.getString();
 	return queryString;

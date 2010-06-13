@@ -13,7 +13,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:xsd="&xsd;"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 xmlns:sparql="&sparql;"
 exclude-result-prefixes="#all">
 
@@ -21,12 +21,12 @@ exclude-result-prefixes="#all">
         <xsl:include href="../query-string.xsl"/>
         <xsl:include href="../page-numbers.xsl"/>
 
-        <xsl:param name="total-item-count"/>
-        <xsl:param name="offset" select="0"/>
-        <xsl:param name="limit" select="20"/>
-        <xsl:param name="order-by"/>
-        <xsl:param name="desc-default" select="true()"/>
-        <xsl:param name="desc" select="$desc-default"/>
+        <xsl:param name="total-item-count" as="xsd:integer"/>
+        <xsl:param name="offset" select="0" as="xsd:integer"/>
+        <xsl:param name="limit" select="20" as="xsd:integer"/>
+        <xsl:param name="order-by" as="xsd:string"/>
+        <xsl:param name="desc-default" select="true()" as="xsd:boolean"/>
+        <xsl:param name="desc" select="$desc-default" as="xsd:boolean"/>
 
 	<xsl:variable name="reports" select="document('arg://reports')"/>
 	<xsl:variable name="query-objects" select="document('arg://query-objects')"/>
@@ -39,7 +39,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
 	<xsl:template name="content">
-		<div id="main">
+		<div id="main"><xsl:value-of select="$total-item-count"/>
 			<h2><xsl:call-template name="title"/></h2>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">

@@ -7,6 +7,7 @@
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
+        <!ENTITY sioc "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -16,6 +17,8 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:id="java:util.IDGenerator"
 exclude-result-prefixes="#all">
 
 	<xsl:import href="../sparql2google-wire.xsl"/>
@@ -23,7 +26,8 @@ exclude-result-prefixes="#all">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:variable name="report" select="document('arg://report')" as="document-node()"/>
-	<xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
+	<xsl:variable name="report-uri" select="$report//sparql:binding[@name = 'report']/sparql:uri" as="xs:anyURI"/>
+        <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
         <xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
@@ -32,6 +36,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="query-subjects" select="document('arg://query-subjects')" as="document-node()"/>
         -->
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
+        <xsl:variable name="comments" select="document('arg://comments')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
 
@@ -142,11 +147,44 @@ exclude-result-prefixes="#all">
 			</form>
 
 			<xsl:apply-templates select="$visualizations//sparql:result" mode="vis-container"/>
-		</div>
+
+			<h3 id="comments">Comments</h3>
+                        <form action="{$report-uri}" method="post" accept-charset="UTF-8">
+                            <xsl:variable name="comment-uri" select="xs:anyURI(concat($report-uri, '#', id:generate()))" as="xs:anyURI"/>
+<input type="hidden" name="rdf"/>
+<input type="hidden" name="n" value="rdf"/>
+<input type="hidden" name="v" value="&rdf;"/>
+
+<input type="hidden" name="su" value="{$report-uri}"/>
+<input type="hidden" name="pu" value="&sioc;container_of"/>
+<input type="hidden" name="ou" value="{$comment-uri}"/>
+<input type="hidden" name="su" value="{$comment-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="&sioc;Post"/>
+<input type="hidden" name="pu" value="&sioc;content"/>
+
+                                <p>
+                                        <textarea name="ol"></textarea>
+                                        <br/>
+					<button type="submit" name="action" value="comment">Comment</button>
+				</p>
+                                <xsl:if test="$comments//sparql:result">
+                                    <ul>
+                                        <xsl:apply-templates select="$comments//sparql:result" mode="comment"/>
+                                    </ul>
+                                </xsl:if>
+			</form>
+                </div>
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="vis-container">
             <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;">&#160;</div>
+        </xsl:template>
+
+        <xsl:template match="sparql:result[sparql:binding[@name = 'comment']]" mode="comment">
+            <li>
+                <xsl:value-of select="sparql:binding[@name = 'content']"/>
+            </li>
         </xsl:template>
 
 </xsl:stylesheet>

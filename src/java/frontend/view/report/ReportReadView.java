@@ -42,6 +42,7 @@ public class ReportReadView extends ReportView
         setVisualizationTypes(request, response);
         setBindingTypes(request, response);
         setQueryUris(request, response);
+        setComments(request, response);
 
 	super.display(request, response);
 
@@ -83,6 +84,13 @@ public class ReportReadView extends ReportView
 	String uris = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/uris.rq"), getResource().getAbsoluteURI()));
 
 	getResolver().setArgument("query-uris", uris);
+    }
+
+    protected void setComments(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String comments = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/comments.rq"), getResource().getAbsoluteURI()));
+
+	getResolver().setArgument("comments", comments);
     }
 
 }

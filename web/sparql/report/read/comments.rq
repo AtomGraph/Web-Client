@@ -1,0 +1,11 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+
+SELECT *
+{
+	?report     rdf:type		sioc:Forum .
+	?report     sioc:container_of	?comment .
+	?comment    rdf:type		sioc:Post .
+        ?comment    sioc:content        ?content
+	FILTER (?report = <%s>)
+}

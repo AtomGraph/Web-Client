@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
+import frontend.controller.form.CommentRDFForm;
 import frontend.controller.form.ReportRDFForm;
 import frontend.view.report.ReportUpdateView;
 import java.io.IOException;
@@ -99,7 +100,8 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	    view = new ReportReadView(this);
 	    
 	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
-	}
+	    if (request.getParameter("action") != null && request.getParameter("action").equals("comment")) comment(request, response);
+        }
 
 	return view;
     }
@@ -120,10 +122,11 @@ public class ReportResource extends FrontEndResource implements LeafResource
         Model newModel = form.getModel();
         newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.MODIFIED), newModel.createTypedLiteral(calendar));
         newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.CREATOR), newModel.createResource(userUri));
+        newModel.add(form.getReportResource(), RDF.type, newModel.createResource(Sioc.FORUM));
         newModel.add(newModel.createResource(userUri), RDF.type, newModel.createResource(Sioc.USER));
         newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.NAME), newModel.createTypedLiteral("RandomUserName"));
 
-Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
+Resource reportResource = SDB.getInstanceModel().createResource(getURI());
 Model oldModel = ResourceUtils.reachableClosure(reportResource);
 List<Statement> keepStatements = new ArrayList<Statement>();
 keepStatements.add(oldModel.getProperty(reportResource, oldModel.createProperty(DublinCore.CREATED)));
@@ -145,4 +148,10 @@ oldModel.remove(keepStatements); // do not delete creation date
         }
     }
 
+    private void comment(HttpServletRequest request, HttpServletResponse response)
+    {
+	CommentRDFForm form = new CommentRDFForm(request);
+
+        SDB.getInstanceModel().add(form.getModel());
+    }
 }

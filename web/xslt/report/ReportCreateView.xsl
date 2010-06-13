@@ -41,7 +41,7 @@ exclude-result-prefixes="#all">
                 <xsl:sequence select="document('arg://report')"/> <!-- only set after $query-result -->
             </xsl:if>
         </xsl:variable>
-	<xsl:variable name="report-uri" as="xs:string">
+	<xsl:variable name="report-uri" as="xs:anyURI">
             <xsl:choose>
                 <xsl:when test="$report">
                     <xsl:value-of select="$report//sparql:binding[@name = 'report']/sparql:uri"/>
@@ -51,7 +51,7 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-	<xsl:variable name="query-uri" as="xs:string">
+	<xsl:variable name="query-uri" as="xs:anyURI">
             <xsl:choose>
                 <xsl:when test="$report">
                     <xsl:value-of select="$report//sparql:binding[@name = 'query']/sparql:uri"/>
