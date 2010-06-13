@@ -149,7 +149,7 @@ exclude-result-prefixes="#all">
 			<xsl:apply-templates select="$visualizations//sparql:result" mode="vis-container"/>
 
 			<h3 id="comments">Comments</h3>
-                        <form action="{$report-uri}" method="post" accept-charset="UTF-8">
+                        <form action="{$report-uri}#comments" method="post" accept-charset="UTF-8">
                             <xsl:variable name="comment-uri" select="xs:anyURI(concat($report-uri, '#', id:generate()))" as="xs:anyURI"/>
 <input type="hidden" name="rdf"/>
 <input type="hidden" name="n" value="rdf"/>
@@ -183,6 +183,8 @@ exclude-result-prefixes="#all">
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'comment']]" mode="comment">
             <li>
+                <xsl:value-of select="sparql:binding[@name = 'dateCreated']"/>
+                <br/>
                 <xsl:value-of select="sparql:binding[@name = 'content']"/>
             </li>
         </xsl:template>

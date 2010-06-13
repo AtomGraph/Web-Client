@@ -151,6 +151,9 @@ oldModel.remove(keepStatements); // do not delete creation date
     private void comment(HttpServletRequest request, HttpServletResponse response)
     {
 	CommentRDFForm form = new CommentRDFForm(request);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        form.getModel().add(form.getCommentResource(), form.getModel().createProperty(DublinCore.CREATED), form.getModel().createTypedLiteral(calendar));
 
         SDB.getInstanceModel().add(form.getModel());
     }
