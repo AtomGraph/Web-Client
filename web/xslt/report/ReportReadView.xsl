@@ -138,7 +138,7 @@ exclude-result-prefixes="#all">
                                     </dd>
                                 </xsl:if>
                                 <xsl:if test="$report//sparql:binding[@name = 'description']/sparql:literal">
-                                    <dt>Modified</dt>
+                                    <dt>Description</dt>
                                     <dd>
                                             <xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
                                     </dd>
