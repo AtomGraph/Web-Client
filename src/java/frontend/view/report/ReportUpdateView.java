@@ -41,6 +41,7 @@ public class ReportUpdateView extends ReportView
 	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportCreateView.xsl")));
 
 	setReport(request, response);
+        setEndpoints(request, response);
 	setQueryResult(request, response);
 	setVisualizations(request, response);
 setVariables(request, response);
@@ -53,7 +54,14 @@ setDataTypes(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);
     }
-   
+
+    protected void setEndpoints(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String endpoints = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq")));
+
+	getResolver().setArgument("endpoints", endpoints);
+    }
+
     protected void setVisualizationTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
 	String visTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq")));

@@ -86,7 +86,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
     @Override
     public View doPost(HttpServletRequest request, HttpServletResponse response)
     {
-        View parent = super.doGet(request, response);
+        View parent = super.doPost(request, response);
 	if (parent != null) return parent;
 
         if (isQueryAction(request)) return query(request, response);
@@ -104,6 +104,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	ReportRDFForm form = new ReportRDFForm(request);
         List<Error> errors = form.validate();
         view.setForm(form);
+        view.setModel(form.getModel());
         
 	try
 	{
@@ -111,13 +112,11 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
 	    String queryResults = QueryXMLResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
 
-            view.setModel(form.getModel());
             view.setQueryResults(queryResults);
             view.setResult(true);
 	}
         catch (InvalidFormException ex)
 	{
-            view.setModel(form.getModel());
             view.setErrors(errors);
             view.setResult(false);
 	}
@@ -125,7 +124,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             errors.add(new Error("ioError"));
 
-            view.setModel(form.getModel());
             view.setErrors(errors);
             view.setResult(false);
 
@@ -135,7 +133,6 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             errors.add(new Error("invalidQuery"));
 
-            view.setModel(form.getModel());
             view.setErrors(errors);
             view.setResult(false);
 

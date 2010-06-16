@@ -125,8 +125,9 @@ public class ReportResource extends FrontEndResource implements LeafResource
         newModel.add(form.getReportResource(), RDF.type, newModel.createResource(Sioc.FORUM));
         newModel.add(newModel.createResource(userUri), RDF.type, newModel.createResource(Sioc.USER));
         newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.NAME), newModel.createTypedLiteral("RandomUserName"));
+//newModel.write(System.out, FileUtils.langXMLAbbrev);
 
-Resource reportResource = SDB.getInstanceModel().createResource(getURI());
+Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
 Model oldModel = ResourceUtils.reachableClosure(reportResource);
 List<Statement> keepStatements = new ArrayList<Statement>();
 keepStatements.add(oldModel.getProperty(reportResource, oldModel.createProperty(DublinCore.CREATED)));

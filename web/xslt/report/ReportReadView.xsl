@@ -137,6 +137,12 @@ exclude-result-prefixes="#all">
                                             <xsl:value-of select="$report//sparql:binding[@name = 'dateModified']/sparql:literal"/>
                                     </dd>
                                 </xsl:if>
+                                <xsl:if test="$report//sparql:binding[@name = 'description']/sparql:literal">
+                                    <dt>Modified</dt>
+                                    <dd>
+                                            <xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
+                                    </dd>
+                                </xsl:if>
                         </dl>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">

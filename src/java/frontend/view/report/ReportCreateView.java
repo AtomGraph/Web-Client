@@ -57,6 +57,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	if (getResult() != null)
         {
             setReport(request, response);
+            getTransformer().setParameter("query-result", getResult());
             
             if (getResult())
             {
@@ -70,7 +71,6 @@ public class ReportCreateView extends FrontEndView implements FormResultView
                 getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
                 //getTransformer().setParameter("query-result", "failure");
             }
-            getTransformer().setParameter("query-result", getResult());
         }
 
 	super.display(request, response);
