@@ -1,7 +1,12 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
 SELECT *
 {
-	?endpoint   rdf:type		rep:Endpoint .
+	?endpoint   rdf:type    rep:Endpoint .
+        OPTIONAL
+        {
+            ?endpoint   rdfs:label  ?label
+        }
 }

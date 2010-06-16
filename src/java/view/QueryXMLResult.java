@@ -80,6 +80,7 @@ public class QueryXMLResult
     public static String selectRemote(String endpointUri, String queryString) throws IOException, QueryException
     {
 	String resultString = null;
+        System.out.println("Endpoint: " + endpointUri);
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);

@@ -10,7 +10,9 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import dk.semantic_web.diy.controller.Error;
 import model.vocabulary.Reports;
 import model.vocabulary.Spin;
 
@@ -41,17 +43,16 @@ public class ReportRDFForm extends RDFForm
         Resource query = null;
         Resource queryClass = getModel().createResource(Spin.SELECT);
         ResIterator iter = getModel().listResourcesWithProperty(RDF.type, queryClass);
-        if (iter.hasNext())
-            query = iter.next();
+        if (iter.hasNext()) query = iter.next();
         return query;
     }
 
-    public String getEndpoint()
+    public Resource getEndpointResource()
     {
-	String endpoint = null;
+	Resource endpoint = null;
 	Property fromProperty = getModel().createProperty(Spin.FROM);
 	Statement stmt = getModel().getProperty(getQueryResource(), fromProperty);
-	if (stmt.getObject() != null) endpoint = stmt.getObject().toString();
+	if (stmt != null) endpoint = stmt.getResource();
 	return endpoint;
     }
     
@@ -60,18 +61,17 @@ public class ReportRDFForm extends RDFForm
 	String queryString = null;
 	Property textProperty = getModel().createProperty(Spin.TEXT);
 	Statement stmt = getModel().getProperty(getQueryResource(), textProperty);
-	if (stmt.getObject() != null) queryString = stmt.getString();
+	if (stmt != null) queryString = stmt.getString();
 	return queryString;
     }
 
-    /*
     @Override
     public List<Error> validate()
     {
-        // if (getTitle() == null || getTitle().equals("");
-        // if (getEndpoint() == null || getEndpoint().equals("");
-        // if (getQueryString() == null || getQueryString().equals("");
-	//throw new UnsupportedOperationException("Not supported yet.");
+        //if (getTitle() == null || getTitle().equals("")) getErrors().add(new Error("noTitle"));
+        if (getEndpointResource() == null) getErrors().add(new Error("noEndpoint"));
+        if (getQueryString() == null || getQueryString().equals("")) getErrors().add(new Error("noQueryString"));
+
+        return getErrors();
     }
-     */
 }

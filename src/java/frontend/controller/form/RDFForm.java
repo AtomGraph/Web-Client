@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RDFForm extends Form
 {
-    Model model = ModelFactory.createDefaultModel();
-    List<String> keys = new ArrayList<String>();
-    List<String> values = new ArrayList<String>();
-    List<Error> errors = new ArrayList<Error>();
+    private Model model = ModelFactory.createDefaultModel();
+    private List<String> keys = new ArrayList<String>();
+    private List<String> values = new ArrayList<String>();
+    private List<Error> errors = new ArrayList<Error>();
 
     public RDFForm(HttpServletRequest request)
     {
@@ -51,9 +51,12 @@ public class RDFForm extends Form
 	    String value = null;
 	    if (array.length > 1) value = ResourceMapping.urlDecode(array[1]);
 
-	    keys.add(key);
-	    values.add(value);
-	}	
+            if (value != null)
+            {
+                keys.add(key);
+                values.add(value);
+            }
+	}
     }
     
     // http://www.lsrn.org/semweb/rdfpost.html
@@ -122,7 +125,12 @@ public class RDFForm extends Form
     {
 	return model;
     }
-    
+
+    public List<Error> getErrors()
+    {
+	return errors;
+    }
+
     @Override
     public List<Error> validate()
     {

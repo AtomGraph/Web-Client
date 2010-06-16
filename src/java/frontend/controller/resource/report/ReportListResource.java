@@ -13,6 +13,7 @@ import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
+import frontend.controller.InvalidFormException;
 import frontend.controller.form.ReportRDFForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
@@ -106,16 +107,25 @@ public class ReportListResource extends FrontEndResource implements Singleton
         
 	try
 	{
-	    String queryResults = QueryXMLResult.selectRemote(form.getEndpoint(), form.getQueryString());
+            if (!errors.isEmpty()) throw new InvalidFormException();
+
+	    String queryResults = QueryXMLResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
 
             view.setModel(form.getModel());
             view.setQueryResults(queryResults);
             view.setResult(true);
 	}
+        catch (InvalidFormException ex)
+	{
+            view.setModel(form.getModel());
+            view.setErrors(errors);
+            view.setResult(false);
+	}
         catch (IOException ex)
 	{
             errors.add(new Error("ioError"));
 
+            view.setModel(form.getModel());
             view.setErrors(errors);
             view.setResult(false);
 
@@ -125,6 +135,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             errors.add(new Error("invalidQuery"));
 
+            view.setModel(form.getModel());
             view.setErrors(errors);
             view.setResult(false);
 
@@ -156,10 +167,9 @@ public class ReportListResource extends FrontEndResource implements Singleton
         model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
 
         SDB.getInstanceModel().add(model); // save report
-	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-//form.getModel().write(System.out);
+//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
+form.getModel().write(System.out);
 
-System.out.print("INTERSECTION: " + SDB.getInstanceModel().intersection(model));
         try {
             // save report
             //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);

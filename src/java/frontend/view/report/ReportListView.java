@@ -25,13 +25,32 @@ import view.QueryXMLResult;
 public class ReportListView extends FrontEndView
 {
     public static final int ITEMS_PER_PAGE = 15;
-    //public static final List<String> sortableVariables = new ArrayList<String>();
-    public static enum SortableVariable { DATE, CREATOR, ENDPOINT }
+    public static enum SortableVariable
+    { CREATED("dateCreated"), MODIFIED("dateModified"), CREATOR("creator"), ENDPOINT("endpoint");
+
+        private final String name;
+
+        SortableVariable(String name)
+        {
+            this.name = name;
+        }
+
+        public final String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public final String toString()
+        {
+            return getName();
+        }
+    }
     
     private Integer offset = 0;
     private Integer limit = ITEMS_PER_PAGE;
     private Boolean desc = true;
-    private SortableVariable orderBy = SortableVariable.DATE;
+    private SortableVariable orderBy = SortableVariable.CREATED;
 
     public ReportListView(ReportListResource resource)
     {
@@ -45,7 +64,7 @@ public class ReportListView extends FrontEndView
         
 	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
 	
-	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString().toLowerCase(), getOffset(), getLimit());
+	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
 	String results = QueryXMLResult.select(SDB.getDataset(), queryString);
 
 	setDocument(results);
@@ -55,7 +74,7 @@ public class ReportListView extends FrontEndView
         getTransformer().setParameter("total-item-count", 2); //    SDB.getReportClass().listInstances().toList().size()
         getTransformer().setParameter("offset", getOffset());
         getTransformer().setParameter("limit", getLimit());
-        getTransformer().setParameter("order-by", getOrderBy().toString().toLowerCase());
+        getTransformer().setParameter("order-by", getOrderBy().toString()); // getOrderBy().toString().toLowerCase()
         getTransformer().setParameter("desc-default", true);
         getTransformer().setParameter("desc", getDesc());
 

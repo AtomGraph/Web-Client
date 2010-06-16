@@ -56,9 +56,10 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 
 	if (getResult() != null)
         {
+            setReport(request, response);
+            
             if (getResult())
             {
-                setReport(request, response);
                 setVisualizations(request, response);
 
                 getResolver().setArgument("results", getQueryResults());

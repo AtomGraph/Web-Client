@@ -246,11 +246,11 @@ exclude-result-prefixes="#all">
                         </h2>
 
                         <!--
-                        <xsl:copy-of select="$visualization-types"/>
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
 
+                        <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
 				<p>
 					<input type="hidden" name="view" value="create"/>
@@ -301,23 +301,40 @@ exclude-result-prefixes="#all">
 						</xsl:if>
                                             </xsl:attribute>
                                         </input>
-					<br/>
+
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="{$query-uri}"/>
 <input type="hidden" name="pu" value="&spin;from"/>
 
-					<label for="endpoint">Endpoint</label>
-                                        <!-- <xsl:value-of select="$query-result"/> -->
-					<input type="text" id="endpoint" name="ou" value="{$endpoint-uri}"/>
+                                        <fieldset>
+                                            <legend>Endpoint</legend>
+                                            <xsl:if test="$endpoints//sparql:result">
+                                                <input type="radio" id="existing-endpoint-radio" name="endpoint" value="existing" checked="checked" onclick="document.getElementById('existing-endpoint-select').disabled = false; document.getElementById('new-endpoint-uri').disabled = true;"/>
+                                                <label for="existing-endpoint-radio">Existing</label>
+                                                <xsl:text> </xsl:text>
+                                                <select id="existing-endpoint-select" name="ou">
+                                                    <xsl:apply-templates select="$endpoints//sparql:result" mode="endpoint-option"/>
+                                                </select>
+                                                <br/>
+                                            </xsl:if>
+                                            <input type="radio" id="new-endpoint-radio" name="endpoint" value="existing" onclick="document.getElementById('existing-endpoint-select').disabled = true; document.getElementById('new-endpoint-uri').disabled = false;"/>
+                                            <label for="new-endpoint-radio">New</label>
+                                            <xsl:text> </xsl:text>
+                                            <label for="new-endpoint-uri">URI</label>
+                                            <xsl:text> </xsl:text>
+                                            <input type="text" id="new-endpoint-uri" name="ou" value="{$endpoint-uri}" disabled="disabled"/>
+                                            <xsl:text> </xsl:text>
+                                            <label for="new-endpoint-label">Label</label>
+                                            <xsl:text> </xsl:text>
+                                            <input type="text" id="new-endpoint-label" name="ou" disabled="disabled"/>
+                                        </fieldset>
 
+<!--
 <input type="hidden" name="su" value="{$endpoint-uri}"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
 <input type="hidden" name="ou" value="&rep;Endpoint"/>
+-->
 
-                                        <select id="endpoint" name="ou" disabled="disabled">
-                                            <xsl:apply-templates select="$endpoints//sparql:result" mode="endpoint-option"/>
-                                        </select>
-                                        <br/>
 					<button type="submit" name="action" value="query">Query</button>
                                         <xsl:if test="$view = $create-view and $query-result eq true()">
                                             <button type="submit" name="action" value="save">Save</button>
@@ -338,7 +355,7 @@ exclude-result-prefixes="#all">
                                 </xsl:if>
 
                                 <xsl:if test="$query-result eq true()">
-                                    <fieldset>
+                                    <fieldset id="visualizations">
                                             <legend>Visualizations</legend>
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
