@@ -63,6 +63,13 @@ public class ReportView extends FrontEndView
 	}
     }
 
+    protected void setEndpoints(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String endpoints = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq")));
+
+	getResolver().setArgument("endpoints", endpoints);
+    }
+
     protected void setVisualizations(HttpServletRequest request, HttpServletResponse response)
     {
 	try

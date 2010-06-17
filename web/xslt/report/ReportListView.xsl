@@ -28,9 +28,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="desc-default" select="true()" as="xsd:boolean"/>
         <xsl:param name="desc" select="$desc-default" as="xsd:boolean"/>
 
-	<xsl:variable name="reports" select="document('arg://reports')"/>
-	<!-- <xsl:variable name="query-objects" select="document('arg://query-objects')"/> -->
-	<xsl:variable name="query-uris" select="document('arg://query-uris')"/>
+	<xsl:variable name="reports" select="document('arg://reports')" as="document-node()"/>
+        <xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
+        <!-- <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/> -->
+	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
 
 	<xsl:template name="title">
 		Reports
@@ -40,7 +41,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
 	<xsl:template name="content">
-		<div id="main"><xsl:value-of select="$total-item-count"/>
+		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
@@ -112,7 +113,15 @@ exclude-result-prefixes="#all">
 			</td>
 			<td>
 				<a href="{sparql:binding[@name = 'endpoint']/sparql:uri}">
-					<xsl:value-of select="sparql:binding[@name = 'endpoint']/sparql:uri"/>
+                                    <xsl:variable name="endpoint" select="$endpoints//sparql:result[sparql:binding[@name = 'endpoint']/sparql:uri = current()/sparql:binding[@name = 'endpoint']/sparql:uri]"/>
+                                    <xsl:choose>
+                                        <xsl:when test="$endpoint">
+                                            <xsl:value-of select="$endpoint/sparql:binding[@name = 'title']/sparql:literal"/>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="sparql:binding[@name = 'endpoint']/sparql:uri"/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
 				</a>
 			</td>
 			<td>

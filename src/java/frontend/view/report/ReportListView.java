@@ -9,6 +9,7 @@ import frontend.controller.form.PaginationForm;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,6 +81,7 @@ public class ReportListView extends FrontEndView
 
 //        setQueryObjects(request, response);
         setQueryUris(request, response);
+        setEndpoints(request, response);
 
 	super.display(request, response);
     }
@@ -133,18 +135,25 @@ public class ReportListView extends FrontEndView
         this.orderBy = orderBy;
     }
 
-    protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response) throws IOException
+    protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
 	String objects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/objects.rq")));
 
 	getResolver().setArgument("query-objects", objects);
     }
 
-    protected void setQueryUris(HttpServletRequest request, HttpServletResponse response) throws IOException
+    protected void setQueryUris(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
     {
 	String uris = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/uris.rq")));
 
 	getResolver().setArgument("query-uris", uris);
+    }
+
+    protected void setEndpoints(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    {
+	String endpoints = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq")));
+
+	getResolver().setArgument("endpoints", endpoints);
     }
 
 }
