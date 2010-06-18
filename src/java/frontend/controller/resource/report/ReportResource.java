@@ -10,6 +10,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import controller.LeafResource;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportReadView;
@@ -128,10 +129,16 @@ public class ReportResource extends FrontEndResource implements LeafResource
 //newModel.write(System.out, FileUtils.langXMLAbbrev);
 
 Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
+Resource endpointResource = SDB.getInstanceModel().createResource(form.getEndpointResource().getURI());
+System.out.println("Report resource: " + reportResource);
+System.out.println("Endpoint resource: " + endpointResource);
+
 Model oldModel = ResourceUtils.reachableClosure(reportResource);
 List<Statement> keepStatements = new ArrayList<Statement>();
 keepStatements.add(oldModel.getProperty(reportResource, oldModel.createProperty(DublinCore.CREATED)));
-oldModel.remove(keepStatements); // do not delete creation date
+keepStatements.add(oldModel.getProperty(endpointResource, RDF.type));
+keepStatements.add(oldModel.getProperty(endpointResource, oldModel.createProperty(DublinCore.TITLE))); // can be null!
+oldModel.remove(keepStatements); // do not delete creation date, endpoint metadata etc.
 //oldModel.write(System.out, FileUtils.langXMLAbbrev);
         SDB.getInstanceModel().remove(oldModel);
         SDB.getInstanceModel().add(newModel);

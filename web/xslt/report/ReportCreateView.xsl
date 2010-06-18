@@ -299,19 +299,24 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="pu" value="&spin;from"/>
 
                                     </p>
-
+<script>
+var existingEndpointIds = ['existing-endpoint-select'];
+var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'endpoint-rdftype', 'endpoint-class', 'endpoint-dctitle', 'endpoint-titletype', 'new-endpoint-title');
+</script>
                                     <fieldset>
                                         <legend>Endpoint</legend>
                                         <xsl:if test="$endpoints//sparql:result">
-                                            <input type="radio" id="existing-endpoint-radio" name="endpoint" value="existing" checked="checked" onclick="document.getElementById('existing-endpoint-select').disabled = false; document.getElementById('new-endpoint-uri').disabled = true; document.getElementById('new-endpoint-title').disabled = true;"/>
+                                            <input type="radio" id="existing-endpoint-radio" name="endpoint" value="existing" checked="checked" onclick="document.getElementById('existing-endpoint-select').disabled = false; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = true;"/>
                                             <label for="existing-endpoint-radio">Existing</label>
                                             <xsl:text> </xsl:text>
-                                            <select id="existing-endpoint-select" name="ou">
-                                                <xsl:apply-templates select="$endpoints//sparql:result" mode="endpoint-option"/>
+                                            <select id="existing-endpoint-select" name="ou" onchange="document.getElementById('new-endpoint-uri-hidden').value = this.value">
+                                                <xsl:apply-templates select="$endpoints//sparql:result" mode="endpoint-option">
+                                                    <xsl:with-param name="selected-uri" select="$endpoint-uri"/>
+                                                </xsl:apply-templates>
                                             </select>
                                             <br/>
                                         </xsl:if>
-                                        <input type="radio" id="new-endpoint-radio" name="endpoint" value="new" onclick="document.getElementById('existing-endpoint-select').disabled = true; document.getElementById('new-endpoint-uri').disabled = false; document.getElementById('new-endpoint-title').disabled = false;">
+                                        <input type="radio" id="new-endpoint-radio" name="endpoint" value="new" onclick="document.getElementById('existing-endpoint-select').disabled = true; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = false;">
                                             <xsl:if test="not($endpoints//sparql:result)">
                                                 <xsl:attribute name="checked">checked</xsl:attribute>
                                             </xsl:if>
@@ -326,11 +331,31 @@ exclude-result-prefixes="#all">
                                             </xsl:if>
                                         </input>
 
-<input type="hidden" name="su" id="new-endpoint-uri-hidden"/>
-<input type="hidden" name="pu" value="&rdf;type"/>
-<input type="hidden" name="ou" value="&rep;Endpoint"/>
-<input type="hidden" name="pu" value="&dc;title"/>
-<input type="hidden" name="lt" value="&xsd;string"/>
+<input type="hidden" name="su" value="{$endpoint-uri}" id="new-endpoint-uri-hidden">
+    <xsl:if test="$endpoints//sparql:result">
+        <xsl:attribute name="disabled">disabled</xsl:attribute>
+    </xsl:if>
+</input>
+<input type="hidden" name="pu" value="&rdf;type" id="endpoint-rdftype">
+    <xsl:if test="$endpoints//sparql:result">
+        <xsl:attribute name="disabled">disabled</xsl:attribute>
+    </xsl:if>
+</input>
+<input type="hidden" name="ou" value="&rep;Endpoint" id="endpoint-class">
+    <xsl:if test="$endpoints//sparql:result">
+        <xsl:attribute name="disabled">disabled</xsl:attribute>
+    </xsl:if>
+</input>
+<input type="hidden" name="pu" value="&dc;title" id="endpoint-dctitle">
+    <xsl:if test="$endpoints//sparql:result">
+        <xsl:attribute name="disabled">disabled</xsl:attribute>
+    </xsl:if>
+</input>
+<input type="hidden" name="lt" value="&xsd;string" id="endpoint-titletype">
+    <xsl:if test="$endpoints//sparql:result">
+        <xsl:attribute name="disabled">disabled</xsl:attribute>
+    </xsl:if>
+</input>
 
                                         <xsl:text> </xsl:text>
                                         <label for="new-endpoint-title">Label</label>
@@ -577,7 +602,11 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'endpoint']]" mode="endpoint-option">
+        <xsl:param name="selected-uri"/>
         <option value="{sparql:binding[@name = 'endpoint']/sparql:uri}">
+            <xsl:if test="sparql:binding[@name = 'endpoint']/sparql:uri = $selected-uri">
+                <xsl:attribute name="selected">selected</xsl:attribute>
+            </xsl:if>
             <xsl:if test="sparql:binding[@name = 'title']/sparql:literal">
                 <xsl:value-of select="sparql:binding[@name = 'title']/sparql:literal"/>
                 <xsl:text> (</xsl:text>

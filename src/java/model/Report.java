@@ -8,8 +8,6 @@ package model;
 import frontend.controller.resource.report.ReportResource;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;

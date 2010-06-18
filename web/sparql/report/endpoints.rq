@@ -10,3 +10,4 @@ SELECT *
             ?endpoint   dc:title  ?title
         }
 }
+ORDER BY ?title ?endpoint

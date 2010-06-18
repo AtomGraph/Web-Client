@@ -14,4 +14,5 @@ import model.Namespaces;
 public class Reports
 {
     public static final String REPORT = Namespaces.REPORT_NS + "Report";
+    public static final String ENDPOINT = Namespaces.REPORT_NS + "Endpoint";
 }
