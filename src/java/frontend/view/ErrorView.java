@@ -5,7 +5,7 @@
 
 package frontend.view;
 
-import frontend.controller.FrontEndResource;
+import controller.Controller;
 import java.io.File;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,16 +21,15 @@ import javax.xml.transform.TransformerException;
 public class ErrorView extends FrontEndView
 {
 
-    public ErrorView(FrontEndResource resource)
+    public ErrorView(Controller controller) throws TransformerConfigurationException
     {
-	super(resource);
+	super(controller);
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/ErrorView.xsl")));
     }
 
     @Override
-    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerConfigurationException, TransformerException, ParserConfigurationException
+    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/ErrorView.xsl")));
-
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 	
 	getTransformer().setParameter("error-message", request.getAttribute("error-message"));

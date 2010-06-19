@@ -35,13 +35,14 @@ public class DataSourceResource extends FrontEndResource implements Singleton
 	return INSTANCE;
     }
     
+    @Override
     public String getRelativeURI()
     {
 	return RELATIVE_URI;
     }
 
     @Override
-    public View doGet(HttpServletRequest request, HttpServletResponse response)
+    public View doGet(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) view = parent;

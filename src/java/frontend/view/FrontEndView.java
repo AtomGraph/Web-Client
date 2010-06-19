@@ -5,6 +5,7 @@
 
 package frontend.view;
 
+import controller.Controller;
 import frontend.controller.FrontEndResource;
 import dk.semantic_web.diy.view.XSLTView;
 import java.io.IOException;
@@ -23,6 +24,11 @@ public class FrontEndView extends XSLTView
     public FrontEndView(FrontEndResource resource)
     {
 	super(resource);
+    }
+
+    public FrontEndView(Controller controller)
+    {
+	super(controller);
     }
 
     @Override

@@ -3,6 +3,8 @@ package controller;
 import frontend.view.NotFoundView;
 import java.io.*;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -19,7 +21,8 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     public void init()
     {
         setMapping(new controller.ResourceMapping());
-	
+
+	System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         SDB.init(getServletContext());
     }
     
@@ -31,23 +34,23 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         request.setCharacterEncoding("UTF-8");
 	setHost(request, response);
 
-        if (request.getMethod().equalsIgnoreCase("post")) request = new PostRequestWrapper(request); // IMPORTANT! otherwise one can only use request.getParameter() OR request.getInputStream(
+        if (request.getMethod().equalsIgnoreCase("post")) request = new PostRequestWrapper(request); // IMPORTANT! otherwise one can only use request.getParameter() OR request.getInputStream()
 
-        super.process(request, response);
-
-        //if (request.getAttribute("uri").equals("")) response.sendRedirect("/reports/"); // make reports the default view
-
-        if (getResource() == null) setView(new NotFoundView());
-
-        if (getView() != null)
         try
         {
-            getView().setController(this);
-            getView().display(request, response);
+            super.process(request, response);
+
+            //if (request.getAttribute("uri").equals("")) response.sendRedirect("/reports/"); // make reports the default view
+
+            if (getResource() == null) setView(new NotFoundView(this));
+            if (getView() != null) getView().display(request, response);
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+
+            ex.printStackTrace(response.getWriter());
+
             /*
             System.out.println(ex.getMessage());
             Writer writer = new StringWriter();
@@ -55,25 +58,10 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
             ex.printStackTrace(printWriter);
             String stackTrace = writer.toString();
 
-            view = new ErrorView(resource);
-            view.setServlet(this);
+            view = new ErrorView(this);
             request.setAttribute("error-message", ex.getMessage());
             request.setAttribute("stack-trace", stackTrace);
-
-            try
-            {
-            view.display(request, response);
-            } catch (TransformerConfigurationException ex1)
-            {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex1);
-            } catch (TransformerException ex1)
-            {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex1);
-            } catch (ParserConfigurationException ex1)
-            {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex1);
-            }
-             */
+            */
         }
     }
 

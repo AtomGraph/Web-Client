@@ -9,7 +9,7 @@
 
 package frontend.view;
 
-import frontend.controller.FrontEndResource;
+import controller.Controller;
 import java.io.File;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,22 +24,16 @@ import javax.xml.transform.TransformerException;
  */
 public class NotFoundView extends FrontEndView
 {
-    
-    public NotFoundView()
+        
+    public NotFoundView(Controller controller) throws TransformerConfigurationException
     {
-	this(null);
-    }
-    
-    public NotFoundView(FrontEndResource resource)
-    {
-	super(resource);
+	super(controller);
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/NotFoundView.xsl")));
     }
 
     @Override
-    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerConfigurationException, TransformerException, ParserConfigurationException
+    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/NotFoundView.xsl")));
-
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 	
 	super.display(request, response);

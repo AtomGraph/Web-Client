@@ -26,6 +26,7 @@ public class FrontPageResource extends FrontEndResource implements Singleton
 	super(parent);
     }
     
+    @Override
     public String getRelativeURI()
     {
 	try

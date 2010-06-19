@@ -5,12 +5,12 @@
 
 package frontend.controller.resource.report;
 
+import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 import controller.LeafResource;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportReadView;
@@ -22,6 +22,7 @@ import dk.semantic_web.diy.view.View;
 import frontend.controller.form.CommentRDFForm;
 import frontend.controller.form.ReportRDFForm;
 import frontend.view.report.ReportUpdateView;
+import frontend.view.report.ReportView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.xml.transform.TransformerConfigurationException;
 import model.vocabulary.DublinCore;
 import model.Report;
 import model.SDB;
@@ -37,6 +39,7 @@ import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
+import view.QueryXMLResult;
 
 /**
  *
@@ -77,7 +80,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
     }
 
     @Override
-    public View doGet(HttpServletRequest request, HttpServletResponse response)
+    public View doGet(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) view = parent;
@@ -92,7 +95,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
     }
 
     @Override
-    public View doPost(HttpServletRequest request, HttpServletResponse response)
+    public View doPost(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
 	View parent = super.doPost(request, response);
 	if (parent != null) view = parent;

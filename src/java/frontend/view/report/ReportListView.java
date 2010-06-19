@@ -14,6 +14,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import model.SDB;
 import view.QueryStringBuilder;
@@ -53,18 +54,17 @@ public class ReportListView extends FrontEndView
     private Boolean desc = true;
     private SortableVariable orderBy = SortableVariable.CREATED;
 
-    public ReportListView(ReportListResource resource)
+    public ReportListView(ReportListResource resource) throws TransformerConfigurationException
     {
 	super(resource);
+	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
     }
 
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
         applyPagination(new PaginationForm(request));
-        
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
-	
+        	
 	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
 	String results = QueryXMLResult.select(SDB.getDataset(), queryString);
 

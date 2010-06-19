@@ -5,6 +5,7 @@
 
 package frontend.controller.resource.report;
 
+import javax.xml.transform.TransformerConfigurationException;
 import model.vocabulary.DublinCore;
 import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -70,7 +71,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
     }
 
     @Override
-    public View doGet(HttpServletRequest request, HttpServletResponse response)
+    public View doGet(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) return parent;
@@ -80,11 +81,11 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
         if (isCreateView(request)) return new ReportCreateView(this);
 
-	return new ReportListView(this);
+        return new ReportListView(this);
     }
 
     @Override
-    public View doPost(HttpServletRequest request, HttpServletResponse response)
+    public View doPost(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
         View parent = super.doPost(request, response);
 	if (parent != null) return parent;
@@ -97,7 +98,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	return new ReportListView(this);
     }
 
-    private ReportCreateView query(HttpServletRequest request, HttpServletResponse response)
+    private ReportCreateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException
     {
         ReportCreateView view = new ReportCreateView(this);
 

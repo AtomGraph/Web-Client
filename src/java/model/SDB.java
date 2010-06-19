@@ -12,6 +12,8 @@ import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.store.DatasetStore;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import java.io.InputStream;
 import javax.servlet.ServletContext;
 
@@ -27,11 +29,20 @@ public class SDB
     public static void init(ServletContext context)
     {
 	com.hp.hpl.jena.sdb.SDB.getContext().setTrue(com.hp.hpl.jena.sdb.SDB.unionDefaultGraph);
-	//com.hp.hpl.jena.sdb.SDB.getContext().setFalse(com.hp.hpl.jena.sdb.SDB.unionDefaultGraph);
-	
-	store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
+        store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
 	dataset = DatasetStore.create(store);
 	Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema");
+/*
+Model instanceModel = SDBFactory.connectNamedModel(store, "http://temp.com/instances");
+schemaModel.removeAll(); // clean model
+instanceModel.removeAll();
+schemaModel.add(schemaModel.createResource("http://temp.com/class"), RDF.type, OWL.Class);
+instanceModel.add(instanceModel.createResource("http://temp.com/instance"), RDF.type, schemaModel.createResource("http://temp.com/class"));
+System.out.println("Schema model size: " + dataset.getNamedModel("http://temp.com/schema").size());
+System.out.println("Instance model size: " + dataset.getNamedModel("http://temp.com/instances").size());
+System.out.println("Union model size: " + dataset.getNamedModel("urn:x-arq:UnionGraph").size());
+*/
+        
         schemaModel.removeAll(); // clean model
 	
 	String fileName = context.getRealPath("/owl/visualizations.owl");
@@ -47,7 +58,9 @@ public class SDB
 	in = FileManager.get().open(fileName);
 	schemaModel.read(in, Namespaces.SIOC_NS);
 
-        System.out.print("Model size: " + schemaModel.size());
+        System.out.println("Schema model size: " + dataset.getNamedModel("http://temp.com/schema").size());
+        System.out.println("Instance model size: " + dataset.getNamedModel("http://temp.com/instances").size());
+        System.out.println("Union model size: " + dataset.getNamedModel("urn:x-arq:UnionGraph").size());
 	//if (dataset.containsNamedModel("http://temp.com/schema")) System.out.print("CONTAINS");
 	//while (dataset.listNames().hasNext())
 	    //System.out.print(dataset.listNames());
