@@ -10,6 +10,7 @@ package view;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import java.io.StringWriter;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -63,6 +64,12 @@ public class XMLSerializer
 
     public static String serialize(ResultSet resultSet)
     {
+        return ResultSetFormatter.asXMLString(resultSet);
+    }
+
+    public static String serialize(ResultSetRewindable resultSet)
+    {
+        if (resultSet != null) resultSet.reset();
         return ResultSetFormatter.asXMLString(resultSet);
     }
 

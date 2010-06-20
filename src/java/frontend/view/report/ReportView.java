@@ -5,7 +5,7 @@
 
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import frontend.controller.resource.report.ReportResource;
 import frontend.view.FrontEndView;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class ReportView extends FrontEndView
         super.display(request, response);
     }
 
-    public void setQueryResults(ResultSet results)
+    public void setQueryResults(ResultSetRewindable results)
     {
 	getTransformer().setParameter("query-result", true);
 
@@ -72,45 +72,45 @@ public class ReportView extends FrontEndView
     }
 */
 
-    protected void setQueryResult(ResultSet results)
+    protected void setQueryResult(ResultSetRewindable results)
     {
 	getTransformer().setParameter("query-result", true);
 
 	getResolver().setArgument("results", XMLSerializer.serialize(results));
     }
 
-    protected void setReport(ResultSet report)
+    protected void setReport(ResultSetRewindable report)
     {
         setDocument(XMLSerializer.serialize(report));
         getResolver().setArgument("report", XMLSerializer.serialize(report));
     }
 
-    protected void setEndpoints(ResultSet endpoints)
+    protected void setEndpoints(ResultSetRewindable endpoints)
     {
 	getResolver().setArgument("endpoints", XMLSerializer.serialize(endpoints));
     }
 
-    protected void setVisualizationTypes(ResultSet visTypes)
+    protected void setVisualizationTypes(ResultSetRewindable visTypes)
     {
 	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
     }
 
-    protected void setVisualizations(ResultSet visualizations)
+    protected void setVisualizations(ResultSetRewindable visualizations)
     {
         getResolver().setArgument("visualizations", XMLSerializer.serialize(visualizations));
     }
 
-    protected void setBindingTypes(ResultSet bindingTypes)
+    protected void setBindingTypes(ResultSetRewindable bindingTypes)
     {
 	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
     }
 
-    protected void setBindings(ResultSet bindings)
+    protected void setBindings(ResultSetRewindable bindings)
     {
 	getResolver().setArgument("bindings", XMLSerializer.serialize(bindings));
     }
 
-    protected void setVariables(ResultSet variables)
+    protected void setVariables(ResultSetRewindable variables)
     {
         getResolver().setArgument("variables", XMLSerializer.serialize(variables));
     }

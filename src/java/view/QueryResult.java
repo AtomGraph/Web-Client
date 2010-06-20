@@ -16,7 +16,9 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -34,17 +36,17 @@ public class QueryResult
      @param model Model to be queried
      @param queryString SPARQL select string (formatted beforehand)
      */
-    public static ResultSet select(Model model, String queryString) throws IOException, QueryException
+    public static ResultSetRewindable select(Model model, String queryString) throws IOException, QueryException
     {
 	//String resultString = null;
-        ResultSet resultSet = null;
+        ResultSetRewindable resultSet = null;
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
 	//model.enterCriticalSection(Lock.READ);
         QueryExecution qe = QueryExecutionFactory.create(query, model);
 	try
 	{
-	    resultSet = qe.execSelect();
+	    resultSet = ResultSetFactory.makeRewindable(qe.execSelect());
 	    //resultString = ResultSetFormatter.asXMLString(resultSet);
 	}
 	finally
@@ -54,6 +56,7 @@ public class QueryResult
         return resultSet;
     }
 
+    /*
     public static ResultSet select(Dataset dataset, String queryString) throws IOException, QueryException
     {
 	//String resultString = null;
@@ -72,6 +75,26 @@ public class QueryResult
 	}
         return resultSet;
     }
+    */
+
+    public static ResultSetRewindable select(Dataset dataset, String queryString) throws IOException, QueryException
+    {
+	//String resultString = null;
+        ResultSetRewindable resultSet = null;
+        System.out.println("Query: " + queryString);
+        Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
+        QueryExecution qe = QueryExecutionFactory.create(query, dataset);
+	try
+	{
+	    resultSet = ResultSetFactory.makeRewindable(qe.execSelect());
+	    //resultString = ResultSetFormatter.asXMLString(resultSet);
+	}
+	finally
+	{
+	    qe.close();
+	}
+        return resultSet;
+    }
 
     public static String query(ResultSet results)
     {
@@ -79,17 +102,18 @@ public class QueryResult
         return ResultSetFormatter.asXMLString(results);
     }
     
-    public static ResultSet selectRemote(String endpointUri, String queryString) throws IOException, QueryException
+    public static ResultSetRewindable selectRemote(String endpointUri, String queryString) throws IOException, QueryException
     {
 	//String resultString = null;
-        ResultSet resultSet = null;
+        ResultSetRewindable resultSet = null;
         System.out.println("Endpoint: " + endpointUri);
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);
 	try
 	{
-	    resultSet = qe.execSelect();
+	    resultSet = ResultSetFactory.makeRewindable(qe.execSelect());
+            //resultSet = qe.execSelect();
 	    //resultString = ResultSetFormatter.asXMLString(resultSet);
             //ResultSetFormatter.consume(resultSet);
 	}

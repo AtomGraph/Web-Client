@@ -5,7 +5,7 @@
 
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDF;
 import frontend.controller.form.PaginationForm;
 import frontend.controller.resource.report.ReportListResource;
@@ -69,11 +69,7 @@ public class ReportListView extends FrontEndView
         applyPagination(new PaginationForm(request));
         	
 	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
-	ResultSet results = QueryResult.select(SDB.getDataset(), queryString);
-
-	setDocument(XMLSerializer.serialize(results));
-	
-	getResolver().setArgument("reports", XMLSerializer.serialize(results));
+	setReports(QueryResult.select(SDB.getDataset(), queryString));
 
         int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.REPORT)).toList().size();
 
@@ -140,17 +136,24 @@ public class ReportListView extends FrontEndView
         this.orderBy = orderBy;
     }
 
-    protected void setQueryObjects(ResultSet objects)
+    protected void setReports(ResultSetRewindable reports)
+    {
+	setDocument(XMLSerializer.serialize(reports));
+
+	getResolver().setArgument("reports", XMLSerializer.serialize(reports));
+    }
+
+    protected void setQueryObjects(ResultSetRewindable objects)
     {
 	getResolver().setArgument("query-objects", XMLSerializer.serialize(objects));
     }
 
-    protected void setQueryUris(ResultSet uris)
+    protected void setQueryUris(ResultSetRewindable uris)
     {
 	getResolver().setArgument("query-uris", XMLSerializer.serialize(uris));
     }
 
-    protected void setEndpoints(ResultSet endpoints)
+    protected void setEndpoints(ResultSetRewindable endpoints)
     {
 	getResolver().setArgument("endpoints", XMLSerializer.serialize(endpoints));
     }

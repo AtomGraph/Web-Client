@@ -8,7 +8,9 @@ package frontend.controller.resource.report;
 import javax.xml.transform.TransformerConfigurationException;
 import model.vocabulary.DublinCore;
 import com.hp.hpl.jena.query.QueryException;
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 import dk.semantic_web.diy.controller.Error;
@@ -16,6 +18,7 @@ import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.controller.exception.InvalidFormException;
+import frontend.controller.exception.NoResultsException;
 import frontend.controller.form.ReportRDFForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
@@ -112,13 +115,22 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             if (!errors.isEmpty()) throw new InvalidFormException();
 
-	    ResultSet queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
-
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
+            int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
+            if (count == 0) throw new NoResultsException();
+            
             view.setQueryResults(queryResults);
             view.setResult(true);
 	}
         catch (InvalidFormException ex)
 	{
+            view.setErrors(errors);
+            view.setResult(false);
+	}
+        catch (NoResultsException ex)
+	{
+            errors.add(new Error("noResults"));
+
             view.setErrors(errors);
             view.setResult(false);
 	}

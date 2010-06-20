@@ -5,6 +5,7 @@
 package frontend.view.report;
 
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import dk.semantic_web.diy.controller.Form;
 import frontend.controller.resource.report.ReportListResource;
@@ -33,7 +34,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     private Form form = null;
     private List<Error> errors = null;
     private Boolean result = null;
-    private ResultSet queryResults = null;
+    private ResultSetRewindable queryResults = null;
     private Model model = null;
     
     public ReportCreateView(ReportListResource resource) throws TransformerConfigurationException
@@ -79,37 +80,37 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected void setEndpoints(ResultSet endpoints)
+    protected void setEndpoints(ResultSetRewindable endpoints)
     {
 	getResolver().setArgument("endpoints", XMLSerializer.serialize(endpoints));
     }
 
-    protected void setVisualizationTypes(ResultSet visTypes)
+    protected void setVisualizationTypes(ResultSetRewindable visTypes)
     {
 	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
     }
 
-    protected void setBindingTypes(ResultSet bindingTypes)
+    protected void setBindingTypes(ResultSetRewindable bindingTypes)
     {
 	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
     }
 
-    protected void setDataTypes(ResultSet dataTypes)
+    protected void setDataTypes(ResultSetRewindable dataTypes)
     {
 	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
     }
 
-    protected void setReport(ResultSet report)
+    protected void setReport(ResultSetRewindable report)
     {
         getResolver().setArgument("report", XMLSerializer.serialize(report));
     }
 
-    protected void setVisualizations(ResultSet visualizations)
+    protected void setVisualizations(ResultSetRewindable visualizations)
     {
         getResolver().setArgument("visualizations", XMLSerializer.serialize(visualizations));
     }
 
-    protected void setVariables(ResultSet variables)
+    protected void setVariables(ResultSetRewindable variables)
     {
         getResolver().setArgument("variables", XMLSerializer.serialize(variables));
     }
@@ -143,7 +144,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         return queryResults;
     }
 
-    public void setQueryResults(ResultSet queryResults)
+    public void setQueryResults(ResultSetRewindable queryResults)
     {
         this.queryResults = queryResults;
     }

@@ -5,7 +5,7 @@
 
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import javax.xml.transform.TransformerConfigurationException;
 import model.SDB;
 import frontend.controller.resource.report.ReportResource;
@@ -49,7 +49,7 @@ public class ReportUpdateView extends ReportView
 	response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected void setDataTypes(ResultSet dataTypes)
+    protected void setDataTypes(ResultSetRewindable dataTypes)
     {
 	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
     }

@@ -5,7 +5,7 @@
 
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import frontend.controller.resource.report.ReportResource;
 import java.io.File;
 import java.io.IOException;
@@ -59,12 +59,12 @@ public class ReportReadView extends ReportView
     }
     */
 
-    protected void setQueryUris(ResultSet uris)
+    protected void setQueryUris(ResultSetRewindable uris)
     {
 	getResolver().setArgument("query-uris", XMLSerializer.serialize(uris));
     }
 
-    protected void setComments(ResultSet comments)
+    protected void setComments(ResultSetRewindable comments)
     {
 	getResolver().setArgument("comments", XMLSerializer.serialize(comments));
     }
