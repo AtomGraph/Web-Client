@@ -8,13 +8,14 @@ package frontend.controller.resource.report;
 import javax.xml.transform.TransformerConfigurationException;
 import model.vocabulary.DublinCore;
 import com.hp.hpl.jena.query.QueryException;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
-import frontend.controller.InvalidFormException;
+import frontend.controller.exception.InvalidFormException;
 import frontend.controller.form.ReportRDFForm;
 import frontend.controller.resource.FrontPageResource;
 import frontend.view.report.ReportCreateView;
@@ -35,7 +36,7 @@ import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
-import view.QueryXMLResult;
+import view.QueryResult;
 
 /**
  *
@@ -111,7 +112,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             if (!errors.isEmpty()) throw new InvalidFormException();
 
-	    String queryResults = QueryXMLResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
+	    ResultSet queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
 
             view.setQueryResults(queryResults);
             view.setResult(true);

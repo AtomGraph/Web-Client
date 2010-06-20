@@ -39,7 +39,7 @@ import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
-import view.QueryXMLResult;
+import view.QueryResult;
 
 /**
  *

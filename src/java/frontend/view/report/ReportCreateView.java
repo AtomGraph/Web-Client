@@ -4,16 +4,14 @@
  */
 package frontend.view.report;
 
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import dk.semantic_web.diy.controller.Form;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,7 +20,7 @@ import javax.xml.transform.TransformerException;
 import model.SDB;
 import view.FormResultView;
 import view.QueryStringBuilder;
-import view.QueryXMLResult;
+import view.QueryResult;
 import view.XMLSerializer;
 import dk.semantic_web.diy.controller.Error;
 
@@ -35,7 +33,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     private Form form = null;
     private List<Error> errors = null;
     private Boolean result = null;
-    private String queryResults = null;
+    private ResultSet queryResults = null;
     private Model model = null;
     
     public ReportCreateView(ReportListResource resource) throws TransformerConfigurationException
@@ -49,21 +47,24 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     {
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 
-        setEndpoints(request, response);
-        setVisualizationTypes(request, response);
-        setBindingTypes(request, response);
-        setDataTypes(request, response);
+        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
+        setVisualizationTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq"))));
+        setBindingTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq"))));
+        setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq"))));
 
 	if (getResult() != null)
         {
-            setReport(request, response);
+            String reportUri = request.getParameter("report-uri"); // after 1st request ("Query" submit), $report-uri is known
+
+            setReport(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri)));
             getTransformer().setParameter("query-result", getResult());
             
             if (getResult())
             {
-                setVisualizations(request, response);
+                setVisualizations(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportUri)));
+                setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri)));
 
-                getResolver().setArgument("results", getQueryResults());
+                getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
                 //getTransformer().setParameter("query-string", request.getParameter("query-string"));
             }
             else
@@ -78,71 +79,39 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected void setEndpoints(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setEndpoints(ResultSet endpoints)
     {
-	String endpoints = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq")));
-
-	getResolver().setArgument("endpoints", endpoints);
+	getResolver().setArgument("endpoints", XMLSerializer.serialize(endpoints));
     }
 
-    protected void setVisualizationTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setVisualizationTypes(ResultSet visTypes)
     {
-	String visTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq")));
-
-	getResolver().setArgument("visualization-types", visTypes);
+	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
     }
 
-    protected void setBindingTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setBindingTypes(ResultSet bindingTypes)
     {
-	String bindingTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq")));
-
-	getResolver().setArgument("binding-types", bindingTypes);
+	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
     }
 
-    protected void setDataTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setDataTypes(ResultSet dataTypes)
     {
-	String dataTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq")));
-
-	getResolver().setArgument("data-types", dataTypes);
+	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
     }
 
-    protected void setReport(HttpServletRequest request, HttpServletResponse response)
+    protected void setReport(ResultSet report)
     {
-	try
-	{
-            String reportUri = request.getParameter("report-uri");  // after 1st request ("Query" submit), $report-uri is known
-            
-	    String report = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri));
-	    setDocument(report);
-
-	    getResolver().setArgument("report", report);
-	} catch (FileNotFoundException ex)
-	{
-	    Logger.getLogger(ReportCreateView.class.getName()).log(Level.SEVERE, null, ex);
-	} catch (IOException ex)
-	{
-	    Logger.getLogger(ReportCreateView.class.getName()).log(Level.SEVERE, null, ex);
-	}
+        getResolver().setArgument("report", XMLSerializer.serialize(report));
     }
 
-    protected void setVisualizations(HttpServletRequest request, HttpServletResponse response)
+    protected void setVisualizations(ResultSet visualizations)
     {
-	try
-	{
-            String reportUri = request.getParameter("report-uri"); // after 1st request ("Query" submit), $report-uri is known
+        getResolver().setArgument("visualizations", XMLSerializer.serialize(visualizations));
+    }
 
-	    String visualizations = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportUri));
-	    String variables = QueryXMLResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri));
-
-	    getResolver().setArgument("visualizations", visualizations);
-	    getResolver().setArgument("variables", variables);
-        } catch (FileNotFoundException ex)
-	{
-	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
-	} catch (IOException ex)
-	{
-	    Logger.getLogger(ReportReadView.class.getName()).log(Level.SEVERE, null, ex);
-	}
+    protected void setVariables(ResultSet variables)
+    {
+        getResolver().setArgument("variables", XMLSerializer.serialize(variables));
     }
 
     @Override
@@ -169,12 +138,12 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         this.result = successful;
     }
 
-    public String getQueryResults()
+    public ResultSet getQueryResults()
     {
         return queryResults;
     }
 
-    public void setQueryResults(String queryResults)
+    public void setQueryResults(ResultSet queryResults)
     {
         this.queryResults = queryResults;
     }

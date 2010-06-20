@@ -48,15 +48,20 @@ function initAndDraw(container, visType, bindingTypes, variables)
     draw(visualizations[visType], visType, bindingTypes, variables);
 }
 
-function initWithControlsAndDraw(container, visType, bindingElements, bindingTypes, xsdTypes, variables)
+function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, variables)
 {
     if (hasSufficientColumns(bindingTypes, xsdTypes))
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
         draw(visualizations[visType], visType, bindingTypes, variables);
+        toggle.checked = true;
     }
-    //else toggleVisualization(container, fieldset, false); // switch off
+    else
+    {
+        toggleVisualization(container, fieldset, false); // switch off
+        toggle.disabled = true;
+    }
 }
 
 function hasSufficientColumns(bindingTypes, xsdTypes)

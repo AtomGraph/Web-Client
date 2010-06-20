@@ -5,18 +5,19 @@
 
 package frontend.view.report;
 
+import com.hp.hpl.jena.query.ResultSet;
 import javax.xml.transform.TransformerConfigurationException;
 import model.SDB;
 import frontend.controller.resource.report.ReportResource;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import view.QueryStringBuilder;
-import view.QueryXMLResult;
+import view.QueryResult;
+import view.XMLSerializer;
 
 /**
  *
@@ -40,19 +41,16 @@ public class ReportUpdateView extends ReportView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-        setEndpoints(request, response);
-	//setQueryResult(request, response);
-        setDataTypes(request, response);
+        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
+        setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq"))));
 
 	super.display(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected void setDataTypes(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setDataTypes(ResultSet dataTypes)
     {
-	String dataTypes = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq")));
-
-	getResolver().setArgument("data-types", dataTypes);
+	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
     }
 }

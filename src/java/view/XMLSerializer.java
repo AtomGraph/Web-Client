@@ -8,6 +8,8 @@
  */
 package view;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import java.io.StringWriter;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -57,6 +59,11 @@ public class XMLSerializer
 	//System.out.println(result.getWriter().toString());
 
 	return result.getWriter().toString();
+    }
+
+    public static String serialize(ResultSet resultSet)
+    {
+        return ResultSetFormatter.asXMLString(resultSet);
     }
 
     public static String serialize(List<Error> errors) throws ParserConfigurationException, TransformerConfigurationException, TransformerException

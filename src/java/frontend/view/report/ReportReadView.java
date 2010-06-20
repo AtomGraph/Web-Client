@@ -5,6 +5,7 @@
 
 package frontend.view.report;
 
+import com.hp.hpl.jena.query.ResultSet;
 import frontend.controller.resource.report.ReportResource;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import model.SDB;
 import view.QueryStringBuilder;
-import view.QueryXMLResult;
+import view.QueryResult;
+import view.XMLSerializer;
 
 /**
  *
@@ -33,8 +35,8 @@ public class ReportReadView extends ReportView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-        setQueryUris(QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/uris.rq"), getResource().getAbsoluteURI())));
-        setComments(QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/comments.rq"), getResource().getAbsoluteURI())));
+        setQueryUris(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/uris.rq"), getResource().getAbsoluteURI())));
+        setComments(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/comments.rq"), getResource().getAbsoluteURI())));
 
 	super.display(request, response);
 
@@ -42,14 +44,14 @@ public class ReportReadView extends ReportView
     }
 
     /*
-    protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response)
     {
 	String objects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/objects.rq"), getResource().getAbsoluteURI()));
 
 	getResolver().setArgument("query-objects", objects);
     }
 
-    protected void setQuerySubjects(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setQuerySubjects(HttpServletRequest request, HttpServletResponse response)
     {
 	String subjects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/subjects.rq"), getResource().getAbsoluteURI()));
 
@@ -57,14 +59,14 @@ public class ReportReadView extends ReportView
     }
     */
 
-    protected void setQueryUris(String uris)
+    protected void setQueryUris(ResultSet uris)
     {
-	getResolver().setArgument("query-uris", uris);
+	getResolver().setArgument("query-uris", XMLSerializer.serialize(uris));
     }
 
-    protected void setComments(String comments)
+    protected void setComments(ResultSet comments)
     {
-	getResolver().setArgument("comments", comments);
+	getResolver().setArgument("comments", XMLSerializer.serialize(comments));
     }
 
 }

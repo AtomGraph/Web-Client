@@ -123,7 +123,11 @@ exclude-result-prefixes="#all">
                     <xsl:for-each select="$visualization-types//sparql:result">
                         <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
                         <xsl:value-of select="generate-id()"/>
-                        <xsl:text>-visualization'), '</xsl:text>
+                        <xsl:text>-visualization'), document.getElementById('</xsl:text>
+                        <xsl:value-of select="generate-id()"/>
+                        <xsl:text>-controls'), document.getElementById('</xsl:text>
+                        <xsl:value-of select="generate-id()"/>
+                        <xsl:text>-toggle'), '</xsl:text>
 
                         <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                         <xsl:text>', [</xsl:text>
@@ -487,7 +491,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
             </xsl:if>
         </xsl:when>
         <xsl:otherwise> <!-- ReportCreateView -->
-            <xsl:attribute name="checked">checked</xsl:attribute>
+            <!-- <xsl:attribute name="checked">checked</xsl:attribute> -->
         </xsl:otherwise>
     </xsl:choose>
 </input>

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package frontend.controller;
+package frontend.controller.exception;
 
 /**
  *

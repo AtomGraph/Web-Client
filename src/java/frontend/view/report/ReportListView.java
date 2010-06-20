@@ -5,11 +5,12 @@
 
 package frontend.view.report;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.vocabulary.RDF;
 import frontend.controller.form.PaginationForm;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,8 +18,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import model.SDB;
+import model.vocabulary.Reports;
 import view.QueryStringBuilder;
-import view.QueryXMLResult;
+import view.QueryResult;
+import view.XMLSerializer;
 
 /**
  *
@@ -66,22 +69,24 @@ public class ReportListView extends FrontEndView
         applyPagination(new PaginationForm(request));
         	
 	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
-	String results = QueryXMLResult.select(SDB.getDataset(), queryString);
+	ResultSet results = QueryResult.select(SDB.getDataset(), queryString);
 
-	setDocument(results);
+	setDocument(XMLSerializer.serialize(results));
 	
-	getResolver().setArgument("reports", results);
+	getResolver().setArgument("reports", XMLSerializer.serialize(results));
 
-        getTransformer().setParameter("total-item-count", 2); //    SDB.getReportClass().listInstances().toList().size()
+        int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.REPORT)).toList().size();
+
+        getTransformer().setParameter("total-item-count", count); //    SDB.getReportClass().listInstances().toList().size()
         getTransformer().setParameter("offset", getOffset());
         getTransformer().setParameter("limit", getLimit());
         getTransformer().setParameter("order-by", getOrderBy().toString()); // getOrderBy().toString().toLowerCase()
         getTransformer().setParameter("desc-default", true);
         getTransformer().setParameter("desc", getDesc());
 
-//        setQueryObjects(request, response);
-        setQueryUris(request, response);
-        setEndpoints(request, response);
+//        setQueryObjects(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/objects.rq"))));
+        setQueryUris(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/uris.rq"))));
+        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
 
 	super.display(request, response);
     }
@@ -135,25 +140,19 @@ public class ReportListView extends FrontEndView
         this.orderBy = orderBy;
     }
 
-    protected void setQueryObjects(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setQueryObjects(ResultSet objects)
     {
-	String objects = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/objects.rq")));
-
-	getResolver().setArgument("query-objects", objects);
+	getResolver().setArgument("query-objects", XMLSerializer.serialize(objects));
     }
 
-    protected void setQueryUris(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setQueryUris(ResultSet uris)
     {
-	String uris = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/uris.rq")));
-
-	getResolver().setArgument("query-uris", uris);
+	getResolver().setArgument("query-uris", XMLSerializer.serialize(uris));
     }
 
-    protected void setEndpoints(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
+    protected void setEndpoints(ResultSet endpoints)
     {
-	String endpoints = QueryXMLResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq")));
-
-	getResolver().setArgument("endpoints", endpoints);
+	getResolver().setArgument("endpoints", XMLSerializer.serialize(endpoints));
     }
 
 }
