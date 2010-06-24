@@ -22,7 +22,7 @@ import view.XMLSerializer;
  *
  * @author Pumba
  */
-public class ReportView extends FrontEndView
+abstract public class ReportView extends FrontEndView
 {
 
     public ReportView(ReportResource resource)

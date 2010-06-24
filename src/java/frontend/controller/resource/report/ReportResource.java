@@ -6,6 +6,9 @@
 package frontend.controller.resource.report;
 
 import com.hp.hpl.jena.query.QueryException;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -19,10 +22,12 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
+import dk.semantic_web.diy.controller.Error;
+import frontend.controller.exception.InvalidFormException;
+import frontend.controller.exception.NoResultsException;
 import frontend.controller.form.CommentRDFForm;
 import frontend.controller.form.ReportRDFForm;
 import frontend.view.report.ReportUpdateView;
-import frontend.view.report.ReportView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -47,8 +52,8 @@ import view.QueryResult;
  */
 public class ReportResource extends FrontEndResource implements LeafResource
 {
-    private View view = null;
     private Report report = null;
+    //private View view = null;
     
     public ReportResource(Report report, ReportListResource parent)
     {
@@ -83,31 +88,78 @@ public class ReportResource extends FrontEndResource implements LeafResource
     public View doGet(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
 	View parent = super.doGet(request, response);
-	if (parent != null) view = parent;
-	else
-	{
-	    view = new ReportReadView(this);
-	    
-	    if (request.getParameter("view") != null && request.getParameter("view").equals("update")) view = new ReportUpdateView(this);
-	}
+	if (parent != null) return parent;
 
-	return view;
+        if (isUpdateView(request)) return new ReportUpdateView(this);
+
+	return new ReportReadView(this);
     }
 
     @Override
     public View doPost(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
 	View parent = super.doPost(request, response);
-	if (parent != null) view = parent;
-	else
-	{
-	    view = new ReportReadView(this);
-	    
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("update")) update(request, response);
-	    if (request.getParameter("action") != null && request.getParameter("action").equals("comment")) comment(request, response);
-        }
+	if (parent != null) return parent;
 
-	return view;
+        if (isQueryAction(request)) return query(request, response);
+        if (isUpdateAction(request)) update(request, response);
+        if (isCommentAction(request)) comment(request, response);
+
+	return new ReportReadView(this);
+    }
+
+    private ReportUpdateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException
+    {
+        ReportUpdateView view = new ReportUpdateView(this);
+
+	ReportRDFForm form = new ReportRDFForm(request);
+        List<Error> errors = form.validate();
+        view.setForm(form);
+        view.setModel(form.getModel());
+
+	try
+	{
+            if (!errors.isEmpty()) throw new InvalidFormException();
+
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
+            int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
+            if (count == 0) throw new NoResultsException();
+
+            view.setQueryResults(queryResults);
+            view.setResult(true);
+	}
+        catch (InvalidFormException ex)
+	{
+            view.setErrors(errors);
+            view.setResult(false);
+	}
+        catch (NoResultsException ex)
+	{
+            errors.add(new Error("noResults"));
+
+            view.setErrors(errors);
+            view.setResult(false);
+	}
+        catch (IOException ex)
+	{
+            errors.add(new Error("ioError"));
+
+            view.setErrors(errors);
+            view.setResult(false);
+
+	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+        catch (QueryException ex)
+	{
+            errors.add(new Error("invalidQuery"));
+
+            view.setErrors(errors);
+            view.setResult(false);
+
+	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+
+        return view;
     }
 
     private void update(HttpServletRequest request, HttpServletResponse response)
@@ -168,4 +220,25 @@ oldModel.remove(keepStatements); // do not delete creation date, endpoint metada
 
         SDB.getInstanceModel().add(form.getModel());
     }
+
+    protected boolean isUpdateView(HttpServletRequest request)
+    {
+        return (request.getParameter("view") != null && request.getParameter("view").equals("update"));
+    }
+
+    protected boolean isQueryAction(HttpServletRequest request)
+    {
+        return (request.getParameter("action") != null && request.getParameter("action").equals("query"));
+    }
+
+    protected boolean isUpdateAction(HttpServletRequest request)
+    {
+        return (request.getParameter("action") != null && request.getParameter("action").equals("update"));
+    }
+
+    protected boolean isCommentAction(HttpServletRequest request)
+    {
+        return (request.getParameter("action") != null && request.getParameter("action").equals("comment"));
+    }
+
 }

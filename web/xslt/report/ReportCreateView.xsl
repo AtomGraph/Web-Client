@@ -422,7 +422,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="pu" value="&dc;description"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
-                                        <textarea id="description" name="ol">
+                                        <textarea id="description" name="ol" cols="80" rows="5" >
                                             <xsl:if test="not(empty($query-result))">
                                                     <xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
                                             </xsl:if>

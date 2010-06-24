@@ -18,7 +18,7 @@ import javax.xml.transform.TransformerException;
  *
  * @author Pumba
  */
-public class FrontEndView extends XSLTView
+abstract public class FrontEndView extends XSLTView
 {
   
     public FrontEndView(FrontEndResource resource)
