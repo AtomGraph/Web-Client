@@ -54,10 +54,39 @@ public class ReportUpdateView extends ReportView implements FormResultView
         setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
         setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq"))));
 
-        if (getResult() != null)
+        //setComments(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/comments.rq"), getResource().getAbsoluteURI())));
+
+        if (getResult() != null) // as in Create
         {
-           getTransformer().setParameter("query-result", getResult());
+            String reportUri = request.getParameter("report-uri"); // after 1st request ("Query" submit), $report-uri is known
+            setReport(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri)));
+
+            getTransformer().setParameter("query-result", getResult());
+            
+            if (getResult())
+            {
+                setVisualizations(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportUri)));
+                setBindings(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), getResource().getAbsoluteURI())));
+                setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri)));
+
+                getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
+            }
+            else
+            {
+                getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
+            }
         }
+        else // as in Read
+        {
+            //setQueryResults(QueryResult.selectRemote(getResource().getReport().getQuery().getEndpoint().toString(), getResource().getReport().getQuery().getQueryString()));
+            setReport(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), getResource().getAbsoluteURI())));
+            setVisualizations(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), getResource().getAbsoluteURI())));
+            setBindings(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), getResource().getAbsoluteURI())));
+            setVariables(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI())));
+
+            getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
+        }
+
 	super.display(request, response);
 
 	response.setStatus(HttpServletResponse.SC_OK);

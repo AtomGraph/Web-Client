@@ -90,9 +90,16 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	View parent = super.doGet(request, response);
 	if (parent != null) return parent;
 
-        if (isUpdateView(request)) return new ReportUpdateView(this);
+        if (isUpdateView(request))
+        {
+            ReportUpdateView updateView = new ReportUpdateView(this);
+            updateView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString()));
+            return updateView;
+        }
 
-	return new ReportReadView(this);
+	ReportReadView readView = new ReportReadView(this);
+        readView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString()));
+        return readView;
     }
 
     @Override
@@ -105,7 +112,11 @@ public class ReportResource extends FrontEndResource implements LeafResource
         if (isUpdateAction(request)) update(request, response);
         if (isCommentAction(request)) comment(request, response);
 
-	return new ReportReadView(this);
+        if (isUpdateView(request)) return new ReportUpdateView(this);
+        
+	ReportReadView view = new ReportReadView(this);
+        view.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString()));
+        return view;
     }
 
     private ReportUpdateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException
@@ -172,7 +183,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI()); // change to query URI
 
         // add some metadata
-        String userUri = getController().getMapping().getHost() + "users/pumba";
+        String userUri = getController().getMapping().getHost() + "users/admin";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model newModel = form.getModel();

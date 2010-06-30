@@ -64,7 +64,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="endpoint-uri" select="$report//sparql:binding[@name = 'endpoint']/sparql:uri" as="xs:anyURI?"/>
         <!--
             <xsl:choose>
-                <xsl:when test="not(empty($query-result))">
+                <xsl:when test="not(empty($query-result)) or $view = $update-view">
                         <xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
                 </xsl:when>
                 <xsl:otherwise>http://dbpedia.org/sparql</xsl:otherwise>
@@ -106,7 +106,7 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template name="body-onload">
-            <xsl:if test="not(empty($query-result))">
+            <xsl:if test="not(empty($query-result)) or $view = $update-view">
                 <xsl:attribute name="onload">
                     <xsl:text>countColumns(data); </xsl:text>
                     <xsl:variable name="used-visualization-types" as="element(*)*">
@@ -252,6 +252,7 @@ exclude-result-prefixes="#all">
                             <xsl:call-template name="title"/>
                         </h2>
 
+			!<xsl:copy-of select="document('arg://report')"/>!
                         <!--
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
@@ -296,7 +297,7 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 					<textarea cols="80" rows="20" id="query-string" name="ol">
-						<xsl:if test="not(empty($query-result))">
+						<xsl:if test="not(empty($query-result)) or $view = $update-view">
 							<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
 						</xsl:if>
 					</textarea>
@@ -397,7 +398,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 					<button type="submit" name="action" value="query">Query</button>
                                     </p>
 
-                                <xsl:if test="$query-result eq true()">
+                                <xsl:if test="$query-result eq true() or $view = $update-view">
                                     <fieldset>
                                         <legend>Metadata</legend>
 					<label for="title">Title</label>
@@ -409,7 +410,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
                                         <input type="text" id="title" name="ol">
                                             <xsl:attribute name="value">
-						<xsl:if test="not(empty($query-result))">
+						<xsl:if test="not(empty($query-result)) or $view = $update-view">
 							<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 						</xsl:if>
                                             </xsl:attribute>
@@ -423,7 +424,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="lt" value="&xsd;string"/>
 
                                         <textarea id="description" name="ol" cols="80" rows="5" >
-                                            <xsl:if test="not(empty($query-result))">
+                                            <xsl:if test="not(empty($query-result)) or $view = $update-view">
                                                     <xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
                                             </xsl:if>
                                         </textarea>
@@ -440,7 +441,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                     </ul>
                                 </xsl:if>
 
-                                <xsl:if test="$query-result eq true()">
+                                <xsl:if test="$query-result eq true() or $view = $update-view">
                                     <fieldset id="visualizations">
                                             <legend>Visualizations</legend>
 <input type="hidden" name="su" value="{$report-uri}"/>

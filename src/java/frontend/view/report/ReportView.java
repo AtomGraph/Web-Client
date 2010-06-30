@@ -24,6 +24,7 @@ import view.XMLSerializer;
  */
 abstract public class ReportView extends FrontEndView
 {
+    private ResultSetRewindable queryResults = null;
 
     public ReportView(ReportResource resource)
     {
@@ -42,42 +43,35 @@ abstract public class ReportView extends FrontEndView
         setVisualizationTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq"))));
         setBindingTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq"))));
 
+        /*
 	setQueryResults(QueryResult.selectRemote(getResource().getReport().getQuery().getEndpoint().toString(), getResource().getReport().getQuery().getQueryString()));
-
         setReport(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), getResource().getAbsoluteURI())));
         setVisualizations(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), getResource().getAbsoluteURI())));
         setBindings(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), getResource().getAbsoluteURI())));
         setVariables(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI())));
+        */
 
         super.display(request, response);
     }
 
-    public void setQueryResults(ResultSetRewindable results)
+    public ResultSetRewindable getQueryResults()
+    {
+        return queryResults;
+    }
+
+    public void setQueryResults(ResultSetRewindable queryResults)
+    {
+        this.queryResults = queryResults;
+    }
+
+    /*
+    protected void setQueryResults(ResultSetRewindable results)
     {
 	getTransformer().setParameter("query-result", true);
 
 	getResolver().setArgument("results", XMLSerializer.serialize(results));
     }
-
-/*
-    protected void setQueryResult(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException
-    {
-        String endpointUri = getResource().getReport().getQuery().getEndpoint().toString();
-        String queryString = getResource().getReport().getQuery().getQueryString();
-        String results = QueryXMLResult.selectRemote(endpointUri, queryString);
-
-	getTransformer().setParameter("query-result", true);
-
-	getResolver().setArgument("results", results);
-    }
-*/
-
-    protected void setQueryResult(ResultSetRewindable results)
-    {
-	getTransformer().setParameter("query-result", true);
-
-	getResolver().setArgument("results", XMLSerializer.serialize(results));
-    }
+    */
 
     protected void setReport(ResultSetRewindable report)
     {

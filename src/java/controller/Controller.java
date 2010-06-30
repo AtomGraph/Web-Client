@@ -50,6 +50,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
 
             ex.printStackTrace(response.getWriter());
+            //response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
 
             /*
             System.out.println(ex.getMessage());

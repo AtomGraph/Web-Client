@@ -6,6 +6,14 @@
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+	<!ENTITY vis "http://code.google.com/apis/visualization/">
+        <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+        <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
+        <!ENTITY dbpedia "http://dbpedia.org/resource/">
+        <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
+        <!ENTITY dbpprop "http://dbpedia.org/property/">
+        <!ENTITY category "http://dbpedia.org/resource/Category:">
+
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -13,7 +21,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:owl="&owl;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:sparql="&sparql;"
 exclude-result-prefixes="#all">
 
@@ -21,12 +29,12 @@ exclude-result-prefixes="#all">
         <xsl:include href="../query-string.xsl"/>
         <xsl:include href="../page-numbers.xsl"/>
 
-        <xsl:param name="total-item-count" as="xsd:integer"/>
-        <xsl:param name="offset" select="0" as="xsd:integer"/>
-        <xsl:param name="limit" select="20" as="xsd:integer"/>
-        <xsl:param name="order-by" as="xsd:string"/>
-        <xsl:param name="desc-default" select="true()" as="xsd:boolean"/>
-        <xsl:param name="desc" select="$desc-default" as="xsd:boolean"/>
+        <xsl:param name="total-item-count" as="xs:integer"/>
+        <xsl:param name="offset" select="0" as="xs:integer"/>
+        <xsl:param name="limit" select="20" as="xs:integer"/>
+        <xsl:param name="order-by" as="xs:string"/>
+        <xsl:param name="desc-default" select="true()" as="xs:boolean"/>
+        <xsl:param name="desc" select="$desc-default" as="xs:boolean"/>
 
 	<xsl:variable name="reports" select="document('arg://reports')" as="document-node()"/>
         <xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
@@ -101,13 +109,7 @@ exclude-result-prefixes="#all">
                             <xsl:variable name="current-uris" select="$query-uris//sparql:result[sparql:binding[@name = 'report']/sparql:uri = current()/sparql:binding[@name = 'report']/sparql:uri]"/>
                             <xsl:if test="$current-uris">
                                 <ul>
-                                    <xsl:for-each select="$current-uris">
-                                        <li>
-                                            <a href="{sparql:binding[@name = 'uri']/sparql:uri}">
-                                                <xsl:value-of select="sparql:binding[@name = 'uri']/sparql:uri"/>
-                                            </a>
-                                        </li>
-                                    </xsl:for-each>
+                                    <xsl:apply-templates select="$current-uris" mode="uri-list-item"/>
                                 </ul>
                              </xsl:if>
 			</td>
@@ -137,5 +139,46 @@ exclude-result-prefixes="#all">
 			</td>
 		</tr>
 	</xsl:template>
+
+        <xsl:template match="sparql:result[sparql:binding[@name = 'uri']]" mode="uri-list-item">
+            <xsl:variable name="uri" select="sparql:binding[@name = 'uri']/sparql:uri" as="xs:anyURI"/>
+            <xsl:variable name="uri-label" as="xs:string">
+                <xsl:choose>
+                    <xsl:when test="starts-with($uri, '&rdf;')">
+                        <xsl:value-of select="concat('rdf:', substring-after($uri, '&rdf;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&rdfs;')">
+                        <xsl:value-of select="concat('rdfs:', substring-after($uri, '&rdfs;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&owl;')">
+                        <xsl:value-of select="concat('owl:', substring-after($uri, '&owl;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&skos;')">
+                        <xsl:value-of select="concat('skos:', substring-after($uri, '&skos;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&category;')">
+                        <xsl:value-of select="concat('category:', substring-after($uri, '&category;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&dbpedia;')">
+                        <xsl:value-of select="concat('dbpedia:', substring-after($uri, '&dbpedia;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&dbpedia-owl;')">
+                        <xsl:value-of select="concat('dbpedia-owl:', substring-after($uri, '&dbpedia-owl;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&dbpprop;')">
+                        <xsl:value-of select="concat('dbpprop:', substring-after($uri, '&dbpprop;'))"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$uri"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+
+            <li>
+                <a href="{$uri}">
+                    <xsl:value-of select="$uri-label"/>
+                </a>
+            </li>
+        </xsl:template>
 
 </xsl:stylesheet>

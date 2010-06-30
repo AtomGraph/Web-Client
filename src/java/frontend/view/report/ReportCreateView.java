@@ -56,8 +56,8 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 	if (getResult() != null)
         {
             String reportUri = request.getParameter("report-uri"); // after 1st request ("Query" submit), $report-uri is known
-
             setReport(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri)));
+
             getTransformer().setParameter("query-result", getResult());
             
             if (getResult())
@@ -66,12 +66,10 @@ public class ReportCreateView extends FrontEndView implements FormResultView
                 setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri)));
 
                 getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
-                //getTransformer().setParameter("query-string", request.getParameter("query-string"));
             }
             else
             {
                 getResolver().setArgument("query-errors", XMLSerializer.serialize(getErrors()));
-                //getTransformer().setParameter("query-result", "failure");
             }
         }
 
@@ -139,7 +137,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         this.result = successful;
     }
 
-    public ResultSet getQueryResults()
+    public ResultSetRewindable getQueryResults()
     {
         return queryResults;
     }
