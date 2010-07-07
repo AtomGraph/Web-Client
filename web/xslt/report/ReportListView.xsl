@@ -45,12 +45,20 @@ exclude-result-prefixes="#all">
 		Reports
 	</xsl:template>
 
+	<xsl:template name="head">
+            <title>
+                <xsl:call-template name="title"/>
+            </title>
+        </xsl:template>
+
 	<xsl:template name="body-onload">
         </xsl:template>
 
 	<xsl:template name="content">
 		<div id="main">
-			<h2><xsl:call-template name="title"/></h2>
+			<h2>
+                            <xsl:call-template name="title"/>
+                        </h2>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>

@@ -25,6 +25,12 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 		Page Not Found
 	</xsl:template>
 
+	<xsl:template name="head">
+            <title>
+                <xsl:call-template name="title"/>
+            </title>
+        </xsl:template>
+
 	<xsl:template name="body-onload">
         </xsl:template>
 

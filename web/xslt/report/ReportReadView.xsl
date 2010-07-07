@@ -49,6 +49,15 @@ exclude-result-prefixes="#all">
 		<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
 	</xsl:template>
 
+	<xsl:template name="head">
+            <title>
+                <xsl:call-template name="title"/>
+            </title>
+
+            <xsl:call-template name="report-scripts"/>
+        </xsl:template>
+
+
 	<xsl:template name="body-onload">
             <xsl:attribute name="onload">
                 <xsl:text>countColumns(data); </xsl:text>
@@ -190,7 +199,7 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="vis-container">
-            <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;">&#160;</div>
+            <div id="{generate-id()}-visualization" class="visualization">&#160;</div>
         </xsl:template>
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'uri']]" mode="uri-list-item">

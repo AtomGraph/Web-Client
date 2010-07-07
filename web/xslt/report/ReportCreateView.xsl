@@ -105,6 +105,14 @@ exclude-result-prefixes="#all">
             </xsl:choose>
 	</xsl:template>
 
+	<xsl:template name="head">
+            <title>
+                <xsl:call-template name="title"/>
+            </title>
+            
+            <xsl:call-template name="report-scripts"/>
+        </xsl:template>
+
 	<xsl:template name="body-onload">
             <xsl:if test="not(empty($query-result)) or $view = $update-view">
                 <xsl:attribute name="onload">
@@ -256,8 +264,6 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			<xsl:copy-of select="$visualization-types"/>
-			<xsl:copy-of select="$binding-types"/>
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -536,7 +542,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                         </p>
                 </fieldset>
 
-        <div id="{generate-id()}-visualization" style="width: 100%; height: 400px;">&#160;</div>
+        <div id="{generate-id()}-visualization" class="visualization">&#160;</div>
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">

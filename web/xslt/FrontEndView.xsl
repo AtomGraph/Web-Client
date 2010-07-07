@@ -40,40 +40,14 @@ exclude-result-prefixes="#all">
 	<xsl:template match="sparql:sparql">
 		<html xmlns="http://www.w3.org/1999/xhtml"> <!-- xml:base="{$base_url}" -->
 			<head>
-				<title>
-					<xsl:call-template name="title"/>
-				</title>
+                                <base href="{$host-uri}"/>
+				<link href="static/css/index.css" rel="stylesheet" type="text/css" media="all"/>
 
-
-				<base href="{$host-uri}"/>
-				<!-- <link href="xhtml/css/index.css" rel="stylesheet" type="text/css" media="all"/> -->
-				<style type="text/css">
-					html { font-family: "Arial"; font-size: small; }
-					/* h1, h2, h3 { font-family: "Georgia"; } */
-					#left, #main, #right { float: left; }
-					#left, #right { width: 15%; }
-					#main { width: 100%; }
-					span.red { color: red; }
-					table, td { border: 1px solid black; }
-                                        table { width: 100%; }
-					thead { font-weight: bold; text-align: center; }
-                                        ol.pagination li { display: inline; }
-                                        button { font-weight: bold; }
-                                        ul#vis-types { padding: 0; }
-                                        ul#vis-types li { display: inline; }
-				</style>
-
-				<script type="text/javascript" src="http://www.google.com/jsapi">&#160;</script>
-				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript">&#160;</script>
-                                <script type="text/javascript">
-google.load('visualization', '1',  {'packages': ["corechart", "table", "map"]});
-
-var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
-				</script>
-				<script type="text/javascript" src="static/js/report.js">&#160;</script>
                                 <meta name="author" content="http://semantic-web.dk"/>
-                                <meta name="DC.title" content="Semantic Reports" />
-			</head>
+                                <meta name="DC.title" content="Semantic Reports"/>
+
+                                <xsl:call-template name="head"/>
+                        </head>
 			<body>
                                 <xsl:if test="$view = 'frontend.view.report.ReportCreateView' or $view = 'frontend.view.report.ReportUpdateView' or $view = 'frontend.view.report.ReportReadView'">
                                     <xsl:call-template name="body-onload"/>
@@ -117,8 +91,27 @@ var table = <xsl:apply-templates select="document('arg://results')" mode="sparql
 				-->
 
 				<xsl:call-template name="content"/>
+
+                                <div id="footer">
+                                    <p>
+                                        <a href="mailto:info@semantic-web.dk">info@semantic-web.dk</a>
+                                    </p>
+                                </div>
 			</body>
 		</html>
 	</xsl:template>
+
+        <xsl:template name="report-scripts">
+            <script type="text/javascript" src="http://www.google.com/jsapi">&#160;</script>
+            <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript">&#160;</script>
+
+            <script type="text/javascript">
+            google.load('visualization', '1',  {'packages': ["corechart", "table", "map"]});
+
+            var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
+            </script>
+            
+            <script type="text/javascript" src="static/js/report.js">&#160;</script>
+        </xsl:template>
 
 </xsl:stylesheet>
