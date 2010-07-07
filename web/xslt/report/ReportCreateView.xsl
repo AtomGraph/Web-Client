@@ -256,6 +256,8 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
+			<xsl:copy-of select="$visualization-types"/>
+			<xsl:copy-of select="$binding-types"/>
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -445,7 +447,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                             <legend>Visualizations</legend>
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
-                                            <ul>
+                                            <ul id="vis-types">
                                                     <xsl:apply-templates select="$visualization-types" mode="vis-type-item"/>
                                             </ul>
                                     </fieldset>

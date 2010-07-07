@@ -20,26 +20,37 @@ function initVis(container, visType)
     if (visType.indexOf("ScatterChart") != -1) visualizations[visType] = new google.visualization.ScatterChart(container);
     if (visType.indexOf("LineChart") != -1) visualizations[visType] = new google.visualization.LineChart(container);
     if (visType.indexOf("PieChart") != -1) visualizations[visType] = new google.visualization.PieChart(container);
+    if (visType.indexOf("BarChart") != -1) visualizations[visType] = new google.visualization.BarChart(container);
+    if (visType.indexOf("ColumnChart") != -1) visualizations[visType] = new google.visualization.ColumnChart(container);
+    if (visType.indexOf("AreaChart") != -1) visualizations[visType] = new google.visualization.AreaChart(container);
     if (visType.indexOf("Map") != -1) visualizations[visType] = new google.visualization.Map(container);
 }
 
 function initControls(visType, bindingElements, bindingTypes, xsdTypes, variables)
 {
-    initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables);
-/*
-    if (visType.indexOf("ScatterChart") != -1)
-        if (typeColumns.number.length > 1)
-            initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables);
-    if (visType.indexOf("LineChart") != -1)
-        if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables);
-    if (visType.indexOf("PieChart") != -1)
-        if (typeColumns.string.length > 0 && typeColumns.number.length > 0)
-            initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables);
-    if (visType.indexOf("Map") != -1)
-        if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
-            initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables);
-*/
+    for (var i = 0; i < bindingElements.length; i++)
+	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
+            if (bindingElements[i].bindingType == bindingTypes[j].type)
+            {
+                if (!("cardinality" in bindingTypes[j]) ||
+                        ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l) ||
+                        ("minCardinality" in bindingTypes[j] && bindingTypes[j].minCardinality > l))
+                    bindingElements[i].element.multiple = "multiple";
+
+                var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
+
+                for (var l = 0; l < bindingColumns.length; l++)
+                {
+                    var option = document.createElement("option");
+                    option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
+                    option.setAttribute("value", bindingColumns[l]);
+
+                    if (variableExists(variables, bindingTypes[j], bindingColumns[l]))
+                        option.setAttribute("selected", "selected");
+
+                    bindingElements[i].element.appendChild(option);
+                }
+            }
 }
 
 function initAndDraw(container, visType, bindingTypes, variables)
@@ -83,6 +94,7 @@ function draw(container, visType, bindingTypes, variables)
     if (visType.indexOf("ScatterChart") != -1) drawScatterChart(container, bindingTypes, variables);
     if (visType.indexOf("LineChart") != -1) drawLineChart(container, bindingTypes, variables);
     if (visType.indexOf("PieChart") != -1) drawPieChart(container, bindingTypes, variables);
+    if (visType.indexOf("BarChart") != -1) drawBarChart(container, bindingTypes, variables);
     if (visType.indexOf("Map") != -1)
         if (typeColumns.lat.length > 0 && typeColumns.lng.length > 0)
             drawMap(container, bindingTypes, variables);
@@ -233,33 +245,6 @@ function toggleVisualization(container, fieldset, show)
 	}
 }
 
-function initVisualizationControls(bindingElements, bindingTypes, xsdTypes, variables)
-{
-    for (var i = 0; i < bindingElements.length; i++)
-	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
-            if (bindingElements[i].bindingType == bindingTypes[j].type)
-            {
-                if (!("cardinality" in bindingTypes[j]) ||
-                        ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l) ||
-                        ("minCardinality" in bindingTypes[j] && bindingTypes[j].minCardinality > l))
-                    bindingElements[i].element.multiple = "multiple";
-
-                var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
-
-                for (var l = 0; l < bindingColumns.length; l++)
-                {
-                    var option = document.createElement("option");
-                    option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
-                    option.setAttribute("value", bindingColumns[l]);
-
-                    if (variableExists(variables, bindingTypes[j], bindingColumns[l]))
-                        option.setAttribute("selected", "selected");
-
-                    bindingElements[i].element.appendChild(option);
-                }
-            }
-}
-
 function drawScatterChart(container, bindingTypes, variables)
 {
 	var orderColumns = new Array();
@@ -277,6 +262,26 @@ function drawScatterChart(container, bindingTypes, variables)
         var options = new Array();
 	options["titleX"] = data.getColumnLabel(visColumns[0]);
 	options["titleY"] = data.getColumnLabel(visColumns[1]);
+	container.draw(view, options);
+}
+
+function drawBarChart(container, bindingTypes, variables)
+{
+	var orderColumns = new Array();
+        var restColumns = new Array();
+        for (var i = 0; i < variables.length; i++)
+        {
+            var bindingType = bindingTypeByVariable(bindingTypes, variables[i]);
+            if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
+            else restColumns = restColumns.concat(variables[i].variable);
+        }
+        var visColumns = orderColumns.concat(restColumns);
+
+	var view = new google.visualization.DataView(data);
+	view.setColumns(visColumns);
+        var options = new Array();
+	//options["titleX"] = data.getColumnLabel(visColumns[0]);
+	//options["titleY"] = data.getColumnLabel(visColumns[1]);
 	container.draw(view, options);
 }
 
