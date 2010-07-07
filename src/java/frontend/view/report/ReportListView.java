@@ -71,7 +71,7 @@ public class ReportListView extends FrontEndView
 	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
 	setReports(QueryResult.select(SDB.getDataset(), queryString));
 
-        int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.REPORT)).toList().size();
+        int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.Report)).toList().size();
 
         getTransformer().setParameter("total-item-count", count); //    SDB.getReportClass().listInstances().toList().size()
         getTransformer().setParameter("offset", getOffset());

@@ -164,18 +164,19 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
 	//arq2Spin.setVarNamespace("http://www.semanticreports.com/queries/");
-	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI()); // change to query URI
+	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI());
 
         // add some metadata
-        String userUri = getController().getMapping().getHost() + "users/pumba";
+        String userUri = getController().getMapping().getHost() + "users/admin";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model model = form.getModel();
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATED), model.createTypedLiteral(calendar));
         model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
-        model.add(form.getReportResource(), RDF.type, model.createResource(Sioc.FORUM));
-        model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.USER));
-        model.add(model.createResource(userUri), model.createProperty(Sioc.NAME), model.createTypedLiteral("RandomUserName"));
+        model.add(form.getReportResource(), RDF.type, model.createResource(Sioc.Forum));
+        model.add(form.getReportResource(), model.createProperty(Sioc.has_creator), model.createResource(userUri));
+        model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.UserAccount));
+        model.add(model.createResource(userUri), model.createProperty(Sioc.name), model.createTypedLiteral("Admin"));
 
         SDB.getInstanceModel().add(model); // save report
 //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);

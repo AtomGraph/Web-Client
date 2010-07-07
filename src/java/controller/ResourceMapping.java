@@ -23,7 +23,7 @@ import thewebsemantic.RDF2Bean;
  * @author Pumba
  */
 public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapping
-{    
+{
     @Override
     public Resource findByURI(String uri)
     {

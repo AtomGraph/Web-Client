@@ -32,14 +32,14 @@ public class Report extends RdfBean<Report>
     private String description = null;    
     private Date createdAt = null;
     private Query query = null;
-    private User creator = null;
+    private UserAccount creator = null;
     //private Collection<Visualization> visualizations = new ArrayList<Visualization>();
 
     public Report()
     {
     }
 
-    public Report(String title, Query query, User creator)
+    public Report(String title, Query query, UserAccount creator)
     {
 	setTitle(title);
 	setQuery(query);
@@ -107,12 +107,12 @@ public class Report extends RdfBean<Report>
     }
 
     @RdfProperty(CREATOR)
-    public User getCreator()
+    public UserAccount getCreator()
     {
 	return creator;
     }
 
-    public void setCreator(User creator)
+    public void setCreator(UserAccount creator)
     {
 	this.creator = creator;
     }

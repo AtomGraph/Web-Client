@@ -32,7 +32,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     {
         //System.out.println("Character encoding: " + request.getCharacterEncoding());
         request.setCharacterEncoding("UTF-8");
-	setHost(request, response);
+	getMapping().setHost(getHost(request));
 
         if (request.getMethod().equalsIgnoreCase("post")) request = new PostRequestWrapper(request); // IMPORTANT! otherwise one can only use request.getParameter() OR request.getInputStream()
 
@@ -88,12 +88,12 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         process(request, response);
     }
 
-    private void setHost(HttpServletRequest request, HttpServletResponse response)
+    private String getHost(HttpServletRequest request)
     {
 	String host = "http://" + request.getServerName();
 	if (request.getServerPort() != 80) host += ":" + request.getServerPort();
 	//host += request.getContextPath();
-	host += "/";	
-	getMapping().setHost(host);
+	host += "/";
+        return host;
     }
 }

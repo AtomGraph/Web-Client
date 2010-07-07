@@ -3,6 +3,7 @@ PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 PREFIX spin: <http://spinrdf.org/sp#>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
 
 SELECT *
 {
@@ -28,7 +29,8 @@ SELECT *
         }
         OPTIONAL
         {
-            ?report	dc:creator	?creator .
+            ?report	sioc:has_creator    ?creator .
+            ?creator	sioc:name           ?creatorName
         }
         OPTIONAL
         {

@@ -180,7 +180,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
         SPINModuleRegistry.get().init();
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(form.getModel());
-	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI()); // change to query URI
+	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI());
 
         // add some metadata
         String userUri = getController().getMapping().getHost() + "users/admin";
@@ -189,9 +189,10 @@ public class ReportResource extends FrontEndResource implements LeafResource
         Model newModel = form.getModel();
         newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.MODIFIED), newModel.createTypedLiteral(calendar));
         newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.CREATOR), newModel.createResource(userUri));
-        newModel.add(form.getReportResource(), RDF.type, newModel.createResource(Sioc.FORUM));
-        newModel.add(newModel.createResource(userUri), RDF.type, newModel.createResource(Sioc.USER));
-        newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.NAME), newModel.createTypedLiteral("RandomUserName"));
+        newModel.add(form.getReportResource(), RDF.type, newModel.createResource(Sioc.Forum));
+        newModel.add(form.getReportResource(), newModel.createProperty(Sioc.has_creator), newModel.createResource(userUri));
+        newModel.add(newModel.createResource(userUri), RDF.type, newModel.createResource(Sioc.UserAccount));
+        newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.name), newModel.createTypedLiteral("Admin"));
 //newModel.write(System.out, FileUtils.langXMLAbbrev);
 
 Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());

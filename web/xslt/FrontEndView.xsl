@@ -52,11 +52,13 @@ exclude-result-prefixes="#all">
 					/* h1, h2, h3 { font-family: "Georgia"; } */
 					#left, #main, #right { float: left; }
 					#left, #right { width: 15%; }
-					#main { width: 65%; }
+					#main { width: 100%; }
 					span.red { color: red; }
 					table, td { border: 1px solid black; }
+                                        table { width: 100%; }
 					thead { font-weight: bold; text-align: center; }
                                         ol.pagination li { display: inline; }
+                                        button { font-weight: bold; }
 				</style>
 
 				<script type="text/javascript" src="http://www.google.com/jsapi">&#160;</script>

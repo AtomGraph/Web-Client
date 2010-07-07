@@ -31,7 +31,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getReportResource()
     {
         Resource report = null;
-        Resource reportClass = getModel().createResource(Reports.REPORT);
+        Resource reportClass = getModel().createResource(Reports.Report);
         ResIterator iter = getModel().listResourcesWithProperty(RDF.type, reportClass);
         if (iter.hasNext())
             report = iter.next();
@@ -41,7 +41,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getQueryResource()
     {
         Resource query = null;
-        Resource queryClass = getModel().createResource(Spin.SELECT);
+        Resource queryClass = getModel().createResource(Spin.Select);
         ResIterator iter = getModel().listResourcesWithProperty(RDF.type, queryClass);
         if (iter.hasNext()) query = iter.next();
         return query;
@@ -50,7 +50,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getEndpointResource()
     {
 	Resource endpoint = null;
-	Property fromProperty = getModel().createProperty(Spin.FROM);
+	Property fromProperty = getModel().createProperty(Spin.from);
 	Statement stmt = getModel().getProperty(getQueryResource(), fromProperty);
 	if (stmt != null) endpoint = stmt.getResource();
 	return endpoint;
@@ -59,7 +59,7 @@ public class ReportRDFForm extends RDFForm
     public String getQueryString()
     {
 	String queryString = null;
-	Property textProperty = getModel().createProperty(Spin.TEXT);
+	Property textProperty = getModel().createProperty(Spin.text);
 	Statement stmt = getModel().getProperty(getQueryResource(), textProperty);
 	if (stmt != null) queryString = stmt.getString();
 	return queryString;

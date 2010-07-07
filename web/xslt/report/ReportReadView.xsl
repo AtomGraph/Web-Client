@@ -131,7 +131,7 @@ exclude-result-prefixes="#all">
                                 <dt>Created by</dt>
 				<dd>
 					<a href="{$report//sparql:binding[@name = 'creator']/sparql:uri}">
-						<xsl:value-of select="$report//sparql:binding[@name = 'creator']/sparql:uri"/>
+                                            <xsl:value-of select="$report//sparql:binding[@name = 'creatorName']/sparql:literal"/>
 					</a>
 				</dd>
 				<dt>Created</dt>

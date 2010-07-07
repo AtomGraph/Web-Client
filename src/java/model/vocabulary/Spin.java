@@ -13,8 +13,8 @@ import model.Namespaces;
  */
 public class Spin
 {
-    public static final String SELECT = Namespaces.SPIN_NS + "Select";
+    public static final String Select = Namespaces.SPIN_NS + "Select";
 
-    public static final String FROM = Namespaces.SPIN_NS + "from";
-    public static final String TEXT = Namespaces.SPIN_NS + "text";
+    public static final String from = Namespaces.SPIN_NS + "from";
+    public static final String text = Namespaces.SPIN_NS + "text";
 }

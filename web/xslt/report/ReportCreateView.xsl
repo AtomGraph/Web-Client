@@ -252,7 +252,6 @@ exclude-result-prefixes="#all">
                             <xsl:call-template name="title"/>
                         </h2>
 
-			!<xsl:copy-of select="document('arg://report')"/>!
                         <!--
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
@@ -535,7 +534,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                         </p>
                 </fieldset>
 
-        <div id="{generate-id()}-visualization" style="width: 800px; height: 400px;">&#160;</div>
+        <div id="{generate-id()}-visualization" style="width: 100%; height: 400px;">&#160;</div>
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">

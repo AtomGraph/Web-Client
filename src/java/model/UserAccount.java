@@ -23,13 +23,13 @@ import static model.vocabulary.DublinCore.*;
  */
 
 @Namespace("http://rdfs.org/sioc/ns#")
-@RdfType("User")
-public class User extends RdfBean<User>
+@RdfType("UserAccount")
+public class UserAccount extends RdfBean<UserAccount>
 {
     private String name = null;
     private Date createdAt = null;
 
-    @RdfProperty(DATE)
+    @RdfProperty(CREATED)
     public Date getCreatedAt()
     {
 	return createdAt;
@@ -62,7 +62,7 @@ public class User extends RdfBean<User>
 	    return new URI(uri);
 	} catch (URISyntaxException ex)
 	{
-	    Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(UserAccount.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	return null;
     }

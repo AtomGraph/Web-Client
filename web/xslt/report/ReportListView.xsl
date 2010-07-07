@@ -128,7 +128,7 @@ exclude-result-prefixes="#all">
 			</td>
 			<td>
                                 <a href="{sparql:binding[@name = 'creator']/sparql:uri}">
-                                    <xsl:value-of select="sparql:binding[@name = 'creator']/sparql:uri"/>
+                                    <xsl:value-of select="sparql:binding[@name = 'creatorName']/sparql:literal"/>
                                 </a>
 			</td>
 			<td>

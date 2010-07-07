@@ -26,7 +26,7 @@ public class CommentRDFForm extends RDFForm
     public Resource getCommentResource()
     {
         Resource comment = null;
-        Resource commentClass = getModel().createResource(Sioc.POST);
+        Resource commentClass = getModel().createResource(Sioc.Post);
         ResIterator iter = getModel().listResourcesWithProperty(RDF.type, commentClass);
         if (iter.hasNext())
             comment = iter.next();
