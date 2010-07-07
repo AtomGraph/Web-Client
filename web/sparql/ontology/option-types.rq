@@ -1,0 +1,23 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX vis: <http://code.google.com/apis/visualization/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+
+SELECT DISTINCT ?type ?label ?visType ?name
+{
+	_:super rdfs:subClassOf vis:Option .
+	?type   rdfs:subClassOf _:super .
+        ?type   rdfs:label      ?label .
+        _:prop  rdfs:range      _:super .
+        _:prop  rdfs:domain     ?visType
+        # cardinalities ???
+        # name
+        OPTIONAL
+        {
+            ?type   rdfs:subClassOf ?x .
+            ?x   owl:onProperty  vis:name .
+            ?x   owl:hasValue    ?name
+        }
+}
+ORDER BY ?label

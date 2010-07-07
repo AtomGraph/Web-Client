@@ -36,10 +36,6 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
         <xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
-        <!--
-        <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/>
-        <xsl:variable name="query-subjects" select="document('arg://query-subjects')" as="document-node()"/>
-        -->
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
         <xsl:variable name="comments" select="document('arg://comments')" as="document-node()"/>
 

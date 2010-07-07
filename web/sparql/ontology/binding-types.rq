@@ -2,7 +2,7 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
-PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
 SELECT DISTINCT ?type ?label ?visType ?cardinality ?minCardinality ?maxCardinality ?order
 {

@@ -42,6 +42,7 @@ abstract public class ReportView extends FrontEndView
     {
         setVisualizationTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq"))));
         setBindingTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq"))));
+        //setOptionTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/option-types.rq"))));
 
         /*
 	setQueryResults(QueryResult.selectRemote(getResource().getReport().getQuery().getEndpoint().toString(), getResource().getReport().getQuery().getQueryString()));
@@ -107,6 +108,11 @@ abstract public class ReportView extends FrontEndView
     protected void setVariables(ResultSetRewindable variables)
     {
         getResolver().setArgument("variables", XMLSerializer.serialize(variables));
+    }
+
+    protected void setOptionTypes(ResultSetRewindable optionTypes)
+    {
+	getResolver().setArgument("option-types", XMLSerializer.serialize(optionTypes));
     }
 
 }

@@ -44,6 +44,16 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/areaChartOption -->
+
+    <owl:ObjectProperty rdf:about="areaChartOption">
+        <rdfs:domain rdf:resource="AreaChart"/>
+        <rdfs:range rdf:resource="AreaChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://code.google.com/apis/visualization/areaChartValueBinding -->
 
     <owl:ObjectProperty rdf:about="areaChartValueBinding">
@@ -60,6 +70,16 @@
         <rdfs:domain rdf:resource="BarChart"/>
         <rdfs:range rdf:resource="BarChartLabelBinding"/>
         <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/barChartOption -->
+
+    <owl:ObjectProperty rdf:about="barChartOption">
+        <rdfs:domain rdf:resource="BarChart"/>
+        <rdfs:range rdf:resource="BarChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
     </owl:ObjectProperty>
     
 
@@ -89,6 +109,16 @@
         <rdfs:domain rdf:resource="ColumnChart"/>
         <rdfs:range rdf:resource="ColumnChartLabelBinding"/>
         <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/columnChartOption -->
+
+    <owl:ObjectProperty rdf:about="columnChartOption">
+        <rdfs:domain rdf:resource="ColumnChart"/>
+        <rdfs:range rdf:resource="ColumnChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
     </owl:ObjectProperty>
     
 
@@ -125,6 +155,16 @@
         <rdfs:domain rdf:resource="LineChart"/>
         <rdfs:range rdf:resource="LineChartLabelBinding"/>
         <rdfs:subPropertyOf rdf:resource="stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/lineChartOption -->
+
+    <owl:ObjectProperty rdf:about="lineChartOption">
+        <rdfs:domain rdf:resource="LineChart"/>
+        <rdfs:range rdf:resource="LineChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
     </owl:ObjectProperty>
     
 
@@ -272,6 +312,7 @@
 
     <owl:DatatypeProperty rdf:about="name">
         <rdfs:domain rdf:resource="Option"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
@@ -281,6 +322,15 @@
     <owl:DatatypeProperty rdf:about="order">
         <rdfs:domain rdf:resource="Binding"/>
         <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/value -->
+
+    <owl:DatatypeProperty rdf:about="value">
+        <rdfs:domain rdf:resource="Option"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
     </owl:DatatypeProperty>
     
 
@@ -526,7 +576,15 @@
     <!-- http://code.google.com/apis/visualization/LineChartHAxisTitle -->
 
     <owl:Class rdf:about="LineChartHAxisTitle">
+        <rdfs:label
+            >Title of the horizontal axis</rdfs:label>
         <rdfs:subClassOf rdf:resource="LineChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -557,7 +615,15 @@
     <!-- http://code.google.com/apis/visualization/LineChartVAxisTitle -->
 
     <owl:Class rdf:about="LineChartVAxisTitle">
+        <rdfs:label
+            >Title of the vertical axis</rdfs:label>
         <rdfs:subClassOf rdf:resource="LineChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 

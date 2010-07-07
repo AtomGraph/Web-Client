@@ -77,6 +77,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()?"/>
         <xsl:variable name="visualization-types" select="document('arg://visualization-types')" as="document-node()"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
+        <xsl:variable name="option-types" select="document('arg://option-types')" as="document-node()"/>
         <xsl:variable name="data-types" select="document('arg://data-types')" as="document-node()"/>
         <xsl:variable name="visualization-ids" as="document-node()">
             <xsl:document>
@@ -264,6 +265,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
+			!!<xsl:copy-of select="$option-types"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">

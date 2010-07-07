@@ -51,6 +51,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
         setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
         setVisualizationTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq"))));
         setBindingTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/binding-types.rq"))));
+        setOptionTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/option-types.rq"))));
         setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq"))));
 
 	if (getResult() != null)
@@ -91,6 +92,11 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     protected void setBindingTypes(ResultSetRewindable bindingTypes)
     {
 	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
+    }
+
+    protected void setOptionTypes(ResultSetRewindable optionTypes)
+    {
+	getResolver().setArgument("option-types", XMLSerializer.serialize(optionTypes));
     }
 
     protected void setDataTypes(ResultSetRewindable dataTypes)
