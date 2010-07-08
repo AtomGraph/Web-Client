@@ -40,6 +40,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="comments" select="document('arg://comments')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
+        <xsl:key name="result-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
 
 	<xsl:template name="title">
 		<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
@@ -87,7 +88,7 @@ exclude-result-prefixes="#all">
                         <xsl:if test="position() != last()">,</xsl:if>
                     </xsl:for-each>
                     <xsl:text>], [</xsl:text>
-                    <xsl:for-each select="key('variable-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables)">
+                    <xsl:for-each select="key('result-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables)">
                         <xsl:text>{ 'variable' : </xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
                         <xsl:text>, 'binding' : '</xsl:text>
