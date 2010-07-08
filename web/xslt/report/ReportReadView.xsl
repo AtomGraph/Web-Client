@@ -35,7 +35,8 @@ exclude-result-prefixes="#all">
         <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
-        <xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
+	<xsl:variable name="options" select="document('arg://options')" as="document-node()?"/>
+	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
         <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
         <xsl:variable name="comments" select="document('arg://comments')" as="document-node()"/>
 
@@ -63,7 +64,8 @@ exclude-result-prefixes="#all">
                     <xsl:value-of select="generate-id()"/>
                     <xsl:text>-visualization'), '</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                    <xsl:text>', [</xsl:text>
+
+		    <xsl:text>', [</xsl:text>
                     <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
                         <xsl:text>{ 'type': '</xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
@@ -87,7 +89,8 @@ exclude-result-prefixes="#all">
                         <xsl:text> }</xsl:text>
                         <xsl:if test="position() != last()">,</xsl:if>
                     </xsl:for-each>
-                    <xsl:text>], [</xsl:text>
+
+		    <xsl:text>], [</xsl:text>
                     <xsl:for-each select="key('result-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables)">
                         <xsl:text>{ 'variable' : </xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
@@ -98,7 +101,24 @@ exclude-result-prefixes="#all">
                         <xsl:text>' }</xsl:text>
                         <xsl:if test="position() != last()">,</xsl:if>
                     </xsl:for-each>
-                    <xsl:text>]);</xsl:text>
+                    <xsl:text>]</xsl:text>
+
+		    <xsl:text>, [</xsl:text>
+		    <xsl:for-each select="$options//sparql:result">
+			<xsl:text>{ 'type' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+			<xsl:text>', 'visType' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+			<xsl:text>', 'name' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
+			<xsl:text>', 'value' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal"/>
+			<xsl:text>' }</xsl:text>
+			<xsl:if test="position() != last()">, </xsl:if>
+		    </xsl:for-each>
+		    <xsl:text>]</xsl:text>
+
+		    <xsl:text>);</xsl:text>
                 </xsl:for-each>
             </xsl:attribute>
         </xsl:template>

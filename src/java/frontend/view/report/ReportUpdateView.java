@@ -52,7 +52,9 @@ public class ReportUpdateView extends ReportView implements FormResultView
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
         setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
-        setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq"))));
+        setVisualizationTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/visualization-types.rq"))));
+	setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/data-types.rq"))));
+        setOptionTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/ontology/option-types.rq"))));
 
         //setComments(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/comments.rq"), getResource().getAbsoluteURI())));
 
@@ -67,6 +69,7 @@ public class ReportUpdateView extends ReportView implements FormResultView
                 setVisualizations(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), getResource().getAbsoluteURI())));
                 setBindings(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), getResource().getAbsoluteURI())));
                 setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI())));
+		setOptions(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/options.rq"), getResource().getAbsoluteURI())));
 
                 getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
             }
@@ -82,6 +85,7 @@ public class ReportUpdateView extends ReportView implements FormResultView
             setVisualizations(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), getResource().getAbsoluteURI())));
             setBindings(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), getResource().getAbsoluteURI())));
             setVariables(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), getResource().getAbsoluteURI())));
+	    setOptions(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/options.rq"), getResource().getAbsoluteURI())));
 
             getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
         }
@@ -91,9 +95,19 @@ public class ReportUpdateView extends ReportView implements FormResultView
 	response.setStatus(HttpServletResponse.SC_OK);
     }
 
+    protected void setVisualizationTypes(ResultSetRewindable visTypes)
+    {
+	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
+    }
+
     protected void setDataTypes(ResultSetRewindable dataTypes)
     {
 	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
+    }
+
+    protected void setOptionTypes(ResultSetRewindable optionTypes)
+    {
+	getResolver().setArgument("option-types", XMLSerializer.serialize(optionTypes));
     }
 
     @Override

@@ -53,10 +53,10 @@ function initControls(visType, bindingElements, bindingTypes, xsdTypes, variable
             }
 }
 
-function initAndDraw(container, visType, bindingTypes, variables)
+function initAndDraw(container, visType, bindingTypes, variables, options)
 {
     initVis(container, visType);
-    draw(visualizations[visType], visType, bindingTypes, variables);
+    draw(visualizations[visType], visType, bindingTypes, variables, options);
 }
 
 function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, variables, options)
@@ -90,6 +90,9 @@ function hasSufficientColumns(bindingTypes, xsdTypes)
 
 function draw(container, visType, bindingTypes, variables, options)
 {
+    //alert(container.toSource());
+    //alert(visualizations);
+    
 	var orderColumns = new Array();
         var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)

@@ -283,7 +283,6 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			!!<xsl:copy-of select="$options"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -604,7 +603,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
         <select id="{generate-id()}-binding" name="ol">
             <xsl:attribute name="onchange">
                 <xsl:for-each select="$visualization">
-                    <xsl:text>draw(visualizations['</xsl:text>
+                    <xsl:text>draw(window.visualizations['</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                     <xsl:text>'], '</xsl:text>
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
@@ -649,6 +648,22 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                         <xsl:if test="position() != last()">,</xsl:if>
                     </xsl:for-each>
                     <xsl:text>])</xsl:text>
+		    
+		    <xsl:text>, [</xsl:text>
+		    <xsl:for-each select="$options//sparql:result">
+			<xsl:text>{ 'type' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+			<xsl:text>', 'visType' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+			<xsl:text>', 'name' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
+			<xsl:text>', 'value' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal"/>
+			<xsl:text>' }</xsl:text>
+			<xsl:if test="position() != last()">, </xsl:if>
+		    </xsl:for-each>
+		    <xsl:text>]</xsl:text>
+
                     <xsl:text>);</xsl:text>
                 </xsl:for-each>
             </xsl:attribute>
