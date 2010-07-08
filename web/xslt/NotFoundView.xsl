@@ -17,7 +17,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
-exclude-result-prefixes="owl rdf rdfs xsd sparql">
+exclude-result-prefixes="#all">
 
 	<xsl:include href="FrontEndView.xsl"/>
 
@@ -36,8 +36,10 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql">
 
 	<xsl:template name="content">
 		<div id="main">
-			<h2><xsl:call-template name="title"/></h2>
-			<p>Resource &quot;<xsl:value-of select="$uri"/>&quot; not found</p>
+			<h2>
+			    <xsl:call-template name="title"/>
+			</h2>
+			<p>Resource &quot;<xsl:value-of select="$relative-uri"/>&quot; not found</p>
 		</div>
 	</xsl:template>
 

@@ -36,13 +36,11 @@ abstract public class FrontEndView extends XSLTView
     {
 	long startTime = System.currentTimeMillis();
 
-	String hostUri = "http://" + (String) request.getHeader("host") + request.getContextPath() + "/";
-
-	getTransformer().setParameter("uri", (String)request.getAttribute("uri"));
-	getTransformer().setParameter("host-uri", hostUri);
+	getTransformer().setParameter("relative-uri", (String)request.getAttribute("uri"));
+	getTransformer().setParameter("host-uri", getController().getMapping().getHost());
 	//getTransformer().setParameter("host-uri", "http://semanticreports.com/"); // QUIRK!!!
 	//getTransformer().setParameter("host-uri", "http://localhost/");
-	getTransformer().setParameter("view", this.getClass().getName());
+	getTransformer().setParameter("view", getClass().getName());
 	getTransformer().setParameter("browser", request.getHeader("User-Agent"));
 
 	response.setCharacterEncoding("UTF-8");

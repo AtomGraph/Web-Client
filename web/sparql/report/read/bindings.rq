@@ -9,5 +9,6 @@ SELECT *
 	?visualization	rdf:type		?visType .
         ?visualization  vis:binding             ?binding .
         ?binding        rdf:type                ?type
+	# cardinality, order, dataType ???
 	FILTER (?report = <%s>)
 }

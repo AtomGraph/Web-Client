@@ -209,6 +209,16 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/mapOption -->
+
+    <owl:ObjectProperty rdf:about="mapOption">
+        <rdfs:domain rdf:resource="Map"/>
+        <rdfs:range rdf:resource="MapOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://code.google.com/apis/visualization/numericBinding -->
 
     <owl:ObjectProperty rdf:about="numericBinding">
@@ -247,12 +257,32 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/pieChartOption -->
+
+    <owl:ObjectProperty rdf:about="pieChartOption">
+        <rdfs:domain rdf:resource="PieChart"/>
+        <rdfs:range rdf:resource="PieChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://code.google.com/apis/visualization/pieChartValueBinding -->
 
     <owl:ObjectProperty rdf:about="pieChartValueBinding">
         <rdfs:domain rdf:resource="PieChart"/>
         <rdfs:range rdf:resource="PieChartValueBinding"/>
         <rdfs:subPropertyOf rdf:resource="numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/scatterChartOption -->
+
+    <owl:ObjectProperty rdf:about="scatterChartOption">
+        <rdfs:domain rdf:resource="ScatterChart"/>
+        <rdfs:range rdf:resource="ScatterChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
     </owl:ObjectProperty>
     
 
@@ -293,6 +323,16 @@
         <rdfs:range rdf:resource="Binding"/>
         <rdfs:domain rdf:resource="Table"/>
         <rdfs:subPropertyOf rdf:resource="binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/tableOption -->
+
+    <owl:ObjectProperty rdf:about="tableOption">
+        <rdfs:domain rdf:resource="Table"/>
+        <rdfs:range rdf:resource="TableOption"/>
+        <rdfs:subPropertyOf rdf:resource="option"/>
     </owl:ObjectProperty>
     
 
@@ -384,6 +424,22 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/AreaChartHAxisTitle -->
+
+    <owl:Class rdf:about="AreaChartHAxisTitle">
+        <rdfs:label
+            >Title of the horizotal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="AreaChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://code.google.com/apis/visualization/AreaChartLabelBinding -->
 
     <owl:Class rdf:about="AreaChartLabelBinding">
@@ -403,6 +459,22 @@
 
     <owl:Class rdf:about="AreaChartOption">
         <rdfs:subClassOf rdf:resource="Option"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/AreaChartVAxisTitle -->
+
+    <owl:Class rdf:about="AreaChartVAxisTitle">
+        <rdfs:label
+            >Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="AreaChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -445,6 +517,22 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/BarChartHAxisTitle -->
+
+    <owl:Class rdf:about="BarChartHAxisTitle">
+        <rdfs:label
+            >Title of the horizotal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="BarChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://code.google.com/apis/visualization/BarChartLabelBinding -->
 
     <owl:Class rdf:about="BarChartLabelBinding">
@@ -464,6 +552,22 @@
 
     <owl:Class rdf:about="BarChartOption">
         <rdfs:subClassOf rdf:resource="Option"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/BarChartVAxisTitle -->
+
+    <owl:Class rdf:about="BarChartVAxisTitle">
+        <rdfs:label
+            >Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="BarChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -512,6 +616,22 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/ColumnChartHAxisTitle -->
+
+    <owl:Class rdf:about="ColumnChartHAxisTitle">
+        <rdfs:label
+            >Title of the horizontal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="ColumnChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://code.google.com/apis/visualization/ColumnChartLabelBinding -->
 
     <owl:Class rdf:about="ColumnChartLabelBinding">
@@ -531,6 +651,22 @@
 
     <owl:Class rdf:about="ColumnChartOption">
         <rdfs:subClassOf rdf:resource="Option"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/ColumnChartVAxisTitle -->
+
+    <owl:Class rdf:about="ColumnChartVAxisTitle">
+        <rdfs:label
+            >Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="ColumnChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -865,10 +1001,42 @@
     
 
 
+    <!-- http://code.google.com/apis/visualization/ScatterChartHAxisTitle -->
+
+    <owl:Class rdf:about="ScatterChartHAxisTitle">
+        <rdfs:label
+            >Title of the horizontal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="ScatterChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://code.google.com/apis/visualization/ScatterChartOption -->
 
     <owl:Class rdf:about="ScatterChartOption">
         <rdfs:subClassOf rdf:resource="Option"/>
+    </owl:Class>
+    
+
+
+    <!-- http://code.google.com/apis/visualization/ScatterChartVAxisTitle -->
+
+    <owl:Class rdf:about="ScatterChartVAxisTitle">
+        <rdfs:label
+            >Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="ScatterChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 

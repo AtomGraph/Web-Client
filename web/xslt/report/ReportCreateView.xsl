@@ -240,6 +240,22 @@ exclude-result-prefixes="#all">
                                 <xsl:text>)</xsl:text>
                             </xsl:otherwise>
                         </xsl:choose>
+
+			<xsl:text>, [</xsl:text>
+			<xsl:for-each select="$options//sparql:result">
+			    <xsl:text>{ 'type' : '</xsl:text>
+			    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+			    <xsl:text>', 'visType' : '</xsl:text>
+			    <xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+			    <xsl:text>', 'name' : '</xsl:text>
+			    <xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
+			    <xsl:text>', 'value' : '</xsl:text>
+			    <xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal"/>
+			    <xsl:text>' }</xsl:text>
+			    <xsl:if test="position() != last()">, </xsl:if>
+			</xsl:for-each>
+			<xsl:text>]</xsl:text>
+
                         <xsl:text>);</xsl:text>
                     </xsl:for-each>
                     <xsl:if test="$view = $update-view">
@@ -267,7 +283,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			!!<xsl:copy-of select="$option-types"/>!!
+			!!<xsl:copy-of select="$options"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -542,12 +558,10 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                 <xsl:with-param name="visualization" select="."/>
                             </xsl:apply-templates>
 
-<!--
                             <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"  mode="option-type-input">
                                 <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
                                 <xsl:with-param name="visualization" select="."/>
                             </xsl:apply-templates>
--->
                         </p>
                 </fieldset>
 
@@ -670,8 +684,8 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
 <input type="hidden" name="su" value="{$option-uri}"/>
 <input type="hidden" name="pv" value="name"/>
-<input type="hidden" name="ou" value="{sparql:binding[@name = 'name']/sparql:literal}"/>
-
+<input type="hidden" name="lt" value="&xsd;string"/>
+<input type="hidden" name="ol" value="{sparql:binding[@name = 'name']/sparql:literal}"/>
 <input type="hidden" name="pv" value="value"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 <input type="hidden" name="ol" value="xxx"/> <!-- name??? -->

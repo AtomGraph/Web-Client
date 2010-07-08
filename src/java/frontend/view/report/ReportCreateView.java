@@ -62,9 +62,12 @@ public class ReportCreateView extends FrontEndView implements FormResultView
             
             if (getResult())
             {
+		System.out.println(getModel());
+		
                 setVisualizations(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportUri)));
                 setBindings(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), reportUri)));
 		setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri)));
+		setOptions(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/options.rq"), reportUri)));
 
                 getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
             }
@@ -122,6 +125,11 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     protected void setVariables(ResultSetRewindable variables)
     {
         getResolver().setArgument("variables", XMLSerializer.serialize(variables));
+    }
+
+    protected void setOptions(ResultSetRewindable options)
+    {
+        getResolver().setArgument("options", XMLSerializer.serialize(options));
     }
 
     @Override
