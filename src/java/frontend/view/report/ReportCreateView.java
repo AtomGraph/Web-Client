@@ -4,7 +4,6 @@
  */
 package frontend.view.report;
 
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import dk.semantic_web.diy.controller.Form;
@@ -64,7 +63,8 @@ public class ReportCreateView extends FrontEndView implements FormResultView
             if (getResult())
             {
                 setVisualizations(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/visualizations.rq"), reportUri)));
-                setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri)));
+                setBindings(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/bindings.rq"), reportUri)));
+		setVariables(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/variables.rq"), reportUri)));
 
                 getResolver().setArgument("results", XMLSerializer.serialize(getQueryResults()));
             }
@@ -112,6 +112,11 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     protected void setVisualizations(ResultSetRewindable visualizations)
     {
         getResolver().setArgument("visualizations", XMLSerializer.serialize(visualizations));
+    }
+
+    protected void setBindings(ResultSetRewindable bindings)
+    {
+	getResolver().setArgument("bindings", XMLSerializer.serialize(bindings));
     }
 
     protected void setVariables(ResultSetRewindable variables)

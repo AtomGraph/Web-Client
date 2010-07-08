@@ -22,9 +22,9 @@ exclude-result-prefixes="#all">
 	<!-- <xsl:output method="xml" encoding="UTF-8" indent="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/> -->
 	<xsl:output method="html" encoding="UTF-8" indent="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="text/html"/>
 
-	<xsl:param name="uri"/>
+	<xsl:param name="relative-uri" as="xs:string"/>
 	<xsl:param name="host-uri"/>
-        <xsl:param name="view"/>
+        <xsl:param name="view" as="xs:string"/>
 
 	<xsl:variable name="resource" select="/"/>
 
