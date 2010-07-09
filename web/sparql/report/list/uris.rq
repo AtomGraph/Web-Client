@@ -23,4 +23,5 @@ WHERE
     }
     FILTER (isURI(?uri))
 }
+ORDER BY ?uri
 # some kind of filter needed to match the number of reports, limited by OFFSET/LIMIT

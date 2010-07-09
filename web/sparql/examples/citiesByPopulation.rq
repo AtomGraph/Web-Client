@@ -10,8 +10,8 @@ WHERE
 	?city <http://dbpedia.org/property/populationMetro> ?population .
 	?city <http://dbpedia.org/property/areaTotalKm> ?area .
 	?city <http://dbpedia.org/property/subdivisionName> <http://dbpedia.org/resource/United_States> .
-	#?city <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .
-	#?city <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
+	?city <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .
+	?city <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
 	FILTER (DATATYPE(?area) = xsd:double)
 	#FILTER (DATATYPE(?population) = xsd:integer)
 	FILTER (LANG(?label) = 'en')

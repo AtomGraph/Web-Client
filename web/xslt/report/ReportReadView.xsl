@@ -247,12 +247,16 @@ exclude-result-prefixes="#all">
                     <xsl:when test="starts-with($uri, '&dbpprop;')">
                         <xsl:value-of select="concat('dbpprop:', substring-after($uri, '&dbpprop;'))"/>
                     </xsl:when>
-                    <xsl:otherwise>
+                    <xsl:when test="starts-with($uri, '&geo;')">
+                        <xsl:value-of select="concat('geo:', substring-after($uri, '&geo;'))"/>
+                    </xsl:when>
+		    <xsl:otherwise>
                         <xsl:value-of select="$uri"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-            <dd>
+
+	    <dd>
                 <a href="{$uri}">
                     <xsl:value-of select="$uri-label"/>
                 </a>

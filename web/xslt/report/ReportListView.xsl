@@ -81,7 +81,7 @@ exclude-result-prefixes="#all">
 					<td>Title</td>
 					<td>Description</td>
 					<td>Used URIs</td>
-					<td>Datasource</td>
+					<td>Endpoint</td>
 					<td>Creator</td>
 					<td>Created</td>
 					<td>Modified</td>
@@ -176,7 +176,10 @@ exclude-result-prefixes="#all">
                     <xsl:when test="starts-with($uri, '&dbpprop;')">
                         <xsl:value-of select="concat('dbpprop:', substring-after($uri, '&dbpprop;'))"/>
                     </xsl:when>
-                    <xsl:otherwise>
+                    <xsl:when test="starts-with($uri, '&geo;')">
+                        <xsl:value-of select="concat('geo:', substring-after($uri, '&geo;'))"/>
+                    </xsl:when>
+		    <xsl:otherwise>
                         <xsl:value-of select="$uri"/>
                     </xsl:otherwise>
                 </xsl:choose>

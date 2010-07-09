@@ -109,7 +109,8 @@ function draw(container, visType, bindingTypes, variables, options)
 	for (var j = 0; j < options.length; j++)
 	    if (visType == options[j].visType)
 		optArray[options[j].name] = options[j].value; // set visualization options
-//alert(optArray.toSource());
+	
+	optArray['height'] = 450; // CSS doesn't work on Table??
 
 	container.draw(view, optArray);
 
