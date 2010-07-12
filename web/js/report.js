@@ -53,18 +53,30 @@ function initControls(visType, bindingElements, bindingTypes, xsdTypes, variable
             }
 }
 
+function initOptions(visType, optionElements, options)
+{
+//alert(options.toSource());
+    for (var i in optionElements)
+	for (var j in options)
+	    if (optionElements[i].optionType == options[j].type)
+		//alert(optionElements[i].toSource());
+		//alert(options[j].toSource());
+		optionElements[i].element.value = options[j].value;
+}
+
 function initAndDraw(container, visType, bindingTypes, variables, options)
 {
     initVis(container, visType);
     draw(visualizations[visType], visType, bindingTypes, variables, options);
 }
 
-function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, variables, options)
+function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, variables, optionElements, options)
 {
     if (hasSufficientColumns(bindingTypes, xsdTypes))
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
+	initOptions(visType, optionElements, options);
         draw(visualizations[visType], visType, bindingTypes, variables, options);
         toggle.checked = true;
     }
@@ -105,12 +117,12 @@ function draw(container, visType, bindingTypes, variables, options)
 	var view = new google.visualization.DataView(data);
 	if (visType.indexOf("Table") == -1) view.setColumns(visColumns); // all columns for Table
 
+	var visOptions = optionsByVisType(visType, options);
 	var optArray = { };
-	for (var j = 0; j < options.length; j++)
-	    if (visType == options[j].visType)
-		optArray[options[j].name] = options[j].value; // set visualization options
+	for (var j in visOptions)
+	    optArray[options[j].name] = options[j].value; // set visualization options
 	
-	optArray['height'] = 450; // CSS doesn't work on Table??
+	optArray["height"] = 450; // CSS doesn't work on Table??
 
 	container.draw(view, optArray);
 
@@ -218,6 +230,17 @@ function bindingElementsByType(bindingElements, bindingTypes)
                 elements.push(bindingElements[i]);
 
     return elements;
+}
+
+function optionsByVisType(visType, options)
+{
+    var visOptions = new Array();
+//alert(bindingType.toSource());
+    for (var k = 0; k < options.length; k++)
+        if (visType == options[k].visType) // join
+            visOptions.push(options[k]);
+
+    return visOptions;
 }
 
 function variableExists(variables, bindingType, value)

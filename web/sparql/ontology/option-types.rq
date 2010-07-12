@@ -4,7 +4,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
-SELECT DISTINCT ?type ?label ?visType ?name
+SELECT *
 {
 	_:super rdfs:subClassOf vis:Option .
 	?type   rdfs:subClassOf _:super .
@@ -15,9 +15,15 @@ SELECT DISTINCT ?type ?label ?visType ?name
         # name
         OPTIONAL
         {
-            ?type   rdfs:subClassOf ?x .
-            ?x   owl:onProperty  vis:name .
-            ?x   owl:hasValue    ?name
+            ?type   rdfs:subClassOf _:x .
+            _:x	    owl:onProperty  vis:name .
+            _:x	    owl:hasValue    ?name
+        }
+        OPTIONAL
+        {
+            ?type   rdfs:subClassOf	_:y .
+            _:y	    owl:onProperty	vis:value .
+            _:y	    owl:allValuesFrom	?dataType
         }
 }
 ORDER BY ?label

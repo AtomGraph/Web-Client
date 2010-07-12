@@ -8,7 +8,10 @@ SELECT *
 	?report		rdf:type		rep:Report .
 	?report		rep:visualizedBy	?visualization .
 	?visualization	rdf:type		?type .
-	?type		rdfs:label		?typeLabel
+	OPTIONAL # does not exist in form model
+	{
+	    ?type		rdfs:label		?typeLabel
+	}
 	FILTER (?report = <%s>)
 }
 ORDER BY ?typeLabel

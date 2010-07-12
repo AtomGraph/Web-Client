@@ -71,7 +71,8 @@ exclude-result-prefixes="#all">
             </xsl:choose>
         </xsl:variable>
         -->
-        <xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
+        <xsl:variable name="results" select="document('arg://results')" as="document-node()?"/>
+	<xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
         <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()?"/> <!-- only set after $query-result -->
 	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()?"/>
 	<xsl:variable name="options" select="document('arg://options')" as="document-node()?"/>
@@ -142,8 +143,10 @@ exclude-result-prefixes="#all">
 
                         <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                         <xsl:text>', [</xsl:text>
-                        <xsl:variable name="binding-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
-                        <xsl:variable name="used-binding-types" as="element(*)*">
+                        <xsl:variable name="vis-binding-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
+                        <xsl:variable name="vis-option-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"/>
+
+			<xsl:variable name="used-binding-types" as="element(*)*">
                             <xsl:choose>
                                 <xsl:when test="exists($bindings)">
                                     <xsl:sequence select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)[sparql:binding[@name = 'type']/sparql:uri = $bindings//sparql:binding[@name = 'type']/sparql:uri]"/>
@@ -154,7 +157,7 @@ exclude-result-prefixes="#all">
                             </xsl:choose>
                         </xsl:variable>
 
-                        <xsl:for-each select="$binding-types">
+                        <xsl:for-each select="$vis-binding-types">
                             <xsl:text>{ 'element' :</xsl:text>
                             <xsl:text>document.getElementById('</xsl:text>
                             <xsl:value-of select="generate-id()"/>
@@ -166,7 +169,7 @@ exclude-result-prefixes="#all">
                         </xsl:for-each>
 
                         <xsl:text>], [</xsl:text>
-                        <xsl:for-each select="$binding-types">
+                        <xsl:for-each select="$vis-binding-types">
                             <xsl:text>{ 'type': '</xsl:text>
                             <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                             <xsl:text>'</xsl:text>
@@ -219,7 +222,7 @@ exclude-result-prefixes="#all">
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:text>countVariables(data, [</xsl:text>
-                                <xsl:for-each select="$binding-types">
+                                <xsl:for-each select="$vis-binding-types">
                                     <xsl:text>{ 'type': '</xsl:text>
                                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                                     <xsl:text>' }</xsl:text>
@@ -241,7 +244,19 @@ exclude-result-prefixes="#all">
                             </xsl:otherwise>
                         </xsl:choose>
 
-			<xsl:text>, [</xsl:text>
+                        <xsl:text>, [</xsl:text>
+                        <xsl:for-each select="$vis-option-types">
+                            <xsl:text>{ 'element' :</xsl:text>
+                            <xsl:text>document.getElementById('</xsl:text>
+                            <xsl:value-of select="generate-id()"/>
+                            <xsl:text>-option')</xsl:text>
+                            <xsl:text>, 'optionType' : '</xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                            <xsl:text>' }</xsl:text>
+                            <xsl:if test="position() != last()">,</xsl:if>
+                        </xsl:for-each>
+                        <xsl:text>], [</xsl:text>
+
 			<xsl:for-each select="$options//sparql:result">
 			    <xsl:text>{ 'type' : '</xsl:text>
 			    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
@@ -283,6 +298,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
+			!!<xsl:copy-of select="$option-types"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -468,9 +484,8 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
                                     <fieldset id="visualizations">
                                             <legend>Visualizations</legend>
-<input type="hidden" name="su" value="{$report-uri}"/>
-<input type="hidden" name="pu" value="&rep;visualizedBy"/>
-                                            <ul id="vis-types">
+
+					    <ul id="vis-types">
                                                     <xsl:apply-templates select="$visualization-types" mode="vis-type-item"/>
                                             </ul>
                                     </fieldset>
@@ -507,7 +522,8 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
                 <li>
 
-<!-- $report rep:visualizedBy ou -->
+<input type="hidden" name="su" value="{$report-uri}"/>
+<input type="hidden" name="pu" value="&rep;visualizedBy"/>
 <input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);">
     <xsl:choose>
         <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
@@ -675,9 +691,9 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="option-type-input">
         <xsl:param name="visualization"/>
         <xsl:param name="visualization-uri" as="xs:anyURI"/>
-        <!-- binding of this type (might be non-existing) -->
+        <!-- option of this type (might be non-existing) -->
         <xsl:variable name="option" select="key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $options)"/>
-        <!-- reuse existing binding URI or generate a new one -->
+        <!-- reuse existing option URI or generate a new one -->
         <xsl:variable name="option-uri" as="xs:anyURI">
             <xsl:choose>
                 <xsl:when test="$option"> <!-- ReportUpdateView -->
@@ -703,7 +719,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="ol" value="{sparql:binding[@name = 'name']/sparql:literal}"/>
 <input type="hidden" name="pv" value="value"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
-<input type="hidden" name="ol" value="xxx"/> <!-- name??? -->
+<input type="hidden" name="ol" value="xxx" id="{generate-id()}-option"/> <!-- name??? -->
 
     </xsl:template>
 

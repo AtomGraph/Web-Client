@@ -55,7 +55,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 
 	if (getResult() != null)
         {
-            String reportUri = request.getParameter("report-uri"); // after 1st request ("Query" submit), $report-uri is known
+            String reportUri = request.getParameter("report-uri"); // same as form.getReportResource().getURI()
             setReport(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/read/report.rq"), reportUri)));
 
             getTransformer().setParameter("query-result", getResult());

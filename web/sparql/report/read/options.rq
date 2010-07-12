@@ -4,12 +4,15 @@ PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 
 SELECT *
 {
-	#?report		rdf:type		rep:Report .
-	#?report		rep:visualizedBy	?visualization .
+	?report		rdf:type		rep:Report .
+	?report		rep:visualizedBy	?visualization .
 	?visualization	rdf:type		?visType .
         ?visualization  vis:option		?option .
         ?option		rdf:type		?type .
-	?option		vis:name		?name .
-	?option		vis:value		?value
+	OPTIONAL
+	{
+		?option		vis:name	?name .
+		?option		vis:value	?value
+	}
 	FILTER (?report = <%s>)
 }
