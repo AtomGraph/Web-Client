@@ -76,14 +76,14 @@ function initAndDraw(container, visType, bindingTypes, variables, options)
     draw(visualizations[visType], visType, bindingTypes, variables, options);
 }
 
-function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, variables, optionElements, options)
+function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, bindings, variables, optionElements, options)
 {
     if (hasSufficientColumns(bindingTypes, xsdTypes))
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
 	initOptions(visType, optionElements, options);
-        draw(visualizations[visType], visType, bindingTypes, variables, options);
+        draw(visualizations[visType], visType, bindings, variables, options);
         toggle.checked = true;
     }
     else
@@ -106,22 +106,22 @@ function hasSufficientColumns(bindingTypes, xsdTypes)
     return true;
 }
 
-function variablesToColumns(bindingTypes, variables)
+function variablesToColumns(bindings, variables)
 {
 	var orderColumns = new Array();
         var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)
         {
-            var bindingType = bindingTypeByVariable(bindingTypes, variables[i]);
-            if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
+            var binding = bindingByVariable(bindings, variables[i]);
+            if ("order" in binding) orderColumns[binding.order] = variables[i].variable;
             else restColumns = restColumns.concat(variables[i].variable);
         }
         return orderColumns.concat(restColumns);
 }
 
-function draw(container, visType, bindingTypes, variables, options)
+function draw(container, visType, bindings, variables, options)
 {
-        var visColumns = variablesToColumns(bindingTypes, variables);
+        var visColumns = variablesToColumns(bindings, variables);
 	var view = new google.visualization.DataView(data);
 	if (visType.indexOf("Table") == -1) view.setColumns(visColumns); // all columns for Table
 
@@ -225,6 +225,13 @@ function bindingTypeByVariable(bindingTypes, variable)
 {
     for (var k = 0; k < bindingTypes.length; k++)
         if (bindingTypes[k].type == variable.bindingType) return bindingTypes[k];
+    return null;
+}
+
+function bindingByVariable(bindings, variable)
+{
+    for (var i in bindings)
+        if (bindings[i].type == variable.bindingType) return bindings[i];
     return null;
 }
 

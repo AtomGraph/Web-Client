@@ -202,6 +202,31 @@ exclude-result-prefixes="#all">
                             <xsl:text>' }</xsl:text>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
+
+                        <xsl:text>], [</xsl:text>
+                        <xsl:for-each select="$bindings//sparql:result">
+                            <xsl:text>{ 'type': '</xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+                            <xsl:text>'</xsl:text>
+                            <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
+                                <xsl:text>, 'cardinality': </xsl:text>
+                                <xsl:value-of select="sparql:binding[@name = 'cardinality']/sparql:literal"/>
+                            </xsl:if>
+                            <xsl:if test="sparql:binding[@name = 'minCardinality']/sparql:literal">
+                                <xsl:text>, 'minCardinality': </xsl:text>
+                                <xsl:value-of select="sparql:binding[@name = 'minCardinality']/sparql:literal"/>
+                            </xsl:if>
+                            <xsl:if test="sparql:binding[@name = 'maxCardinality']/sparql:literal">
+                                <xsl:text>, 'maxCardinality': </xsl:text>
+                                <xsl:value-of select="sparql:binding[@name = 'maxCardinality']/sparql:literal"/>
+                            </xsl:if>
+                            <xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+                                <xsl:text>, 'order': </xsl:text>
+                                <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+                            </xsl:if>
+                            <xsl:text> }</xsl:text>
+                            <xsl:if test="position() != last()">,</xsl:if>
+                        </xsl:for-each>
                         <xsl:text>],</xsl:text>
 
                         <xsl:choose>
@@ -300,7 +325,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			!!<xsl:copy-of select="$data-types"/>!!
+			!!<xsl:copy-of select="$bindings"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
