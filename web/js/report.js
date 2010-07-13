@@ -29,7 +29,7 @@ function initVis(container, visType)
 function initControls(visType, bindingElements, bindingTypes, xsdTypes, variables)
 {
     for (var i = 0; i < bindingElements.length; i++)
-	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
+	for (var j = 0; j < bindingTypes.length; j++)
             if (bindingElements[i].bindingType == bindingTypes[j].type)
             {
                 if (!("cardinality" in bindingTypes[j]) ||
@@ -70,15 +70,15 @@ function initOptions(visType, optionElements, options)
 		}
 }
 
-function initAndDraw(container, visType, bindingTypes, variables, options)
+function initAndDraw(container, visType, bindings, variables, options)
 {
     initVis(container, visType);
-    draw(visualizations[visType], visType, bindingTypes, variables, options);
+    draw(visualizations[visType], visType, bindings, variables, options);
 }
 
 function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, bindings, variables, optionElements, options)
 {
-    if (hasSufficientColumns(bindingTypes, xsdTypes))
+    if (hasSufficientColumns(bindings, xsdTypes))
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
@@ -93,15 +93,15 @@ function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingEl
     }
 }
 
-function hasSufficientColumns(bindingTypes, xsdTypes)
+function hasSufficientColumns(bindings, xsdTypes)
 {
-    for (var i = 0; i < bindingTypes.length; i++)
+    for (var i in bindings)
     {
-        var columns = columnsByBindingType(bindingTypes[i], xsdTypes);
-        var bindingType = bindingTypes[i];
-//alert(bindingType.type + " Columns: " + columns.length + " Cardinality: " + bindingType.cardinality);
-        if ("cardinality" in bindingType && bindingType.cardinality > columns.length) return false;
-        if ("minCardinality" in bindingType && bindingType.minCardinality > columns.length) return false;
+        var columns = columnsByBinding(bindings[i], xsdTypes);
+        var binding = bindings[i];
+//alert(binding.type + " Columns: " + columns.length + " Cardinality: " + binding.cardinality);
+        if ("cardinality" in binding && binding.cardinality > columns.length) return false;
+        if ("minCardinality" in binding && binding.minCardinality > columns.length) return false;
     }
     return true;
 }
@@ -184,6 +184,17 @@ function xsdTypesByBindingType(bindingType, xsdTypes)
     return bindingXsdTypes;
 }
 
+function xsdTypesByBinding(binding, xsdTypes)
+{
+    var bindingXsdTypes = new Array();
+//alert(bindingType.toSource());
+    for (var k = 0; k < xsdTypes.length; k++)
+        if (binding.type == xsdTypes[k].bindingType) // join
+            bindingXsdTypes.push(xsdTypes[k].type);
+
+    return bindingXsdTypes;
+}
+
 function wireTypesByBindingType(bindingType, xsdTypes)
 {
     var wireTypes = new Array();
@@ -198,10 +209,35 @@ function wireTypesByBindingType(bindingType, xsdTypes)
     return wireTypes;
 }
 
+function wireTypesByBinding(binding, xsdTypes)
+{
+    var wireTypes = new Array();
+    var bindingXsdTypes = xsdTypesByBindingType(binding, xsdTypes);
+//alert(bindingXsdTypes.toSource());
+    for (var k = 0; k < bindingXsdTypes.length; k++)
+    {
+        var wireType = xsdTypeToWireType(bindingXsdTypes[k]);
+        if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType);
+    }
+
+    return wireTypes;
+}
+
 function columnsByBindingType(bindingType, xsdTypes)
 {
     var bindingColumns = new Array();
     var wireTypes = wireTypesByBindingType(bindingType, xsdTypes);
+
+    for (var k = 0; k < wireTypes.length; k++)
+        bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[k])); // add columns for each type
+
+    return bindingColumns;
+}
+
+function columnsByBinding(binding, xsdTypes)
+{
+    var bindingColumns = new Array();
+    var wireTypes = wireTypesByBindingType(binding, xsdTypes);
 
     for (var k = 0; k < wireTypes.length; k++)
         bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[k])); // add columns for each type
