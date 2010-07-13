@@ -7,8 +7,12 @@ SELECT *
 	?report		rdf:type		rep:Report .
 	?report		rep:visualizedBy	?visualization .
 	?visualization	rdf:type		?visType .
-        ?visualization  vis:binding             ?binding .
-        ?binding        rdf:type                ?type
+        ?visualization  vis:binding		?binding .
+        ?binding        rdf:type		?type .
+	OPTIONAL
+	{
+            ?binding        vis:order		?order
+	}
 	# cardinality, order, dataType ???
 	FILTER (?report = <%s>)
 }

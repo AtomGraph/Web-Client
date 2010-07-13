@@ -56,12 +56,18 @@ function initControls(visType, bindingElements, bindingTypes, xsdTypes, variable
 function initOptions(visType, optionElements, options)
 {
 //alert(options.toSource());
+        //var visColumns = variablesToColumns(bindingTypes, variables);
+
     for (var i in optionElements)
 	for (var j in options)
 	    if (optionElements[i].optionType == options[j].type)
-		//alert(optionElements[i].toSource());
-		//alert(options[j].toSource());
-		optionElements[i].element.value = options[j].value;
+		if (options[j].name == "hAxis.title" || options[j].name == "vAxis.title")
+		{
+		    var wireType = xsdTypeToWireType(options[j].dataType);
+		    var columns = columnsByWireType(wireType);
+		    //alert(columns.toSource());
+		    //optionElements[i].element.value = options[j].value;
+		}
 }
 
 function initAndDraw(container, visType, bindingTypes, variables, options)
@@ -100,11 +106,8 @@ function hasSufficientColumns(bindingTypes, xsdTypes)
     return true;
 }
 
-function draw(container, visType, bindingTypes, variables, options)
+function variablesToColumns(bindingTypes, variables)
 {
-    //alert(container.toSource());
-    //alert(visualizations);
-    
 	var orderColumns = new Array();
         var restColumns = new Array();
         for (var i = 0; i < variables.length; i++)
@@ -113,7 +116,12 @@ function draw(container, visType, bindingTypes, variables, options)
             if ("order" in bindingType) orderColumns[bindingType.order] = variables[i].variable;
             else restColumns = restColumns.concat(variables[i].variable);
         }
-        var visColumns = orderColumns.concat(restColumns);
+        return orderColumns.concat(restColumns);
+}
+
+function draw(container, visType, bindingTypes, variables, options)
+{
+        var visColumns = variablesToColumns(bindingTypes, variables);
 	var view = new google.visualization.DataView(data);
 	if (visType.indexOf("Table") == -1) view.setColumns(visColumns); // all columns for Table
 

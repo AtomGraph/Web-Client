@@ -266,6 +266,8 @@ exclude-result-prefixes="#all">
 			    <xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
 			    <xsl:text>', 'value' : '</xsl:text>
 			    <xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal"/>
+			    <xsl:text>', 'dataType' : '</xsl:text>
+			    <xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal/@datatype"/>
 			    <xsl:text>' }</xsl:text>
 			    <xsl:if test="position() != last()">, </xsl:if>
 			</xsl:for-each>
@@ -298,7 +300,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			!!<xsl:copy-of select="$option-types"/>!!
+			!!<xsl:copy-of select="$data-types"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -609,6 +611,16 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="ou" value="{$binding-uri}"/>
 
 <input type="hidden" name="su" value="{$binding-uri}"/> <!-- TO-DO: order, dataType?? -->
+<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+    <input type="hidden" name="pv" value="order"/>
+    <input type="hidden" name="lt" value="&xsd;integer"/>
+    <input type="hidden" name="ol" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
+</xsl:if>
+<!--
+<input type="hidden" name="pv" value="dataType"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
+-->
+
 <input type="hidden" name="pv" value="variableName"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 

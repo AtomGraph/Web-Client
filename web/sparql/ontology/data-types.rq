@@ -3,12 +3,22 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
-SELECT DISTINCT ?bindingType ?type
+SELECT ?bindingType ?type
 {
 	?super          rdfs:subClassOf vis:Binding .
 	?bindingType    rdfs:subClassOf ?super .
         ?super          rdfs:subClassOf ?rest .
         ?rest           owl:onProperty  vis:dataType .
-        ?rest           owl:onClass     ?type
+	{
+	    ?rest           owl:onClass     ?type
+	}
+	UNION
+	{ # union of number types
+	    ?rest	owl:onClass     ?class .
+	    ?class	owl:unionOf	?union .
+	    ?union	list:member	?type .
+        }
+	FILTER (isURI(?type))
 }
