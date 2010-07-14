@@ -143,7 +143,7 @@ exclude-result-prefixes="#all">
 
                         <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                         <xsl:text>', [</xsl:text>
-                        <xsl:variable name="vis-binding-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
+			<xsl:variable name="vis-binding-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
                         <xsl:variable name="vis-option-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"/>
 
 			<xsl:variable name="used-binding-types" as="element(*)*">
@@ -169,11 +169,13 @@ exclude-result-prefixes="#all">
                         </xsl:for-each>
 
                         <xsl:text>], [</xsl:text>
-                        <xsl:for-each select="$vis-binding-types">
+                        <xsl:for-each select="$binding-types//sparql:result">
                             <xsl:text>{ 'type': '</xsl:text>
                             <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                            <xsl:text>'</xsl:text>
-                            <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
+                            <xsl:text>', 'visType': '</xsl:text>
+                            <xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+			    <xsl:text>'</xsl:text>
+			    <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
                                 <xsl:text>, 'cardinality': </xsl:text>
                                 <xsl:value-of select="sparql:binding[@name = 'cardinality']/sparql:literal"/>
                             </xsl:if>
@@ -208,18 +210,6 @@ exclude-result-prefixes="#all">
                             <xsl:text>{ 'type': '</xsl:text>
                             <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
                             <xsl:text>'</xsl:text>
-                            <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
-                                <xsl:text>, 'cardinality': </xsl:text>
-                                <xsl:value-of select="sparql:binding[@name = 'cardinality']/sparql:literal"/>
-                            </xsl:if>
-                            <xsl:if test="sparql:binding[@name = 'minCardinality']/sparql:literal">
-                                <xsl:text>, 'minCardinality': </xsl:text>
-                                <xsl:value-of select="sparql:binding[@name = 'minCardinality']/sparql:literal"/>
-                            </xsl:if>
-                            <xsl:if test="sparql:binding[@name = 'maxCardinality']/sparql:literal">
-                                <xsl:text>, 'maxCardinality': </xsl:text>
-                                <xsl:value-of select="sparql:binding[@name = 'maxCardinality']/sparql:literal"/>
-                            </xsl:if>
                             <xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
                                 <xsl:text>, 'order': </xsl:text>
                                 <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
@@ -477,66 +467,93 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                     </ul>
                                 </xsl:if>
 
-                                <xsl:if test="$query-result eq true() or $view = $update-view">
-                                    <fieldset>
-                                        <legend>Metadata</legend>
-					<label for="title">Title</label>
-                                        <xsl:text> </xsl:text>
+				<xsl:choose>
+				    <xsl:when test="$query-result eq true() or $view = $update-view">
+					<fieldset>
+					    <legend>Metadata</legend>
+					    <label for="title">Title</label>
+					    <xsl:text> </xsl:text>
 
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&dc;title"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
-                                        <input type="text" id="title" name="ol">
-                                            <xsl:attribute name="value">
-						<xsl:if test="not(empty($query-result)) or $view = $update-view">
-							<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
-						</xsl:if>
-                                            </xsl:attribute>
-                                        </input>
-                                        <br/>
-					<label for="description">Description</label>
-                                        <br/>
+					    <input type="text" id="title" name="ol">
+						<xsl:attribute name="value">
+						    <xsl:if test="not(empty($query-result)) or $view = $update-view">
+							    <xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
+						    </xsl:if>
+						</xsl:attribute>
+					    </input>
+					    <br/>
+					    <label for="description">Description</label>
+					    <br/>
 
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&dc;description"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
-                                        <textarea id="description" name="ol" cols="80" rows="5" >
-                                            <xsl:if test="not(empty($query-result)) or $view = $update-view">
-                                                    <xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
-                                            </xsl:if>
-                                        </textarea>
-                                    </fieldset>
+					    <textarea id="description" name="ol" cols="80" rows="5" >
+						<xsl:if test="not(empty($query-result)) or $view = $update-view">
+							<xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
+						</xsl:if>
+					    </textarea>
+					</fieldset>
 
-                                    <fieldset id="visualizations">
-                                            <legend>Visualizations</legend>
+					<fieldset id="visualizations">
+						<legend>Visualizations</legend>
 
-					    <ul id="vis-types">
-                                                    <xsl:apply-templates select="$visualization-types" mode="vis-type-item"/>
-                                            </ul>
-                                    </fieldset>
+						<ul id="vis-types">
+							<xsl:apply-templates select="$visualization-types" mode="vis-type-item"/>
+						</ul>
+					</fieldset>
 
-                                    <p>
-                                        <xsl:if test="$view = $create-view and $query-result eq true()">
-                                            <button type="submit" name="action" value="save">Save</button>
-                                        </xsl:if>
-                                        <xsl:if test="$view = $update-view">
-                                            <button type="submit" name="action" value="update">Save</button>
-                                        </xsl:if>
-                                    </p>
+					<p>
+					    <xsl:if test="$view = $create-view and $query-result eq true()">
+						<button type="submit" name="action" value="save">Save</button>
+					    </xsl:if>
+					    <xsl:if test="$view = $update-view">
+						<button type="submit" name="action" value="update">Save</button>
+					    </xsl:if>
+					</p>
 
-                                    <xsl:apply-templates select="$visualization-types" mode="vis-type-fieldset"/>
-                                </xsl:if>
+					<xsl:apply-templates select="$visualization-types" mode="vis-type-fieldset"/>
+				    </xsl:when>
+				    <xsl:otherwise>
+					<xsl:apply-templates select="$visualization-types" mode="vis-type-inputs"/>
+				    </xsl:otherwise>
+				</xsl:choose>
 			</form>
 		</div>
+	</xsl:template>
+
+	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-inputs">
+                <xsl:variable name="visualization-uri" select="xs:anyURI(concat($host-uri, 'visualizations/', key('id-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids)))" as="xs:anyURI"/>
+
+<input type="hidden" name="su" value="{$report-uri}"/>
+<input type="hidden" name="pu" value="&rep;visualizedBy"/>
+<input type="hidden" name="ou" value="{$visualization-uri}"/>
+
+<input type="hidden" name="su" value="{$visualization-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+
+		<xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"  mode="binding-type-inputs">
+		    <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
+		    <xsl:with-param name="visualization" select="."/>
+		</xsl:apply-templates>
+
+		<xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"  mode="option-type-inputs">
+		    <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
+		    <xsl:with-param name="visualization" select="."/>
+		</xsl:apply-templates>
 	</xsl:template>
 
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-item">
                 <!-- visualization of this type (might be non-existing) -->
                 <xsl:variable name="visualization" select="key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)"/>
                 <!-- reuse existing visualization URI or generate a new one -->
-                <xsl:variable name="visualization-uri">
+                <xsl:variable name="visualization-uri" as="xs:anyURI">
                     <xsl:choose>
                         <xsl:when test="$visualization">
                             <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
@@ -608,6 +625,30 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                 </fieldset>
 
         <div id="{generate-id()}-visualization" class="visualization">&#160;</div>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-inputs">
+        <xsl:param name="visualization-uri"/>
+        <xsl:variable name="binding-uri" as="xs:anyURI" select="xs:anyURI(concat($host-uri, 'bindings/', id:generate()))"/>
+
+<input type="hidden" name="su" value="{$binding-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+
+<input type="hidden" name="su" value="{$visualization-uri}"/>
+<input type="hidden" name="pv" value="binding"/>
+<input type="hidden" name="ou" value="{$binding-uri}"/>
+
+<input type="hidden" name="su" value="{$binding-uri}"/> <!-- TO-DO: order, dataType?? -->
+<input type="hidden" name="pv" value="dataType"/>
+<input type="hidden" name="lt" value="&xsd;integer"/>
+<input type="hidden" name="ol" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
+<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+    <input type="hidden" name="pv" value="order"/>
+    <input type="hidden" name="lt" value="&xsd;integer"/>
+    <input type="hidden" name="ol" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
+</xsl:if>
+
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-select">
@@ -723,6 +764,30 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
             <xsl:text>&#160;</xsl:text>
         </select>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="option-type-inputs">
+        <xsl:param name="visualization-uri" as="xs:anyURI"/>
+        <xsl:variable name="option-uri" select="xs:anyURI(concat($host-uri, 'options/', id:generate()))" as="xs:anyURI"/>
+
+<input type="hidden" name="su" value="{$option-uri}"/>
+<input type="hidden" name="pu" value="&rdf;type"/>
+<input type="hidden" name="ou" value="{sparql:binding[@name = 'type']/sparql:uri}"/>
+
+<input type="hidden" name="su" value="{$visualization-uri}"/>
+<input type="hidden" name="pv" value="option"/>
+<input type="hidden" name="ou" value="{$option-uri}"/>
+
+<input type="hidden" name="su" value="{$option-uri}"/>
+<input type="hidden" name="pv" value="name"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+<input type="hidden" name="ol" value="{sparql:binding[@name = 'name']/sparql:literal}"/>
+<!--
+<input type="hidden" name="pv" value="value"/>
+<input type="hidden" name="lt" value="&xsd;string"/>
+<input type="hidden" name="ol" value="xxx" id="{generate-id()}-option"/>
+-->
+
     </xsl:template>
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="option-type-input">

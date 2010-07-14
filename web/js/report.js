@@ -28,29 +28,35 @@ function initVis(container, visType)
 
 function initControls(visType, bindingElements, bindingTypes, xsdTypes, variables)
 {
-    for (var i = 0; i < bindingElements.length; i++)
-	for (var j = 0; j < bindingTypes.length; j++)
-            if (bindingElements[i].bindingType == bindingTypes[j].type)
-            {
-                if (!("cardinality" in bindingTypes[j]) ||
-                        ("cardinality" in bindingTypes[j] && bindingTypes[j].cardinality > l) ||
-                        ("minCardinality" in bindingTypes[j] && bindingTypes[j].minCardinality > l))
-                    bindingElements[i].element.multiple = "multiple";
+    var visBindingTypes = bindingTypesByVisType(bindingTypes, visType);
+    //alert(visBindingTypes.toSource());
+    //alert(variables.toSource());
 
-                var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
+    for (var i in visBindingTypes)
+    {
+        var bindingElement = elementByBindingType(bindingElements, visBindingTypes[i].type);
+	//alert(bindingElement.toSource());
 
-                for (var l = 0; l < bindingColumns.length; l++)
-                {
-                    var option = document.createElement("option");
-                    option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[l])));
-                    option.setAttribute("value", bindingColumns[l]);
+	if (!("cardinality" in visBindingTypes[i]) ||
+		("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality > j) ||
+		("minCardinality" in visBindingTypes[i] && visBindingTypes[i].minCardinality > j))
+	    bindingElement.element.multiple = "multiple";
 
-                    if (variableExists(variables, bindingTypes[j], bindingColumns[l]))
-                        option.setAttribute("selected", "selected");
+	var bindingColumns = columnsByBindingType(visBindingTypes[i], xsdTypes);
+//alert(visBindingTypes[i].toSource() + " " + bindingColumns.toSource());
 
-                    bindingElements[i].element.appendChild(option);
-                }
-            }
+	for (var j in bindingColumns)
+	{
+	    var option = document.createElement("option");
+	    option.appendChild(document.createTextNode(data.getColumnLabel(bindingColumns[j])));
+	    option.setAttribute("value", bindingColumns[j]);
+
+	    if (variableExists(variables, visBindingTypes[i], bindingColumns[j]))
+		option.setAttribute("selected", "selected");
+//alert(visBindingTypes[i].toSource());
+	    bindingElement.element.appendChild(option);
+	}
+    }
 }
 
 function initOptions(visType, optionElements, options)
@@ -78,11 +84,12 @@ function initAndDraw(container, visType, bindings, variables, options)
 
 function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, bindings, variables, optionElements, options)
 {
-    if (hasSufficientColumns(bindings, xsdTypes))
+    // bindingElements & optionElements - only for this visualization
+    if (hasSufficientColumns(bindingTypes, xsdTypes, bindings))
     {
         initVis(container, visType);
         initControls(visType, bindingElements, bindingTypes, xsdTypes, variables);
-	initOptions(visType, optionElements, options);
+	//initOptions(visType, optionElements, options);
         draw(visualizations[visType], visType, bindings, variables, options);
         toggle.checked = true;
     }
@@ -93,15 +100,16 @@ function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingEl
     }
 }
 
-function hasSufficientColumns(bindings, xsdTypes)
+function hasSufficientColumns(bindingTypes, xsdTypes, bindings)
 {
     for (var i in bindings)
     {
         var columns = columnsByBinding(bindings[i], xsdTypes);
-        var binding = bindings[i];
+	var bindingType = bindingTypeByType(bindingTypes, bindings[i].type);
+//alert("BINDING TYPE: " + bindingType.toSource());
 //alert(binding.type + " Columns: " + columns.length + " Cardinality: " + binding.cardinality);
-        if ("cardinality" in binding && binding.cardinality > columns.length) return false;
-        if ("minCardinality" in binding && binding.minCardinality > columns.length) return false;
+        if ("cardinality" in bindingType && bindingType.cardinality > columns.length) return false;
+        if ("minCardinality" in bindingType && bindingType.minCardinality > columns.length) return false;
     }
     return true;
 }
@@ -110,7 +118,7 @@ function variablesToColumns(bindings, variables)
 {
 	var orderColumns = new Array();
         var restColumns = new Array();
-        for (var i = 0; i < variables.length; i++)
+        for (var i in variables)
         {
             var binding = bindingByVariable(bindings, variables[i]);
             if ("order" in binding) orderColumns[binding.order] = variables[i].variable;
@@ -122,6 +130,8 @@ function variablesToColumns(bindings, variables)
 function draw(container, visType, bindings, variables, options)
 {
         var visColumns = variablesToColumns(bindings, variables);
+//alert(visType + "  " + visColumns.toSource());
+//alert(visType + "  " + bindings.toSource() + " " + variables.toSource());
 	var view = new google.visualization.DataView(data);
 	if (visType.indexOf("Table") == -1) view.setColumns(visColumns); // all columns for Table
 
@@ -257,17 +267,34 @@ function variablesByBindingType(bindingType, variables)
     return bindingVariables;
 }
 
-function bindingTypeByVariable(bindingTypes, variable)
+function bindingTypeByType(bindingTypes, type)
 {
-    for (var k = 0; k < bindingTypes.length; k++)
-        if (bindingTypes[k].type == variable.bindingType) return bindingTypes[k];
+    for (var i in bindingTypes)
+        if (bindingTypes[i].type == type) return bindingTypes[i];
     return null;
+}
+
+function bindingTypesByVisType(bindingTypes, visType)
+{
+    var visBindingTypes = new Array();
+
+    for (var i in bindingTypes)
+        if (bindingTypes[i].visType == visType) visBindingTypes.push(bindingTypes[i]);
+
+    return visBindingTypes;
 }
 
 function bindingByVariable(bindings, variable)
 {
     for (var i in bindings)
         if (bindings[i].type == variable.bindingType) return bindings[i];
+    return null;
+}
+
+function elementByBindingType(bindingElements, bindingType)
+{
+    for (var i in bindingElements)
+        if (bindingElements[i].bindingType == bindingType) return bindingElements[i];
     return null;
 }
 
@@ -295,9 +322,12 @@ function optionsByVisType(visType, options)
 }
 
 function variableExists(variables, bindingType, value)
-{
-    for (var m = 0; m < variables.length; m++)
-        if (variables[m].bindingType == bindingType.type && variables[m].variable == value) return true;
+{//alert(variables.toSource());
+    for (var i in variables)
+	{
+	    //alert("variables[i].bindingType: " + variables[i].bindingType + "\nbindingType.type: " + bindingType.type + "\nvariables[i].variable: " + variables[i].variable + "\nvalue: " + value);
+        if (variables[i].bindingType == bindingType.type && variables[i].variable == value) return true;
+	}
     return false;
 }
 
@@ -305,18 +335,17 @@ function countVariables(data, bindingTypes, xsdTypes)
 {
     var variables = new Array();
 
-    for (var j = 0; j < bindingTypes.length; j++)
+    for (var i in bindingTypes)
     {
-        var bindingColumns = columnsByBindingType(bindingTypes[j], xsdTypes);
+        var bindingColumns = columnsByBindingType(bindingTypes[i], xsdTypes);
 
-        for (var l = 0; l < bindingColumns.length; l++)
+        for (var j in bindingColumns)
         {
             var variable = { };
-            variable.variable = bindingColumns [l];
-            variable.bindingType = bindingTypes[j].type;
+            variable.variable = bindingColumns[j];
+            variable.bindingType = bindingTypes[i].type;
             variables.push(variable);
         }
-//alert(variables.toSource());
     }
     return variables;
 }
