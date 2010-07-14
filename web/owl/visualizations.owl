@@ -409,15 +409,15 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="package"/>
-                <owl:hasValue rdf:resource="CoreChartPackage"/>
+                <owl:onProperty rdf:resource="binding"/>
+                <owl:onClass rdf:resource="AreaChartValueBinding"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="AreaChartValueBinding"/>
-                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onProperty rdf:resource="package"/>
+                <owl:hasValue rdf:resource="CoreChartPackage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -432,14 +432,14 @@
         <rdfs:subClassOf rdf:resource="AreaChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -507,6 +507,12 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="package"/>
+                <owl:hasValue rdf:resource="CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="BarChartValueBinding"/>
                 <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
@@ -517,12 +523,6 @@
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="BarChartLabelBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="package"/>
-                <owl:hasValue rdf:resource="CoreChartPackage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -537,14 +537,14 @@
         <rdfs:subClassOf rdf:resource="BarChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -618,6 +618,12 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="package"/>
+                <owl:hasValue rdf:resource="CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="ColumnChartLabelBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
@@ -628,12 +634,6 @@
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="ColumnChartValueBinding"/>
                 <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="package"/>
-                <owl:hasValue rdf:resource="CoreChartPackage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -648,14 +648,14 @@
         <rdfs:subClassOf rdf:resource="ColumnChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -693,14 +693,14 @@
         <rdfs:subClassOf rdf:resource="ColumnChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -723,6 +723,13 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="binding"/>
+                <owl:onClass rdf:resource="LineChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="package"/>
                 <owl:hasValue rdf:resource="CoreChartPackage"/>
             </owl:Restriction>
@@ -732,13 +739,6 @@
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="LineChartValueBinding"/>
                 <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="LineChartLabelBinding"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -753,14 +753,14 @@
         <rdfs:subClassOf rdf:resource="LineChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -820,14 +820,14 @@
         <rdfs:subClassOf rdf:resource="LineChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -850,9 +850,8 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="MapLngBinding"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onProperty rdf:resource="package"/>
+                <owl:hasValue rdf:resource="MapPackage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -864,8 +863,16 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="package"/>
-                <owl:hasValue rdf:resource="MapPackage"/>
+                <owl:onProperty rdf:resource="binding"/>
+                <owl:onClass rdf:resource="MapLngBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="binding"/>
+                <owl:onClass rdf:resource="MapAddressBinding"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -875,7 +882,7 @@
     <!-- http://code.google.com/apis/visualization/MapAddressBinding -->
 
     <owl:Class rdf:about="MapAddressBinding">
-        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:label>Address binding</rdfs:label>
         <rdfs:subClassOf rdf:resource="StringBinding"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -971,14 +978,14 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="PieChartLabelBinding"/>
+                <owl:onClass rdf:resource="PieChartValueBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
-                <owl:onClass rdf:resource="PieChartValueBinding"/>
+                <owl:onClass rdf:resource="PieChartLabelBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -1037,12 +1044,6 @@
         <rdfs:subClassOf rdf:resource="Visualization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="package"/>
-                <owl:hasValue rdf:resource="CoreChartPackage"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="ScatterChartYBinding"/>
                 <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
@@ -1053,6 +1054,12 @@
                 <owl:onProperty rdf:resource="binding"/>
                 <owl:onClass rdf:resource="ScatterChartXBinding"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="package"/>
+                <owl:hasValue rdf:resource="CoreChartPackage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -1067,14 +1074,14 @@
         <rdfs:subClassOf rdf:resource="ScatterChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -1097,14 +1104,14 @@
         <rdfs:subClassOf rdf:resource="ScatterChartOption"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="value"/>
-                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                <owl:onProperty rdf:resource="name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="name"/>
-                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+                <owl:onProperty rdf:resource="value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>

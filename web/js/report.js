@@ -35,15 +35,13 @@ function initControls(visType, bindingElements, bindingTypes, xsdTypes, variable
     for (var i in visBindingTypes)
     {
         var bindingElement = elementByBindingType(bindingElements, visBindingTypes[i].type);
-	//alert(bindingElement.toSource());
-
-	if (!("cardinality" in visBindingTypes[i]) ||
-		("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality > j) ||
-		("minCardinality" in visBindingTypes[i] && visBindingTypes[i].minCardinality > j))
-	    bindingElement.element.multiple = "multiple";
-
 	var bindingColumns = columnsByBindingType(visBindingTypes[i], xsdTypes);
+	//alert(bindingElement.toSource());
 //alert(visBindingTypes[i].toSource() + " " + bindingColumns.toSource());
+
+	if (!(("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality == 1) ||
+		("maxCardinality" in visBindingTypes[i] && visBindingTypes[i].maxCardinality == 1)))
+	    bindingElement.element.multiple = "multiple";
 
 	for (var j in bindingColumns)
 	{
