@@ -28,14 +28,14 @@ function initVis(container, visType)
 
 function initControls(visType, bindingElements, bindingTypes, xsdTypes, variables)
 {
-    var visBindingTypes = bindingTypesByVisType(bindingTypes, visType);
+    var visBindingTypes = objectsByVisType(visType, bindingTypes);
     //alert(visBindingTypes.toSource());
-    //alert(variables.toSource());
+//alert(bindingElements.toSource());
 
     for (var i in visBindingTypes)
     {
         var bindingElement = elementByBindingType(bindingElements, visBindingTypes[i].type);
-	var bindingColumns = columnsByBindingType(visBindingTypes[i], xsdTypes);
+	var bindingColumns = columnsByBindingType(visBindingTypes[i].type, xsdTypes);
 	//alert(bindingElement.toSource());
 //alert(visBindingTypes[i].toSource() + " " + bindingColumns.toSource());
 
@@ -76,12 +76,14 @@ function initOptions(visType, optionElements, options)
 
 function initAndDraw(container, visType, bindings, variables, options)
 {
+//alert(bindings.toSource());
     initVis(container, visType);
     draw(visualizations[visType], visType, bindings, variables, options);
 }
 
 function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingElements, bindingTypes, xsdTypes, bindings, variables, optionElements, options)
 {
+    //alert(bindingElements.toSource());
     // bindingElements & optionElements - only for this visualization
     if (hasSufficientColumns(bindingTypes, xsdTypes, bindings))
     {
@@ -103,17 +105,17 @@ function hasSufficientColumns(bindingTypes, xsdTypes, bindings)
     for (var i in bindings)
     {
         var columns = columnsByBinding(bindings[i], xsdTypes);
-	var bindingType = bindingTypeByType(bindingTypes, bindings[i].type);
-//alert("BINDING TYPE: " + bindingType.toSource());
-//alert(binding.type + " Columns: " + columns.length + " Cardinality: " + binding.cardinality);
+	var bindingType = objectByType(bindings[i].type, bindingTypes);
         if ("cardinality" in bindingType && bindingType.cardinality > columns.length) return false;
         if ("minCardinality" in bindingType && bindingType.minCardinality > columns.length) return false;
+	// maxCardinality???
     }
     return true;
 }
 
 function variablesToColumns(bindings, variables)
 {
+//alert(bindings.toSource());
 	var orderColumns = new Array();
         var restColumns = new Array();
         for (var i in variables)
@@ -127,13 +129,17 @@ function variablesToColumns(bindings, variables)
 
 function draw(container, visType, bindings, variables, options)
 {
-        var visColumns = variablesToColumns(bindings, variables);
+//alert(variables.toSource());
+
+        var visVariables = objectsByVisType(visType, variables);
+//alert(visVariables.toSource());
+	var visColumns = variablesToColumns(bindings, visVariables);
 //alert(visType + "  " + visColumns.toSource());
 //alert(visType + "  " + bindings.toSource() + " " + variables.toSource());
 	var view = new google.visualization.DataView(data);
 	if (visType.indexOf("Table") == -1) view.setColumns(visColumns); // all columns for Table
 
-	var visOptions = optionsByVisType(visType, options);
+	var visOptions = objectsByVisType(visType, options);
 	var optArray = { };
 	for (var j in visOptions)
 	    optArray[options[j].name] = options[j].value; // set visualization options
@@ -181,15 +187,15 @@ function columnsByWireType(wireType)
     return typeColumns[wireType];
 }
 
-function xsdTypesByBindingType(bindingType, xsdTypes)
+function objectsByBindingType(objects, bindingType)
 {
-    var bindingXsdTypes = new Array();
+    var bindingTypeObjects = new Array();
 //alert(bindingType.toSource());
-    for (var k = 0; k < xsdTypes.length; k++)
-        if (bindingType.type == xsdTypes[k].bindingType) // join
-            bindingXsdTypes.push(xsdTypes[k].type);
+    for (var i in objects)
+        if (bindingType == objects[i].bindingType) // join
+            bindingTypeObjects.push(objects[i].type);
 
-    return bindingXsdTypes;
+    return bindingTypeObjects;
 }
 
 function xsdTypesByBinding(binding, xsdTypes)
@@ -206,11 +212,11 @@ function xsdTypesByBinding(binding, xsdTypes)
 function wireTypesByBindingType(bindingType, xsdTypes)
 {
     var wireTypes = new Array();
-    var bindingXsdTypes = xsdTypesByBindingType(bindingType, xsdTypes);
+    var bindingXsdTypes = objectsByBindingType(xsdTypes, bindingType);
 //alert(bindingXsdTypes.toSource());
-    for (var k = 0; k < bindingXsdTypes.length; k++)
+    for (var i in bindingXsdTypes)
     {
-        var wireType = xsdTypeToWireType(bindingXsdTypes[k]);
+        var wireType = xsdTypeToWireType(bindingXsdTypes[i]);
         if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType);
     }
 
@@ -220,7 +226,7 @@ function wireTypesByBindingType(bindingType, xsdTypes)
 function wireTypesByBinding(binding, xsdTypes)
 {
     var wireTypes = new Array();
-    var bindingXsdTypes = xsdTypesByBindingType(binding, xsdTypes);
+    var bindingXsdTypes = objectsByBindingType(xsdTypes, binding.type);
 //alert(bindingXsdTypes.toSource());
     for (var k = 0; k < bindingXsdTypes.length; k++)
     {
@@ -233,11 +239,13 @@ function wireTypesByBinding(binding, xsdTypes)
 
 function columnsByBindingType(bindingType, xsdTypes)
 {
+//alert(bindingType);
     var bindingColumns = new Array();
     var wireTypes = wireTypesByBindingType(bindingType, xsdTypes);
+//alert(wireTypes.toSource());
 
-    for (var k = 0; k < wireTypes.length; k++)
-        bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[k])); // add columns for each type
+    for (var i in wireTypes)
+        bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[i])); // add columns for each type
 
     return bindingColumns;
 }
@@ -245,10 +253,10 @@ function columnsByBindingType(bindingType, xsdTypes)
 function columnsByBinding(binding, xsdTypes)
 {
     var bindingColumns = new Array();
-    var wireTypes = wireTypesByBindingType(binding, xsdTypes);
+    var wireTypes = wireTypesByBindingType(binding.type, xsdTypes);
 
-    for (var k = 0; k < wireTypes.length; k++)
-        bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[k])); // add columns for each type
+    for (var i in wireTypes)
+        bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[i])); // add columns for each type
 
     return bindingColumns;
 }
@@ -265,21 +273,21 @@ function variablesByBindingType(bindingType, variables)
     return bindingVariables;
 }
 
-function bindingTypeByType(bindingTypes, type)
+function objectByType(type, objects)
 {
-    for (var i in bindingTypes)
-        if (bindingTypes[i].type == type) return bindingTypes[i];
+    for (var i in objects)
+        if (objects[i].type == type) return objects[i];
     return null;
 }
 
-function bindingTypesByVisType(bindingTypes, visType)
+function objectsByVisType(visType, objects)
 {
-    var visBindingTypes = new Array();
+    var visObjects = new Array();
 
-    for (var i in bindingTypes)
-        if (bindingTypes[i].visType == visType) visBindingTypes.push(bindingTypes[i]);
+    for (var i in objects)
+        if (objects[i].visType == visType) visObjects.push(objects[i]);
 
-    return visBindingTypes;
+    return visObjects;
 }
 
 function bindingByVariable(bindings, variable)
@@ -308,24 +316,10 @@ function bindingElementsByType(bindingElements, bindingTypes)
     return elements;
 }
 
-function optionsByVisType(visType, options)
-{
-    var visOptions = new Array();
-//alert(bindingType.toSource());
-    for (var k = 0; k < options.length; k++)
-        if (visType == options[k].visType) // join
-            visOptions.push(options[k]);
-
-    return visOptions;
-}
-
 function variableExists(variables, bindingType, value)
 {//alert(variables.toSource());
     for (var i in variables)
-	{
-	    //alert("variables[i].bindingType: " + variables[i].bindingType + "\nbindingType.type: " + bindingType.type + "\nvariables[i].variable: " + variables[i].variable + "\nvalue: " + value);
         if (variables[i].bindingType == bindingType.type && variables[i].variable == value) return true;
-	}
     return false;
 }
 
@@ -335,12 +329,12 @@ function countVariables(data, bindingTypes, xsdTypes)
 
     for (var i in bindingTypes)
     {
-        var bindingColumns = columnsByBindingType(bindingTypes[i], xsdTypes);
-
+        var bindingColumns = columnsByBindingType(bindingTypes[i].type, xsdTypes);
         for (var j in bindingColumns)
         {
             var variable = { };
             variable.variable = bindingColumns[j];
+	    variable.visType = bindingTypes[i].visType;
             variable.bindingType = bindingTypes[i].type;
             variables.push(variable);
         }
@@ -362,27 +356,31 @@ function toggleVisualization(container, fieldset, show)
 	}
 }
 
-function getBindingVariables(bindingElement, bindingType)
+function getBindingVariables(bindingElement, binding)
 {
 	var variables = new Array();
 
-	for (var i = 0; i < bindingElement.options.length; i++)
+	for (var i in bindingElement.options)
             if (bindingElement.options[i].selected)
                 {
                     var variable = { };
                     variable.variable = Number(bindingElement.options[i].value);
-                    variable.bindingType = bindingType;
+		    variable.binding = binding.binding;
+		    variable.bindingType = binding.type;
+		    variable.visType = binding.visType;
                     variables.push(variable);
-                    //alert(variable.toSource());
                 }
-
 	return variables;
 }
 
-function getVisualizationVariables(bindingElements, bindingTypes)
+function getVisualizationVariables(bindingElements, bindings) // bindings???
 {
+//alert(bindingElements.toSource());
     var variables = new Array();
-    for (var i = 0; i < bindingElements.length; i++)
-        variables = variables.concat(getBindingVariables(bindingElements[i], bindingTypes[i]));
+    for (var i in bindingElements)
+    {
+	var binding = objectByType(bindingElements[i].bindingType, bindings);
+        variables = variables.concat(getBindingVariables(bindingElements[i].element, binding));
+    }
     return variables;
 }

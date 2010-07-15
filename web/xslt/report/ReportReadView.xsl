@@ -66,35 +66,28 @@ exclude-result-prefixes="#all">
                     <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
 
 		    <xsl:text>', [</xsl:text>
-                    <xsl:for-each select="key('binding-type-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)">
-                        <xsl:text>{ 'type': '</xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                        <xsl:text>'</xsl:text>
-                        <xsl:if test="sparql:binding[@name = 'cardinality']/sparql:literal">
-                            <xsl:text>, 'cardinality': </xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'cardinality']/sparql:literal"/>
-                        </xsl:if>
-                        <xsl:if test="sparql:binding[@name = 'minCardinality']/sparql:literal">
-                            <xsl:text>, 'minCardinality': </xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'minCardinality']/sparql:literal"/>
-                        </xsl:if>
-                        <xsl:if test="sparql:binding[@name = 'maxCardinality']/sparql:literal">
-                            <xsl:text>, 'maxCardinality': </xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'maxCardinality']/sparql:literal"/>
-                        </xsl:if>
-                        <xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
-                            <xsl:text>, 'order': </xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
-                        </xsl:if>
-                        <xsl:text> }</xsl:text>
-                        <xsl:if test="position() != last()">,</xsl:if>
-                    </xsl:for-each>
+		    <xsl:for-each select="$bindings//sparql:result">
+			<xsl:text>{ 'binding': '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
+			<xsl:text>', 'type': '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+			<xsl:text>'</xsl:text>
+			<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+			    <xsl:text>, 'order': </xsl:text>
+			    <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+			</xsl:if>
+			<xsl:text>}</xsl:text>
+			<xsl:if test="position() != last()">,</xsl:if>
+		    </xsl:for-each>
+		    <xsl:text>],</xsl:text>
 
-		    <xsl:text>], [</xsl:text>
-                    <xsl:for-each select="key('result-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables)">
+		    <xsl:text>[</xsl:text>
+                    <xsl:for-each select="$variables//sparql:result">
                         <xsl:text>{ 'variable' : </xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
-                        <xsl:text>, 'binding' : '</xsl:text>
+			<xsl:text>, 'visType' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+			<xsl:text>', 'binding' : '</xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
                         <xsl:text>', 'bindingType' : '</xsl:text>
                         <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
@@ -104,6 +97,7 @@ exclude-result-prefixes="#all">
                     <xsl:text>]</xsl:text>
 
 		    <xsl:text>, [</xsl:text>
+		    <!-- key('result-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables) -->
 		    <xsl:for-each select="$options//sparql:result">
 			<xsl:text>{ 'type' : '</xsl:text>
 			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
@@ -113,6 +107,8 @@ exclude-result-prefixes="#all">
 			<xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
 			<xsl:text>', 'value' : '</xsl:text>
 			<xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal"/>
+			<xsl:text>', 'dataType' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal/@datatype"/>
 			<xsl:text>' }</xsl:text>
 			<xsl:if test="position() != last()">, </xsl:if>
 		    </xsl:for-each>
