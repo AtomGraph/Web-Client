@@ -85,7 +85,18 @@ exclude-result-prefixes="#all">
             <xsl:document>
                 <ids xmlns="">
                     <xsl:for-each select="$visualization-types//sparql:result">
-                        <id visType="{sparql:binding[@name = 'type']/sparql:uri}">
+                        <id type="{sparql:binding[@name = 'type']/sparql:uri}">
+                            <xsl:value-of select="id:generate()"/>
+                        </id>
+                    </xsl:for-each>
+                </ids>
+            </xsl:document>
+        </xsl:variable>
+        <xsl:variable name="binding-ids" as="document-node()">
+            <xsl:document>
+                <ids xmlns="">
+                    <xsl:for-each select="$binding-types//sparql:result">
+                        <id type="{sparql:binding[@name = 'type']/sparql:uri}">
                             <xsl:value-of select="id:generate()"/>
                         </id>
                     </xsl:for-each>
@@ -95,7 +106,7 @@ exclude-result-prefixes="#all">
 
         <xsl:key name="result-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
         <xsl:key name="result-by-type" match="sparql:result" use="sparql:binding[@name = 'type']/sparql:uri"/>
-        <xsl:key name="id-by-vis-type" match="id" use="@visType"/>
+        <xsl:key name="id-by-type" match="id" use="@type"/>
         <xsl:key name="endpoint-by-uri" match="sparql:result" use="sparql:binding[@name = 'endpoint']/sparql:uri"/>
 
 	<xsl:template name="title">
@@ -120,8 +131,46 @@ exclude-result-prefixes="#all">
 	<xsl:template name="body-onload">
             <xsl:if test="not(empty($query-result)) or $view = $update-view">
                 <xsl:attribute name="onload">
-                    <xsl:text>countColumns(data); </xsl:text>
-                    <xsl:variable name="used-visualization-types" as="element(*)*">
+                    <xsl:text>Report.init([ </xsl:text>
+                    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-type-json"/>
+		    <xsl:text>], [</xsl:text>
+                    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
+		    <xsl:text>]); </xsl:text>
+		    <xsl:text>var report = new Report(table, [</xsl:text>
+		    <xsl:apply-templates select="$visualizations//sparql:result" mode="visualization-json"/>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
+		    <xsl:text>], [], [</xsl:text>
+                    <xsl:for-each select="$visualization-types//sparql:result">
+			<xsl:text>{ 'element' :</xsl:text>
+			<xsl:text>document.getElementById('</xsl:text>
+			<xsl:value-of select="generate-id()"/>
+			<xsl:text>-visualization')</xsl:text>
+			<xsl:text>, 'visType' : '</xsl:text>
+			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+			<xsl:text>' }</xsl:text>
+			<xsl:if test="position() != last()">,</xsl:if>
+		    </xsl:for-each>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>
+		    <xsl:text>]); report.setVariables(</xsl:text>
+		    <xsl:choose>
+			<!-- if visualization of this type was saved, and there are variables -->
+			<xsl:when test="$variables//sparql:result and key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)">
+			    <xsl:text>[</xsl:text>
+			    <xsl:apply-templates select="$variables//sparql:result" mode="variable-json"/>
+			    <xsl:text>]</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+			    <xsl:text>report.countVariables()</xsl:text>
+			</xsl:otherwise>
+		    </xsl:choose>
+
+		    <xsl:text>); report.show(); </xsl:text>
+
+		    <xsl:variable name="used-visualization-types" as="element(*)*">
                         <xsl:choose>
                             <xsl:when test="exists($visualizations)">
                                 <xsl:sequence select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
@@ -146,34 +195,14 @@ exclude-result-prefixes="#all">
 			<!-- <xsl:variable name="vis-binding-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/> -->
                         <xsl:variable name="vis-option-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"/>
 
-			<xsl:variable name="used-binding-types" as="element(*)*">
-                            <xsl:choose>
-                                <xsl:when test="exists($bindings)">
-                                    <xsl:sequence select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)[sparql:binding[@name = 'type']/sparql:uri = $bindings//sparql:binding[@name = 'type']/sparql:uri]"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:sequence select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:variable>
-
-                        <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)" mode="binding-element-json"/>
+                        <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)" mode="binding-element-json"/>
 
                         <xsl:text>], [</xsl:text>
                         <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
-
                         <xsl:text>], [</xsl:text>
-                        <xsl:for-each select="$data-types//sparql:result">
-                            <xsl:text>{ 'type' : '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                            <xsl:text>', 'bindingType' : '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
-                            <xsl:text>' }</xsl:text>
-                            <xsl:if test="position() != last()">, </xsl:if>
-                        </xsl:for-each>
-
+			<xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
                         <xsl:text>], [</xsl:text>
-                        <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
+                        <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
                         <xsl:text>],</xsl:text>
 
                         <xsl:choose>
@@ -188,14 +217,7 @@ exclude-result-prefixes="#all">
 				<xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
 
                                 <xsl:text>], [</xsl:text>
-                                <xsl:for-each select="$data-types//sparql:result">
-                                    <xsl:text>{ 'type' : '</xsl:text>
-                                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                                    <xsl:text>', 'bindingType' : '</xsl:text>
-                                    <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
-                                    <xsl:text>' }</xsl:text>
-                                    <xsl:if test="position() != last()">, </xsl:if>
-                                </xsl:for-each>
+                                <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
                                 <xsl:text>]</xsl:text>
 
                                 <xsl:text>)</xsl:text>
@@ -246,7 +268,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			!!<xsl:copy-of select="$bindings"/>!!
+			!!<xsl:copy-of select="$visualizations"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -459,7 +481,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 	</xsl:template>
 
 	<xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-type-inputs">
-                <xsl:variable name="visualization-uri" select="xs:anyURI(concat($host-uri, 'visualizations/', key('id-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids)))" as="xs:anyURI"/>
+                <xsl:variable name="visualization-uri" select="xs:anyURI(concat($host-uri, 'visualizations/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids)))" as="xs:anyURI"/>
 
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
@@ -490,7 +512,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                             <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
@@ -529,7 +551,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                             <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
+                            <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
@@ -560,7 +582,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-type-inputs">
         <xsl:param name="visualization-uri"/>
-        <xsl:variable name="binding-uri" as="xs:anyURI" select="xs:anyURI(concat($host-uri, 'bindings/', id:generate()))"/>
+        <xsl:variable name="binding-uri" as="xs:anyURI" select="xs:anyURI(concat($host-uri, 'bindings/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $binding-ids)))"/>
 
 <input type="hidden" name="su" value="{$binding-uri}"/>
 <input type="hidden" name="pu" value="&rdf;type"/>
@@ -594,7 +616,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                     <xsl:value-of select="$binding/sparql:binding[@name = 'binding']/sparql:uri"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="concat($host-uri, 'bindings/', id:generate())"/>
+                    <xsl:value-of select="concat($host-uri, 'bindings/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $binding-ids))"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -621,11 +643,11 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="pv" value="variableName"/>
 <input type="hidden" name="lt" value="&xsd;string"/>
 
-        <label for="{generate-id($binding)}-binding">
+        <label for="{generate-id()}-binding">
             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
         </label>
         <xsl:variable name="binding-type" select="sparql:binding[@name = 'type']/sparql:uri"/>
-        <select id="{generate-id($binding)}-binding" name="ol">
+        <select id="{generate-id()}-binding" name="ol">
             <xsl:attribute name="onchange">
                 <xsl:for-each select="$visualization">
                     <xsl:text>draw(window.visualizations['</xsl:text>
@@ -637,7 +659,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                     <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
 
                     <xsl:text>], getVisualizationVariables([</xsl:text>
-                    <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)" mode="binding-element-json"/>
+                    <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)" mode="binding-element-json"/>
                     <xsl:text>], [</xsl:text>		    
 		    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
 		    <xsl:text>])</xsl:text>
@@ -730,6 +752,13 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
         </option>
     </xsl:template>
 
+    <xsl:template match="sparql:result" mode="vis-type-json">
+	<xsl:text>{ 'type': '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+	<xsl:text>' }</xsl:text>
+	<xsl:if test="position() != last()">,</xsl:if>
+    </xsl:template>
+
     <xsl:template match="sparql:result" mode="binding-type-json">
 	<xsl:text>{ 'type': '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
@@ -752,11 +781,20 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 	    <xsl:text>, 'order': </xsl:text>
 	    <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
 	</xsl:if>
-	<xsl:text> }</xsl:text>
+	<xsl:text>}</xsl:text>
 	<xsl:if test="position() != last()">,</xsl:if>
     </xsl:template>
 
-    <xsl:template match="sparql:result" mode="option-json">
+    <xsl:template match="sparql:result" mode="data-type-json">
+	<xsl:text>{ 'type' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+	<xsl:text>', 'bindingType' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
+	<xsl:text>' }</xsl:text>
+	<xsl:if test="position() != last()">, </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'option']]" mode="option-json">
 	<xsl:text>{ 'option' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'option']/sparql:uri"/>
 	<xsl:text>', 'type' : '</xsl:text>
@@ -784,7 +822,19 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 	<xsl:if test="position() != last()">,</xsl:if>
     </xsl:template>
 
-    <xsl:template match="sparql:result" mode="binding-json">
+    <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="visualization-json">
+	<xsl:text>{ 'visualization': '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'visualization']/sparql:uri"/>
+	<xsl:text>', 'type': '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+	<xsl:text>', 'report' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'report']/sparql:uri"/>
+	<xsl:text>'</xsl:text>
+	<xsl:text>}</xsl:text>
+	<xsl:if test="position() != last()">,</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'binding']]" mode="binding-json">
 	<xsl:text>{ 'binding': '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
 	<xsl:text>', 'type': '</xsl:text>
@@ -800,7 +850,39 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 	<xsl:if test="position() != last()">,</xsl:if>
     </xsl:template>
 
-    <xsl:template match="sparql:result" mode="variable-json">
+    <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-from-type-json">
+        <xsl:param name="visualization"/>
+        <xsl:param name="visualization-uri"/>
+        <!-- binding of this type (might be non-existing) -->
+        <xsl:variable name="binding" select="key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)"/>
+        <!-- reuse existing binding URI or generate a new one -->
+        <xsl:variable name="binding-uri" as="xs:anyURI">
+            <xsl:choose>
+                <xsl:when test="$binding">
+                    <xsl:value-of select="$binding/sparql:binding[@name = 'binding']/sparql:uri"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat($host-uri, 'bindings/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $binding-ids))"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+	<xsl:text>{ 'binding': '</xsl:text>
+	<xsl:value-of select="$binding-uri"/>
+	<xsl:text>', 'type': '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+	<xsl:text>', 'visType' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+	<xsl:text>'</xsl:text>
+	<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
+	    <xsl:text>, 'order': </xsl:text>
+	    <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+	</xsl:if>
+	<xsl:text>}</xsl:text>
+	<xsl:if test="position() != last()">,</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'variable']]" mode="variable-json">
 	<xsl:text>{ 'variable' : </xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
 	<xsl:text>, 'visType' : '</xsl:text>
