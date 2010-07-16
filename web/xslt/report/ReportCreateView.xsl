@@ -180,69 +180,6 @@ exclude-result-prefixes="#all">
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
-
-                    <xsl:for-each select="$visualization-types//sparql:result">
-                        <xsl:text>initWithControlsAndDraw(document.getElementById('</xsl:text>
-                        <xsl:value-of select="generate-id()"/>
-                        <xsl:text>-visualization'), document.getElementById('</xsl:text>
-                        <xsl:value-of select="generate-id()"/>
-                        <xsl:text>-controls'), document.getElementById('</xsl:text>
-                        <xsl:value-of select="generate-id()"/>
-                        <xsl:text>-toggle'), '</xsl:text>
-
-                        <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                        <xsl:text>', [</xsl:text>
-			<!-- <xsl:variable name="vis-binding-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"/> -->
-                        <xsl:variable name="vis-option-types" select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"/>
-
-                        <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)" mode="binding-element-json"/>
-
-                        <xsl:text>], [</xsl:text>
-                        <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
-                        <xsl:text>], [</xsl:text>
-			<xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
-                        <xsl:text>], [</xsl:text>
-                        <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
-                        <xsl:text>],</xsl:text>
-
-                        <xsl:choose>
-                            <!-- if visualization of this type was saved, and there are variables -->
-                            <xsl:when test="$variables//sparql:result and key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)">
-                                <xsl:text>[</xsl:text>
-                                <xsl:apply-templates select="$variables//sparql:result" mode="variable-json"/>
-                                <xsl:text>]</xsl:text>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:text>countVariables(data, [</xsl:text>
-				<xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
-
-                                <xsl:text>], [</xsl:text>
-                                <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
-                                <xsl:text>]</xsl:text>
-
-                                <xsl:text>)</xsl:text>
-                            </xsl:otherwise>
-                        </xsl:choose>
-
-                        <xsl:text>, [</xsl:text>
-                        <xsl:for-each select="$vis-option-types">
-                            <xsl:text>{ 'element' :</xsl:text>
-                            <xsl:text>document.getElementById('</xsl:text>
-                            <xsl:value-of select="generate-id()"/>
-                            <xsl:text>-option')</xsl:text>
-                            <xsl:text>, 'optionType' : '</xsl:text>
-                            <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                            <xsl:text>' }</xsl:text>
-                            <xsl:if test="position() != last()">,</xsl:if>
-                        </xsl:for-each>
-                        <xsl:text>], [</xsl:text>
-
-			<xsl:apply-templates select="$options//sparql:result" mode="option-json"/>
-
-			<xsl:text>]</xsl:text>
-
-                        <xsl:text>);</xsl:text>
-                    </xsl:for-each>
                     <xsl:if test="$view = $update-view">
                         <xsl:text> </xsl:text>
                         <!-- switch of Visualizations not included in the Report -->
