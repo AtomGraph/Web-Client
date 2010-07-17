@@ -62,6 +62,7 @@ Report.prototype.setBindings = function(bindings)
 
 Report.prototype.setVariables = function(variables)
 {
+    alert(variables.toSource());
     this.variables = variables;
 }
 
@@ -427,15 +428,15 @@ function toggleVisualization(container, fieldset, show)
 	}
 }
 
-Report.prototype.getBindingVariables = function(binding)
+Report.prototype.getBindingVariables = function(bindingTypeElement, binding)
 {
 	var variables = new Array();
 
-	for (var i in this.bindingTypeElements.options)
-            if (this.bindingTypeElements.options[i].selected)
+	for (var i in bindingTypeElement.element.options)
+            if (bindingTypeElement.element.options[i].selected)
                 {
                     var variable = { };
-                    variable.variable = Number(this.bindingTypeElements.options[i].value);
+                    variable.variable = Number(bindingTypeElement.element.options[i].value);
 		    variable.binding = binding.binding;
 		    variable.bindingType = binding.type;
 		    variable.visType = binding.visType;
@@ -453,7 +454,7 @@ Report.prototype.getVariablesFromControls = function() // bindings???
     {
 	var binding = objectByType(this.bindingTypeElements[i].bindingType, this.bindings);
 //alert(binding.toSource());
-        variables = variables.concat(this.getBindingVariables(this.bindingTypeElements[i].element, binding));
+        variables = variables.concat(this.getBindingVariables(this.bindingTypeElements[i], binding));
     }
     return variables;
 }
