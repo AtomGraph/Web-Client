@@ -154,6 +154,8 @@ exclude-result-prefixes="#all">
 			<xsl:text>' }</xsl:text>
 			<xsl:if test="position() != last()">,</xsl:if>
 		    </xsl:for-each>
+		    <xsl:text>]); report.setVisTypeToggleElements([</xsl:text>
+		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-toggle-json"/>
 		    <xsl:text>]); report.setBindingTypeElements([</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>
 		    <xsl:text>]); report.setVariables(</xsl:text>

@@ -1,17 +1,13 @@
 var report = null;
 
-function Report(table, visualizations, bindings, options, containers, bindingTypeElements)
+function Report(table, visualizations, bindings, options, containers)
 {
-
     //alert(Report.bindingTypes.toSource());
     
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations;
     this.bindings = bindings;
     this.options = options;
-    //this.variables = variables;
-    this.containers = containers;
-    this.bindingTypeElements = bindingTypeElements;
     this.countColumns();
     for (var i in containers)
 	this.initVis(containers[i].element, containers[i].visType);
@@ -21,7 +17,9 @@ function Report(table, visualizations, bindings, options, containers, bindingTyp
 Report.prototype.uri = null;
 Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
+Report.prototype.visTypeToggleElements = new Array();
 Report.prototype.containers = new Array();
+Report.prototype.bindingTypeElements = new Array();
 Report.prototype.visualizations = new Array();
 Report.prototype.googleVisualizations = new Array();
 Report.prototype.bindings = new Array();
@@ -62,8 +60,18 @@ Report.prototype.setBindings = function(bindings)
 
 Report.prototype.setVariables = function(variables)
 {
-    alert(variables.toSource());
+    //alert(variables.toSource());
     this.variables = variables;
+}
+
+Report.prototype.setVisTypeToggleElements = function(visTypeToggleElements)
+{
+    this.visTypeToggleElements = visTypeToggleElements;
+}
+
+Report.prototype.setBindingTypeElements = function(bindingTypeElements)
+{
+    this.bindingTypeElements = bindingTypeElements;
 }
 
 Report.prototype.initVis = function(containerElement, visType)
@@ -153,12 +161,14 @@ function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingTy
     }
 }
 
-function hasSufficientColumns(bindingTypes, xsdTypes, bindings)
+Report.prototype.hasSufficientColumns = function(visualization)
 {
-    for (var i in bindings)
+    var visBindings = objectsByVisType(visualization.type, this.bindings);
+
+    for (var i in visBindings)
     {
-        var columns = columnsByBinding(bindings[i], xsdTypes);
-	var bindingType = objectByType(bindings[i].type, bindingTypes);
+        var columns = this.columnsByBinding(visBindings[i]);
+	var bindingType = objectByType(visBindings[i].type, Report.bindingTypes);
         if ("cardinality" in bindingType && bindingType.cardinality > columns.length) return false;
         if ("minCardinality" in bindingType && bindingType.minCardinality > columns.length) return false;
 	// maxCardinality???
@@ -180,13 +190,36 @@ function variablesToColumns(bindings, variables)
         return orderColumns.concat(restColumns);
 }
 
+Report.prototype.showWithControls = function()
+{
+    //alert(this.visTypeToggleElements.toSource());
+    
+    for (var i in this.visualizations)
+    {
+	var toggleElement = objectByVisType(this.visualizations[i].type, this.visTypeToggleElements);
+
+	if (this.hasSufficientColumns(this.visualizations[i]))
+	{
+	    //alert("sufficient" + this.visualizations[i].toSource());
+	    this.fillControls(this.visualizations[i]);
+	    this.draw(this.visualizations[i]);
+	    toggleElement.element.disabled = false;
+	}
+        else
+	{
+	    //alert("nope");
+	    //toggleVisualization(container, fieldset, false); // switch off
+	    toggleElement.element.disabled = true;
+	}
+    }
+}
+
 Report.prototype.show = function()
 {
     for (var i in this.visualizations)
-    {
-	this.fillControls(this.visualizations[i]);
-	this.draw(this.visualizations[i]);
-    }
+	if (this.hasSufficientColumns(this.visualizations[i]))
+	    this.draw(this.visualizations[i]);
+	else alert("nope");
 }
 
 Report.prototype.draw = function(visualization)
@@ -313,10 +346,10 @@ Report.prototype.columnsByBindingType = function(bindingType)
     return bindingColumns;
 }
 
-function columnsByBinding(binding, xsdTypes)
+Report.prototype.columnsByBinding = function(binding)
 {
     var bindingColumns = new Array();
-    var wireTypes = wireTypesByBindingType(binding.type, xsdTypes);
+    var wireTypes = Report.wireTypesByBindingType(binding.type, this.dataTypes);
 
     for (var i in wireTypes)
         bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[i])); // add columns for each type

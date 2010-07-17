@@ -79,6 +79,17 @@ exclude-result-prefixes="#all">
 	<xsl:if test="position() != last()">,</xsl:if>
     </xsl:template>
 
+    <xsl:template match="sparql:result" mode="vis-toggle-json">
+	<xsl:text>{ 'element' : </xsl:text>
+	<xsl:text>document.getElementById('</xsl:text>
+	<xsl:value-of select="generate-id()"/>
+	<xsl:text>-toggle')</xsl:text>
+	<xsl:text>, 'visType' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+	<xsl:text>' }</xsl:text>
+	<xsl:if test="position() != last()">,</xsl:if>
+    </xsl:template>
+
     <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="visualization-json">
 	<xsl:text>{ 'visualization': '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'visualization']/sparql:uri"/>
