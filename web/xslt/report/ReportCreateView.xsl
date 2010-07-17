@@ -138,7 +138,7 @@ exclude-result-prefixes="#all">
 		    <xsl:text>], [</xsl:text>
 		    <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
 		    <xsl:text>]); </xsl:text>
-		    <xsl:text>var report = new Report(table, [</xsl:text>
+		    <xsl:text>report = new Report(table, [</xsl:text>
 		    <xsl:apply-templates select="$visualizations//sparql:result" mode="visualization-json"/>
 		    <xsl:text>], [</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
@@ -430,12 +430,10 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
 		<xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"  mode="binding-type-inputs">
 		    <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
-		    <xsl:with-param name="visualization" select="."/>
 		</xsl:apply-templates>
 
 		<xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"  mode="option-type-inputs">
 		    <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
-		    <xsl:with-param name="visualization" select="."/>
 		</xsl:apply-templates>
 	</xsl:template>
 
@@ -504,12 +502,12 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
                             <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)"  mode="binding-type-select">
                                 <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
-                                <xsl:with-param name="visualization" select="."/>
+                                <xsl:with-param name="visualization" select="$visualization"/>
                             </xsl:apply-templates>
 
                             <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $option-types)"  mode="option-type-input">
                                 <xsl:with-param name="visualization-uri" select="$visualization-uri"/>
-                                <xsl:with-param name="visualization" select="."/>
+                                <xsl:with-param name="visualization" select="$visualization"/>
                             </xsl:apply-templates>
                         </p>
                 </fieldset>
@@ -586,27 +584,10 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
         <xsl:variable name="binding-type" select="sparql:binding[@name = 'type']/sparql:uri"/>
         <select id="{generate-id()}-binding" name="ol">
             <xsl:attribute name="onchange">
-                <xsl:for-each select="$visualization">
-                    <xsl:text>draw(window.visualizations['</xsl:text>
-                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                    <xsl:text>'], '</xsl:text>
-                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-                    <xsl:text>', [</xsl:text>
-
-                    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
-
-                    <xsl:text>], getVisualizationVariables([</xsl:text>
-                    <xsl:apply-templates select="key('result-by-vis-type', sparql:binding[@name = 'type']/sparql:uri, $binding-types)" mode="binding-element-json"/>
-                    <xsl:text>], [</xsl:text>		    
-		    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
-		    <xsl:text>])</xsl:text>
-		    
-		    <xsl:text>, [</xsl:text>
-		    <xsl:apply-templates select="$options//sparql:result" mode="option-json"/>
-		    <xsl:text>]</xsl:text>
-
-                    <xsl:text>);</xsl:text>
-                </xsl:for-each>
+		<xsl:text>report.setVariables(report.getVariablesFromControls()); </xsl:text>
+		<xsl:text>report.draw(</xsl:text>
+		<xsl:apply-templates select="$visualization" mode="visualization-json"/>
+		<xsl:text>);</xsl:text>
             </xsl:attribute>
 
             <xsl:text>&#160;</xsl:text>

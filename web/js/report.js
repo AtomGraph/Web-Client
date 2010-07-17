@@ -1,3 +1,5 @@
+var report = null;
+
 function Report(table, visualizations, bindings, options, containers, bindingTypeElements)
 {
 
@@ -16,6 +18,7 @@ function Report(table, visualizations, bindings, options, containers, bindingTyp
 }
 
 //google.setOnLoadCallback(countColumns(data));
+Report.prototype.uri = null;
 Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
 Report.prototype.containers = new Array();
@@ -424,15 +427,15 @@ function toggleVisualization(container, fieldset, show)
 	}
 }
 
-function getBindingVariables(bindingElement, binding)
+Report.prototype.getBindingVariables = function(binding)
 {
 	var variables = new Array();
 
-	for (var i in bindingElement.options)
-            if (bindingElement.options[i].selected)
+	for (var i in this.bindingTypeElements.options)
+            if (this.bindingTypeElements.options[i].selected)
                 {
                     var variable = { };
-                    variable.variable = Number(bindingElement.options[i].value);
+                    variable.variable = Number(this.bindingTypeElements.options[i].value);
 		    variable.binding = binding.binding;
 		    variable.bindingType = binding.type;
 		    variable.visType = binding.visType;
@@ -441,16 +444,16 @@ function getBindingVariables(bindingElement, binding)
 	return variables;
 }
 
-function getVisualizationVariables(bindingElements, bindings) // bindings???
+Report.prototype.getVariablesFromControls = function() // bindings???
 {
 //alert(bindingElements.toSource());
 //alert(bindings.toSource());
     var variables = new Array();
-    for (var i in bindingElements)
+    for (var i in this.bindingTypeElements)
     {
-	var binding = objectByType(bindingElements[i].bindingType, bindings);
+	var binding = objectByType(this.bindingTypeElements[i].bindingType, this.bindings);
 //alert(binding.toSource());
-        variables = variables.concat(getBindingVariables(bindingElements[i].element, binding));
+        variables = variables.concat(this.getBindingVariables(this.bindingTypeElements[i].element, binding));
     }
     return variables;
 }
