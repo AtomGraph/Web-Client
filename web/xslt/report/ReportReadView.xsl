@@ -27,6 +27,7 @@ xmlns:id="java:util.IDGenerator"
 exclude-result-prefixes="#all">
 
 	<xsl:import href="../sparql2google-wire.xsl"/>
+	<xsl:import href="sparql2json.xsl"/>
 
 	<xsl:include href="../FrontEndView.xsl"/>
 
@@ -58,64 +59,36 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="body-onload">
             <xsl:attribute name="onload">
-                <xsl:text>countColumns(data); </xsl:text>
-                <xsl:for-each select="$visualizations//sparql:result">
-                    <xsl:text>initAndDraw(document.getElementById('</xsl:text>
-                    <xsl:value-of select="generate-id()"/>
-                    <xsl:text>-visualization'), '</xsl:text>
-                    <xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-
-		    <xsl:text>', [</xsl:text>
-		    <xsl:for-each select="$bindings//sparql:result">
-			<xsl:text>{ 'binding': '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
-			<xsl:text>', 'type': '</xsl:text>
+		    <!--
+                    <xsl:text>Report.init([ </xsl:text>
+                    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-type-json"/>
+		    <xsl:text>], [</xsl:text>
+                    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
+		    <xsl:text>]); </xsl:text>
+		    -->
+		    <xsl:text>report = new Report(table, [</xsl:text>
+		    <xsl:apply-templates select="$visualizations//sparql:result" mode="visualization-json"/>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
+		    <xsl:text>], [], [</xsl:text>
+                    <xsl:for-each select="$visualizations//sparql:result">
+			<xsl:text>{ 'element' :</xsl:text>
+			<xsl:text>document.getElementById('</xsl:text>
+			<xsl:value-of select="generate-id()"/>
+			<xsl:text>-visualization')</xsl:text>
+			<xsl:text>, 'visType' : '</xsl:text>
 			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-			<xsl:text>'</xsl:text>
-			<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
-			    <xsl:text>, 'order': </xsl:text>
-			    <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
-			</xsl:if>
-			<xsl:text>}</xsl:text>
+			<xsl:text>' }</xsl:text>
 			<xsl:if test="position() != last()">,</xsl:if>
 		    </xsl:for-each>
-		    <xsl:text>],</xsl:text>
-
+		    <xsl:text>]); report.setVariables(</xsl:text>
 		    <xsl:text>[</xsl:text>
-                    <xsl:for-each select="$variables//sparql:result">
-                        <xsl:text>{ 'variable' : </xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
-			<xsl:text>, 'visType' : '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
-			<xsl:text>', 'binding' : '</xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
-                        <xsl:text>', 'bindingType' : '</xsl:text>
-                        <xsl:value-of select="sparql:binding[@name = 'bindingType']/sparql:uri"/>
-                        <xsl:text>' }</xsl:text>
-                        <xsl:if test="position() != last()">,</xsl:if>
-                    </xsl:for-each>
-                    <xsl:text>]</xsl:text>
-
-		    <xsl:text>, [</xsl:text>
-		    <!-- key('result-by-visualization', sparql:binding[@name = 'visualization']/sparql:uri, $variables) -->
-		    <xsl:for-each select="$options//sparql:result">
-			<xsl:text>{ 'type' : '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-			<xsl:text>', 'visType' : '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
-			<xsl:text>', 'name' : '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
-			<xsl:text>', 'value' : '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal"/>
-			<xsl:text>', 'dataType' : '</xsl:text>
-			<xsl:value-of select="sparql:binding[@name = 'value']/sparql:literal/@datatype"/>
-			<xsl:text>' }</xsl:text>
-			<xsl:if test="position() != last()">, </xsl:if>
-		    </xsl:for-each>
+		    <xsl:apply-templates select="$variables//sparql:result" mode="variable-json"/>
 		    <xsl:text>]</xsl:text>
 
-		    <xsl:text>);</xsl:text>
-                </xsl:for-each>
+		    <xsl:text>); report.show();</xsl:text>
             </xsl:attribute>
         </xsl:template>
         
