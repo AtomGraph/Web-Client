@@ -210,7 +210,7 @@ Report.prototype.showWithControls = function()
 	    //alert("sufficient" + this.visualizations[i].toSource());
 	    this.fillControls(this.visualizations[i]);
 	    this.draw(this.visualizations[i]);
-	    toggleElement.element.disabled = false;
+	    toggleElement.element.checked = true;
 	}
         else
 	{
