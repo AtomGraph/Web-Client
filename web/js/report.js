@@ -142,32 +142,6 @@ function initOptions(visType, optionElements, options)
 		}
 }
 
-function initAndDraw(container, visType, bindings, variables, options)
-{
-//alert(bindings.toSource());
-    initVis(container, visType);
-    draw(this.googleVisualizations[visType], visType, bindings, variables, options);
-}
-
-function initWithControlsAndDraw(container, fieldset, toggle, visType, bindingTypeElements, bindingTypes, xsdTypes, bindings, variables, optionElements, options)
-{
-    //alert(bindings.toSource());
-    // bindingElements & optionElements - only for this visualization
-    if (hasSufficientColumns(bindingTypes, xsdTypes, bindings))
-    {
-        initVis(container, visType);
-        initControls(visType, bindingTypeElements, bindingTypes, xsdTypes, variables);
-	//initOptions(visType, optionElements, options);
-        draw(this.googleVisualizations[visType], visType, bindings, variables, options);
-        toggle.checked = true;
-    }
-    else
-    {
-        toggleVisualization(container, fieldset, false); // switch off
-        toggle.disabled = true;
-    }
-}
-
 Report.prototype.hasSufficientColumns = function(visualization)
 {
     var visBindings = objectsByVisType(visualization.type, this.bindings);
