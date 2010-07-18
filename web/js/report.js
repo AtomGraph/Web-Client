@@ -215,7 +215,7 @@ Report.prototype.showWithControls = function()
         else
 	{
 	    //alert("nope");
-	    //toggleVisualization(container, fieldset, false); // switch off
+	    this.toggleVisualization(this.visualizations[i], false); // switch off
 	    toggleElement.element.disabled = true;
 	}
     }
