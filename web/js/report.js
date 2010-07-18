@@ -9,8 +9,9 @@ function Report(table, visualizations, bindings, options, containers)
     this.bindings = bindings;
     this.options = options;
     this.countColumns();
-    for (var i in containers)
-	this.initVis(containers[i].element, containers[i].visType);
+    this.containers = containers;
+    for (var i in this.containers)
+	this.initVis(this.containers[i].element, this.containers[i].visType);
 }
 
 //google.setOnLoadCallback(countColumns(data));
@@ -18,6 +19,7 @@ Report.prototype.uri = null;
 Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
 Report.prototype.visTypeToggleElements = new Array();
+Report.prototype.visTypeFieldsetElements = new Array();
 Report.prototype.containers = new Array();
 Report.prototype.bindingTypeElements = new Array();
 Report.prototype.visualizations = new Array();
@@ -67,6 +69,11 @@ Report.prototype.setVariables = function(variables)
 Report.prototype.setVisTypeToggleElements = function(visTypeToggleElements)
 {
     this.visTypeToggleElements = visTypeToggleElements;
+}
+
+Report.prototype.setVisTypeFieldsetElements = function(visTypeFieldsetElements)
+{
+    this.visTypeFieldsetElements = visTypeFieldsetElements;
 }
 
 Report.prototype.setBindingTypeElements = function(bindingTypeElements)
@@ -121,7 +128,7 @@ Report.prototype.fillControls = function(visualization)
 function initOptions(visType, optionElements, options)
 {
 //alert(options.toSource());
-        //var visColumns = variablesToColumns(bindingTypes, variables);
+        //var visColumns = columnsByVariables(this.bindings, variables);
 
     for (var i in optionElements)
 	for (var j in options)
@@ -176,14 +183,14 @@ Report.prototype.hasSufficientColumns = function(visualization)
     return true;
 }
 
-function variablesToColumns(bindings, variables)
+Report.prototype.columnsByVariables = function(variables)
 {
 //alert(bindings.toSource());
 	var orderColumns = new Array();
         var restColumns = new Array();
         for (var i in variables)
         {
-            var binding = bindingByVariable(bindings, variables[i]);
+            var binding = bindingByVariable(this.bindings, variables[i]);
             if ("order" in binding) orderColumns[binding.order] = variables[i].variable;
             else restColumns = restColumns.concat(variables[i].variable);
         }
@@ -217,9 +224,9 @@ Report.prototype.showWithControls = function()
 Report.prototype.show = function()
 {
     for (var i in this.visualizations)
-	if (this.hasSufficientColumns(this.visualizations[i]))
+	//if (this.hasSufficientColumns(this.visualizations[i]))
 	    this.draw(this.visualizations[i]);
-	else alert("nope");
+	//else alert("nope");
 }
 
 Report.prototype.draw = function(visualization)
@@ -228,7 +235,7 @@ Report.prototype.draw = function(visualization)
 
         var visVariables = objectsByVisType(visualization.type, this.variables);
 //alert(visVariables.toSource());
-	var visColumns = variablesToColumns(this.bindings, visVariables);
+	var visColumns = this.columnsByVariables(visVariables);
 //alert(visType + "  " + visColumns.toSource());
 //alert(visType + "  " + bindings.toSource() + " " + variables.toSource());
 	var view = new google.visualization.DataView(this.data);
@@ -241,8 +248,8 @@ Report.prototype.draw = function(visualization)
 	
 	optArray["height"] = 450; // CSS doesn't work on Table??
 
-	var container = this.googleVisualizations[visualization.type];
-	container.draw(view, optArray);
+	var googleVis = this.googleVisualizations[visualization.type];
+	googleVis.draw(view, optArray);
 
     /*
     if (visType.indexOf("Map") != -1)
@@ -447,18 +454,22 @@ Report.prototype.countVariables = function()
     return variables;
 }
 
-function toggleVisualization(container, fieldset, show)
+Report.prototype.toggleVisualization = function(visType, show)
 {//alert(container.id);
-	if (show)
-	{
-		container.style.display = "block";
-		fieldset.style.display = "block";
-	}
-	else
-	{
-		container.style.display = "none";
-		fieldset.style.display = "none";
-	}
+//alert(visType.toSource());
+    var container = objectByVisType(visType.type, this.containers);
+    var fieldset = objectByVisType(visType.type, this.visTypeFieldsetElements);
+    
+    if (show)
+    {
+	    container.element.style.display = "block";
+	    fieldset.element.style.display = "block";
+    }
+    else
+    {
+	    container.element.style.display = "none";
+	    fieldset.element.style.display = "none";
+    }
 }
 
 Report.prototype.getBindingVariables = function(bindingTypeElement, binding)

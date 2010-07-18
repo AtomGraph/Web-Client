@@ -156,6 +156,8 @@ exclude-result-prefixes="#all">
 		    </xsl:for-each>
 		    <xsl:text>]); report.setVisTypeToggleElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-toggle-json"/>
+		    <xsl:text>]); report.setVisTypeFieldsetElements([</xsl:text>
+		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-fieldset-json"/>
 		    <xsl:text>]); report.setBindingTypeElements([</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>
 		    <xsl:text>]); report.setVariables(</xsl:text>
@@ -187,11 +189,9 @@ exclude-result-prefixes="#all">
                         <xsl:text> </xsl:text>
                         <!-- switch of Visualizations not included in the Report -->
                         <xsl:for-each select="$visualization-types//sparql:result[not(sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri)]">
-                            <xsl:text>toggleVisualization(document.getElementById('</xsl:text>
-                            <xsl:value-of select="generate-id()"/>
-                            <xsl:text>-visualization'), document.getElementById('</xsl:text>
-                            <xsl:value-of select="generate-id()"/>
-                            <xsl:text>-controls'), false); </xsl:text>
+                            <xsl:text>report.toggleVisualization(</xsl:text>
+			    <xsl:apply-templates select="." mode="vis-type-json"/>
+                            <xsl:text>, false); </xsl:text>
                         </xsl:for-each>
                     </xsl:if>
                 </xsl:attribute>
@@ -459,7 +459,13 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
-<input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle" onchange="toggleVisualization(document.getElementById('{generate-id()}-visualization'), document.getElementById('{generate-id()}-controls'), this.checked);">
+<input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle">
+    <xsl:attribute name="onchange">
+	<xsl:text>report.toggleVisualization(</xsl:text>
+	<xsl:apply-templates select="." mode="vis-type-json"/>
+	<xsl:text>, this.checked);</xsl:text>
+    </xsl:attribute>
+
     <xsl:choose>
         <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->
             <xsl:if test="$visualization">
