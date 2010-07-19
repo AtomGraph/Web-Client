@@ -117,7 +117,7 @@ Report.prototype.fillControls = function(visualization)
 	    option.appendChild(document.createTextNode(this.data.getColumnLabel(bindingColumns[j])));
 	    option.setAttribute("value", bindingColumns[j]);
 
-	    if (variableExists(this.variables, visBindingTypes[i], bindingColumns[j]))
+	    if (this.variableExists(visBindingTypes[i], bindingColumns[j]))
 		option.setAttribute("selected", "selected");
 //alert(visBindingTypes[i].toSource());
 	    bindingElement.element.appendChild(option);
@@ -300,20 +300,6 @@ Report.wireTypesByBindingType = function(bindingType)
     return wireTypes;
 }
 
-function wireTypesByBinding(binding, xsdTypes)
-{
-    var wireTypes = new Array();
-    var bindingXsdTypes = objectsByBindingType(xsdTypes, binding.type);
-//alert(bindingXsdTypes.toSource());
-    for (var k = 0; k < bindingXsdTypes.length; k++)
-    {
-        var wireType = xsdTypeToWireType(bindingXsdTypes[k]);
-        if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType);
-    }
-
-    return wireTypes;
-}
-
 Report.prototype.columnsByBindingType = function(bindingType)
 {
 //alert(bindingType);
@@ -336,18 +322,6 @@ Report.prototype.columnsByBinding = function(binding)
         bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[i])); // add columns for each type
 
     return bindingColumns;
-}
-
-function variablesByBindingType(bindingType, variables)
-{
-//alert(bindingType.toSource());
-    var bindingVariables = new Array();
-
-    for (var k = 0; k < variables.length; k++)
-        if (bindingType.type == variables[k].bindingType) // join
-            bindingVariables.push(variables[k].variable);
-//alert(bindingColumns.toSource());
-    return bindingVariables;
 }
 
 function objectByVisType(visType, objects)
@@ -377,7 +351,7 @@ function objectsByVisType(visType, objects)
 function bindingByVariable(bindings, variable)
 {
     for (var i in bindings)
-        if (bindings[i].type == variable.bindingType) return bindings[i];
+        if (bindings[i].binding == variable.binding) return bindings[i];
     return null;
 }
 
@@ -388,22 +362,10 @@ Report.prototype.elementByBindingType = function(bindingType)
     return null;
 }
 
-function bindingElementsByType(bindingElements, bindingTypes)
-{
-    var elements = new Array();
-    
-    for (var i = 0; i < bindingElements.length; i++)
-	for (var j = 0; j < bindingTypes.length; j++) // for (var j = 0; j < variables.length; j++)
-            if (bindingElements[i].bindingType == bindingTypes[j].type)
-                elements.push(bindingElements[i]);
-
-    return elements;
-}
-
-function variableExists(variables, bindingType, value)
+Report.prototype.variableExists = function(bindingType, value)
 {//alert(variables.toSource());
-    for (var i in variables)
-        if (variables[i].bindingType == bindingType.type && variables[i].variable == value) return true;
+    for (var i in this.variables)
+        if (this.variables[i].bindingType == bindingType.type && this.variables[i].variable == value) return true;
     return false;
 }
 
