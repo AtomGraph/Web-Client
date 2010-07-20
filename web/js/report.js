@@ -397,20 +397,23 @@ Report.prototype.createVariables = function(bindings)
 }
 
 Report.prototype.toggleVisualization = function(visType, show)
-{//alert(container.id);
+{
 //alert(visType.toSource());
     var container = objectByVisType(visType.type, this.containers);
     var fieldset = objectByVisType(visType.type, this.visTypeFieldsetElements);
-    
+    var toggle = objectByVisType(visType.type, this.visTypeToggleElements);
+
     if (show)
     {
 	    container.element.style.display = "block";
 	    fieldset.element.style.display = "block";
+	    toggle.element.checked = true;
     }
     else
     {
 	    container.element.style.display = "none";
 	    fieldset.element.style.display = "none";
+	    toggle.element.checked = false;
     }
 }
 

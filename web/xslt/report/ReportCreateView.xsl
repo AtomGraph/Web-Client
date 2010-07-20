@@ -167,16 +167,6 @@ exclude-result-prefixes="#all">
 
 		    <xsl:text>report.showWithControls(); </xsl:text>
 
-		    <xsl:variable name="used-visualization-types" as="element(*)*">
-                        <xsl:choose>
-                            <xsl:when test="exists($visualizations)">
-                                <xsl:sequence select="$visualization-types//sparql:result[sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri]"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:sequence select="$visualization-types//sparql:result"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:variable>
                     <xsl:if test="$view = $update-view">
                         <xsl:text> </xsl:text>
                         <!-- switch of Visualizations not included in the Report -->
