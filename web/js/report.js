@@ -2,7 +2,7 @@ var report = null;
 
 function Report(table, visualizations, bindings, options, containers)
 {
-    //alert(Report.bindingTypes.toSource());
+    //alert(visualizations.toSource());
     
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations;
@@ -64,6 +64,12 @@ Report.prototype.setVariables = function(variables)
 {
     //alert(variables.toSource());
     this.variables = variables;
+
+    var bindings = this.getBindingsWithoutVariables();
+    //alert(bindings.toSource());
+    var missingVars = this.createVariables(bindings);
+    //alert(missingVars.toSource());
+    this.variables = this.variables.concat(missingVars);
 }
 
 Report.prototype.setVisTypeToggleElements = function(visTypeToggleElements)
@@ -205,7 +211,6 @@ Report.prototype.show = function()
 
 Report.prototype.draw = function(visualization)
 {
-//alert(visualization.toSource());
 
         var visVariables = objectsByVisType(visualization.type, this.variables);
 //alert(visVariables.toSource());
@@ -369,20 +374,21 @@ Report.prototype.variableExists = function(bindingType, value)
     return false;
 }
 
-Report.prototype.countVariables = function()
+Report.prototype.createVariables = function(bindings)
 {
     var variables = new Array();
 
-    for (var i in this.bindings)
+    for (var i in bindings)
     {
-        var bindingColumns = this.columnsByBindingType(this.bindings[i].type);
+        var bindingColumns = this.columnsByBindingType(bindings[i].type);
         for (var j in bindingColumns)
         {
             var variable = { };
             variable.variable = bindingColumns[j];
-	    variable.binding = this.bindings[i].binding;
-            variable.bindingType = this.bindings[i].type;
-	    variable.visType = this.bindings[i].visType;
+	    variable.binding = bindings[i].binding;
+            variable.bindingType = bindings[i].type;
+	    variable.visualization = bindings[i].visualization;
+	    variable.visType = bindings[i].visType;
 	    variables.push(variable);
         }
     }
@@ -419,6 +425,7 @@ Report.prototype.getBindingVariables = function(bindingTypeElement, binding)
                     variable.variable = Number(bindingTypeElement.element.options[i].value);
 		    variable.binding = binding.binding;
 		    variable.bindingType = binding.type;
+		    variable.visualization = binding.visualization;
 		    variable.visType = binding.visType;
                     variables.push(variable);
                 }
@@ -437,4 +444,18 @@ Report.prototype.getVariablesFromControls = function() // bindings???
         variables = variables.concat(this.getBindingVariables(this.bindingTypeElements[i], binding));
     }
     return variables;
+}
+
+Report.prototype.getBindingsWithoutVariables = function()
+{
+    var bindings = new Array();
+
+    for (var i in this.bindings)
+    {
+	var variables = objectsByBindingType(this.variables, this.bindings[i].type); // byBinding?
+//alert(this.bindings[i].type + " " + variables.toSource());
+	if (variables.length == 0) bindings.push(this.bindings[i]);
+    }
+//alert(bindings.toSource());
+    return bindings;
 }

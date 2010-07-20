@@ -133,7 +133,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="sparql:result[sparql:binding[@name = 'variable']]" mode="variable-json">
 	<xsl:text>{ 'variable' : </xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'variable']/sparql:literal"/>
-	<xsl:text>, 'visType' : '</xsl:text>
+	<xsl:text>, 'visualization' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'visualization']/sparql:uri"/>
+	<xsl:text>', 'visType' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
 	<xsl:text>', 'binding' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'binding']/sparql:uri"/>
