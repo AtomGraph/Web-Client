@@ -14,3 +14,4 @@ ul#vis-types { padding: 0; }
 ul#vis-types li { display: inline; }
 .visualization { width: 100%; height: 450px; /* overflow: scroll; */ }
 #footer { text-align: center; font-size: smaller; }
+#errors { color: red; }

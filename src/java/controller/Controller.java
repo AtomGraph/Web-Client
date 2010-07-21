@@ -40,7 +40,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         {
             super.process(request, response);
 
-            //if (request.getAttribute("uri").equals("")) response.sendRedirect("/reports/"); // make reports the default view
+            if (request.getAttribute("uri").equals("")) response.sendRedirect("/reports/"); // make reports the default view
 
             if (getResource() == null) setView(new NotFoundView(this));
             if (getView() != null) getView().display(request, response);

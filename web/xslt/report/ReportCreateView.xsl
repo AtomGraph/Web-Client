@@ -130,7 +130,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
 	<xsl:template name="body-onload">
-            <xsl:if test="not(empty($query-result)) or $view = $update-view">
+            <xsl:if test="$query-result eq true() or $view = $update-view">
                 <xsl:attribute name="onload">
                     <xsl:text>Report.init([ </xsl:text>
                     <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-type-json"/>
@@ -190,7 +190,6 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$data-types"/>
 			<xsl:copy-of select="$binding-types"/>
                         -->
-			!!<xsl:copy-of select="$visualizations"/>!!
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
@@ -333,7 +332,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                     </p>
 
                                 <xsl:if test="$query-result eq false()">
-                                    <ul>
+                                    <ul id="errors">
                                         <xsl:for-each select="document('arg://query-errors')//sparql:binding">
                                             <li>
                                                 <xsl:value-of select="."/>
