@@ -1,1 +1,1 @@
-java -jar saxon9.jar -s:sparql.xml -xsl:sparql2google-wire.xsl -o:output.txt
+java -jar ../../lib/saxon9.jar -s:%1 -xsl:sparql2google-wire.xsl -o:%~n1.txt

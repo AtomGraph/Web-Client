@@ -18,7 +18,7 @@ xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 xmlns:date="http://exslt.org/dates-and-times"
-exclude-result-prefixes="owl rdf rdfs xsd sparql date">
+exclude-result-prefixes="#all">
 
 	<xsl:import href="markup.xsl" />
 
@@ -134,7 +134,7 @@ exclude-result-prefixes="owl rdf rdfs xsd sparql date">
 		<xsl:text>"</xsl:text>
 	</xsl:template>
 
-	<xsl:template match="sparql:literal" mode="sparql2wire">
+	<xsl:template match="sparql:literal" mode="sparql2wire" priority="0.5">
 		<xsl:choose>
 			<xsl:when test="count(key('binding-by-name', ../@name)) = count(key('binding-by-name', ../@name)[string(number(sparql:literal)) != 'NaN'])">
 				<xsl:value-of select="."/>
