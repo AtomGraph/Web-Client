@@ -29,11 +29,6 @@ exclude-result-prefixes="#all">
 
 	<xsl:variable name="resource" select="/"/>
 
-        <!-- <xsl:key name="binding-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/> -->
-        <!-- <xsl:key name="variable-by-binding-type" match="sparql:result" use="sparql:binding[@name = 'bindingType']/sparql:uri"/> -->
-        <!-- <xsl:key name="data-type-by-binding-type" match="sparql:result" use="sparql:binding[@name = 'bindingType']/sparql:uri"/> -->
-        <!-- <xsl:key name="variable-by-binding" match="sparql:result" use="sparql:binding[@name = 'binding']/sparql:uri"/> -->
-
 	<xsl:template match="sparql:sparql">
 		<html xmlns="http://www.w3.org/1999/xhtml"> <!-- xml:base="{$base_url}" -->
 			<head>
@@ -42,8 +37,11 @@ exclude-result-prefixes="#all">
 
                                 <meta name="author" content="http://semantic-web.dk"/>
                                 <meta name="DC.title" content="Semantic Reports"/>
+				<meta name="description" xml:lang="en" lang="en" content="Generic SPARQL results visualizer and report datastore"/>
+				<meta name="keywords" xml:lang="en" lang="en" content="semantic, reports, semantic web, linked data, rdf, sparql, query, generic, endpoint, visualization"/>
 
                                 <xsl:call-template name="head"/>
+				
 				<script type="text/javascript">
 
 				  var _gaq = _gaq || [];
@@ -66,6 +64,9 @@ exclude-result-prefixes="#all">
 				<h1>
 					<a href="{$host-uri}">Semantic Reports</a>
 				</h1>
+
+				<p>Generic SPARQL results visualizer and report datastore</p>
+				
 				<!--
 				<div id="left">
 					<h1>whatsup</h1>

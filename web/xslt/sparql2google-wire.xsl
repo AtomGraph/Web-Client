@@ -161,8 +161,14 @@ exclude-result-prefixes="#all">
 				</xsl:call-template>
 	-->
 
+	<!--
 	<xsl:template match="sparql:uri" mode="sparql2wire">
 		"<xsl:value-of select="."/>"
+	</xsl:template>
+	-->
+
+	<xsl:template match="sparql:uri" mode="sparql2wire">
+		'<a href="{.}"><xsl:value-of select="."/></a>'
 	</xsl:template>
 
 	<!-- Escape the backslash (\) before everything else. -->

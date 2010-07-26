@@ -226,6 +226,7 @@ Report.prototype.draw = function(visualization)
 	    optArray[visOptions[j].name] = visOptions[j].value; // set visualization options
 	
 	optArray["height"] = 450; // CSS doesn't work on Table??
+	optArray["allowHtml"] = true; // to allow hyperlinks in Table
 
 	var googleVis = this.googleVisualizations[visualization.type];
 	googleVis.draw(view, optArray);
