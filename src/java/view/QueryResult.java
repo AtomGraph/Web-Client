@@ -102,13 +102,15 @@ public class QueryResult
         return ResultSetFormatter.asXMLString(results);
     }
     
-    public static ResultSetRewindable selectRemote(String endpointUri, String queryString) throws IOException, QueryException
+    public static ResultSetRewindable selectRemote(String endpointUri, String queryString, long resultLimit) throws IOException, QueryException
     {
 	//String resultString = null;
         ResultSetRewindable resultSet = null;
         System.out.println("Endpoint: " + endpointUri);
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
+	query.setLimit(resultLimit);
+	
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);
 	try
 	{

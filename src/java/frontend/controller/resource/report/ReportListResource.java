@@ -115,7 +115,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             if (!errors.isEmpty()) throw new InvalidFormException();
 
-	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString(), ReportResource.RESULTS_LIMIT);
             int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
             if (count == 0) throw new NoResultsException();
             

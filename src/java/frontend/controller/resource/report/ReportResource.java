@@ -54,6 +54,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 {
     private Report report = null;
     //private View view = null;
+    public static final long RESULTS_LIMIT = 50;
     
     public ReportResource(Report report, ReportListResource parent)
     {
@@ -93,12 +94,12 @@ public class ReportResource extends FrontEndResource implements LeafResource
         if (isUpdateView(request))
         {
             ReportUpdateView updateView = new ReportUpdateView(this);
-            updateView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString()));
+            updateView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), RESULTS_LIMIT));
             return updateView;
         }
 
 	ReportReadView readView = new ReportReadView(this);
-        readView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString()));
+        readView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), RESULTS_LIMIT));
         return readView;
     }
 
@@ -115,7 +116,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
         if (isUpdateView(request)) return new ReportUpdateView(this);
         
 	ReportReadView view = new ReportReadView(this);
-        view.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString()));
+        view.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), RESULTS_LIMIT));
         return view;
     }
 
@@ -132,7 +133,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	{
             if (!errors.isEmpty()) throw new InvalidFormException();
 
-	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString());
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString(), RESULTS_LIMIT);
             int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
             if (count == 0) throw new NoResultsException();
 
