@@ -1,0 +1,12 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX eurostat: <http://www4.wiwiss.fu-berlin.de/eurostat/resource/eurostat/>
+
+SELECT *
+WHERE
+{
+?region rdfs:label ?name .
+?region eurostat:unemployment_rate_total ?unemployment .
+?region eurostat:disposable_income ?income
+}
+ORDER BY DESC(?income)
+LIMIT 50

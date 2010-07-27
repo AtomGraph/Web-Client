@@ -29,7 +29,7 @@ import view.XMLSerializer;
  */
 public class ReportListView extends FrontEndView
 {
-    public static final int ITEMS_PER_PAGE = 15;
+    public static final int ITEMS_PER_PAGE = 10;
     public static enum SortableVariable
     { CREATED("dateCreated"), MODIFIED("dateModified"), CREATOR("creator"), ENDPOINT("endpoint");
 
