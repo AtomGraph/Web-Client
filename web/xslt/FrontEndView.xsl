@@ -39,6 +39,7 @@ exclude-result-prefixes="#all">
                                 <meta name="DC.title" content="Semantic Reports"/>
 				<meta name="description" xml:lang="en" lang="en" content="Generic SPARQL results visualizer and report datastore"/>
 				<meta name="keywords" xml:lang="en" lang="en" content="semantic, reports, semantic web, linked data, rdf, sparql, query, generic, endpoint, visualization"/>
+				<meta name="google-site-verification" content="9OYr7f_MgT7pH7oSBQY6D2zB7mzZFWy-1ilHcpJtVsg" />
 
                                 <xsl:call-template name="head"/>
 				
