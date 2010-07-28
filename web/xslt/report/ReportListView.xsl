@@ -122,7 +122,7 @@ exclude-result-prefixes="#all">
                              </xsl:if>
 			</td>
 			<td>
-				<a href="{sparql:binding[@name = 'endpoint']/sparql:uri}">
+				<a href="{sparql:binding[@name = 'endpoint']/sparql:uri}?query={encode-for-uri(sparql:binding[@name = 'queryString']/sparql:literal)}">
                                     <xsl:variable name="endpoint" select="$endpoints//sparql:result[sparql:binding[@name = 'endpoint']/sparql:uri = current()/sparql:binding[@name = 'endpoint']/sparql:uri]"/>
                                     <xsl:choose>
                                         <xsl:when test="$endpoint">

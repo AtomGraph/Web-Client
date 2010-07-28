@@ -108,7 +108,7 @@ exclude-result-prefixes="#all">
 			<dl>
 				<dt>Endpoint</dt>
 				<dd>
-					<a href="{$report//sparql:binding[@name = 'endpoint']/sparql:uri}">
+					<a href="{$report//sparql:binding[@name = 'endpoint']/sparql:uri}?query={encode-for-uri($report//sparql:binding[@name = 'queryString']/sparql:literal)}">
                                             <xsl:choose>
                                                 <xsl:when test="$report//sparql:binding[@name = 'endpointTitle']/sparql:literal">
                                                     <xsl:value-of select="$report//sparql:binding[@name = 'endpointTitle']/sparql:literal"/>
