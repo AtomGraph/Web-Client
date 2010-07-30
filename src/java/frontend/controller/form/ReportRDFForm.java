@@ -13,6 +13,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import dk.semantic_web.diy.controller.Error;
+import model.vocabulary.DublinCore;
 import model.vocabulary.Reports;
 import model.vocabulary.Spin;
 
@@ -65,6 +66,15 @@ public class ReportRDFForm extends RDFForm
 	return queryString;
     }
 
+    public String getTitle()
+    {
+	String title = null;
+	Property titleProperty = getModel().createProperty(DublinCore.TITLE);
+	Statement stmt = getModel().getProperty(getReportResource(), titleProperty);
+	if (stmt != null) title = stmt.getString();
+	return title;
+    }
+
     @Override
     public List<Error> validate()
     {
@@ -74,4 +84,14 @@ public class ReportRDFForm extends RDFForm
 
         return getErrors();
     }
+
+    public List<Error> validateWithTitle()
+    {
+        if (getTitle() == null || getTitle().equals("")) getErrors().add(new Error("noTitle"));
+        if (getEndpointResource() == null) getErrors().add(new Error("noEndpoint"));
+        if (getQueryString() == null || getQueryString().equals("")) getErrors().add(new Error("noQueryString"));
+
+        return getErrors();
+    }
+
 }
