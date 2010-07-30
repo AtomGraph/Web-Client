@@ -45,7 +45,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
 
 	<xsl:template name="title">
-		Reports
+		Semantic Reports: Reports
 	</xsl:template>
 
 	<xsl:template name="head">

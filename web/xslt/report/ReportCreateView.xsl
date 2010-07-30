@@ -130,7 +130,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="head">
             <title>
-                <xsl:call-template name="title"/>
+                Semantic Reports: <xsl:call-template name="title"/>
             </title>
             
             <xsl:call-template name="report-scripts"/>
