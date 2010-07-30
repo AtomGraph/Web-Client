@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE uridef[
-	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
+        <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
+	<!ENTITY vis "http://code.google.com/apis/visualization/">
+        <!ENTITY spin "http://spinrdf.org/sp#">
 	<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-        <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
-        <!ENTITY vis "http://code.google.com/apis/visualization/">
+	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
         <!ENTITY dc "http://purl.org/dc/elements/1.1/">
-        <!ENTITY spin "http://spinrdf.org/sp#">
+	<!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+	<!ENTITY sioc "http://rdfs.org/sioc/ns#">
+        <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
+        <!ENTITY dbpedia "http://dbpedia.org/resource/">
+        <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
+        <!ENTITY dbpprop "http://dbpedia.org/property/">
+        <!ENTITY category "http://dbpedia.org/resource/Category:">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -230,10 +237,29 @@ exclude-result-prefixes="#all">
 <input type="hidden" name="lt" value="&xsd;string"/>
 
 					<textarea cols="80" rows="20" id="query-string" name="ol">
-						<xsl:if test="not(empty($query-result)) or $view = $update-view">
-							<xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
-						</xsl:if>
+						<xsl:choose>
+						    <xsl:when test="not(empty($query-result)) or $view = $update-view">
+							    <xsl:value-of select="$report//sparql:binding[@name = 'queryString']/sparql:literal"/>
+						    </xsl:when>
+						    <xsl:otherwise>
+<xsl:text>PREFIX rdf: &lt;&rdf;&gt;
+PREFIX rdfs: &lt;&rdfs;&gt;
+PREFIX owl: &lt;&owl;&gt;
+PREFIX xsd: &lt;&xsd;&gt;</xsl:text>
+<xsl:text>
+
+SELECT DISTINCT *
+WHERE
+{
+    ?s ?p ?o
+}
+LIMIT 50</xsl:text>
+
+						    </xsl:otherwise>
+						</xsl:choose>
 					</textarea>
+					<br/>
+					<em>Number of results is limited to 50. rdf:, rdfs:, owl:, xsd: prefixes are included by default</em>
 
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="{$query-uri}"/>

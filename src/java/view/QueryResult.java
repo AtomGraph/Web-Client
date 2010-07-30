@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import model.Namespaces;
 
 /**
  * Static helper class, used to select a model using a SPARQL select string.
@@ -110,6 +111,16 @@ public class QueryResult
         System.out.println("Query: " + queryString);
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
 	query.setLimit(resultLimit);
+	// rdf, rdfs, xsd, foaf, sioc, skos, geo, dbpedia, dbpedia-owl, dbpprop, category
+	query.setPrefix("rdf", Namespaces.RDF_NS);
+	query.setPrefix("rdfs", Namespaces.RDFS_NS);
+	query.setPrefix("owl", Namespaces.OWL_NS);
+	query.setPrefix("xsd", Namespaces.XSD_NS);
+	query.setPrefix("dc", Namespaces.DC_NS);
+	query.setPrefix("foaf", Namespaces.FOAF_NS);
+	query.setPrefix("sioc", Namespaces.SIOC_NS);
+	query.setPrefix("skos", Namespaces.SKOS_NS);
+	query.setPrefix("geo", Namespaces.GEO_NS);
 	
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);
 	try

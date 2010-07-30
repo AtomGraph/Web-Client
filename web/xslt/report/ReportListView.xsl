@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE uridef[
-	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
+        <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
+	<!ENTITY vis "http://code.google.com/apis/visualization/">
+        <!ENTITY spin "http://spinrdf.org/sp#">
 	<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-	<!ENTITY vis "http://code.google.com/apis/visualization/">
-        <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
+        <!ENTITY dc "http://purl.org/dc/elements/1.1/">
+	<!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+	<!ENTITY sioc "http://rdfs.org/sioc/ns#">
         <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
         <!ENTITY dbpedia "http://dbpedia.org/resource/">
         <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
         <!ENTITY dbpprop "http://dbpedia.org/property/">
         <!ENTITY category "http://dbpedia.org/resource/Category:">
-
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -161,10 +164,22 @@ exclude-result-prefixes="#all">
                     <xsl:when test="starts-with($uri, '&owl;')">
                         <xsl:value-of select="concat('owl:', substring-after($uri, '&owl;'))"/>
                     </xsl:when>
-                    <xsl:when test="starts-with($uri, '&skos;')">
+                    <xsl:when test="starts-with($uri, '&dc;')">
+                        <xsl:value-of select="concat('dc:', substring-after($uri, '&dc;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&foaf;')">
+                        <xsl:value-of select="concat('foaf:', substring-after($uri, '&foaf;'))"/>
+                    </xsl:when>
+		    <xsl:when test="starts-with($uri, '&skos;')">
                         <xsl:value-of select="concat('skos:', substring-after($uri, '&skos;'))"/>
                     </xsl:when>
-                    <xsl:when test="starts-with($uri, '&category;')">
+                    <xsl:when test="starts-with($uri, '&sioc;')">
+                        <xsl:value-of select="concat('sioc:', substring-after($uri, '&sioc;'))"/>
+                    </xsl:when>
+                    <xsl:when test="starts-with($uri, '&geo;')">
+                        <xsl:value-of select="concat('geo:', substring-after($uri, '&geo;'))"/>
+                    </xsl:when>
+		    <xsl:when test="starts-with($uri, '&category;')">
                         <xsl:value-of select="concat('category:', substring-after($uri, '&category;'))"/>
                     </xsl:when>
                     <xsl:when test="starts-with($uri, '&dbpedia;')">
@@ -175,9 +190,6 @@ exclude-result-prefixes="#all">
                     </xsl:when>
                     <xsl:when test="starts-with($uri, '&dbpprop;')">
                         <xsl:value-of select="concat('dbpprop:', substring-after($uri, '&dbpprop;'))"/>
-                    </xsl:when>
-                    <xsl:when test="starts-with($uri, '&geo;')">
-                        <xsl:value-of select="concat('geo:', substring-after($uri, '&geo;'))"/>
                     </xsl:when>
 		    <xsl:otherwise>
                         <xsl:value-of select="$uri"/>
