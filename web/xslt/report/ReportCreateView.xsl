@@ -137,7 +137,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
 	<xsl:template name="body-onload">
-            <xsl:if test="$query-result eq true() or $view = $update-view">
+            <xsl:if test="$query-result eq true() or ($view = $update-view and not($query-result eq false()))">
                 <xsl:attribute name="onload">
                     <xsl:text>Report.init([ </xsl:text>
                     <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-type-json"/>
@@ -259,7 +259,7 @@ LIMIT 50</xsl:text>
 						</xsl:choose>
 					</textarea>
 					<br/>
-					<em>Number of results is limited to 50. rdf:, rdfs:, owl:, xsd: prefixes are included by default</em>
+					<em>Number of results is limited to 50</em>
 
 <!-- <input type="hidden" name="sb" value="query"/> -->
 <input type="hidden" name="su" value="{$query-uri}"/>
@@ -368,7 +368,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                 </xsl:if>
 
 				<xsl:choose>
-				    <xsl:when test="$query-result eq true() or $view = $update-view">
+				    <xsl:when test="$query-result eq true() or ($view = $update-view and not($query-result eq false()))">
 					<fieldset>
 					    <legend>Metadata</legend>
 					    <label for="title">Title</label>

@@ -24,7 +24,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import model.Namespaces;
 
 /**
  * Static helper class, used to select a model using a SPARQL select string.
@@ -32,7 +31,8 @@ import model.Namespaces;
  */
 public class QueryResult
 {
-    
+    public static final String DEFAULT_PREFIXES = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
+
     /** Queries model using SPARQL select string
      @param model Model to be queried
      @param queryString SPARQL select string (formatted beforehand)
@@ -109,18 +109,10 @@ public class QueryResult
         ResultSetRewindable resultSet = null;
         System.out.println("Endpoint: " + endpointUri);
         System.out.println("Query: " + queryString);
+
+	//queryString = DEFAULT_PREFIXES + queryString;
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
 	query.setLimit(resultLimit);
-	// rdf, rdfs, xsd, foaf, sioc, skos, geo, dbpedia, dbpedia-owl, dbpprop, category
-	query.setPrefix("rdf", Namespaces.RDF_NS);
-	query.setPrefix("rdfs", Namespaces.RDFS_NS);
-	query.setPrefix("owl", Namespaces.OWL_NS);
-	query.setPrefix("xsd", Namespaces.XSD_NS);
-	query.setPrefix("dc", Namespaces.DC_NS);
-	query.setPrefix("foaf", Namespaces.FOAF_NS);
-	query.setPrefix("sioc", Namespaces.SIOC_NS);
-	query.setPrefix("skos", Namespaces.SKOS_NS);
-	query.setPrefix("geo", Namespaces.GEO_NS);
 	
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);
 	try
