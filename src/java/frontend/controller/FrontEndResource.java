@@ -20,6 +20,7 @@ abstract public class FrontEndResource extends ResourceImpl
 	super(parent);
     }
 
+    @Override
     public String getURI()
     {
 	String uri = getRelativeURI();

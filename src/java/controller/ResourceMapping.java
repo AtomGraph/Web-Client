@@ -10,10 +10,14 @@
 package controller;
 
 import dk.semantic_web.diy.controller.Resource;
+import frontend.controller.resource.FrontPageResource;
+import frontend.controller.resource.PageResource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import model.Page;
+import model.PagePeer;
 import model.Report;
 import model.SDB;
 import thewebsemantic.RDF2Bean;
@@ -54,6 +58,10 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		}
 		return resource;
 	    }
+
+            Page page = PagePeer.doSelectByName(relativeUris[0]);
+            //System.out.println(page.getName()); // page can be null => null pointer exception
+            if (page != null) return new PageResource(page, FrontPageResource.getInstance());
 	}
 
         return null;

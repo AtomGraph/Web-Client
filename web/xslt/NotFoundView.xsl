@@ -31,8 +31,7 @@ exclude-result-prefixes="#all">
             </title>
         </xsl:template>
 
-	<xsl:template name="body-onload">
-        </xsl:template>
+	<xsl:template name="body-onload"/>
 
 	<xsl:template name="content">
 		<div id="main">
