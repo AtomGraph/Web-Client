@@ -82,17 +82,17 @@ public class ReportListView extends FrontEndView
 
 //        setQueryObjects(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/objects.rq"))));
         setQueryUris(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/uris.rq"))));
-        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/endpoints.rq"))));
+        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/endpoint/list/endpoints.rq"))));
 
 	super.display(request, response);
     }
 
     protected void applyPagination(PaginationForm form)
     {
-        if (form.getOffset() != null) offset = form.getOffset();
-        if (form.getLimit() != null) limit = form.getLimit();
+        if (form.getOffset() != null) setOffset(form.getOffset());
+        if (form.getLimit() != null) setLimit(form.getLimit());
         // desc!!!
-        //if (form.getOrderBy() != null) orderBy = form.getOrderBy();
+        //if (form.getOrderBy() != null) setOrderBy(form.getOrderBy());
             //&& Arrays.asList(SortableVariables.values()).contains(SortableVariables.valueOf(form.getOrderBy()))
     }
 
