@@ -111,6 +111,7 @@ exclude-result-prefixes="#all">
 				</a>
 			</td>
 			<td>
+				<xsl:value-of select="sparql:binding[@name = 'reportCount']/sparql:literal"/>
 			</td>
 		</tr>
 	</xsl:template>
