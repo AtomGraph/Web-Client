@@ -12,6 +12,8 @@ import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -57,18 +59,18 @@ public class ReportListView extends FrontEndView
     private Boolean desc = true;
     private SortableVariable orderBy = SortableVariable.CREATED;
 
-    public ReportListView(ReportListResource resource) throws TransformerConfigurationException
+    public ReportListView(ReportListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/report/ReportListView.xsl")));
+        setStyleSheet(getController().getServletContext().getResourceAsStream(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl"), getController().getServletContext().getResource(XSLT_PATH + "report/").toURI().toString());
     }
-
+    
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
         applyPagination(new PaginationForm(request));
         	
-	String queryString = QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
+	String queryString = QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
 	setReports(QueryResult.select(SDB.getDataset(), queryString));
 
         int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.Report)).toList().size();
@@ -80,9 +82,9 @@ public class ReportListView extends FrontEndView
         getTransformer().setParameter("desc-default", true);
         getTransformer().setParameter("desc", getDesc());
 
-//        setQueryObjects(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/objects.rq"))));
-        setQueryUris(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/report/list/uris.rq"))));
-        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getRealPath("/sparql/endpoint/list/endpoints.rq"))));
+//        setQueryObjects(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/objects.rq"))));
+        setQueryUris(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/uris.rq"))));
+        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/list/endpoints.rq"))));
 
 	super.display(request, response);
     }

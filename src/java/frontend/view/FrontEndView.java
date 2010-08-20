@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerException;
  */
 abstract public class FrontEndView extends XSLTView
 {
+    public static final String XSLT_PATH = "/WEB-INF/xslt/";
   
     public FrontEndView(FrontEndResource resource)
     {
@@ -29,6 +30,11 @@ abstract public class FrontEndView extends XSLTView
     public FrontEndView(Controller controller)
     {
 	super(controller);
+    }
+
+    protected String getStyleSheetPath()
+    {
+	return XSLT_PATH + getClass().getSimpleName() + ".xsl";
     }
 
     @Override

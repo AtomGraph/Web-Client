@@ -18,6 +18,7 @@ import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 /**
@@ -27,16 +28,15 @@ import javax.xml.transform.TransformerException;
 public class DataSourceView extends FrontEndView
 {
 
-        public DataSourceView(DataSourceResource resource)
+    public DataSourceView(DataSourceResource resource) throws TransformerConfigurationException
     {
 	super(resource);
+	setStyleSheet(getController().getServletContext().getResourceAsStream("/WEB-INF/xslt/sparql2google-wire.xsl"), "temp");
     }
 
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/sparql2google-wire.xsl")));
-
 	String resultUrlString = request.getParameter("result-url");
 	if (resultUrlString != null)
 	{

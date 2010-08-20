@@ -8,6 +8,8 @@ package frontend.view;
 import frontend.controller.resource.PageResource;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,10 +23,10 @@ import javax.xml.transform.TransformerException;
 public class PageView extends FrontEndView
 {
 
-    public PageView(PageResource resource) throws TransformerConfigurationException
+    public PageView(PageResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
         super(resource);
-        setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/PageView.xsl")));
+        setStyleSheet(getController().getServletContext().getResourceAsStream(getStyleSheetPath()), getController().getServletContext().getResource(XSLT_PATH).toURI().toString());
     }
 
     @Override

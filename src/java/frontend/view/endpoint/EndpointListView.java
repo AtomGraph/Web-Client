@@ -11,6 +11,8 @@ import frontend.controller.FrontEndResource;
 import frontend.view.FrontEndView;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,10 +31,10 @@ import view.XMLSerializer;
 public class EndpointListView extends FrontEndView
 {
 
-    public EndpointListView(FrontEndResource resource) throws TransformerConfigurationException
+    public EndpointListView(FrontEndResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/endpoint/EndpointListView.xsl")));
+        setStyleSheet(getController().getServletContext().getResourceAsStream(getStyleSheetPath()), getController().getServletContext().getResource(XSLT_PATH).toURI().toString());
     }
 
     @Override

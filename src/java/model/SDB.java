@@ -27,7 +27,7 @@ public class SDB
     public static void init(ServletContext context)
     {
 	com.hp.hpl.jena.sdb.SDB.getContext().setTrue(com.hp.hpl.jena.sdb.SDB.unionDefaultGraph);
-        store = SDBFactory.connectStore(context.getRealPath("sdb.ttl"));
+        store = SDBFactory.connectStore(context.getRealPath("/WEB-INF/sdb.ttl"));
 	dataset = DatasetStore.create(store);
 	Model schemaModel = SDBFactory.connectNamedModel(store, "http://temp.com/schema");
 /*
@@ -43,18 +43,10 @@ System.out.println("Union model size: " + dataset.getNamedModel("urn:x-arq:Union
         
         schemaModel.removeAll(); // clean model
 	
-	String fileName = context.getRealPath("/owl/visualizations.owl");
-	InputStream in = FileManager.get().open(fileName);
-	schemaModel.read(in, Namespaces.VIS_NS);
-	fileName = context.getRealPath("/owl/reports.owl");
-	in = FileManager.get().open(fileName);
-	schemaModel.read(in, Namespaces.REPORT_NS);
-	fileName = context.getRealPath("/owl/spin.owl");
-	in = FileManager.get().open(fileName);
-	schemaModel.read(in, Namespaces.SPIN_NS);
-	fileName = context.getRealPath("/owl/sioc.owl");
-	in = FileManager.get().open(fileName);
-	schemaModel.read(in, Namespaces.SIOC_NS);
+	schemaModel.read(context.getResourceAsStream("/WEB-INF/owl/visualizations.owl"), Namespaces.VIS_NS);
+	schemaModel.read(context.getResourceAsStream("/WEB-INF/owl/reports.owl"), Namespaces.REPORT_NS);
+	schemaModel.read(context.getResourceAsStream("/WEB-INF/owl/spin.owl"), Namespaces.SPIN_NS);
+	schemaModel.read(context.getResourceAsStream("/WEB-INF/owl/sioc.owl"), Namespaces.SIOC_NS);
 
         System.out.println("Schema model size: " + dataset.getNamedModel("http://temp.com/schema").size());
         System.out.println("Instance model size: " + dataset.getNamedModel("http://temp.com/instances").size());

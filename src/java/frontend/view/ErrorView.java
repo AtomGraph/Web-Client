@@ -8,6 +8,8 @@ package frontend.view;
 import controller.Controller;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,10 +23,10 @@ import javax.xml.transform.TransformerException;
 public class ErrorView extends FrontEndView
 {
 
-    public ErrorView(Controller controller) throws TransformerConfigurationException
+    public ErrorView(Controller controller) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(controller);
-	setStyleSheet(new File(getController().getServletConfig().getServletContext().getRealPath("/xslt/ErrorView.xsl")));
+        setStyleSheet(getController().getServletContext().getResourceAsStream(getStyleSheetPath()), getController().getServletContext().getResource(XSLT_PATH).toURI().toString());
     }
 
     @Override

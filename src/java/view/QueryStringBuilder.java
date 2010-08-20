@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
@@ -29,7 +30,12 @@ public class QueryStringBuilder
      */
     public static String build(String queryFileName, Object... args) throws FileNotFoundException, IOException
     {
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(queryFileName)));
+        return build(new FileInputStream(queryFileName), args);
+    }
+
+    public static String build(InputStream query, Object... args) throws FileNotFoundException, IOException
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(query));
         StringBuilder sb = new StringBuilder();
         String line = null;
         while ((line = br.readLine()) != null) sb.append(line + "\n");
@@ -37,5 +43,5 @@ public class QueryStringBuilder
         String queryString = sb.toString();
         return String.format(queryString, args);
     }
-    
+
 }
