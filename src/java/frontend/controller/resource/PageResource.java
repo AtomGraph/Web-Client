@@ -6,7 +6,6 @@
 package frontend.controller.resource;
 
 import controller.LeafResource;
-import dk.semantic_web.diy.controller.Resource;
 import dk.semantic_web.diy.view.View;
 import frontend.controller.FrontEndResource;
 import frontend.view.PageView;
