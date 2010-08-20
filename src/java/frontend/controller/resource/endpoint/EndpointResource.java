@@ -5,16 +5,18 @@
 
 package frontend.controller.resource.endpoint;
 
+import controller.LeafResource;
 import frontend.controller.FrontEndResource;
+import model.Endpoint;
 
 /**
  *
  * @author Pumba
  */
-public class EndpointResource extends FrontEndResource
+public class EndpointResource extends FrontEndResource implements LeafResource
 {
 
-    public EndpointResource(EndpointListResource parent)
+    public EndpointResource(Endpoint endpoint, EndpointListResource parent)
     {
 	super(parent);
     }

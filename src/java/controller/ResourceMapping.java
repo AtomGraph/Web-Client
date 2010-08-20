@@ -13,10 +13,12 @@ import dk.semantic_web.diy.controller.Resource;
 import frontend.controller.resource.FrontPageResource;
 import frontend.controller.resource.PageResource;
 import frontend.controller.resource.endpoint.EndpointListResource;
+import frontend.controller.resource.endpoint.EndpointResource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import model.Endpoint;
 import model.Page;
 import model.PagePeer;
 import model.Report;
@@ -59,7 +61,20 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		}
 		return resource;
 	    }
-	    if (relativeUris[0].equals(EndpointListResource.getInstance().getRelativeURI())) return EndpointListResource.getInstance();
+	    if (relativeUris[0].equals(EndpointListResource.getInstance().getRelativeURI()))
+	    {
+		resource = EndpointListResource.getInstance();
+		if (relativeUris.length >= 2)
+		{
+		    Endpoint endpoint = null;
+
+		    if (endpoint != null)
+                    {
+                        //endpoint.setUri(relativeUris[1]);
+                        return new EndpointResource(endpoint, (EndpointListResource)resource);
+                    }
+		}
+	    }
 
             Page page = PagePeer.doSelectByName(relativeUris[0]);
             //System.out.println(page.getName()); // page can be null => null pointer exception
