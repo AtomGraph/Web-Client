@@ -45,12 +45,20 @@ public class EndpointReadView extends FrontEndView
     {
         setEndpoint(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/read/endpoint.rq"), getResource().getEndpoint().getURI())));
 
+	String queryString = QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/read/reports.rq"), getResource().getEndpoint().getURI().toString(), "dateCreated", 0, 20); // QUIRK!!!
+	setReports(QueryResult.select(SDB.getDataset(), queryString));
+
 	super.display(request, response);
     }
 
     private void setEndpoint(ResultSetRewindable endpoint)
     {
 	setDocument(XMLSerializer.serialize(endpoint));
+    }
+
+    protected void setReports(ResultSetRewindable reports)
+    {
+	getResolver().setArgument("reports", XMLSerializer.serialize(reports));
     }
 
 }
