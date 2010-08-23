@@ -17,6 +17,8 @@ import frontend.controller.resource.endpoint.EndpointResource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import model.Endpoint;
 import model.Page;
@@ -32,7 +34,7 @@ import thewebsemantic.RDF2Bean;
 public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapping
 {
     @Override
-    public Resource findByURI(String uri)
+    public Resource findByURI(String uri) throws URISyntaxException
     {
 	Resource resource = null;
 	//Individual instance = Ontology.getJointOntology().getIndividual(URI);
@@ -57,7 +59,7 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
                         report.setId(relativeUris[1]);
                         return new ReportResource(report, (ReportListResource)resource);
                     }
-		    //return null;
+		    return null;
 		}
 		return resource;
 	    }
@@ -66,14 +68,19 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		resource = EndpointListResource.getInstance();
 		if (relativeUris.length >= 2)
 		{
-		    Endpoint endpoint = null;
+		    String fullUri = urlDecode(relativeUris[1]);
+                    RDF2Bean reader = new RDF2Bean(SDB.getInstanceModel());
+                    reader.bindAll("model");
+		    Endpoint endpoint = reader.load(Endpoint.class, fullUri);
 
 		    if (endpoint != null)
                     {
-                        //endpoint.setUri(relativeUris[1]);
+                        endpoint.setURI(new URI(fullUri));
                         return new EndpointResource(endpoint, (EndpointListResource)resource);
                     }
+		    return null;
 		}
+		return resource;
 	    }
 
             Page page = PagePeer.doSelectByName(relativeUris[0]);
