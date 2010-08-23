@@ -6,7 +6,6 @@
 package frontend.view;
 
 import controller.Controller;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -26,7 +25,7 @@ public class ErrorView extends FrontEndView
     public ErrorView(Controller controller) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(controller);
-        setStyleSheet(getController().getServletContext().getResourceAsStream(getStyleSheetPath()), getController().getServletContext().getResource(XSLT_PATH).toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(getStyleSheetPath()).toURI().toString());
     }
 
     @Override

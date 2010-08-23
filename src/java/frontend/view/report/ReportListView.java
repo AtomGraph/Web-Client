@@ -10,7 +10,6 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import frontend.controller.form.PaginationForm;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.view.FrontEndView;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -62,7 +61,7 @@ public class ReportListView extends FrontEndView
     public ReportListView(ReportListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-        setStyleSheet(getController().getServletContext().getResourceAsStream(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl"), getController().getServletContext().getResource(XSLT_PATH + "report/").toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl").toURI().toString());
     }
     
     @Override

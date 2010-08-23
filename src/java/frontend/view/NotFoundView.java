@@ -30,7 +30,7 @@ public class NotFoundView extends FrontEndView
     public NotFoundView(Controller controller) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(controller);
-        setStyleSheet(getController().getServletContext().getResourceAsStream(getStyleSheetPath()), getController().getServletContext().getResource(XSLT_PATH).toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(getStyleSheetPath()).toURI().toString());
     }
 
     @Override

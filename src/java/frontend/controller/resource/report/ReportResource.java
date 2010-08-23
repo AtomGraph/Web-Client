@@ -17,6 +17,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import controller.LeafResource;
 import frontend.controller.FrontEndResource;
 import frontend.view.report.ReportReadView;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -120,7 +122,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
         return view;
     }
 
-    private ReportUpdateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException
+    private ReportUpdateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
         ReportUpdateView view = new ReportUpdateView(this);
 

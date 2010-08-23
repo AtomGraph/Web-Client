@@ -40,7 +40,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     public ReportCreateView(ReportListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-        setStyleSheet(getController().getServletContext().getResourceAsStream(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl"), getController().getServletContext().getResource(XSLT_PATH + "report/").toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl").toURI().toString());
     }
 
     @Override

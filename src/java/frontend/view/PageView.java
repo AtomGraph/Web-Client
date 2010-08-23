@@ -6,7 +6,6 @@
 package frontend.view;
 
 import frontend.controller.resource.PageResource;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -26,7 +25,7 @@ public class PageView extends FrontEndView
     public PageView(PageResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
         super(resource);
-        setStyleSheet(getController().getServletContext().getResourceAsStream(getStyleSheetPath()), getController().getServletContext().getResource(XSLT_PATH).toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(getStyleSheetPath()).toURI().toString());
     }
 
     @Override

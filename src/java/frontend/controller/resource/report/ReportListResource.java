@@ -5,6 +5,8 @@
 
 package frontend.controller.resource.report;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.xml.transform.TransformerConfigurationException;
 import model.vocabulary.DublinCore;
 import com.hp.hpl.jena.query.QueryException;
@@ -102,7 +104,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	return new ReportListView(this);
     }
 
-    private ReportCreateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException
+    private ReportCreateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
         ReportCreateView view = new ReportCreateView(this);
 

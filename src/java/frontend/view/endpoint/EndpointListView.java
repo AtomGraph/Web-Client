@@ -33,7 +33,7 @@ public class EndpointListView extends FrontEndView
     public EndpointListView(FrontEndResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-        setStyleSheet(getController().getServletContext().getResourceAsStream(XSLT_PATH + "endpoint/" + getClass().getSimpleName() + ".xsl"), getController().getServletContext().getResource(XSLT_PATH + "endpoint/").toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "endpoint/" + getClass().getSimpleName() + ".xsl").toURI().toString());
     }
 
     @Override

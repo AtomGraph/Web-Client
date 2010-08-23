@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import javax.xml.transform.TransformerConfigurationException;
 import model.SDB;
 import frontend.controller.resource.report.ReportResource;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +41,7 @@ public class ReportUpdateView extends ReportView implements FormResultView
     {
 	super(resource);
 	//setStyleSheet(new File(getController().getServletContext().getResourceAsStream("/WEB-INF/xslt/report/ReportCreateView.xsl")));
-        setStyleSheet(getController().getServletContext().getResourceAsStream(XSLT_PATH + "report/" + ReportCreateView.class.getSimpleName() + ".xsl"), getController().getServletContext().getResource(XSLT_PATH + "report/").toURI().toString());
+        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "report/" + ReportCreateView.class.getSimpleName() + ".xsl").toURI().toString());
     }
 
     @Override
