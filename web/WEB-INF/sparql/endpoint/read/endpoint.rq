@@ -1,0 +1,19 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+PREFIX spin: <http://spinrdf.org/sp#>
+
+SELECT DISTINCT *
+{
+	?endpoint   rdf:type    rep:Endpoint .
+        OPTIONAL
+        {
+            ?endpoint   dc:title  ?title
+        }
+	#?query	spin:from	?endpoint .
+	#?report	rep:query	?query .
+	FILTER (?endpoint = <%s>)
+}
+#GROUP BY ?endpoint ?title
+#ORDER BY ?title ?endpoint
+#ORDER BY DESC(?reportCount) ?title

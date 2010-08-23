@@ -1,0 +1,18 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX vis: <http://code.google.com/apis/visualization/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+
+SELECT *
+{
+	?report		rdf:type		rep:Report .
+	?report		rep:visualizedBy	?visualization .
+	?visualization	rdf:type		?visType .
+        ?visualization  vis:binding             ?binding .
+        ?binding        rdf:type                ?type
+	OPTIONAL
+	{
+	    ?binding	vis:order   ?order
+	}
+	# cardinality, order, dataType ???
+	FILTER (?report = <%s>)
+}
