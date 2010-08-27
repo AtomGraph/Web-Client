@@ -1,0 +1,872 @@
+@prefix map: <file:/C:/Users/Pumba/WebRoot/d2r-server-0.7/mapping.n3#> .
+@prefix db: <> .
+@prefix vocab: <http://localhost:2020/vocab/resource/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix jdbc: <http://d2rq.org/terms/jdbc/> .
+@prefix d2r: <http://sites.wiwiss.fu-berlin.de/suhl/bizer/d2r-server/config.rdf#> .
+
+<> a d2r:Server;
+    rdfs:label "Wulffmorgenthaler SPARQL endpoint";
+    # d2r:baseURI <http://localhost:8084/wulffmorgenthaler/>;
+    # d2r:port 8084;
+    d2r:baseURI <http://semantic-web.dk:8080/wulffmorgenthaler/>;
+    d2r:port 8080;
+    d2r:vocabularyIncludeInstances true;
+    .
+map:database a d2rq:Database;
+	d2rq:jdbcDriver "com.mysql.jdbc.Driver";
+	# d2rq:jdbcDSN "jdbc:mysql://localhost/wmorgent";
+	d2rq:jdbcDSN "jdbc:mysql://diffie.pil.dk/wmorgent";
+	d2rq:username "wmorgent_d2r_u";
+	d2rq:password "j5f7ghntfg";
+	jdbc:autoReconnect "true";
+	jdbc:zeroDateTimeBehavior "convertToNull";
+	# d2rq:resultSizeLimit 100;
+	.
+
+# Table cartoon_images
+map:cartoon_images a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "cartoon_images/@@cartoon_images.filename|urlify@@";
+	d2rq:class vocab:cartoon_images;
+	d2rq:classDefinitionLabel "cartoon_images";
+	.
+map:cartoon_images__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoon_images;
+	d2rq:property rdfs:label;
+	d2rq:pattern "cartoon_images #@@cartoon_images.filename@@";
+	.
+map:cartoon_images_filename a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoon_images;
+	d2rq:property vocab:cartoon_images_filename;
+	d2rq:propertyDefinitionLabel "cartoon_images filename";
+	d2rq:column "cartoon_images.filename";
+	.
+map:cartoon_images_thumb_filename a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoon_images;
+	d2rq:property vocab:cartoon_images_thumb_filename;
+	d2rq:propertyDefinitionLabel "cartoon_images thumb_filename";
+	d2rq:column "cartoon_images.thumb_filename";
+	.
+map:cartoon_images_icon_filename a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoon_images;
+	d2rq:property vocab:cartoon_images_icon_filename;
+	d2rq:propertyDefinitionLabel "cartoon_images icon_filename";
+	d2rq:column "cartoon_images.icon_filename";
+	.
+map:cartoon_images_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoon_images;
+	d2rq:property vocab:cartoon_images_created_at;
+	d2rq:propertyDefinitionLabel "cartoon_images created_at";
+	d2rq:column "cartoon_images.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:cartoon_images_approved_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoon_images;
+	d2rq:property vocab:cartoon_images_approved_at;
+	d2rq:propertyDefinitionLabel "cartoon_images approved_at";
+	d2rq:column "cartoon_images.approved_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table cartoons
+map:cartoons a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "cartoons/@@cartoons.id@@";
+	d2rq:class vocab:cartoons;
+	d2rq:classDefinitionLabel "cartoons";
+	.
+map:cartoons__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property rdfs:label;
+	d2rq:pattern "cartoons #@@cartoons.id@@";
+	.
+map:cartoons_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_id;
+	d2rq:propertyDefinitionLabel "cartoons id";
+	d2rq:column "cartoons.id";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_type a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_type;
+	d2rq:propertyDefinitionLabel "cartoons type";
+	d2rq:column "cartoons.type";
+	.
+map:cartoons_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_created_at;
+	d2rq:propertyDefinitionLabel "cartoons created_at";
+	d2rq:column "cartoons.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:cartoons_updated_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_updated_at;
+	d2rq:propertyDefinitionLabel "cartoons updated_at";
+	d2rq:column "cartoons.updated_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:cartoons_published_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_published_at;
+	d2rq:propertyDefinitionLabel "cartoons published_at";
+	d2rq:column "cartoons.published_at";
+	d2rq:datatype xsd:date;
+	.
+map:cartoons_image_filename a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_image_filename;
+	d2rq:propertyDefinitionLabel "cartoons image_filename";
+	d2rq:column "cartoons.image_filename";
+	.
+map:cartoons_title a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_title;
+	d2rq:propertyDefinitionLabel "cartoons title";
+	d2rq:column "cartoons.title";
+	.
+map:cartoons_day_index a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_day_index;
+	d2rq:propertyDefinitionLabel "cartoons day_index";
+	d2rq:column "cartoons.day_index";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_rating;
+	d2rq:propertyDefinitionLabel "cartoons rating";
+	d2rq:column "cartoons.rating";
+	d2rq:datatype xsd:float;
+	.
+map:cartoons_yearly_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_yearly_rating;
+	d2rq:propertyDefinitionLabel "cartoons yearly_rating";
+	d2rq:column "cartoons.yearly_rating";
+	d2rq:datatype xsd:float;
+	.
+map:cartoons_monthly_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_monthly_rating;
+	d2rq:propertyDefinitionLabel "cartoons monthly_rating";
+	d2rq:column "cartoons.monthly_rating";
+	d2rq:datatype xsd:float;
+	.
+map:cartoons_weekly_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_weekly_rating;
+	d2rq:propertyDefinitionLabel "cartoons weekly_rating";
+	d2rq:column "cartoons.weekly_rating";
+	d2rq:datatype xsd:float;
+	.
+map:cartoons_daily_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_daily_rating;
+	d2rq:propertyDefinitionLabel "cartoons daily_rating";
+	d2rq:column "cartoons.daily_rating";
+	d2rq:datatype xsd:float;
+	.
+map:cartoons_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_comment_count;
+	d2rq:propertyDefinitionLabel "cartoons comment_count";
+	d2rq:column "cartoons.comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_yearly_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_yearly_comment_count;
+	d2rq:propertyDefinitionLabel "cartoons yearly_comment_count";
+	d2rq:column "cartoons.yearly_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_monthly_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_monthly_comment_count;
+	d2rq:propertyDefinitionLabel "cartoons monthly_comment_count";
+	d2rq:column "cartoons.monthly_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_weekly_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_weekly_comment_count;
+	d2rq:propertyDefinitionLabel "cartoons weekly_comment_count";
+	d2rq:column "cartoons.weekly_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_daily_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_daily_comment_count;
+	d2rq:propertyDefinitionLabel "cartoons daily_comment_count";
+	d2rq:column "cartoons.daily_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:cartoons_newsletter_campaign_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:cartoons;
+	d2rq:property vocab:cartoons_newsletter_campaign_id;
+	d2rq:propertyDefinitionLabel "cartoons newsletter_campaign_id";
+	d2rq:column "cartoons.newsletter_campaign_id";
+	d2rq:datatype xsd:int;
+	.
+
+# Table comments
+map:comments a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "comments/@@comments.id@@";
+	d2rq:class vocab:comments;
+	d2rq:classDefinitionLabel "comments";
+	.
+map:comments__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property rdfs:label;
+	d2rq:pattern "comments #@@comments.id@@";
+	.
+map:comments_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_id;
+	d2rq:propertyDefinitionLabel "comments id";
+	d2rq:column "comments.id";
+	d2rq:datatype xsd:int;
+	.
+map:comments_parent_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_parent_id;
+	d2rq:propertyDefinitionLabel "comments parent_id";
+	d2rq:column "comments.parent_id";
+	d2rq:datatype xsd:int;
+	.
+map:comments_cartoon_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_cartoon_id;
+	d2rq:propertyDefinitionLabel "comments cartoon_id";
+	d2rq:column "comments.cartoon_id";
+	d2rq:datatype xsd:int;
+	.
+map:comments_user_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_user_id;
+	d2rq:propertyDefinitionLabel "comments user_id";
+	d2rq:column "comments.user_id";
+	d2rq:datatype xsd:int;
+	.
+map:comments_nick_name a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_nick_name;
+	d2rq:propertyDefinitionLabel "comments nick_name";
+	d2rq:column "comments.nick_name";
+	.
+map:comments_email a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_email;
+	d2rq:propertyDefinitionLabel "comments email";
+	d2rq:column "comments.email";
+	.
+map:comments_text a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_text;
+	d2rq:propertyDefinitionLabel "comments text";
+	d2rq:column "comments.text";
+	.
+map:comments_thumb_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_thumb_count;
+	d2rq:propertyDefinitionLabel "comments thumb_count";
+	d2rq:column "comments.thumb_count";
+	d2rq:datatype xsd:int;
+	.
+map:comments_ip_address a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_ip_address;
+	d2rq:propertyDefinitionLabel "comments ip_address";
+	d2rq:column "comments.ip_address";
+	d2rq:datatype xsd:int;
+	.
+map:comments_user_agent a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_user_agent;
+	d2rq:propertyDefinitionLabel "comments user_agent";
+	d2rq:column "comments.user_agent";
+	.
+map:comments_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_created_at;
+	d2rq:propertyDefinitionLabel "comments created_at";
+	d2rq:column "comments.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:comments_updated_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_updated_at;
+	d2rq:propertyDefinitionLabel "comments updated_at";
+	d2rq:column "comments.updated_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:comments_is_spam a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:comments;
+	d2rq:property vocab:comments_is_spam;
+	d2rq:propertyDefinitionLabel "comments is_spam";
+	d2rq:column "comments.is_spam";
+	d2rq:datatype xsd:boolean;
+	.
+
+# Table keywords
+map:keywords a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "keywords/@@keywords.id@@";
+	d2rq:class vocab:keywords;
+	d2rq:classDefinitionLabel "keywords";
+	.
+map:keywords__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:keywords;
+	d2rq:property rdfs:label;
+	d2rq:pattern "keywords #@@keywords.id@@";
+	.
+map:keywords_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:keywords;
+	d2rq:property vocab:keywords_id;
+	d2rq:propertyDefinitionLabel "keywords id";
+	d2rq:column "keywords.id";
+	d2rq:datatype xsd:int;
+	.
+map:keywords_cartoon_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:keywords;
+	d2rq:property vocab:keywords_cartoon_id;
+	d2rq:propertyDefinitionLabel "keywords cartoon_id";
+	d2rq:column "keywords.cartoon_id";
+	d2rq:datatype xsd:int;
+	.
+map:keywords_text a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:keywords;
+	d2rq:property vocab:keywords_text;
+	d2rq:propertyDefinitionLabel "keywords text";
+	d2rq:column "keywords.text";
+	.
+map:keywords_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:keywords;
+	d2rq:property vocab:keywords_created_at;
+	d2rq:propertyDefinitionLabel "keywords created_at";
+	d2rq:column "keywords.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table newsletter_campaign
+map:newsletter_campaign a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "newsletter_campaign/@@newsletter_campaign.id@@";
+	d2rq:class vocab:newsletter_campaign;
+	d2rq:classDefinitionLabel "newsletter_campaign";
+	.
+map:newsletter_campaign__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletter_campaign;
+	d2rq:property rdfs:label;
+	d2rq:pattern "newsletter_campaign #@@newsletter_campaign.id@@";
+	.
+map:newsletter_campaign_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletter_campaign;
+	d2rq:property vocab:newsletter_campaign_id;
+	d2rq:propertyDefinitionLabel "newsletter_campaign id";
+	d2rq:column "newsletter_campaign.id";
+	d2rq:datatype xsd:int;
+	.
+map:newsletter_campaign_name a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletter_campaign;
+	d2rq:property vocab:newsletter_campaign_name;
+	d2rq:propertyDefinitionLabel "newsletter_campaign name";
+	d2rq:column "newsletter_campaign.name";
+	.
+map:newsletter_campaign_html_snippet a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletter_campaign;
+	d2rq:property vocab:newsletter_campaign_html_snippet;
+	d2rq:propertyDefinitionLabel "newsletter_campaign html_snippet";
+	d2rq:column "newsletter_campaign.html_snippet";
+	.
+map:newsletter_campaign_published_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletter_campaign;
+	d2rq:property vocab:newsletter_campaign_published_at;
+	d2rq:propertyDefinitionLabel "newsletter_campaign published_at";
+	d2rq:column "newsletter_campaign.published_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:newsletter_campaign_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletter_campaign;
+	d2rq:property vocab:newsletter_campaign_created_at;
+	d2rq:propertyDefinitionLabel "newsletter_campaign created_at";
+	d2rq:column "newsletter_campaign.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table newsletters
+map:newsletters a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "newsletters/@@newsletters.id@@";
+	d2rq:class vocab:newsletters;
+	d2rq:classDefinitionLabel "newsletters";
+	.
+map:newsletters__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletters;
+	d2rq:property rdfs:label;
+	d2rq:pattern "newsletters #@@newsletters.id@@";
+	.
+map:newsletters_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletters;
+	d2rq:property vocab:newsletters_id;
+	d2rq:propertyDefinitionLabel "newsletters id";
+	d2rq:column "newsletters.id";
+	d2rq:datatype xsd:int;
+	.
+map:newsletters_subject a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletters;
+	d2rq:property vocab:newsletters_subject;
+	d2rq:propertyDefinitionLabel "newsletters subject";
+	d2rq:column "newsletters.subject";
+	.
+map:newsletters_message a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletters;
+	d2rq:property vocab:newsletters_message;
+	d2rq:propertyDefinitionLabel "newsletters message";
+	d2rq:column "newsletters.message";
+	.
+map:newsletters_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletters;
+	d2rq:property vocab:newsletters_created_at;
+	d2rq:propertyDefinitionLabel "newsletters created_at";
+	d2rq:column "newsletters.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:newsletters_updated_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:newsletters;
+	d2rq:property vocab:newsletters_updated_at;
+	d2rq:propertyDefinitionLabel "newsletters updated_at";
+	d2rq:column "newsletters.updated_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table ratings
+map:ratings a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "ratings/@@ratings.id@@";
+	d2rq:class vocab:ratings;
+	d2rq:classDefinitionLabel "ratings";
+	.
+map:ratings__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property rdfs:label;
+	d2rq:pattern "ratings #@@ratings.id@@";
+	.
+map:ratings_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property vocab:ratings_id;
+	d2rq:propertyDefinitionLabel "ratings id";
+	d2rq:column "ratings.id";
+	d2rq:datatype xsd:int;
+	.
+map:ratings_cartoon_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property vocab:ratings_cartoon_id;
+	d2rq:propertyDefinitionLabel "ratings cartoon_id";
+	d2rq:column "ratings.cartoon_id";
+	d2rq:datatype xsd:int;
+	.
+map:ratings_user_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property vocab:ratings_user_id;
+	d2rq:propertyDefinitionLabel "ratings user_id";
+	d2rq:column "ratings.user_id";
+	d2rq:datatype xsd:int;
+	.
+map:ratings_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property vocab:ratings_rating;
+	d2rq:propertyDefinitionLabel "ratings rating";
+	d2rq:column "ratings.rating";
+	d2rq:datatype xsd:int;
+	.
+map:ratings_ip_address a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property vocab:ratings_ip_address;
+	d2rq:propertyDefinitionLabel "ratings ip_address";
+	d2rq:column "ratings.ip_address";
+	d2rq:datatype xsd:int;
+	.
+map:ratings_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:ratings;
+	d2rq:property vocab:ratings_created_at;
+	d2rq:propertyDefinitionLabel "ratings created_at";
+	d2rq:column "ratings.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table subscriptions
+map:subscriptions a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "subscriptions/@@subscriptions.email|urlify@@";
+	d2rq:class vocab:subscriptions;
+	d2rq:classDefinitionLabel "subscriptions";
+	.
+map:subscriptions__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:subscriptions;
+	d2rq:property rdfs:label;
+	d2rq:pattern "subscriptions #@@subscriptions.email@@";
+	.
+map:subscriptions_email a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:subscriptions;
+	d2rq:property vocab:subscriptions_email;
+	d2rq:propertyDefinitionLabel "subscriptions email";
+	d2rq:column "subscriptions.email";
+	.
+map:subscriptions_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:subscriptions;
+	d2rq:property vocab:subscriptions_created_at;
+	d2rq:propertyDefinitionLabel "subscriptions created_at";
+	d2rq:column "subscriptions.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table tag_types
+map:tag_types a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "tag_types/@@tag_types.id@@";
+	d2rq:class vocab:tag_types;
+	d2rq:classDefinitionLabel "tag_types";
+	.
+map:tag_types__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tag_types;
+	d2rq:property rdfs:label;
+	d2rq:pattern "tag_types #@@tag_types.id@@";
+	.
+map:tag_types_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tag_types;
+	d2rq:property vocab:tag_types_id;
+	d2rq:propertyDefinitionLabel "tag_types id";
+	d2rq:column "tag_types.id";
+	d2rq:datatype xsd:int;
+	.
+map:tag_types_type a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tag_types;
+	d2rq:property vocab:tag_types_type;
+	d2rq:propertyDefinitionLabel "tag_types type";
+	d2rq:column "tag_types.type";
+	.
+map:tag_types_tag_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tag_types;
+	d2rq:property vocab:tag_types_tag_count;
+	d2rq:propertyDefinitionLabel "tag_types tag_count";
+	d2rq:column "tag_types.tag_count";
+	d2rq:datatype xsd:int;
+	.
+map:tag_types_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tag_types;
+	d2rq:property vocab:tag_types_created_at;
+	d2rq:propertyDefinitionLabel "tag_types created_at";
+	d2rq:column "tag_types.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:tag_types_updated_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tag_types;
+	d2rq:property vocab:tag_types_updated_at;
+	d2rq:propertyDefinitionLabel "tag_types updated_at";
+	d2rq:column "tag_types.updated_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table tags
+map:tags a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "tags/@@tags.id@@";
+	d2rq:class vocab:tags;
+	d2rq:classDefinitionLabel "tags";
+	.
+map:tags__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tags;
+	d2rq:property rdfs:label;
+	d2rq:pattern "tags #@@tags.id@@";
+	.
+map:tags_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tags;
+	d2rq:property vocab:tags_id;
+	d2rq:propertyDefinitionLabel "tags id";
+	d2rq:column "tags.id";
+	d2rq:datatype xsd:int;
+	.
+map:tags_cartoon_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tags;
+	d2rq:property vocab:tags_cartoon_id;
+	d2rq:propertyDefinitionLabel "tags cartoon_id";
+	d2rq:column "tags.cartoon_id";
+	d2rq:datatype xsd:int;
+	.
+map:tags_tag_type_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tags;
+	d2rq:property vocab:tags_tag_type_id;
+	d2rq:propertyDefinitionLabel "tags tag_type_id";
+	d2rq:column "tags.tag_type_id";
+	d2rq:datatype xsd:int;
+	.
+map:tags_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:tags;
+	d2rq:property vocab:tags_created_at;
+	d2rq:propertyDefinitionLabel "tags created_at";
+	d2rq:column "tags.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table thumbs
+map:thumbs a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "thumbs/@@thumbs.id@@";
+	d2rq:class vocab:thumbs;
+	d2rq:classDefinitionLabel "thumbs";
+	.
+map:thumbs__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:thumbs;
+	d2rq:property rdfs:label;
+	d2rq:pattern "thumbs #@@thumbs.id@@";
+	.
+map:thumbs_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:thumbs;
+	d2rq:property vocab:thumbs_id;
+	d2rq:propertyDefinitionLabel "thumbs id";
+	d2rq:column "thumbs.id";
+	d2rq:datatype xsd:int;
+	.
+map:thumbs_comment_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:thumbs;
+	d2rq:property vocab:thumbs_comment_id;
+	d2rq:propertyDefinitionLabel "thumbs comment_id";
+	d2rq:column "thumbs.comment_id";
+	d2rq:datatype xsd:int;
+	.
+map:thumbs_user_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:thumbs;
+	d2rq:property vocab:thumbs_user_id;
+	d2rq:propertyDefinitionLabel "thumbs user_id";
+	d2rq:column "thumbs.user_id";
+	d2rq:datatype xsd:int;
+	.
+map:thumbs_ip_address a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:thumbs;
+	d2rq:property vocab:thumbs_ip_address;
+	d2rq:propertyDefinitionLabel "thumbs ip_address";
+	d2rq:column "thumbs.ip_address";
+	d2rq:datatype xsd:int;
+	.
+map:thumbs_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:thumbs;
+	d2rq:property vocab:thumbs_created_at;
+	d2rq:propertyDefinitionLabel "thumbs created_at";
+	d2rq:column "thumbs.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+
+# Table users
+map:users a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "users/@@users.id@@";
+	d2rq:class vocab:users;
+	d2rq:classDefinitionLabel "users";
+	.
+map:users__label a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property rdfs:label;
+	d2rq:pattern "users #@@users.id@@";
+	.
+map:users_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_id;
+	d2rq:propertyDefinitionLabel "users id";
+	d2rq:column "users.id";
+	d2rq:datatype xsd:int;
+	.
+map:users_nick_name a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_nick_name;
+	d2rq:propertyDefinitionLabel "users nick_name";
+	d2rq:column "users.nick_name";
+	.
+map:users_tagline a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_tagline;
+	d2rq:propertyDefinitionLabel "users tagline";
+	d2rq:column "users.tagline";
+	.
+map:users_subscribes_newsletter a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_subscribes_newsletter;
+	d2rq:propertyDefinitionLabel "users subscribes_newsletter";
+	d2rq:column "users.subscribes_newsletter";
+	d2rq:datatype xsd:byte;
+	.
+map:users_created_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_created_at;
+	d2rq:propertyDefinitionLabel "users created_at";
+	d2rq:column "users.created_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:users_updated_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_updated_at;
+	d2rq:propertyDefinitionLabel "users updated_at";
+	d2rq:column "users.updated_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:users_last_login_at a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_last_login_at;
+	d2rq:propertyDefinitionLabel "users last_login_at";
+	d2rq:column "users.last_login_at";
+	d2rq:datatype xsd:dateTime;
+	.
+map:users_show_real_name a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_show_real_name;
+	d2rq:propertyDefinitionLabel "users show_real_name";
+	d2rq:column "users.show_real_name";
+	d2rq:datatype xsd:byte;
+	.
+map:users_status a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_status;
+	d2rq:propertyDefinitionLabel "users status";
+	d2rq:column "users.status";
+	d2rq:datatype xsd:int;
+	.
+map:users_picture_filename a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_picture_filename;
+	d2rq:propertyDefinitionLabel "users picture_filename";
+	d2rq:column "users.picture_filename";
+	.
+map:users_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_rating;
+	d2rq:propertyDefinitionLabel "users rating";
+	d2rq:column "users.rating";
+	d2rq:datatype xsd:float;
+	.
+map:users_yearly_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_yearly_rating;
+	d2rq:propertyDefinitionLabel "users yearly_rating";
+	d2rq:column "users.yearly_rating";
+	d2rq:datatype xsd:float;
+	.
+map:users_monthly_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_monthly_rating;
+	d2rq:propertyDefinitionLabel "users monthly_rating";
+	d2rq:column "users.monthly_rating";
+	d2rq:datatype xsd:float;
+	.
+map:users_weekly_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_weekly_rating;
+	d2rq:propertyDefinitionLabel "users weekly_rating";
+	d2rq:column "users.weekly_rating";
+	d2rq:datatype xsd:float;
+	.
+map:users_daily_rating a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_daily_rating;
+	d2rq:propertyDefinitionLabel "users daily_rating";
+	d2rq:column "users.daily_rating";
+	d2rq:datatype xsd:float;
+	.
+map:users_thumb_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_thumb_count;
+	d2rq:propertyDefinitionLabel "users thumb_count";
+	d2rq:column "users.thumb_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_yearly_thumb_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_yearly_thumb_count;
+	d2rq:propertyDefinitionLabel "users yearly_thumb_count";
+	d2rq:column "users.yearly_thumb_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_monthly_thumb_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_monthly_thumb_count;
+	d2rq:propertyDefinitionLabel "users monthly_thumb_count";
+	d2rq:column "users.monthly_thumb_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_weekly_thumb_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_weekly_thumb_count;
+	d2rq:propertyDefinitionLabel "users weekly_thumb_count";
+	d2rq:column "users.weekly_thumb_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_daily_thumb_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_daily_thumb_count;
+	d2rq:propertyDefinitionLabel "users daily_thumb_count";
+	d2rq:column "users.daily_thumb_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_comment_count;
+	d2rq:propertyDefinitionLabel "users comment_count";
+	d2rq:column "users.comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_yearly_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_yearly_comment_count;
+	d2rq:propertyDefinitionLabel "users yearly_comment_count";
+	d2rq:column "users.yearly_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_monthly_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_monthly_comment_count;
+	d2rq:propertyDefinitionLabel "users monthly_comment_count";
+	d2rq:column "users.monthly_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_weekly_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_weekly_comment_count;
+	d2rq:propertyDefinitionLabel "users weekly_comment_count";
+	d2rq:column "users.weekly_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_daily_comment_count a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_daily_comment_count;
+	d2rq:propertyDefinitionLabel "users daily_comment_count";
+	d2rq:column "users.daily_comment_count";
+	d2rq:datatype xsd:int;
+	.
+map:users_facebook_id a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_facebook_id;
+	d2rq:propertyDefinitionLabel "users facebook_id";
+	d2rq:column "users.facebook_id";
+	d2rq:datatype xsd:long;
+	.
+map:users_facebook_permissions a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_facebook_permissions;
+	d2rq:propertyDefinitionLabel "users facebook_permissions";
+	d2rq:column "users.facebook_permissions";
+	d2rq:datatype xsd:int;
+	.
+map:users_notifications a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:users;
+	d2rq:property vocab:users_notifications;
+	d2rq:propertyDefinitionLabel "users notifications";
+	d2rq:column "users.notifications";
+	d2rq:datatype xsd:int;
+	.
+
