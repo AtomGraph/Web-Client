@@ -502,32 +502,6 @@ map:ratings_created_at a d2rq:PropertyBridge;
 	d2rq:datatype xsd:dateTime;
 	.
 
-# Table subscriptions
-map:subscriptions a d2rq:ClassMap;
-	d2rq:dataStorage map:database;
-	d2rq:uriPattern "subscriptions/@@subscriptions.email|urlify@@";
-	d2rq:class vocab:subscriptions;
-	d2rq:classDefinitionLabel "subscriptions";
-	.
-map:subscriptions__label a d2rq:PropertyBridge;
-	d2rq:belongsToClassMap map:subscriptions;
-	d2rq:property rdfs:label;
-	d2rq:pattern "subscriptions #@@subscriptions.email@@";
-	.
-map:subscriptions_email a d2rq:PropertyBridge;
-	d2rq:belongsToClassMap map:subscriptions;
-	d2rq:property vocab:subscriptions_email;
-	d2rq:propertyDefinitionLabel "subscriptions email";
-	d2rq:column "subscriptions.email";
-	.
-map:subscriptions_created_at a d2rq:PropertyBridge;
-	d2rq:belongsToClassMap map:subscriptions;
-	d2rq:property vocab:subscriptions_created_at;
-	d2rq:propertyDefinitionLabel "subscriptions created_at";
-	d2rq:column "subscriptions.created_at";
-	d2rq:datatype xsd:dateTime;
-	.
-
 # Table tag_types
 map:tag_types a d2rq:ClassMap;
 	d2rq:dataStorage map:database;

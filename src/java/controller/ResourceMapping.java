@@ -16,6 +16,8 @@ import frontend.controller.resource.endpoint.EndpointListResource;
 import frontend.controller.resource.endpoint.EndpointResource;
 import frontend.controller.resource.report.ReportListResource;
 import frontend.controller.resource.report.ReportResource;
+import frontend.controller.resource.visualization.VisualizationEmbedResource;
+import frontend.controller.resource.visualization.VisualizationListResource;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -78,6 +80,17 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
                         endpoint.setURI(new URI(fullUri));
                         return new EndpointResource(endpoint, (EndpointListResource)resource);
                     }
+		    return null;
+		}
+		return resource;
+	    }
+	    if (relativeUris[0].equals(VisualizationListResource.getInstance().getRelativeURI()))
+	    {
+		resource = VisualizationListResource.getInstance();
+		if (relativeUris.length >= 2)
+		{
+		    if (relativeUris[1].equals(VisualizationEmbedResource.getInstance().getRelativeURI())) return VisualizationEmbedResource.getInstance();
+
 		    return null;
 		}
 		return resource;

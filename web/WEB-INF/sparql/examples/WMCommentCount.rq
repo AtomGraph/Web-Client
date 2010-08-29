@@ -4,7 +4,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX map: <file:/D:/Pumba/WebRoot/d2r-server-0.7/d2r-server-0.7/mapping.n3#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX vocab: <http://localhost:2020/vocab/resource/>
+PREFIX vocab: <http://semantic-web.dk:8080/wulffmorgenthaler/vocab/resource/>
 PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
 
 SELECT ?cartoon ?date (count(*) as ?commentCount)
