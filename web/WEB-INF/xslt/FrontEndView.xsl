@@ -124,10 +124,13 @@ exclude-result-prefixes="#all">
             </script>
             
             <script type="text/javascript" src="static/js/report.js">&#160;</script>
+	    <!--
 	    <script type="text/javascript" src="static/js/sparql.js">&#160;</script>
 	    <script type="text/javascript">
 		var sparqler = new SPARQL.Service("<xsl:value-of select="$host-uri"/>sparql");
+		sparqler.setMethod("GET");
 	    </script>
+	    -->
 	</xsl:template>
 
 </xsl:stylesheet>

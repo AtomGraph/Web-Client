@@ -24,6 +24,7 @@ import view.QueryStringBuilder;
 import view.QueryResult;
 import view.XMLSerializer;
 import dk.semantic_web.diy.controller.Error;
+import view.JSONSerializer;
 
 /**
  *
@@ -91,21 +92,25 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     protected void setVisualizationTypes(ResultSetRewindable visTypes)
     {
 	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
+	getTransformer().setParameter("visualization-types-json", JSONSerializer.serialize(visTypes));
     }
 
     protected void setBindingTypes(ResultSetRewindable bindingTypes)
     {
 	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
+	getTransformer().setParameter("binding-types-json", JSONSerializer.serialize(bindingTypes));
     }
 
     protected void setOptionTypes(ResultSetRewindable optionTypes)
     {
 	getResolver().setArgument("option-types", XMLSerializer.serialize(optionTypes));
+	getTransformer().setParameter("option-types-json", JSONSerializer.serialize(optionTypes));
     }
 
     protected void setDataTypes(ResultSetRewindable dataTypes)
     {
 	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
+	getTransformer().setParameter("data-types-json", JSONSerializer.serialize(dataTypes));
     }
 
     protected void setReport(ResultSetRewindable report)

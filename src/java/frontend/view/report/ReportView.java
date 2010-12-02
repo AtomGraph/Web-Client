@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import model.SDB;
+import view.JSONSerializer;
 import view.QueryStringBuilder;
 import view.QueryResult;
 import view.XMLSerializer;
@@ -79,6 +80,7 @@ abstract public class ReportView extends FrontEndView
     protected void setVisualizations(ResultSetRewindable visualizations)
     {
         getResolver().setArgument("visualizations", XMLSerializer.serialize(visualizations));
+	getTransformer().setParameter("visualizations-json", JSONSerializer.serialize(visualizations));
     }
 
     protected void setBindingTypes(ResultSetRewindable bindingTypes)

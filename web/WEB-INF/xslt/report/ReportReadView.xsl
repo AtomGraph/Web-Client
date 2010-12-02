@@ -35,6 +35,8 @@ exclude-result-prefixes="#all">
 
 	<xsl:include href="../FrontEndView.xsl"/>
 
+	<xsl:param name="visualizations-json" as="xs:string"/>
+
 	<xsl:variable name="report" select="document('arg://report')" as="document-node()"/>
 	<xsl:variable name="report-uri" select="$report//sparql:binding[@name = 'report']/sparql:uri" as="xs:anyURI"/>
         <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
@@ -63,9 +65,9 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="body-onload">
             <xsl:attribute name="onload">
-		    <xsl:text>report = new Report(table, [</xsl:text>
-		    <xsl:apply-templates select="$visualizations//sparql:result" mode="visualization-json"/>
-		    <xsl:text>], [</xsl:text>
+		    <xsl:text>report = new Report(table, </xsl:text>
+		    <xsl:value-of select="$visualizations-json"/>
+		    <xsl:text>, [</xsl:text>
 		    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
 		    <xsl:text>], [</xsl:text>
 		    <xsl:apply-templates select="$options//sparql:result" mode="option-json"/>

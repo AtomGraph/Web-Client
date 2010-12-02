@@ -44,6 +44,11 @@ exclude-result-prefixes="#all">
 	<xsl:param name="create-view" select="'frontend.view.report.ReportCreateView'" as="xs:string"/>
 	<xsl:param name="update-view" select="'frontend.view.report.ReportUpdateView'" as="xs:string"/>
 
+	<xsl:param name="visualization-types-json" as="xs:string"/>
+	<xsl:param name="binding-types-json" as="xs:string"/>
+	<xsl:param name="data-types-json" as="xs:string"/>
+	<xsl:param name="option-types-json" as="xs:string"/>
+
         <xsl:variable name="report" as="document-node()?">
             <xsl:if test="($view = $create-view and not(empty($query-result))) or $view = $update-view">
                 <xsl:sequence select="document('arg://report')"/> <!-- only set after $query-result -->
@@ -140,14 +145,15 @@ exclude-result-prefixes="#all">
 	<xsl:template name="body-onload">
             <xsl:if test="$query-result eq true() or ($view = $update-view and not($query-result eq false()))">
                 <xsl:attribute name="onload">
-                    <xsl:text>Report.init([ </xsl:text>
-                    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-type-json"/>
-		    <xsl:text>], [</xsl:text>
-                    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
-		    <xsl:text>], [</xsl:text>
-		    <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
-		    <xsl:text>], [</xsl:text>
-		    <xsl:apply-templates select="$option-types//sparql:result" mode="option-type-json"/>
+                    <xsl:text>Report.init(</xsl:text>
+                    <xsl:value-of select="$visualization-types-json"/>
+		    <xsl:text>, </xsl:text>
+                    <xsl:value-of select="$binding-types-json"/>
+		    <xsl:text>, </xsl:text>
+		    <!-- <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/> -->
+		    <xsl:value-of select="$data-types-json"/>
+		    <xsl:text>, [</xsl:text>
+		    <xsl:value-of select="$option-types-json"/>
 		    <xsl:text>]); </xsl:text>
 		    <xsl:text>report = new Report(table, [</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-from-type-json"/>
@@ -199,7 +205,7 @@ exclude-result-prefixes="#all">
 <script type="text/javascript">
     function sparql()
     {
-	sparqler.setMethod("GET");
+    alert("<xsl:value-of select="$endpoint-list-query"/>");
 	var query = sparqler.createQuery();
 	query.query("<xsl:value-of select="$endpoint-list-query"/>",
 		{ failure: alert("failure!"), success: function(json) { alert(json); } }
@@ -211,7 +217,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$bindings"/>
 			<xsl:copy-of select="$options"/>
 			-->
-
+<xsl:value-of select="$data-types-json"/>
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">

@@ -131,6 +131,7 @@ public class QueryResult
 	ResultSetFormatter.outputAsXML(stream, results);
     }
 
+    /*
     public static String selectXML(Model model, String queryString) throws IOException
     {
        // System.out.println("Query: " + queryString);
@@ -144,7 +145,8 @@ public class QueryResult
 	ResultSetFormatter.outputAsJSON(jsonout, result);
         return jsonout.toString();
     }
-
+    */
+    
     public static void selectJSONToStream(Dataset dataset, String queryString, OutputStream stream) throws IOException, QueryException
     {
 	ResultSet results = select(dataset, queryString);
