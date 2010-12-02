@@ -28,10 +28,12 @@ public class Endpoint extends RdfBean<Endpoint>
 
     public Endpoint()
     {
+	super();
     }
 
     public Endpoint(URI uri)
     {
+	super();
 	setURI(uri);
     }
 

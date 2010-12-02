@@ -22,7 +22,9 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 
 /**
@@ -97,12 +99,6 @@ public class QueryResult
         return resultSet;
     }
 
-    public static String query(ResultSet results)
-    {
-       // System.out.println("Query: " + queryString);
-        return ResultSetFormatter.asXMLString(results);
-    }
-    
     public static ResultSetRewindable selectRemote(String endpointUri, String queryString, long resultLimit) throws IOException, QueryException
     {
 	//String resultString = null;
@@ -113,7 +109,7 @@ public class QueryResult
 	//queryString = DEFAULT_PREFIXES + queryString;
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
 	query.setLimit(resultLimit);
-	
+
         QueryExecution qe = QueryExecutionFactory.sparqlService(endpointUri, query);
 	try
 	{
@@ -128,7 +124,33 @@ public class QueryResult
 	}
         return resultSet;
     }
-    
+
+    public static void selectXMLToStream(Dataset dataset, String queryString, OutputStream stream) throws IOException, QueryException
+    {
+	ResultSet results = select(dataset, queryString);
+	ResultSetFormatter.outputAsXML(stream, results);
+    }
+
+    public static String selectXML(Model model, String queryString) throws IOException
+    {
+       // System.out.println("Query: " + queryString);
+        return XMLSerializer.serialize(select(model, queryString));
+    }
+
+    public static String selectJSON(Model model, String queryString) throws IOException
+    {
+        OutputStream jsonout = new ByteArrayOutputStream();
+        ResultSet result = select(model, queryString);
+	ResultSetFormatter.outputAsJSON(jsonout, result);
+        return jsonout.toString();
+    }
+
+    public static void selectJSONToStream(Dataset dataset, String queryString, OutputStream stream) throws IOException, QueryException
+    {
+	ResultSet results = select(dataset, queryString);
+	ResultSetFormatter.outputAsJSON(stream, results);
+    }
+
     public static String describe(Model model, String queryString)
     {
         //System.out.println("Query: " + queryString);

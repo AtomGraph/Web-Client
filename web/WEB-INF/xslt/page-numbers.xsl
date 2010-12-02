@@ -21,7 +21,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
                 <li>
                     <xsl:choose>
-                            <xsl:when test="$page-number mod round($page-count div $max-numbers) = 0 or $offset-param = $page-number * $limit-param or $offset-param = ($page-number + 1) * $limit-param or $offset-param = ($page-number - 1) * $limit-param">
+                            <xsl:when test="$page-number mod ceiling($page-count div $max-numbers) = 0 or $offset-param = $page-number * $limit-param or $offset-param = ($page-number + 1) * $limit-param or $offset-param = ($page-number - 1) * $limit-param">
                                     <xsl:choose>
                                             <xsl:when test="$offset-param = $page-number * $limit-param">
                                                     <xsl:value-of select="$page-number * $limit-param + 1"/>&#8211;<xsl:value-of select="($page-number  + 1) * $limit-param"/>

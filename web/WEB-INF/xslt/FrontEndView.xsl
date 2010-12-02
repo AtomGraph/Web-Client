@@ -42,7 +42,7 @@ exclude-result-prefixes="#all">
 				<meta name="google-site-verification" content="9OYr7f_MgT7pH7oSBQY6D2zB7mzZFWy-1ilHcpJtVsg" />
 
                                 <xsl:call-template name="head"/>
-				
+
 				<script type="text/javascript">
 
 				  var _gaq = _gaq || [];
@@ -124,6 +124,10 @@ exclude-result-prefixes="#all">
             </script>
             
             <script type="text/javascript" src="static/js/report.js">&#160;</script>
-        </xsl:template>
+	    <script type="text/javascript" src="static/js/sparql.js">&#160;</script>
+	    <script type="text/javascript">
+		var sparqler = new SPARQL.Service("<xsl:value-of select="$host-uri"/>sparql");
+	    </script>
+	</xsl:template>
 
 </xsl:stylesheet>

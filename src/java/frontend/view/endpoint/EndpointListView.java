@@ -7,7 +7,7 @@ package frontend.view.endpoint;
 
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDF;
-import frontend.controller.FrontEndResource;
+import frontend.controller.resource.endpoint.EndpointListResource;
 import frontend.view.FrontEndView;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,7 +30,7 @@ import view.XMLSerializer;
 public class EndpointListView extends FrontEndView
 {
 
-    public EndpointListView(FrontEndResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
+    public EndpointListView(EndpointListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
         setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "endpoint/" + getClass().getSimpleName() + ".xsl").toURI().toString());

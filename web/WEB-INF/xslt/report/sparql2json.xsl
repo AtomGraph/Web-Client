@@ -51,6 +51,28 @@ exclude-result-prefixes="#all">
 	<xsl:if test="position() != last()">, </xsl:if>
     </xsl:template>
 
+    <xsl:template match="sparql:result" mode="option-type-json">
+	<xsl:text>{ 'type' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
+	<xsl:text>', 'label' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
+	<xsl:text>', 'visType' : '</xsl:text>
+	<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
+	<xsl:text>'</xsl:text>
+	<xsl:if test="sparql:binding[@name = 'name']/sparql:literal">
+	    <xsl:text>, 'name': '</xsl:text>
+	    <xsl:value-of select="sparql:binding[@name = 'name']/sparql:literal"/>
+	    <xsl:text>'</xsl:text>
+	</xsl:if>
+	<xsl:if test="sparql:binding[@name = 'dataType']/sparql:uri">
+	    <xsl:text>, 'dataType': '</xsl:text>
+	    <xsl:value-of select="sparql:binding[@name = 'dataType']/sparql:uri"/>
+	    <xsl:text>'</xsl:text>
+	</xsl:if>
+	<xsl:text>}</xsl:text>
+	<xsl:if test="position() != last()">, </xsl:if>
+    </xsl:template>
+
     <xsl:template match="sparql:result[sparql:binding[@name = 'option']]" mode="option-json">
 	<xsl:text>{ 'option' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'option']/sparql:uri"/>

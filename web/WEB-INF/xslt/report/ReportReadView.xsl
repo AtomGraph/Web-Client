@@ -63,20 +63,13 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="body-onload">
             <xsl:attribute name="onload">
-		    <!--
-                    <xsl:text>Report.init([ </xsl:text>
-                    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-type-json"/>
-		    <xsl:text>], [</xsl:text>
-                    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
-		    <xsl:text>], [</xsl:text>
-		    <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
-		    <xsl:text>]); </xsl:text>
-		    -->
 		    <xsl:text>report = new Report(table, [</xsl:text>
 		    <xsl:apply-templates select="$visualizations//sparql:result" mode="visualization-json"/>
 		    <xsl:text>], [</xsl:text>
 		    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
-		    <xsl:text>], [], [</xsl:text>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$options//sparql:result" mode="option-json"/>
+		    <xsl:text>], [</xsl:text>
                     <xsl:for-each select="$visualizations//sparql:result">
 			<xsl:text>{ 'element' :</xsl:text>
 			<xsl:text>document.getElementById('</xsl:text>

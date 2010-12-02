@@ -9,7 +9,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="450"
-   height="400"
+   height="450"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.46"
@@ -119,7 +119,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1"
      inkscape:cx="358.27042"
-     inkscape:cy="140.35336"
+     inkscape:cy="199.58333"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -162,7 +162,29 @@
            y="56.869553"
            x="198.35028"
            id="tspan2678"
-           sodipodi:role="line">Semantic Reports</tspan></text>
+           sodipodi:role="line">Semantic Report</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
+         x="136"
+         y="431"
+         id="text2492"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan2494"
+           x="136"
+           y="431">Public</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
+         x="346"
+         y="432"
+         id="text2496"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan2498"
+           x="346"
+           y="432">Private</tspan></text>
     </g>
     <rect
        style="fill:#7dcde9;fill-opacity:1;fill-rule:nonzero;stroke:#577d9a;stroke-width:5.17586279;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -175,14 +197,14 @@
     <text
        xml:space="preserve"
        style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
-       x="323.62616"
+       x="337.62616"
        y="206.79453"
        id="text2680"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2682"
-         x="323.62616"
-         y="206.79453">D2R Server</tspan></text>
+         x="337.62616"
+         y="206.79453">Adapter</tspan></text>
     <g
        id="g10173"
        transform="matrix(0.4285714,0,0,1,258.08162,-0.9281912)">
@@ -204,14 +226,14 @@
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
-       x="256"
-       y="138.36218"
+       x="262"
+       y="144.36218"
        id="text8476"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan8478"
-         x="256"
-         y="138.36218">SPARQL</tspan></text>
+         x="262"
+         y="144.36218">SPARQL</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;marker-mid:none;marker-end:url(#Arrow2Send);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
        d="M 375.31486,252.36219 L 375.62389,301.43398"
@@ -274,7 +296,7 @@
          sodipodi:role="line"
          id="tspan10230"
          x="339.62793"
-         y="358.94336">RDBMS</tspan></text>
+         y="358.94336">Database</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        d="M 375.31486,252.36219 L 375.62389,301.43398"
@@ -283,37 +305,82 @@
        inkscape:connection-start="#rect2658"
        inkscape:connection-end="#g10173" />
     <g
-       id="g10240"
-       transform="matrix(0.4285714,0,0,1,58.081618,-0.9281912)">
-      <rect
-         y="306.51447"
-         x="104.1523"
-         height="91.695412"
-         width="341.6954"
-         id="rect10242"
-         style="opacity:1;fill:#7dcde9;fill-opacity:1;fill-rule:nonzero;stroke:#577d9a;stroke-width:8.30458736;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       id="g2469"
+       transform="translate(-34,0)">
+      <g
+         transform="matrix(0.2104146,0,0,1,95.5929,-0.9281912)"
+         id="g10240">
+        <rect
+           style="opacity:1;fill:#7dcde9;fill-opacity:1;fill-rule:nonzero;stroke:#577d9a;stroke-width:8.30458736;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect10242"
+           width="341.6954"
+           height="91.695412"
+           x="104.1523"
+           y="306.51447" />
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text10244"
+         y="347.94336"
+         x="154.96973"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
+         xml:space="preserve"><tspan
+           id="tspan10248"
+           y="347.94336"
+           x="154.96973"
+           sodipodi:role="line">Data-</tspan><tspan
+           id="tspan2467"
+           y="372.94336"
+           x="154.96973"
+           sodipodi:role="line">source</tspan></text>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
-       x="134.96973"
-       y="347.94336"
-       id="text10244"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan10246"
-         x="134.96973"
-         y="347.94336">SPARQL</tspan><tspan
-         sodipodi:role="line"
-         x="134.96973"
-         y="372.94336"
-         id="tspan10248">endpoint</tspan></text>
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Send);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 258.43854,102.36218 L 192.5002,301.43398"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.43199539;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Send);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 248.99569,102.36218 L 144.29227,303.68158"
        id="path10250"
        inkscape:connector-type="polyline"
        inkscape:connection-start="#g10187"
-       inkscape:connection-end="#g10240" />
+       inkscape:connection-end="#g2469" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3.71832705;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:3.71832701, 11.15498104;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 266.80603,281.85916 L 269.19397,447.14084"
+       id="path2463" />
+    <g
+       id="g2476"
+       transform="translate(56.543085,-0.43398)">
+      <g
+         transform="matrix(0.2104146,0,0,1,95.5929,-0.9281912)"
+         id="g2478">
+        <rect
+           style="opacity:1;fill:#7dcde9;fill-opacity:1;fill-rule:nonzero;stroke:#577d9a;stroke-width:8.30458736;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect2480"
+           width="341.6954"
+           height="91.695412"
+           x="104.1523"
+           y="306.51447" />
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text2482"
+         y="347.94336"
+         x="154.96973"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Georgia;-inkscape-font-specification:Georgia"
+         xml:space="preserve"><tspan
+           id="tspan2484"
+           y="347.94336"
+           x="154.96973"
+           sodipodi:role="line">Data-</tspan><tspan
+           id="tspan2486"
+           y="372.94336"
+           x="154.96973"
+           sodipodi:role="line">source</tspan></text>
+    </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.43199539;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Send);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 264.11725,102.36218 L 220.39355,303.2476"
+       id="path2490"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g10187"
+       inkscape:connection-end="#g2476" />
   </g>
 </svg>

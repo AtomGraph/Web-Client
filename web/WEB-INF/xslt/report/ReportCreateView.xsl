@@ -111,6 +111,7 @@ exclude-result-prefixes="#all">
                 </ids>
             </xsl:document>
         </xsl:variable>
+	<xsl:variable name="endpoint-list-query" select="translate(unparsed-text('../../sparql/endpoint/list/endpoints.rq'), '&#10;&#13;', '  ')" as="xs:string"/>
 
         <xsl:key name="result-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
         <xsl:key name="result-by-type" match="sparql:result" use="sparql:binding[@name = 'type']/sparql:uri"/>
@@ -132,7 +133,7 @@ exclude-result-prefixes="#all">
             <title>
                 Semantic Reports: <xsl:call-template name="title"/>
             </title>
-            
+
             <xsl:call-template name="report-scripts"/>
         </xsl:template>
 
@@ -145,6 +146,8 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-type-json"/>
 		    <xsl:text>], [</xsl:text>
 		    <xsl:apply-templates select="$data-types//sparql:result" mode="data-type-json"/>
+		    <xsl:text>], [</xsl:text>
+		    <xsl:apply-templates select="$option-types//sparql:result" mode="option-type-json"/>
 		    <xsl:text>]); </xsl:text>
 		    <xsl:text>report = new Report(table, [</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-from-type-json"/>
@@ -193,10 +196,22 @@ exclude-result-prefixes="#all">
                             <xsl:call-template name="title"/>
                         </h2>
 
-                        <!--
-			<xsl:copy-of select="$data-types"/>
-			<xsl:copy-of select="$binding-types"/>
-                        -->
+<script type="text/javascript">
+    function sparql()
+    {
+	sparqler.setMethod("GET");
+	var query = sparqler.createQuery();
+	query.query("<xsl:value-of select="$endpoint-list-query"/>",
+		{ failure: alert("failure!"), success: function(json) { alert(json); } }
+	);
+    }
+</script>
+<button onclick="sparql();">sparql</button>
+			<!--
+			<xsl:copy-of select="$bindings"/>
+			<xsl:copy-of select="$options"/>
+			-->
+
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">

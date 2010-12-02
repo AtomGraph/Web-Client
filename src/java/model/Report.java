@@ -37,10 +37,12 @@ public class Report extends RdfBean<Report>
 
     public Report()
     {
+	super();
     }
 
     public Report(String title, Query query, UserAccount creator)
     {
+	super();
 	setTitle(title);
 	setQuery(query);
 	setCreator(creator);

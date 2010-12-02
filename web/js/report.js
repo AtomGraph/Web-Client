@@ -2,7 +2,7 @@ var report = null;
 
 function Report(table, visualizations, bindings, options, containers)
 {
-    //alert(visualizations.toSource());
+    //alert(options.toSource());
     
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations;
@@ -31,6 +31,7 @@ Report.XSD_NS = 'http://www.w3.org/2001/XMLSchema#';
 Report.visualizationTypes = new Array();
 Report.bindingTypes = new Array();
 Report.dataTypes = new Array();
+Report.optionTypes = new Array();
 Report.xsd2wireTypes = new Array();
 Report.xsd2wireTypes[Report.XSD_NS + 'boolean'] = 'boolean';
 Report.xsd2wireTypes[Report.XSD_NS + 'string'] = 'string';
@@ -42,12 +43,13 @@ Report.xsd2wireTypes[Report.XSD_NS + 'date'] = 'date';
 Report.xsd2wireTypes[Report.XSD_NS + 'dateTime'] = 'datetime';
 Report.xsd2wireTypes[Report.XSD_NS + 'time'] = 'timeofday';
 
-Report.init = function(visualizationTypes, bindingTypes, dataTypes) // static types (classes)
+Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
 {
     Report.visualizationTypes = visualizationTypes;
     Report.bindingTypes = bindingTypes;
     Report.dataTypes = dataTypes;
-    //Report.optionTypes = optionTypes;
+    Report.optionTypes = optionTypes;
+    //alert(optionTypes.toSource());
 }
 
 Report.prototype.setVisualizations = function(visualizations)
@@ -223,11 +225,25 @@ Report.prototype.draw = function(visualization)
 	var visOptions = objectsByVisType(visualization.type, this.options);
 	var optArray = { };
 	for (var j in visOptions)
-	    optArray[visOptions[j].name] = visOptions[j].value; // set visualization options
+	{
+	    var name = visOptions[j].name;
+	    var value = visOptions[j].value;
+	    if (visOptions[j].name == "hAxis.title")
+	    {
+		name = "hAxis";
+		value = { title: visOptions[j].value }
+	    }
+	    if (visOptions[j].name == "vAxis.title")
+	    {
+		name = "vAxis";
+		value = { title: visOptions[j].value }
+	    }
+	    optArray[name] = value; // set visualization options
+	}
 	
 	optArray["height"] = 450; // CSS doesn't work on Table??
 	optArray["allowHtml"] = true; // to allow hyperlinks in Table
-
+//alert(visualization.type + " " + optArray.toSource());
 	var googleVis = this.googleVisualizations[visualization.type];
 	googleVis.draw(view, optArray);
 

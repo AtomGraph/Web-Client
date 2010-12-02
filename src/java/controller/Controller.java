@@ -49,6 +49,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
 
+	    response.setContentType("text/html");
             ex.printStackTrace(response.getWriter());
             //response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
 
@@ -92,7 +93,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
     {
 	String host = "http://" + request.getServerName();
 	if (request.getServerPort() != 80) host += ":" + request.getServerPort();
-	//host += request.getContextPath();
+	//host += request.getContextPath(); // QUIRK -- doesn't work because of Apache-Tomcat connector
 	host += "/";
         return host;
     }
