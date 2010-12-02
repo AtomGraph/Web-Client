@@ -15,8 +15,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import model.SDB;
 import view.JSONSerializer;
-import view.QueryStringBuilder;
 import view.QueryResult;
+import view.QueryStringBuilder;
 import view.XMLSerializer;
 
 /**
@@ -88,14 +88,22 @@ abstract public class ReportView extends FrontEndView
 	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
     }
 
+    protected void setDataTypes(ResultSetRewindable dataTypes)
+    {
+	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
+	getTransformer().setParameter("data-types-json", JSONSerializer.serialize(dataTypes));
+    }
+
     protected void setBindings(ResultSetRewindable bindings)
     {
 	getResolver().setArgument("bindings", XMLSerializer.serialize(bindings));
+	getTransformer().setParameter("bindings-json", JSONSerializer.serialize(bindings));
     }
 
     protected void setVariables(ResultSetRewindable variables)
     {
         getResolver().setArgument("variables", XMLSerializer.serialize(variables));
+	getTransformer().setParameter("variables-json", JSONSerializer.serialize(variables));
     }
 
     protected void setOptions(ResultSetRewindable options)

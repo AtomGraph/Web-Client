@@ -36,6 +36,9 @@ exclude-result-prefixes="#all">
 	<xsl:include href="../FrontEndView.xsl"/>
 
 	<xsl:param name="visualizations-json" as="xs:string"/>
+	<xsl:param name="bindings-json" as="xs:string"/>
+	<xsl:param name="variables-json" as="xs:string"/>
+	<xsl:param name="data-types-json" as="xs:string"/>
 
 	<xsl:variable name="report" select="document('arg://report')" as="document-node()"/>
 	<xsl:variable name="report-uri" select="$report//sparql:binding[@name = 'report']/sparql:uri" as="xs:anyURI"/>
@@ -44,7 +47,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
 	<xsl:variable name="options" select="document('arg://options')" as="document-node()?"/>
 	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
-        <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/>
+        <!-- <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/> -->
         <xsl:variable name="comments" select="document('arg://comments')" as="document-node()"/>
 
         <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
@@ -65,11 +68,13 @@ exclude-result-prefixes="#all">
 
 	<xsl:template name="body-onload">
             <xsl:attribute name="onload">
-		    <xsl:text>report = new Report(table, </xsl:text>
+		    <xsl:text>Report.shit(</xsl:text>
+		    <xsl:value-of select="$data-types-json"/>
+		    <xsl:text>); report = new Report(table, </xsl:text>
 		    <xsl:value-of select="$visualizations-json"/>
+		    <xsl:text>, </xsl:text>
+		    <xsl:value-of select="$bindings-json"/>
 		    <xsl:text>, [</xsl:text>
-		    <xsl:apply-templates select="$bindings//sparql:result" mode="binding-json"/>
-		    <xsl:text>], [</xsl:text>
 		    <xsl:apply-templates select="$options//sparql:result" mode="option-json"/>
 		    <xsl:text>], [</xsl:text>
                     <xsl:for-each select="$visualizations//sparql:result">
@@ -83,10 +88,7 @@ exclude-result-prefixes="#all">
 			<xsl:if test="position() != last()">,</xsl:if>
 		    </xsl:for-each>
 		    <xsl:text>]); report.setVariables(</xsl:text>
-		    <xsl:text>[</xsl:text>
-		    <xsl:apply-templates select="$variables//sparql:result" mode="variable-json"/>
-		    <xsl:text>]</xsl:text>
-
+		    <xsl:value-of select="$variables-json"/>
 		    <xsl:text>); report.show();</xsl:text>
             </xsl:attribute>
         </xsl:template>
