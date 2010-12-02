@@ -193,9 +193,10 @@ Report.prototype.columnsByVariables = function(variables)
             //var binding = bindingByVariable(this.bindings.results.bindings, variables[i]);
 	    var binding = this.bindings.results.bindings.filter(function(el) { return el.binding.value == variables[i].binding.value; } )[0];
 //alert(binding.toSource());
-
-	    if ("order" in binding) orderColumns[binding.order] = variables[i].variable;
-            else restColumns = restColumns.concat(variables[i].variable);
+//alert(binding.toSource() + "\n" + variables[i].toSource());
+//QUIRK -- why order is string???
+	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variables[i].variable.value);
+            else restColumns = restColumns.concat(parseInt(variables[i].variable.value));
         }
         return orderColumns.concat(restColumns);
 }
@@ -239,16 +240,18 @@ Report.prototype.draw = function(visualization)
 {
 	//var visVariables = objectsByVisType(visualization.type.value, this.variables);
 	var visVariables = this.variables.filter(function(el) { return el.visType.value == visualization.type.value; } )
-//alert(visVariables.toSource());
+//alert(visualization.toSource() + " " + visVariables.toSource());
 	var visColumns = this.columnsByVariables(visVariables);
 //alert(visualization.toSource() + " " + visColumns.toSource());
+/*
 var columnArr = new Array();
 for (var i in visColumns)
     columnArr = columnArr.concat(parseInt(visColumns[i].value));
-alert(columnArr.toSource());
+*/
+//alert(visualization.toSource() + " " + columnArr.toSource());
 //alert(visType + "  " + bindings.toSource() + " " + variables.toSource());
 	var view = new google.visualization.DataView(this.data);
-	if (visualization.type.value.indexOf("Table") == -1) view.setColumns(columnArr); // all columns for Table
+	if (visualization.type.value.indexOf("Table") == -1) view.setColumns(visColumns); // all columns for Table
 
 	//var visOptions = objectsByVisType(visualization.type.value, this.options);
 	var visOptions = this.options.filter(function(el) { return el.visType == visualization.type.value; } )
