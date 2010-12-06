@@ -38,6 +38,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="visualizations-json" as="xs:string"/>
 	<xsl:param name="bindings-json" as="xs:string"/>
 	<xsl:param name="variables-json" as="xs:string"/>
+	<xsl:param name="binding-types-json" as="xs:string"/> <!-- QUIRK - should not be necessary! -->
 	<xsl:param name="data-types-json" as="xs:string"/>
 
 	<xsl:variable name="report" select="document('arg://report')" as="document-node()"/>
@@ -69,6 +70,8 @@ exclude-result-prefixes="#all">
 	<xsl:template name="body-onload">
             <xsl:attribute name="onload">
 		    <xsl:text>Report.shit(</xsl:text>
+		    <xsl:value-of select="$binding-types-json"/>
+		    <xsl:text>, </xsl:text>
 		    <xsl:value-of select="$data-types-json"/>
 		    <xsl:text>); report = new Report(table, </xsl:text>
 		    <xsl:value-of select="$visualizations-json"/>

@@ -86,6 +86,7 @@ abstract public class ReportView extends FrontEndView
     protected void setBindingTypes(ResultSetRewindable bindingTypes)
     {
 	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
+	getTransformer().setParameter("binding-types-json", JSONSerializer.serialize(bindingTypes));
     }
 
     protected void setDataTypes(ResultSetRewindable dataTypes)

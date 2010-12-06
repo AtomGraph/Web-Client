@@ -43,15 +43,16 @@ Report.xsd2wireTypes[Report.XSD_NS + 'date'] = 'date';
 Report.xsd2wireTypes[Report.XSD_NS + 'dateTime'] = 'datetime';
 Report.xsd2wireTypes[Report.XSD_NS + 'time'] = 'timeofday';
 
-Report.shit = function(dataTypes) // static types (classes)
+Report.shit = function(bindingTypes, dataTypes) // static types (classes)
 {
-    //alert(dataTypes.toSource());
+    //alert(bindingTypes.toSource());
+    Report.bindingTypes = bindingTypes; //  QUIRK -- should not be necessary if bindings are saved with "order"!!!
     Report.dataTypes = dataTypes;
 }
 
 Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
 {
-    //alert(visualizationTypes.results.toSource());
+    alert(bindingTypes);
     Report.visualizationTypes = visualizationTypes;
     Report.bindingTypes = bindingTypes;
     Report.dataTypes = dataTypes;
@@ -185,17 +186,19 @@ Report.prototype.hasSufficientColumns = function(visualization)
 
 Report.prototype.columnsByVariables = function(variables)
 {
-//alert(bindings.toSource());
+//alert(variables.toSource());
 	var orderColumns = new Array();
         var restColumns = new Array();
         for (var i in variables)
         {
             //var binding = bindingByVariable(this.bindings.results.bindings, variables[i]);
-	    var binding = this.bindings.results.bindings.filter(function(el) { return el.binding.value == variables[i].binding.value; } )[0];
-//alert(binding.toSource());
+	    //var binding = this.bindings.results.bindings.filter(function(el) { return el.binding.value == variables[i].binding.value; } )[0];
+	    var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == variables[i].bindingType.value; } )[0];
+//alert(bindingType.toSource());
 //alert(binding.toSource() + "\n" + variables[i].toSource());
-//QUIRK -- why order is string???
-	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variables[i].variable.value);
+// QUIRK -- why order is string???
+// QUIRK -- binding.order should be used instead of bindingType.order
+	    if ("order" in bindingType) orderColumns[parseInt(bindingType.order.value)] = parseInt(variables[i].variable.value);
             else restColumns = restColumns.concat(parseInt(variables[i].variable.value));
         }
         return orderColumns.concat(restColumns);
@@ -257,6 +260,7 @@ for (var i in visColumns)
 	var visOptions = this.options.filter(function(el) { return el.visType == visualization.type.value; } )
 
 	var optArray = { };
+	/*
 	for (var j in visOptions)
 	{
 	    var name = visOptions[j].name;
@@ -273,7 +277,7 @@ for (var i in visColumns)
 	    }
 	    optArray[name] = value; // set visualization options
 	}
-	
+	*/
 	optArray["height"] = 450; // CSS doesn't work on Table??
 	optArray["allowHtml"] = true; // to allow hyperlinks in Table
 //alert(visualization.type + " " + optArray.toSource());
