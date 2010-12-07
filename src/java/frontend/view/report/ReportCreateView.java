@@ -116,26 +116,31 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     protected void setReport(ResultSetRewindable report)
     {
         getResolver().setArgument("report", XMLSerializer.serialize(report));
+	getTransformer().setParameter("report-json", JSONSerializer.serialize(report));
     }
 
     protected void setVisualizations(ResultSetRewindable visualizations)
     {
         getResolver().setArgument("visualizations", XMLSerializer.serialize(visualizations));
+	getTransformer().setParameter("visualizations-json", JSONSerializer.serialize(visualizations));
     }
 
     protected void setBindings(ResultSetRewindable bindings)
     {
 	getResolver().setArgument("bindings", XMLSerializer.serialize(bindings));
+	getTransformer().setParameter("bindings-json", JSONSerializer.serialize(bindings));
     }
 
     protected void setVariables(ResultSetRewindable variables)
     {
         getResolver().setArgument("variables", XMLSerializer.serialize(variables));
+	getTransformer().setParameter("variables-json", JSONSerializer.serialize(variables));
     }
 
     protected void setOptions(ResultSetRewindable options)
     {
         getResolver().setArgument("options", XMLSerializer.serialize(options));
+	getTransformer().setParameter("options-json", JSONSerializer.serialize(options));
     }
 
     @Override

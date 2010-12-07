@@ -44,6 +44,9 @@ exclude-result-prefixes="#all">
 	<xsl:param name="create-view" select="'frontend.view.report.ReportCreateView'" as="xs:string"/>
 	<xsl:param name="update-view" select="'frontend.view.report.ReportUpdateView'" as="xs:string"/>
 
+	<xsl:param name="visualizations-json" as="xs:string"/>
+	<xsl:param name="bindings-json" as="xs:string"/>
+	<xsl:param name="variables-json" as="xs:string"/>
 	<xsl:param name="visualization-types-json" as="xs:string"/>
 	<xsl:param name="binding-types-json" as="xs:string"/>
 	<xsl:param name="data-types-json" as="xs:string"/>
@@ -155,11 +158,11 @@ exclude-result-prefixes="#all">
 		    <xsl:text>, [</xsl:text>
 		    <xsl:value-of select="$option-types-json"/>
 		    <xsl:text>]); </xsl:text>
-		    <xsl:text>report = new Report(table, [</xsl:text>
+		    <xsl:text>report = new Report(table, { 'results' : { 'bindings' : [</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-from-type-json"/>
-		    <xsl:text>], [</xsl:text>
+		    <xsl:text>] } }, { 'results' : { 'bindings' : [</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
-		    <xsl:text>], [], [</xsl:text>
+		    <xsl:text>] } }, [], [</xsl:text>
                     <xsl:for-each select="$visualization-types//sparql:result">
 			<xsl:text>{ 'element' :</xsl:text>
 			<xsl:text>document.getElementById('</xsl:text>
@@ -177,9 +180,8 @@ exclude-result-prefixes="#all">
 		    <xsl:text>]); report.setBindingTypeElements([</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>
 		    <xsl:text>]); report.setVariables(</xsl:text>
-		    <xsl:text>[</xsl:text>
-		    <xsl:apply-templates select="$variables//sparql:result" mode="variable-json"/>
-		    <xsl:text>]);</xsl:text>
+		    <xsl:value-of select="$variables-json"/>
+		    <xsl:text>);</xsl:text>
 
 		    <xsl:text>report.showWithControls(); </xsl:text>
 
@@ -723,14 +725,13 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 		</xsl:choose>
 	    </xsl:variable>
 
-	<xsl:text>{ 'visualization': '</xsl:text>
+	<xsl:text>{ 'visualization': { 'type' : 'uri', 'value' : '</xsl:text>
 	<xsl:value-of select="$visualization-uri"/>
-	<xsl:text>', 'type': '</xsl:text>
+	<xsl:text>' }, 'type': { 'type' : 'uri', 'value' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-	<xsl:text>', 'report' : '</xsl:text>
+	<xsl:text>' }, 'report' : { 'type' : 'uri', 'value' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'report']/sparql:uri"/>
-	<xsl:text>'</xsl:text>
-	<xsl:text>}</xsl:text>
+	<xsl:text>' } }</xsl:text>
 	<xsl:if test="position() != last()">,</xsl:if>
     </xsl:template>
 
@@ -749,16 +750,17 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
             </xsl:choose>
         </xsl:variable>
 
-	<xsl:text>{ 'binding': '</xsl:text>
+	<xsl:text>{ 'binding': { 'type' : 'uri', 'value' : '</xsl:text>
 	<xsl:value-of select="$binding-uri"/>
-	<xsl:text>', 'type': '</xsl:text>
+	<xsl:text>' }, 'type': { 'type' : 'uri', 'value' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-	<xsl:text>', 'visType' : '</xsl:text>
+	<xsl:text>' }, 'visType' : { 'type' : 'uri', 'value' : '</xsl:text>
 	<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
-	<xsl:text>'</xsl:text>
+	<xsl:text>'} </xsl:text>
 	<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
-	    <xsl:text>, 'order': </xsl:text>
+	    <xsl:text>, 'order': { 'type' : 'typed-literal', 'value' : '</xsl:text>
 	    <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
+	    <xsl:text>' }</xsl:text>
 	</xsl:if>
 	<xsl:text>}</xsl:text>
 	<xsl:if test="position() != last()">,</xsl:if>

@@ -52,7 +52,7 @@ Report.shit = function(bindingTypes, dataTypes) // static types (classes)
 
 Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
 {
-    alert(bindingTypes);
+    //alert(bindingTypes.toSource());
     Report.visualizationTypes = visualizationTypes;
     Report.bindingTypes = bindingTypes;
     Report.dataTypes = dataTypes;
@@ -166,7 +166,7 @@ function initOptions(visType, optionElements, options)
 Report.prototype.hasSufficientColumns = function(visualization)
 {
     //var visBindings = objectsByVisType(visualization.type.value, this.bindings);
-    var visBindings = this.bindings.filter(function(el) { return el.visType == visualization.type.value; } )
+    var visBindings = this.bindings.results.bindings.filter(function(el) { return el.visType == visualization.type.value; } )
 
     for (var i in visBindings)
     {
@@ -208,24 +208,26 @@ Report.prototype.showWithControls = function()
 {
     //alert(this.visTypeToggleElements.toSource());
     
-    for (var i in this.visualizations)
+    for (var i in this.visualizations.results.bindings)
     {
+	var visualization = this.visualizations.results.bindings[i];
+//alert(visualization.toSource());
 	//var toggleElement = objectByVisType(this.visualizations[i].type.value, this.visTypeToggleElements);
-	var toggleElement = this.visTypeToggleElements.filter(function(el) { return el.visType == this.visualizations[i].type.value; } )[0];
+	var toggleElement = this.visTypeToggleElements.filter(function(el) { return el.visType == visualization.type.value; } )[0];
 
 //alert(toggleElement.toSource());
 
-	if (this.hasSufficientColumns(this.visualizations[i]))
+	if (this.hasSufficientColumns(this.visualizations.results.bindings[i]))
 	{
 	    //alert("sufficient" + this.visualizations[i].toSource());
-	    this.fillControls(this.visualizations[i]);
-	    this.draw(this.visualizations[i]);
+	    this.fillControls(this.visualizations.results.bindings[i]);
+	    this.draw(this.visualizations.results.bindings[i]);
 	    toggleElement.element.checked = true;
 	}
         else
 	{
 	    //alert("nope");
-	    this.toggleVisualization(this.visualizations[i], false); // switch off
+	    this.toggleVisualization(this.visualizations.results.bindings[i], false); // switch off
 	    toggleElement.element.disabled = true;
 	}
     }
