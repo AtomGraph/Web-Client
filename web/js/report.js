@@ -440,20 +440,22 @@ Report.prototype.toggleVisualization = function(visType, show)
 
 Report.prototype.getBindingVariables = function(bindingTypeElement, binding)
 {
-	var variables = new Array();
+alert(binding.toSource());
 
-	for (var i in bindingTypeElement.element.options)
-            if (bindingTypeElement.element.options[i].selected)
-                {
-                    var variable = { };
-                    variable.variable = Number(bindingTypeElement.element.options[i].value);
-		    variable.binding = binding.binding;
-		    variable.bindingType = binding.type;
-		    variable.visualization = binding.visualization;
-		    variable.visType = binding.visType;
-                    variables.push(variable);
-                }
-	return variables;
+    var variables = new Array();
+
+    for (var i in bindingTypeElement.element.options)
+	if (bindingTypeElement.element.options[i].selected)
+	    {
+		var variable = { };
+		variable.variable = Number(bindingTypeElement.element.options[i].value);
+		variable.binding = binding.binding;
+		variable.bindingType = binding.type;
+		variable.visualization = binding.visualization;
+		variable.visType = binding.visType;
+		variables.push(variable);
+	    }
+    return variables;
 }
 
 Report.prototype.getVariablesFromControls = function() // bindings???
@@ -464,9 +466,10 @@ Report.prototype.getVariablesFromControls = function() // bindings???
     for (var i in this.bindingTypeElements)
     {
 	//var binding = objectByType(this.bindingTypeElements[i].bindingType, this.bindings);
-	var binding = this.bindings.filter(function(el) { return el.type == this.bindingTypeElements[i].bindingType; } )[0];
+	var element = this.bindingTypeElements[i];
+	var binding = this.bindings.results.bindings.filter(function(el) { return el.type.value == element.bindingType; } )[0];
 
-//alert(binding.toSource());
+alert(binding.toSource());
         variables = variables.concat(this.getBindingVariables(this.bindingTypeElements[i], binding));
     }
     return variables;
