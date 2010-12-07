@@ -76,7 +76,7 @@ Report.prototype.setVariables = function(variables)
     this.variables = variables;
 
     var bindings = this.getBindingsWithoutVariables();
-    //alert(bindings.toSource());
+//alert(bindings.toSource());
     var missingVars = this.createVariables(bindings);
     //alert(missingVars.toSource());
     this.variables = this.variables.results.bindings.concat(missingVars);
@@ -112,24 +112,23 @@ Report.prototype.initVis = function(containerElement, visType)
 
 Report.prototype.fillControls = function(visualization)
 {
+//alert(visualization.toSource());
     //var visTypeResults = filterResults(Report.bindingTypes.results.bindings, 'visType', visualization.type.value);
-    var visTypeResults = Report.bindingTypes.results.bindings.filter(function(el) { return el.visType == visualization.type.value; } )
+    var visBindingTypes = Report.bindingTypes.results.bindings.filter(function(el) { return el.visType.value == visualization.type.value; } )
+//alert(visBindingTypes.toSource());
 
-//alert(visTypeResults.toSource());
-
-    for (var i in visTypeResults)
+    for (var i in visBindingTypes)
     {
 //alert(visBindingTypes[i].type);
 	//var bindingElement = this.elementByBindingType(visTypeResults[i].type.value);
-	var bindingElement = this.bindingTypeElements.filter(function(el) { return el.bindingType == visTypeResults[i].type.value; } )[0];
+	var bindingElement = this.bindingTypeElements.filter(function(el) { return el.bindingType == visBindingTypes[i].type.value; } )[0];
 //alert(bindingElement.toSource());
 
-	var bindingColumns = this.columnsByBindingType(visTypeResults[i].type.value);
-	//alert(bindingElement.toSource());
-//alert(visBindingTypes[i].toSource() + " " + bindingColumns.toSource());
+	var bindingColumns = this.columnsByBindingType(visBindingTypes[i]);
+//alert(visBindingTypes[i].toSource() + "\n\n" + bindingColumns.toSource());
 
-	if (!(("cardinality" in visTypeResults[i] && visTypeResults[i].cardinality == 1) ||
-		("maxCardinality" in visTypeResults[i] && visTypeResults[i].maxCardinality == 1)))
+	if (!(("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality.value == 1) ||
+		("maxCardinality" in visBindingTypes[i] && visBindingTypes[i].maxCardinality.value == 1)))
 	    bindingElement.element.multiple = "multiple";
 
 	for (var j in bindingColumns)
@@ -138,7 +137,7 @@ Report.prototype.fillControls = function(visualization)
 	    option.appendChild(document.createTextNode(this.data.getColumnLabel(bindingColumns[j])));
 	    option.setAttribute("value", bindingColumns[j]);
 
-	    if (this.variableExists(visTypeResults[i], bindingColumns[j]))
+	    if (this.variableExists(visBindingTypes[i], bindingColumns[j]))
 		option.setAttribute("selected", "selected");
 //alert(visBindingTypes[i].toSource());
 	    bindingElement.element.appendChild(option);
@@ -165,20 +164,23 @@ function initOptions(visType, optionElements, options)
 
 Report.prototype.hasSufficientColumns = function(visualization)
 {
+//alert(Report.bindingTypes.results.bindings.toSource());
     //var visBindings = objectsByVisType(visualization.type.value, this.bindings);
-    var visBindings = this.bindings.results.bindings.filter(function(el) { return el.visType == visualization.type.value; } )
+    var visBindings = this.bindings.results.bindings.filter(function(el) { return el.visualization.value == visualization.visualization.value; } );
+//alert(visBindings.toSource());
 
     for (var i in visBindings)
     {
+//alert(visBindings[i].toSource());
         var columns = this.columnsByBinding(visBindings[i]);
 	//var bindingType = objectByType(visBindings[i].type, Report.bindingTypes.results.bindings);
 	//var bindingType = filterResults(Report.bindingTypes.results.bindings, 'type', visBindings[i].type)[0];
-	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == visBindings[i].bindingType.value; } )[0];
+	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == visBindings[i].type.value; } )[0];
 
 //alert(bindingType.toSource());
 
-        if ("cardinality" in bindingType && bindingType.cardinality > columns.length) return false;
-        if ("minCardinality" in bindingType && bindingType.minCardinality > columns.length) return false;
+        if ("cardinality" in bindingType && bindingType.cardinality.value > columns.length) return false;
+        if ("minCardinality" in bindingType && bindingType.minCardinality.value > columns.length) return false;
 	// maxCardinality???
     }
     return true;
@@ -195,13 +197,18 @@ Report.prototype.columnsByVariables = function(variables)
 	    //var binding = this.bindings.results.bindings.filter(function(el) { return el.binding.value == variables[i].binding.value; } )[0];
 	    var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == variables[i].bindingType.value; } )[0];
 //alert(bindingType.toSource());
-//alert(binding.toSource() + "\n" + variables[i].toSource());
+//alert(bindingType.toSource() + "\n\n" + variables[i].toSource() + "\n\n" + orderColumns.toSource() + "\n\n" + parseInt(bindingType.order.value));
+//alert(variables[i].variable.value);
+//alert(orderColumns.toSource() + "\n\n" + restColumns.toSource());
+//alert("order: " + bindingType.order.value + "\n\n" + "value: " + variables[i].variable.value);
 // QUIRK -- why order is string???
 // QUIRK -- binding.order should be used instead of bindingType.order
 	    if ("order" in bindingType) orderColumns[parseInt(bindingType.order.value)] = parseInt(variables[i].variable.value);
             else restColumns = restColumns.concat(parseInt(variables[i].variable.value));
         }
-        return orderColumns.concat(restColumns);
+	var columns = orderColumns.concat(restColumns);
+//alert(columns.toSource());
+	return columns;
 }
 
 Report.prototype.showWithControls = function()
@@ -243,11 +250,12 @@ Report.prototype.show = function()
 
 Report.prototype.draw = function(visualization)
 {
+//alert(this.variables.toSource());
 	//var visVariables = objectsByVisType(visualization.type.value, this.variables);
 	var visVariables = this.variables.filter(function(el) { return el.visType.value == visualization.type.value; } )
-//alert(visualization.toSource() + " " + visVariables.toSource());
+//alert(visualization.toSource() + "\n\n" + visVariables.toSource());
 	var visColumns = this.columnsByVariables(visVariables);
-//alert(visualization.toSource() + " " + visColumns.toSource());
+//alert(visualization.toSource() + "\n\n" + visColumns.toSource());
 /*
 var columnArr = new Array();
 for (var i in visColumns)
@@ -327,14 +335,14 @@ function columnsByWireType(wireType)
 
 Report.wireTypesByBindingType = function(bindingType)
 {
+//alert(bindingType.toSource());
     var wireTypes = new Array();
-    //var bindingTypeResults = filterResults(Report.dataTypes.results.bindings, 'bindingType', bindingType);
-    var bindingTypeResults = Report.dataTypes.results.bindings.filter(function(el) { return el.bindingType == bindingType; } )
+    var bindingTypeDataTypes = Report.dataTypes.results.bindings.filter(function(el) { return el.bindingType.value == bindingType.type.value; } )
 
 //alert(bindingTypeResults.toSource());
-    for (var i in bindingTypeResults)
+    for (var i in bindingTypeDataTypes)
     {
-        var wireType = Report.xsdTypeToWireType(bindingTypeResults[i].type.value);
+        var wireType = Report.xsdTypeToWireType(bindingTypeDataTypes[i].type.value);
         if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType); // no duplicates
     }
 //alert(wireTypes);
@@ -343,21 +351,21 @@ Report.wireTypesByBindingType = function(bindingType)
 
 Report.prototype.columnsByBindingType = function(bindingType)
 {
-//alert(bindingType);
+//alert(bindingType.toSource());
     var bindingColumns = new Array();
     var wireTypes = Report.wireTypesByBindingType(bindingType);
 //alert(wireTypes.toSource());
 
     for (var i in wireTypes)
         bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[i])); // add columns for each type
-
+//alert(bindingType.toSource() + "\n\n" + bindingColumns.toSource());
     return bindingColumns;
 }
 
 Report.prototype.columnsByBinding = function(binding)
 {
     var bindingColumns = new Array();
-    var wireTypes = Report.wireTypesByBindingType(binding.type);
+    var wireTypes = Report.wireTypesByBindingType(binding);
 
     for (var i in wireTypes)
         bindingColumns = bindingColumns.concat(columnsByWireType(wireTypes[i])); // add columns for each type
@@ -384,20 +392,21 @@ Report.prototype.createVariables = function(bindings)
     var variables = new Array();
 
 //alert(bindings.toSource());
-
+//alert(bindings.length);
     for (var i in bindings)
     {
 //alert(bindings[i].toSource());
 
-        var bindingColumns = this.columnsByBindingType(bindings[i].type);
+	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[i].type.value; } )[0];
+        var bindingColumns = this.columnsByBindingType(bindingType);
         for (var j in bindingColumns)
         {
             var variable = { };
-            variable.variable = bindingColumns[j];
-	    variable.binding = bindings[i].binding;
-            variable.bindingType = bindings[i].type;
-	    variable.visualization = bindings[i].visualization;
-	    variable.visType = bindings[i].visType;
+            variable.variable = { 'type' : 'typed-literal', 'value' : bindingColumns[j] }; // 'datatype
+	    variable.binding = eval(bindings[i].binding.toSource());
+            variable.bindingType = eval(bindings[i].type.toSource());
+	    variable.visualization = eval(bindings[i].visualization.toSource());
+	    variable.visType = eval(bindings[i].visType.toSource());
 	    variables.push(variable);
         }
     }
