@@ -77,8 +77,10 @@ exclude-result-prefixes="#all">
 		    <xsl:value-of select="$visualizations-json"/>
 		    <xsl:text>, </xsl:text>
 		    <xsl:value-of select="$bindings-json"/>
+		    <xsl:text>, </xsl:text>
+		    <xsl:value-of select="$variables-json"/>
 		    <xsl:text>, [</xsl:text>
-		    <xsl:apply-templates select="$options//sparql:result" mode="option-json"/>
+		    <!-- <xsl:apply-templates select="$options//sparql:result" mode="option-json"/> -->
 		    <xsl:text>], [</xsl:text>
                     <xsl:for-each select="$visualizations//sparql:result">
 			<xsl:text>{ 'element' :</xsl:text>

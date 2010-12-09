@@ -1,17 +1,84 @@
 var report = null;
 
-function Report(table, visualizations, bindings, options, containers)
+function Visualization(bindings, variables, container)
 {
-    //alert(visualizations.toSource());
+    //var visualization = this;
+    this.bindings = bindings;
+//alert(this.bindings.toSource());
+    this.container = container;
+//alert(this.container.toSource());
+    for (var i in this.bindings)
+    {
+	var binding = this.bindings[i];
+	var bindingVariables = variables.results.bindings.filter(function(variable) { return variable.binding.value == binding.binding.value; } );
+//alert(bindingVariables.toSource());
+	binding.variables = bindingVariables;
+    }
+    this.init = Visualization.prototype.init;
+    this.init();
+    //alert(visualization.googleVis.toSource());
+
+}
+Visualization.prototype.alert = function()
+{
+    alert(this.bindings.toSource());
+    //alert("whatup!");
+}
+Visualization.prototype.init = function()
+{
+    if (this.type.value.indexOf("Table") != -1) this.googleVis = new google.visualization.Table(this.container);
+    if (this.type.value.indexOf("ScatterChart") != -1) this.googleVis = new google.visualization.ScatterChart(this.container);
+    if (this.type.value.indexOf("LineChart") != -1) this.googleVis = new google.visualization.LineChart(this.container);
+    if (this.type.value.indexOf("PieChart") != -1) this.googleVis = new google.visualization.PieChart(this.container);
+    if (this.type.value.indexOf("BarChart") != -1) this.googleVis = new google.visualization.BarChart(this.container);
+    if (this.type.value.indexOf("ColumnChart") != -1) this.googleVis = new google.visualization.ColumnChart(this.container);
+    if (this.type.value.indexOf("AreaChart") != -1) this.googleVis = new google.visualization.AreaChart(this.container);
+    if (this.type.value.indexOf("Map") != -1) this.googleVis = new google.visualization.Map(this.container);
+}
+
+function Binding(variables)
+{
+    this.variables = variables;
+}
+
+function Variable()
+{
+
+}
+
+function DataType()
+{
+
+}
+
+function Option()
+{
+
+}
+
+function Report(table, visualizations, bindings, variables, options, containers)
+{
+    //alert(Report.bindingTypes.results.bindings.toSource());
     
     this.data = new google.visualization.DataTable(table, 0.6);
-    this.visualizations = visualizations;
-    this.bindings = bindings;
-    this.options = options;
+    this.visualizations = visualizations.results.bindings;
+    // join and split the whole thing
+    for (var j in this.visualizations)
+    {
+	var visualization = this.visualizations[j];
+	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
+	var visContainer = containers.filter(function(container) { return container.visType == visualization.type.value; } )[0];
+	visualization.constructor = Visualization;
+	visualization.constructor(visBindings, variables, visContainer);
+	//visualization.bindings = visBindings;
+    }
+    //alert(this.visualizations.toSource());
+    //this.bindings = bindings.results.bindings;
+    //this.options = options.results.bindings;
     this.countColumns();
-    this.containers = containers;
-    for (var i in this.containers)
-	this.initVis(this.containers[i].element, this.containers[i].visType);
+    //this.containers = containers;
+    //for (var i in this.containers)
+	//this.initVis(this.containers[i].element, this.containers[i].visType);
 }
 
 //google.setOnLoadCallback(countColumns(data));
@@ -20,12 +87,12 @@ Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
 Report.prototype.visTypeToggleElements = new Array();
 Report.prototype.visTypeFieldsetElements = new Array();
-Report.prototype.containers = new Array();
+//Report.prototype.containers = new Array();
 Report.prototype.bindingTypeElements = new Array();
 Report.prototype.visualizations = new Array();
-Report.prototype.googleVisualizations = new Array();
-Report.prototype.bindings = new Array();
-Report.prototype.options = new Array();
+//Report.prototype.googleVisualizations = new Array();
+//Report.prototype.bindings = new Array();
+//Report.prototype.options = new Array();
 
 Report.XSD_NS = 'http://www.w3.org/2001/XMLSchema#';
 Report.visualizationTypes = new Array();
@@ -96,18 +163,6 @@ Report.prototype.setVisTypeFieldsetElements = function(visTypeFieldsetElements)
 Report.prototype.setBindingTypeElements = function(bindingTypeElements)
 {
     this.bindingTypeElements = bindingTypeElements;
-}
-
-Report.prototype.initVis = function(containerElement, visType)
-{
-    if (visType.indexOf("Table") != -1) this.googleVisualizations[visType] = new google.visualization.Table(containerElement);
-    if (visType.indexOf("ScatterChart") != -1) this.googleVisualizations[visType] = new google.visualization.ScatterChart(containerElement);
-    if (visType.indexOf("LineChart") != -1) this.googleVisualizations[visType] = new google.visualization.LineChart(containerElement);
-    if (visType.indexOf("PieChart") != -1) this.googleVisualizations[visType] = new google.visualization.PieChart(containerElement);
-    if (visType.indexOf("BarChart") != -1) this.googleVisualizations[visType] = new google.visualization.BarChart(containerElement);
-    if (visType.indexOf("ColumnChart") != -1) this.googleVisualizations[visType] = new google.visualization.ColumnChart(containerElement);
-    if (visType.indexOf("AreaChart") != -1) this.googleVisualizations[visType] = new google.visualization.AreaChart(containerElement);
-    if (visType.indexOf("Map") != -1) this.googleVisualizations[visType] = new google.visualization.Map(containerElement);
 }
 
 Report.prototype.fillControls = function(visualization)
