@@ -1,6 +1,6 @@
 var report = null;
 
-function Visualization(bindings, variables, container)
+function Visualization(bindings, variables, options, container)
 {
     //var visualization = this;
     this.bindings = bindings;
@@ -11,8 +11,11 @@ function Visualization(bindings, variables, container)
     {
 	var binding = this.bindings[i];
 	var bindingVariables = variables.results.bindings.filter(function(variable) { return variable.binding.value == binding.binding.value; } );
+	binding.constructor = Binding;
+	binding.constructor(bindingVariables);
+
 //alert(bindingVariables.toSource());
-	binding.variables = bindingVariables;
+	//binding.variables = bindingVariables;
     }
     this.init = Visualization.prototype.init;
     this.init();
@@ -39,6 +42,18 @@ Visualization.prototype.init = function()
 function Binding(variables)
 {
     this.variables = variables;
+    //alert(this.variables.toSource());
+}
+
+Binding.prototype.getColumns = function()
+{
+    var columns = new Array();
+    var wireTypes = Report.wireTypesByBindingType(binding);
+
+    for (var i in wireTypes)
+        columns = columns.concat(columnsByWireType(wireTypes[i])); // add columns for each type
+
+    return columns;
 }
 
 function Variable()
@@ -68,8 +83,10 @@ function Report(table, visualizations, bindings, variables, options, containers)
 	var visualization = this.visualizations[j];
 	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
 	var visContainer = containers.filter(function(container) { return container.visType == visualization.type.value; } )[0];
+	//var visOptions = options.results.bindings.filter(function(option) { return option.visualization.value == visualization.visualization.value; } );
+	var visOptions = new Array();
 	visualization.constructor = Visualization;
-	visualization.constructor(visBindings, variables, visContainer);
+	visualization.constructor(visBindings, variables, visOptions, visContainer);
 	//visualization.bindings = visBindings;
     }
     //alert(this.visualizations.toSource());
