@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import view.FormResultView;
+import view.JSONSerializer;
 import view.QueryStringBuilder;
 import view.QueryResult;
 import view.XMLSerializer;
@@ -100,16 +101,20 @@ public class ReportUpdateView extends ReportView implements FormResultView
     protected void setVisualizationTypes(ResultSetRewindable visTypes)
     {
 	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
+	getTransformer().setParameter("visualization-types-json", JSONSerializer.serialize(visTypes));
     }
 
+    @Override
     protected void setDataTypes(ResultSetRewindable dataTypes)
     {
 	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
+	getTransformer().setParameter("data-types-json", JSONSerializer.serialize(dataTypes));
     }
 
     protected void setOptionTypes(ResultSetRewindable optionTypes)
     {
 	getResolver().setArgument("option-types", XMLSerializer.serialize(optionTypes));
+	getTransformer().setParameter("option-types-json", JSONSerializer.serialize(optionTypes));
     }
 
     @Override
