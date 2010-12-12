@@ -1,8 +1,9 @@
 var report = null;
 
-function Visualization(bindings, variables, options, container)
+function Visualization(report, bindings, variables, options, container)
 {
     var visualization = this;
+    this.report = report;
 //alert(Report.visualizationTypes.toSource());
     //this.type = Report.visualizationTypes.filter(function(visType) { return visType.type.value == visualization.type.value; } );
 //alert(this.type.toSource());
@@ -16,11 +17,10 @@ function Visualization(bindings, variables, options, container)
 	var binding = this.bindings[i];
 	var bindingVariables = this.variables.filter(function(variable) { return variable.binding.value == binding.binding.value; } );
 	binding.constructor = Binding;
-	binding.constructor(bindingVariables);
+	binding.constructor(this.report, this, bindingVariables);
 
 //alert(bindingVariables.toSource());
 	//binding.variables = bindingVariables;
-	binding.visualization = this;
     }
     this.init = Visualization.prototype.init;
     this.init();
@@ -48,6 +48,22 @@ Visualization.prototype.getColumns = function()
 //alert(this.type.toSource() + "\n\n" + columns.toSource());
     return columns;
 
+}
+Visualization.prototype.hasSufficientColumns = function()
+{
+    for (var i in this.bindings)
+    {
+	var binding = this.bindings[i];
+	binding.getColumns = Binding.prototype.getColumns;
+        var columns = binding.getColumns();
+
+//alert(bindingType.toSource());
+
+        if ("cardinality" in binding.type && binding.type.cardinality.value > columns.length) return false;
+        if ("minCardinality" in binding.type && binding.type.minCardinality.value > columns.length) return false;
+	// maxCardinality???
+    }
+    return true;
 }
 Visualization.prototype.show = function()
 {
@@ -86,43 +102,105 @@ if (visType.indexOf("Map") != -1)
 	drawMap(container, bindingTypes, variables);
 */
 }
+Visualization.prototype.toggle = function(show)
+{
+    if (show)
+    {
+	    this.container.style.display = "block";
+	    //this.fieldset.style.display = "block";
+	    //this.toggle.checked = true;
+    }
+    else
+    {
+	    this.container.style.display = "none";
+	    //this.fieldset.style.display = "none";
+	    //this.toggle.checked = false;
+    }
+}
+Visualization.prototype.fillControls = function()
+{
+//alert(visualization.toSource());
+    //var visTypeResults = filterResults(Report.bindingTypes.results.bindings, 'visType', visualization.type.value);
+    //var visBindingTypes = Report.bindingTypes.results.bindings.filter(function(el) { return el.visType.value == visualization.type.value; } )
+//alert(this.bindings.toSource());
+
+    for (var i in this.bindings)
+    {
+	var binding = this.bindings[i];
+//alert(visBindingTypes[i].type);
+	//var bindingElement = this.elementByBindingType(visTypeResults[i].type.value);
+	var bindingElement = this.bindingTypeElements.filter(function(el) { return el.bindingType == visBindingTypes[i].type.value; } )[0];
+//alert(bindingElement.toSource());
+
+	var bindingColumns = this.columnsByBindingType(visBindingTypes[i]);
+//alert(visBindingTypes[i].toSource() + "\n\n" + bindingColumns.toSource());
+
+	if (!(("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality.value == 1) ||
+		("maxCardinality" in visBindingTypes[i] && visBindingTypes[i].maxCardinality.value == 1)))
+	    bindingElement.element.multiple = "multiple";
+
+	for (var j in bindingColumns)
+	{
+	    var option = document.createElement("option");
+	    option.appendChild(document.createTextNode(this.data.getColumnLabel(bindingColumns[j])));
+	    option.setAttribute("value", bindingColumns[j]);
+
+	    if (this.variableExists(visBindingTypes[i], bindingColumns[j]))
+		option.setAttribute("selected", "selected");
+//alert(visBindingTypes[i].toSource());
+	    bindingElement.element.appendChild(option);
+	}
+    }
+}
 Visualization.prototype.init = function()
 {
-    if (this.type.value.indexOf("Table") != -1) this.googleVis = new google.visualization.Table(this.container.element);
-    if (this.type.value.indexOf("ScatterChart") != -1) this.googleVis = new google.visualization.ScatterChart(this.container.element);
-    if (this.type.value.indexOf("LineChart") != -1) this.googleVis = new google.visualization.LineChart(this.container.element);
-    if (this.type.value.indexOf("PieChart") != -1) this.googleVis = new google.visualization.PieChart(this.container.element);
-    if (this.type.value.indexOf("BarChart") != -1) this.googleVis = new google.visualization.BarChart(this.container.element);
-    if (this.type.value.indexOf("ColumnChart") != -1) this.googleVis = new google.visualization.ColumnChart(this.container.element);
-    if (this.type.value.indexOf("AreaChart") != -1) this.googleVis = new google.visualization.AreaChart(this.container.element);
-    if (this.type.value.indexOf("Map") != -1) this.googleVis = new google.visualization.Map(this.container.element);
+    if (this.type.value.indexOf("Table") != -1) this.googleVis = new google.visualization.Table(this.container);
+    if (this.type.value.indexOf("ScatterChart") != -1) this.googleVis = new google.visualization.ScatterChart(this.container);
+    if (this.type.value.indexOf("LineChart") != -1) this.googleVis = new google.visualization.LineChart(this.container);
+    if (this.type.value.indexOf("PieChart") != -1) this.googleVis = new google.visualization.PieChart(this.container);
+    if (this.type.value.indexOf("BarChart") != -1) this.googleVis = new google.visualization.BarChart(this.container);
+    if (this.type.value.indexOf("ColumnChart") != -1) this.googleVis = new google.visualization.ColumnChart(this.container);
+    if (this.type.value.indexOf("AreaChart") != -1) this.googleVis = new google.visualization.AreaChart(this.container);
+    if (this.type.value.indexOf("Map") != -1) this.googleVis = new google.visualization.Map(this.container);
 }
 
-function Binding(variables)
+function Binding(report, visualization, variables)
 {
     var binding = this;
 //alert(Report.bindingTypes.toSource());
+    this.report = report;
+    this.visualization = visualization;
+    //this.control = control;
     this.type = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
     this.variables = variables;
     for (var i in this.variables)
-	this.variables[i].binding = this;
+    {
+	var variable = this.variables[i];
+	variable.constructor = Variable;
+	variable.constructor(this.report, this.visualization, this);
+    }
 //alert(this.variables.toSource());
 }
 
 Binding.prototype.getColumns = function()
 {
     var columns = new Array();
-    var wireTypes = Report.wireTypesByBindingType(binding);
+//alert(this.report.toSource());
+    this.type.getWireTypes = BindingType.prototype.getWireTypes;
+//alert(this.type.getWireTypes().toSource());
 
+    var wireTypes = this.type.getWireTypes();
     for (var i in wireTypes)
-        columns = columns.concat(this.getColumnsByWireType(wireTypes[i])); // add columns for each type
-
+        columns = columns.concat(this.report.getColumnsByWireType(wireTypes[i])); // add columns for each type
+//alert(columns.toSource());
     return columns;
 }
 
-function Variable()
+function Variable(report, visualization, binding)
 {
-
+    this.report = report;
+    this.visualization = visualization;
+    this.binding = binding;
 }
 
 function DataType()
@@ -150,25 +228,51 @@ function Option()
 
 }
 
-function VisualizationType()
+function BindingType(dataTypes)
 {
-
+    this.dataTypes = dataTypes;
+    //alert(this.dataTypes.toSource());
 }
-VisualizationType.prototype.toggle = function(show)
+BindingType.prototype.getWireTypes = function()
 {
+    var wireTypes = new Array();
+    for (var i in this.dataTypes)
+    {
+	var dataType = this.dataTypes[i];
+	dataType.getWireType = DataType.prototype.getWireType;
+	var wireType = dataType.getWireType();
+	if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType); // no duplicates
+    }
+    return wireTypes;
+}
 
+function VisualizationType(bindingTypes, dataTypes, optionTypes)
+{
+    this.bindingTypes = bindingTypes;
+    this.dataTypes = dataTypes;
+    this.optionTypes = optionTypes;
+//alert(this.bindingTypes.toSource());
+    for (var i in this.bindingTypes)
+    {
+	var bindingType = this.bindingTypes[i];
+	var bindDataTypes = this.dataTypes.filter(function(dataType) { return dataType.bindingType.value == bindingType.type.value; } );
+	bindingType.constructor = BindingType;
+	bindingType.constructor(bindDataTypes);
+	bindingType.visType = this;
+	//alert(bindDataTypes.toSource());
+    }
 }
 
 function Report(table, visualizations, bindings, variables, options, containers)
 {
     //alert(Report.bindingTypes.results.bindings.toSource());
-//alert(variables.results.bindings.toSource());
+//alert(variables.toSource());
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations.results.bindings;
     // join and split the whole thing
-    for (var j in this.visualizations)
+    for (var i in this.visualizations)
     {
-	var visualization = this.visualizations[j];
+	var visualization = this.visualizations[i];
 	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
 	var visVariables = variables.results.bindings.filter(function(variable) { return variable.visualization.value == visualization.visualization.value; } );
 //alert(visVariables.toSource());
@@ -180,11 +284,9 @@ function Report(table, visualizations, bindings, variables, options, containers)
 //alert(temp.baseClass);
 	visualization.constructor = Visualization;
 	// only pass arrays, not the whole SPARQL result
-	visualization.constructor(visBindings, visVariables, visOptions, visContainer);
-	//visualization.bindings = visBindings;
-	visualization.report = this;
-	visualization.show = Visualization.prototype.show;
-	visualization.show();
+	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
+	//visualization.show = Visualization.prototype.show;
+	//visualization.show();
 //alert(visualization.variables.toSource());
     }
     //alert(this.visualizations.toSource());
@@ -227,8 +329,21 @@ Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes)
     Report.visualizationTypes = visualizationTypes.results.bindings;
     Report.bindingTypes = bindingTypes.results.bindings;
     Report.dataTypes = dataTypes.results.bindings;
-    Report.optionTypes = optionTypes.results.bindings;
-    //alert(optionTypes.toSource());
+    //Report.optionTypes = optionTypes.results.bindings;
+    //alert(Report.dataTypes.toSource());
+
+    for (var i in Report.visualizationTypes)
+    {
+	var visType = Report.visualizationTypes[i];
+	var visBindingTypes = Report.bindingTypes.filter(function(bindingType) { return bindingType.visType.value == visType.type.value; } );
+	var visDataTypes = Report.dataTypes.filter(function(dataType) { return dataType.visType.value == visType.type.value; } );
+	var visOptionTypes = new Array();
+	//alert(visDataTypes.toSource());
+
+	visType.constructor = VisualizationType;
+	// only pass arrays, not the whole SPARQL result
+	visType.constructor(visBindingTypes, visDataTypes, visOptionTypes);
+    }
 }
 
 Report.prototype.setVisualizations = function(visualizations)
@@ -246,17 +361,23 @@ Report.prototype.setVariables = function(variables)
     //alert(variables.toSource());
     this.variables = variables;
 
+    /*
     var bindings = this.getBindingsWithoutVariables();
-//alert(bindings.toSource());
     var missingVars = this.createVariables(bindings);
-    //alert(missingVars.toSource());
     this.variables = this.variables.results.bindings.concat(missingVars);
-    //alert(this.variables.toSource());
+    */
 }
 
-Report.prototype.setVisTypeToggleElements = function(visTypeToggleElements)
+Report.prototype.setToggleElements = function(elements)
 {
-    this.visTypeToggleElements = visTypeToggleElements;
+    //alert(elements.toSource());
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
+	visualization.toggleElement = element.element;
+	//alert(visualization.toggleElement.toSource());
+    }
 }
 
 Report.prototype.setVisTypeFieldsetElements = function(visTypeFieldsetElements)
@@ -264,45 +385,18 @@ Report.prototype.setVisTypeFieldsetElements = function(visTypeFieldsetElements)
     this.visTypeFieldsetElements = visTypeFieldsetElements;
 }
 
-Report.prototype.setBindingTypeElements = function(bindingTypeElements)
+Report.prototype.setBindingControls = function(controls)
 {
-    this.bindingTypeElements = bindingTypeElements;
-}
-
-Report.prototype.fillControls = function(visualization)
-{
-//alert(visualization.toSource());
-    //var visTypeResults = filterResults(Report.bindingTypes.results.bindings, 'visType', visualization.type.value);
-    var visBindingTypes = Report.bindingTypes.results.bindings.filter(function(el) { return el.visType.value == visualization.type.value; } )
-//alert(visBindingTypes.toSource());
-
-    for (var i in visBindingTypes)
+alert(controls.toSource());
+    for (var i in this.visualizations)
     {
-//alert(visBindingTypes[i].type);
-	//var bindingElement = this.elementByBindingType(visTypeResults[i].type.value);
-	var bindingElement = this.bindingTypeElements.filter(function(el) { return el.bindingType == visBindingTypes[i].type.value; } )[0];
-//alert(bindingElement.toSource());
-
-	var bindingColumns = this.columnsByBindingType(visBindingTypes[i]);
-//alert(visBindingTypes[i].toSource() + "\n\n" + bindingColumns.toSource());
-
-	if (!(("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality.value == 1) ||
-		("maxCardinality" in visBindingTypes[i] && visBindingTypes[i].maxCardinality.value == 1)))
-	    bindingElement.element.multiple = "multiple";
-
-	for (var j in bindingColumns)
-	{
-	    var option = document.createElement("option");
-	    option.appendChild(document.createTextNode(this.data.getColumnLabel(bindingColumns[j])));
-	    option.setAttribute("value", bindingColumns[j]);
-
-	    if (this.variableExists(visBindingTypes[i], bindingColumns[j]))
-		option.setAttribute("selected", "selected");
-//alert(visBindingTypes[i].toSource());
-	    bindingElement.element.appendChild(option);
-	}
+	var visualization = this.visualizations[i];
+	var visControls = controls.filter(function(element) { return element.visType == visualization.type.value; } )[0];
+	visualization.toggleElement = element.element;
+	//alert(visualization.toggleElement.toSource());
     }
 }
+
 
 function initOptions(visType, optionElements, options)
 {
@@ -374,27 +468,29 @@ Report.prototype.showWithControls = function()
 {
     //alert(this.visTypeToggleElements.toSource());
     
-    for (var i in this.visualizations.results.bindings)
+    for (var i in this.visualizations)
     {
-	var visualization = this.visualizations.results.bindings[i];
+	var visualization = this.visualizations[i];
 //alert(visualization.toSource());
-	//var toggleElement = objectByVisType(this.visualizations[i].type.value, this.visTypeToggleElements);
-	var toggleElement = this.visTypeToggleElements.filter(function(el) { return el.visType == visualization.type.value; } )[0];
 
 //alert(toggleElement.toSource());
 
-	if (this.hasSufficientColumns(this.visualizations.results.bindings[i]))
+	visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
+	if (visualization.hasSufficientColumns())
 	{
 	    //alert("sufficient" + this.visualizations[i].toSource());
-	    this.fillControls(this.visualizations.results.bindings[i]);
-	    this.draw(this.visualizations.results.bindings[i]);
-	    toggleElement.element.checked = true;
+	    visualization.fillControls = Visualization.prototype.fillControls;
+	    visualization.fillControls();
+	    visualization.show = Visualization.prototype.show;
+	    visualization.show();
+	    visualization.toggle = Visualization.prototype.toggle;
+	    visualization.toggle(true);
 	}
         else
 	{
 	    //alert("nope");
-	    this.toggleVisualization(this.visualizations.results.bindings[i], false); // switch off
-	    toggleElement.element.disabled = true;
+	    visualization.toggle(false);
+	    visualization.toggleElement.disabled = true;
 	}
     }
 }
@@ -402,9 +498,12 @@ Report.prototype.showWithControls = function()
 Report.prototype.show = function()
 {
     for (var i in this.visualizations)
-	//if (this.hasSufficientColumns(this.visualizations[i]))
-	    this.visualizations[i].show();
+    {
+	var visualization = this.visualizations[i];
+	visualization.show = Visualization.prototype.show;
+	visualization.show();
 	//else alert("nope");
+    }
 }
 
 Report.prototype.draw = function(visualization)

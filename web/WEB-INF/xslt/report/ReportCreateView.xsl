@@ -162,7 +162,9 @@ exclude-result-prefixes="#all">
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-from-type-json"/>
 		    <xsl:text>] } }, { 'results' : { 'bindings' : [</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
-		    <xsl:text>] } }, [], [</xsl:text>
+		    <xsl:text>] } }, </xsl:text>
+		    <xsl:value-of select="$variables-json"/>
+		    <xsl:text>, [], [</xsl:text>
                     <xsl:for-each select="$visualization-types//sparql:result">
 			<xsl:text>{ 'element' :</xsl:text>
 			<xsl:text>document.getElementById('</xsl:text>
@@ -173,11 +175,11 @@ exclude-result-prefixes="#all">
 			<xsl:text>' }</xsl:text>
 			<xsl:if test="position() != last()">,</xsl:if>
 		    </xsl:for-each>
-		    <xsl:text>]); report.setVisTypeToggleElements([</xsl:text>
+		    <xsl:text>]); report.setToggleElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-toggle-json"/>
 		    <xsl:text>]); report.setVisTypeFieldsetElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-fieldset-json"/>
-		    <xsl:text>]); report.setBindingTypeElements([</xsl:text>
+		    <xsl:text>]); report.setBindingControls([</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>
 		    <xsl:text>]); report.setVariables(</xsl:text>
 		    <xsl:value-of select="$variables-json"/>
@@ -188,11 +190,13 @@ exclude-result-prefixes="#all">
                     <xsl:if test="$view = $update-view">
                         <xsl:text> </xsl:text>
                         <!-- switch of Visualizations not included in the Report -->
+			<!--
                         <xsl:for-each select="$visualization-types//sparql:result[not(sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri)]">
                             <xsl:text>report.toggleVisualization(</xsl:text>
 			    <xsl:apply-templates select="." mode="vis-type-json"/>
                             <xsl:text>, false); </xsl:text>
                         </xsl:for-each>
+			-->
                     </xsl:if>
                 </xsl:attribute>
              </xsl:if>

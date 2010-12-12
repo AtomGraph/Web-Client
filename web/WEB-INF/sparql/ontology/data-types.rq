@@ -5,12 +5,14 @@ PREFIX vis: <http://code.google.com/apis/visualization/>
 PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
-SELECT ?bindingType ?type
+SELECT ?visType ?bindingType ?type
 {
 	?super          rdfs:subClassOf vis:Binding .
 	?bindingType    rdfs:subClassOf ?super .
         ?super          rdfs:subClassOf ?rest .
         ?rest           owl:onProperty  vis:dataType .
+        _:prop		rdfs:range      ?bindingType .
+        _:prop		rdfs:domain     ?visType
 	{
 	    ?rest           owl:onClass     ?type
 	}
