@@ -179,7 +179,6 @@ function Binding(report, visualization, variables)
     }
 //alert(this.variables.toSource());
 }
-
 Binding.prototype.getColumns = function()
 {
     var columns = new Array();
@@ -192,6 +191,28 @@ Binding.prototype.getColumns = function()
         columns = columns.concat(this.report.getColumnsByWireType(wireTypes[i])); // add columns for each type
 //alert(columns.toSource());
     return columns;
+}
+Binding.prototype.getVariablesFromControl = function()
+{
+//alert(this.toSource());
+    var variables = new Array();
+
+    for (var i in this.control.options)
+    {
+	var option = this.control.options[i];
+	if (option.selected)
+	{
+	    var variable = { };
+	    variable.variable = Number(option.value);
+	    variable.binding = this.binding;
+	    variable.bindingType = this.type;
+	    variable.visualization = this.visualization;
+	    variable.visType = this.visType;
+	    variables.push(variable);
+	}
+    }
+//alert(variables.toSource());
+    return variables;
 }
 Binding.prototype.hasVariable = function(name)
 {
@@ -411,7 +432,13 @@ Report.prototype.setBindingControls = function(controls)
 	    //alert(binding.type.type.toSource());
 	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.type.value; } )[0];
 	    binding.control = bindingControl.element;
-	    //binding.control.onchange = bin
+	    binding.control.onchange = function()
+	    {
+		binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
+		binding.variables = binding.getVariablesFromControl();
+		alert(binding.variables.toSource());
+		visualization.show();
+	    }
 	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
 	    //alert(binding.control.toSource());
 	}
@@ -534,7 +561,7 @@ Report.prototype.getBindingVariables = function(bindingTypeElement, binding)
 Report.prototype.getVariablesFromControls = function() // bindings???
 {
 //alert(bindingElements.toSource());
-//alert(bindings.toSource());
+//alert(this.toSource());
     var variables = new Array();
     for (var i in this.bindingTypeElements)
     {
