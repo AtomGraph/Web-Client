@@ -142,10 +142,10 @@ Visualization.prototype.fillControls = function()
 	    option.appendChild(document.createTextNode(this.report.data.getColumnLabel(columns[j])));
 	    option.setAttribute("value", columns[j]);
 
-	    //if (this.variableExists(visBindingTypes[i], columns[j]))
-	//	option.setAttribute("selected", "selected");
 	    binding.hasVariable = Binding.prototype.hasVariable;
-alert(binding.hasVariable(columns[j]));
+	    if (binding.hasVariable(columns[j]))
+		option.setAttribute("selected", "selected");
+//alert(binding.hasVariable(columns[j]));
 	    binding.control.appendChild(option);
 	}
     }
@@ -197,14 +197,17 @@ Binding.prototype.hasVariable = function(name)
 {
     //alert(this.varia)
     var binding = this;
-    //this.variables.filter(function(variable) { return variable.type.value == binding.type.value; } )[0];
+    var variables = this.variables.filter(function(variable) { return variable.variable.value == name; } );
+    /*
     for (var i in this.variables)
     {
 	var variable = this.variables[i];
-	alert(variable.variable.toSource());
+	alert(variable.variable.value);
         //if (variable.bindingType == bindingType.type && this.variables[i].variable == value) return true;
     }
-    return false;
+    */
+//alert(variables.length);
+    return (variables.length > 0);
 }
 
 function Variable(report, visualization, binding)
