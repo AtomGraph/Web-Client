@@ -127,28 +127,26 @@ Visualization.prototype.fillControls = function()
     for (var i in this.bindings)
     {
 	var binding = this.bindings[i];
-//alert(visBindingTypes[i].type);
-	//var bindingElement = this.elementByBindingType(visTypeResults[i].type.value);
-	var bindingElement = this.bindingTypeElements.filter(function(el) { return el.bindingType == visBindingTypes[i].type.value; } )[0];
-//alert(bindingElement.toSource());
+//alert(binding.variables.length);
 
-	var bindingColumns = this.columnsByBindingType(visBindingTypes[i]);
+	var columns = binding.getColumns();
 //alert(visBindingTypes[i].toSource() + "\n\n" + bindingColumns.toSource());
+//alert(columns.toSource());
+	if (!(("cardinality" in binding.type && binding.type.cardinality.value == 1) ||
+		("maxCardinality" in binding.type && binding.type.maxCardinality.value == 1)))
+	    binding.control.multiple = "multiple";
 
-	if (!(("cardinality" in visBindingTypes[i] && visBindingTypes[i].cardinality.value == 1) ||
-		("maxCardinality" in visBindingTypes[i] && visBindingTypes[i].maxCardinality.value == 1)))
-	    bindingElement.element.multiple = "multiple";
-
-	for (var j in bindingColumns)
+	for (var j in columns)
 	{
 	    var option = document.createElement("option");
-	    option.appendChild(document.createTextNode(this.data.getColumnLabel(bindingColumns[j])));
-	    option.setAttribute("value", bindingColumns[j]);
+	    option.appendChild(document.createTextNode(this.report.data.getColumnLabel(columns[j])));
+	    option.setAttribute("value", columns[j]);
 
-	    if (this.variableExists(visBindingTypes[i], bindingColumns[j]))
-		option.setAttribute("selected", "selected");
-//alert(visBindingTypes[i].toSource());
-	    bindingElement.element.appendChild(option);
+	    //if (this.variableExists(visBindingTypes[i], columns[j]))
+	//	option.setAttribute("selected", "selected");
+	    binding.hasVariable = Binding.prototype.hasVariable;
+alert(binding.hasVariable(columns[j]));
+	    binding.control.appendChild(option);
 	}
     }
 }
@@ -194,6 +192,19 @@ Binding.prototype.getColumns = function()
         columns = columns.concat(this.report.getColumnsByWireType(wireTypes[i])); // add columns for each type
 //alert(columns.toSource());
     return columns;
+}
+Binding.prototype.hasVariable = function(name)
+{
+    //alert(this.varia)
+    var binding = this;
+    //this.variables.filter(function(variable) { return variable.type.value == binding.type.value; } )[0];
+    for (var i in this.variables)
+    {
+	var variable = this.variables[i];
+	alert(variable.variable.toSource());
+        //if (variable.bindingType == bindingType.type && this.variables[i].variable == value) return true;
+    }
+    return false;
 }
 
 function Variable(report, visualization, binding)
@@ -387,13 +398,18 @@ Report.prototype.setVisTypeFieldsetElements = function(visTypeFieldsetElements)
 
 Report.prototype.setBindingControls = function(controls)
 {
-alert(controls.toSource());
+//alert(controls.toSource());
     for (var i in this.visualizations)
     {
 	var visualization = this.visualizations[i];
-	var visControls = controls.filter(function(element) { return element.visType == visualization.type.value; } )[0];
-	visualization.toggleElement = element.element;
-	//alert(visualization.toggleElement.toSource());
+	for (var j in visualization.bindings)
+	{
+	    var binding = visualization.bindings[j];
+	    //alert(binding.type.type.toSource());
+	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.type.value; } )[0];
+	    binding.control = bindingControl.element;
+	    //alert(binding.control.toSource());
+	}
     }
 }
 
