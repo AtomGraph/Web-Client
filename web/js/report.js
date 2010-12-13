@@ -34,16 +34,28 @@ Visualization.prototype.getColumns = function()
 //alert(this.variables.length);
     var orderColumns = new Array();
     var restColumns = new Array();
-//alert(this.variables);
+//alert(this.bindings.length);
+    for (var j in this.bindings)
+    {
+	var binding = this.bindings[j];
+	//alert(binding.variables.toSource());
+	for (var k in binding.variables)
+	{
+	    var variable = binding.variables[k];
+	    //alert(variable.variable.value);
+	    if ("order" in binding.type) orderColumns[parseInt(binding.type.order.value)] = parseInt(variable.variable.value);
+	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
+	}
+    }
+    /*
     for (var i in this.variables)
     {
 	var variable = this.variables[i];
-//alert(variable.binding.toSource());
 // QUIRK -- why order is string???
-//alert(variable.binding.type.label);
 	if ("order" in variable.binding.type) orderColumns[parseInt(variable.binding.type.order.value)] = parseInt(variable.variable.value);
 	else restColumns = restColumns.concat(parseInt(variable.variable.value));
     }
+    */
     var columns = orderColumns.concat(restColumns);
 //alert(this.type.toSource() + "\n\n" + columns.toSource());
     return columns;
@@ -68,6 +80,7 @@ Visualization.prototype.hasSufficientColumns = function()
 Visualization.prototype.show = function()
 {
 //alert(this.variables.toSource());
+//alert("show!");
     this.view = new google.visualization.DataView(this.report.data);
     this.getColumns = Visualization.prototype.getColumns;
     if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.getColumns()); // all columns for Table
@@ -436,7 +449,7 @@ Report.prototype.setBindingControls = function(controls)
 	    {
 		binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
 		binding.variables = binding.getVariablesFromControl();
-		alert(binding.variables.toSource());
+		//alert(binding.variables.toSource());
 		visualization.show();
 	    }
 	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
