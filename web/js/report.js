@@ -374,7 +374,7 @@ Visualization.prototype.fillControls = function()
 //alert(binding.variables.length);
 
 	//var columns = binding.getColumns();
-	var columns = binding.columns;
+//	var columns = binding.columns;
 //alert(columns.toSource());
 //alert(visBindingTypes[i].toSource() + "\n\n" + bindingColmns.toSource());
 //alert(binding.type.toSource());
@@ -382,18 +382,24 @@ Visualization.prototype.fillControls = function()
 		("maxCardinality" in binding && binding.maxCardinality.value == 1)))
 	    binding.control.multiple = "multiple";
 
-	for (var j = 0; j < columns.length; j++)
-	{
-	    var option = document.createElement("option");
-	    option.appendChild(document.createTextNode(this.report.data.getColumnLabel(columns[j])));
-	    option.setAttribute("value", columns[j]);
+	binding.fillControls = Binding.prototype.fillControls;
+	binding.fillControls(); //???
 
-	    binding.hasVariable = Binding.prototype.hasVariable;
-	    if (binding.hasVariable(columns[j]))
-		option.setAttribute("selected", "selected");
+  }
+}
+Binding.prototype.fillControls = function()
+{
+    for (var j = 0; j < this.columns.length; j++)
+    {
+	var option = document.createElement("option");
+	option.appendChild(document.createTextNode(this.report.data.getColumnLabel(this.columns[j])));
+	option.setAttribute("value", this.columns[j]);
+
+	this.hasVariable = Binding.prototype.hasVariable;
+	if (this.hasVariable(this.columns[j]))
+	    option.setAttribute("selected", "selected");
 //alert(binding.hasVariable(columns[j]));
-	    binding.control.appendChild(option);
-	}
+	this.control.appendChild(option);
     }
 }
 Visualization.prototype.init = function()
