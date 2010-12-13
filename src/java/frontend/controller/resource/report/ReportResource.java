@@ -56,7 +56,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 {
     private Report report = null;
     //private View view = null;
-    public static final long RESULTS_LIMIT = 50;
+    public static final long RESULTS_LIMIT = 200;
     
     public ReportResource(Report report, ReportListResource parent)
     {
