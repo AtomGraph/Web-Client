@@ -495,11 +495,13 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="su" value="{$report-uri}"/>
 <input type="hidden" name="pu" value="&rep;visualizedBy"/>
 <input type="checkbox" name="ou" value="{$visualization-uri}" id="{generate-id()}-toggle">
+    <!--
     <xsl:attribute name="onchange">
 	<xsl:text>report.toggleVisualization(</xsl:text>
 	<xsl:apply-templates select="." mode="vis-type-json"/>
 	<xsl:text>, this.checked);</xsl:text>
     </xsl:attribute>
+    -->
 
     <xsl:choose>
         <xsl:when test="$view = $update-view"> <!-- ReportUpdateView -->

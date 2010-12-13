@@ -1,5 +1,249 @@
 var report = null;
 
+//google.setOnLoadCallback(countColumns(data));
+Report.prototype.uri = null;
+Report.prototype.data = null;
+Report.prototype.typeColumns = new Array();
+Report.prototype.visTypeToggleElements = new Array();
+Report.prototype.visTypeFieldsetElements = new Array();
+//Report.prototype.containers = new Array();
+Report.prototype.bindingTypeElements = new Array();
+Report.prototype.visualizations = new Array();
+//Report.prototype.googleVisualizations = new Array();
+//Report.prototype.bindings = new Array();
+//Report.prototype.options = new Array();
+
+Report.visualizationTypes = new Array();
+Report.bindingTypes = new Array();
+Report.dataTypes = new Array();
+Report.optionTypes = new Array();
+
+Report.shit = function(bindingTypes, dataTypes) // static types (classes)
+{
+    Report.bindingTypes = bindingTypes.results.bindings; //  QUIRK -- should not be necessary if bindings are saved with "order"!!!
+    Report.dataTypes = dataTypes.results.bindings;
+    //alert(this.bindingTypes.toSource());
+}
+
+Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
+{
+    //alert(bindingTypes.toSource());
+    Report.visualizationTypes = visualizationTypes.results.bindings;
+    Report.bindingTypes = bindingTypes.results.bindings;
+    Report.dataTypes = dataTypes.results.bindings;
+    //Report.optionTypes = optionTypes.results.bindings;
+    //alert(Report.dataTypes.toSource());
+
+    for (var i in Report.visualizationTypes)
+    {
+	var visType = Report.visualizationTypes[i];
+	var visBindingTypes = Report.bindingTypes.filter(function(bindingType) { return bindingType.visType.value == visType.type.value; } );
+	var visDataTypes = Report.dataTypes.filter(function(dataType) { return dataType.visType.value == visType.type.value; } );
+	var visOptionTypes = new Array();
+	//alert(visDataTypes.toSource());
+
+	visType.constructor = VisualizationType;
+	// only pass arrays, not the whole SPARQL result
+	visType.constructor(visBindingTypes, visDataTypes, visOptionTypes);
+    }
+}
+function Report(table, visualizations, bindings, variables, options, containers)
+{
+    //alert(Report.bindingTypes.results.bindings.toSource());
+//alert(variables.toSource());
+    this.data = new google.visualization.DataTable(table, 0.6);
+    this.visualizations = visualizations.results.bindings;
+    this.countColumns();
+    // join and split the whole thing
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+//alert(visualization.toSource());
+	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
+	var visVariables = variables.results.bindings.filter(function(variable) { return variable.visualization.value == visualization.visualization.value; } );
+//alert(visVariables.toSource());
+	var visContainer = containers.filter(function(container) { return container.visType == visualization.type.value; } )[0];
+	//var visOptions = options.results.bindings.filter(function(option) { return option.visualization.value == visualization.visualization.value; } );
+	var visOptions = new Array();
+
+//temp = new Visualization();
+//alert(temp.baseClass);
+	visualization.constructor = Visualization;
+	// only pass arrays, not the whole SPARQL result
+	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
+	//visualization.show = Visualization.prototype.show;
+	//visualization.show();
+//alert(visualization.variables.toSource());
+    }
+    //alert(this.visualizations.toSource());
+    //this.bindings = bindings.results.bindings;
+    //this.options = options.results.bindings;
+    //this.containers = containers;
+    //for (var i in this.containers)
+	//this.initVis(this.containers[i].element, this.containers[i].visType);
+}
+
+Report.prototype.setVisualizations = function(visualizations)
+{
+    this.visualizations = visualizations;
+}
+
+Report.prototype.setBindings = function(bindings)
+{
+    this.bindings = bindings;
+}
+
+Report.prototype.setVariables = function(variables)
+{
+    this.variables = variables;
+}
+
+Report.prototype.setToggleElements = function(elements)
+{
+    //alert(elements.toSource());
+    // DISABLE UNUSED ELEMENTS!!!
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+//alert(visualization.type.value);
+	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
+	visualization.toggleElement = element.element;
+	visualization.toggleElement.visualization = this;
+	visualization.toggleElement.onchange = function()
+	{
+	    this.visualization.toggle = Visualization.prototype.toggle;
+	    this.visualization.toggle(this.checked);
+	}
+	//alert(visualization.toggleElement.toSource());
+    }
+}
+
+Report.prototype.setFieldsetElements = function(elements)
+{
+//alert(elements.toSource());
+    // HIDE UNUSED ELEMENTS!!!
+    for (var j in elements)
+	elements[j].element.style.display = "none";
+
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
+	visualization.fieldset = element.element;
+	//alert(visualization.toggleElement.toSource());
+    }
+
+    //this.visTypeFieldsetElements = elements;
+}
+
+Report.prototype.setBindingControls = function(controls)
+{
+//alert(controls.toSource());
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+	for (var j in visualization.bindings)
+	{
+	    var binding = visualization.bindings[j];
+	    //alert(binding.type.type.toSource());
+	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.value; } )[0];
+	    binding.control = bindingControl.element;
+	    binding.control.visualization = visualization;
+	    binding.control.binding = binding;
+	    binding.control.onchange = function()
+	    {
+		this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
+		this.binding.variables = this.binding.getVariablesFromControl();
+		//alert(this.binding.variables.length);
+		this.visualization.getColumns = Visualization.prototype.getColumns;
+		this.visualization.columns = this.visualization.getColumns();
+		//alert(this.visualization.columns.toSource());
+		this.visualization.show();
+	    }
+	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
+	    //alert(binding.control.toSource());
+	}
+    }
+}
+Report.prototype.showWithControls = function()
+{
+    //alert(this.visTypeToggleElements.toSource());
+
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+//alert(visualization.toSource());
+
+//alert(toggleElement.toSource());
+
+	visualization.fillControls = Visualization.prototype.fillControls;
+	visualization.fillControls();
+	visualization.show = Visualization.prototype.show;
+	visualization.show();
+	visualization.toggle = Visualization.prototype.toggle;
+	visualization.toggle(true);
+
+	/*
+	visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
+	visualization.toggle = Visualization.prototype.toggle;
+
+	if (visualization.hasSufficientColumns())
+	{
+	    //alert("sufficient" + this.visualizations[i].toSource());
+	    visualization.fillControls = Visualization.prototype.fillControls;
+	    visualization.fillControls();
+	    visualization.show = Visualization.prototype.show;
+	    visualization.show();
+	    visualization.toggle(true);
+	}
+        else
+	{
+	    //alert("nope");
+	    visualization.toggle(false);
+	    visualization.toggleElement.disabled = true;
+	}
+	*/
+    }
+}
+
+Report.prototype.show = function()
+{
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+	visualization.show = Visualization.prototype.show;
+	visualization.show();
+	//else alert("nope");
+    }
+}
+Report.prototype.countColumns = function()
+{
+    //alert("count!!");
+    this.typeColumns = { "string": [], "number": [], "date": [], "lat": [], "lng": [] };
+
+    for (var i = 0; i < this.data.getNumberOfColumns(); i++)
+    {
+	if (this.data.getColumnType(i) == "string") this.typeColumns.string.push(i);
+	if (this.data.getColumnType(i) == "date")
+	{
+	    this.typeColumns.string.push(i); // date columns also treated as strings
+	    this.typeColumns.date.push(i);
+	}
+	if (this.data.getColumnType(i) == "number") // lat/lng columns
+	{
+	    this.typeColumns.number.push(i);
+	    var range = this.data.getColumnRange(i);
+	    if (range.min >= -90 && range.max <= 90) this.typeColumns.lat.push(i);
+	    if (range.min >= -180 && range.max <= 180) this.typeColumns.lng.push(i);
+	}
+    }
+}
+Report.prototype.getColumnsByWireType = function(wireType)
+{
+//alert(wireType.toSource());
+    return this.typeColumns[wireType];
+}
+
 function Visualization(report, bindings, variables, options, container)
 {
     var visualization = this;
@@ -112,17 +356,18 @@ if (visType.indexOf("Map") != -1)
 }
 Visualization.prototype.toggle = function(show)
 {
+//alert(this.container.toSource());
     if (show)
     {
 	    this.container.style.display = "block";
 	    this.fieldset.style.display = "block";
-	    //this.toggle.checked = true;
+	    this.toggleElement.checked = true;
     }
     else
     {
 	    this.container.style.display = "none";
 	    this.fieldset.style.display = "none";
-	    //this.toggle.checked = false;
+	    this.toggleElement.checked = false;
     }
 }
 Visualization.prototype.fillControls = function()
@@ -336,231 +581,7 @@ function VisualizationType(bindingTypes, dataTypes, optionTypes)
     }
 }
 
-function Report(table, visualizations, bindings, variables, options, containers)
-{
-    //alert(Report.bindingTypes.results.bindings.toSource());
-//alert(variables.toSource());
-    this.data = new google.visualization.DataTable(table, 0.6);
-    this.visualizations = visualizations.results.bindings;
-    this.countColumns();
-    // join and split the whole thing
-    for (var i in this.visualizations)
-    {
-	var visualization = this.visualizations[i];
-//alert(visualization.toSource());
-	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
-	var visVariables = variables.results.bindings.filter(function(variable) { return variable.visualization.value == visualization.visualization.value; } );
-//alert(visVariables.toSource());
-	var visContainer = containers.filter(function(container) { return container.visType == visualization.type.value; } )[0];
-	//var visOptions = options.results.bindings.filter(function(option) { return option.visualization.value == visualization.visualization.value; } );
-	var visOptions = new Array();
-
-//temp = new Visualization();
-//alert(temp.baseClass);
-	visualization.constructor = Visualization;
-	// only pass arrays, not the whole SPARQL result
-	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
-	//visualization.show = Visualization.prototype.show;
-	//visualization.show();
-//alert(visualization.variables.toSource());
-    }
-    //alert(this.visualizations.toSource());
-    //this.bindings = bindings.results.bindings;
-    //this.options = options.results.bindings;
-    //this.containers = containers;
-    //for (var i in this.containers)
-	//this.initVis(this.containers[i].element, this.containers[i].visType);
-}
-
-//google.setOnLoadCallback(countColumns(data));
-Report.prototype.uri = null;
-Report.prototype.data = null;
-Report.prototype.typeColumns = new Array();
-Report.prototype.visTypeToggleElements = new Array();
-Report.prototype.visTypeFieldsetElements = new Array();
-//Report.prototype.containers = new Array();
-Report.prototype.bindingTypeElements = new Array();
-Report.prototype.visualizations = new Array();
-//Report.prototype.googleVisualizations = new Array();
-//Report.prototype.bindings = new Array();
-//Report.prototype.options = new Array();
-
-Report.visualizationTypes = new Array();
-Report.bindingTypes = new Array();
-Report.dataTypes = new Array();
-Report.optionTypes = new Array();
-
-Report.shit = function(bindingTypes, dataTypes) // static types (classes)
-{
-    Report.bindingTypes = bindingTypes.results.bindings; //  QUIRK -- should not be necessary if bindings are saved with "order"!!!
-    Report.dataTypes = dataTypes.results.bindings;
-    //alert(this.bindingTypes.toSource());
-}
-
-Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
-{
-    //alert(bindingTypes.toSource());
-    Report.visualizationTypes = visualizationTypes.results.bindings;
-    Report.bindingTypes = bindingTypes.results.bindings;
-    Report.dataTypes = dataTypes.results.bindings;
-    //Report.optionTypes = optionTypes.results.bindings;
-    //alert(Report.dataTypes.toSource());
-
-    for (var i in Report.visualizationTypes)
-    {
-	var visType = Report.visualizationTypes[i];
-	var visBindingTypes = Report.bindingTypes.filter(function(bindingType) { return bindingType.visType.value == visType.type.value; } );
-	var visDataTypes = Report.dataTypes.filter(function(dataType) { return dataType.visType.value == visType.type.value; } );
-	var visOptionTypes = new Array();
-	//alert(visDataTypes.toSource());
-
-	visType.constructor = VisualizationType;
-	// only pass arrays, not the whole SPARQL result
-	visType.constructor(visBindingTypes, visDataTypes, visOptionTypes);
-    }
-}
-
-Report.prototype.setVisualizations = function(visualizations)
-{
-    this.visualizations = visualizations;
-}
-
-Report.prototype.setBindings = function(bindings)
-{
-    this.bindings = bindings;
-}
-
-Report.prototype.setVariables = function(variables)
-{
-    this.variables = variables;
-}
-
-Report.prototype.setToggleElements = function(elements)
-{
-    //alert(elements.toSource());
-    // HIDE UNUSED ELEMENTS!!!
-    for (var i in this.visualizations)
-    {
-	var visualization = this.visualizations[i];
-//alert(visualization.type.value);
-	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
-	visualization.toggleElement = element.element;
-	//alert(visualization.toggleElement.toSource());
-    }
-}
-
-Report.prototype.setFieldsetElements = function(elements)
-{
-    // HIDE UNUSED ELEMENTS!!!
-    for (var i in this.visualizations)
-    {
-	var visualization = this.visualizations[i];
-	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
-	visualization.fieldset = element.element;
-	//alert(visualization.toggleElement.toSource());
-    }
-
-    //this.visTypeFieldsetElements = elements;
-}
-
-Report.prototype.setBindingControls = function(controls)
-{
-//alert(controls.toSource());
-    for (var i in this.visualizations)
-    {
-	var visualization = this.visualizations[i];
-	for (var j in visualization.bindings)
-	{
-	    var binding = visualization.bindings[j];
-	    //alert(binding.type.type.toSource());
-	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.value; } )[0];
-	    binding.control = bindingControl.element;
-	    binding.control.visualization = visualization;
-	    binding.control.binding = binding;
-	    binding.control.onchange = function()
-	    {
-		this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
-		this.binding.variables = this.binding.getVariablesFromControl();
-		//alert(this.binding.variables.length);
-		this.visualization.getColumns = Visualization.prototype.getColumns;
-		this.visualization.columns = this.visualization.getColumns();
-		//alert(this.visualization.columns.toSource());
-		this.visualization.show();
-	    }
-	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
-	    //alert(binding.control.toSource());
-	}
-    }
-}
-Report.prototype.showWithControls = function()
-{
-    //alert(this.visTypeToggleElements.toSource());
-    
-    for (var i in this.visualizations)
-    {
-	var visualization = this.visualizations[i];
-//alert(visualization.toSource());
-
-//alert(toggleElement.toSource());
-
-	visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
-	visualization.toggle = Visualization.prototype.toggle;
-
-	if (visualization.hasSufficientColumns())
-	{
-	    //alert("sufficient" + this.visualizations[i].toSource());
-	    visualization.fillControls = Visualization.prototype.fillControls;
-	    visualization.fillControls();
-	    visualization.show = Visualization.prototype.show;
-	    visualization.show();
-	    visualization.toggle(true);
-	}
-        else
-	{
-	    //alert("nope");
-	    visualization.toggle(false);
-	    visualization.toggleElement.disabled = true;
-	}
-    }
-}
-
-Report.prototype.show = function()
-{
-    for (var i in this.visualizations)
-    {
-	var visualization = this.visualizations[i];
-	visualization.show = Visualization.prototype.show;
-	visualization.show();
-	//else alert("nope");
-    }
-}
-Report.prototype.countColumns = function()
-{
-    //alert("count!!");
-    this.typeColumns = { "string": [], "number": [], "date": [], "lat": [], "lng": [] };
-
-    for (var i = 0; i < this.data.getNumberOfColumns(); i++)
-    {
-	if (this.data.getColumnType(i) == "string") this.typeColumns.string.push(i);
-	if (this.data.getColumnType(i) == "date")
-	{
-	    this.typeColumns.string.push(i); // date columns also treated as strings
-	    this.typeColumns.date.push(i);
-	}
-	if (this.data.getColumnType(i) == "number") // lat/lng columns
-	{
-	    this.typeColumns.number.push(i);
-	    var range = this.data.getColumnRange(i);
-	    if (range.min >= -90 && range.max <= 90) this.typeColumns.lat.push(i);
-	    if (range.min >= -180 && range.max <= 180) this.typeColumns.lng.push(i);
-	}
-    }
-}
-Report.prototype.getColumnsByWireType = function(wireType)
-{
-//alert(wireType.toSource());
-    return this.typeColumns[wireType];
-}
+// =========================== NOT USED? ====================================
 
 Report.prototype.createVariables = function(bindings)
 {
@@ -586,26 +607,6 @@ Report.prototype.createVariables = function(bindings)
         }
     }
 //alert(variables.toSource());
-    return variables;
-}
-
-Report.prototype.getBindingVariables = function(bindingTypeElement, binding)
-{
-//alert(binding.toSource());
-
-    var variables = new Array();
-
-    for (var i in bindingTypeElement.element.options)
-	if (bindingTypeElement.element.options[i].selected)
-	    {
-		var variable = { };
-		variable.variable = Number(bindingTypeElement.element.options[i].value);
-		variable.binding = binding.binding;
-		variable.bindingType = binding.type;
-		variable.visualization = binding.visualization;
-		variable.visType = binding.visType;
-		variables.push(variable);
-	    }
     return variables;
 }
 
