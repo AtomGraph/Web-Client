@@ -6,10 +6,8 @@ Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
 Report.prototype.visTypeToggleElements = new Array();
 Report.prototype.visTypeFieldsetElements = new Array();
-//Report.prototype.containers = new Array();
 Report.prototype.bindingTypeElements = new Array();
 Report.prototype.visualizations = new Array();
-//Report.prototype.googleVisualizations = new Array();
 //Report.prototype.bindings = new Array();
 //Report.prototype.options = new Array();
 
@@ -71,16 +69,12 @@ function Report(table, visualizations, bindings, variables, options, containers)
 	visualization.constructor = Visualization;
 	// only pass arrays, not the whole SPARQL result
 	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
-	//visualization.show = Visualization.prototype.show;
-	//visualization.show();
 //alert(visualization.variables.toSource());
     }
     //alert(this.visualizations.toSource());
     //this.bindings = bindings.results.bindings;
     //this.options = options.results.bindings;
     //this.containers = containers;
-    //for (var i in this.containers)
-	//this.initVis(this.containers[i].element, this.containers[i].visType);
 }
 
 Report.prototype.setVisualizations = function(visualizations)
@@ -132,8 +126,6 @@ Report.prototype.setFieldsetElements = function(elements)
 	visualization.fieldset = element.element;
 	//alert(visualization.toggleElement.toSource());
     }
-
-    //this.visTypeFieldsetElements = elements;
 }
 
 Report.prototype.setBindingControls = function(controls)
@@ -160,7 +152,6 @@ Report.prototype.setBindingControls = function(controls)
 		//alert(this.visualization.columns.toSource());
 		this.visualization.show();
 	    }
-	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
 	    //alert(binding.control.toSource());
 	}
     }
