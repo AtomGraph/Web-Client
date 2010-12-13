@@ -182,7 +182,7 @@ exclude-result-prefixes="#all">
 		    </xsl:for-each>
 		    <xsl:text>]); report.setToggleElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-toggle-json"/>
-		    <xsl:text>]); report.setVisTypeFieldsetElements([</xsl:text>
+		    <xsl:text>]); report.setFieldsetElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-fieldset-json"/>
 		    <xsl:text>]); report.setBindingControls([</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>

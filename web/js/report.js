@@ -123,13 +123,13 @@ Visualization.prototype.toggle = function(show)
     if (show)
     {
 	    this.container.style.display = "block";
-	    //this.fieldset.style.display = "block";
+	    this.fieldset.style.display = "block";
 	    //this.toggle.checked = true;
     }
     else
     {
 	    this.container.style.display = "none";
-	    //this.fieldset.style.display = "none";
+	    this.fieldset.style.display = "none";
 	    //this.toggle.checked = false;
     }
 }
@@ -452,18 +452,29 @@ Report.prototype.setVariables = function(variables)
 Report.prototype.setToggleElements = function(elements)
 {
     //alert(elements.toSource());
+    // HIDE UNUSED ELEMENTS!!!
     for (var i in this.visualizations)
     {
 	var visualization = this.visualizations[i];
+//alert(visualization.type.value);
 	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
 	visualization.toggleElement = element.element;
 	//alert(visualization.toggleElement.toSource());
     }
 }
 
-Report.prototype.setVisTypeFieldsetElements = function(visTypeFieldsetElements)
+Report.prototype.setFieldsetElements = function(elements)
 {
-    this.visTypeFieldsetElements = visTypeFieldsetElements;
+    // HIDE UNUSED ELEMENTS!!!
+    for (var i in this.visualizations)
+    {
+	var visualization = this.visualizations[i];
+	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
+	visualization.fieldset = element.element;
+	//alert(visualization.toggleElement.toSource());
+    }
+
+    //this.visTypeFieldsetElements = elements;
 }
 
 Report.prototype.setBindingControls = function(controls)
