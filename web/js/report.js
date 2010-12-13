@@ -3,12 +3,13 @@ var report = null;
 function Visualization(report, bindings, variables, options, container)
 {
     var visualization = this;
+//alert(visualization.type.value);
     this.report = report;
 //alert(Report.visualizationTypes.toSource());
     //this.type = Report.visualizationTypes.filter(function(visType) { return visType.type.value == visualization.type.value; } );
 //alert(this.type.toSource());
     this.variables = variables;
-//alert(this.variables.toSource());
+//alert(this.type.value + "\n\n" + this.variables.toSource());
     this.bindings = bindings;
 //alert(this.bindings.toSource());
     this.container = container;
@@ -82,7 +83,7 @@ Visualization.prototype.hasSufficientColumns = function()
 Visualization.prototype.show = function()
 {
 //alert(this.columns.toSource());
-//alert("show!");
+//alert(this.type.value + "\n\n" + this.columns.toSource());
     this.view = new google.visualization.DataView(this.report.data);
     //this.getColumns = Visualization.prototype.getColumns;
     if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.columns); // all columns for Table
@@ -353,6 +354,7 @@ function Report(table, visualizations, bindings, variables, options, containers)
     for (var i in this.visualizations)
     {
 	var visualization = this.visualizations[i];
+//alert(visualization.toSource());
 	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
 	var visVariables = variables.results.bindings.filter(function(variable) { return variable.visualization.value == visualization.visualization.value; } );
 //alert(visVariables.toSource());

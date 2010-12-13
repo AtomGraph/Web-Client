@@ -158,11 +158,16 @@ exclude-result-prefixes="#all">
 		    <xsl:text>, [</xsl:text>
 		    <xsl:value-of select="$option-types-json"/>
 		    <xsl:text>]); </xsl:text>
-		    <xsl:text>report = new Report(table, { 'results' : { 'bindings' : [</xsl:text>
-		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-from-type-json"/>
-		    <xsl:text>] } }, { 'results' : { 'bindings' : [</xsl:text>
+		    <xsl:text>report = new Report(table, </xsl:text>
+		    <xsl:value-of select="$visualizations-json"/>
+		    <!--
+		    <xsl:text>, { 'results' : { 'bindings' : [</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
 		    <xsl:text>] } }, </xsl:text>
+		    -->
+		    <xsl:text>, </xsl:text>
+		    <xsl:value-of select="$bindings-json"/>
+		    <xsl:text>, </xsl:text>
 		    <xsl:value-of select="$variables-json"/>
 		    <xsl:text>, [], [</xsl:text>
                     <xsl:for-each select="$visualization-types//sparql:result">
