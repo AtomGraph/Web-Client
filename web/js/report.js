@@ -46,19 +46,11 @@ Visualization.prototype.getColumns = function()
 	{
 	    var variable = binding.variables[j];
 	    //alert(variable.toSource());
+	    // QUIRK -- why order is string???
 	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variable.variable.value);
 	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
 	}
     }
-    /*
-    for (var i in this.variables)
-    {
-	var variable = this.variables[i];
-// QUIRK -- why order is string???
-	if ("order" in variable.binding.type) orderColumns[parseInt(variable.binding.type.order.value)] = parseInt(variable.variable.value);
-	else restColumns = restColumns.concat(parseInt(variable.variable.value));
-    }
-    */
     var columns = orderColumns.concat(restColumns);
 //alert(this.type.toSource() + "\n\n" + columns.toSource());
     return columns;
@@ -250,7 +242,7 @@ Binding.prototype.getVariablesFromControl = function()
 	if (option.selected)
 	{
 	    var variable = { };
-	    variable.variable = { 'type': 'literal', 'value' : Number(option.value) };
+	    variable.variable = { 'type': 'typed-literal', 'value' : Number(option.value) };
 	    variable.binding = this;
 	    variable.bindingType = this.type;
 	    variable.visualization = this.visualization;
@@ -440,14 +432,7 @@ Report.prototype.setBindings = function(bindings)
 
 Report.prototype.setVariables = function(variables)
 {
-    //alert(variables.toSource());
     this.variables = variables;
-
-    /*
-    var bindings = this.getBindingsWithoutVariables();
-    var missingVars = this.createVariables(bindings);
-    this.variables = this.variables.results.bindings.concat(missingVars);
-    */
 }
 
 Report.prototype.setToggleElements = function(elements)
@@ -621,23 +606,6 @@ Report.prototype.getBindingVariables = function(bindingTypeElement, binding)
 		variable.visType = binding.visType;
 		variables.push(variable);
 	    }
-    return variables;
-}
-
-Report.prototype.getVariablesFromControls = function() // bindings???
-{
-//alert(bindingElements.toSource());
-//alert(this.toSource());
-    var variables = new Array();
-    for (var i in this.bindingTypeElements)
-    {
-	//var binding = objectByType(this.bindingTypeElements[i].bindingType, this.bindings);
-	var element = this.bindingTypeElements[i];
-	var binding = this.bindings.results.bindings.filter(function(el) { return el.type.value == element.bindingType; } )[0];
-
-//alert(binding.toSource());
-        variables = variables.concat(this.getBindingVariables(this.bindingTypeElements[i], binding));
-    }
     return variables;
 }
 

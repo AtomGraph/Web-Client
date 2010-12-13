@@ -160,11 +160,6 @@ exclude-result-prefixes="#all">
 		    <xsl:text>]); </xsl:text>
 		    <xsl:text>report = new Report(table, </xsl:text>
 		    <xsl:value-of select="$visualizations-json"/>
-		    <!--
-		    <xsl:text>, { 'results' : { 'bindings' : [</xsl:text>
-		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-from-type-json"/>
-		    <xsl:text>] } }, </xsl:text>
-		    -->
 		    <xsl:text>, </xsl:text>
 		    <xsl:value-of select="$bindings-json"/>
 		    <xsl:text>, </xsl:text>
@@ -720,71 +715,6 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                 <xsl:text>)</xsl:text>
             </xsl:if>
         </option>
-    </xsl:template>
-
-    <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="vis-from-type-json">
-	<xsl:variable name="visualization" select="key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualizations)"/>
-	<xsl:variable name="visualization-uri" as="xs:anyURI">
-	    <xsl:choose>
-		<xsl:when test="$visualization">
-		    <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</xsl:variable>
-
-	<xsl:text>{ 'visualization': { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="$visualization-uri"/>
-	<xsl:text>' }, 'type': { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-	<xsl:text>' }, 'report' : { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="sparql:binding[@name = 'report']/sparql:uri"/>
-	<xsl:text>' } }</xsl:text>
-	<xsl:if test="position() != last()">,</xsl:if>
-    </xsl:template>
-
-    <xsl:template match="sparql:result[sparql:binding[@name = 'type']]" mode="binding-from-type-json">
-	<xsl:variable name="visualization" select="key('result-by-type', sparql:binding[@name = 'visType']/sparql:uri, $visualizations)"/>
-	<xsl:variable name="visualization-uri" as="xs:anyURI">
-	    <xsl:choose>
-		<xsl:when test="$visualization">
-		    <xsl:value-of select="$visualization/sparql:binding[@name = 'visualization']/sparql:uri"/>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:value-of select="concat($host-uri, 'visualizations/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $visualization-ids))"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</xsl:variable>
-        <xsl:variable name="binding" select="key('result-by-type', sparql:binding[@name = 'type']/sparql:uri, $bindings)"/>
-        <xsl:variable name="binding-uri" as="xs:anyURI">
-            <xsl:choose>
-                <xsl:when test="$binding">
-                    <xsl:value-of select="$binding/sparql:binding[@name = 'binding']/sparql:uri"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="concat($host-uri, 'bindings/', key('id-by-type', sparql:binding[@name = 'type']/sparql:uri, $binding-ids))"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
-	<xsl:text>{ 'binding': { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="$binding-uri"/>
-	<xsl:text>' }, 'type': { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="sparql:binding[@name = 'type']/sparql:uri"/>
-	<xsl:text>' }, 'visualization': { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="$visualization-uri"/>
-	<xsl:text>' }, 'visType' : { 'type' : 'uri', 'value' : '</xsl:text>
-	<xsl:value-of select="sparql:binding[@name = 'visType']/sparql:uri"/>
-	<xsl:text>'} </xsl:text>
-	<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
-	    <xsl:text>, 'order': { 'type' : 'typed-literal', 'value' : '</xsl:text>
-	    <xsl:value-of select="sparql:binding[@name = 'order']/sparql:literal"/>
-	    <xsl:text>' }</xsl:text>
-	</xsl:if>
-	<xsl:text>}</xsl:text>
-	<xsl:if test="position() != last()">,</xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>
