@@ -37,15 +37,15 @@ Visualization.prototype.getColumns = function()
 //alert(this.variables.length);
     var orderColumns = new Array();
     var restColumns = new Array();
-//alert(this.bindings.length);
-    for (var j in this.bindings)
+//alert(this.type.value + "\n\n" + this.bindings.length);
+    for (var i in this.bindings)
     {
-	var binding = this.bindings[j];
+	var binding = this.bindings[i];
 	//alert(binding.variables.toSource());
-	for (var k in binding.variables)
+	for (var j in binding.variables)
 	{
-	    var variable = binding.variables[k];
-	    //alert(variable.variable.value);
+	    var variable = binding.variables[j];
+	    //alert(variable.toSource());
 	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variable.variable.value);
 	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
 	}
@@ -189,6 +189,7 @@ function Binding(report, visualization, variables)
     //this.control = control;
     var bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
     //alert(bindingType.toSource());
+    // QUIRK -- bindingType should not be used, if its properties are already saved with binding
     this.type = bindingType.type;
     this.label = bindingType.label;
     this.dataTypes = bindingType.dataTypes;
@@ -249,7 +250,7 @@ Binding.prototype.getVariablesFromControl = function()
 	if (option.selected)
 	{
 	    var variable = { };
-	    variable.variable = Number(option.value);
+	    variable.variable = { 'type': 'literal', 'value' : Number(option.value) };
 	    variable.binding = this;
 	    variable.bindingType = this.type;
 	    variable.visualization = this.visualization;
@@ -489,14 +490,17 @@ Report.prototype.setBindingControls = function(controls)
 	    //alert(binding.type.type.toSource());
 	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.value; } )[0];
 	    binding.control = bindingControl.element;
+	    binding.control.visualization = visualization;
+	    binding.control.binding = binding;
 	    binding.control.onchange = function()
 	    {
-		binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
-		binding.variables = binding.getVariablesFromControl();
-		//alert(binding.variables.length);
-		visualization.getColumns = Visualization.prototype.getColumns;
-		visualization.columns = visualization.getColumns();
-		visualization.show();
+		this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
+		this.binding.variables = this.binding.getVariablesFromControl();
+		//alert(this.binding.variables.length);
+		this.visualization.getColumns = Visualization.prototype.getColumns;
+		this.visualization.columns = this.visualization.getColumns();
+		//alert(this.visualization.columns.toSource());
+		this.visualization.show();
 	    }
 	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
 	    //alert(binding.control.toSource());
