@@ -83,18 +83,6 @@ abstract public class ReportView extends FrontEndView
 	getTransformer().setParameter("visualizations-json", JSONSerializer.serialize(visualizations));
     }
 
-    protected void setBindingTypes(ResultSetRewindable bindingTypes)
-    {
-	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
-	getTransformer().setParameter("binding-types-json", JSONSerializer.serialize(bindingTypes));
-    }
-
-    protected void setDataTypes(ResultSetRewindable dataTypes)
-    {
-	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
-	getTransformer().setParameter("data-types-json", JSONSerializer.serialize(dataTypes));
-    }
-
     protected void setBindings(ResultSetRewindable bindings)
     {
 	getResolver().setArgument("bindings", XMLSerializer.serialize(bindings));
@@ -110,6 +98,24 @@ abstract public class ReportView extends FrontEndView
     protected void setOptions(ResultSetRewindable options)
     {
         getResolver().setArgument("options", XMLSerializer.serialize(options));
+    }
+
+    protected void setVisualizationTypes(ResultSetRewindable visTypes)
+    {
+	getResolver().setArgument("visualization-types", XMLSerializer.serialize(visTypes));
+	getTransformer().setParameter("visualization-types-json", JSONSerializer.serialize(visTypes));
+    }
+
+    protected void setBindingTypes(ResultSetRewindable bindingTypes)
+    {
+	getResolver().setArgument("binding-types", XMLSerializer.serialize(bindingTypes));
+	getTransformer().setParameter("binding-types-json", JSONSerializer.serialize(bindingTypes));
+    }
+
+    protected void setDataTypes(ResultSetRewindable dataTypes)
+    {
+	getResolver().setArgument("data-types", XMLSerializer.serialize(dataTypes));
+	getTransformer().setParameter("data-types-json", JSONSerializer.serialize(dataTypes));
     }
 
 }

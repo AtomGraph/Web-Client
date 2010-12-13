@@ -412,6 +412,9 @@ function Binding(report, visualization, variables)
 {
     var binding = this;
 //alert(Report.bindingTypes.toSource());
+//alert(JSON.stringify(this));
+    // hack for visualization ontology changes
+    if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
     this.report = report;
     this.visualization = visualization;
     //this.control = control;
@@ -421,6 +424,8 @@ function Binding(report, visualization, variables)
     this.type = bindingType.type;
     this.label = bindingType.label;
     this.dataTypes = bindingType.dataTypes;
+//alert(bindingType.dataTypes.toSource());
+//alert(this.dataTypes.toSource());
     // QUIRK -- only "order" belongs here!!! (belongs to binding and not bindingType)
     if ("order" in bindingType) this.order = bindingType.order;
     if ("cardinality" in bindingType) this.cardinality = bindingType.cardinality;
