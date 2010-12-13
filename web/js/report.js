@@ -22,6 +22,8 @@ function Visualization(report, bindings, variables, options, container)
 //alert(bindingVariables.toSource());
 	//binding.variables = bindingVariables;
     }
+    this.getColumns = Visualization.prototype.getColumns;
+    this.columns = this.getColumns();
     this.init = Visualization.prototype.init;
     this.init();
     //alert(visualization.googleVis.toSource());
@@ -43,7 +45,7 @@ Visualization.prototype.getColumns = function()
 	{
 	    var variable = binding.variables[k];
 	    //alert(variable.variable.value);
-	    if ("order" in binding.type) orderColumns[parseInt(binding.type.order.value)] = parseInt(variable.variable.value);
+	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variable.variable.value);
 	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
 	}
     }
@@ -66,24 +68,24 @@ Visualization.prototype.hasSufficientColumns = function()
     for (var i in this.bindings)
     {
 	var binding = this.bindings[i];
-	binding.getColumns = Binding.prototype.getColumns;
-        var columns = binding.getColumns();
+	//binding.getColumns = Binding.prototype.getColumns;
+        //var columns = binding.getColumns();
 
-//alert(bindingType.toSource());
+//alert(binding.columns.toSource());
 
-        if ("cardinality" in binding.type && binding.type.cardinality.value > columns.length) return false;
-        if ("minCardinality" in binding.type && binding.type.minCardinality.value > columns.length) return false;
+        if ("cardinality" in binding && binding.cardinality.value > binding.columns.length) return false;
+        if ("minCardinality" in binding && binding.minCardinality.value > binding.columns.length) return false;
 	// maxCardinality???
     }
     return true;
 }
 Visualization.prototype.show = function()
 {
-//alert(this.variables.toSource());
+//alert(this.columns.toSource());
 //alert("show!");
     this.view = new google.visualization.DataView(this.report.data);
-    this.getColumns = Visualization.prototype.getColumns;
-    if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.getColumns()); // all columns for Table
+    //this.getColumns = Visualization.prototype.getColumns;
+    if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.columns); // all columns for Table
 //alert(this.type.toSource() + "\n\n" + this.getColumns());
     var optArray = { }; // this.options
     /*
@@ -142,11 +144,13 @@ Visualization.prototype.fillControls = function()
 	var binding = this.bindings[i];
 //alert(binding.variables.length);
 
-	var columns = binding.getColumns();
-//alert(visBindingTypes[i].toSource() + "\n\n" + bindingColumns.toSource());
+	//var columns = binding.getColumns();
+	var columns = binding.columns;
 //alert(columns.toSource());
-	if (!(("cardinality" in binding.type && binding.type.cardinality.value == 1) ||
-		("maxCardinality" in binding.type && binding.type.maxCardinality.value == 1)))
+//alert(visBindingTypes[i].toSource() + "\n\n" + bindingColmns.toSource());
+//alert(binding.type.toSource());
+	if (!(("cardinality" in binding && binding.cardinality.value == 1) ||
+		("maxCardinality" in binding && binding.maxCardinality.value == 1)))
 	    binding.control.multiple = "multiple";
 
 	for (var j in columns)
@@ -182,7 +186,15 @@ function Binding(report, visualization, variables)
     this.report = report;
     this.visualization = visualization;
     //this.control = control;
-    this.type = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
+    var bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
+    //alert(bindingType.toSource());
+    this.type = bindingType.type;
+    this.label = bindingType.label;
+    this.dataTypes = bindingType.dataTypes;
+    if ("order" in bindingType) this.order = bindingType.order;
+    if ("cardinality" in bindingType) this.cardinality = bindingType.cardinality;
+    if ("minCardinality" in bindingType) this.minCardinality = bindingType.minCardinality;
+    //alert(bindingType.toSource());
     this.variables = variables;
     for (var i in this.variables)
     {
@@ -190,16 +202,35 @@ function Binding(report, visualization, variables)
 	variable.constructor = Variable;
 	variable.constructor(this.report, this.visualization, this);
     }
-//alert(this.variables.toSource());
+    // after variables are set
+    this.getColumns = Binding.prototype.getColumns;
+    this.columns = this.getColumns();
+//alert(this.columns.toSource());
+}
+Binding.prototype.getWireTypes = function()
+{
+    var wireTypes = new Array();
+//alert(this.dataTypes.toSource());
+
+    for (var i in this.dataTypes)
+    {
+	var dataType = this.dataTypes[i];
+	dataType.getWireType = DataType.prototype.getWireType;
+	var wireType = dataType.getWireType();
+	if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType); // no duplicates
+    }
+    return wireTypes;
 }
 Binding.prototype.getColumns = function()
 {
     var columns = new Array();
 //alert(this.report.toSource());
-    this.type.getWireTypes = BindingType.prototype.getWireTypes;
+    this.getWireTypes = Binding.prototype.getWireTypes;
 //alert(this.type.getWireTypes().toSource());
 
-    var wireTypes = this.type.getWireTypes();
+    var wireTypes = this.getWireTypes();
+//alert(wireTypes.toSource());
+//alert(this.report.toSource());
     for (var i in wireTypes)
         columns = columns.concat(this.report.getColumnsByWireType(wireTypes[i])); // add columns for each type
 //alert(columns.toSource());
@@ -213,18 +244,18 @@ Binding.prototype.getVariablesFromControl = function()
     for (var i in this.control.options)
     {
 	var option = this.control.options[i];
+//alert(option.toSource());
 	if (option.selected)
 	{
 	    var variable = { };
 	    variable.variable = Number(option.value);
-	    variable.binding = this.binding;
+	    variable.binding = this;
 	    variable.bindingType = this.type;
 	    variable.visualization = this.visualization;
 	    variable.visType = this.visType;
 	    variables.push(variable);
 	}
     }
-//alert(variables.toSource());
     return variables;
 }
 Binding.prototype.hasVariable = function(name)
@@ -317,6 +348,7 @@ function Report(table, visualizations, bindings, variables, options, containers)
 //alert(variables.toSource());
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations.results.bindings;
+    this.countColumns();
     // join and split the whole thing
     for (var i in this.visualizations)
     {
@@ -340,7 +372,6 @@ function Report(table, visualizations, bindings, variables, options, containers)
     //alert(this.visualizations.toSource());
     //this.bindings = bindings.results.bindings;
     //this.options = options.results.bindings;
-    this.countColumns();
     //this.containers = containers;
     //for (var i in this.containers)
 	//this.initVis(this.containers[i].element, this.containers[i].visType);
@@ -443,13 +474,15 @@ Report.prototype.setBindingControls = function(controls)
 	{
 	    var binding = visualization.bindings[j];
 	    //alert(binding.type.type.toSource());
-	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.type.value; } )[0];
+	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.value; } )[0];
 	    binding.control = bindingControl.element;
 	    binding.control.onchange = function()
 	    {
 		binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
 		binding.variables = binding.getVariablesFromControl();
-		//alert(binding.variables.toSource());
+		//alert(binding.variables.length);
+		visualization.getColumns = Visualization.prototype.getColumns;
+		visualization.columns = visualization.getColumns();
 		visualization.show();
 	    }
 	    //report.toggleVisualization(http://code.google.com/apis/visualization/AreaChartArea chart, this.checked)
@@ -469,6 +502,8 @@ Report.prototype.showWithControls = function()
 //alert(toggleElement.toSource());
 
 	visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
+	visualization.toggle = Visualization.prototype.toggle;
+
 	if (visualization.hasSufficientColumns())
 	{
 	    //alert("sufficient" + this.visualizations[i].toSource());
@@ -476,7 +511,6 @@ Report.prototype.showWithControls = function()
 	    visualization.fillControls();
 	    visualization.show = Visualization.prototype.show;
 	    visualization.show();
-	    visualization.toggle = Visualization.prototype.toggle;
 	    visualization.toggle(true);
 	}
         else
@@ -500,27 +534,29 @@ Report.prototype.show = function()
 }
 Report.prototype.countColumns = function()
 {
-        this.typeColumns = { "string": [], "number": [], "date": [], "lat": [], "lng": [] };
-        
-	for (var i = 0; i < this.data.getNumberOfColumns(); i++)
+    //alert("count!!");
+    this.typeColumns = { "string": [], "number": [], "date": [], "lat": [], "lng": [] };
+
+    for (var i = 0; i < this.data.getNumberOfColumns(); i++)
+    {
+	if (this.data.getColumnType(i) == "string") this.typeColumns.string.push(i);
+	if (this.data.getColumnType(i) == "date")
 	{
-            if (this.data.getColumnType(i) == "string") this.typeColumns.string.push(i);
-            if (this.data.getColumnType(i) == "date")
-            {
-                this.typeColumns.string.push(i); // date columns also treated as strings
-                this.typeColumns.date.push(i);
-            }
-            if (this.data.getColumnType(i) == "number") // lat/lng columns
-            {
-                this.typeColumns.number.push(i);
-		var range = this.data.getColumnRange(i);
-		if (range.min >= -90 && range.max <= 90) this.typeColumns.lat.push(i);
-		if (range.min >= -180 && range.max <= 180) this.typeColumns.lng.push(i);
-            }
+	    this.typeColumns.string.push(i); // date columns also treated as strings
+	    this.typeColumns.date.push(i);
 	}
+	if (this.data.getColumnType(i) == "number") // lat/lng columns
+	{
+	    this.typeColumns.number.push(i);
+	    var range = this.data.getColumnRange(i);
+	    if (range.min >= -90 && range.max <= 90) this.typeColumns.lat.push(i);
+	    if (range.min >= -180 && range.max <= 180) this.typeColumns.lng.push(i);
+	}
+    }
 }
 Report.prototype.getColumnsByWireType = function(wireType)
 {
+//alert(wireType.toSource());
     return this.typeColumns[wireType];
 }
 
