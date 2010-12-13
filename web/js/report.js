@@ -32,7 +32,7 @@ Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes)
     //Report.optionTypes = optionTypes.results.bindings;
     //alert(Report.dataTypes.toSource());
 
-    for (var i in Report.visualizationTypes)
+    for (var i = 0; i < Report.visualizationTypes.length; i++)
     {
 	var visType = Report.visualizationTypes[i];
 	var visBindingTypes = Report.bindingTypes.filter(function(bindingType) { return bindingType.visType.value == visType.type.value; } );
@@ -53,7 +53,7 @@ function Report(table, visualizations, bindings, variables, options, containers)
     this.visualizations = visualizations.results.bindings;
     this.countColumns();
     // join and split the whole thing
-    for (var i in this.visualizations)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
 //alert(visualization.toSource());
@@ -96,7 +96,7 @@ Report.prototype.setToggleElements = function(elements)
 {
     //alert(elements.toSource());
     // DISABLE UNUSED ELEMENTS!!!
-    for (var i in this.visualizations)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
 //alert(visualization.type.value);
@@ -116,10 +116,10 @@ Report.prototype.setFieldsetElements = function(elements)
 {
 //alert(elements.toSource());
     // HIDE UNUSED ELEMENTS!!!
-    for (var j in elements)
+    for (var j = 0; j < elements.length; j++)
 	elements[j].element.style.display = "none";
 
-    for (var i in this.visualizations)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
 	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
@@ -131,10 +131,10 @@ Report.prototype.setFieldsetElements = function(elements)
 Report.prototype.setBindingControls = function(controls)
 {
 //alert(controls.toSource());
-    for (var i in this.visualizations)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
-	for (var j in visualization.bindings)
+	for (var j = 0; j < visualization.bindings.length; j++)
 	{
 	    var binding = visualization.bindings[j];
 	    //alert(binding.type.type.toSource());
@@ -149,7 +149,7 @@ Report.prototype.setBindingControls = function(controls)
 		//alert(this.binding.variables.length);
 		this.visualization.getColumns = Visualization.prototype.getColumns;
 		this.visualization.columns = this.visualization.getColumns();
-		//alert(this.visualization.columns.toSource());
+		//alert(this.visualization.columns);
 		this.visualization.show();
 	    }
 	    //alert(binding.control.toSource());
@@ -160,7 +160,7 @@ Report.prototype.showWithControls = function()
 {
     //alert(this.visTypeToggleElements.toSource());
 
-    for (var i in this.visualizations)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
 //alert(visualization.toSource());
@@ -199,7 +199,7 @@ Report.prototype.showWithControls = function()
 
 Report.prototype.show = function()
 {
-    for (var i in this.visualizations)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
 	visualization.show = Visualization.prototype.show;
@@ -248,7 +248,7 @@ function Visualization(report, bindings, variables, options, container)
     this.bindings = bindings;
 //alert(this.bindings.toSource());
     this.container = container;
-    for (var i in this.bindings)
+    for (var i = 0; i < this.bindings.length; i++)
     {
 	var binding = this.bindings[i];
 	var bindingVariables = this.variables.filter(function(variable) { return variable.binding.value == binding.binding.value; } );
@@ -273,14 +273,14 @@ Visualization.prototype.getColumns = function()
     var orderColumns = new Array();
     var restColumns = new Array();
 //alert(this.type.value + "\n\n" + this.bindings.length);
-    for (var i in this.bindings)
+    for (var i = 0; i < this.bindings.length; i++)
     {
 	var binding = this.bindings[i];
 	//alert(binding.variables.toSource());
-	for (var j in binding.variables)
+	for (var j = 0; j < binding.variables.length; j++)
 	{
 	    var variable = binding.variables[j];
-	    //alert(variable.toSource());
+	    //alert(variable.variable.value);
 	    // QUIRK -- why order is string???
 	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variable.variable.value);
 	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
@@ -293,7 +293,7 @@ Visualization.prototype.getColumns = function()
 }
 Visualization.prototype.hasSufficientColumns = function()
 {
-    for (var i in this.bindings)
+    for (var i = 0; i < this.bindings.length; i++)
     {
 	var binding = this.bindings[i];
 	//binding.getColumns = Binding.prototype.getColumns;
@@ -317,7 +317,7 @@ Visualization.prototype.show = function()
 //alert(this.type.toSource() + "\n\n" + this.getColumns());
     var optArray = { }; // this.options
     /*
-    for (var j in visOptions)
+    for (var j = 0; j < visOptions.length; j++)
     {
 	var name = visOptions[j].name;
 	var value = visOptions[j].value;
@@ -368,7 +368,7 @@ Visualization.prototype.fillControls = function()
     //var visBindingTypes = Report.bindingTypes.results.bindings.filter(function(el) { return el.visType.value == visualization.type.value; } )
 //alert(this.bindings.toSource());
 
-    for (var i in this.bindings)
+    for (var i = 0; i < this.bindings.length; i++)
     {
 	var binding = this.bindings[i];
 //alert(binding.variables.length);
@@ -382,7 +382,7 @@ Visualization.prototype.fillControls = function()
 		("maxCardinality" in binding && binding.maxCardinality.value == 1)))
 	    binding.control.multiple = "multiple";
 
-	for (var j in columns)
+	for (var j = 0; j < columns.length; j++)
 	{
 	    var option = document.createElement("option");
 	    option.appendChild(document.createTextNode(this.report.data.getColumnLabel(columns[j])));
@@ -421,12 +421,13 @@ function Binding(report, visualization, variables)
     this.type = bindingType.type;
     this.label = bindingType.label;
     this.dataTypes = bindingType.dataTypes;
+    // QUIRK -- only "order" belongs here!!! (belongs to binding and not bindingType)
     if ("order" in bindingType) this.order = bindingType.order;
     if ("cardinality" in bindingType) this.cardinality = bindingType.cardinality;
     if ("minCardinality" in bindingType) this.minCardinality = bindingType.minCardinality;
     //alert(bindingType.toSource());
     this.variables = variables;
-    for (var i in this.variables)
+    for (var i = 0; i < this.variables.length; i++)
     {
 	var variable = this.variables[i];
 	variable.constructor = Variable;
@@ -442,7 +443,7 @@ Binding.prototype.getWireTypes = function()
     var wireTypes = new Array();
 //alert(this.dataTypes.toSource());
 
-    for (var i in this.dataTypes)
+    for (var i = 0; i < this.dataTypes.length; i++)
     {
 	var dataType = this.dataTypes[i];
 	dataType.getWireType = DataType.prototype.getWireType;
@@ -461,7 +462,7 @@ Binding.prototype.getColumns = function()
     var wireTypes = this.getWireTypes();
 //alert(wireTypes.toSource());
 //alert(this.report.toSource());
-    for (var i in wireTypes)
+    for (var i = 0; i < wireTypes.length; i++)
         columns = columns.concat(this.report.getColumnsByWireType(wireTypes[i])); // add columns for each type
 //alert(columns.toSource());
     return columns;
@@ -471,7 +472,7 @@ Binding.prototype.getVariablesFromControl = function()
 //alert(this.toSource());
     var variables = new Array();
 
-    for (var i in this.control.options)
+    for (var i = 0; i < this.control.options.length; i++)
     {
 	var option = this.control.options[i];
 //alert(option.toSource());
@@ -545,7 +546,7 @@ function BindingType(dataTypes)
 BindingType.prototype.getWireTypes = function()
 {
     var wireTypes = new Array();
-    for (var i in this.dataTypes)
+    for (var i = 0; i < this.dataTypes.length; i++)
     {
 	var dataType = this.dataTypes[i];
 	dataType.getWireType = DataType.prototype.getWireType;
@@ -561,9 +562,13 @@ function VisualizationType(bindingTypes, dataTypes, optionTypes)
     this.dataTypes = dataTypes;
     this.optionTypes = optionTypes;
 //alert(this.bindingTypes.toSource());
-    for (var i in this.bindingTypes)
+//alert(JSON.stringify(this.bindingTypes));
+//alert(this.bindingTypes.length);
+    for (var i = 0; i < this.bindingTypes.length; i++)
     {
+	//alert(i);
 	var bindingType = this.bindingTypes[i];
+	//alert(JSON.stringify(bindingType));
 	var bindDataTypes = this.dataTypes.filter(function(dataType) { return dataType.bindingType.value == bindingType.type.value; } );
 	bindingType.constructor = BindingType;
 	bindingType.constructor(bindDataTypes);
@@ -580,13 +585,13 @@ Report.prototype.createVariables = function(bindings)
 
 //alert(bindings.toSource());
 //alert(bindings.length);
-    for (var i in bindings)
+    for (var i = 0; i < bindings.length; i++)
     {
 //alert(bindings[i].toSource());
 
 	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[i].type.value; } )[0];
         var bindingColumns = this.columnsByBindingType(bindingType);
-        for (var j in bindingColumns)
+        for (var j = 0; j < bindingColumns.length; j++)
         {
             var variable = { };
             variable.variable = { 'type' : 'typed-literal', 'value' : bindingColumns[j] }; // 'datatype
@@ -608,7 +613,7 @@ Report.prototype.getBindingsWithoutVariables = function()
 //alert(report.bindings.toSource());
 //alert(this.variables.toSource());
 
-    for (var i in this.bindings.results.bindings)
+    for (var i = 0; i < this.bindings.results.bindings.length; i++)
     {
 	//var variables = objectsByBindingType(this.variables, this.bindings.results.bindings[i].type.value); // byBinding?
 	var variables = this.variables.results.bindings.filter(function(el) { return el.binding.value == report.bindings.results.bindings[i].binding.value; } );
@@ -617,4 +622,76 @@ Report.prototype.getBindingsWithoutVariables = function()
     }
 //alert(bindings.toSource());
     return bindings;
+}
+
+// ============================ Internet Explorer fixes ========================
+
+if (!Array.prototype.filter)
+{
+  Array.prototype.filter = function(fun /*, thisp */)
+  {
+    "use strict";
+
+    if (this === void 0 || this === null)
+      throw new TypeError();
+
+    var t = Object(this);
+    var len = t.length >>> 0;
+    if (typeof fun !== "function")
+      throw new TypeError();
+
+    var res = [];
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in t)
+      {
+        var val = t[i]; // in case fun mutates this
+        if (fun.call(thisp, val, i, t))
+          res.push(val);
+      }
+    }
+
+    return res;
+  };
+}
+
+if (!Array.prototype.indexOf)
+{
+  Array.prototype.indexOf = function(searchElement /*, fromIndex */)
+  {
+    "use strict";
+
+    if (this === void 0 || this === null)
+      throw new TypeError();
+
+    var t = Object(this);
+    var len = t.length >>> 0;
+    if (len === 0)
+      return -1;
+
+    var n = 0;
+    if (arguments.length > 0)
+    {
+      n = Number(arguments[1]);
+      if (n !== n)
+        n = 0;
+      else if (n !== 0 && n !== (1 / 0) && n !== -(1 / 0))
+        n = (n > 0 || -1) * Math.floor(Math.abs(n));
+    }
+
+    if (n >= len)
+      return -1;
+
+    var k = n >= 0
+          ? n
+          : Math.max(len - Math.abs(n), 0);
+
+    for (; k < len; k++)
+    {
+      if (k in t && t[k] === searchElement)
+        return k;
+    }
+    return -1;
+  };
 }
