@@ -1,3 +1,5 @@
+// =============================== Instances ===================================
+
 var report = null;
 
 //google.setOnLoadCallback(countColumns(data));
@@ -16,21 +18,12 @@ Report.bindingTypes = new Array();
 Report.dataTypes = new Array();
 Report.optionTypes = new Array();
 
-Report.shit = function(bindingTypes, dataTypes) // static types (classes)
-{
-    Report.bindingTypes = bindingTypes.results.bindings; //  QUIRK -- should not be necessary if bindings are saved with "order"!!!
-    Report.dataTypes = dataTypes.results.bindings;
-    //alert(this.bindingTypes.toSource());
-}
-
 Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
 {
-    //alert(bindingTypes.toSource());
     Report.visualizationTypes = visualizationTypes.results.bindings;
     Report.bindingTypes = bindingTypes.results.bindings;
     Report.dataTypes = dataTypes.results.bindings;
     //Report.optionTypes = optionTypes.results.bindings;
-    //alert(Report.dataTypes.toSource());
 
     for (var i = 0; i < Report.visualizationTypes.length; i++)
     {
@@ -63,7 +56,6 @@ function Report(table, visualizations, bindings, variables, options, containers)
 	// only pass arrays, not the whole SPARQL result
 	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
     }
-    //alert(this.visualizations.toSource());
     //this.bindings = bindings.results.bindings;
     //this.options = options.results.bindings;
     //this.containers = containers;
@@ -86,12 +78,10 @@ Report.prototype.setVariables = function(variables)
 
 Report.prototype.setToggleElements = function(elements)
 {
-    //alert(elements.toSource());
     // DISABLE UNUSED ELEMENTS!!!
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
-//alert(visualization.type.value);
 	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
 	visualization.toggleElement = element.element;
 	visualization.toggleElement.visualization = this;
@@ -100,7 +90,6 @@ Report.prototype.setToggleElements = function(elements)
 	    this.visualization.toggle = Visualization.prototype.toggle;
 	    this.visualization.toggle(this.checked);
 	}
-	//alert(visualization.toggleElement.toSource());
     }
 }
 
@@ -117,7 +106,13 @@ Report.prototype.setFieldsetElements = function(elements)
 	visualization.fieldset = element.element;
     }
 }
-
+function getSelectedOptions()
+{
+    var selected = new Array();
+    for (var i = 0; i < this.options.length; i++)
+	if (this.options[ i ].selected) selected.push(this.options[ i ].value);
+    return selected;
+}
 Report.prototype.setBindingControls = function(controls)
 {
     for (var i = 0; i < this.visualizations.length; i++)
@@ -132,11 +127,18 @@ Report.prototype.setBindingControls = function(controls)
 	    binding.control.binding = binding;
 	    binding.control.onchange = function()
 	    {
+		this.binding.control.getSelectedOptions = getSelectedOptions;
+		var selectedOptions = this.binding.control.getSelectedOptions();
+		// do not allow deselecting too much/all
+		if ("cardinality" in this.binding && this.binding.cardinality.value > selectedOptions.length) return false;
+		if ("minCardinality" in this.binding && this.binding.minCardinality.value > selectedOptions.length) return false;
+		//alert(selectedOptions.length);
 		this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
 		this.binding.variables = this.binding.getVariablesFromControl();
 		this.visualization.getColumns = Visualization.prototype.getColumns;
 		this.visualization.columns = this.visualization.getColumns();
 		this.visualization.show();
+		return true;
 	    }
 	}
     }
@@ -209,7 +211,6 @@ Report.prototype.getColumnsByWireType = function(wireType)
 
 function Visualization(report, bindings, variables, options, container)
 {
-    var visualization = this;
     this.report = report;
     this.variables = variables;
     this.bindings = bindings;
@@ -303,9 +304,8 @@ Visualization.prototype.fillControls = function()
     {
 	var binding = this.bindings[i];
 	binding.fillControls = Binding.prototype.fillControls;
-	binding.fillControls(); //???
-
-  }
+	binding.fillControls();
+    }
 }
 Binding.prototype.fillControls = function()
 {
@@ -313,14 +313,14 @@ Binding.prototype.fillControls = function()
 	    ("maxCardinality" in this && this.maxCardinality.value == 1)))
 	this.control.multiple = "multiple";
 
-    for (var j = 0; j < this.columns.length; j++)
+    for (var i = 0; i < this.columns.length; i++)
     {
 	var option = document.createElement("option");
-	option.appendChild(document.createTextNode(this.report.data.getColumnLabel(this.columns[j])));
-	option.setAttribute("value", this.columns[j]);
+	option.appendChild(document.createTextNode(this.report.data.getColumnLabel(this.columns[i])));
+	option.setAttribute("value", this.columns[i]);
 
 	this.hasVariable = Binding.prototype.hasVariable;
-	if (this.hasVariable(this.columns[j]))
+	if (this.hasVariable(this.columns[i]))
 	    option.setAttribute("selected", "selected");
 	this.control.appendChild(option);
     }
@@ -423,29 +423,26 @@ function Variable(report, visualization, binding)
     this.binding = binding;
 }
 
-function DataType()
-{
-
-}
-DataType.XSD_NS = 'http://www.w3.org/2001/XMLSchema#';
-DataType.wireTypes = new Array();
-DataType.wireTypes[DataType.XSD_NS + 'boolean'] = 'boolean';
-DataType.wireTypes[DataType.XSD_NS + 'string'] = 'string';
-DataType.wireTypes[DataType.XSD_NS + 'integer'] = 'number';
-DataType.wireTypes[DataType.XSD_NS + 'decimal'] = 'number';
-DataType.wireTypes[DataType.XSD_NS + 'float'] = 'number';
-DataType.wireTypes[DataType.XSD_NS + 'double'] = 'number';
-DataType.wireTypes[DataType.XSD_NS + 'date'] = 'date';
-DataType.wireTypes[DataType.XSD_NS + 'dateTime'] = 'datetime';
-DataType.wireTypes[DataType.XSD_NS + 'time'] = 'timeofday';
-DataType.prototype.getWireType = function()
-{
-    return DataType.wireTypes[this.type.value];
-}
-
 function Option()
 {
 
+}
+
+// =========================== Types/classes ===================================
+
+function VisualizationType(bindingTypes, dataTypes, optionTypes)
+{
+    this.bindingTypes = bindingTypes;
+    this.dataTypes = dataTypes;
+    this.optionTypes = optionTypes;
+    for (var i = 0; i < this.bindingTypes.length; i++)
+    {
+	var bindingType = this.bindingTypes[i];
+	var bindDataTypes = this.dataTypes.filter(function(dataType) { return dataType.bindingType.value == bindingType.type.value; } );
+	bindingType.constructor = BindingType;
+	bindingType.constructor(bindDataTypes);
+	bindingType.visType = this;
+    }
 }
 
 function BindingType(dataTypes)
@@ -465,19 +462,24 @@ BindingType.prototype.getWireTypes = function()
     return wireTypes;
 }
 
-function VisualizationType(bindingTypes, dataTypes, optionTypes)
+function DataType()
 {
-    this.bindingTypes = bindingTypes;
-    this.dataTypes = dataTypes;
-    this.optionTypes = optionTypes;
-    for (var i = 0; i < this.bindingTypes.length; i++)
-    {
-	var bindingType = this.bindingTypes[i];
-	var bindDataTypes = this.dataTypes.filter(function(dataType) { return dataType.bindingType.value == bindingType.type.value; } );
-	bindingType.constructor = BindingType;
-	bindingType.constructor(bindDataTypes);
-	bindingType.visType = this;
-    }
+
+}
+DataType.XSD_NS = 'http://www.w3.org/2001/XMLSchema#';
+DataType.wireTypes = new Array();
+DataType.wireTypes[DataType.XSD_NS + 'boolean'] = 'boolean';
+DataType.wireTypes[DataType.XSD_NS + 'string'] = 'string';
+DataType.wireTypes[DataType.XSD_NS + 'integer'] = 'number';
+DataType.wireTypes[DataType.XSD_NS + 'decimal'] = 'number';
+DataType.wireTypes[DataType.XSD_NS + 'float'] = 'number';
+DataType.wireTypes[DataType.XSD_NS + 'double'] = 'number';
+DataType.wireTypes[DataType.XSD_NS + 'date'] = 'date';
+DataType.wireTypes[DataType.XSD_NS + 'dateTime'] = 'datetime';
+DataType.wireTypes[DataType.XSD_NS + 'time'] = 'timeofday';
+DataType.prototype.getWireType = function()
+{
+    return DataType.wireTypes[this.type.value];
 }
 
 // =========================== NOT USED? ====================================
