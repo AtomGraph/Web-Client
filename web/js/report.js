@@ -19,6 +19,7 @@ function Report(table, visualizations, bindings, variables, options, containers)
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations.results.bindings;
     this.countColumns();
+    // filter out visualizations that do not have sufficient columns!!!
     // join and split the whole thing
     for (var i = 0; i < this.visualizations.length; i++)
     {
@@ -37,22 +38,10 @@ function Report(table, visualizations, bindings, variables, options, containers)
     //this.options = options.results.bindings;
     //this.containers = containers;
 }
-
-Report.prototype.setVisualizations = function(visualizations)
-{
-    this.visualizations = visualizations;
-}
-
-Report.prototype.setBindings = function(bindings)
-{
-    this.bindings = bindings;
-}
-
 Report.prototype.setVariables = function(variables)
 {
     this.variables = variables;
 }
-
 Report.prototype.setToggleElements = function(elements)
 {
     for (var j = 0; j < Report.visualizationTypes.length; j++)
@@ -62,13 +51,12 @@ Report.prototype.setToggleElements = function(elements)
 	visType.hasSufficientColumns = VisualizationType.prototype.hasSufficientColumns;
 	var sufficient = visType.hasSufficientColumns(this);
 	typeToggle.element.disabled = !sufficient;
-	alert(visType.type.value + "\n\n" + sufficient);
     }
 
-    // DISABLE UNUSED ELEMENTS!!!
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
+//alert(visualization.container);
 	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
 	visualization.toggleElement = element.element;
 	visualization.toggleElement.visualization = this;
@@ -80,7 +68,6 @@ Report.prototype.setToggleElements = function(elements)
 	}
     }
 }
-
 Report.prototype.setFieldsetElements = function(elements)
 {
     // HIDE UNUSED ELEMENTS!!!
@@ -154,7 +141,6 @@ Report.prototype.showWithControls = function()
 	*/
     }
 }
-
 Report.prototype.show = function()
 {
     for (var i = 0; i < this.visualizations.length; i++)
@@ -267,6 +253,7 @@ Visualization.prototype.show = function()
 }
 Visualization.prototype.toggle = function(show)
 {
+//alert(this.fieldset.toSource());
     if (show)
     {
 	    this.container.style.display = "block";
@@ -425,7 +412,7 @@ Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes)
     Report.dataTypes = dataTypes.results.bindings;
     //Report.optionTypes = optionTypes.results.bindings;
 
-    // after data is set (in Report()) and before BindingTypes are initializaed
+    // after data is set (in Report()) and before BindingTypes are initialized
     //this.countColumns = Report.prototype.countColumns;
     //this.countColumns();
 
