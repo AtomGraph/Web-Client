@@ -20,6 +20,9 @@ function Report(table, visualizations, bindings, variables, options, containers)
     // count columns after data is set - but before visualizations are filtered
     this.countColumns();
     this.visualizations = visualizations.results.bindings;
+    // hide unused containers!!!
+    for (var h = 0; h < containers.length; h++)
+	containers[h].element.style.display = "none";
     // join and split the whole thing
     for (var i = 0; i < this.visualizations.length; i++)
     {
@@ -129,13 +132,6 @@ Report.prototype.showWithControls = function()
 {
     for (var i = 0; i < this.visualizations.length; i++)
     {
-	/*
-	visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
-	visualization.toggle = Visualization.prototype.toggle;
-
-	if (visualization.hasSufficientColumns())
-	*/
-
 	var visualization = this.visualizations[i];
 	visualization.fillControls = Visualization.prototype.fillControls;
 	visualization.fillControls();
@@ -143,16 +139,6 @@ Report.prototype.showWithControls = function()
 	visualization.show();
 	visualization.toggle = Visualization.prototype.toggle;
 	visualization.toggle(true);
-
-	/*
-	}
-        else
-	{
-	    //alert("nope");
-	    visualization.toggle(false);
-	    visualization.toggleElement.disabled = true;
-	}
-	*/
     }
 }
 Report.prototype.show = function()
@@ -187,9 +173,6 @@ Report.prototype.countColumns = function()
 }
 Report.prototype.getColumnsByWireType = function(wireType)
 {
-//alert(wireType);
-//alert(this.toSource());
-//alert(this.typeColumns.toSource());
     return this.typeColumns[wireType];
 }
 
@@ -242,7 +225,7 @@ Visualization.prototype.hasSufficientColumns = function()
 }
 Visualization.prototype.show = function()
 {
-//alert(this.type.value + "\n\n" + this.columns.toSource());
+    this.container.style.display = "block";
     this.view = new google.visualization.DataView(this.report.data);
     if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.columns); // all columns for Table
     var optArray = { }; // this.options
@@ -270,7 +253,6 @@ Visualization.prototype.show = function()
 }
 Visualization.prototype.toggle = function(show)
 {
-//alert(this.fieldset.toSource());
     if (show)
     {
 	    this.container.style.display = "block";
@@ -295,6 +277,7 @@ Visualization.prototype.fillControls = function()
 }
 Visualization.prototype.init = function()
 {
+//alert(this.type.value);
     if (this.type.value.indexOf("Table") != -1) this.googleVis = new google.visualization.Table(this.container);
     if (this.type.value.indexOf("ScatterChart") != -1) this.googleVis = new google.visualization.ScatterChart(this.container);
     if (this.type.value.indexOf("LineChart") != -1) this.googleVis = new google.visualization.LineChart(this.container);
