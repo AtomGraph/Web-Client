@@ -225,7 +225,7 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$bindings"/>
 			<xsl:copy-of select="$options"/>
 			-->
-			<xsl:copy-of select="$visualizations-json"/>
+			<xsl:copy-of select="$visualizations"/>
 
                         <!-- /reports/?view=create#visualizations -->
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="post" accept-charset="UTF-8">
