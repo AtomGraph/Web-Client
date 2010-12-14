@@ -197,11 +197,13 @@ function Visualization(report, bindings, variables, options, container)
     }
     this.getColumns = Visualization.prototype.getColumns;
     this.columns = this.getColumns();
+//alert(this.columns.toSource());
     this.init = Visualization.prototype.init;
     this.init();
 }
 Visualization.prototype.getColumns = function()
 {
+//alert(this.bindings.toSource());
     var orderColumns = new Array();
     var restColumns = new Array();
     for (var i = 0; i < this.bindings.length; i++)
@@ -216,6 +218,7 @@ Visualization.prototype.getColumns = function()
 	}
     }
     var columns = orderColumns.concat(restColumns);
+//alert(this.type.value + "\n\n" + columns.toSource());
     return columns;
 }
 Visualization.prototype.hasSufficientColumns = function()
@@ -231,6 +234,7 @@ Visualization.prototype.hasSufficientColumns = function()
 }
 Visualization.prototype.show = function()
 {
+//alert(this.columns.toSource());
     this.container.style.display = "block";
     this.view = new google.visualization.DataView(this.report.data);
     if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.columns); // all columns for Table
