@@ -31,7 +31,6 @@ xmlns:id="java:util.IDGenerator"
 exclude-result-prefixes="#all">
 
 	<xsl:import href="../sparql2google-wire.xsl"/>
-	<xsl:import href="sparql2json.xsl"/>
 
 	<xsl:include href="../FrontEndView.xsl"/>
 

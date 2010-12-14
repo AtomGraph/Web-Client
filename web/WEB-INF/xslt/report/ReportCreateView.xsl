@@ -186,18 +186,6 @@ exclude-result-prefixes="#all">
 		    <xsl:text>);</xsl:text>
 
 		    <xsl:text>report.showWithControls(); </xsl:text>
-
-                    <xsl:if test="$view = $update-view">
-                        <xsl:text> </xsl:text>
-                        <!-- switch of Visualizations not included in the Report -->
-			<!--
-                        <xsl:for-each select="$visualization-types//sparql:result[not(sparql:binding[@name = 'type']/sparql:uri = $visualizations//sparql:binding[@name = 'type']/sparql:uri)]">
-                            <xsl:text>report.toggleVisualization(</xsl:text>
-			    <xsl:apply-templates select="." mode="vis-type-json"/>
-                            <xsl:text>, false); </xsl:text>
-                        </xsl:for-each>
-			-->
-                    </xsl:if>
                 </xsl:attribute>
              </xsl:if>
         </xsl:template>
