@@ -15,7 +15,6 @@ Report.prototype.visualizations = new Array();
 
 function Report(table, visualizations, bindings, variables, options, containers)
 {
-//alert(this.typeColumns.toSource());
     this.data = new google.visualization.DataTable(table, 0.6);
     // count columns after data is set - but before visualizations are filtered
     this.countColumns();
@@ -38,7 +37,8 @@ function Report(table, visualizations, bindings, variables, options, containers)
 	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
     }
     // filter out visualizations that do not have sufficient columns!!!
-    this.visualizations = this.filterSufficient();
+    this.visualizations = this.getSufficientVisualizations(visualizations.results.bindings);
+    var unsufficient = this.getUnsufficientVisualizations(visualizations.results.bindings);
 
     //this.bindings = bindings.results.bindings;
     //this.options = options.results.bindings;
@@ -65,7 +65,7 @@ Report.prototype.setToggleElements = function(elements)
 //alert(visualization.container);
 	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
 	visualization.toggleElement = element.element;
-	visualization.toggleElement.visualization = this;
+	visualization.toggleElement.visualization = visualization;
 	// visualization.toggleElement.checked = true; // -- set in ReportCreateView.xsl
 	visualization.toggleElement.onchange = function()
 	{
@@ -117,15 +117,22 @@ Report.prototype.setBindingControls = function(controls)
 	}
     }
 }
-Report.prototype.filterSufficient = function()
+Report.prototype.getSufficientVisualizations = function(visualizations)
 {
-    return this.visualizations.filter(
+    return visualizations.filter(
 	function(visualization)
 	{
 	    visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
-	    var sufficient = visualization.hasSufficientColumns();
-	    if (!sufficient) visualization.toggle(false); // turn off unsufficient
-	    return sufficient;
+	    return visualization.hasSufficientColumns();
+	});
+}
+Report.prototype.getUnsufficientVisualizations = function(visualizations)
+{
+    return visualizations.filter(
+	function(visualization)
+	{
+	    visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
+	    return !visualization.hasSufficientColumns();
 	});
 }
 Report.prototype.showWithControls = function()
@@ -253,6 +260,7 @@ Visualization.prototype.show = function()
 }
 Visualization.prototype.toggle = function(show)
 {
+//alert(this.toSource());
     if (show)
     {
 	    this.container.style.display = "block";

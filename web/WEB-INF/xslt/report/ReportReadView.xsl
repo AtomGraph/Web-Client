@@ -117,7 +117,6 @@ exclude-result-prefixes="#all">
 			<xsl:copy-of select="$bindings"/>
                         <xsl:copy-of select="$variables"/>
                         -->
-			<xsl:copy-of select="$visualizations"/>
 
 			<dl>
 				<dt>Endpoint</dt>
