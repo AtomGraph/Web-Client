@@ -13,32 +13,9 @@ Report.prototype.visualizations = new Array();
 //Report.prototype.bindings = new Array();
 //Report.prototype.options = new Array();
 
-Report.visualizationTypes = new Array();
-Report.bindingTypes = new Array();
-Report.dataTypes = new Array();
-Report.optionTypes = new Array();
-
-Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
-{
-    Report.visualizationTypes = visualizationTypes.results.bindings;
-    Report.bindingTypes = bindingTypes.results.bindings;
-    Report.dataTypes = dataTypes.results.bindings;
-    //Report.optionTypes = optionTypes.results.bindings;
-
-    for (var i = 0; i < Report.visualizationTypes.length; i++)
-    {
-	var visType = Report.visualizationTypes[i];
-	var visBindingTypes = Report.bindingTypes.filter(function(bindingType) { return bindingType.visType.value == visType.type.value; } );
-	var visDataTypes = Report.dataTypes.filter(function(dataType) { return dataType.visType.value == visType.type.value; } );
-	var visOptionTypes = new Array();
-
-	visType.constructor = VisualizationType;
-	// only pass arrays, not the whole SPARQL result
-	visType.constructor(visBindingTypes, visDataTypes, visOptionTypes);
-    }
-}
 function Report(table, visualizations, bindings, variables, options, containers)
 {
+//alert(this.typeColumns.toSource());
     this.data = new google.visualization.DataTable(table, 0.6);
     this.visualizations = visualizations.results.bindings;
     this.countColumns();
@@ -78,6 +55,16 @@ Report.prototype.setVariables = function(variables)
 
 Report.prototype.setToggleElements = function(elements)
 {
+    for (var j = 0; j < Report.visualizationTypes.length; j++)
+    {
+	var visType = Report.visualizationTypes[j];
+	var typeToggle = elements.filter(function(element) { return element.visType == visType.type.value; } )[0];
+	visType.hasSufficientColumns = VisualizationType.prototype.hasSufficientColumns;
+	var sufficient = visType.hasSufficientColumns(this);
+	typeToggle.element.disabled = !sufficient;
+	alert(visType.type.value + "\n\n" + sufficient);
+    }
+
     // DISABLE UNUSED ELEMENTS!!!
     for (var i = 0; i < this.visualizations.length; i++)
     {
@@ -85,6 +72,7 @@ Report.prototype.setToggleElements = function(elements)
 	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
 	visualization.toggleElement = element.element;
 	visualization.toggleElement.visualization = this;
+	// visualization.toggleElement.checked = true; // -- set in ReportCreateView.xsl
 	visualization.toggleElement.onchange = function()
 	{
 	    this.visualization.toggle = Visualization.prototype.toggle;
@@ -106,13 +94,6 @@ Report.prototype.setFieldsetElements = function(elements)
 	visualization.fieldset = element.element;
     }
 }
-function getSelectedOptions()
-{
-    var selected = new Array();
-    for (var i = 0; i < this.options.length; i++)
-	if (this.options[ i ].selected) selected.push(this.options[ i ].value);
-    return selected;
-}
 Report.prototype.setBindingControls = function(controls)
 {
     for (var i = 0; i < this.visualizations.length; i++)
@@ -132,7 +113,7 @@ Report.prototype.setBindingControls = function(controls)
 		// do not allow deselecting too much/all
 		if ("cardinality" in this.binding && this.binding.cardinality.value > selectedOptions.length) return false;
 		if ("minCardinality" in this.binding && this.binding.minCardinality.value > selectedOptions.length) return false;
-		//alert(selectedOptions.length);
+
 		this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
 		this.binding.variables = this.binding.getVariablesFromControl();
 		this.visualization.getColumns = Visualization.prototype.getColumns;
@@ -206,6 +187,7 @@ Report.prototype.countColumns = function()
 }
 Report.prototype.getColumnsByWireType = function(wireType)
 {
+//alert(this.toSource());
     return this.typeColumns[wireType];
 }
 
@@ -430,6 +412,36 @@ function Option()
 
 // =========================== Types/classes ===================================
 
+Report.visualizationTypes = new Array();
+Report.bindingTypes = new Array();
+Report.dataTypes = new Array();
+Report.optionTypes = new Array();
+
+// ReportType() ???
+Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes) // static types (classes)
+{
+    Report.visualizationTypes = visualizationTypes.results.bindings;
+    Report.bindingTypes = bindingTypes.results.bindings;
+    Report.dataTypes = dataTypes.results.bindings;
+    //Report.optionTypes = optionTypes.results.bindings;
+
+    // after data is set (in Report()) and before BindingTypes are initializaed
+    //this.countColumns = Report.prototype.countColumns;
+    //this.countColumns();
+
+    for (var i = 0; i < Report.visualizationTypes.length; i++)
+    {
+	var visType = Report.visualizationTypes[i];
+	var visBindingTypes = Report.bindingTypes.filter(function(bindingType) { return bindingType.visType.value == visType.type.value; } );
+	var visDataTypes = Report.dataTypes.filter(function(dataType) { return dataType.visType.value == visType.type.value; } );
+	var visOptionTypes = new Array();
+
+	visType.constructor = VisualizationType;
+	// only pass arrays, not the whole SPARQL result
+	visType.constructor(visBindingTypes, visDataTypes, visOptionTypes);
+    }
+}
+
 function VisualizationType(bindingTypes, dataTypes, optionTypes)
 {
     this.bindingTypes = bindingTypes;
@@ -444,10 +456,26 @@ function VisualizationType(bindingTypes, dataTypes, optionTypes)
 	bindingType.visType = this;
     }
 }
+VisualizationType.prototype.hasSufficientColumns = function(report)
+{
+//alert(this.bindingTypes.toSource());
+    for (var i = 0; i < this.bindingTypes.length; i++)
+    {
+	var bindingType = this.bindingTypes[i];
+	bindingType.getColumns = BindingType.prototype.getColumns;
+	var columns = bindingType.getColumns(report);
+        if ("cardinality" in bindingType && bindingType.cardinality.value > columns.length) return false;
+        if ("minCardinality" in bindingType && bindingType.minCardinality.value > columns.length) return false;
+	// maxCardinality???
+    }
+    return true;
+}
 
 function BindingType(dataTypes)
 {
     this.dataTypes = dataTypes;
+    //this.getColumns = BindingType.prototype.getColumns;
+    //this.columns = this.getColumns();
 }
 BindingType.prototype.getWireTypes = function()
 {
@@ -460,6 +488,19 @@ BindingType.prototype.getWireTypes = function()
 	if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType); // no duplicates
     }
     return wireTypes;
+}
+BindingType.prototype.getColumns = function(report)
+{
+    // no this.report at this point!!!
+    var columns = new Array();
+    this.getWireTypes = BindingType.prototype.getWireTypes;
+    //this.report.getColumnsByWireType = Report.prototype.getColumnsByWireType;
+
+    var wireTypes = this.getWireTypes();
+    for (var i = 0; i < wireTypes.length; i++)
+        columns = columns.concat(report.getColumnsByWireType(wireTypes[i])); // add columns for each type
+
+    return columns;
 }
 
 function DataType()
@@ -480,6 +521,15 @@ DataType.wireTypes[DataType.XSD_NS + 'time'] = 'timeofday';
 DataType.prototype.getWireType = function()
 {
     return DataType.wireTypes[this.type.value];
+}
+// =========================== Helpers ====================================
+
+function getSelectedOptions()
+{
+    var selected = new Array();
+    for (var i = 0; i < this.options.length; i++)
+	if (this.options[i].selected) selected.push(this.options[i].value);
+    return selected;
 }
 
 // =========================== NOT USED? ====================================
