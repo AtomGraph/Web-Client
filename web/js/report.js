@@ -44,10 +44,6 @@ function Report(table, visualizations, bindings, variables, options, containers)
     //this.options = options.results.bindings;
     //this.containers = containers;
 }
-Report.prototype.setVariables = function(variables)
-{
-    this.variables = variables;
-}
 Report.prototype.setToggleElements = function(elements)
 {
     for (var j = 0; j < Report.visualizationTypes.length; j++)
@@ -112,6 +108,23 @@ Report.prototype.setBindingControls = function(controls)
 		this.visualization.columns = this.visualization.getColumns();
 		this.visualization.show();
 		return true;
+	    }
+	}
+    }
+}
+Report.prototype.setVariables = function(variables)
+{
+    //this.variables = variables;
+    for (var i = 0; i < this.visualizations.length; i++)
+    {
+	var visualization = this.visualizations[i];
+	for (var j = 0; j < visualization.bindings.length; j++)
+	{
+	    var binding = visualization.bindings[j];
+	    //alert(binding.columns.length);
+	    for (var k = 0; k < binding.columns.length; k++)
+	    {
+		var column = binding.columns[k];
 	    }
 	}
     }
@@ -382,7 +395,7 @@ Binding.prototype.getVariablesFromControl = function()
 	var option = this.control.options[i];
 	if (option.selected)
 	{
-	    var variable = { };
+	    var variable = new Variable(this.report, this.visualization, this);
 	    variable.variable = { 'type': 'typed-literal', 'value' : Number(option.value) };
 	    variable.binding = this;
 	    variable.bindingType = this.type;
@@ -535,25 +548,48 @@ function getSelectedOptions()
 
 // =========================== NOT USED? ====================================
 
-Report.prototype.createVariables = function(bindings)
+Report.prototype.createVariables = function()
 {
     var variables = new Array();
 
-    for (var i = 0; i < bindings.length; i++)
+    for (var i = 0; i < this.visualizations.length; i++)
     {
-	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[i].type.value; } )[0];
+	var visualization = this.visualizations[i];
+	for (var j = 0; j < visualization.bindings.length; j++)
+	{
+	    var binding = visualization.bindings[j];
+	    //alert(binding.columns.length);
+	    for (var k = 0; k < binding.columns.length; k++)
+	    {
+		var column = binding.columns[k];
+		var variable = new Variable(this, visualization, binding);
+		variable.variable = { 'type' : 'typed-literal', 'value' : column }; // 'datatype
+		variable.binding = binding;
+		variable.bindingType = binding.type;
+		variable.visualization = binding.visualization;
+		variable.visType = binding.visType;
+		variables.push(variable);
+	    }
+	}
+    }
+//alert(variables.toSource());
+    /*
+    for (var j = 0; j < bindings.length; j++)
+    {
+	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[j].type.value; } )[0];
         var bindingColumns = this.columnsByBindingType(bindingType);
         for (var j = 0; j < bindingColumns.length; j++)
         {
             var variable = { };
             variable.variable = { 'type' : 'typed-literal', 'value' : bindingColumns[j] }; // 'datatype
-	    variable.binding = eval(bindings[i].binding.toSource());
-            variable.bindingType = eval(bindings[i].type.toSource());
-	    variable.visualization = eval(bindings[i].visualization.toSource());
-	    variable.visType = eval(bindings[i].visType.toSource());
+	    variable.binding = eval(bindings[j].binding.toSource());
+            variable.bindingType = eval(bindings[j].type.toSource());
+	    variable.visualization = eval(bindings[j].visualization.toSource());
+	    variable.visType = eval(bindings[j].visType.toSource());
 	    variables.push(variable);
         }
     }
+    */
     return variables;
 }
 
