@@ -378,9 +378,6 @@ Visualization.prototype.fillControls = function()
 //alert(columns.toSource());
 //alert(visBindingTypes[i].toSource() + "\n\n" + bindingColmns.toSource());
 //alert(binding.type.toSource());
-	if (!(("cardinality" in binding && binding.cardinality.value == 1) ||
-		("maxCardinality" in binding && binding.maxCardinality.value == 1)))
-	    binding.control.multiple = "multiple";
 
 	binding.fillControls = Binding.prototype.fillControls;
 	binding.fillControls(); //???
@@ -389,6 +386,10 @@ Visualization.prototype.fillControls = function()
 }
 Binding.prototype.fillControls = function()
 {
+    if (!(("cardinality" in this && this.cardinality.value == 1) ||
+	    ("maxCardinality" in this && this.maxCardinality.value == 1)))
+	this.control.multiple = "multiple";
+
     for (var j = 0; j < this.columns.length; j++)
     {
 	var option = document.createElement("option");
