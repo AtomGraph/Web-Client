@@ -7,8 +7,10 @@ Report.prototype.uri = null;
 Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
 Report.prototype.visualizations = new Array();
-//Report.prototype.bindings = new Array();
-//Report.prototype.options = new Array();
+Report.prototype.bindings = new Array();
+Report.prototype.variables = new Array();
+Report.prototype.options = new Array();
+Report.prototype.containers = new Array();
 
 function Report(table, visualizations, bindings, variables, options, containers)
 {
@@ -16,30 +18,32 @@ function Report(table, visualizations, bindings, variables, options, containers)
     // count columns after data is set - but before visualizations are filtered
     this.countColumns();
     this.visualizations = visualizations.results.bindings;
+    this.bindings = bindings.results.bindings;
+    this.variables = variables.results.bindings;
+    //this.options = options.results.bindings;
+    this.containers = containers;
     // hide unused containers!!!
-    for (var h = 0; h < containers.length; h++)
-	containers[h].element.style.display = "none";
+    for (var h = 0; h < this.containers.length; h++)
+	this.containers[h].display = "none";
     // join and split the whole thing
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
-	var visBindings = bindings.results.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
-	var visVariables = variables.results.bindings.filter(function(variable) { return variable.visualization.value == visualization.visualization.value; } );
-	var visContainer = containers.filter(function(container) { return container.visType == visualization.type.value; } )[0];
-	//var visOptions = options.results.bindings.filter(function(option) { return option.visualization.value == visualization.visualization.value; } );
+	var visBindings = this.bindings.filter(function(binding) { return binding.visualization.value == visualization.visualization.value; } );
+	var visVariables = this.variables.filter(function(variable) { return variable.visualization.value == visualization.visualization.value; } );
+	var visContainer = this.containers.filter(function(container) { return container.visType == visualization.type.value; } )[0];
+	//var visOptions = this.options.filter(function(option) { return option.visualization.value == visualization.visualization.value; } );
 	var visOptions = new Array();
 
 	visualization.constructor = Visualization;
 	// only pass arrays, not the whole SPARQL result
 	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
+	visualization.init = Visualization.prototype.init;
+	visualization.init();
     }
     // filter out visualizations that do not have sufficient columns!!!
     this.visualizations = this.getSufficientVisualizations(this.visualizations);
     //var unsufficient = this.getUnsufficientVisualizations(this.visualizations);
-
-    //this.bindings = bindings.results.bindings;
-    //this.options = options.results.bindings;
-    //this.containers = containers;
 }
 Report.setToggleElements = function(report, elements)
 {
@@ -51,30 +55,44 @@ Report.setToggleElements = function(report, elements)
 	var sufficient = visType.hasSufficientColumns(report);
 	typeToggle.element.disabled = !sufficient;
 
-	typeToggle.element.visType = visType;
+	// REFACTOR FOLLOWING!!!
+	var visualization = null;
+	var temp = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
+	if (temp.length > 0) visualization = temp[0];
+
+	// add missing visualizations
+	if (visualization == null)
+	{
+	    var visBindings = new Array();
+	    for (var i = 0; i < visType.bindingTypes.length; i++)
+	    {
+		var bindingType = visType.bindingTypes[i];
+		var binding = { }; // new Binding();
+		binding.type = bindingType.type;
+		visBindings.push(binding);
+	    }
+//alert(visBindings.toSource());
+	    var visContainer = report.containers.filter(function(container) { return container.visType == visType.type.value; } )[0];
+	    visualization = new Visualization(report, visBindings, [], [], visContainer.element);
+	    //visualization.report = report;
+	    visualization.type = visType.type;
+//alert("null " + visualization.type.value);
+	    visualization.init = Visualization.prototype.init;
+	    visualization.init();
+	    visualization.createVariables();
+	    //visualization.toggle(false);
+	    report.visualizations.push(visualization);
+	}
+	visualization.toggleElement = typeToggle.element;
+	//typeToggle.element.checked = true; // -- set in ReportCreateView.xsl
+	typeToggle.element.visualization = visualization;
 	typeToggle.element.onchange = function()
 	{
-	    alert("togg")
-	    var visualization = null;
-	    visualization.toggle = Visualization.prototype.toggle;
-	    visualization.toggle(this.checked);
+	    //this.visualization.toggle = Visualization.prototype.toggle;
+	    this.visualization.toggle(this.checked);
+	    //this.visualization.show();
 	}
     }
-
-    /*
-    for (var i = 0; i < this.visualizations.length; i++)
-    {
-	var visualization = this.visualizations[i];
-	var element = elements.filter(function(element) { return element.visType == visualization.type.value; } )[0];
-	visualization.toggleElement = element.element;
-	visualization.toggleElement.visualization = visualization;
-	// visualization.toggleElement.checked = true; // -- set in ReportCreateView.xsl
-	visualization.toggleElement.onchange = function()
-	{
-	    this.visualization.toggle = Visualization.prototype.toggle;
-	    this.visualization.toggle(this.checked);
-	}
-    }*/
 }
 Report.prototype.setFieldsetElements = function(elements)
 {
@@ -126,7 +144,7 @@ Report.prototype.showWithControls = function()
 	visualization.show = Visualization.prototype.show;
 	visualization.show();
 	visualization.toggle = Visualization.prototype.toggle;
-	visualization.toggle(true);
+	visualization.toggle(visualization.toggleElement.checked);
     }
 }
 Report.prototype.show = function()
@@ -190,13 +208,17 @@ function Visualization(report, bindings, variables, options, container)
 	binding.constructor = Binding;
 	binding.constructor(this.report, this, bindingVariables);
     }
-    this.getColumns = Visualization.prototype.getColumns;
-    this.columns = this.getColumns();
-    this.init = Visualization.prototype.init;
-    this.init();
+    //this.getColumns = Visualization.prototype.getColumns;
+    //this.columns = this.getColumns();
+//alert(this.type.toSource());
+//alert(this.type.value + "\n\n" + this.columns.toSource());
+    //this.init = Visualization.prototype.init;
+    //this.init();
 }
 Visualization.prototype.getColumns = function()
 {
+//alert(this.type.value + "\n\n" + this.bindings.toSource());
+
     var orderColumns = new Array();
     var restColumns = new Array();
     for (var i = 0; i < this.bindings.length; i++)
@@ -206,7 +228,7 @@ Visualization.prototype.getColumns = function()
 	{
 	    var variable = binding.variables[j];
 	    // QUIRK -- why order is string???
-	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variable.variable.value);
+	    if ("order" in binding.bindingType) orderColumns[parseInt(binding.bindingType.order.value)] = parseInt(variable.variable.value);
 	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
 	}
     }
@@ -218,8 +240,8 @@ Visualization.prototype.hasSufficientColumns = function()
     for (var i = 0; i < this.bindings.length; i++)
     {
 	var binding = this.bindings[i];
-        if ("cardinality" in binding && binding.cardinality.value > binding.columns.length) return false;
-        if ("minCardinality" in binding && binding.minCardinality.value > binding.columns.length) return false;
+        if ("cardinality" in binding.bindingType && binding.bindingType.cardinality.value > binding.columns.length) return false;
+        if ("minCardinality" in binding.bindingType && binding.bindingType.minCardinality.value > binding.columns.length) return false;
 	// maxCardinality???
     }
     return true;
@@ -237,7 +259,8 @@ Visualization.prototype.createVariables = function()
 }
 Visualization.prototype.show = function()
 {
-//alert(this.columns.toSource());
+//alert(this.type.value + "\n\n" + this.columns.toSource());
+
     this.container.style.display = "block";
     this.view = new google.visualization.DataView(this.report.data);
     if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.columns); // all columns for Table
@@ -266,17 +289,19 @@ Visualization.prototype.show = function()
 }
 Visualization.prototype.toggle = function(show)
 {
+//alert("show: " + true);
     if (show)
     {
-	    this.container.style.display = "block";
-	    this.fieldset.style.display = "block";
-	    //this.toggleElement.checked = true;
+//alert(this.container.toSource());
+	this.container.style.display = "block";
+	this.fieldset.style.display = "block";
+	this.toggleElement.checked = true;
     }
     else
     {
-	    this.container.style.display = "none";
-	    this.fieldset.style.display = "none";
-	    //this.toggleElement.checked = false;
+	this.container.style.display = "none";
+	this.fieldset.style.display = "none";
+	this.toggleElement.checked = false;
     }
 }
 Visualization.prototype.setControls = function(controls)
@@ -300,6 +325,11 @@ Visualization.prototype.fillControls = function()
 }
 Visualization.prototype.init = function()
 {
+    this.getColumns = Visualization.prototype.getColumns;
+    this.columns = this.getColumns();
+//alert(this.type.value + "\n\n" + this.columns.toSource());
+//alert(this.type.value + "\n\n" + this.variables.toSource());
+
     if (this.type.value.indexOf("Table") != -1) this.googleVis = new google.visualization.Table(this.container);
     if (this.type.value.indexOf("ScatterChart") != -1) this.googleVis = new google.visualization.ScatterChart(this.container);
     if (this.type.value.indexOf("LineChart") != -1) this.googleVis = new google.visualization.LineChart(this.container);
@@ -312,20 +342,16 @@ Visualization.prototype.init = function()
 
 function Binding(report, visualization, variables)
 {
+//alert(bindingType.toSource());
+//alert(this.type.value);
+//alert(visualization.type.value);
     var binding = this;
     // hack for visualization ontology changes
-    if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
+    //if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
     this.report = report;
     this.visualization = visualization;
-    var bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
-    // QUIRK -- bindingType should not be used, if its properties are already saved with binding
-    this.type = bindingType.type;
-    this.label = bindingType.label;
-    this.dataTypes = bindingType.dataTypes;
-    // QUIRK -- only "order" belongs here!!! (belongs to binding and not bindingType)
-    if ("order" in bindingType) this.order = bindingType.order;
-    if ("cardinality" in bindingType) this.cardinality = bindingType.cardinality;
-    if ("minCardinality" in bindingType) this.minCardinality = bindingType.minCardinality;
+    this.bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
+    if ("order" in this.bindingType) this.order = this.bindingType.order;
     this.variables = variables;
 
     for (var i = 0; i < this.variables.length; i++)
@@ -342,9 +368,9 @@ Binding.prototype.getWireTypes = function()
 {
     var wireTypes = new Array();
 
-    for (var i = 0; i < this.dataTypes.length; i++)
+    for (var i = 0; i < this.bindingType.dataTypes.length; i++)
     {
-	var dataType = this.dataTypes[i];
+	var dataType = this.bindingType.dataTypes[i];
 	dataType.getWireType = DataType.prototype.getWireType;
 	var wireType = dataType.getWireType();
 	if (wireTypes.indexOf(wireType) == -1) wireTypes.push(wireType); // no duplicates
@@ -394,8 +420,8 @@ Binding.prototype.setControl = function(control)
 	this.binding.control.getSelectedOptions = getSelectedOptions;
 	var selectedOptions = this.binding.control.getSelectedOptions();
 	// do not allow deselecting too much/all
-	if ("cardinality" in this.binding && this.binding.cardinality.value > selectedOptions.length) return false;
-	if ("minCardinality" in this.binding && this.binding.minCardinality.value > selectedOptions.length) return false;
+	if ("cardinality" in this.binding.bindingType && this.binding.bindingType.cardinality.value > selectedOptions.length) return false;
+	if ("minCardinality" in this.binding.bindingType && this.binding.bindingType.minCardinality.value > selectedOptions.length) return false;
 
 	this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
 	this.binding.variables = this.binding.getVariablesFromControl();
@@ -407,8 +433,8 @@ Binding.prototype.setControl = function(control)
 }
 Binding.prototype.fillControls = function()
 {
-    if (!(("cardinality" in this && this.cardinality.value == 1) ||
-	("maxCardinality" in this && this.maxCardinality.value == 1)))
+    if (!(("cardinality" in this.bindingType && this.bindingType.cardinality.value == 1) ||
+	("maxCardinality" in this.bindingType && this.bindingType.maxCardinality.value == 1)))
 	    this.control.multiple = "multiple";
 
     for (var i = 0; i < this.columns.length; i++)
@@ -580,21 +606,6 @@ function getSelectedOptions()
     for (var i = 0; i < this.options.length; i++)
 	if (this.options[i].selected) selected.push(this.options[i].value);
     return selected;
-}
-
-// =========================== NOT USED? ====================================
-
-Report.prototype.getBindingsWithoutVariables = function()
-{
-    var bindings = new Array();
-    var report = this;
-
-    for (var i = 0; i < this.bindings.results.bindings.length; i++)
-    {
-	var variables = this.variables.results.bindings.filter(function(el) { return el.binding.value == report.bindings.results.bindings[i].binding.value; } );
-	if (variables.length == 0) bindings.push(this.bindings.results.bindings[i]);
-    }
-    return bindings;
 }
 
 // ============================ Internet Explorer fixes ========================
