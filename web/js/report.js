@@ -41,9 +41,6 @@ function Report(table, visualizations, bindings, variables, options, containers)
 	visualization.init = Visualization.prototype.init;
 	visualization.init();
     }
-    // filter out visualizations that do not have sufficient columns!!!
-    this.visualizations = this.getSufficientVisualizations(this.visualizations);
-    //var unsufficient = this.getUnsufficientVisualizations(this.visualizations);
 }
 Report.setToggleElements = function(report, elements)
 {
@@ -115,13 +112,20 @@ Report.prototype.setControls = function(controls)
 	visualization.setControls(controls);
     }
 }
+Report.prototype.filterSufficientVisualizations = function()
+{
+    // filter out visualizations that do not have sufficient columns!!!
+    this.visualizations = this.getSufficientVisualizations(this.visualizations);
+    //var unsufficient = this.getUnsufficientVisualizations(this.visualizations);
+}
 Report.prototype.getSufficientVisualizations = function(visualizations)
 {
+    var report = this;
     return visualizations.filter(
 	function(visualization)
 	{
-	    visualization.hasSufficientColumns = Visualization.prototype.hasSufficientColumns;
-	    return visualization.hasSufficientColumns();
+	    visualization.visType.hasSufficientColumns = VisualizationType.prototype.hasSufficientColumns;
+	    return visualization.visType.hasSufficientColumns(report);
 	});
 }
 Report.prototype.getUnsufficientVisualizations = function(visualizations)
@@ -229,17 +233,6 @@ Visualization.prototype.getColumns = function()
     }
     var columns = orderColumns.concat(restColumns);
     return columns;
-}
-Visualization.prototype.hasSufficientColumns = function()
-{
-    for (var i = 0; i < this.bindings.length; i++)
-    {
-	var binding = this.bindings[i];
-        if ("cardinality" in binding.bindingType && binding.bindingType.cardinality.value > binding.columns.length) return false;
-        if ("minCardinality" in binding.bindingType && binding.bindingType.minCardinality.value > binding.columns.length) return false;
-	// maxCardinality???
-    }
-    return true;
 }
 Visualization.prototype.createVariables = function()
 {
