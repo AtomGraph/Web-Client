@@ -508,13 +508,11 @@ Report.bindInstances = function(report)
     for (var i = 0; i < Report.visualizationTypes.length; i++)
     {
 	var visType = Report.visualizationTypes[i];
-	var visualization = null;
 	var visualizations = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
-	if (visualizations.length > 0) visualization = visualizations[0];
-	if (visualization != null)
+	if (visualizations.length > 0)
 	{
 	    visType.bindInstances = VisualizationType.prototype.bindInstances;
-	    visType.bindInstances(visualization);
+	    visType.bindInstances(visualizations[0]);
 	}
     }
 }
@@ -550,13 +548,11 @@ VisualizationType.prototype.bindInstances = function(visualization)
     for (var i = 0; i < this.bindingTypes.length; i++)
     {
 	var bindingType = this.bindingTypes[i];
-	var binding = null;
 	var bindings = visualization.bindings.filter(function(binding) { return binding.type.value == bindingType.type.value; } );
-	if (bindings.length > 0) binding = bindings[0];
-	if (binding != null)
+	if (bindings.length > 0)
 	{
 	    bindingType.bindInstances = BindingType.prototype.bindInstances;
-	    bindingType.bindInstances(binding);
+	    bindingType.bindInstances(bindings[0]);
 	}
     }
 }
