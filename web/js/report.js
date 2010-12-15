@@ -513,7 +513,6 @@ Report.bindInstances = function(report)
 	if (visualizations.length > 0) visualization = visualizations[0];
 	if (visualization != null)
 	{
-//alert(visualization.type.value);
 	    visType.bindInstances = VisualizationType.prototype.bindInstances;
 	    visType.bindInstances(visualization);
 	}
@@ -546,27 +545,18 @@ VisualizationType.prototype.hasSufficientColumns = function(report)
 }
 VisualizationType.prototype.bindInstances = function(visualization)
 {
-//alert(visualization.type.value);
     visualization.visType = this;
     this.visualization = visualization;
-//alert(visualization.type.value + "\n\n" + visualization.bindings);
-//alert(visType.type.value);
-//alert(visType.bindingTypes.length);
     for (var i = 0; i < this.bindingTypes.length; i++)
     {
 	var bindingType = this.bindingTypes[i];
-//alert(bindingType.type.value);
-//if (!("bindings" in visualization)) alert(visualization.type.value);
-//alert(visualization.bindings.toSource());
-//alert(visualization.type.value);
 	var binding = null;
 	var bindings = visualization.bindings.filter(function(binding) { return binding.type.value == bindingType.type.value; } );
 	if (bindings.length > 0) binding = bindings[0];
 	if (binding != null)
 	{
-//alert(binding.type.value);
-	    binding.bindingType = bindingType;
-	    bindingType.binding = binding;
+	    bindingType.bindInstances = BindingType.prototype.bindInstances;
+	    bindingType.bindInstances(binding);
 	}
     }
 }
@@ -576,6 +566,11 @@ function BindingType(dataTypes)
     this.dataTypes = dataTypes;
     //this.getColumns = BindingType.prototype.getColumns;
     //this.columns = this.getColumns();
+}
+BindingType.prototype.bindInstances = function(binding)
+{
+    binding.bindingType = this;
+    this.binding = binding;
 }
 BindingType.prototype.getWireTypes = function()
 {
@@ -635,7 +630,7 @@ DataType.prototype.getWireType = function()
     return DataType.wireTypes[this.type.value];
 }
 
-// =========================== Helpers ====================================
+// ================================ Helpers ====================================
 
 function getSelectedOptions()
 {
