@@ -6,9 +6,6 @@ var report = null;
 Report.prototype.uri = null;
 Report.prototype.data = null;
 Report.prototype.typeColumns = new Array();
-Report.prototype.visTypeToggleElements = new Array();
-Report.prototype.visTypeFieldsetElements = new Array();
-Report.prototype.bindingTypeElements = new Array();
 Report.prototype.visualizations = new Array();
 //Report.prototype.bindings = new Array();
 //Report.prototype.options = new Array();
@@ -37,24 +34,34 @@ function Report(table, visualizations, bindings, variables, options, containers)
 	visualization.constructor(this, visBindings, visVariables, visOptions, visContainer.element);
     }
     // filter out visualizations that do not have sufficient columns!!!
-    this.visualizations = this.getSufficientVisualizations(visualizations.results.bindings);
-    var unsufficient = this.getUnsufficientVisualizations(visualizations.results.bindings);
+    this.visualizations = this.getSufficientVisualizations(this.visualizations);
+    //var unsufficient = this.getUnsufficientVisualizations(this.visualizations);
 
     //this.bindings = bindings.results.bindings;
     //this.options = options.results.bindings;
     //this.containers = containers;
 }
-Report.prototype.setToggleElements = function(elements)
+Report.setToggleElements = function(report, elements)
 {
     for (var j = 0; j < Report.visualizationTypes.length; j++)
     {
 	var visType = Report.visualizationTypes[j];
 	var typeToggle = elements.filter(function(element) { return element.visType == visType.type.value; } )[0];
 	visType.hasSufficientColumns = VisualizationType.prototype.hasSufficientColumns;
-	var sufficient = visType.hasSufficientColumns(this);
+	var sufficient = visType.hasSufficientColumns(report);
 	typeToggle.element.disabled = !sufficient;
+
+	typeToggle.element.visType = visType;
+	typeToggle.element.onchange = function()
+	{
+	    alert("togg")
+	    var visualization = null;
+	    visualization.toggle = Visualization.prototype.toggle;
+	    visualization.toggle(this.checked);
+	}
     }
 
+    /*
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
@@ -67,7 +74,7 @@ Report.prototype.setToggleElements = function(elements)
 	    this.visualization.toggle = Visualization.prototype.toggle;
 	    this.visualization.toggle(this.checked);
 	}
-    }
+    }*/
 }
 Report.prototype.setFieldsetElements = function(elements)
 {
@@ -263,13 +270,13 @@ Visualization.prototype.toggle = function(show)
     {
 	    this.container.style.display = "block";
 	    this.fieldset.style.display = "block";
-	    this.toggleElement.checked = true;
+	    //this.toggleElement.checked = true;
     }
     else
     {
 	    this.container.style.display = "none";
 	    this.fieldset.style.display = "none";
-	    this.toggleElement.checked = false;
+	    //this.toggleElement.checked = false;
     }
 }
 Visualization.prototype.setControls = function(controls)
@@ -401,8 +408,8 @@ Binding.prototype.setControl = function(control)
 Binding.prototype.fillControls = function()
 {
     if (!(("cardinality" in this && this.cardinality.value == 1) ||
-	    ("maxCardinality" in this && this.maxCardinality.value == 1)))
-	this.control.multiple = "multiple";
+	("maxCardinality" in this && this.maxCardinality.value == 1)))
+	    this.control.multiple = "multiple";
 
     for (var i = 0; i < this.columns.length; i++)
     {
@@ -411,8 +418,7 @@ Binding.prototype.fillControls = function()
 	option.setAttribute("value", this.columns[i]);
 
 	this.hasVariable = Binding.prototype.hasVariable;
-	if (this.hasVariable(this.columns[i]))
-	    option.setAttribute("selected", "selected");
+	if (this.hasVariable(this.columns[i])) option.setAttribute("selected", "selected");
 	this.control.appendChild(option);
     }
 }
