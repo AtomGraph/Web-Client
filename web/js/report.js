@@ -82,34 +82,13 @@ Report.prototype.setFieldsetElements = function(elements)
 	visualization.fieldset = element.element;
     }
 }
-Report.prototype.setBindingControls = function(controls)
+Report.prototype.setControls = function(controls)
 {
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
-	for (var j = 0; j < visualization.bindings.length; j++)
-	{
-	    var binding = visualization.bindings[j];
-	    var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.value; } )[0];
-	    binding.control = bindingControl.element;
-	    binding.control.visualization = visualization;
-	    binding.control.binding = binding;
-	    binding.control.onchange = function()
-	    {
-		this.binding.control.getSelectedOptions = getSelectedOptions;
-		var selectedOptions = this.binding.control.getSelectedOptions();
-		// do not allow deselecting too much/all
-		if ("cardinality" in this.binding && this.binding.cardinality.value > selectedOptions.length) return false;
-		if ("minCardinality" in this.binding && this.binding.minCardinality.value > selectedOptions.length) return false;
-
-		this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
-		this.binding.variables = this.binding.getVariablesFromControl();
-		this.visualization.getColumns = Visualization.prototype.getColumns;
-		this.visualization.columns = this.visualization.getColumns();
-		this.visualization.show();
-		return true;
-	    }
-	}
+	visualization.setControls = Visualization.prototype.setControls;
+	visualization.setControls(controls);
     }
 }
 Report.prototype.getSufficientVisualizations = function(visualizations)
@@ -152,6 +131,7 @@ Report.prototype.show = function()
 	visualization.show();
     }
 }
+// creates Variables for first request to ReportCreateView, when none are submitted from form controls
 Report.prototype.createVariables = function()
 {
     var variables = new Array();
@@ -159,25 +139,8 @@ Report.prototype.createVariables = function()
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
-	for (var j = 0; j < visualization.bindings.length; j++)
-	{
-	    var binding = visualization.bindings[j];
-	    //alert(binding.variables.length);
-	    // create a Variable for the first of this binding's data columns
-	    //for (var k = 0; k < binding.columns.length; k++)
-	    {
-		var column = binding.columns[0];
-		var variable = new Variable(this, visualization, binding);
-		variable.variable = { 'type' : 'typed-literal', 'value' : column }; // 'datatype
-		variable.binding = binding;
-		variable.bindingType = binding.type;
-		variable.visualization = binding.visualization;
-		variable.visType = binding.visType;
-		binding.variables.push(variable);
-	    }
-	}
-	//visualization.getColumns = Visualization.prototype.getColumns;
-	visualization.columns = visualization.getColumns();
+	visualization.createVariables = Visualization.prototype.createVariables;
+	visualization.createVariables();
     }
     return variables;
 }
@@ -222,13 +185,11 @@ function Visualization(report, bindings, variables, options, container)
     }
     this.getColumns = Visualization.prototype.getColumns;
     this.columns = this.getColumns();
-//alert(this.columns.toSource());
     this.init = Visualization.prototype.init;
     this.init();
 }
 Visualization.prototype.getColumns = function()
 {
-//alert(this.bindings.toSource());
     var orderColumns = new Array();
     var restColumns = new Array();
     for (var i = 0; i < this.bindings.length; i++)
@@ -243,7 +204,6 @@ Visualization.prototype.getColumns = function()
 	}
     }
     var columns = orderColumns.concat(restColumns);
-//alert(this.type.value + "\n\n" + columns.toSource());
     return columns;
 }
 Visualization.prototype.hasSufficientColumns = function()
@@ -256,6 +216,17 @@ Visualization.prototype.hasSufficientColumns = function()
 	// maxCardinality???
     }
     return true;
+}
+Visualization.prototype.createVariables = function()
+{
+    for (var j = 0; j < this.bindings.length; j++)
+    {
+	var binding = this.bindings[j];
+	binding.createVariables = Binding.prototype.createVariables;
+	binding.createVariables();
+    }
+    //visualization.getColumns = Visualization.prototype.getColumns;
+    this.columns = this.getColumns();
 }
 Visualization.prototype.show = function()
 {
@@ -299,6 +270,16 @@ Visualization.prototype.toggle = function(show)
 	    this.container.style.display = "none";
 	    this.fieldset.style.display = "none";
 	    this.toggleElement.checked = false;
+    }
+}
+Visualization.prototype.setControls = function(controls)
+{
+    for (var i = 0; i < this.bindings.length; i++)
+    {
+	var binding = this.bindings[i];
+	var bindingControl = controls.filter(function(element) { return element.bindingType == binding.type.value; } )[0];
+	binding.setControl = Binding.prototype.setControl;
+	binding.setControl(bindingControl.element);
     }
 }
 Visualization.prototype.fillControls = function()
@@ -380,6 +361,42 @@ Binding.prototype.hasVariable = function(name)
 {
     var variables = this.variables.filter(function(variable) { return variable.variable.value == name; } );
     return (variables.length > 0);
+}
+Binding.prototype.createVariables = function()
+{
+    // create a Variable for the first of this binding's data columns
+    //for (var i = 0; i < this.columns.length; i++)
+    {
+	var column = this.columns[0];
+	var variable = new Variable(this.report, this.visualization, this);
+	variable.variable = { 'type' : 'typed-literal', 'value' : column }; // 'datatype
+	variable.binding = this;
+	variable.bindingType = this.type;
+	variable.visualization = this.visualization;
+	variable.visType = this.visType;
+	this.variables.push(variable);
+    }
+}
+Binding.prototype.setControl = function(control)
+{
+    this.control = control;
+    this.control.visualization = this.visualization;
+    this.control.binding = this;
+    this.control.onchange = function()
+    {
+	this.binding.control.getSelectedOptions = getSelectedOptions;
+	var selectedOptions = this.binding.control.getSelectedOptions();
+	// do not allow deselecting too much/all
+	if ("cardinality" in this.binding && this.binding.cardinality.value > selectedOptions.length) return false;
+	if ("minCardinality" in this.binding && this.binding.minCardinality.value > selectedOptions.length) return false;
+
+	this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
+	this.binding.variables = this.binding.getVariablesFromControl();
+	this.visualization.getColumns = Visualization.prototype.getColumns;
+	this.visualization.columns = this.visualization.getColumns();
+	this.visualization.show();
+	return true;
+    }
 }
 Binding.prototype.fillControls = function()
 {

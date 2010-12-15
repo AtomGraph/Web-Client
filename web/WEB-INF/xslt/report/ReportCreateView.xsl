@@ -179,7 +179,7 @@ exclude-result-prefixes="#all">
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-toggle-json"/>
 		    <xsl:text>]); report.setFieldsetElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-fieldset-json"/>
-		    <xsl:text>]); report.setBindingControls([</xsl:text>
+		    <xsl:text>]); report.setControls([</xsl:text>
 		    <xsl:apply-templates select="$binding-types//sparql:result" mode="binding-element-json"/>
 		    <xsl:text>]); </xsl:text>
 		    <!-- create new or use saved variables -->
