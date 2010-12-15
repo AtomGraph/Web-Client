@@ -98,9 +98,7 @@ exclude-result-prefixes="#all">
 			<xsl:text>' }</xsl:text>
 			<xsl:if test="position() != last()">,</xsl:if>
 		    </xsl:for-each>
-		    <xsl:text>]); report.setVariables(</xsl:text>
-		    <xsl:value-of select="$variables-json"/>
-		    <xsl:text>); report.show();</xsl:text>
+		    <xsl:text>]); report.show();</xsl:text>
             </xsl:attribute>
         </xsl:template>
         

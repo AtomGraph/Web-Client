@@ -132,8 +132,6 @@ Report.prototype.getUnsufficientVisualizations = function(visualizations)
 }
 Report.prototype.showWithControls = function()
 {
-//alert("what??")
-//alert(this.visualizations.length);
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
@@ -147,7 +145,6 @@ Report.prototype.showWithControls = function()
 }
 Report.prototype.show = function()
 {
-//alert(this.visualizations.length);
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
@@ -182,24 +179,6 @@ Report.prototype.createVariables = function()
 	//visualization.getColumns = Visualization.prototype.getColumns;
 	visualization.columns = visualization.getColumns();
     }
-//alert(variables.toSource());
-    /*
-    for (var j = 0; j < bindings.length; j++)
-    {
-	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[j].type.value; } )[0];
-        var bindingColumns = this.columnsByBindingType(bindingType);
-        for (var j = 0; j < bindingColumns.length; j++)
-        {
-            var variable = { };
-            variable.variable = { 'type' : 'typed-literal', 'value' : bindingColumns[j] }; // 'datatype
-	    variable.binding = eval(bindings[j].binding.toSource());
-            variable.bindingType = eval(bindings[j].type.toSource());
-	    variable.visualization = eval(bindings[j].visualization.toSource());
-	    variable.visType = eval(bindings[j].visType.toSource());
-	    variables.push(variable);
-        }
-    }
-    */
     return variables;
 }
 Report.prototype.countColumns = function()
