@@ -228,7 +228,7 @@ Visualization.prototype.getColumns = function()
 	{
 	    var variable = binding.variables[j];
 	    // QUIRK -- why order is string???
-	    if ("order" in binding.bindingType) orderColumns[parseInt(binding.bindingType.order.value)] = parseInt(variable.variable.value);
+	    if ("order" in binding) orderColumns[parseInt(binding.order.value)] = parseInt(variable.variable.value);
 	    else restColumns = restColumns.concat(parseInt(variable.variable.value));
 	}
     }
