@@ -112,23 +112,6 @@ Report.prototype.setBindingControls = function(controls)
 	}
     }
 }
-Report.prototype.setVariables = function(variables)
-{
-    //this.variables = variables;
-    for (var i = 0; i < this.visualizations.length; i++)
-    {
-	var visualization = this.visualizations[i];
-	for (var j = 0; j < visualization.bindings.length; j++)
-	{
-	    var binding = visualization.bindings[j];
-	    //alert(binding.columns.length);
-	    for (var k = 0; k < binding.columns.length; k++)
-	    {
-		var column = binding.columns[k];
-	    }
-	}
-    }
-}
 Report.prototype.getSufficientVisualizations = function(visualizations)
 {
     return visualizations.filter(
@@ -149,6 +132,8 @@ Report.prototype.getUnsufficientVisualizations = function(visualizations)
 }
 Report.prototype.showWithControls = function()
 {
+//alert("what??")
+//alert(this.visualizations.length);
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
@@ -162,12 +147,60 @@ Report.prototype.showWithControls = function()
 }
 Report.prototype.show = function()
 {
+//alert(this.visualizations.length);
     for (var i = 0; i < this.visualizations.length; i++)
     {
 	var visualization = this.visualizations[i];
 	visualization.show = Visualization.prototype.show;
 	visualization.show();
     }
+}
+Report.prototype.createVariables = function()
+{
+    var variables = new Array();
+
+    for (var i = 0; i < this.visualizations.length; i++)
+    {
+	var visualization = this.visualizations[i];
+	for (var j = 0; j < visualization.bindings.length; j++)
+	{
+	    var binding = visualization.bindings[j];
+	    //alert(binding.variables.length);
+	    // create a Variable for the first of this binding's data columns
+	    //for (var k = 0; k < binding.columns.length; k++)
+	    {
+		var column = binding.columns[0];
+		var variable = new Variable(this, visualization, binding);
+		variable.variable = { 'type' : 'typed-literal', 'value' : column }; // 'datatype
+		variable.binding = binding;
+		variable.bindingType = binding.type;
+		variable.visualization = binding.visualization;
+		variable.visType = binding.visType;
+		binding.variables.push(variable);
+	    }
+	}
+	//visualization.getColumns = Visualization.prototype.getColumns;
+	visualization.columns = visualization.getColumns();
+    }
+//alert(variables.toSource());
+    /*
+    for (var j = 0; j < bindings.length; j++)
+    {
+	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[j].type.value; } )[0];
+        var bindingColumns = this.columnsByBindingType(bindingType);
+        for (var j = 0; j < bindingColumns.length; j++)
+        {
+            var variable = { };
+            variable.variable = { 'type' : 'typed-literal', 'value' : bindingColumns[j] }; // 'datatype
+	    variable.binding = eval(bindings[j].binding.toSource());
+            variable.bindingType = eval(bindings[j].type.toSource());
+	    variable.visualization = eval(bindings[j].visualization.toSource());
+	    variable.visType = eval(bindings[j].visType.toSource());
+	    variables.push(variable);
+        }
+    }
+    */
+    return variables;
 }
 Report.prototype.countColumns = function()
 {
@@ -354,6 +387,7 @@ Binding.prototype.getWireTypes = function()
 }
 Binding.prototype.getColumns = function()
 {
+    // works directly on data, not binding.variables
     var columns = new Array();
     this.getWireTypes = Binding.prototype.getWireTypes;
 
@@ -547,51 +581,6 @@ function getSelectedOptions()
 }
 
 // =========================== NOT USED? ====================================
-
-Report.prototype.createVariables = function()
-{
-    var variables = new Array();
-
-    for (var i = 0; i < this.visualizations.length; i++)
-    {
-	var visualization = this.visualizations[i];
-	for (var j = 0; j < visualization.bindings.length; j++)
-	{
-	    var binding = visualization.bindings[j];
-	    //alert(binding.columns.length);
-	    for (var k = 0; k < binding.columns.length; k++)
-	    {
-		var column = binding.columns[k];
-		var variable = new Variable(this, visualization, binding);
-		variable.variable = { 'type' : 'typed-literal', 'value' : column }; // 'datatype
-		variable.binding = binding;
-		variable.bindingType = binding.type;
-		variable.visualization = binding.visualization;
-		variable.visType = binding.visType;
-		variables.push(variable);
-	    }
-	}
-    }
-//alert(variables.toSource());
-    /*
-    for (var j = 0; j < bindings.length; j++)
-    {
-	var bindingType = Report.bindingTypes.results.bindings.filter(function(el) { return el.type.value == bindings[j].type.value; } )[0];
-        var bindingColumns = this.columnsByBindingType(bindingType);
-        for (var j = 0; j < bindingColumns.length; j++)
-        {
-            var variable = { };
-            variable.variable = { 'type' : 'typed-literal', 'value' : bindingColumns[j] }; // 'datatype
-	    variable.binding = eval(bindings[j].binding.toSource());
-            variable.bindingType = eval(bindings[j].type.toSource());
-	    variable.visualization = eval(bindings[j].visualization.toSource());
-	    variable.visType = eval(bindings[j].visType.toSource());
-	    variables.push(variable);
-        }
-    }
-    */
-    return variables;
-}
 
 Report.prototype.getBindingsWithoutVariables = function()
 {

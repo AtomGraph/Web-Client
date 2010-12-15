@@ -184,13 +184,15 @@ exclude-result-prefixes="#all">
 		    <xsl:text>]); </xsl:text>
 		    <!-- create new or use saved variables -->
                     <xsl:if test="$view = $create-view">
-			<xsl:text>report.setVariables(report.createVariables());</xsl:text>
+			<xsl:text>report.createVariables();</xsl:text>
 		    </xsl:if>
+		    <!--
                     <xsl:if test="$view = $update-view">
 			<xsl:text>report.setVariables(</xsl:text>
 			<xsl:value-of select="$variables-json"/>
 			<xsl:text>);</xsl:text>
 		    </xsl:if>
+		    -->
 
 		    <xsl:text>report.showWithControls(); </xsl:text>
                 </xsl:attribute>
