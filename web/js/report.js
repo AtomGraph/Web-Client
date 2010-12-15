@@ -55,14 +55,9 @@ Report.setToggleElements = function(report, elements)
 	var sufficient = visType.hasSufficientColumns(report);
 	typeToggle.element.disabled = !sufficient;
 
-	// REFACTOR FOLLOWING!!!
-	
-	var visualization = null;
-	var temp = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
-	if (temp.length > 0) visualization = temp[0];
-
+	// QUIRK -- move out following block to a method
 	// add missing visualizations
-	if (visualization == null)
+	if (visType.visualization == undefined) // visType does not have a binded visualization
 	{
 	    var visBindings = new Array();
 	    for (var i = 0; i < visType.bindingTypes.length; i++)
@@ -74,22 +69,22 @@ Report.setToggleElements = function(report, elements)
 	    }
 //alert(visBindings.toSource());
 	    var visContainer = report.containers.filter(function(container) { return container.visType == visType.type.value; } )[0];
-	    visualization = new Visualization(report, visBindings, [], [], visContainer.element);
+	    visType.visualization = new Visualization(report, visBindings, [], [], visContainer.element);
 	    //visualization.report = report;
-	    visualization.type = visType.type;
+	    visType.visualization.type = visType.type;
 //alert("null " + visualization.type.value);
-	    visualization.init = Visualization.prototype.init;
-	    visualization.init();
-	    visualization.createVariables();
+	    visType.visualization.init = Visualization.prototype.init;
+	    visType.visualization.init();
+	    visType.visualization.createVariables();
 	    //visualization.toggle(false);
-	    report.visualizations.push(visualization);
+	    report.visualizations.push(visType.visualization);
 	    typeToggle.element.checked = false;
 	}
 	else typeToggle.element.checked = true;
 
-	visualization.toggleElement = typeToggle.element;
+	visType.visualization.toggleElement = typeToggle.element;
 	//typeToggle.element.checked = true; // -- set in ReportCreateView.xsl
-	typeToggle.element.visualization = visualization;
+	typeToggle.element.visualization = visType.visualization;
 	typeToggle.element.onchange = function()
 	{
 	    //this.visualization.toggle = Visualization.prototype.toggle;
@@ -204,6 +199,7 @@ function Visualization(report, bindings, variables, options, container)
     this.report = report;
     this.variables = variables;
     this.bindings = bindings;
+//alert(this.type.value + "\n\n" + this.bindings.toSource());
     this.container = container;
     for (var i = 0; i < this.bindings.length; i++)
     {
@@ -293,10 +289,8 @@ Visualization.prototype.show = function()
 }
 Visualization.prototype.toggle = function(show)
 {
-//alert("show: " + true);
     if (show)
     {
-//alert(this.container.toSource());
 	this.container.style.display = "block";
 	this.fieldset.style.display = "block";
 	this.toggleElement.checked = true;
@@ -346,9 +340,6 @@ Visualization.prototype.init = function()
 
 function Binding(report, visualization, variables)
 {
-//alert(bindingType.toSource());
-//alert(this.type.value);
-//alert(visualization.type.value);
     var binding = this;
     // hack for visualization ontology changes
     //if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
@@ -522,22 +513,9 @@ Report.bindInstances = function(report)
 	if (visualizations.length > 0) visualization = visualizations[0];
 	if (visualization != null)
 	{
-	    visualization.visType = visType;
-	    visType.visualization = visualization;
-
-	    for (var j = 0; j < visType.bindingTypes.length; j++)
-	    {
-		var bindingType = visType.bindingTypes[j];
-		var binding = null;
-		var bindings = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
-		if (bindings.length > 0) visualization = bindings[0];
-		if (binding != null)
-		{
-		    binding.bindingType = bindingType;
-		    bindingType.binding = binding;
-
-		}
-	    }
+//alert(visualization.type.value);
+	    visType.bindInstances = VisualizationType.prototype.bindInstances;
+	    visType.bindInstances(visualization);
 	}
     }
 }
@@ -565,6 +543,32 @@ VisualizationType.prototype.hasSufficientColumns = function(report)
 	if (!bindingType.hasSufficientColumns(report)) return false;
     }
     return true;
+}
+VisualizationType.prototype.bindInstances = function(visualization)
+{
+//alert(visualization.type.value);
+    visualization.visType = this;
+    this.visualization = visualization;
+//alert(visualization.type.value + "\n\n" + visualization.bindings);
+//alert(visType.type.value);
+//alert(visType.bindingTypes.length);
+    for (var i = 0; i < this.bindingTypes.length; i++)
+    {
+	var bindingType = this.bindingTypes[i];
+//alert(bindingType.type.value);
+//if (!("bindings" in visualization)) alert(visualization.type.value);
+//alert(visualization.bindings.toSource());
+//alert(visualization.type.value);
+	var binding = null;
+	var bindings = visualization.bindings.filter(function(binding) { return binding.type.value == bindingType.type.value; } );
+	if (bindings.length > 0) binding = bindings[0];
+	if (binding != null)
+	{
+//alert(binding.type.value);
+	    binding.bindingType = bindingType;
+	    bindingType.binding = binding;
+	}
+    }
 }
 
 function BindingType(dataTypes)

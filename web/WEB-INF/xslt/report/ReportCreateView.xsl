@@ -175,7 +175,7 @@ exclude-result-prefixes="#all">
 			<xsl:text>' }</xsl:text>
 			<xsl:if test="position() != last()">,</xsl:if>
 		    </xsl:for-each>
-		    <xsl:text>]); Report.setToggleElements(report, [</xsl:text>
+		    <xsl:text>]); Report.bindInstances(report); Report.setToggleElements(report, [</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-toggle-json"/>
 		    <xsl:text>]); report.setFieldsetElements([</xsl:text>
 		    <xsl:apply-templates select="$visualization-types//sparql:result" mode="vis-fieldset-json"/>
