@@ -56,6 +56,7 @@ Report.setToggleElements = function(report, elements)
 	typeToggle.element.disabled = !sufficient;
 
 	// REFACTOR FOLLOWING!!!
+	
 	var visualization = null;
 	var temp = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
 	if (temp.length > 0) visualization = temp[0];
@@ -509,6 +510,35 @@ Report.init = function(visualizationTypes, bindingTypes, dataTypes, optionTypes)
 	visType.constructor = VisualizationType;
 	// only pass arrays, not the whole SPARQL result
 	visType.constructor(visBindingTypes, visDataTypes, visOptionTypes);
+    }
+}
+Report.bindInstances = function(report)
+{
+    for (var i = 0; i < Report.visualizationTypes.length; i++)
+    {
+	var visType = Report.visualizationTypes[i];
+	var visualization = null;
+	var visualizations = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
+	if (visualizations.length > 0) visualization = visualizations[0];
+	if (visualization != null)
+	{
+	    visualization.visType = visType;
+	    visType.visualization = visualization;
+
+	    for (var j = 0; j < visType.bindingTypes.length; j++)
+	    {
+		var bindingType = visType.bindingTypes[j];
+		var binding = null;
+		var bindings = report.visualizations.filter(function(visualization) { return visualization.type.value == visType.type.value; } );
+		if (bindings.length > 0) visualization = bindings[0];
+		if (binding != null)
+		{
+		    binding.bindingType = bindingType;
+		    bindingType.binding = binding;
+
+		}
+	    }
+	}
     }
 }
 
