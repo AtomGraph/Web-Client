@@ -82,7 +82,10 @@ Report.setToggleElements = function(report, elements)
 	    visualization.createVariables();
 	    //visualization.toggle(false);
 	    report.visualizations.push(visualization);
+	    typeToggle.element.checked = false;
 	}
+	else typeToggle.element.checked = true;
+
 	visualization.toggleElement = typeToggle.element;
 	//typeToggle.element.checked = true; // -- set in ReportCreateView.xsl
 	typeToggle.element.visualization = visualization;
