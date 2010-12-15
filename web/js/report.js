@@ -199,7 +199,6 @@ function Visualization(report, bindings, variables, options, container)
     this.report = report;
     this.variables = variables;
     this.bindings = bindings;
-//alert(this.type.value + "\n\n" + this.bindings.toSource());
     this.container = container;
     for (var i = 0; i < this.bindings.length; i++)
     {
@@ -210,15 +209,11 @@ function Visualization(report, bindings, variables, options, container)
     }
     //this.getColumns = Visualization.prototype.getColumns;
     //this.columns = this.getColumns();
-//alert(this.type.toSource());
-//alert(this.type.value + "\n\n" + this.columns.toSource());
     //this.init = Visualization.prototype.init;
     //this.init();
 }
 Visualization.prototype.getColumns = function()
 {
-//alert(this.type.value + "\n\n" + this.bindings.toSource());
-
     var orderColumns = new Array();
     var restColumns = new Array();
     for (var i = 0; i < this.bindings.length; i++)
@@ -259,8 +254,6 @@ Visualization.prototype.createVariables = function()
 }
 Visualization.prototype.show = function()
 {
-//alert(this.type.value + "\n\n" + this.columns.toSource());
-
     this.container.style.display = "block";
     this.view = new google.visualization.DataView(this.report.data);
     if (this.type.value.indexOf("Table") == -1) this.view.setColumns(this.columns); // all columns for Table
@@ -325,8 +318,6 @@ Visualization.prototype.init = function()
 {
     this.getColumns = Visualization.prototype.getColumns;
     this.columns = this.getColumns();
-//alert(this.type.value + "\n\n" + this.columns.toSource());
-//alert(this.type.value + "\n\n" + this.variables.toSource());
 
     if (this.type.value.indexOf("Table") != -1) this.googleVis = new google.visualization.Table(this.container);
     if (this.type.value.indexOf("ScatterChart") != -1) this.googleVis = new google.visualization.ScatterChart(this.container);
@@ -346,6 +337,7 @@ function Binding(report, visualization, variables)
     this.report = report;
     this.visualization = visualization;
     this.bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
+    // "order" should be saved with Binding!!! reference to BindingType makes ReportReadView load Types as well
     if ("order" in this.bindingType) this.order = this.bindingType.order;
     this.variables = variables;
 
