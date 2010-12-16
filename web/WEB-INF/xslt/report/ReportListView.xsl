@@ -69,6 +69,7 @@ exclude-result-prefixes="#all">
 				</p>
 			</form>
 
+<div class="pagination">
                         <xsl:call-template name="sort-paging-controls">
                             <xsl:with-param name="uri" select="'reports'"/>
                             <xsl:with-param name="item-count-param" select="$total-item-count"/>
@@ -78,7 +79,7 @@ exclude-result-prefixes="#all">
                             <xsl:with-param name="desc-param" select="$desc"/>
                             <xsl:with-param name="desc-default-param" select="$desc-default"/>
                         </xsl:call-template>
-
+</div>
 			<table>
 				<thead>
 					<td>Title</td>

@@ -384,11 +384,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
                                 <xsl:if test="$query-result eq false()">
                                     <ul id="errors">
-                                        <xsl:for-each select="document('arg://query-errors')//sparql:binding">
-                                            <li>
-                                                <xsl:value-of select="."/>
-                                            </li>
-                                        </xsl:for-each>
+					<xsl:apply-templates select="document('arg://query-errors')//sparql:binding" mode="error"/>
                                     </ul>
                                 </xsl:if>
 
@@ -716,6 +712,12 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                 <xsl:text>)</xsl:text>
             </xsl:if>
         </option>
+    </xsl:template>
+
+    <xsl:template match="sparql:result[sparql:binding[@name = 'error']]/sparql:binding" mode="error">
+	<li>
+	    <xsl:value-of select="."/>
+	</li>
     </xsl:template>
 
 </xsl:stylesheet>

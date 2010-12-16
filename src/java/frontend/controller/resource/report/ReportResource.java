@@ -167,7 +167,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	}
         catch (QueryException ex)
 	{
-            errors.add(new Error("invalidQuery"));
+            errors.add(new Error("invalidQuery", ex.getMessage()));
 
             view.setErrors(errors);
             view.setResult(false);
