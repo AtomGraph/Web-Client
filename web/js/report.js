@@ -400,8 +400,12 @@ Binding.prototype.setControl = function(control)
 	this.binding.control.getSelectedOptions = getSelectedOptions;
 	var selectedOptions = this.binding.control.getSelectedOptions();
 	// do not allow deselecting too much/all
-	if ("cardinality" in this.binding.bindingType && this.binding.bindingType.cardinality.value > selectedOptions.length) return false;
-	if ("minCardinality" in this.binding.bindingType && this.binding.bindingType.minCardinality.value > selectedOptions.length) return false;
+	if (("cardinality" in this.binding.bindingType && this.binding.bindingType.cardinality.value > selectedOptions.length) ||
+	    ("minCardinality" in this.binding.bindingType && this.binding.bindingType.minCardinality.value > selectedOptions.length))
+	    {
+		this.binding.control.options[0].selected = true;
+		return false;
+	    }
 
 	this.binding.getVariablesFromControl = Binding.prototype.getVariablesFromControl;
 	this.binding.variables = this.binding.getVariablesFromControl();
