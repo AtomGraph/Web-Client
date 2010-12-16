@@ -106,7 +106,7 @@ exclude-result-prefixes="#all">
 
                                 <div id="footer">
                                     <p>
-                                        <a href="mailto:info@semantic-web.dk">info@semantic-web.dk</a>
+                                        Project of <a href="http://semantic-web.dk">semantic-web.dk</a> 2010
                                     </p>
                                 </div>
 			</body>

@@ -69,17 +69,22 @@ exclude-result-prefixes="#all">
 				</p>
 			</form>
 
-<div class="pagination">
-                        <xsl:call-template name="sort-paging-controls">
-                            <xsl:with-param name="uri" select="'reports'"/>
-                            <xsl:with-param name="item-count-param" select="$total-item-count"/>
-                            <xsl:with-param name="offset-param" select="$offset"/>
-                            <xsl:with-param name="limit-param" select="$limit"/>
-                            <xsl:with-param name="order-by-param" select="$order-by"/>
-                            <xsl:with-param name="desc-param" select="$desc"/>
-                            <xsl:with-param name="desc-default-param" select="$desc-default"/>
-                        </xsl:call-template>
-</div>
+			<xsl:variable name="paging-controls">
+			    <xsl:call-template name="sort-paging-controls">
+				<xsl:with-param name="uri" select="'reports'"/>
+				<xsl:with-param name="item-count-param" select="$total-item-count"/>
+				<xsl:with-param name="offset-param" select="$offset"/>
+				<xsl:with-param name="limit-param" select="$limit"/>
+				<xsl:with-param name="order-by-param" select="$order-by"/>
+				<xsl:with-param name="desc-param" select="$desc"/>
+				<xsl:with-param name="desc-default-param" select="$desc-default"/>
+			    </xsl:call-template>
+			</xsl:variable>
+
+			<div class="pagination">
+			    <xsl:copy-of select="$paging-controls"/>
+		        </div>
+			
 			<table>
 				<thead>
 					<td>Title</td>
@@ -95,15 +100,9 @@ exclude-result-prefixes="#all">
 				</tbody>
 			</table>
 
-                        <xsl:call-template name="sort-paging-controls">
-                            <xsl:with-param name="uri" select="'reports'"/>
-                            <xsl:with-param name="item-count-param" select="$total-item-count"/>
-                            <xsl:with-param name="offset-param" select="$offset"/>
-                            <xsl:with-param name="limit-param" select="$limit"/>
-                            <xsl:with-param name="order-by-param" select="$order-by"/>
-                            <xsl:with-param name="desc-param" select="$desc"/>
-                            <xsl:with-param name="desc-default-param" select="$desc-default"/>
-                        </xsl:call-template>
+			<div class="pagination">
+			    <xsl:copy-of select="$paging-controls"/>
+		        </div>
 		</div>
 	</xsl:template>
 

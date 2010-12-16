@@ -8,8 +8,8 @@ span.red { color: red; }
 table, td { border: 1px solid black; }
 table { width: 100%; }
 thead { font-weight: bold; text-align: center; }
-div.pagination { display: inline; }
-ol.pagination li { display: inline; }
+div.pagination *, ol.pagination li { display: inline; }
+div.pagination { margin: 1em; }
 button { font-weight: bold; }
 ul#vis-types { padding: 0; }
 ul#vis-types li { display: inline; }
