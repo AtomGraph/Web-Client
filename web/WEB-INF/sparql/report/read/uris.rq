@@ -4,7 +4,7 @@ PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 PREFIX spin: <http://spinrdf.org/sp#>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
-SELECT *
+SELECT DISTINCT *
 WHERE
 {
     ?report	rep:query	?query .
