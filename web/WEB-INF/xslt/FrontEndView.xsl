@@ -114,23 +114,25 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
         <xsl:template name="report-scripts">
-            <script type="text/javascript" src="http://www.google.com/jsapi">&#160;</script>
-            <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript">&#160;</script>
+	    <xsl:if test="$view = 'frontend.view.report.ReportCreateView' or $view = 'frontend.view.report.ReportUpdateView' or $view = 'frontend.view.report.ReportReadView'">
+		<script type="text/javascript" src="http://www.google.com/jsapi">&#160;</script>
+		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAACeGvD278ackc4SWUVEJSXBRKvlh_JZwu81_tOS6Bm9fWR6zB2BRWlRbMrtA0atMf6bgsA7OsCjgdVw" type="text/javascript">&#160;</script>
 
-            <script type="text/javascript">
-            google.load('visualization', '1',  {'packages': ["corechart", "table", "map"]});
+		<script type="text/javascript">
+		google.load('visualization', '1',  {'packages': ["corechart", "table", "map"]});
 
-            var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
-            </script>
-            
-            <script type="text/javascript" src="static/js/report.js">&#160;</script>
-	    <!--
-	    <script type="text/javascript" src="static/js/sparql.js">&#160;</script>
-	    <script type="text/javascript">
-		var sparqler = new SPARQL.Service("<xsl:value-of select="$host-uri"/>sparql");
-		sparqler.setMethod("GET");
-	    </script>
-	    -->
+		var table = <xsl:apply-templates select="document('arg://results')" mode="sparql2wire"/>;
+		</script>
+
+		<script type="text/javascript" src="static/js/report.js">&#160;</script>
+		<!--
+		<script type="text/javascript" src="static/js/sparql.js">&#160;</script>
+		<script type="text/javascript">
+		    var sparqler = new SPARQL.Service("<xsl:value-of select="$host-uri"/>sparql");
+		    sparqler.setMethod("GET");
+		</script>
+		-->
+	    </xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>
