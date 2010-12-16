@@ -628,12 +628,14 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
             <xsl:value-of select="sparql:binding[@name = 'label']/sparql:literal"/>
         </label>
         <select id="{generate-id()}-binding" name="ol">
+	    <!--
             <xsl:attribute name="onchange">
 		<xsl:text>report.setVariables(report.getVariablesFromControls()); </xsl:text>
 		<xsl:text>report.draw(objectByType('</xsl:text>
 		<xsl:value-of select="$visualization-type//sparql:binding[@name = 'type']/sparql:uri"/>
 		<xsl:text>', report.visualizations));</xsl:text>
             </xsl:attribute>
+	    -->
 
             <xsl:text>&#160;</xsl:text>
         </select>

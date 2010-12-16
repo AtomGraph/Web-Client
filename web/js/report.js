@@ -326,7 +326,7 @@ function Binding(report, visualization, variables)
 {
     var binding = this;
     // hack for visualization ontology changes
-    //if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
+    if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
     this.report = report;
     this.visualization = visualization;
     this.bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
