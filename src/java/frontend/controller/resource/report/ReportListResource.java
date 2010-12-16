@@ -147,7 +147,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	}
         catch (QueryException ex)
 	{
-            errors.add(new Error("invalidQuery"));
+            errors.add(new Error("invalidQuery", ex.getMessage()));
 
             view.setErrors(errors);
             view.setResult(false);

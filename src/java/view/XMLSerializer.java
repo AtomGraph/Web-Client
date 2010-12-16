@@ -73,6 +73,7 @@ public class XMLSerializer
         return ResultSetFormatter.asXMLString(resultSet);
     }
 
+    // refactor into serialize(Error error) ???
     public static String serialize(List<Error> errors) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
     {
 	XMLSerializer.init();
@@ -91,13 +92,24 @@ public class XMLSerializer
 		Element result = document.createElementNS(Namespaces.SPARQL_NS, "sparql:result");
 		results.appendChild(result);
 
-		Element binding = document.createElementNS(Namespaces.SPARQL_NS, "sparql:binding");
-		result.appendChild(binding);
-		binding.setAttribute("name", "error");
+		Element nameBinding = document.createElementNS(Namespaces.SPARQL_NS, "sparql:binding");
+		result.appendChild(nameBinding);
+		nameBinding.setAttribute("name", "error");
 
 		Element uri = document.createElementNS(Namespaces.SPARQL_NS, "sparql:uri");
-		binding.appendChild(uri);
+		nameBinding.appendChild(uri);
 		uri.appendChild(document.createTextNode(error.getURI()));
+
+		if (error.getMessage() != null)
+		{
+		    Element msgBinding = document.createElementNS(Namespaces.SPARQL_NS, "sparql:binding");
+		    result.appendChild(msgBinding);
+		    msgBinding.setAttribute("name", "message");
+
+		    Element literal = document.createElementNS(Namespaces.SPARQL_NS, "sparql:literal");
+		    msgBinding.appendChild(literal);
+		    literal.appendChild(document.createTextNode(error.getMessage()));
+		}
 	    }
 
 	return serialize(document);

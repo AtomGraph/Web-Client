@@ -100,8 +100,10 @@ public class ReportResource extends FrontEndResource implements LeafResource
             return updateView;
         }
 
+	long limit = RESULTS_LIMIT;
+	if (request.getParameter("limit") != null) limit = Integer.parseInt(request.getParameter("limit"));
 	ReportReadView readView = new ReportReadView(this);
-        readView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), RESULTS_LIMIT));
+        readView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), limit));
         return readView;
     }
 
