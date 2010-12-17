@@ -89,7 +89,7 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
         process(request, response);
     }
 
-    private String getHost(HttpServletRequest request)
+    public static String getHost(HttpServletRequest request)
     {
 	String host = "http://" + request.getServerName();
 	if (request.getServerPort() != 80) host += ":" + request.getServerPort();

@@ -299,7 +299,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                         <legend>Endpoint</legend>
                                         <xsl:variable name="existing-endpoint" select="$endpoints//sparql:result and (empty($query-result) or (not(empty($query-result)) and key('endpoint-by-uri', $endpoint-uri, $endpoints)))" as="xs:boolean"/>
                                         <xsl:if test="$endpoints//sparql:result">
-                                            <input type="radio" id="existing-endpoint-radio" name="endpoint" value="existing" onclick="document.getElementById('existing-endpoint-select').disabled = false; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = true;">
+                                            <input type="radio" id="existing-endpoint-radio" name="endpoint-exists" value="true" onclick="document.getElementById('existing-endpoint-select').disabled = false; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = true;">
                                                 <xsl:if test="$existing-endpoint">
                                                     <xsl:attribute name="checked">checked</xsl:attribute>
                                                 </xsl:if>
@@ -317,7 +317,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
                                             <br/>
                                         </xsl:if>
 
-                                        <input type="radio" id="new-endpoint-radio" name="endpoint" value="new" onclick="document.getElementById('existing-endpoint-select').disabled = true; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = false;">
+                                        <input type="radio" id="new-endpoint-radio" name="endpoint-exists" value="false" onclick="document.getElementById('existing-endpoint-select').disabled = true; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = false;">
                                             <xsl:if test="not($existing-endpoint)">
                                                 <xsl:attribute name="checked">checked</xsl:attribute>
                                             </xsl:if>

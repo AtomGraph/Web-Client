@@ -82,8 +82,8 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	View parent = super.doGet(request, response);
 	if (parent != null) return parent;
 
-        if (isQueryAction(request)) return query(request, response);
-        if (isSaveAction(request)) save(request, response);
+        if (isQueryAction(request) || isProxyQueryAction(request)) return query(request, response);
+        //if (isSaveAction(request)) save(request, response);
 
         if (isCreateView(request)) return new ReportCreateView(this);
 
@@ -117,7 +117,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	{
             if (!errors.isEmpty()) throw new InvalidFormException();
 
-	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString(), ReportResource.RESULTS_LIMIT);
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpoint().getURI(), form.getQueryString(), ReportResource.RESULTS_LIMIT);
             int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
             if (count == 0) throw new NoResultsException();
             
@@ -225,6 +225,11 @@ form.getModel().write(System.out);
     protected boolean isQueryAction(HttpServletRequest request)
     {
         return (request.getParameter("action") != null && request.getParameter("action").equals("query"));
+    }
+
+    protected boolean isProxyQueryAction(HttpServletRequest request)
+    {
+        return ((request.getParameter("endpoint") != null && request.getParameter("query") != null));
     }
 
     protected boolean isSaveAction(HttpServletRequest request)

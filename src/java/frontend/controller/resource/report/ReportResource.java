@@ -137,7 +137,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	{
             if (!errors.isEmpty()) throw new InvalidFormException();
 
-	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpointResource().getURI(), form.getQueryString(), RESULTS_LIMIT);
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpoint().getURI(), form.getQueryString(), RESULTS_LIMIT);
             int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
             if (count == 0) throw new NoResultsException();
 
@@ -201,7 +201,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
 //newModel.write(System.out, FileUtils.langXMLAbbrev);
 
 Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
-Resource endpointResource = SDB.getInstanceModel().createResource(form.getEndpointResource().getURI());
+Resource endpointResource = SDB.getInstanceModel().createResource(form.getEndpoint().getURI());
 System.out.println("Report resource: " + reportResource);
 System.out.println("Endpoint resource: " + endpointResource);
 

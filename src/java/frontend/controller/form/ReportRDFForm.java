@@ -10,12 +10,14 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
+import controller.Controller;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import dk.semantic_web.diy.controller.Error;
 import model.vocabulary.DublinCore;
 import model.vocabulary.Reports;
 import model.vocabulary.Spin;
+import util.IDGenerator;
 
 /**
  *
@@ -23,10 +25,29 @@ import model.vocabulary.Spin;
  */
 public class ReportRDFForm extends RDFForm 
 {
-
     public ReportRDFForm(HttpServletRequest request)
     {
 	super(request);
+
+	// override endpoint & query if used as a proxy
+	if (request.getParameter("endpoint") != null && request.getParameter("query") != null)
+	{
+	    String reportUri = Controller.getHost(request) + "reports/" + IDGenerator.generate();
+	    String queryUri = Controller.getHost(request) + "queries/" + IDGenerator.generate();
+	    String endpointUri = request.getParameter("endpoint");
+
+	    Resource reportResource = getModel().createResource(reportUri);
+	    Resource queryResource = getModel().createResource(queryUri);
+	    Resource endpointResource = getModel().createResource(endpointUri);
+	    
+	    getModel().add(reportResource, RDF.type, getModel().createResource(Reports.Report));
+	    getModel().add(queryResource, RDF.type, getModel().createResource(Spin.Select));
+	    getModel().add(endpointResource, RDF.type, getModel().createResource(Reports.Endpoint));
+
+	    getModel().add(reportResource, getModel().createProperty(Reports.query), queryResource);
+	    getModel().add(queryResource, getModel().createProperty(Spin.from), endpointResource);
+	    getModel().add(queryResource, getModel().createProperty(Spin.text), getModel().createTypedLiteral(request.getParameter("query")));
+	}
     }
 
     public Resource getReportResource()
@@ -48,7 +69,7 @@ public class ReportRDFForm extends RDFForm
         return query;
     }
 
-    public Resource getEndpointResource()
+    public Resource getEndpoint()
     {
 	Resource endpoint = null;
 	Property fromProperty = getModel().createProperty(Spin.from);
@@ -79,7 +100,7 @@ public class ReportRDFForm extends RDFForm
     public List<Error> validate()
     {
         //if (getTitle() == null || getTitle().equals("")) getErrors().add(new Error("noTitle"));
-        if (getEndpointResource() == null) getErrors().add(new Error("noEndpoint"));
+        if (getEndpoint() == null) getErrors().add(new Error("noEndpoint"));
         if (getQueryString() == null || getQueryString().equals("")) getErrors().add(new Error("noQueryString"));
 
         return getErrors();
@@ -88,7 +109,7 @@ public class ReportRDFForm extends RDFForm
     public List<Error> validateWithTitle()
     {
         if (getTitle() == null || getTitle().equals("")) getErrors().add(new Error("noTitle"));
-        if (getEndpointResource() == null) getErrors().add(new Error("noEndpoint"));
+        if (getEndpoint() == null) getErrors().add(new Error("noEndpoint"));
         if (getQueryString() == null || getQueryString().equals("")) getErrors().add(new Error("noQueryString"));
 
         return getErrors();
