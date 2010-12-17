@@ -50,7 +50,7 @@ public class ReportRDFForm extends RDFForm
 	}
     }
 
-    public Resource getReportResource()
+    public Resource getReport()
     {
         Resource report = null;
         Resource reportClass = getModel().createResource(Reports.Report);
@@ -91,7 +91,7 @@ public class ReportRDFForm extends RDFForm
     {
 	String title = null;
 	Property titleProperty = getModel().createProperty(DublinCore.TITLE);
-	Statement stmt = getModel().getProperty(getReportResource(), titleProperty);
+	Statement stmt = getModel().getProperty(getReport(), titleProperty);
 	if (stmt != null) title = stmt.getString();
 	return title;
     }

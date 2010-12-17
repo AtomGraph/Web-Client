@@ -173,10 +173,10 @@ public class ReportListResource extends FrontEndResource implements Singleton
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model model = form.getModel();
-        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATED), model.createTypedLiteral(calendar));
-        model.add(form.getReportResource(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
-        model.add(form.getReportResource(), RDF.type, model.createResource(Sioc.Forum));
-        model.add(form.getReportResource(), model.createProperty(Sioc.has_creator), model.createResource(userUri));
+        model.add(form.getReport(), model.createProperty(DublinCore.CREATED), model.createTypedLiteral(calendar));
+        model.add(form.getReport(), model.createProperty(DublinCore.CREATOR), model.createResource(userUri));
+        model.add(form.getReport(), RDF.type, model.createResource(Sioc.Forum));
+        model.add(form.getReport(), model.createProperty(Sioc.has_creator), model.createResource(userUri));
         model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.UserAccount));
         model.add(model.createResource(userUri), model.createProperty(Sioc.name), model.createTypedLiteral("Admin"));
 
@@ -187,7 +187,7 @@ form.getModel().write(System.out);
         try {
             // save report
             //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-            response.sendRedirect(form.getReportResource().getURI());
+            response.sendRedirect(form.getReport().getURI());
         } catch (IOException ex) {
             Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
         }

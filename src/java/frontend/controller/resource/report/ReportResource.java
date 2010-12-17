@@ -192,15 +192,15 @@ public class ReportResource extends FrontEndResource implements LeafResource
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model newModel = form.getModel();
-        newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.MODIFIED), newModel.createTypedLiteral(calendar));
-        newModel.add(form.getReportResource(), newModel.createProperty(DublinCore.CREATOR), newModel.createResource(userUri));
-        newModel.add(form.getReportResource(), RDF.type, newModel.createResource(Sioc.Forum));
-        newModel.add(form.getReportResource(), newModel.createProperty(Sioc.has_creator), newModel.createResource(userUri));
+        newModel.add(form.getReport(), newModel.createProperty(DublinCore.MODIFIED), newModel.createTypedLiteral(calendar));
+        newModel.add(form.getReport(), newModel.createProperty(DublinCore.CREATOR), newModel.createResource(userUri));
+        newModel.add(form.getReport(), RDF.type, newModel.createResource(Sioc.Forum));
+        newModel.add(form.getReport(), newModel.createProperty(Sioc.has_creator), newModel.createResource(userUri));
         newModel.add(newModel.createResource(userUri), RDF.type, newModel.createResource(Sioc.UserAccount));
         newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.name), newModel.createTypedLiteral("Admin"));
 //newModel.write(System.out, FileUtils.langXMLAbbrev);
 
-Resource reportResource = SDB.getInstanceModel().createResource(form.getReportResource().getURI());
+Resource reportResource = SDB.getInstanceModel().createResource(form.getReport().getURI());
 Resource endpointResource = SDB.getInstanceModel().createResource(form.getEndpoint().getURI());
 System.out.println("Report resource: " + reportResource);
 System.out.println("Endpoint resource: " + endpointResource);
@@ -222,7 +222,7 @@ oldModel.remove(keepStatements); // do not delete creation date, endpoint metada
         try {
             // save report
             //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-            response.sendRedirect(form.getReportResource().getURI());
+            response.sendRedirect(form.getReport().getURI());
         } catch (IOException ex) {
             Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
         }

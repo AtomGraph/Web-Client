@@ -24,6 +24,7 @@ import view.QueryStringBuilder;
 import view.QueryResult;
 import view.XMLSerializer;
 import dk.semantic_web.diy.controller.Error;
+import frontend.controller.form.ReportRDFForm;
 import view.JSONSerializer;
 
 /**
@@ -57,7 +58,7 @@ public class ReportCreateView extends FrontEndView implements FormResultView
 
 	if (getResult() != null)
         {
-            String reportUri = request.getParameter("report-uri"); // same as form.getReportResource().getURI()
+            String reportUri = ((ReportRDFForm)getForm()).getReport().getURI(); //request.getParameter("report-uri");
             setReport(QueryResult.select(getModel(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/read/report.rq"), reportUri)));
 
             getTransformer().setParameter("query-result", getResult());
