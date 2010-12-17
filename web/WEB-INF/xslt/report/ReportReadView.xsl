@@ -120,7 +120,7 @@ exclude-result-prefixes="#all">
 				<dd>
 					<a href="{$report//sparql:binding[@name = 'endpoint']/sparql:uri}">
                                             <xsl:choose>
-                                                <xsl:when test="$report//sparql:binding[@name = 'endpointTitle']/sparql:literal">
+                                                <xsl:when test="$report//sparql:binding[@name = 'endpointTitle']">
                                                     <xsl:value-of select="$report//sparql:binding[@name = 'endpointTitle']/sparql:literal"/>
                                                 </xsl:when>
                                                 <xsl:otherwise>
