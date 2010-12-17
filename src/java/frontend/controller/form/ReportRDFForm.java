@@ -96,6 +96,15 @@ public class ReportRDFForm extends RDFForm
 	return title;
     }
 
+    public String getEndpointTitle()
+    {
+	String title = null;
+	Property titleProperty = getModel().createProperty(DublinCore.TITLE);
+	Statement stmt = getModel().getProperty(getEndpoint(), titleProperty);
+	if (stmt != null) title = stmt.getString();
+	return title;
+    }
+
     @Override
     public List<Error> validate()
     {

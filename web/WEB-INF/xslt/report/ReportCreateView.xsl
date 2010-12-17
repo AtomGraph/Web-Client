@@ -364,7 +364,7 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 </input>
 
                                         <xsl:text> </xsl:text>
-                                        <label for="new-endpoint-title">Label</label>
+                                        <label for="new-endpoint-title">Title</label>
                                         <xsl:text> </xsl:text>
                                         <input type="text" id="new-endpoint-title" name="ol">
                                             <xsl:if test="$existing-endpoint">

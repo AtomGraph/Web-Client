@@ -97,7 +97,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	if (parent != null) return parent;
 
         if (isQueryAction(request)) return query(request, response);
-        if (isSaveAction(request)) save(request, response);
+        if (isSaveAction(request)) return save(request, response);
 
         if (isCreateView(request)) return new ReportCreateView(this);
 
@@ -157,10 +157,67 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	
         return view;
     }
-    
-    public void save(HttpServletRequest request, HttpServletResponse response)
+
+    private ReportCreateView save(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
+        ReportCreateView view = new ReportCreateView(this);
+
 	ReportRDFForm form = new ReportRDFForm(request);
+        List<Error> errors = form.validateWithTitle();
+        view.setForm(form);
+        view.setModel(form.getModel());
+
+	try
+	{
+            if (!errors.isEmpty()) throw new InvalidFormException();
+
+	    ResultSetRewindable queryResults = QueryResult.selectRemote(form.getEndpoint().getURI(), form.getQueryString(), ReportResource.RESULTS_LIMIT);
+            int count = ResultSetFormatter.consume(ResultSetFactory.copyResults(queryResults));
+            if (count == 0) throw new NoResultsException();
+            view.setQueryResults(queryResults);
+
+	    saveModel(form);
+	    
+            view.setResult(true);
+	    response.sendRedirect(form.getReport().getURI());
+	}
+        catch (InvalidFormException ex)
+	{
+            view.setErrors(errors);
+            view.setResult(false);
+	}
+        catch (NoResultsException ex)
+	{
+            errors.add(new Error("noResults"));
+
+            view.setErrors(errors);
+            view.setResult(false);
+	}
+        catch (IOException ex)
+	{
+            errors.add(new Error("ioError"));
+
+            view.setErrors(errors);
+            view.setResult(false);
+
+	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+        catch (QueryException ex)
+	{
+            errors.add(new Error("invalidQuery", ex.getMessage()));
+
+            view.setErrors(errors);
+            view.setResult(false);
+
+	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+
+        return view;
+    }
+
+    public void saveModel(ReportRDFForm form)
+    {
+	//ReportRDFForm form = new ReportRDFForm(request);
 
         SPINModuleRegistry.get().init();
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
@@ -182,15 +239,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 
         SDB.getInstanceModel().add(model); // save report
 //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-form.getModel().write(System.out);
-
-        try {
-            // save report
-            //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-            response.sendRedirect(form.getReport().getURI());
-        } catch (IOException ex) {
-            Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//form.getModel().write(System.out);
     }
 
     /*

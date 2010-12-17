@@ -114,11 +114,16 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	if (parent != null) return parent;
 
         if (isQueryAction(request)) return query(request, response);
-        if (isUpdateAction(request)) update(request, response);
+        if (isUpdateAction(request)) return update(request, response);
         if (isCommentAction(request)) comment(request, response);
 
         if (isUpdateView(request)) return new ReportUpdateView(this);
         
+	return read(request, response);
+    }
+
+    private ReportReadView read(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, MalformedURLException, URISyntaxException, IOException
+    {
 	ReportReadView view = new ReportReadView(this);
         view.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), RESULTS_LIMIT));
         return view;
@@ -127,7 +132,6 @@ public class ReportResource extends FrontEndResource implements LeafResource
     private ReportUpdateView query(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
         ReportUpdateView view = new ReportUpdateView(this);
-
 	ReportRDFForm form = new ReportRDFForm(request);
         List<Error> errors = form.validate();
         view.setForm(form);
@@ -178,9 +182,45 @@ public class ReportResource extends FrontEndResource implements LeafResource
         return view;
     }
 
-    private void update(HttpServletRequest request, HttpServletResponse response)
+    private ReportUpdateView update(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, IOException, URISyntaxException
     {
+	ReportUpdateView view = new ReportUpdateView(this);
 	ReportRDFForm form = new ReportRDFForm(request);
+	List<Error> errors = form.validateWithTitle();
+	view.setForm(form);
+	view.setModel(form.getModel());
+	try
+	{
+	    if (!errors.isEmpty()) throw new InvalidFormException();
+
+	    view.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), RESULTS_LIMIT));
+
+	    updateModel(form);
+
+	    view.setResult(true);
+	    response.sendRedirect(form.getReport().getURI());
+	}
+	catch (InvalidFormException ex)
+	{
+	    view.setErrors(errors);
+	    view.setResult(false);
+	}
+        catch (IOException ex)
+	{
+            errors.add(new Error("ioError"));
+
+            view.setErrors(errors);
+            view.setResult(false);
+
+	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return view;
+    }
+
+    // should be possible to refactor more
+    private void updateModel(ReportRDFForm form)
+    {
+	//ReportRDFForm form = new ReportRDFForm(request);
 
         SPINModuleRegistry.get().init();
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(form.getModel(), form.getQueryString());
@@ -209,23 +249,12 @@ Model oldModel = ResourceUtils.reachableClosure(reportResource);
 List<Statement> keepStatements = new ArrayList<Statement>();
 keepStatements.add(oldModel.getProperty(reportResource, oldModel.createProperty(DublinCore.CREATED)));
 keepStatements.add(oldModel.getProperty(endpointResource, RDF.type));
-keepStatements.add(oldModel.getProperty(endpointResource, oldModel.createProperty(DublinCore.TITLE))); // can be null!
+Statement endpointTitle = oldModel.getProperty(endpointResource, oldModel.createProperty(DublinCore.TITLE)); // can be null!
+if (endpointTitle != null) keepStatements.add(endpointTitle);
 oldModel.remove(keepStatements); // do not delete creation date, endpoint metadata etc.
 //oldModel.write(System.out, FileUtils.langXMLAbbrev);
         SDB.getInstanceModel().remove(oldModel);
         SDB.getInstanceModel().add(newModel);
-
-        //SDB.getInstanceModel().add(model); // save report
-	//SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-//form.getModel().write(System.out);
-
-        try {
-            // save report
-            //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
-            response.sendRedirect(form.getReport().getURI());
-        } catch (IOException ex) {
-            Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     private void comment(HttpServletRequest request, HttpServletResponse response)
