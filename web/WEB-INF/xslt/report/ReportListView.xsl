@@ -45,7 +45,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
         <!-- <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/> -->
 	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
-	<xsl:variable name="schema-cache-endpoint" select="xs:anyURI('http://schemacache.test.talis.com/services/sparql')" as="xs:anyURI"/>
+	<xsl:variable name="schema-cache-endpoint" select="xs:anyURI('http://api.talis.com/stores/schema-cache/services/sparql')" as="xs:anyURI"/>
 	<!-- query all external properties for labels -->
 	<xsl:variable name="label-query" as="xs:string">
 	    <xsl:variable name="query-items" as="xs:string*">
@@ -61,6 +61,7 @@ exclude-result-prefixes="#all">
 	    </xsl:variable>
 	    <xsl:value-of select="string-join($query-items, '')"/>
 	</xsl:variable>
+	<xsl:variable name="property-labels" select="xsltsparql:sparqlEndpoint(concat(xsltsparql:commonPrefixes(), $label-query), $schema-cache-endpoint)" as="document-node()"/>
 
 	<xsl:key name="result-by-uri" match="sparql:result" use="sparql:binding[@name = 'uri']/sparql:uri"/>
 
@@ -83,7 +84,9 @@ exclude-result-prefixes="#all">
                             <xsl:call-template name="title"/>
                         </h2>
 
-<!-- <xsl:copy-of select="xsltsparql:sparqlEndpoint(concat(xsltsparql:commonPrefixes(), $label-query), $schema-cache-endpoint)"/> -->
+<xsl:copy-of select="$label-query"/>
+<xsl:copy-of select="$property-labels"/>
+<xsl:value-of select="key('result-by-uri', $uri, $property-labels)//sparql:literal"/>
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
@@ -177,6 +180,9 @@ exclude-result-prefixes="#all">
             <xsl:variable name="uri" select="sparql:binding[@name = 'uri']/sparql:uri" as="xs:anyURI"/>
             <xsl:variable name="uri-label" as="xs:string">
                 <xsl:choose>
+		    <xsl:when test="key('result-by-uri', $uri, $property-labels)">
+			<xsl:value-of select="key('result-by-uri', $uri, $property-labels)//sparql:literal"/>
+		    </xsl:when>
                     <xsl:when test="starts-with($uri, '&rdf;')">
                         <xsl:value-of select="concat('rdf:', substring-after($uri, '&rdf;'))"/>
                     </xsl:when>

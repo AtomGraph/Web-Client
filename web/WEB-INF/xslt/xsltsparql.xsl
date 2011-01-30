@@ -22,7 +22,7 @@
 	Results: <xsl:copy-of select="$endpointResponse"/>
       </xsl:message>
     </xsl:if>
-    <xsl:copy-of select="$endpointResponse/results:sparql"/>
+    <xsl:copy-of select="$endpointResponse"/>
   </xsl:function>
 
   <xsl:function name="xsltsparql:commonPrefixes">
