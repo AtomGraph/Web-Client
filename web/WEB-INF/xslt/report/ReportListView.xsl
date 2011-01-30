@@ -26,11 +26,13 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:sparql="&sparql;"
+xmlns:xsltsparql="http://berrueta.net/research/xsltsparql"
 exclude-result-prefixes="#all">
 
         <xsl:include href="../FrontEndView.xsl"/>
         <xsl:include href="../query-string.xsl"/>
         <xsl:include href="../page-numbers.xsl"/>
+        <xsl:include href="../xsltsparql.xsl"/>
 
         <xsl:param name="total-item-count" as="xs:integer"/>
         <xsl:param name="offset" select="0" as="xs:integer"/>
@@ -43,6 +45,24 @@ exclude-result-prefixes="#all">
         <xsl:variable name="endpoints" select="document('arg://endpoints')" as="document-node()"/>
         <!-- <xsl:variable name="query-objects" select="document('arg://query-objects')" as="document-node()"/> -->
 	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
+	<xsl:variable name="schema-cache-endpoint" select="xs:anyURI('http://schemacache.test.talis.com/services/sparql')" as="xs:anyURI"/>
+	<!-- query all external properties for labels -->
+	<xsl:variable name="label-query" as="xs:string">
+	    <xsl:variable name="query-items" as="xs:string*">
+		<xsl:text>SELECT DISTINCT * { </xsl:text>
+		<xsl:for-each-group select="$query-uris//sparql:binding[@name = 'uri']/sparql:uri[not(starts-with(., $host-uri))]" group-by=".">
+		    <xsl:text>OPTIONAL { &lt;</xsl:text>
+		    <xsl:value-of select="."/>
+		    <xsl:text>&gt; rdfs:label ?label</xsl:text>
+		    <xsl:value-of select="position()"/>
+		    <xsl:text> } . </xsl:text>
+		</xsl:for-each-group>
+		<xsl:text> }</xsl:text>
+	    </xsl:variable>
+	    <xsl:value-of select="string-join($query-items, '')"/>
+	</xsl:variable>
+
+	<xsl:key name="result-by-uri" match="sparql:result" use="sparql:binding[@name = 'uri']/sparql:uri"/>
 
 	<xsl:template name="title">
 		Semantic Reports: Reports
@@ -62,6 +82,9 @@ exclude-result-prefixes="#all">
 			<h2>
                             <xsl:call-template name="title"/>
                         </h2>
+
+<xsl:value-of select="$label-query"/>
+<!-- <xsl:copy-of select="xsltsparql:sparqlEndpoint(concat(xsltsparql:commonPrefixes(), $label-query), $schema-cache-endpoint)"/> -->
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
