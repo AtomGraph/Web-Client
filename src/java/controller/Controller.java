@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import model.SDB;
+import model.sdb.SDB;
 
 /**
  Central controller, single point of entry to the application.
@@ -44,14 +44,16 @@ public class Controller extends dk.semantic_web.diy.controller.Controller
 
             if (getResource() == null) setView(new NotFoundView(this));
             if (getView() != null) getView().display(request, response);
+
+	    SDB.closeStore();
         }
         catch (Exception ex)
         {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
 
 	    response.setContentType("text/html");
-            ex.printStackTrace(response.getWriter());
-            //response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            //ex.printStackTrace(response.getWriter());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
 
             /*
             System.out.println(ex.getMessage());

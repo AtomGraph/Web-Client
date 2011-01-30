@@ -40,7 +40,7 @@ import java.util.List;
 import javax.xml.transform.TransformerConfigurationException;
 import model.vocabulary.DublinCore;
 import model.Report;
-import model.SDB;
+import model.sdb.SDB;
 import model.vocabulary.Sioc;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;

@@ -12,7 +12,7 @@ import dk.semantic_web.diy.controller.Error;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerConfigurationException;
-import model.SDB;
+import model.sdb.SDB;
 import frontend.controller.resource.report.ReportResource;
 import java.io.IOException;
 import java.util.List;

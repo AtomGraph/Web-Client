@@ -5,6 +5,7 @@
 
 package frontend.controller.resource.report;
 
+import model.sdb.SDB;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerConfigurationException;

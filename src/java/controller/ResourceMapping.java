@@ -27,7 +27,7 @@ import model.Endpoint;
 import model.Page;
 import model.PagePeer;
 import model.Report;
-import model.SDB;
+import model.sdb.SDB;
 import thewebsemantic.RDF2Bean;
 
 /**

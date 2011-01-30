@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import model.SDB;
+import model.sdb.SDB;
 import view.JSONSerializer;
 import view.QueryResult;
 import view.QueryStringBuilder;
