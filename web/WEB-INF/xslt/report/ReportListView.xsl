@@ -61,7 +61,7 @@ exclude-result-prefixes="#all">
 	    </xsl:variable>
 	    <xsl:value-of select="string-join($query-items, '')"/>
 	</xsl:variable>
-	<xsl:variable name="property-labels" select="xsltsparql:sparqlEndpoint(concat(xsltsparql:commonPrefixes(), $label-query), $schema-cache-endpoint)" as="document-node()"/>
+	<xsl:variable name="property-labels" select="xsltsparql:sparqlEndpoint(concat(xsltsparql:commonPrefixes(), $label-query), $schema-cache-endpoint)" as="document-node()?"/>
 
 	<xsl:key name="result-by-uri" match="sparql:result" use="sparql:binding[@name = 'uri']/sparql:uri"/>
 	<xsl:key name="binding-by-label-pos" match="sparql:binding" use="number(substring-after(@name, 'label'))"/>
@@ -177,7 +177,11 @@ exclude-result-prefixes="#all">
         <xsl:template match="sparql:result[sparql:binding[@name = 'uri']]" mode="uri-list-item">
             <xsl:variable name="uri" select="sparql:binding[@name = 'uri']/sparql:uri" as="xs:anyURI"/>
 	    <xsl:variable name="unique-position" select="count(preceding::sparql:result[. is key('result-by-uri', sparql:binding[@name = 'uri']/sparql:uri, $query-uris)[1]])" as="xs:integer"/>
-	    <xsl:variable name="lookup-label" select="key('binding-by-label-pos', $unique-position, $property-labels)[1]/sparql:literal" as="xs:string?"/>
+	    <xsl:variable name="lookup-label" as="xs:string?">
+		<xsl:if test="$property-labels">
+		    <xsl:sequence select="key('binding-by-label-pos', $unique-position, $property-labels)[1]/sparql:literal"/>
+		</xsl:if>
+	    </xsl:variable>
             <xsl:variable name="uri-label" as="xs:string">
                 <xsl:choose>
 		    <xsl:when test="$lookup-label">
