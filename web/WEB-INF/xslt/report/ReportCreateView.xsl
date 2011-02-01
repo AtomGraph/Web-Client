@@ -139,10 +139,6 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template name="head">
-            <title>
-                Semantic Reports: <xsl:call-template name="title"/>
-            </title>
-
             <xsl:call-template name="report-scripts"/>
         </xsl:template>
 
@@ -295,10 +291,11 @@ LIMIT 50</xsl:text>
 var existingEndpointIds = ['existing-endpoint-select'];
 var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'endpoint-rdftype', 'endpoint-class', 'endpoint-dctitle', 'endpoint-titletype', 'new-endpoint-title');
 </script>
+
                                     <fieldset>
                                         <legend>Endpoint</legend>
-                                        <xsl:variable name="existing-endpoint" select="$endpoints//sparql:result and (empty($query-result) or (not(empty($query-result)) and key('endpoint-by-uri', $endpoint-uri, $endpoints)))" as="xs:boolean"/>
-                                        <xsl:if test="$endpoints//sparql:result">
+                                        <xsl:variable name="existing-endpoint" select="$endpoints//sparql:result[sparql:binding[@name = 'endpoint']] and (empty($query-result) or (not(empty($query-result)) and key('endpoint-by-uri', $endpoint-uri, $endpoints)))" as="xs:boolean"/>
+                                        <xsl:if test="$endpoints//sparql:result[sparql:binding[@name = 'endpoint']]">
                                             <input type="radio" id="existing-endpoint-radio" name="endpoint-exists" value="true" onclick="document.getElementById('existing-endpoint-select').disabled = false; for (var i in newEndpointIds) document.getElementById(newEndpointIds[i]).disabled = true;">
                                                 <xsl:if test="$existing-endpoint">
                                                     <xsl:attribute name="checked">checked</xsl:attribute>
@@ -716,7 +713,14 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 
     <xsl:template match="sparql:result[sparql:binding[@name = 'error']]/sparql:binding" mode="error">
 	<li>
-	    <xsl:value-of select="."/>
+	    <xsl:choose>
+		<xsl:when test="sparql:uri = 'noResults'">Query returned no results</xsl:when>
+		<xsl:when test="sparql:uri = 'invalidQuery'">Invalid query</xsl:when>
+		<xsl:when test="sparql:uri = 'ioError'">I/O error (endpoint down?)</xsl:when>
+		<xsl:otherwise>
+		    <xsl:value-of select="."/>
+		</xsl:otherwise>
+	    </xsl:choose>
 	</li>
     </xsl:template>
 

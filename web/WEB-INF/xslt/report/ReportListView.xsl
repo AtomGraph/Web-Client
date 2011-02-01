@@ -64,16 +64,13 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="property-labels" select="xsltsparql:sparqlEndpoint(concat(xsltsparql:commonPrefixes(), $label-query), $schema-cache-endpoint)" as="document-node()"/>
 
 	<xsl:key name="result-by-uri" match="sparql:result" use="sparql:binding[@name = 'uri']/sparql:uri"/>
+	<xsl:key name="binding-by-label-pos" match="sparql:binding" use="number(substring-after(@name, 'label'))"/>
 
 	<xsl:template name="title">
-		Semantic Reports: Reports
+		Reports
 	</xsl:template>
 
-	<xsl:template name="head">
-            <title>
-                <xsl:call-template name="title"/>
-            </title>
-        </xsl:template>
+	<xsl:template name="head"/>
 
 	<xsl:template name="body-onload">
         </xsl:template>
@@ -84,9 +81,10 @@ exclude-result-prefixes="#all">
                             <xsl:call-template name="title"/>
                         </h2>
 
-<xsl:copy-of select="$label-query"/>
-<xsl:copy-of select="$property-labels"/>
-<xsl:value-of select="key('result-by-uri', $uri, $property-labels)//sparql:literal"/>
+<!-- <xsl:copy-of select="$query-uris"/> -->
+<!-- <xsl:copy-of select="$label-query"/> -->
+<!-- <xsl:copy-of select="$property-labels"/> -->
+<!-- <xsl:copy-of select="key('binding-by-label-pos', 24, $property-labels)[1]"/> -->
 
 			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
 				<p>
@@ -178,10 +176,12 @@ exclude-result-prefixes="#all">
 
         <xsl:template match="sparql:result[sparql:binding[@name = 'uri']]" mode="uri-list-item">
             <xsl:variable name="uri" select="sparql:binding[@name = 'uri']/sparql:uri" as="xs:anyURI"/>
+	    <xsl:variable name="unique-position" select="count(preceding::sparql:result[. is key('result-by-uri', sparql:binding[@name = 'uri']/sparql:uri, $query-uris)[1]])" as="xs:integer"/>
+	    <xsl:variable name="lookup-label" select="key('binding-by-label-pos', $unique-position, $property-labels)[1]/sparql:literal" as="xs:string?"/>
             <xsl:variable name="uri-label" as="xs:string">
                 <xsl:choose>
-		    <xsl:when test="key('result-by-uri', $uri, $property-labels)">
-			<xsl:value-of select="key('result-by-uri', $uri, $property-labels)//sparql:literal"/>
+		    <xsl:when test="$lookup-label">
+			<xsl:value-of select="concat(upper-case(substring($lookup-label, 1, 1)), substring($lookup-label, 2))"/>
 		    </xsl:when>
                     <xsl:when test="starts-with($uri, '&rdf;')">
                         <xsl:value-of select="concat('rdf:', substring-after($uri, '&rdf;'))"/>
@@ -226,9 +226,10 @@ exclude-result-prefixes="#all">
             </xsl:variable>
 
             <li>
-                <a href="{$uri}">
+		<a href="{$uri}">
                     <xsl:value-of select="$uri-label"/>
                 </a>
+		<!-- <xsl:value-of select="$unique-position"/> -->
             </li>
         </xsl:template>
 

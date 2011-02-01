@@ -41,7 +41,10 @@ exclude-result-prefixes="#all">
 				<meta name="keywords" xml:lang="en" lang="en" content="semantic, reports, semantic web, linked data, rdf, sparql, query, generic, endpoint, visualization"/>
 				<meta name="google-site-verification" content="9OYr7f_MgT7pH7oSBQY6D2zB7mzZFWy-1ilHcpJtVsg" />
 
-                                <xsl:call-template name="head"/>
+                                <title>
+				    Semantic Reports: <xsl:call-template name="title"/>
+				</title>
+				<xsl:call-template name="head"/>
 
 				<script type="text/javascript">
 
@@ -62,45 +65,32 @@ exclude-result-prefixes="#all">
                                     <xsl:call-template name="body-onload"/>
                                 </xsl:if>
 
-				<h1>
-					<a href="{$host-uri}">Semantic Reports</a>
-				</h1>
+				<div id="header">
+				    <div id="logo">
+					<h1>
+						<a href="{$host-uri}">Semantic Reports</a>
+					</h1>
+					<h2>Generic SPARQL results visualizer and report datastore</h2>
+				    </div>
 
-				<p>Generic SPARQL results visualizer and report datastore</p>
-				
-				<!--
-				<div id="left">
-					<h1>whatsup</h1>
-					<ul>
-						<li>
-							<a href="Location/">Locations</a>
-						</li>
-						<li>
-							<a href="Place/">Places</a>
-						</li>
-						<li>
-							<a href="Time/">Time</a>
-						</li>
-						<li>
-							<a href="Event/">Events</a>
-						</li>
-						<li>
-							<a href="Person/">People</a>
-						</li>
-					</ul>
-					<ul>
-						<li>
-							<a href="Settings">Settings</a>
-						</li>
-						<li>
-							<a href="Query">Query</a>
-						</li>
-						<li>
-							<a href="Search">Search</a>
-						</li>
-					</ul>
+				    <!--
+				    <ul id="menu">
+					    <li>
+						    <a href="reports/">Reports</a>
+					    </li>
+					    <li>
+						    <a href="datasources">Datasources</a>
+					    </li>
+					    <li>
+						    <a href="about">About</a>
+					    </li>
+					    <li>
+						    <a href="contacts">Contacts</a>
+					    </li>
+				    </ul>
+				    -->
+				    <hr/>
 				</div>
-				-->
 
 				<xsl:call-template name="content"/>
 

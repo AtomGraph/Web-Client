@@ -25,11 +25,7 @@ exclude-result-prefixes="#all">
 		Page Not Found
 	</xsl:template>
 
-	<xsl:template name="head">
-            <title>
-                <xsl:call-template name="title"/>
-            </title>
-        </xsl:template>
+	<xsl:template name="head"/>
 
 	<xsl:template name="body-onload"/>
 

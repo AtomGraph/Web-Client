@@ -61,10 +61,6 @@ exclude-result-prefixes="#all">
 	</xsl:template>
 
 	<xsl:template name="head">
-            <title>
-                Semantic Reports: <xsl:call-template name="title"/>
-            </title>
-
             <xsl:call-template name="report-scripts"/>
         </xsl:template>
 

@@ -367,7 +367,11 @@ Binding.prototype.getColumns = function()
     var wireTypes = this.getWireTypes();
     for (var i = 0; i < wireTypes.length; i++)
         columns = columns.concat(this.report.getColumnsByWireType(wireTypes[i])); // add columns for each type
-    
+
+    // lat/lng have a special value range. QUIRK - this constraint should be included in the ontology!
+    if (this.type.value.indexOf("MapLatBinding") != -1) columns = this.report.typeColumns.lat;
+    if (this.type.value.indexOf("MapLngBinding") != -1) columns = this.report.typeColumns.lng;
+
     return columns;
 }
 Binding.prototype.hasVariable = function(name)
@@ -580,6 +584,10 @@ BindingType.prototype.getColumns = function(report)
 
     for (var i = 0; i < wireTypes.length; i++)
         columns = columns.concat(report.getColumnsByWireType(wireTypes[i])); // add columns for each type
+
+    // lat/lng have a special value range. QUIRK - this constraint should be included in the ontology!
+    if (this.type.value.indexOf("MapLatBinding") != -1) columns = report.typeColumns.lat;
+    if (this.type.value.indexOf("MapLngBinding") != -1) columns = report.typeColumns.lng;
 
     return columns;
 }
