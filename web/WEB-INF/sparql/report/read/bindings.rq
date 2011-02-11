@@ -8,11 +8,8 @@ SELECT *
 	?report		rep:visualizedBy	?visualization .
 	?visualization	rdf:type		?visType .
         ?visualization  vis:binding             ?binding .
-        ?binding        rdf:type                ?type
-	OPTIONAL
-	{
-	    ?binding	vis:order   ?order
-	}
+        ?binding        rdf:type                ?type .
+	?binding	vis:order		?order
 	# cardinality, order, dataType ???
 	FILTER (?report = <%s>)
 }

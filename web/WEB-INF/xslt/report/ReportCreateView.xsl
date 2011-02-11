@@ -569,11 +569,11 @@ var newEndpointIds = new Array('new-endpoint-uri', 'new-endpoint-uri-hidden', 'e
 <input type="hidden" name="pv" value="dataType"/>
 <input type="hidden" name="lt" value="&xsd;integer"/>
 <input type="hidden" name="ol" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
-<xsl:if test="sparql:binding[@name = 'order']/sparql:literal">
-    <input type="hidden" name="pv" value="order"/>
-    <input type="hidden" name="lt" value="&xsd;integer"/>
-    <input type="hidden" name="ol" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
-</xsl:if>
+<!-- <xsl:if test="sparql:binding[@name = 'order']/sparql:literal"> -->
+<input type="hidden" name="pv" value="order"/>
+<input type="hidden" name="lt" value="&xsd;integer"/>
+<input type="hidden" name="ol" value="{sparql:binding[@name = 'order']/sparql:literal}"/>
+<!-- </xsl:if> -->
 
     </xsl:template>
 

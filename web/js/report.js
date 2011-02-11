@@ -329,9 +329,8 @@ function Binding(report, visualization, variables)
     if (this.type.value == "http://code.google.com/apis/visualization/MapAddressBinding") this.type.value = "http://code.google.com/apis/visualization/MapLabelBinding";
     this.report = report;
     this.visualization = visualization;
+    // QUIRK - this.bindingType not necessary???
     this.bindingType = Report.bindingTypes.filter(function(bindingType) { return bindingType.type.value == binding.type.value; } )[0];
-    // "order" should be saved with Binding!!! reference to BindingType makes ReportReadView load Types as well
-    if ("order" in this.bindingType) this.order = this.bindingType.order;
     this.variables = variables;
 
     for (var i = 0; i < this.variables.length; i++)
