@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package model;
+package model.vocabulary;
 
 /**
  * Keeps commonly used RDF namespaces.

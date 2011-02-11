@@ -102,7 +102,7 @@ exclude-result-prefixes="#all">
 		<div id="main">
 			<h2><xsl:call-template name="title"/></h2>
 
-			<!-- <xsl:copy-of select="$report"/> -->
+			<xsl:copy-of select="$report"/>
                         <!-- <xsl:copy-of select="$results"/> -->
 			<!-- <xsl:copy-of select="$visualizations"/> -->
                         <!--

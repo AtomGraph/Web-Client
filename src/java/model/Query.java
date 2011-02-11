@@ -25,6 +25,7 @@ public class Query extends RdfBean<Query>
 {
     private String queryString = null;
     private URI endpoint = null;
+    private String lastResult = null;
 
     @RdfProperty("http://spinrdf.org/sp#from")
     public URI getEndpoint()
@@ -48,12 +49,23 @@ public class Query extends RdfBean<Query>
 	this.queryString = queryString;
     }
 
+    @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/lastResult")
+    public String getLastResult()
+    {
+	return lastResult;
+    }
+
+    public void setLastResult(String lastResult)
+    {
+	this.lastResult = lastResult;
+    }
+
     @Id
     public URI getURI()
     {
 	try
 	{
-	    String uri = "http://temp.com/query/123";
+	    String uri = "http://temp.com/query/123"; // QUIRK!!!
 
 	    return new URI(uri);
 	} catch (URISyntaxException ex)

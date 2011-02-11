@@ -5,6 +5,7 @@
 
 package model.sdb;
 
+import model.vocabulary.Namespaces;
 import model.*;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.Dataset;

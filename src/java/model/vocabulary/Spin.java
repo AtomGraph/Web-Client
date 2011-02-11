@@ -5,8 +5,6 @@
 
 package model.vocabulary;
 
-import model.Namespaces;
-
 /**
  *
  * @author Pumba

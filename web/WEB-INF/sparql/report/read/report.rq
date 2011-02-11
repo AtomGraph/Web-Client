@@ -36,5 +36,10 @@ SELECT *
         {
             ?endpoint	dc:title	?endpointTitle
         }
+OPTIONAL
+{
+?query rep:lastResult ?lastResult
+#?query ?x ?y
+}
 	FILTER (?report = <%s>)
 }

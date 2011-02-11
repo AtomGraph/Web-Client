@@ -46,7 +46,9 @@ import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
+import thewebsemantic.Bean2RDF;
 import view.QueryResult;
+import view.XMLSerializer;
 
 /**
  *
@@ -103,7 +105,13 @@ public class ReportResource extends FrontEndResource implements LeafResource
 	long limit = RESULTS_LIMIT;
 	if (request.getParameter("limit") != null) limit = Integer.parseInt(request.getParameter("limit"));
 	ReportReadView readView = new ReportReadView(this);
-        readView.setQueryResults(QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), limit));
+	ResultSetRewindable results = QueryResult.selectRemote(getReport().getQuery().getEndpoint().toString(), getReport().getQuery().getQueryString(), limit);
+
+	readView.setQueryResults(results);
+getReport().getQuery().setLastResult(XMLSerializer.serialize(results));
+Bean2RDF writer = new Bean2RDF(SDB.getInstanceModel());
+writer.save(getReport().getQuery());
+
         return readView;
     }
 

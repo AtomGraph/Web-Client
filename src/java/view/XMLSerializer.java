@@ -23,7 +23,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import model.Namespaces;
+import model.vocabulary.Namespaces;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import dk.semantic_web.diy.controller.Error;
@@ -45,6 +45,7 @@ public class XMLSerializer
 	if (transformer == null) transformer = TransformerFactory.newInstance().newTransformer();
 	
 	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes"); // easier to save XMLLiterals?
     }
 
     public static String serialize(Document document) throws TransformerConfigurationException, TransformerException, ParserConfigurationException

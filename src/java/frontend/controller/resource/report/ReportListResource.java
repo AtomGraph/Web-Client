@@ -36,12 +36,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.vocabulary.Namespaces;
 import model.vocabulary.Sioc;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import view.QueryResult;
+import view.XMLSerializer;
 
 /**
  *
@@ -176,7 +178,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
             if (count == 0) throw new NoResultsException();
             view.setQueryResults(queryResults);
 
-	    saveModel(form);
+	    saveModel(form, queryResults);
 	    
             view.setResult(true);
 	    response.sendRedirect(form.getReport().getURI());
@@ -215,7 +217,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
         return view;
     }
 
-    public void saveModel(ReportRDFForm form)
+    public void saveModel(ReportRDFForm form, ResultSetRewindable results)
     {
 	//ReportRDFForm form = new ReportRDFForm(request);
 
@@ -237,6 +239,10 @@ public class ReportListResource extends FrontEndResource implements Singleton
         model.add(model.createResource(userUri), RDF.type, model.createResource(Sioc.UserAccount));
         model.add(model.createResource(userUri), model.createProperty(Sioc.name), model.createTypedLiteral("Admin"));
 
+String xmlString = XMLSerializer.serialize(results);
+xmlString = xmlString.substring("<?xml version='1.0'?>".length());
+model.add(form.getQueryResource(), model.createProperty(Namespaces.REPORT_NS + "lastResult"), model.createLiteral(xmlString, true));
+	
         SDB.getInstanceModel().add(model); // save report
 //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
 //form.getModel().write(System.out);
