@@ -86,6 +86,7 @@ function ElementList(query, triplePatterns)
 	var pattern = this.triplePatterns[i];
 	pattern.constructor = TriplePattern;
 	pattern.constructor(this);
+	pattern.toString = TriplePattern.prototype.toString;
     }
 }
 ElementList.prototype.toString = function()
@@ -94,7 +95,7 @@ ElementList.prototype.toString = function()
     for (var i = 0; i < this.triplePatterns.length; i++)
     {
 	var pattern = this.triplePatterns[i];
-//alert(pattern.toSource());
+//alert(pattern.constructor);
 	string += pattern.toString();
     }
     string += "\n}";
@@ -111,14 +112,19 @@ function TriplePattern(elementList)
 
     this.subject.constructor = Resource;
     this.subject.constructor(this);
+    this.subject.toString = Resource.prototype.toString;
+
     this.predicate.constructor = Resource;
     this.predicate.constructor(this);
+    this.predicate.toString = Resource.prototype.toString;
+
     this.object.constructor = Resource;
     this.object.constructor(this);
+    this.object.toString = Resource.prototype.toString;
 }
 TriplePattern.prototype.toString = function()
 {
-    return this.subject.toString() + " " + this.predicate.toString() + " " + this.object.toString() + "." + "\n";
+    return this.subject.toString() + " " + this.predicate.toString() + " " + this.object.toString() + " ." + "\n";
 }
 function Resource(triplePattern)
 {
@@ -126,7 +132,9 @@ function Resource(triplePattern)
 }
 Resource.prototype.toString = function()
 {
-    return "<" + this.uri + ">";
+//alert(this.toSource());
+    if (this.type == "literal") return this.value;
+    return "<" + this.value + ">";
 }
 
 var query = new Select(triplePatterns, labels);
@@ -137,7 +145,7 @@ var query = new Select(triplePatterns, labels);
       <div id="wysiwyg">
 	  
       </div>
-      <textarea cols="20" rows="10" id="text">
+      <textarea cols="60" rows="10" id="text">
       </textarea>
       <br/>
       <button onclick="document.getElementById('text').value = query.toString();">Generate</button>
