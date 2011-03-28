@@ -87,7 +87,9 @@ Select.prototype.toDOM = function(container)
     var legend = document.createElement("legend");
     legend.appendChild(document.createTextNode("SELECT"));
     fieldset.appendChild(legend);
+    //fieldset.appendChild(this.where.toDOM(fieldset));
     container.appendChild(fieldset);
+    this.where.toDOM(fieldset);
 }
 Select.prototype.toString = function()
 {
@@ -104,7 +106,6 @@ function ElementList(query, triplePatterns)
 	var pattern = this.triplePatterns[i];
 	pattern.constructor = TriplePattern;
 	pattern.constructor(this);
-	pattern.toString = TriplePattern.prototype.toString;
     }
 }
 ElementList.prototype.toString = function()
@@ -114,10 +115,20 @@ ElementList.prototype.toString = function()
     {
 	var pattern = this.triplePatterns[i];
 //alert(pattern.constructor);
+	pattern.toString = TriplePattern.prototype.toString;
 	string += pattern.toString();
     }
     string += "\n}";
     return string;
+}
+ElementList.prototype.toDOM = function(container)
+{
+    for (var i = 0; i < this.triplePatterns.length; i++)
+    {
+	var pattern = this.triplePatterns[i];
+	pattern.toDOM = TriplePattern.prototype.toDOM;
+	pattern.toDOM(container);
+    }
 }
 function TriplePattern(elementList)
 {
@@ -130,23 +141,73 @@ function TriplePattern(elementList)
 
     this.subject.constructor = Resource;
     this.subject.constructor(this);
-    this.subject.toString = Resource.prototype.toString;
 
     this.predicate.constructor = Resource;
     this.predicate.constructor(this);
-    this.predicate.toString = Resource.prototype.toString;
 
     this.object.constructor = Resource;
     this.object.constructor(this);
-    this.object.toString = Resource.prototype.toString;
+}
+TriplePattern.prototype.toDOM = function(container)
+{
+    this.subject.toDOM = Resource.prototype.toDOM;
+    this.predicate.toDOM = Resource.prototype.toDOM;
+    this.object.toDOM = Resource.prototype.toDOM;
+
+    var div = document.createElement("div");
+    container.appendChild(div);
+    this.subject.toDOM(div);
+    this.predicate.toDOM(div);
+    this.object.toDOM(div);
 }
 TriplePattern.prototype.toString = function()
 {
+    this.subject.toString = Resource.prototype.toString;
+    this.predicate.toString = Resource.prototype.toString;
+    this.object.toString = Resource.prototype.toString;
+
     return this.subject.toString() + " " + this.predicate.toString() + " " + this.object.toString() + " ." + "\n";
 }
 function Resource(triplePattern)
 {
     this.triplePattern = triplePattern;
+}
+Resource.prototype.toDOM = function(container)
+{
+    var span = document.createElement("span");
+    container.appendChild(span);
+
+    if (this.type == "bnode")
+    {
+	var bnode = this;
+	var variable = this.triplePattern.elementList.query.variables.filter(function(variable) { return variable.variable.value == bnode.value; } )[0];
+	var select = document.createElement("select");
+        for (var i = 0; i < this.triplePattern.elementList.query.variables.length; i++)
+	{
+	    var tempVar = this.triplePattern.elementList.query.variables[i];
+	    var option = document.createElement("option");
+	    option.setAttribute("value", tempVar.name.value);
+	    option.appendChild(document.createTextNode(tempVar.name.value));
+	    select.appendChild(option);
+	    span.appendChild(select);
+	}
+    }
+    if (this.type == "literal")
+    {
+	var input = document.createElement("input");
+	input.setAttribute("type", "text");
+	input.setAttribute("value", this.value)
+	span.appendChild(input);
+    }
+    if (this.type != "literal" && this.type != "bnode")
+    {
+	var select = document.createElement("select");
+	var option = document.createElement("option");
+	option.setAttribute("value", this.value);
+	option.appendChild(document.createTextNode(this.value));
+	select.appendChild(option);
+	span.appendChild(select);
+    }
 }
 Resource.prototype.toString = function()
 {
