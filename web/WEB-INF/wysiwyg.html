@@ -8,21 +8,35 @@ and open the template in the editor.
     <title>WYSIWYG SPARQL</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript">
+var variables =
+{
+  "head": { "vars": [ "variable" , "name" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "variable": { "type": "bnode" , "value": "_bnode1" } ,
+        "name": { "type": "typed-literal" , "datatype": "string", "value": "var" }
+      }
+    ]
+  }
+}
+
 var triplePatterns =
 {
-  "head": { "vars": [ "pattern" , "subject", "property", "object" ]
+  "head": { "vars": [ "pattern" , "subject", "predicate", "object" ]
   } ,
   "results": {
     "bindings": [
       {
         "pattern": { "type": "uri" , "value": "http://example.org/patterns/1" } ,
-        "subject": { "type": "uri" , "value": "http://example.org/subjects/1" } ,
+        "subject": { "type": "bnode" , "value": "_bnode1" } ,
         "predicate": { "type": "uri" , "value": "http://example.org/properties/1" } ,
         "object": { "type": "literal" , "value": "42" }
       },
       {
         "pattern": { "type": "uri" , "value": "http://example.org/patterns/2" } ,
-        "subject": { "type": "uri" , "value": "http://example.org/subjects/1" } ,
+        "subject": { "type": "bnode" , "value": "_bnode1" } ,
         "predicate": { "type": "uri" , "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" } ,
         "object": { "type": "uri" , "value": "http://example.org/objects/1" }
       }
@@ -57,19 +71,23 @@ var labels =
   }
 }
 
-function Select(triplePatterns, labels)
+function Select(variables, triplePatterns)
 {
-    this.labels = labels;
     /*
     this.where = new Object();
     this.where.constructor = ElementList;
     this.where.constructor(this, triplePatterns);
     */
-   this.where = new ElementList(this, triplePatterns);
+    this.variables = variables.results.bindings;
+    this.where = new ElementList(this, triplePatterns);
 }
-Select.prototype.wysiwyg = function(container)
+Select.prototype.toDOM = function(container)
 {
-
+    var fieldset = document.createElement("fieldset");
+    var legend = document.createElement("legend");
+    legend.appendChild(document.createTextNode("SELECT"));
+    fieldset.appendChild(legend);
+    container.appendChild(fieldset);
 }
 Select.prototype.toString = function()
 {
@@ -133,11 +151,17 @@ function Resource(triplePattern)
 Resource.prototype.toString = function()
 {
 //alert(this.toSource());
+    if (this.type == "bnode")
+    {
+	var bnode = this;
+	var variable = this.triplePattern.elementList.query.variables.filter(function(variable) { return variable.variable.value == bnode.value; } )[0];
+	return "?" + variable.name.value;
+    }
     if (this.type == "literal") return this.value;
     return "<" + this.value + ">";
 }
 
-var query = new Select(triplePatterns, labels);
+var query = new Select(variables, triplePatterns);
 //alert(triplePatterns.toSource());
     </script>
   </head>
@@ -145,6 +169,9 @@ var query = new Select(triplePatterns, labels);
       <div id="wysiwyg">
 	  
       </div>
+      <br/>
+      <button onclick="query.toDOM(document.getElementById('wysiwyg'));">Generate</button>
+      <br/>
       <textarea cols="60" rows="10" id="text">
       </textarea>
       <br/>
