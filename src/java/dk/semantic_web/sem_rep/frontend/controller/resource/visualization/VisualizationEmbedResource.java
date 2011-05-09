@@ -35,7 +35,7 @@ public class VisualizationEmbedResource extends FrontEndResource
     }
 
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{

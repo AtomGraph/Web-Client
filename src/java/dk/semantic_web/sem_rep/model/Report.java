@@ -76,7 +76,7 @@ public class Report extends RdfBean<Report>
     {
 	try
 	{
-	    String uri = getFrontEndResource().getAbsoluteURI();
+	    String uri = getFrontEndResource().getAbsolutePath();
 	    
 	    return new URI(uri);
 	} catch (URISyntaxException ex)

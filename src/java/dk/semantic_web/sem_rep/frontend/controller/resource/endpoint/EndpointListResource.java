@@ -25,7 +25,7 @@ import javax.xml.transform.TransformerConfigurationException;
  */
 public class EndpointListResource extends FrontEndResource implements Singleton
 {
-    private static final String RELATIVE_URI = "endpoints";
+    private static final String PATH = "endpoints";
     private static final EndpointListResource INSTANCE = new EndpointListResource(FrontPageResource.getInstance());
 
     public EndpointListResource(FrontPageResource parent)
@@ -39,16 +39,16 @@ public class EndpointListResource extends FrontEndResource implements Singleton
     }
 
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{
-	    return URLEncoder.encode(RELATIVE_URI, "UTF-8");
+	    return URLEncoder.encode(PATH, "UTF-8");
 	} catch (UnsupportedEncodingException ex)
 	{
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
-	return RELATIVE_URI;
+	return PATH;
     }
 
     @Override

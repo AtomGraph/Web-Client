@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class FrontPageResource extends FrontEndResource implements Singleton
 {
-    private static final String RELATIVE_URI = "";
+    private static final String PATH = "";
     private static final FrontPageResource INSTANCE = new FrontPageResource(null);
 
     private FrontPageResource(FrontEndResource parent)
@@ -27,16 +27,16 @@ public class FrontPageResource extends FrontEndResource implements Singleton
     }
     
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{
-	    return URLEncoder.encode(RELATIVE_URI, "UTF-8");
+	    return URLEncoder.encode(PATH, "UTF-8");
 	} catch (UnsupportedEncodingException ex)
 	{
 	    Logger.getLogger(FrontPageResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
-	return RELATIVE_URI;
+	return PATH;
     }
 
     public static FrontPageResource getInstance()

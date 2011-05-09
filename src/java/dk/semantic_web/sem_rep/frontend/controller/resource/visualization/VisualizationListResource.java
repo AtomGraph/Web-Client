@@ -33,7 +33,7 @@ public class VisualizationListResource extends FrontEndResource implements Singl
     }
 
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{

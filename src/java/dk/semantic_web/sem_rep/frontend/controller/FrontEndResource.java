@@ -21,11 +21,16 @@ abstract public class FrontEndResource extends ResourceImpl
     }
 
     @Override
-    public String getURI()
+    public String getAbsolutePath()
     {
-	String uri = getRelativeURI();
+	String uri = getPath();
 	if (!(this instanceof LeafResource || uri.equals(""))) uri += "/";
-	if (hasParent()) return getParent().getURI() + uri;
+	if (hasParent()) return getParent().getAbsolutePath() + uri;
 	else return uri;
+    }
+
+    @Override
+    public final String getURI() {
+	return null;
     }
 }

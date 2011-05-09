@@ -22,7 +22,7 @@ import javax.xml.transform.TransformerConfigurationException;
  */
 public class SPARQLResource extends FrontEndResource
 {
-    private static final String RELATIVE_URI = "sparql";
+    private static final String PATH = "sparql";
     private static final SPARQLResource INSTANCE = new SPARQLResource(FrontPageResource.getInstance());
 
     public SPARQLResource(FrontPageResource parent)
@@ -36,16 +36,16 @@ public class SPARQLResource extends FrontEndResource
     }
 
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{
-	    return URLEncoder.encode(RELATIVE_URI, "UTF-8");
+	    return URLEncoder.encode(PATH, "UTF-8");
 	} catch (UnsupportedEncodingException ex)
 	{
 	    Logger.getLogger(SPARQLResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
-	return RELATIVE_URI;
+	return PATH;
     }
 
     @Override

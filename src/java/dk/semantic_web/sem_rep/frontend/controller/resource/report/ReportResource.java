@@ -70,7 +70,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
     }
     
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{

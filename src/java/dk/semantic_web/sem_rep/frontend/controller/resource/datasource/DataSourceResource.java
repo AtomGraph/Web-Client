@@ -20,7 +20,7 @@ import dk.semantic_web.sem_rep.frontend.view.datasource.DataSourceView;
  */
 public class DataSourceResource extends FrontEndResource implements Singleton
 {
-    public static final String RELATIVE_URI = "sparql-xml2google-wire";
+    public static final String PATH = "sparql-xml2google-wire";
     private static final DataSourceResource INSTANCE = new DataSourceResource(FrontPageResource.getInstance());
     
     private View view = null;
@@ -36,9 +36,9 @@ public class DataSourceResource extends FrontEndResource implements Singleton
     }
     
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
-	return RELATIVE_URI;
+	return PATH;
     }
 
     @Override

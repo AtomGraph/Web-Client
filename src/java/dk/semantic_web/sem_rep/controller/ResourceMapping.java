@@ -48,12 +48,12 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 	
 	if (relativeUris.length >= 1)
 	{
-	    if (relativeUris[0].equals(ReportListResource.getInstance().getRelativeURI()))
+	    if (relativeUris[0].equals(ReportListResource.getInstance().getPath()))
 	    {
 		resource = ReportListResource.getInstance();
 		if (relativeUris.length >= 2)
 		{
-		    String fullUri = getHost() + resource.getURI() + relativeUris[1];
+		    String fullUri = getHost() + resource.getAbsolutePath() + relativeUris[1];
                     RDF2Bean reader = new RDF2Bean(SDB.getInstanceModel());
                     reader.bindAll("model");
 		    Report report = reader.load(Report.class, fullUri);
@@ -67,7 +67,7 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		}
 		return resource;
 	    }
-	    if (relativeUris[0].equals(EndpointListResource.getInstance().getRelativeURI()))
+	    if (relativeUris[0].equals(EndpointListResource.getInstance().getPath()))
 	    {
 		resource = EndpointListResource.getInstance();
 		if (relativeUris.length >= 2)
@@ -92,18 +92,18 @@ public class ResourceMapping extends dk.semantic_web.diy.controller.ResourceMapp
 		}
 		return resource;
 	    }
-	    if (relativeUris[0].equals(VisualizationListResource.getInstance().getRelativeURI()))
+	    if (relativeUris[0].equals(VisualizationListResource.getInstance().getPath()))
 	    {
 		resource = VisualizationListResource.getInstance();
 		if (relativeUris.length >= 2)
 		{
-		    if (relativeUris[1].equals(VisualizationEmbedResource.getInstance().getRelativeURI())) return VisualizationEmbedResource.getInstance();
+		    if (relativeUris[1].equals(VisualizationEmbedResource.getInstance().getPath())) return VisualizationEmbedResource.getInstance();
 
 		    return null;
 		}
 		return resource;
 	    }
-	    if (relativeUris[0].equals(SPARQLResource.getInstance().getRelativeURI())) return SPARQLResource.getInstance();
+	    if (relativeUris[0].equals(SPARQLResource.getInstance().getPath())) return SPARQLResource.getInstance();
 
             Page page = PagePeer.doSelectByName(relativeUris[0]);
             //System.out.println(page.getName()); // page can be null => null pointer exception

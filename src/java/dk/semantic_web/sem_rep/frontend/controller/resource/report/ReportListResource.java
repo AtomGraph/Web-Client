@@ -51,7 +51,7 @@ import dk.semantic_web.sem_rep.view.XMLSerializer;
  */
 public class ReportListResource extends FrontEndResource implements Singleton
 {
-    private static final String RELATIVE_URI = "reports";
+    private static final String PATH = "reports";
     private static final ReportListResource INSTANCE = new ReportListResource(FrontPageResource.getInstance());
     //private View view = null;
     
@@ -66,16 +66,16 @@ public class ReportListResource extends FrontEndResource implements Singleton
     }
     
     @Override
-    public String getRelativeURI()
+    public String getPath()
     {
 	try
 	{
-	    return URLEncoder.encode(RELATIVE_URI, "UTF-8");
+	    return URLEncoder.encode(PATH, "UTF-8");
 	} catch (UnsupportedEncodingException ex)
 	{
 	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
 	}
-	return RELATIVE_URI;
+	return PATH;
     }
 
     @Override
