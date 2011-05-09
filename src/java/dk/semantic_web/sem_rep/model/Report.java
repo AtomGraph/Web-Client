@@ -1,0 +1,161 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package dk.semantic_web.sem_rep.model;
+
+import dk.semantic_web.sem_rep.frontend.controller.resource.report.ReportResource;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import thewebsemantic.Id;
+import thewebsemantic.Namespace;
+import thewebsemantic.RdfProperty;
+import thewebsemantic.Transient;
+import thewebsemantic.binding.RdfBean;
+import static dk.semantic_web.sem_rep.model.vocabulary.DublinCore.*;
+
+/**
+ *
+ * @author Pumba
+ */
+
+@Namespace("http://www.semantic-web.dk/ontologies/semantic-reports/")
+public class Report extends RdfBean<Report>
+{
+    private String id = null;
+    private ReportResource resource = null;
+    private String title = null;
+    private String description = null;    
+    private Date createdAt = null;
+    private Query query = null;
+    private UserAccount creator = null;
+    //private Collection<Visualization> visualizations = new ArrayList<Visualization>();
+
+    public Report()
+    {
+	super();
+    }
+
+    public Report(String title, Query query, UserAccount creator)
+    {
+	super();
+	setTitle(title);
+	setQuery(query);
+	setCreator(creator);
+	setCreatedAt(new Date());
+    }
+
+    @Transient
+    public ReportResource getFrontEndResource()
+    {
+	return resource;
+    }
+
+    public void setFrontEndResource(ReportResource resource)
+    {
+	this.resource = resource;
+    }
+
+    @Transient
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    @Id
+    public URI getURI()
+    {
+	try
+	{
+	    String uri = getFrontEndResource().getAbsoluteURI();
+	    
+	    return new URI(uri);
+	} catch (URISyntaxException ex)
+	{
+	    Logger.getLogger(Report.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return null;
+    }
+    
+    @RdfProperty(CREATED)
+    public Date getCreatedAt()
+    {
+	return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+	this.createdAt = createdAt;
+    }
+
+    @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/query")
+    public Query getQuery()
+    {
+	return query;
+    }
+
+    public void setQuery(Query query)
+    {
+	this.query = query;
+    }
+
+    @RdfProperty(CREATOR)
+    public UserAccount getCreator()
+    {
+	return creator;
+    }
+
+    public void setCreator(UserAccount creator)
+    {
+	this.creator = creator;
+    }
+
+    @RdfProperty(DESCRIPTION)
+    public String getDescription()
+    {
+	return description;
+    }
+
+    public void setDescription(String description)
+    {
+	this.description = description;
+    }
+
+    @RdfProperty(TITLE)
+    public String getTitle()
+    {
+	return title;
+    }
+
+    public void setTitle(String title)
+    {
+	this.title = title;
+    }
+    
+    /*
+    @RdfProperty("http://www.semantic-web.dk/ontologies/semantic-reports/visualizedBy")
+    public Collection<Visualization> getVisualizations()
+    {
+	return visualizations;
+    }
+
+    public void setVisualizations(Collection<Visualization> visualizations)
+    {
+	this.visualizations = visualizations;
+    }
+
+    public void addVisualization(Visualization visualization)
+    {
+	visualizations.add(visualization);
+    }
+    */
+}
