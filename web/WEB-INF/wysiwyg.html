@@ -16,7 +16,8 @@ var variables =
     "bindings": [
       {
         "variable": { "type": "bnode" , "value": "_bnode1" } ,
-        "name": { "type": "typed-literal" , "datatype": "string", "value": "var" }
+        "name": { "type": "typed-literal" , "datatype": "string", "value": "var" } ,
+        "resultVar": { "type": "typed-literal" , "datatype": "boolean", "value": "var" }
       }
     ]
   }
@@ -79,6 +80,7 @@ function Select(variables, triplePatterns)
     this.where.constructor(this, triplePatterns);
     */
     this.variables = variables.results.bindings;
+    this.resultVariables = new VariableList(this, resultVariables);
     this.where = new ElementList(this, triplePatterns);
 }
 Select.prototype.toDOM = function(container)
@@ -95,6 +97,20 @@ Select.prototype.toString = function()
 {
 //alert(this.where.prototype);
     return "SELECT * WHERE" + "\n" + this.where.toString();
+}
+function VariableList(query, variables)
+{
+    this.query = query;
+    this.variables = variables.results.bindings;
+}
+VariableList.prototype.toString = function()
+{
+    var string = "";
+    for (var i = 0; i < this.variables.length; i++)
+    {
+	var variable = this.variables[i];
+	string +=
+    }
 }
 function ElementList(query, triplePatterns)
 {
