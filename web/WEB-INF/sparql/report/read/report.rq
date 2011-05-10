@@ -1,0 +1,45 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+PREFIX spin: <http://spinrdf.org/sp#>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+
+SELECT *
+{
+	?report	rdf:type	rep:Report .
+	?report	rep:query	?query .
+	?query	spin:text	?queryString .
+	?query	spin:from	?endpoint .
+        OPTIONAL
+        {
+            ?report	dc:title	?title .
+        }
+        OPTIONAL
+        {
+            ?report	dc:description  ?description .
+        }
+        OPTIONAL
+        {
+            ?report	dct:created	?dateCreated .
+        }
+        OPTIONAL
+        {
+            ?report	dct:modified	?dateModified .
+        }
+        OPTIONAL
+        {
+            ?report	sioc:has_creator    ?creator .
+            ?creator	sioc:name           ?creatorName
+        }
+        OPTIONAL
+        {
+            ?endpoint	dc:title	?endpointTitle
+        }
+OPTIONAL
+{
+?query rep:lastResult ?lastResult
+#?query ?x ?y
+}
+	FILTER (?report = <%s>)
+}

@@ -1,0 +1,257 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>WYSIWYG SPARQL</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript">
+var variables =
+{
+  "head": { "vars": [ "variable" , "name" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "variable": { "type": "bnode" , "value": "_bnode1" } ,
+        "name": { "type": "typed-literal" , "datatype": "string", "value": "var" } ,
+        "resultVar": { "type": "typed-literal" , "datatype": "boolean", "value": "var" }
+      }
+    ]
+  }
+}
+
+var triplePatterns =
+{
+  "head": { "vars": [ "pattern" , "subject", "predicate", "object" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "pattern": { "type": "uri" , "value": "http://example.org/patterns/1" } ,
+        "subject": { "type": "bnode" , "value": "_bnode1" } ,
+        "predicate": { "type": "uri" , "value": "http://example.org/properties/1" } ,
+        "object": { "type": "literal" , "value": "42" }
+      },
+      {
+        "pattern": { "type": "uri" , "value": "http://example.org/patterns/2" } ,
+        "subject": { "type": "bnode" , "value": "_bnode1" } ,
+        "predicate": { "type": "uri" , "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" } ,
+        "object": { "type": "uri" , "value": "http://example.org/objects/1" }
+      }
+    ]
+  }
+}
+
+var labels =
+{
+  "head": { "vars": [ "uri" , "label" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "uri": { "type": "uri" , "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" } ,
+        "label": { "type": "literal" , "value": "type" }
+      },
+      {
+        "uri": { "type": "uri" , "value": "http://example.org/subjects/1" } ,
+        "label": { "type": "literal" , "value": "Subject" }
+      },
+      {
+        "uri": { "type": "uri" , "value": "http://example.org/properties/1" } ,
+        "label": { "type": "literal" , "value": "answer" }
+      },
+      {
+        "uri": { "type": "uri" , "value": "http://example.org/objects/1" } ,
+        "label": { "type": "literal" , "value": "Class" }
+      },
+
+    ]
+  }
+}
+
+function Select(variables, triplePatterns)
+{
+    /*
+    this.where = new Object();
+    this.where.constructor = ElementList;
+    this.where.constructor(this, triplePatterns);
+    */
+    this.variables = variables.results.bindings;
+    this.resultVariables = new VariableList(this, resultVariables);
+    this.where = new ElementList(this, triplePatterns);
+}
+Select.prototype.toDOM = function(container)
+{
+    var fieldset = document.createElement("fieldset");
+    var legend = document.createElement("legend");
+    legend.appendChild(document.createTextNode("SELECT"));
+    fieldset.appendChild(legend);
+    //fieldset.appendChild(this.where.toDOM(fieldset));
+    container.appendChild(fieldset);
+    this.where.toDOM(fieldset);
+}
+Select.prototype.toString = function()
+{
+//alert(this.where.prototype);
+    return "SELECT * WHERE" + "\n" + this.where.toString();
+}
+function VariableList(query, variables)
+{
+    this.query = query;
+    this.variables = variables.results.bindings;
+}
+VariableList.prototype.toString = function()
+{
+    var string = "";
+    for (var i = 0; i < this.variables.length; i++)
+    {
+	var variable = this.variables[i];
+	string +=
+    }
+}
+function ElementList(query, triplePatterns)
+{
+    this.query = query;
+    this.triplePatterns = triplePatterns.results.bindings;
+
+    for (var i = 0; i < this.triplePatterns.length; i++)
+    {
+	var pattern = this.triplePatterns[i];
+	pattern.constructor = TriplePattern;
+	pattern.constructor(this);
+    }
+}
+ElementList.prototype.toString = function()
+{
+    var string = "{\n";
+    for (var i = 0; i < this.triplePatterns.length; i++)
+    {
+	var pattern = this.triplePatterns[i];
+//alert(pattern.constructor);
+	pattern.toString = TriplePattern.prototype.toString;
+	string += pattern.toString();
+    }
+    string += "\n}";
+    return string;
+}
+ElementList.prototype.toDOM = function(container)
+{
+    for (var i = 0; i < this.triplePatterns.length; i++)
+    {
+	var pattern = this.triplePatterns[i];
+	pattern.toDOM = TriplePattern.prototype.toDOM;
+	pattern.toDOM(container);
+    }
+}
+function TriplePattern(elementList)
+{
+    this.elementList = elementList;
+    /*
+    this.subject = subject;
+    this.predicate = predicate;
+    this.object = object;
+    */
+
+    this.subject.constructor = Resource;
+    this.subject.constructor(this);
+
+    this.predicate.constructor = Resource;
+    this.predicate.constructor(this);
+
+    this.object.constructor = Resource;
+    this.object.constructor(this);
+}
+TriplePattern.prototype.toDOM = function(container)
+{
+    this.subject.toDOM = Resource.prototype.toDOM;
+    this.predicate.toDOM = Resource.prototype.toDOM;
+    this.object.toDOM = Resource.prototype.toDOM;
+
+    var div = document.createElement("div");
+    container.appendChild(div);
+    this.subject.toDOM(div);
+    this.predicate.toDOM(div);
+    this.object.toDOM(div);
+}
+TriplePattern.prototype.toString = function()
+{
+    this.subject.toString = Resource.prototype.toString;
+    this.predicate.toString = Resource.prototype.toString;
+    this.object.toString = Resource.prototype.toString;
+
+    return this.subject.toString() + " " + this.predicate.toString() + " " + this.object.toString() + " ." + "\n";
+}
+function Resource(triplePattern)
+{
+    this.triplePattern = triplePattern;
+}
+Resource.prototype.toDOM = function(container)
+{
+    var span = document.createElement("span");
+    container.appendChild(span);
+
+    if (this.type == "bnode")
+    {
+	var bnode = this;
+	var variable = this.triplePattern.elementList.query.variables.filter(function(variable) { return variable.variable.value == bnode.value; } )[0];
+	var select = document.createElement("select");
+        for (var i = 0; i < this.triplePattern.elementList.query.variables.length; i++)
+	{
+	    var tempVar = this.triplePattern.elementList.query.variables[i];
+	    var option = document.createElement("option");
+	    option.setAttribute("value", tempVar.name.value);
+	    option.appendChild(document.createTextNode(tempVar.name.value));
+	    select.appendChild(option);
+	    span.appendChild(select);
+	}
+    }
+    if (this.type == "literal")
+    {
+	var input = document.createElement("input");
+	input.setAttribute("type", "text");
+	input.setAttribute("value", this.value)
+	span.appendChild(input);
+    }
+    if (this.type != "literal" && this.type != "bnode")
+    {
+	var select = document.createElement("select");
+	var option = document.createElement("option");
+	option.setAttribute("value", this.value);
+	option.appendChild(document.createTextNode(this.value));
+	select.appendChild(option);
+	span.appendChild(select);
+    }
+}
+Resource.prototype.toString = function()
+{
+//alert(this.toSource());
+    if (this.type == "bnode")
+    {
+	var bnode = this;
+	var variable = this.triplePattern.elementList.query.variables.filter(function(variable) { return variable.variable.value == bnode.value; } )[0];
+	return "?" + variable.name.value;
+    }
+    if (this.type == "literal") return this.value;
+    return "<" + this.value + ">";
+}
+
+var query = new Select(variables, triplePatterns);
+//alert(triplePatterns.toSource());
+    </script>
+  </head>
+  <body>
+      <div id="wysiwyg">
+	  
+      </div>
+      <br/>
+      <button onclick="query.toDOM(document.getElementById('wysiwyg'));">Generate</button>
+      <br/>
+      <textarea cols="60" rows="10" id="text">
+      </textarea>
+      <br/>
+      <button onclick="document.getElementById('text').value = query.toString();">Generate</button>
+  </body>
+</html>

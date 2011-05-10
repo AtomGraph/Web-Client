@@ -1,0 +1,36 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX dba: <http://www.dba.dk/ontology/>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dk: <http://oiorest.dk/danmark/>
+
+SELECT *
+FROM <http://xmlns.com/foaf/0.1/>
+{
+	SERVICE <http://semantic-web.dk/projects/dba/sparql>
+	{
+		?apt rdf:type dba:ApartmentForSale .
+		#?apt dc:date ?date .
+		?apt dba:price ?price .
+		?apt geo:lat ?aptLat .
+		?apt geo:long ?aptLng .
+		?apt dc:title ?aptTitle .
+		?apt dba:address ?aptAddr .
+		?apt dba:postalCode ?aptZip .
+	}
+
+	SERVICE <http://semantic-web.dk/projects/schools/sparql>
+	{
+		?school rdf:type dk:School .
+		?school dc:title ?schoolTitle .
+		?school geo:lat ?schoolLat .
+		?school geo:long ?schoolLng .
+		?school dk:address ?schoolAddr .
+		?school dk:postalCode ?schoolZip .
+	}
+	FILTER (fn:abs(xsd:float(?schoolLat) - xsd:float(?aptLat)) < 0.01)
+	FILTER (fn:abs(xsd:float(?schoolLng) - xsd:float(?aptLng)) < 0.01)
+}
+LIMIT 50

@@ -1,0 +1,9 @@
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX dbpedia2: <http://dbpedia.org/property/>
+SELECT DISTINCT ?presName ?birthday ?startDate
+WHERE
+{
+  ?presName skos:subject <http://dbpedia.org/resource/Category:Presidents_of_the_United_States> .
+  ?presName dbpedia2:birth ?birthday .
+  ?presName dbpedia2:presidentStart ?startDate.
+}

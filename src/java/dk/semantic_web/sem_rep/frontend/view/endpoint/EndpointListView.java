@@ -1,0 +1,64 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package dk.semantic_web.sem_rep.frontend.view.endpoint;
+
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.vocabulary.RDF;
+import dk.semantic_web.sem_rep.frontend.controller.resource.endpoint.EndpointListResource;
+import dk.semantic_web.sem_rep.frontend.view.FrontEndView;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import dk.semantic_web.sem_rep.model.sdb.SDB;
+import dk.semantic_web.sem_rep.model.vocabulary.Reports;
+import dk.semantic_web.sem_rep.view.QueryResult;
+import dk.semantic_web.sem_rep.view.QueryStringBuilder;
+import dk.semantic_web.sem_rep.view.XMLSerializer;
+
+/**
+ *
+ * @author Pumba
+ */
+public class EndpointListView extends FrontEndView
+{
+
+    public EndpointListView(EndpointListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
+    {
+	super(resource);
+        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "endpoint/" + getClass().getSimpleName() + ".xsl").toURI().toString());
+    }
+
+    @Override
+    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
+    {
+        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/list/endpoints.rq"))));
+
+        int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.Report)).toList().size();
+
+        getTransformer().setParameter("total-item-count", count); //    SDB.getReportClass().listInstances().toList().size()
+	/*
+        getTransformer().setParameter("offset", getOffset());
+        getTransformer().setParameter("limit", getLimit());
+        getTransformer().setParameter("order-by", getOrderBy().toString()); // getOrderBy().toString().toLowerCase()
+        getTransformer().setParameter("desc-default", true);
+        getTransformer().setParameter("desc", getDesc());
+	*/
+
+	super.display(request, response);
+    }
+
+    protected void setEndpoints(ResultSetRewindable endpoints)
+    {
+	setDocument(XMLSerializer.serialize(endpoints));
+	//getResolver().setArgument("endpoints", XMLSerializer.serialize(endpoints));
+    }
+
+}
