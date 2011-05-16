@@ -5,44 +5,53 @@
 
 package dk.semantic_web.sem_rep.frontend.controller.resource.visualization;
 
-import dk.semantic_web.diy.controller.Singleton;
-import dk.semantic_web.sem_rep.frontend.controller.FrontEndResource;
-import dk.semantic_web.sem_rep.frontend.controller.resource.FrontPageResource;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.jersey.spi.resource.Singleton;
+import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.FrontPageResource;
+import java.net.URI;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
  * @author Pumba
  */
-public class VisualizationListResource extends FrontEndResource implements Singleton
+
+@Singleton
+@Path(VisualizationListResource.PATH)
+public class VisualizationListResource extends FrontEndResource
 {
-    private static final String RELATIVE_URI = "visualizations";
-    private static final VisualizationListResource INSTANCE = new VisualizationListResource(FrontPageResource.getInstance());
+    public static final String PATH = "visualizations";
+    //private static final VisualizationListResource INSTANCE = new VisualizationListResource(FrontPageResource.getInstance());
+    public static final UriBuilder URI_BUILDER = FrontPageResource.URI_BUILDER.clone().path(PATH);
 
-    private VisualizationListResource(FrontPageResource parent)
+    private VisualizationListResource(FrontPageResource parent, @Context UriInfo uriInfo)
     {
-	super(parent);
-    }
-
-    public static VisualizationListResource getInstance()
-    {
-	return INSTANCE;
+	super(parent, uriInfo);
     }
 
     @Override
-    public String getPath()
+    public String getPath() {
+        return PATH;
+    }
+
+    @Override
+    public String getAbsolutePath()
     {
-	try
-	{
-	    return URLEncoder.encode(RELATIVE_URI, "UTF-8");
-	} catch (UnsupportedEncodingException ex)
-	{
-	    Logger.getLogger(VisualizationListResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return RELATIVE_URI;
+	return getPath();
+    }
+
+    @Override
+    public URI getRealURI()
+    {
+	return URI_BUILDER.build();
+    }
+
+    @Override
+    public UriBuilder getUriBuilder() {
+	return URI_BUILDER;
     }
 
 }

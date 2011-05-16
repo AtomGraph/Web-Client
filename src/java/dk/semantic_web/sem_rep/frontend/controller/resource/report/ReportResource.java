@@ -5,6 +5,7 @@
 
 package dk.semantic_web.sem_rep.frontend.controller.resource.report;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -14,33 +15,30 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
-import dk.semantic_web.sem_rep.controller.LeafResource;
-import dk.semantic_web.sem_rep.frontend.controller.FrontEndResource;
+import com.sun.jersey.spi.resource.PerRequest;
 import dk.semantic_web.sem_rep.frontend.view.report.ReportReadView;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
 import dk.semantic_web.diy.controller.Error;
+import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.instance.InstanceResource;
 import dk.semantic_web.sem_rep.frontend.controller.exception.InvalidFormException;
 import dk.semantic_web.sem_rep.frontend.controller.exception.NoResultsException;
 import dk.semantic_web.sem_rep.frontend.controller.form.CommentRDFForm;
 import dk.semantic_web.sem_rep.frontend.controller.form.ReportRDFForm;
 import dk.semantic_web.sem_rep.frontend.view.report.ReportUpdateView;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.TransformerConfigurationException;
 import dk.semantic_web.sem_rep.model.vocabulary.DublinCore;
 import dk.semantic_web.sem_rep.model.Report;
-import dk.semantic_web.sem_rep.model.sdb.SDB;
 import dk.semantic_web.sem_rep.model.vocabulary.Sioc;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.Select;
@@ -49,37 +47,45 @@ import org.topbraid.spin.system.SPINModuleRegistry;
 import thewebsemantic.Bean2RDF;
 import dk.semantic_web.sem_rep.view.QueryResult;
 import dk.semantic_web.sem_rep.view.XMLSerializer;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pumba
  */
-public class ReportResource extends FrontEndResource implements LeafResource
+
+@PerRequest
+public class ReportResource extends FrontEndResource
 {
+    public static final UriBuilder URI_BUILDER = ReportListResource.URI_BUILDER.clone().path("{ontology}");
+
+    static final Logger logger = LoggerFactory.getLogger(ReportResource.class);
+
     private Report report = null;
     //private View view = null;
     public static final long RESULTS_LIMIT = 50;
     public static List<Class> REFERRING_CLASSES = new ArrayList<Class>();
     
-    public ReportResource(Report report, ReportListResource parent)
+    public ReportResource(ReportListResource parent, @Context UriInfo uriInfo) // Report report
     {
-	super(parent);
-	setReport(report);
+	super(parent, uriInfo);
+	//setReport(report);
 	REFERRING_CLASSES.add(this.getClass());
 	REFERRING_CLASSES.add(ReportListResource.class);
     }
     
     @Override
-    public String getPath()
-    {
-	try
-	{
-	    return URLEncoder.encode(getReport().getId(), "UTF-8");
-	} catch (UnsupportedEncodingException ex)
-	{
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return getReport().getId();
+    public String getPath() {
+	return InstanceResource.getIndividualLabel(getTopicIndividual());
+    }
+
+    public Individual getTopicIndividual() {
+	return getTopicResource().as(Individual.class);
     }
 
     public Report getReport()
@@ -93,6 +99,7 @@ public class ReportResource extends FrontEndResource implements LeafResource
     }
 
     @Override
+    @GET
     public View doGet(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
 	View parent = super.doGet(request, response);
@@ -114,13 +121,14 @@ public class ReportResource extends FrontEndResource implements LeafResource
 
 	readView.setQueryResults(results);
 getReport().getQuery().setLastResult(XMLSerializer.serialize(results));
-Bean2RDF writer = new Bean2RDF(SDB.getInstanceModel());
+Bean2RDF writer = new Bean2RDF(dk.semantic_web.rdf_editor.model.Model.getInstance().getData());
 writer.save(getReport().getQuery());
 
         return readView;
     }
 
     @Override
+    @POST
     public View doPost(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
 	View parent = super.doPost(request, response);
@@ -180,7 +188,7 @@ writer.save(getReport().getQuery());
             view.setErrors(errors);
             view.setResult(false);
 
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	    logger.error(ex.toString());
 	}
         catch (QueryException ex)
 	{
@@ -189,7 +197,7 @@ writer.save(getReport().getQuery());
             view.setErrors(errors);
             view.setResult(false);
 
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	    logger.error(ex.toString());
 	}
 
         return view;
@@ -225,7 +233,7 @@ writer.save(getReport().getQuery());
             view.setErrors(errors);
             view.setResult(false);
 
-	    Logger.getLogger(ReportResource.class.getName()).log(Level.SEVERE, null, ex);
+	    logger.error(ex.toString());
 	}
 	return view;
     }
@@ -253,8 +261,8 @@ writer.save(getReport().getQuery());
         newModel.add(newModel.createResource(userUri), newModel.createProperty(Sioc.name), newModel.createTypedLiteral("Admin"));
 //newModel.write(System.out, FileUtils.langXMLAbbrev);
 
-Resource reportResource = SDB.getInstanceModel().createResource(form.getReport().getURI());
-Resource endpointResource = SDB.getInstanceModel().createResource(form.getEndpoint().getURI());
+Resource reportResource = dk.semantic_web.rdf_editor.model.Model.getInstance().getData().createResource(form.getReport().getURI());
+Resource endpointResource = dk.semantic_web.rdf_editor.model.Model.getInstance().getData().createResource(form.getEndpoint().getURI());
 System.out.println("Report resource: " + reportResource);
 System.out.println("Endpoint resource: " + endpointResource);
 
@@ -266,8 +274,8 @@ Statement endpointTitle = oldModel.getProperty(endpointResource, oldModel.create
 if (endpointTitle != null) keepStatements.add(endpointTitle);
 oldModel.remove(keepStatements); // do not delete creation date, endpoint metadata etc.
 //oldModel.write(System.out, FileUtils.langXMLAbbrev);
-        SDB.getInstanceModel().remove(oldModel);
-        SDB.getInstanceModel().add(newModel);
+        dk.semantic_web.rdf_editor.model.Model.getInstance().getData().remove(oldModel);
+        dk.semantic_web.rdf_editor.model.Model.getInstance().getData().add(newModel);
     }
 
     private void comment(HttpServletRequest request, HttpServletResponse response)
@@ -277,7 +285,7 @@ oldModel.remove(keepStatements); // do not delete creation date, endpoint metada
         calendar.setTime(new Date());
         form.getModel().add(form.getCommentResource(), form.getModel().createProperty(DublinCore.CREATED), form.getModel().createTypedLiteral(calendar));
 
-        SDB.getInstanceModel().add(form.getModel());
+        dk.semantic_web.rdf_editor.model.Model.getInstance().getData().add(form.getModel());
     }
 
     protected boolean isUpdateView(HttpServletRequest request)
@@ -304,5 +312,11 @@ oldModel.remove(keepStatements); // do not delete creation date, endpoint metada
     {
 	String relativeUri = request.getHeader("Referrer");
 	return getController().getMapping().findByURI(relativeUri);
+    }
+
+    @Override
+    public UriBuilder getUriBuilder()
+    {
+	throw new UnsupportedOperationException("Not supported yet.");
     }
 }

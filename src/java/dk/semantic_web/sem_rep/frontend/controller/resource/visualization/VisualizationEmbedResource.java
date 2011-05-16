@@ -6,7 +6,7 @@
 package dk.semantic_web.sem_rep.frontend.controller.resource.visualization;
 
 import dk.semantic_web.diy.view.View;
-import dk.semantic_web.sem_rep.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.logging.Level;

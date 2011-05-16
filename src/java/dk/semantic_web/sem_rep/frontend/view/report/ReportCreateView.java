@@ -8,7 +8,6 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import dk.semantic_web.diy.controller.Form;
 import dk.semantic_web.sem_rep.frontend.controller.resource.report.ReportListResource;
-import dk.semantic_web.sem_rep.frontend.view.FrontEndView;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -18,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import dk.semantic_web.sem_rep.model.sdb.SDB;
 import dk.semantic_web.sem_rep.view.FormResultView;
 import dk.semantic_web.sem_rep.view.QueryStringBuilder;
 import dk.semantic_web.sem_rep.view.QueryResult;
 import dk.semantic_web.sem_rep.view.XMLSerializer;
-import dk.semantic_web.diy.controller.Error;
+import dk.semantic_web.diy.controller.Error;import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
+;
 import dk.semantic_web.sem_rep.frontend.controller.form.ReportRDFForm;
 import dk.semantic_web.sem_rep.view.JSONSerializer;
 
@@ -42,7 +41,12 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     public ReportCreateView(ReportListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl").toURI().toString());
+    }
+
+    @Override
+    protected String getStyleSheetPath()
+    {
+	return XSLT_BASE + "report/" + getClass().getSimpleName() + ".xsl";
     }
 
     @Override
@@ -50,11 +54,11 @@ public class ReportCreateView extends FrontEndView implements FormResultView
     {
 	setDocument("<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\"/>");
 
-        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/list/endpoints.rq"))));
-        setVisualizationTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/visualization-types.rq"))));
-        setBindingTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/binding-types.rq"))));
-        setDataTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/data-types.rq"))));
-        setOptionTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/option-types.rq"))));
+        setEndpoints(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/list/endpoints.rq"))));
+        setVisualizationTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/visualization-types.rq"))));
+        setBindingTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/binding-types.rq"))));
+        setDataTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/data-types.rq"))));
+        setOptionTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/option-types.rq"))));
 
 	if (getResult() != null)
         {

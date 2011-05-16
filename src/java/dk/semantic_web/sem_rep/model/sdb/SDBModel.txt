@@ -24,7 +24,7 @@ import org.apache.commons.dbcp.BasicDataSource;
  *
  * @author Pumba
  */
-public class SDB
+public class SDBModel
 {
     private static Store store = null;
     private static Dataset dataset = null;
@@ -60,7 +60,7 @@ public class SDB
 	}
 	catch (SQLException ex)
 	{
-	    Logger.getLogger(SDB.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SDBModel.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
     
@@ -95,7 +95,7 @@ public class SDB
 	    dataset = DatasetStore.create(getStore());
 	} catch (SQLException ex)
 	{
-	    Logger.getLogger(SDB.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SDBModel.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	return dataset;
     }

@@ -5,7 +5,6 @@
 
 package dk.semantic_web.sem_rep.frontend.controller.resource.report;
 
-import dk.semantic_web.sem_rep.model.sdb.SDB;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -16,19 +15,17 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.sun.jersey.spi.resource.Singleton;
 import dk.semantic_web.diy.controller.Error;
-import dk.semantic_web.diy.controller.Singleton;
 import dk.semantic_web.diy.view.View;
-import dk.semantic_web.sem_rep.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.FrontPageResource;
 import dk.semantic_web.sem_rep.frontend.controller.exception.InvalidFormException;
 import dk.semantic_web.sem_rep.frontend.controller.exception.NoResultsException;
 import dk.semantic_web.sem_rep.frontend.controller.form.ReportRDFForm;
-import dk.semantic_web.sem_rep.frontend.controller.resource.FrontPageResource;
 import dk.semantic_web.sem_rep.frontend.view.report.ReportCreateView;
 import dk.semantic_web.sem_rep.frontend.view.report.ReportListView;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -44,41 +41,45 @@ import org.topbraid.spin.system.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import dk.semantic_web.sem_rep.view.QueryResult;
 import dk.semantic_web.sem_rep.view.XMLSerializer;
+import java.net.URI;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
  * @author Pumba
  */
-public class ReportListResource extends FrontEndResource implements Singleton
+
+@Singleton
+@Path(ReportListResource.PATH)
+public class ReportListResource extends FrontEndResource
 {
-    private static final String PATH = "reports";
-    private static final ReportListResource INSTANCE = new ReportListResource(FrontPageResource.getInstance());
-    //private View view = null;
-    
-    private ReportListResource(FrontPageResource parent)
-    {
-	super(parent);
-    }
+    public static final String PATH = "reports";
+    //private static final ReportListResource INSTANCE = new ReportListResource(FrontPageResource.getInstance());
+    public static final UriBuilder URI_BUILDER = FrontPageResource.URI_BUILDER.clone().path(PATH);
 
-    public static ReportListResource getInstance()
+    private ReportListResource(FrontPageResource parent, @Context UriInfo uriInfo)
     {
-	return INSTANCE;
+	super(parent, uriInfo);
     }
     
-    @Override
-    public String getPath()
-    {
-	try
-	{
-	    return URLEncoder.encode(PATH, "UTF-8");
-	} catch (UnsupportedEncodingException ex)
-	{
-	    Logger.getLogger(ReportListResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return PATH;
+    @Path("{id}")
+    public ReportResource getReportResource(@Context UriInfo uriInfo) {
+	ReportResource resource = null;
+	if (dk.semantic_web.rdf_editor.model.Model.getInstance().getSystemOnt().getIndividual(uriInfo.getAbsolutePath().toString()) != null)
+	    resource = new ReportResource(this, uriInfo);
+	if (resource == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+	return resource;
     }
 
     @Override
+    @GET
     public View doGet(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
 	View parent = super.doGet(request, response);
@@ -93,6 +94,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
     }
 
     @Override
+    @POST
     public View doPost(HttpServletRequest request, HttpServletResponse response) throws TransformerConfigurationException, Exception
     {
         View parent = super.doPost(request, response);
@@ -228,7 +230,7 @@ public class ReportListResource extends FrontEndResource implements Singleton
 	Select spinQuery = (Select)arq2Spin.createQuery(arqQuery, form.getQueryResource().getURI());
 
         // add some metadata
-        String userUri = getController().getMapping().getHost() + "users/admin";
+        String userUri = getController().getMapping().getHost() + "users/admin"; // QUIRK
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         Model model = form.getModel();
@@ -243,7 +245,7 @@ String xmlString = XMLSerializer.serialize(results);
 xmlString = xmlString.substring("<?xml version='1.0'?>".length());
 model.add(form.getQueryResource(), model.createProperty(Namespaces.REPORT_NS + "lastResult"), model.createLiteral(xmlString, true));
 	
-        SDB.getInstanceModel().add(model); // save report
+        dk.semantic_web.rdf_editor.model.Model.getInstance().getData().add(model); // save report
 //SDB.getDefaultModel().write(System.out, FileUtils.langXMLAbbrev);
 //form.getModel().write(System.out);
     }
@@ -290,6 +292,28 @@ model.add(form.getQueryResource(), model.createProperty(Namespaces.REPORT_NS + "
     protected boolean isSaveAction(HttpServletRequest request)
     {
         return (request.getParameter("action") != null && request.getParameter("action").equals("save"));
+    }
+
+    @Override
+    public String getPath() {
+        return PATH;
+    }
+
+    @Override
+    public String getAbsolutePath()
+    {
+	return getPath();
+    }
+
+    @Override
+    public URI getRealURI()
+    {
+	return URI_BUILDER.build();
+    }
+
+    @Override
+    public UriBuilder getUriBuilder() {
+	return URI_BUILDER;
     }
 
 }

@@ -7,9 +7,9 @@ package dk.semantic_web.sem_rep.frontend.view.report;
 
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDF;
+import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
 import dk.semantic_web.sem_rep.frontend.controller.form.PaginationForm;
 import dk.semantic_web.sem_rep.frontend.controller.resource.report.ReportListResource;
-import dk.semantic_web.sem_rep.frontend.view.FrontEndView;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import dk.semantic_web.sem_rep.model.sdb.SDB;
 import dk.semantic_web.sem_rep.model.vocabulary.Reports;
 import dk.semantic_web.sem_rep.view.QueryStringBuilder;
 import dk.semantic_web.sem_rep.view.QueryResult;
@@ -61,18 +60,23 @@ public class ReportListView extends FrontEndView
     public ReportListView(ReportListResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
-        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "report/" + getClass().getSimpleName() + ".xsl").toURI().toString());
     }
-    
+
+    @Override
+    protected String getStyleSheetPath() {
+        return XSLT_BASE + "report/" + getClass().getSimpleName() + ".xsl";
+    }
+
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
         applyPagination(new PaginationForm(request));
         	
 	String queryString = QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/reports.rq"), getOrderBy().toString(), getOffset(), getLimit());
-	setReports(QueryResult.select(SDB.getDataset(), queryString));
+	setReports(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), queryString));
 
-        int count = SDB.getInstanceModel().listResourcesWithProperty(RDF.type, SDB.getInstanceModel().createResource(Reports.Report)).toList().size();
+        int count = dk.semantic_web.rdf_editor.model.Model.getInstance().getData().listResourcesWithProperty(RDF.type,
+	    dk.semantic_web.rdf_editor.model.Model.getInstance().getData().createResource(Reports.Report)).toList().size();
 
         getTransformer().setParameter("total-item-count", count); //    SDB.getReportClass().listInstances().toList().size()
         getTransformer().setParameter("offset", getOffset());
@@ -82,8 +86,8 @@ public class ReportListView extends FrontEndView
         getTransformer().setParameter("desc", getDesc());
 
 //        setQueryObjects(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletConfig().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/objects.rq"))));
-        setQueryUris(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/uris.rq"))));
-        setEndpoints(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/list/endpoints.rq"))));
+        setQueryUris(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/report/list/uris.rq"))));
+        setEndpoints(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/endpoint/list/endpoints.rq"))));
 
 	super.display(request, response);
     }

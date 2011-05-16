@@ -6,14 +6,16 @@
 package dk.semantic_web.sem_rep.frontend.view.report;
 
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
 import dk.semantic_web.sem_rep.frontend.controller.resource.report.ReportResource;
-import dk.semantic_web.sem_rep.frontend.view.FrontEndView;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import dk.semantic_web.sem_rep.model.sdb.SDB;
 import dk.semantic_web.sem_rep.view.JSONSerializer;
 import dk.semantic_web.sem_rep.view.QueryResult;
 import dk.semantic_web.sem_rep.view.QueryStringBuilder;
@@ -27,9 +29,14 @@ abstract public class ReportView extends FrontEndView
 {
     private ResultSetRewindable queryResults = null;
 
-    public ReportView(ReportResource resource)
+    public ReportView(ReportResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
+    }
+
+    @Override
+    protected String getStyleSheetPath() {
+        return XSLT_BASE + "report/" + getClass().getSimpleName() + ".xsl";
     }
 
     @Override
@@ -42,7 +49,7 @@ abstract public class ReportView extends FrontEndView
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
 	// to be moved out!!!
-        setBindingTypes(QueryResult.select(SDB.getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/binding-types.rq"))));
+        setBindingTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/binding-types.rq"))));
 
         super.display(request, response);
     }
