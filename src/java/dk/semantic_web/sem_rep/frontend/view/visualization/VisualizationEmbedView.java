@@ -6,9 +6,10 @@
 package dk.semantic_web.sem_rep.frontend.view.visualization;
 
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import dk.semantic_web.sem_rep.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
 import dk.semantic_web.sem_rep.frontend.controller.form.EmbedForm;
-import dk.semantic_web.sem_rep.frontend.view.FrontEndView;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -32,7 +33,11 @@ public class VisualizationEmbedView extends FrontEndView
     public VisualizationEmbedView(FrontEndResource resource) throws MalformedURLException, TransformerConfigurationException, URISyntaxException
     {
 	super(resource);
-        setStyleSheet(getController().getServletContext().getResource(XSLT_PATH + "visualization/" + getClass().getSimpleName() + ".xsl").toURI().toString());
+    }
+
+    @Override
+    protected String getStyleSheetPath() {
+        return XSLT_BASE + "visualization/" + getClass().getSimpleName() + ".xsl";
     }
 
     public ResultSetRewindable getQueryResults()
