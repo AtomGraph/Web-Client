@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 @PerRequest
 public class ReportResource extends FrontEndResource
 {
-    public static final UriBuilder URI_BUILDER = ReportListResource.URI_BUILDER.clone().path("{ontology}");
+    public static final UriBuilder URI_BUILDER = ReportListResource.URI_BUILDER.clone().path("{report}");
 
     static final Logger logger = LoggerFactory.getLogger(ReportResource.class);
 
@@ -317,6 +317,6 @@ oldModel.remove(keepStatements); // do not delete creation date, endpoint metada
     @Override
     public UriBuilder getUriBuilder()
     {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return URI_BUILDER;
     }
 }

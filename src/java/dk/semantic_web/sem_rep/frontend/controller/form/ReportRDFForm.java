@@ -10,10 +10,12 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
-import dk.semantic_web.sem_rep.controller.Controller;
+import dk.semantic_web.diy.controller.Controller;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import dk.semantic_web.diy.controller.Error;
+import dk.semantic_web.rdf_editor.frontend.controller.form.RDFForm;
 import dk.semantic_web.sem_rep.model.vocabulary.DublinCore;
 import dk.semantic_web.sem_rep.model.vocabulary.Reports;
 import dk.semantic_web.sem_rep.model.vocabulary.Spin;
@@ -25,7 +27,7 @@ import dk.semantic_web.sem_rep.util.IDGenerator;
  */
 public class ReportRDFForm extends RDFForm 
 {
-    public ReportRDFForm(HttpServletRequest request)
+    public ReportRDFForm(HttpServletRequest request) throws UnsupportedEncodingException
     {
 	super(request);
 

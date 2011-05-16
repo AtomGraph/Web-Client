@@ -5,33 +5,39 @@
 
 package dk.semantic_web.sem_rep.frontend.controller.resource.endpoint;
 
-import dk.semantic_web.sem_rep.controller.LeafResource;
+import com.hp.hpl.jena.ontology.Individual;
+import com.sun.jersey.spi.resource.PerRequest;
 import dk.semantic_web.diy.view.View;
-import dk.semantic_web.sem_rep.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.instance.InstanceResource;
 import dk.semantic_web.sem_rep.frontend.view.endpoint.EndpointReadView;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerConfigurationException;
 import dk.semantic_web.sem_rep.model.Endpoint;
+import javax.ws.rs.GET;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
  * @author Pumba
  */
-public class EndpointResource extends FrontEndResource implements LeafResource
+
+@PerRequest
+public class EndpointResource extends FrontEndResource
 {
+    public static final UriBuilder URI_BUILDER = EndpointListResource.URI_BUILDER.clone().path("{endpoint}");
+
     private Endpoint endpoint = null;
 
-    public EndpointResource(Endpoint endpoint, EndpointListResource parent)
+    public EndpointResource(EndpointListResource parent, @Context UriInfo uriInfo) // Endpoint endpoint
     {
-	super(parent);
-	setEndpoint(endpoint);
+	super(parent, uriInfo);
+	//setEndpoint(endpoint);
     }
 
     public Endpoint getEndpoint()
@@ -45,25 +51,28 @@ public class EndpointResource extends FrontEndResource implements LeafResource
     }
 
     @Override
-    public String getPath()
-    {
-	try
-	{
-	    return URLEncoder.encode(getEndpoint().getURI().toString(), "UTF-8");
-	} catch (UnsupportedEncodingException ex)
-	{
-	    Logger.getLogger(EndpointResource.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return getEndpoint().getURI().toString();
+    public String getPath() {
+	return InstanceResource.getIndividualLabel(getTopicEndpoint());
     }
 
-   @Override
+    public Individual getTopicEndpoint() {
+	return getTopicResource().as(Individual.class);
+    }
+
+    @Override
+    @GET
     public View doGet(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException, TransformerConfigurationException, URISyntaxException, Exception
     {
 	View parent = super.doGet(request, response);
 	if (parent != null) return parent;
 
 	return new EndpointReadView(this);
+    }
+
+    @Override
+    public UriBuilder getUriBuilder()
+    {
+	return URI_BUILDER;
     }
 
 }
