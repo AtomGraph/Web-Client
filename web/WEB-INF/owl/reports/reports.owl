@@ -3,6 +3,7 @@
 
 <!DOCTYPE rdf:RDF [
     <!ENTITY sp "http://spinrdf.org/sp#" >
+    <!ENTITY vann "http://purl.org/vocab/vann/" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
@@ -22,13 +23,11 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:vann="http://purl.org/vocab/vann/"
      xmlns:semantic-reports="http://www.semantic-web.dk/ontologies/semantic-reports/">
     <owl:Ontology rdf:about="">
         <rdfs:label
             >Semantic report ontology</rdfs:label>
-        <owl:imports rdf:resource="http://code.google.com/apis/visualization/"/>
-        <owl:imports rdf:resource="http://rdfs.org/sioc/ns"/>
-        <owl:imports rdf:resource="http://spinrdf.org/sp"/>
     </owl:Ontology>
     
 
@@ -47,7 +46,9 @@
     <!-- http://www.semantic-web.dk/ontologies/semantic-reports/query -->
 
     <owl:ObjectProperty rdf:about="query">
+        <rdfs:label>Query</rdfs:label>
         <rdfs:range rdf:resource="&sp;Query"/>
+        <rdfs:isDefinedBy rdf:resource=""/>
         <rdfs:domain rdf:resource="Report"/>
     </owl:ObjectProperty>
     
@@ -56,9 +57,28 @@
     <!-- http://www.semantic-web.dk/ontologies/semantic-reports/visualizedBy -->
 
     <owl:ObjectProperty rdf:about="visualizedBy">
+        <rdfs:label>Visualized by</rdfs:label>
         <rdfs:range rdf:resource="&visualization;Visualization"/>
+        <rdfs:isDefinedBy rdf:resource=""/>
         <rdfs:domain rdf:resource="Report"/>
     </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/vocab/vann/preferredNamespacePrefix -->
+
+    <owl:DatatypeProperty rdf:about="&vann;preferredNamespacePrefix"/>
     
 
 
@@ -75,19 +95,47 @@
 
     <!-- http://code.google.com/apis/visualization/Visualization -->
 
-    <owl:Class rdf:about="&visualization;Visualization"/>
+    <owl:Class rdf:about="&visualization;Visualization">
+        <rdfs:label>Visualization</rdfs:label>
+        <rdfs:isDefinedBy rdf:resource=""/>
+    </owl:Class>
     
 
 
     <!-- http://spinrdf.org/sp#Query -->
 
-    <owl:Class rdf:about="&sp;Query"/>
+    <owl:Class rdf:about="&sp;Query">
+        <rdfs:label>Query</rdfs:label>
+        <rdfs:isDefinedBy rdf:resource=""/>
+    </owl:Class>
     
 
 
     <!-- http://www.semantic-web.dk/ontologies/semantic-reports/Report -->
 
-    <owl:Class rdf:about="Report"/>
+    <owl:Class rdf:about="Report">
+        <rdfs:label>Report</rdfs:label>
+        <rdfs:isDefinedBy rdf:resource=""/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semantic-web.dk/ontologies/semantic-reports/ -->
+
+    <owl:Thing rdf:about="">
+        <vann:preferredNamespacePrefix>semrep</vann:preferredNamespacePrefix>
+    </owl:Thing>
 </rdf:RDF>
 
 
