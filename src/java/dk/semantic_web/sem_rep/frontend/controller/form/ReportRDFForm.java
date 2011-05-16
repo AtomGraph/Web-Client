@@ -10,8 +10,6 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
-import dk.semantic_web.diy.controller.Controller;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import dk.semantic_web.diy.controller.Error;
@@ -27,15 +25,16 @@ import dk.semantic_web.sem_rep.util.IDGenerator;
  */
 public class ReportRDFForm extends RDFForm 
 {
-    public ReportRDFForm(HttpServletRequest request) throws UnsupportedEncodingException
+    public ReportRDFForm(HttpServletRequest request)
     {
 	super(request);
 
 	// override endpoint & query if used as a proxy
 	if (request.getParameter("endpoint") != null && request.getParameter("query") != null)
 	{
-	    String reportUri = Controller.getHost(request) + "reports/" + IDGenerator.generate();
-	    String queryUri = Controller.getHost(request) + "queries/" + IDGenerator.generate();
+	    //Controller.getHost(request)
+	    String reportUri = "reports/" + IDGenerator.generate();
+	    String queryUri = "queries/" + IDGenerator.generate();
 	    String endpointUri = request.getParameter("endpoint");
 
 	    Resource reportResource = getModel().createResource(reportUri);

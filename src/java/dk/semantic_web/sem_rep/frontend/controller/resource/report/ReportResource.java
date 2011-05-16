@@ -14,6 +14,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.ResourceUtils;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.PerRequest;
 import dk.semantic_web.sem_rep.frontend.view.report.ReportReadView;
@@ -283,7 +284,7 @@ oldModel.remove(keepStatements); // do not delete creation date, endpoint metada
 	CommentRDFForm form = new CommentRDFForm(request);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        form.getModel().add(form.getCommentResource(), form.getModel().createProperty(DublinCore.CREATED), form.getModel().createTypedLiteral(calendar));
+        form.getModel().add(form.getCommentResource(), DCTerms.created, form.getModel().createTypedLiteral(calendar));
 
         dk.semantic_web.rdf_editor.model.Model.getInstance().getData().add(form.getModel());
     }
