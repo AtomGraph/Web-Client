@@ -41,12 +41,6 @@ public class ReportUpdateView extends ReportView implements FormResultView
     {
 	super(resource);
     }
-
-    @Override
-    public ReportResource getResource()
-    {
-	return (ReportResource)super.getResource();
-    }
     
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException

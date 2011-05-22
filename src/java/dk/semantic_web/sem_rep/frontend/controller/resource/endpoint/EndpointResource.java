@@ -52,7 +52,7 @@ public class EndpointResource extends FrontEndResource
 
     @Override
     public String getPath() {
-	return InstanceResource.getIndividualLabel(getTopicEndpoint());
+	return InstanceResource.getIndividualPath(getTopicEndpoint());
     }
 
     public Individual getTopicEndpoint() {

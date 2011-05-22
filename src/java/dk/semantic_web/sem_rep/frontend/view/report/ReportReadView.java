@@ -6,7 +6,7 @@
 package dk.semantic_web.sem_rep.frontend.view.report;
 
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import dk.semantic_web.sem_rep.frontend.controller.resource.report.ReportResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.instance.InstanceResource;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -26,7 +26,7 @@ import dk.semantic_web.sem_rep.view.XMLSerializer;
 public class ReportReadView extends ReportView
 {
 
-    public ReportReadView(ReportResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
+    public ReportReadView(InstanceResource resource) throws TransformerConfigurationException, MalformedURLException, URISyntaxException
     {
 	super(resource);
     }
@@ -34,7 +34,7 @@ public class ReportReadView extends ReportView
     @Override
     public void display(HttpServletRequest request, HttpServletResponse response) throws IOException, TransformerException, ParserConfigurationException
     {
-        setVisualizationTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/visualization-types.rq"))));
+	setVisualizationTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/visualization-types.rq"))));
         setBindingTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/binding-types.rq"))));
         setDataTypes(QueryResult.select(dk.semantic_web.rdf_editor.model.Model.getInstance().getDataset(), QueryStringBuilder.build(getController().getServletContext().getResourceAsStream("/WEB-INF/sparql/ontology/data-types.rq"))));
 

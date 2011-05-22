@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dk.semantic_web.diy.view.View;
 import dk.semantic_web.diy.controller.Error;
-import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
 import dk.semantic_web.rdf_editor.frontend.controller.resource.instance.InstanceResource;
 import dk.semantic_web.sem_rep.frontend.controller.exception.InvalidFormException;
 import dk.semantic_web.sem_rep.frontend.controller.exception.NoResultsException;
@@ -61,9 +60,9 @@ import org.slf4j.LoggerFactory;
  */
 
 @PerRequest
-public class ReportResource extends FrontEndResource
+public class ReportResource extends InstanceResource
 {
-    public static final UriBuilder URI_BUILDER = ReportListResource.URI_BUILDER.clone().path("{report}");
+    //public static final UriBuilder URI_BUILDER = ReportListResource.URI_BUILDER.clone().path("{report}");
 
     static final Logger logger = LoggerFactory.getLogger(ReportResource.class);
 
@@ -82,7 +81,7 @@ public class ReportResource extends FrontEndResource
     
     @Override
     public String getPath() {
-	return InstanceResource.getIndividualLabel(getTopicIndividual());
+	return InstanceResource.getIndividualPath(getTopicIndividual());
     }
 
     public Individual getTopicIndividual() {

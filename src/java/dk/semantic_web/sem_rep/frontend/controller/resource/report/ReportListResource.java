@@ -18,8 +18,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
 import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.view.View;
-import dk.semantic_web.rdf_editor.frontend.controller.FrontEndResource;
 import dk.semantic_web.rdf_editor.frontend.controller.resource.FrontPageResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.clazz.ClassInstanceListResource;
+import dk.semantic_web.rdf_editor.frontend.controller.resource.clazz.ClassResource;
 import dk.semantic_web.sem_rep.frontend.controller.exception.InvalidFormException;
 import dk.semantic_web.sem_rep.frontend.controller.exception.NoResultsException;
 import dk.semantic_web.sem_rep.frontend.controller.form.ReportRDFForm;
@@ -58,13 +59,13 @@ import javax.ws.rs.core.UriInfo;
 
 @Singleton
 @Path(ReportListResource.PATH)
-public class ReportListResource extends FrontEndResource
+public class ReportListResource extends ClassInstanceListResource
 {
-    public static final String PATH = "reports";
+    //public static final String PATH = "reports";
     //private static final ReportListResource INSTANCE = new ReportListResource(FrontPageResource.getInstance());
-    public static final UriBuilder URI_BUILDER = FrontPageResource.URI_BUILDER.clone().path(PATH);
+    //public static final UriBuilder URI_BUILDER = FrontPageResource.URI_BUILDER.clone().path(PATH);
 
-    private ReportListResource(FrontPageResource parent, @Context UriInfo uriInfo)
+    private ReportListResource(ClassResource parent, @Context UriInfo uriInfo)
     {
 	super(parent, uriInfo);
     }
