@@ -8,6 +8,9 @@ package dk.semantic_web.sem_rep.frontend.view.report;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDF;
 import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
+import dk.semantic_web.rdf_editor.view.QueryResult;
+import dk.semantic_web.rdf_editor.view.QueryStringBuilder;
+import dk.semantic_web.rdf_editor.view.XMLSerializer;
 import dk.semantic_web.sem_rep.frontend.controller.form.PaginationForm;
 import dk.semantic_web.sem_rep.frontend.controller.resource.report.ReportListResource;
 import java.io.IOException;
@@ -19,9 +22,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import dk.semantic_web.sem_rep.model.vocabulary.Reports;
-import dk.semantic_web.sem_rep.view.QueryStringBuilder;
-import dk.semantic_web.sem_rep.view.QueryResult;
-import dk.semantic_web.sem_rep.view.XMLSerializer;
 
 /**
  *

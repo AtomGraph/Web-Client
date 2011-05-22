@@ -8,11 +8,11 @@ package dk.semantic_web.sem_rep.frontend.view.report;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import dk.semantic_web.rdf_editor.frontend.controller.resource.instance.InstanceResource;
 import dk.semantic_web.rdf_editor.frontend.view.instance.InstanceView;
+import dk.semantic_web.rdf_editor.view.JSONSerializer;
+import dk.semantic_web.rdf_editor.view.XMLSerializer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerConfigurationException;
-import dk.semantic_web.sem_rep.view.JSONSerializer;
-import dk.semantic_web.sem_rep.view.XMLSerializer;
 
 /**
  *

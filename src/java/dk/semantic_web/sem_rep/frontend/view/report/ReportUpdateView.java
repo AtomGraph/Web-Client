@@ -20,10 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import dk.semantic_web.sem_rep.view.FormResultView;
-import dk.semantic_web.sem_rep.view.JSONSerializer;
-import dk.semantic_web.sem_rep.view.QueryStringBuilder;
-import dk.semantic_web.sem_rep.view.QueryResult;
-import dk.semantic_web.sem_rep.view.XMLSerializer;
+import dk.semantic_web.rdf_editor.view.JSONSerializer;
+import dk.semantic_web.rdf_editor.view.QueryResult;
+import dk.semantic_web.rdf_editor.view.QueryStringBuilder;
+import dk.semantic_web.rdf_editor.view.XMLSerializer;
 
 /**
  *

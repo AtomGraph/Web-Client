@@ -18,13 +18,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import dk.semantic_web.sem_rep.view.FormResultView;
-import dk.semantic_web.sem_rep.view.QueryStringBuilder;
-import dk.semantic_web.sem_rep.view.QueryResult;
-import dk.semantic_web.sem_rep.view.XMLSerializer;
-import dk.semantic_web.diy.controller.Error;import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
+import dk.semantic_web.diy.controller.Error;
+import dk.semantic_web.rdf_editor.frontend.view.FrontEndView;
+import dk.semantic_web.rdf_editor.view.QueryResult;
+import dk.semantic_web.rdf_editor.view.QueryStringBuilder;
+import dk.semantic_web.rdf_editor.view.XMLSerializer;
 ;
 import dk.semantic_web.sem_rep.frontend.controller.form.ReportRDFForm;
-import dk.semantic_web.sem_rep.view.JSONSerializer;
+import dk.semantic_web.rdf_editor.view.JSONSerializer;
 
 /**
  *
