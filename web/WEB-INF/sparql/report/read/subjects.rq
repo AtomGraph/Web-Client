@@ -1,15 +1,18 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
 PREFIX spin: <http://spinrdf.org/sp#>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
 SELECT *
 {
-	?report	rep:query	?query .
-	?query	spin:where	?where .
-	?where	list:member	?member .
-	?member	spin:subject	?subject .
+	?resource   foaf:topic	    ?report .
+	?report	    rep:query	    ?query .
+	?query	    spin:where	    ?where .
+	?where	    list:member	    ?member .
+	?member	    spin:subject    ?subject .
 	FILTER (isURI(?subject))
-        FILTER (?report = <%s>)
+        #FILTER (?report = <s>)
+	FILTER (?resource = <%s>)
 }
