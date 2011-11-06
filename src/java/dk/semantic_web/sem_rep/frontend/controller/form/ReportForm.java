@@ -5,7 +5,6 @@
 
 package dk.semantic_web.sem_rep.frontend.controller.form;
 
-import dk.semantic_web.diy.controller.Error;
 import dk.semantic_web.diy.controller.Form;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +50,7 @@ public class ReportForm extends Form
     }
 
     @Override
-    public List<Error> validate()
+    public List<Exception> validate()
     {
 	throw new UnsupportedOperationException("Not supported yet.");
     }

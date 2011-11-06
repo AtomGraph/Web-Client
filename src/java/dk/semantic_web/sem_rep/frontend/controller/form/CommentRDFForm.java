@@ -8,7 +8,7 @@ package dk.semantic_web.sem_rep.frontend.controller.form;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
-import dk.semantic_web.rdf_editor.frontend.controller.form.RDFForm;
+import dk.semantic_web.diy.controller.RDFForm;
 import javax.servlet.http.HttpServletRequest;
 import dk.semantic_web.sem_rep.model.vocabulary.Sioc;
 

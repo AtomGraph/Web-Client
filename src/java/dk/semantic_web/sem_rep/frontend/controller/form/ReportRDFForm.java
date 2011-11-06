@@ -13,7 +13,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import dk.semantic_web.diy.controller.Error;
-import dk.semantic_web.rdf_editor.frontend.controller.form.RDFForm;
+import dk.semantic_web.diy.controller.RDFForm;
 import dk.semantic_web.sem_rep.model.vocabulary.DublinCore;
 import dk.semantic_web.sem_rep.model.vocabulary.Reports;
 import dk.semantic_web.sem_rep.model.vocabulary.Spin;

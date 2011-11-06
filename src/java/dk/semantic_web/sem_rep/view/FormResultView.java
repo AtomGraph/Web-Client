@@ -7,7 +7,6 @@ package dk.semantic_web.sem_rep.view;
 
 import dk.semantic_web.diy.controller.Form;
 import java.util.List;
-import dk.semantic_web.diy.controller.Error;
 
 /**
  *
