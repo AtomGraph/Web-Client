@@ -17,6 +17,6 @@
     sdb:sdbHost       "localhost" ;
     sdb:sdbName       "reports" ;
     sdb:driver        "com.mysql.jdbc.Driver" ;
-    sdb:sdbUser       "reports" ;
-    sdb:sdbPassword   "semantic" ;
+    sdb:sdbUser       "user" ;
+    sdb:sdbPassword   "password" ;
     .
