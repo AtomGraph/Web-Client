@@ -1,0 +1,93 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX vis: <http://code.google.com/apis/visualization/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+PREFIX spin: <http://spinrdf.org/sp#>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
+
+CONSTRUCT
+{
+	?report	    rdf:type	?type .
+    ?report     dc:title	?title .
+    ?report     dc:description ?description .
+    ?report     dct:created	?dateCreated .
+    ?report     dct:modified    ?dateModified .
+    ?report     sioc:has_creator ?creator .
+    ?creator    sioc:name   ?creatorName .
+	?report	    rep:query	?query .
+	?query	    spin:text	?queryString .
+	?query	    spin:from	?endpoint .
+    ?endpoint	dc:title	?endpointTitle .
+	?query	    spin:where	?where .
+	?where	    list:member	?member .
+	?member	    spin:subject    ?subject .
+	?member	    spin:predicate  ?predicate .
+	?member	    spin:object	?object .
+	?report		rep:visualizedBy	?vis .
+	?vis        rdf:type    ?visType .
+    ?vis        vis:binding ?binding .
+    ?binding    rdf:type    ?bindingType .
+	?binding	vis:order   ?order .
+    ?binding    vis:variableName    ?variable .
+    ?vis        vis:option  ?option .
+    ?option     rdf:type    ?type .
+}
+WHERE
+{
+	?report	    rdf:type	?type .
+	?report	    rep:query	?query .
+	?query	    spin:text	?queryString .
+	?query	    spin:from	?endpoint .
+	?query	    spin:where	?where .
+	?where	    list:member	?member .
+	?member	    spin:subject    ?subject .
+	?member	    spin:predicate  ?predicate .
+	?member	    spin:object	?object .
+	?report		rep:visualizedBy ?vis .
+	?vis        rdf:type    ?visType .
+    ?vis        vis:binding ?binding .
+    ?binding    rdf:type    ?bindingType .
+	?binding	vis:order   ?order .      # cardinality, dataType ???
+    ?binding    vis:variableName    ?variable .
+    ?vis        vis:option  ?option .
+    ?option     rdf:type    ?type .
+	
+
+    OPTIONAL
+    {
+        ?report	dc:title	?title .
+    }
+    OPTIONAL
+    {
+        ?report	dc:description  ?description .
+    }
+    OPTIONAL
+    {
+        ?report	dct:created	?dateCreated .
+    }
+    OPTIONAL
+    {
+        ?report	dct:modified	?dateModified .
+    }
+    OPTIONAL
+    {
+        ?report	sioc:has_creator    ?creator .
+        ?creator	sioc:name           ?creatorName
+    }
+    OPTIONAL
+    {
+        ?endpoint	dc:title	?endpointTitle
+    }
+	OPTIONAL
+	{
+		?option		vis:name	?name .
+		?option		vis:value	?value
+	}
+	#FILTER (?resource = <%s>)
+	#FILTER (isURI(?subject))
+	FILTER (isURI(?predicate))
+	#FILTER (isURI(?object))
+}

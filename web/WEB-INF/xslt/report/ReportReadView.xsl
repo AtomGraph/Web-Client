@@ -17,23 +17,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE uridef[
-        <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
+    <!ENTITY rep "http://www.semantic-web.dk/ontologies/semantic-reports/">
 	<!ENTITY vis "http://code.google.com/apis/visualization/">
-        <!ENTITY spin "http://spinrdf.org/sp#">
+    <!ENTITY spin "http://spinrdf.org/sp#">
 	<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
 	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
 	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
 	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 	<!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
-        <!ENTITY dc "http://purl.org/dc/elements/1.1/">
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/">
+    <!ENTITY dct "http://purl.org/dc/terms/">
 	<!ENTITY foaf "http://xmlns.com/foaf/0.1/">
 	<!ENTITY sioc "http://rdfs.org/sioc/ns#">
-        <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
-        <!ENTITY dbpedia "http://dbpedia.org/resource/">
-        <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
-        <!ENTITY dbpprop "http://dbpedia.org/property/">
-        <!ENTITY category "http://dbpedia.org/resource/Category:">
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
+    <!ENTITY dbpedia "http://dbpedia.org/resource/">
+    <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
+    <!ENTITY dbpprop "http://dbpedia.org/property/">
+    <!ENTITY category "http://dbpedia.org/resource/Category:">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -60,21 +61,8 @@ exclude-result-prefixes="#all">
 	<xsl:param name="data-types-json" as="xs:string"/>
 	<xsl:param name="option-types-json" as="xs:string" select="'[]'"/>
 
-	<xsl:variable name="report" select="document('arg://report')" as="document-node()"/>
-	<xsl:variable name="report-uri" select="$report//sparql:binding[@name = 'report']/sparql:uri" as="xs:anyURI"/>
-        <xsl:variable name="visualizations" select="document('arg://visualizations')" as="document-node()"/>
-	<xsl:variable name="bindings" select="document('arg://bindings')" as="document-node()"/>
-	<xsl:variable name="variables" select="document('arg://variables')" as="document-node()"/>
-	<xsl:variable name="options" select="document('arg://options')" as="document-node()?"/>
-	<xsl:variable name="query-uris" select="document('arg://query-uris')" as="document-node()"/>
-        <!-- <xsl:variable name="binding-types" select="document('arg://binding-types')" as="document-node()"/> -->
-        <xsl:variable name="comments" select="document('arg://comments')" as="document-node()"/>
-
-        <xsl:key name="binding-type-by-vis-type" match="sparql:result" use="sparql:binding[@name = 'visType']/sparql:uri"/>
-        <xsl:key name="result-by-visualization" match="sparql:result" use="sparql:binding[@name = 'visualization']/sparql:uri"/>
-
 	<xsl:template name="title">
-		<xsl:value-of select="$report//sparql:binding[@name = 'title']/sparql:literal"/>
+		<xsl:value-of select="dc:title"/>
 	</xsl:template>
 
 	<xsl:template name="head">
@@ -131,17 +119,17 @@ exclude-result-prefixes="#all">
 			<dl>
 				<dt>Endpoint</dt>
 				<dd>
-					<a href="{$report//sparql:binding[@name = 'endpoint']/sparql:uri}">
+					<a href="{spin:from/@rdf:resource}">
                                             <xsl:choose>
                                                 <xsl:when test="$report//sparql:binding[@name = 'endpointTitle']">
                                                     <xsl:value-of select="$report//sparql:binding[@name = 'endpointTitle']/sparql:literal"/>
                                                 </xsl:when>
                                                 <xsl:otherwise>
-                                                    <xsl:value-of select="$report//sparql:binding[@name = 'endpoint']/sparql:uri"/>
+                                                    <xsl:value-of select="spin:from/@rdf:resource"/>
                                                 </xsl:otherwise>
                                             </xsl:choose>
 					</a>
-					(<a href="{$report//sparql:binding[@name = 'endpoint']/sparql:uri}?query={encode-for-uri($report//sparql:binding[@name = 'queryString']/sparql:literal)}">with query</a>)
+					(<a href="{spin:from/@rdf:resource}?query={encode-for-uri($report//sparql:binding[@name = 'queryString']/sparql:literal)}">with query</a>)
 				</dd>
                                 <xsl:if test="$query-uris//sparql:binding[@name = 'uri']/sparql:uri">
                                     <dt>Used URIs</dt>
@@ -149,29 +137,29 @@ exclude-result-prefixes="#all">
                                 </xsl:if>
                                 <dt>Created by</dt>
 				<dd>
-					<a href="{$report//sparql:binding[@name = 'creator']/sparql:uri}">
-                                            <xsl:value-of select="$report//sparql:binding[@name = 'creatorName']/sparql:literal"/>
+					<a href="{dc:creator/@rdf:resource}">
+                                            <xsl:value-of select="key('resources', dc:creator/@rdf:resource)/foaf:name"/>
 					</a>
 				</dd>
 				<dt>Created</dt>
 				<dd>
-                                        <xsl:value-of select="$report//sparql:binding[@name = 'dateCreated']/sparql:literal"/>
+                                        <xsl:value-of select="dct:created"/>
 				</dd>
-                                <xsl:if test="$report//sparql:binding[@name = 'dateModified']/sparql:literal">
+                                <xsl:if test="dct:modified">
                                     <dt>Modified</dt>
                                     <dd>
-                                            <xsl:value-of select="$report//sparql:binding[@name = 'dateModified']/sparql:literal"/>
+                                            <xsl:value-of select="dct:modified"/>
                                     </dd>
                                 </xsl:if>
-                                <xsl:if test="$report//sparql:binding[@name = 'description']/sparql:literal">
+                                <xsl:if test="dc:description">
                                     <dt>Description</dt>
                                     <dd>
-                                            <xsl:value-of select="$report//sparql:binding[@name = 'description']/sparql:literal"/>
+                                            <xsl:value-of select="dc:description"/>
                                     </dd>
                                 </xsl:if>
                         </dl>
 
-			<form action="{$resource//sparql:binding[@name = 'resource']/sparql:uri}" method="get" accept-charset="UTF-8">
+			<form action="" method="get" accept-charset="UTF-8">
 				<p>
 					<button type="submit" name="view" value="update">Edit</button>
 				</p>
@@ -180,13 +168,13 @@ exclude-result-prefixes="#all">
 			<xsl:apply-templates select="$visualizations//sparql:result" mode="vis-container"/>
 
 			<h3 id="comments">Comments</h3>
-                        <form action="{$report-uri}#comments" method="post" accept-charset="UTF-8">
-                            <xsl:variable name="comment-uri" select="xs:anyURI(concat($report-uri, '#', id:generate()))" as="xs:anyURI"/>
+                        <form action="{@rdf:about}#comments" method="post" accept-charset="UTF-8">
+                            <xsl:variable name="comment-uri" select="xs:anyURI(concat(@rdf:about, '#', id:generate()))" as="xs:anyURI"/>
 <input type="hidden" name="rdf"/>
 <input type="hidden" name="n" value="rdf"/>
 <input type="hidden" name="v" value="&rdf;"/>
 
-<input type="hidden" name="su" value="{$report-uri}"/>
+<input type="hidden" name="su" value="{@rdf:about}"/>
 <input type="hidden" name="pu" value="&sioc;container_of"/>
 <input type="hidden" name="ou" value="{$comment-uri}"/>
 <input type="hidden" name="su" value="{$comment-uri}"/>
@@ -208,7 +196,7 @@ exclude-result-prefixes="#all">
                 </div>
 	</xsl:template>
 
-        <xsl:template match="sparql:result[sparql:binding[@name = 'visualization']]" mode="vis-container">
+        <xsl:template match="vis:Visualization | *[rdf:type/@rdf:resource = '&vis;Visualization']" mode="vis-container">
             <div id="{generate-id()}-visualization" class="visualization">&#160;</div>
         </xsl:template>
 
@@ -265,11 +253,11 @@ exclude-result-prefixes="#all">
             </dd>
         </xsl:template>
         
-        <xsl:template match="sparql:result[sparql:binding[@name = 'comment']]" mode="comment">
+        <xsl:template match="sioc:Post | *[rdf:type/@rdf:resource = '&sioc;Post']" mode="comment">
             <li>
-                <xsl:value-of select="sparql:binding[@name = 'dateCreated']"/>
+                <xsl:value-of select="dct:created"/>
                 <br/>
-                <xsl:value-of select="sparql:binding[@name = 'content']"/>
+                <xsl:value-of select="sioc:content"/>
             </li>
         </xsl:template>
 
