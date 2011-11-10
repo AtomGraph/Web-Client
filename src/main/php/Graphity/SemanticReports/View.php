@@ -8,7 +8,6 @@ use Graphity\Resource;
 use Graphity\Sparql as Sparql;
 use Graphity\View\XSLTView;
 
-use HeltNormalt\Model as Model;
 use HeltNormalt\Repository\Dydra\DydraClient;
 
 class View extends XSLTView
@@ -22,27 +21,13 @@ class View extends XSLTView
     {
         parent::__construct($resource);
 
-        /**
-        // Uncomment this block below after the project launch (or when the user load has
-        // normalized) because the Variation against User-Agent is considered a pitfall:
-        // https://www.varnish-cache.org/docs/trunk/tutorial/vary.html
-        $userAgent = $this->getResource()->getRequest()->getHeader("HTTP_USER_AGENT");
-        if(strpos($userAgent, "MSIE") !== false) {
-            // for the disabled browsers - return text/html
-            $this->setContentType(self::TEXT_HTML);
-        } else {
-            $this->setContentType(self::APPLICATION_XHTML);
-        }
-
-        $this->setHeader("Vary", "User-Agent,Accept");
-        */
         // http://hixie.ch/advocacy/xhtml though, we have to do this :(
         $this->setContentType(self::TEXT_HTML);
         $this->setHeader("Vary", "Accept");
 
         if (strstr(get_class($this->getResource()), "List")) $this->getTransformer()->setParameter("", "view", Model\HeltNormalt::NS . "ListView");
         else
-            $this->getTransformer()->setParameter("", "view", Model\HeltNormalt::NS . "ReadView");
+            $this->getTransformer()->setParameter("", "view", Model\Graphity::NS . "ReadView");
 
         $this->getTransformer()->setParameter("", "uri", $this->getResource()->getURI());
         $this->getTransformer()->setParameter("", "base-uri", $this->getResource()->getBaseURI());

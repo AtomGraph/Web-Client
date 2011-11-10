@@ -14,7 +14,6 @@ use Graphity\WebApplicationException;
 
 /** 
  * @Path("{.*}")
- * @Singleton 
  */
 class Resource extends Resource
 {
@@ -120,12 +119,12 @@ class Resource extends Resource
      */
     public function getQueryString($relativePath)
     {
-        return file_get_contents(ROOTDIR . DS . "src" . DS . "main" . HeltNormaltView::SPARQL_BASE . $relativePath);
+        return file_get_contents(ROOTDIR . DS . "src" . DS . "main" . View::SPARQL_BASE . $relativePath);
     }
 
     public function getDefaultView()
     {
-        if ($this->view == null) $this->view = new HeltNormaltView($this); // cannot be initialized in constructor as long it uses $this
+        if ($this->view == null) $this->view = new View($this); // cannot be initialized in constructor as long it uses $this
         return $this->view;
     }
 
@@ -139,16 +138,11 @@ class Resource extends Resource
             ->setQuery($this->getQueryString('exists.rq'))
             ->setVariable('uri', new Rdf\Resource($this->getURI()))
             ->setVariable('today', new Rdf\Literal($today->format(\DateTime::W3C), Model\XSD::dateTime)));
-        /**
-        return $this->getRepository()->ask($this->getQueryString('exists.rq'), array(
-            'resource-uri' => $this->getURI(), 
-            'today' => $today->format(\DateTime::W3C)
-        ));
-        */
     }
 
     public function getOntClass()
     {
+        /*
         $className = get_class($this);
         $namespace = '\\';
         if(false !== ($nsPos = strripos($className, "\\"))) {
@@ -158,6 +152,8 @@ class Resource extends Resource
         $className = str_replace("List", "", $className);
 
         return Model\HeltNormalt::NS . $className;
+        */
+        return null;
     }
 
     /**
@@ -167,32 +163,8 @@ class Resource extends Resource
     {
         $today = new \DateTime();
 
-        $className = get_class($this);
-        $namespace = '\\';
-        if(false !== ($nsPos = strripos($className, "\\"))) {
-            $namespace = substr($className, 0, $nsPos);
-            $className = substr($className, $nsPos+1);
-        }
-
-        // TO-DO: move the following relationships to ontology!
-        $fileName = "describe.rq";
-        if($className == "FrontPageResource") $fileName = "latestPosts.rq";
-        else
-        {
-            if (strpos($className, "ListResource") !== false)
-            {
-                $resourceName = str_replace("ListResource", "", $className); 
-                if (isset($this->moduleMap[$resourceName])) $fileName = $this->moduleMap[$resourceName] . "/list.rq";
-            }
-            else
-            {
-                $resourceName = str_replace("Resource", "", $className); 
-                if (isset($this->moduleMap[$resourceName])) $fileName = $this->moduleMap[$resourceName] . "/read.rq";
-            }
-        }
-
         return $this->getRepository()->query(Sparql\Query::newInstance()
-            ->setQuery($this->getQueryString($fileName))
+            ->setQuery($this->getQueryString("describe.rq"))
             ->setVariable("baseUri", new Rdf\Resource($this->getBaseURI()))
             ->setVariable("uri", new Rdf\Resource($this->getURI()))
             ->setVariable("today", new Rdf\Literal($today->format(\DateTime::W3C), Model\XSD::dateTime))
