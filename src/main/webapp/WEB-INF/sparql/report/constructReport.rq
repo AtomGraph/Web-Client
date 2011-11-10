@@ -1,0 +1,12 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX semrep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+
+CONSTRUCT
+{
+	<http://www.semantic-web.dk/ontologies/semantic-reports/Report/28315727> ?p ?o
+}
+WHERE
+{
+	<http://www.semantic-web.dk/ontologies/semantic-reports/Report/28315727> ?p ?o
+}

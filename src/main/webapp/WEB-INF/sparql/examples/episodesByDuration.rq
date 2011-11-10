@@ -1,0 +1,19 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX po: <http://purl.org/ontology/po/> 
+
+SELECT *
+WHERE
+{
+#?programme ?p ?o
+?programme rdf:type po:Brand .
+?programme <http://purl.org/dc/elements/1.1/title> ?title .
+?programme po:episode ?episode .
+?episode po:version ?version .
+?version po:duration ?duration .
+#FILTER (?type = po:Brand)
+#FILTER (?s = <http://www.bbc.co.uk/programmes/b006m86d#programme>)
+#FILTER (?programme = <http://www.bbc.co.uk/programmes/b006m86d#programme>)
+}
+ORDER BY ?duration
+LIMIT 50

@@ -1,0 +1,12 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rev: <http://purl.org/stuff/rev#>
+
+SELECT DISTINCT * WHERE {
+?thing rdfs:label ?name .
+?thing rev:hasReview ?review .
+?review rdf:type rev:Review .
+?review rev:rating ?rating .
+?review rev:createdOn ?createdOn
+}
+LIMIT 100

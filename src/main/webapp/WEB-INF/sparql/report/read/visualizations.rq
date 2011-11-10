@@ -1,0 +1,20 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX vis: <http://code.google.com/apis/visualization/>
+PREFIX rep: <http://www.semantic-web.dk/ontologies/semantic-reports/>
+
+SELECT *
+{
+	?resource	foaf:topic		?report .
+	?report		rdf:type		rep:Report .
+	?report		rep:visualizedBy	?visualization .
+	?visualization	rdf:type		?type .
+	OPTIONAL # does not exist in form model
+	{
+	    ?type		rdfs:label		?typeLabel
+	}
+	#FILTER (?report = <s>)
+	FILTER (?resource = <%s>)
+}
+ORDER BY ?typeLabel
