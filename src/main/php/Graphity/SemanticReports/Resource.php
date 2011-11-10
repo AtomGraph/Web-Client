@@ -12,6 +12,10 @@ use Graphity\Util\UriBuilder;
 use Graphity\Util\PhutilURI;
 use Graphity\WebApplicationException;
 
+/** 
+ * @Path("{.*}")
+ * @Singleton 
+ */
 class Resource extends Resource
 {
     /**
@@ -23,13 +27,6 @@ class Resource extends Resource
      *  @var DataCache
      */
     private $dataCache = null;
-
-    /**
-     * Array with post urls for random retrieval.
-     * 
-     * @var array
-     */
-    private $postUris = array();
 
     /**
      *  @var Form
@@ -68,26 +65,9 @@ class Resource extends Resource
     /** 
      * @GET
      * @Produces("text/html")
-     * @Produces("application/xml")
-     * @Produces("application/xhtml+xml")
-     * @Produces("application/rdf+xml")
      */
-    public function doGet()
+    public function html()
     {
-        /**
-         *  strpos(....) are commented out, because it appears that sometimes you can receive an application/rdf+xml RSS content instead of HTML
-         *  if the browser accidentally or intentionally sends application/rdf+xml among other accept mime-types.
-         */
-        if ($this->getRequest()->getParameter("view") == "rss")/* || strpos($this->getRequest()->getHeader('HTTP_ACCEPT'), "application/rdf+xml") !== false)*/
-            return new RSSView($this);
-        if ($this->getRequest()->getParameter("view") == "rdf")/* || strpos($this->getRequest()->getHeader('HTTP_ACCEPT'), "application/rdf+xml") !== false)*/
-            return new RDFXMLView($this);
-        if ($this->getRequest()->getParameter("view") == "json")
-            return new JSONView($this);
-        if ($this->getRequest()->getParameter("offset") !== null) {
-            return new BobsLynMoreView($this);
-        }
-
         return $this->getDefaultView();
     }
 

@@ -1,0 +1,3 @@
+[submodule "lib/graphity"]
+	path = lib/graphity
+	url = git@github.com:Graphity/graphity-core.git

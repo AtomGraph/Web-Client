@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_URI} !\.(js|ico|gif|jpg|png|css|swf)$ [NC]
+# RewriteRule !\.(js|ico|gif|jpg|png|css|swf)$ /index.php/ [L]
+# RewriteRule ^admin/(.*)$ admin/index.php/$1 [L]
+RewriteRule ^(.*)$ index.php/$1 [L]
+
+RewriteCond %{HTTP_HOST} ^www\.semanticreports\.com$
+RewriteRule ^index.php/(.*)$ http://semanticreports.com/$1 [R=301,L]
+
+AddDefaultCharset UTF-8
