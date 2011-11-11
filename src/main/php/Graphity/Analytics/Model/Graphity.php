@@ -1,6 +1,6 @@
 <?php
 
-namespace Graphity\SemanticReports\Model; // move to global Graphity namespace?
+namespace Graphity\Analytics\Model; // move to global Graphity namespace?
 
 class Graphity
 {

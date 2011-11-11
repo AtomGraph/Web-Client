@@ -12,7 +12,7 @@ if(extension_loaded('xhprof')) {
     xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 }
 
-require_once ROOTDIR . '/src/main/php/HeltNormalt/config/init.php';
+require_once ROOTDIR . '/src/main/php/Graphity/Analytics/config/init.php';
 $request = new Graphity\Request();
 
 try {
@@ -26,7 +26,7 @@ try {
 }
 
 if(extension_loaded('xhprof')) {
-    $namespace = 'heltnormalt';
+    $namespace = 'analytics';
     $data = xhprof_disable();
     $xhprof = new XHProfRuns_Default();
     $runId = $xhprof->save_run($data, $namespace);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Graphity\SemanticReports;
+namespace Graphity\Analytics;
 
 use Graphity\Rdf as Rdf;
 use Graphity\Response;
@@ -25,7 +25,7 @@ class View extends XSLTView
         $this->setContentType(self::TEXT_HTML);
         $this->setHeader("Vary", "Accept");
 
-        if (strstr(get_class($this->getResource()), "List")) $this->getTransformer()->setParameter("", "view", Model\HeltNormalt::NS . "ListView");
+        if (strstr(get_class($this->getResource()), "List")) $this->getTransformer()->setParameter("", "view", Model\Graphity::NS . "ListView");
         else
             $this->getTransformer()->setParameter("", "view", Model\Graphity::NS . "ReadView");
 
@@ -50,7 +50,7 @@ class View extends XSLTView
 
     protected function getStyleSheetPath()
     {
-        return ROOTDIR . "/src/main/webapp/WEB-INF/xsl/SemanticReports.xsl";
+        return ROOTDIR . "/src/main/webapp/WEB-INF/xsl/Analytics.xsl";
     }
 
     // TO-DO: move this to HeltNormaltResource::describe()

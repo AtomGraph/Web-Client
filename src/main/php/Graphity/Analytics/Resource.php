@@ -1,6 +1,6 @@
 <?php
 
-namespace Graphity\SemanticReports;
+namespace Graphity\Analytics;
 
 use Graphity\Rdf as Rdf;
 use Graphity\Request;
