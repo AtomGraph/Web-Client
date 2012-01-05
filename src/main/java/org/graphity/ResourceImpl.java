@@ -55,10 +55,12 @@ abstract public class ResourceImpl implements Resource {
 	return uriInfo;
     }
 
+    @Override
     public Application getApplication() {
         return resourceConfig;
     }
 
+    @Override
     public ServletContext getServletContext() {
         return servletContext;
     }

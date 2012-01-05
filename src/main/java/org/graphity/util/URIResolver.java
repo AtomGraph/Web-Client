@@ -1,4 +1,4 @@
-package org.graphity.view;
+package org.graphity.util;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
 
@@ -9,12 +9,11 @@ import java.io.*;
 /**
  * Resolves calls to documents with <code>arg://</code> URI from XSLT stylesheets by passing dynamically formed strings as an XML documents.
  */
-public class ArgURIResolver implements URIResolver
+public class URIResolver
 {
     private Map<String, Source> args = new Hashtable<String, Source>();
     private static final String ARG_PROTOCOL = "arg://";
     
-    @Override
     public Source resolve(String href, String base)
     {
         //System.out.print("href: " + href + " base : " + base);
