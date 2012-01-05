@@ -4,20 +4,14 @@
  */
 package org.graphity.analytics;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 
 /**
  *
  * @author Pumba
  */
-@Path("/{path}")
-public class Resource
+@Path("/")
+public class FrontPageResource extends Resource
 {
-    @GET
-    public Response html()
-    {
-	return View.build();
-    }
+    
 }
