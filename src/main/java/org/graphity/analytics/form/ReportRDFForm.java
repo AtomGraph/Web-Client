@@ -109,19 +109,25 @@ public class ReportRDFForm extends RDFForm
     public List<Exception> validate()
     {
         //if (getTitle() == null || getTitle().equals("")) getErrors().add(new Error("noTitle"));
+	/*
         if (getEndpoint() == null) errors.add(new Error("noEndpoint"));
         if (getQueryString() == null || getQueryString().equals("")) errors.add(new Error("noQueryString"));
 
         return errors;
+	 */
+	return null;
     }
 
     public List<Error> validateWithTitle()
     {
+	/*
         if (getTitle() == null || getTitle().equals("")) errors.add(new Error("noTitle"));
         if (getEndpoint() == null) errors.add(new Error("noEndpoint"));
         if (getQueryString() == null || getQueryString().equals("")) errors.add(new Error("noQueryString"));
 
         return errors;
+	 */
+	return null;
     }
 
 }

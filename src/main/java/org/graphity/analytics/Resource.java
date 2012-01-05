@@ -2,13 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+package org.graphity.analytics;
 
-package org.graphity.analytics.form;
+import javax.ws.rs.Path;
 
 /**
  *
  * @author Pumba
  */
-public class QueryRDFForm {
-
+@Path("/{path}")
+public class Resource
+{
+    
 }

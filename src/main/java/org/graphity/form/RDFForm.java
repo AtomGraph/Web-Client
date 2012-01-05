@@ -30,8 +30,9 @@ import org.graphity.Form;
  *
  * @author Pumba
  */
-public class RDFForm implements Request, Form
+public class RDFForm implements Form // Request?
 {
+    private HttpServletRequest request = null;
     private Model model = ModelFactory.createDefaultModel();
     private List<String> keys = new ArrayList<String>();
     private List<String> values = new ArrayList<String>();
@@ -39,13 +40,13 @@ public class RDFForm implements Request, Form
 
     public RDFForm(HttpServletRequest request)
     {
-	super(request);
+	this.request = request;
 
-	initParamMap(request);
+	initParamMap();
 	initModel();
     }
 
-    private void initParamMap(HttpServletRequest request)
+    private void initParamMap()
     {
 	// using getQueryString() even with POST method because request.getParameterNames() does not guarantee order
 	String queryString = request.getQueryString();
@@ -147,41 +148,4 @@ public class RDFForm implements Request, Form
     {
         return errors;
     }
-
-    @Override
-    public String getMethod()
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ResponseBuilder evaluatePreconditions(EntityTag eTag)
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ResponseBuilder evaluatePreconditions(Date lastModified)
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ResponseBuilder evaluatePreconditions()
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
 }
