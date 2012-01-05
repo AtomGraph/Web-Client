@@ -6,6 +6,10 @@ package org.graphity;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -20,10 +24,39 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  *
  * @author Pumba
  */
-public class RDFResourceImpl extends ResourceImpl implements RDFResource
+abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
+    public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
+    
+    private com.hp.hpl.jena.rdf.model.Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
 
+    public RDFResourceImpl()
+    {
+	Query query = QueryFactory.create();
+	QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
+	model = qex.execDescribe();
+
+	resource = model.createResource(getURI());
+    }
+
+    public final String getServiceURI()
+    {
+	return SERVICE_URI;
+    }
+
+    @Override
+    public boolean exists()
+    {
+	return getModel().containsResource(this);
+    }
+    
+    @Override
+    public Model getModel()
+    {
+	return resource.getModel();
+    }
+    
     @Override
     public AnonId getId()
     {
@@ -299,4 +332,5 @@ public class RDFResourceImpl extends ResourceImpl implements RDFResource
     {
 	return resource.asNode();
     }
+
 }

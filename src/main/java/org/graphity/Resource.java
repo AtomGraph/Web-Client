@@ -5,7 +5,6 @@
 
 package org.graphity;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import java.net.URI;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Application;
@@ -25,6 +24,5 @@ public interface Resource
 
 	public boolean exists() throws Exception;
 	public boolean authorize() throws Exception;
-	
-	public Model getModel();
+
 }
