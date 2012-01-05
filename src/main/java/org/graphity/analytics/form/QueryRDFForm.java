@@ -3,13 +3,12 @@
  * and open the template in the editor.
  */
 
-package org.graphity.analytics.frontend.controller.exception;
+package org.graphity.analytics.form;
 
 /**
  *
  * @author Pumba
  */
-public class InvalidFormException extends Exception
-{
+public class QueryRDFForm {
 
 }

@@ -25,5 +25,6 @@ public interface Resource
 
 	public boolean exists() throws Exception;
 	public boolean authorize() throws Exception;
-	public Model describe() throws Exception; // return RDF/XML
+	
+	public Model getModel();
 }

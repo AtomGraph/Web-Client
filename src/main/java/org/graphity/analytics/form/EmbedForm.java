@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package org.graphity.analytics.frontend.controller.form;
+package org.graphity.analytics.form;
 
+import dk.semantic_web.diy.controller.Error;
 import org.graphity.Form;
 import java.util.ArrayList;
 import java.util.List;

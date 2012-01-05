@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.graphity.analytics.frontend.controller.form;
+package org.graphity.analytics.form;
 
 import org.graphity.Form;
 import java.util.List;

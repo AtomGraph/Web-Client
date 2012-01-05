@@ -3,13 +3,13 @@
  * and open the template in the editor.
  */
 
-package org.graphity.analytics.frontend.controller.exception;
+package org.graphity.analytics.exception;
 
 /**
  *
  * @author Pumba
  */
-public class NoResultsException extends Exception
+public class InvalidFormException extends Exception
 {
 
 }

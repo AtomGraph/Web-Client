@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.graphity.analytics.frontend.controller.form;
+package org.graphity.analytics.form;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;

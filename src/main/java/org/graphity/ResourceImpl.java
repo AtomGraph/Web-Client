@@ -10,6 +10,11 @@
 package org.graphity;
 
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
@@ -23,7 +28,7 @@ import javax.ws.rs.core.UriInfo;
  * 
  * @author Pumba
  */
-abstract public class ResourceImpl implements Resource {
+public class ResourceImpl implements Resource {
     @Context private ResourceContext resourceContext;
     @Context private ServletContext servletContext;
     @Context private Application application;
@@ -69,5 +74,19 @@ abstract public class ResourceImpl implements Resource {
     public boolean authorize()
     {
 	return true;
+    }
+
+    @Override
+    public boolean exists() throws Exception
+    {
+	return true;
+    }
+
+    @Override
+    public Model getModel()
+    {
+	Query query = QueryFactory.create();
+	QueryExecution qex = QueryExecutionFactory.sparqlService("http://dolph.heltnormalt.dk:82/local/query", query);
+	return qex.execDescribe();
     }
 }
