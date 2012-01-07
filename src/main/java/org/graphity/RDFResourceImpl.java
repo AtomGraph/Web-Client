@@ -19,6 +19,8 @@ import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 /**
  *
@@ -31,15 +33,36 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     private com.hp.hpl.jena.rdf.model.Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
 
-    public RDFResourceImpl()
+    @Override
+    // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
+    public Model getModel()
     {
-	Query query = QueryFactory.create();
-	QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
-	model = qex.execDescribe();
-
-	resource = model.createResource(getURI());
+	if (model == null)
+	{
+	    Query query = QueryFactory.create();
+	    QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
+	    model = qex.execDescribe();
+	}
+	
+	return model;
     }
-
+    
+    private Resource getResource()
+    {
+	if (resource == null)
+	    resource = getModel().createResource(getURI());
+	
+	return resource;
+    }
+    
+    @Override
+    public OutputStream describe()
+    {
+	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	getModel().write(stream);
+	return stream;
+    }
+    
     public final String getServiceURI()
     {
 	return SERVICE_URI;
@@ -52,285 +75,279 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     }
     
     @Override
-    public Model getModel()
-    {
-	return resource.getModel();
-    }
-    
-    @Override
     public AnonId getId()
     {
-	return resource.getId();
+	return getResource().getId();
     }
 
     @Override
     public Resource inModel(Model m)
     {
-	return resource.inModel(m);
+	return getResource().inModel(m);
     }
 
     @Override
     public boolean hasURI(String uri)
     {
-	return resource.hasURI(uri);
+	return getResource().hasURI(uri);
     }
 
     @Override
     public String getNameSpace()
     {
-	return resource.getNameSpace();
+	return getResource().getNameSpace();
     }
 
     @Override
     public String getLocalName()
     {
-	return resource.getLocalName();
+	return getResource().getLocalName();
     }
 
     @Override
     public Statement getRequiredProperty(Property p)
     {
-	return resource.getRequiredProperty(p);
+	return getResource().getRequiredProperty(p);
     }
 
     @Override
     public Statement getProperty(Property p)
     {
-	return resource.getProperty(p);
+	return getResource().getProperty(p);
     }
 
     @Override
     public StmtIterator listProperties(Property p)
     {
-	return resource.listProperties(p);
+	return getResource().listProperties(p);
     }
 
     @Override
     public StmtIterator listProperties()
     {
-	return resource.listProperties();
+	return getResource().listProperties();
     }
 
     @Override
     public Resource addLiteral(Property p, boolean o)
     {
-	return resource.addLiteral(p, o);
+	return getResource().addLiteral(p, o);
     }
 
     @Override
     public Resource addLiteral(Property p, long o)
     {
-	return resource.addLiteral(p, o);
+	return getResource().addLiteral(p, o);
     }
 
     @Override
     public Resource addLiteral(Property p, char o)
     {
-	return resource.addLiteral(p, o);
+	return getResource().addLiteral(p, o);
     }
 
     @Override
     public Resource addLiteral(Property value, double d)
     {
-	return resource.addLiteral(value, d);
+	return getResource().addLiteral(value, d);
     }
 
     @Override
     public Resource addLiteral(Property value, float d)
     {
-	return resource.addLiteral(value, d);
+	return getResource().addLiteral(value, d);
     }
 
     @Override
     public Resource addLiteral(Property p, Object o)
     {
-	return resource.addLiteral(p, o);
+	return getResource().addLiteral(p, o);
     }
 
     @Override
     public Resource addLiteral(Property p, Literal o)
     {
-	return resource.addLiteral(p, o);
+	return getResource().addLiteral(p, o);
     }
 
     @Override
     public Resource addProperty(Property p, String o)
     {
-	return resource.addProperty(p, o);
+	return getResource().addProperty(p, o);
     }
 
     @Override
     public Resource addProperty(Property p, String o, String l)
     {
-	return resource.addProperty(p, o, l);
+	return getResource().addProperty(p, o, l);
     }
 
     @Override
     public Resource addProperty(Property p, String lexicalForm, RDFDatatype datatype)
     {
-	return resource.addProperty(p, lexicalForm, datatype);
+	return getResource().addProperty(p, lexicalForm, datatype);
     }
 
     @Override
     public Resource addProperty(Property p, RDFNode o)
     {
-	return resource.addProperty(p, o);
+	return getResource().addProperty(p, o);
     }
 
     @Override
     public boolean hasProperty(Property p)
     {
-	return resource.hasProperty(p);
+	return getResource().hasProperty(p);
     }
 
     @Override
     public boolean hasLiteral(Property p, boolean o)
     {
-	return resource.hasLiteral(p, o);
+	return getResource().hasLiteral(p, o);
     }
 
     @Override
     public boolean hasLiteral(Property p, long o)
     {
-	return resource.hasLiteral(p, o);
+	return getResource().hasLiteral(p, o);
     }
 
     @Override
     public boolean hasLiteral(Property p, char o)
     {
-	return resource.hasLiteral(p, o);
+	return getResource().hasLiteral(p, o);
     }
 
     @Override
     public boolean hasLiteral(Property p, double o)
     {
-	return resource.hasLiteral(p, o);
+	return getResource().hasLiteral(p, o);
     }
 
     @Override
     public boolean hasLiteral(Property p, float o)
     {
-	return resource.hasLiteral(p, o);
+	return getResource().hasLiteral(p, o);
     }
 
     @Override
     public boolean hasLiteral(Property p, Object o)
     {
-	return resource.hasLiteral(p, o);
+	return getResource().hasLiteral(p, o);
     }
 
     @Override
     public boolean hasProperty(Property p, String o)
     {
-	return resource.hasProperty(p, o);
+	return getResource().hasProperty(p, o);
     }
 
     @Override
     public boolean hasProperty(Property p, String o, String l)
     {
-	return resource.hasProperty(p, o, l);
+	return getResource().hasProperty(p, o, l);
     }
 
     @Override
     public boolean hasProperty(Property p, RDFNode o)
     {
-	return resource.hasProperty(p, o);
+	return getResource().hasProperty(p, o);
     }
 
     @Override
     public Resource removeProperties()
     {
-	return resource.removeProperties();
+	return getResource().removeProperties();
     }
 
     @Override
     public Resource removeAll(Property p)
     {
-	return resource.removeAll(p);
+	return getResource().removeAll(p);
     }
 
     @Override
     public Resource begin()
     {
-	return resource.begin();
+	return getResource().begin();
     }
 
     @Override
     public Resource abort()
     {
-	return resource.abort();
+	return getResource().abort();
     }
 
     @Override
     public Resource commit()
     {
-	return resource.commit();
+	return getResource().commit();
     }
 
     @Override
     public Resource getPropertyResourceValue(Property p)
     {
-	return resource.getPropertyResourceValue(p);
+	return getResource().getPropertyResourceValue(p);
     }
 
     @Override
     public boolean isAnon()
     {
-	return resource.isAnon();
+	return getResource().isAnon();
     }
 
     @Override
     public boolean isLiteral()
     {
-	return resource.isLiteral();
+	return getResource().isLiteral();
     }
 
     @Override
     public boolean isURIResource()
     {
-	return resource.isURIResource();
+	return getResource().isURIResource();
     }
 
     @Override
     public boolean isResource()
     {
-	return resource.isResource();
+	return getResource().isResource();
     }
 
     @Override
     public <T extends RDFNode> T as(Class<T> view)
     {
-	return resource.as(view);
+	return getResource().as(view);
     }
 
     @Override
     public <T extends RDFNode> boolean canAs(Class<T> view)
     {
-	return resource.canAs(view);
+	return getResource().canAs(view);
     }
 
     @Override
     public Object visitWith(RDFVisitor rv)
     {
-	return resource.visitWith(rv);
+	return getResource().visitWith(rv);
     }
 
     @Override
     public Resource asResource()
     {
-	return resource.asResource();
+	return getResource().asResource();
     }
 
     @Override
     public Literal asLiteral()
     {
-	return resource.asLiteral();
+	return getResource().asLiteral();
     }
 
     @Override
     public Node asNode()
     {
-	return resource.asNode();
+	return getResource().asNode();
     }
 
 }

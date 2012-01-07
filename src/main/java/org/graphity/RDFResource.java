@@ -4,7 +4,7 @@
  */
 package org.graphity;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import java.io.OutputStream;
 
 /**
  *
@@ -12,4 +12,5 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
  */
 public interface RDFResource extends Resource, com.hp.hpl.jena.rdf.model.Resource
 {
+    public OutputStream describe(); // return RDF/XML
 }

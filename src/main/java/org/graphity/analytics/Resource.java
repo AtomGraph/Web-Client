@@ -6,18 +6,22 @@ package org.graphity.analytics;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.graphity.RDFResourceImpl;
 
 /**
  *
  * @author Pumba
  */
 @Path("/{path}")
-public class Resource
+public class Resource extends RDFResourceImpl
 {
     @GET
+    @Produces("text/html")
     public Response html()
     {
-	return View.build();
+	View view = new View(this);
+	return view.build();
     }
 }
