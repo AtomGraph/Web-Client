@@ -24,10 +24,10 @@ import javax.ws.rs.core.UriInfo;
  * @author Pumba
  */
 abstract public class ResourceImpl implements Resource {
-    @Context private ResourceContext resourceContext;
-    @Context private ServletContext servletContext;
-    @Context private Application application;
-    @Context private ResourceConfig resourceConfig;
+    //@Context private ResourceContext resourceContext;
+    //@Context private ServletContext servletContext;
+    //@Context private Application application;
+    //@Context private ResourceConfig resourceConfig;
     @Context private UriInfo uriInfo = null;
     @Context private Request request = null;
     //private Response response = null;
@@ -55,6 +55,7 @@ abstract public class ResourceImpl implements Resource {
 	return uriInfo;
     }
 
+    /*
     @Override
     public Application getApplication() {
         return resourceConfig;
@@ -64,6 +65,7 @@ abstract public class ResourceImpl implements Resource {
     public ServletContext getServletContext() {
         return servletContext;
     }
+    */
 
     @Override
     public boolean authorize()

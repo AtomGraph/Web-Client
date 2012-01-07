@@ -4,7 +4,12 @@
     <display-name>Semantic Reports</display-name>
     <servlet>
         <servlet-name>index</servlet-name>
-        <servlet-class>dk.semantic_web.sem_rep.controller.Controller</servlet-class>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>org.graphity.analytics.Application</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>default</servlet-name>

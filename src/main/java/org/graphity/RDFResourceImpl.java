@@ -16,11 +16,14 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 /**
  *
@@ -72,6 +75,13 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     public boolean exists()
     {
 	return getModel().containsResource(this);
+    }
+
+    @Override
+    public Date getLastModified()
+    {
+	//ResIterator it = getModel().listResourcesWithProperty(DCTerms.modified);
+	return null;
     }
     
     @Override
