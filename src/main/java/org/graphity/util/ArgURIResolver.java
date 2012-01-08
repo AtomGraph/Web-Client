@@ -9,7 +9,7 @@ import java.io.*;
 /**
  * Resolves calls to documents with <code>arg://</code> URI from XSLT stylesheets by passing dynamically formed strings as an XML documents.
  */
-public class URIResolver
+public class ArgURIResolver
 {
     private Map<String, Source> args = new Hashtable<String, Source>();
     private static final String ARG_PROTOCOL = "arg://";
