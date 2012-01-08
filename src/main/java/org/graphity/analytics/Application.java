@@ -7,6 +7,7 @@ package org.graphity.analytics;
 import java.util.HashSet;
 import java.util.Set;
 import org.graphity.util.ModelWriter;
+import org.graphity.util.ModelXSLTWriter;
 
 /**
  *
@@ -22,6 +23,7 @@ public class Application extends javax.ws.rs.core.Application
         s.add(Resource.class);
 	
 	s.add(ModelWriter.class);
+	s.add(ModelXSLTWriter.class);
 	
         return s;
     }
@@ -31,7 +33,7 @@ public class Application extends javax.ws.rs.core.Application
     {
         Set<Object> s = new HashSet<Object>();
 
-        s.add(new FrontPageResource());
+        //s.add(new FrontPageResource());
 
 	return s;
     }

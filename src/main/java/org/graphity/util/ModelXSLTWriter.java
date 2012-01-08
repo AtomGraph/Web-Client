@@ -30,12 +30,12 @@ import javax.xml.transform.stream.StreamSource;
  * @author Pumba
  */
 @Provider
-@Produces({"application/xml", "application/xhtml+xml", "application/rdf+xml", "text/xml", "text/plain"})
+@Produces({"text/html", "application/xml", "application/xhtml+xml", "application/rdf+xml", "text/xml", "text/plain"})
 public class ModelXSLTWriter implements MessageBodyWriter<Model>
 {
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
  
-    @Context ServletContext context = null;
+    @Context ServletContext context;
     private ByteArrayOutputStream bos = null;
 
     @Override
@@ -47,7 +47,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
     @Override
     public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	if (bos == null) model.write(bos);
+	if (bos == null)
+	{
+	    bos = new ByteArrayOutputStream();
+	    model.write(bos);
+	}
 	
 	return bos.size();
 	//return Integer.valueOf(stream.toByteArray().length).longValue();
@@ -56,7 +60,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
     @Override
     public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	if (bos == null) model.write(bos);
+	if (bos == null)
+	{
+	    bos = new ByteArrayOutputStream();
+	    model.write(bos);
+	}
 	// can we avoid buffering here? I guess not...
 	try
 	{
@@ -72,6 +80,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
     
     public Source getStylesheet()
     {
+	if (context == null) Logger.getLogger(ModelXSLTWriter.class.getName()).log(Level.INFO, "context == null");
 	return new StreamSource(context.getResourceAsStream(XSLT_BASE + "ResourceReadView.xsl"));
     }
     

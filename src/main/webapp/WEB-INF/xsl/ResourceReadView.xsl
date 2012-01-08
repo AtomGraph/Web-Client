@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE xsl:stylesheet [
-	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
-	<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-	<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-	<!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-	<!ENTITY hn "http://semantic-web.dk/ontologies/heltnormalt#">
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY hn "http://semantic-web.dk/ontologies/heltnormalt#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
-	<!ENTITY zodiac "http://data.totl.net/zodiac/ontology/">
+    <!ENTITY zodiac "http://data.totl.net/zodiac/ontology/">
     <!ENTITY list "http://jena.hpl.hp.com/ARQ/list#">
     <!ENTITY awol "http://bblfish.net/work/atom-owl/2006-06-06/AtomOwl.html#">
     <!ENTITY og "http://ogp.me/ns#">
@@ -41,16 +41,16 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 
     <xsl:output method="xml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
 
-	<xsl:preserve-space elements="pre"/>
+    <xsl:preserve-space elements="pre"/>
 
-	<xsl:param name="uri"/>
-	<xsl:param name="base-uri"/>
-	<xsl:param name="view"/>
-	<xsl:param name="action" select="false()"/>
-	<xsl:param name="php-os"/>
+    <xsl:param name="uri"/>
+    <xsl:param name="base-uri"/>
+    <xsl:param name="view"/>
+    <xsl:param name="action" select="false()"/>
+    <xsl:param name="php-os"/>
     <xsl:param name="fb-app-id" select="'264143360289485'"/>
 
-	<xsl:variable name="resource" select="/"/>
+    <xsl:variable name="resource" select="/"/>
     <xsl:variable name="lower-case" select="'abcdefghijklmnopqrstuvwxyz'" />
     <xsl:variable name="upper-case" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
