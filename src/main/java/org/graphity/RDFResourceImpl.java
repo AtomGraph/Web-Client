@@ -16,14 +16,14 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
 
 /**
  *
@@ -36,13 +36,16 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     private com.hp.hpl.jena.rdf.model.Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
 
-    @Override
+
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
+    @Override
+    @GET
+    @Produces("text/plain")
     public Model getModel()
     {
 	if (model == null)
 	{
-	    Query query = QueryFactory.create();
+	    Query query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
 	    QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
 	    model = qex.execDescribe();
 	}

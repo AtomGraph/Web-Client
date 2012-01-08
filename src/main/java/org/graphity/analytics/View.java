@@ -23,7 +23,7 @@ public class View extends ResponseBuilder
     public View(Resource resource)
     {
 	this.resource = resource;
-	builder = Response.ok("shit");
+	builder = Response.ok(resource.getURI());
     }
 
     @Override
