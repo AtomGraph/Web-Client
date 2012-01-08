@@ -10,12 +10,24 @@
 package org.graphity.util;
 
 import java.io.File;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -25,12 +37,118 @@ public class XSLTBuilder
 {
     private Transformer transformer = null;
     private Source doc = null;
-    private Source stylesheet = null;
-    private URIResolver resolver = new URIResolver();
+    //private Source stylesheet = null;
+
+    protected XSLTBuilder newInstance()
+    {
+	return new XSLTBuilder();
+    }
+    
+    public XSLTBuilder fromDocument(Source doc)
+    {
+	return newInstance().document(doc);
+    }
+
+    public XSLTBuilder fromDocument(Node n)
+    {
+	return newInstance().document(n);
+    }
+
+    public XSLTBuilder fromDocument(Node n, String systemId)
+    {
+	return newInstance().document(n, systemId);
+    }
+
+    public XSLTBuilder fromDocument(File file)
+    {
+	return newInstance().document(file);
+    }
+
+    public XSLTBuilder fromDocument(InputStream is)
+    {
+	return newInstance().document(is);
+    }
+
+    public XSLTBuilder fromDocument(InputStream is, String systemId)
+    {
+	return newInstance().document(is, systemId);
+    }
+
+    public XSLTBuilder fromDocument(Reader reader)
+    {
+	return newInstance().document(reader);
+    }
+
+    public XSLTBuilder fromDocument(Reader reader, String systemId)
+    {
+	return newInstance().document(reader, systemId);
+    }
+
+    public XSLTBuilder fromDocument(String systemId)
+    {
+	return newInstance().document(systemId);
+    }
+
+    public XSLTBuilder fromStylesheet(Source doc) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(doc);
+    }
+
+    public XSLTBuilder fromStylesheet(Node n) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(n);
+    }
+
+    public XSLTBuilder fromStylesheet(Node n, String systemId) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(n, systemId);
+    }
+
+    public XSLTBuilder fromStylesheet(File file) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(file);
+    }
+
+    public XSLTBuilder fromStylesheet(InputStream is) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(is);
+    }
+
+    public XSLTBuilder fromStylesheet(InputStream is, String systemId) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(is, systemId);
+    }
+
+    public XSLTBuilder fromStylesheet(Reader reader) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(reader);
+    }
+
+    public XSLTBuilder fromStylesheet(Reader reader, String systemId) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(reader, systemId);
+    }
+
+    public XSLTBuilder fromStylesheet(String systemId) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(systemId);
+    }
 
     public XSLTBuilder document(Source doc)
     {
 	this.doc = doc;
+	return this;
+    }
+
+    public XSLTBuilder document(Node n)
+    {
+	document(new DOMSource(n));
+	return this;
+    }
+
+    public XSLTBuilder document(Node n, String systemId)
+    {
+	document(new DOMSource(n, systemId));
 	return this;
     }
 
@@ -39,15 +157,76 @@ public class XSLTBuilder
 	document(new StreamSource(file));
 	return this;
     }
-	
+
+    public XSLTBuilder document(InputStream is)
+    {
+	document(new StreamSource(is));
+	return this;
+    }
+
+    public XSLTBuilder document(InputStream is, String systemId)
+    {
+	document(new StreamSource(is, systemId));
+	return this;
+    }
+
+    public XSLTBuilder document(Reader reader)
+    {
+	document(new StreamSource(reader));
+	return this;
+    }
+
+    public XSLTBuilder document(Reader reader, String systemId)
+    {
+	document(new StreamSource(reader, systemId));
+	return this;
+    }
+
+    public XSLTBuilder document(String systemId)
+    {
+	document(new StreamSource(systemId));
+	return this;
+    }
+
+    public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
+    {
+        transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
+	return this;
+    }
+
+    public XSLTBuilder stylesheet(Node n) throws TransformerConfigurationException
+    {
+        return stylesheet(new DOMSource(n));
+    }
+
+    public XSLTBuilder stylesheet(Node n, String systemId) throws TransformerConfigurationException
+    {
+        return stylesheet(new DOMSource(n, systemId));
+    }
+
     public XSLTBuilder stylesheet(File file) throws TransformerConfigurationException
     {
         return stylesheet(new StreamSource(file));
     }
 
-    public XSLTBuilder stylesheet(InputStream stream, String systemId) throws TransformerConfigurationException
+    public XSLTBuilder stylesheet(InputStream is) throws TransformerConfigurationException
     {
-        return stylesheet(new StreamSource(stream, systemId));
+        return stylesheet(new StreamSource(is));
+    }
+
+    public XSLTBuilder stylesheet(InputStream is, String systemId) throws TransformerConfigurationException
+    {
+        return stylesheet(new StreamSource(is, systemId));
+    }
+
+    public XSLTBuilder stylesheet(Reader reader) throws TransformerConfigurationException
+    {
+        return stylesheet(new StreamSource(reader));
+    }
+
+    public XSLTBuilder stylesheet(Reader reader, String systemId) throws TransformerConfigurationException
+    {
+        return stylesheet(new StreamSource(reader, systemId));
     }
 
     public XSLTBuilder stylesheet(String systemId) throws TransformerConfigurationException
@@ -55,23 +234,37 @@ public class XSLTBuilder
         return stylesheet(new StreamSource(systemId));
     }
 
-    public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
+    public XSLTBuilder parameter(String name, Object o)
     {
-	this.stylesheet = stylesheet;
-        transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
+	transformer.setParameter(name, o);
+	return this;
+    }
+    
+    public XSLTBuilder resolver(URIResolver resolver)
+    {
+	transformer.setURIResolver(resolver);
 	return this;
     }
 
-    public URIResolver getResolver()
+    public void transform(Result result) throws TransformerException
     {
-	return resolver;
+	transformer.transform(doc, result);
     }
 
-    public void setResolver(URIResolver resolver)
+    public Document transform() throws TransformerException, ParserConfigurationException
     {
-	this.resolver = resolver;
+	Document resDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+	
+	transform(new DOMResult(resDoc));
+	
+	return resDoc;
     }
 
+    public void transform(OutputStream out) throws TransformerException
+    {
+	transform(new StreamResult(out));
+    }
+    
     /*
     public void display(HttpServletRequest request, OutputStream out) throws IOException, TransformerException, ParserConfigurationException
     {
