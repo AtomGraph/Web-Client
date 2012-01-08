@@ -6,7 +6,7 @@ package org.graphity.analytics;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.graphity.util.JenaModelWriter;
+import org.graphity.util.ModelWriter;
 
 /**
  *
@@ -21,7 +21,7 @@ public class Application extends javax.ws.rs.core.Application
 	
         s.add(Resource.class);
 	
-	s.add(JenaModelWriter.class);
+	s.add(ModelWriter.class);
 	
         return s;
     }

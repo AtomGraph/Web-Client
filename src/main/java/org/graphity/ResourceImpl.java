@@ -10,11 +10,8 @@
 package org.graphity;
 
 
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
@@ -25,7 +22,7 @@ import javax.ws.rs.core.UriInfo;
  */
 abstract public class ResourceImpl implements Resource {
     //@Context private ResourceContext resourceContext;
-    //@Context private ServletContext servletContext;
+    @Context private ServletContext servletContext;
     //@Context private Application application;
     //@Context private ResourceConfig resourceConfig;
     @Context private UriInfo uriInfo = null;
@@ -57,15 +54,17 @@ abstract public class ResourceImpl implements Resource {
 
     /*
     @Override
-    public Application getApplication() {
+    public Application getApplication()
+    {
         return resourceConfig;
     }
-
+     */
+    
     @Override
-    public ServletContext getServletContext() {
+    public ServletContext getServletContext()
+    {
         return servletContext;
     }
-    */
 
     @Override
     public boolean authorize()

@@ -21,7 +21,7 @@ public interface Resource
 	public URI getBaseUri();
 	public UriInfo getUriInfo();
 	//public Application getApplication();
-	//public ServletContext getServletContext();
+	public ServletContext getServletContext();
 
 	public boolean exists() throws Exception;
 	public boolean authorize() throws Exception;

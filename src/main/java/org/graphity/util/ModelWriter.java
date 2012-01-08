@@ -49,11 +49,13 @@ import com.hp.hpl.jena.rdf.model.RDFWriter;
  */
 @Provider
 @Produces({"application/rdf+xml", "text/turtle", "text/n3", "text/plain", "application/turtle"})
-public class JenaModelWriter implements MessageBodyWriter<Model> {
+public class ModelWriter implements MessageBodyWriter<Model>
+{
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    {
         return Model.class.isAssignableFrom(type);
     }
 
@@ -64,7 +66,8 @@ public class JenaModelWriter implements MessageBodyWriter<Model> {
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
-                        MediaType mediaType) {
+                        MediaType mediaType)
+    {
         log.debug("Called size of item");
         stream = toStream(t, mediaType.toString());
         log.debug("Returning {} bytes", stream.size());

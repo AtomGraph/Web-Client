@@ -39,97 +39,97 @@ public class XSLTBuilder
     private Source doc = null;
     //private Source stylesheet = null;
 
-    protected XSLTBuilder newInstance()
+    protected static XSLTBuilder newInstance()
     {
 	return new XSLTBuilder();
     }
     
-    public XSLTBuilder fromDocument(Source doc)
+    public static XSLTBuilder fromDocument(Source doc)
     {
 	return newInstance().document(doc);
     }
 
-    public XSLTBuilder fromDocument(Node n)
+    public static XSLTBuilder fromDocument(Node n)
     {
 	return newInstance().document(n);
     }
 
-    public XSLTBuilder fromDocument(Node n, String systemId)
+    public static XSLTBuilder fromDocument(Node n, String systemId)
     {
 	return newInstance().document(n, systemId);
     }
 
-    public XSLTBuilder fromDocument(File file)
+    public static XSLTBuilder fromDocument(File file)
     {
 	return newInstance().document(file);
     }
 
-    public XSLTBuilder fromDocument(InputStream is)
+    public static XSLTBuilder fromDocument(InputStream is)
     {
 	return newInstance().document(is);
     }
 
-    public XSLTBuilder fromDocument(InputStream is, String systemId)
+    public static XSLTBuilder fromDocument(InputStream is, String systemId)
     {
 	return newInstance().document(is, systemId);
     }
 
-    public XSLTBuilder fromDocument(Reader reader)
+    public static XSLTBuilder fromDocument(Reader reader)
     {
 	return newInstance().document(reader);
     }
 
-    public XSLTBuilder fromDocument(Reader reader, String systemId)
+    public static XSLTBuilder fromDocument(Reader reader, String systemId)
     {
 	return newInstance().document(reader, systemId);
     }
 
-    public XSLTBuilder fromDocument(String systemId)
+    public static XSLTBuilder fromDocument(String systemId)
     {
 	return newInstance().document(systemId);
     }
 
-    public XSLTBuilder fromStylesheet(Source doc) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(Source doc) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(doc);
     }
 
-    public XSLTBuilder fromStylesheet(Node n) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(Node n) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(n);
     }
 
-    public XSLTBuilder fromStylesheet(Node n, String systemId) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(Node n, String systemId) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(n, systemId);
     }
 
-    public XSLTBuilder fromStylesheet(File file) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(File file) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(file);
     }
 
-    public XSLTBuilder fromStylesheet(InputStream is) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(InputStream is) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(is);
     }
 
-    public XSLTBuilder fromStylesheet(InputStream is, String systemId) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(InputStream is, String systemId) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(is, systemId);
     }
 
-    public XSLTBuilder fromStylesheet(Reader reader) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(Reader reader) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(reader);
     }
 
-    public XSLTBuilder fromStylesheet(Reader reader, String systemId) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(Reader reader, String systemId) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(reader, systemId);
     }
 
-    public XSLTBuilder fromStylesheet(String systemId) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(String systemId) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(systemId);
     }
