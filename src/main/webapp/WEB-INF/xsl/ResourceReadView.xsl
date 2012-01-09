@@ -67,15 +67,11 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <xsl:key name="object-properties" match="*[@rdf:resource or */@rdf:about]" use="concat(namespace-uri(.), local-name(.))"/>
     <xsl:key name="datatype-properties" match="*[*]" use="concat(namespace-uri(.), local-name(.))"/>
 
-    <xsl:template match="rdf:RDF">alioo
-        <xsl:apply-templates select="key('resources-by-type', '&sioc;Site')"/>
+    <xsl:template match="rdf:RDF">
+	alioox
+	<xsl:value-of select="$uri"/>
+
     </xsl:template>
-
-	<xsl:template match="sioc:Site | *[rdf:type/@rdf:resource = '&sioc;Site']" mode="body-attrs">frontpage</xsl:template>
-
-	<xsl:template match="sioc:Site | *[rdf:type/@rdf:resource = '&sioc;Site']">
-		<html/>
-	</xsl:template>
 
     <!-- traverses linked rdf:List -->
     <xsl:template match="*[@rdf:nodeID]" mode="rdf:List">

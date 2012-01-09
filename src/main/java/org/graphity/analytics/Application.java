@@ -33,7 +33,7 @@ public class Application extends javax.ws.rs.core.Application
     {
         Set<Object> s = new HashSet<Object>();
 
-        //s.add(new FrontPageResource());
+        s.add(new FrontPageResource());
 
 	return s;
     }

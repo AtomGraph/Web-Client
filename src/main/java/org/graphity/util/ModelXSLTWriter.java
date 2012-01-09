@@ -19,9 +19,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 
@@ -36,6 +38,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
  
     @Context ServletContext context;
+    @Context UriInfo uriInfo;
     private ByteArrayOutputStream bos = null;
 
     @Override
@@ -68,9 +71,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
 	// can we avoid buffering here? I guess not...
 	try
 	{
-	    XSLTBuilder.fromStylesheet(getStylesheet()).
-		document(new ByteArrayInputStream(bos.toByteArray())).
-		transform(entityStream);
+		getXSLTBuilder().transform(entityStream);
 	}
 	catch (TransformerException ex)
 	{
@@ -78,9 +79,16 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
 	}
     }
     
+    public XSLTBuilder getXSLTBuilder() throws TransformerConfigurationException
+    {
+	return XSLTBuilder.fromStylesheet(getStylesheet()).
+	    document(new ByteArrayInputStream(bos.toByteArray())).
+	    parameter("uri", uriInfo.getAbsolutePath()).
+	    parameter("base-uri", uriInfo.getBaseUri());
+    }
+    
     public Source getStylesheet()
     {
-	if (context == null) Logger.getLogger(ModelXSLTWriter.class.getName()).log(Level.INFO, "context == null");
 	return new StreamSource(context.getResourceAsStream(XSLT_BASE + "ResourceReadView.xsl"));
     }
     
