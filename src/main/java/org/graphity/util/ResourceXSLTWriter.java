@@ -4,7 +4,6 @@
  */
 package org.graphity.util;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,72 +18,78 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.RDFResource;
 
 /**
  *
  * @author Pumba
  */
 @Provider
-@Produces({"text/html", "application/xml", "application/xhtml+xml", "application/rdf+xml", "text/xml", "text/plain"})
-public class ModelXSLTWriter implements MessageBodyWriter<Model>
+@Produces({"text/html", "application/xml", "application/*+xml", "text/xml"})
+public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 {
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
  
     @Context ServletContext context;
-    @Context UriInfo uriInfo;
+    //@Context UriInfo uriInfo;
     private ByteArrayOutputStream bos = null;
+    //private MultivaluedMap<String, String> params = null;
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	return Model.class.isAssignableFrom(type);
+	return RDFResource.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    public long getSize(RDFResource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
 	if (bos == null)
 	{
 	    bos = new ByteArrayOutputStream();
-	    model.write(bos);
+	    resource.getModel().write(bos);
 	}
 	
-	return bos.size();
+	return bos.size(); // is this the right value?
 	//return Integer.valueOf(stream.toByteArray().length).longValue();
     }
 
     @Override
-    public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+    public void writeTo(RDFResource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
 	if (bos == null)
 	{
 	    bos = new ByteArrayOutputStream();
-	    model.write(bos);
+	    resource.getModel().write(bos);
 	}
 	// can we avoid buffering here? I guess not...
 	try
 	{
-		getXSLTBuilder().transform(entityStream);
+		getXSLTBuilder(resource).transform(entityStream);
 	}
 	catch (TransformerException ex)
 	{
-	    Logger.getLogger(ModelXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ResourceXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
     
-    public XSLTBuilder getXSLTBuilder() throws TransformerConfigurationException
+    public XSLTBuilder getXSLTBuilder(RDFResource resource) throws TransformerConfigurationException
     {
-	return XSLTBuilder.fromStylesheet(getStylesheet()).
+	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
 	    document(new ByteArrayInputStream(bos.toByteArray())).
-	    parameter("uri", uriInfo.getAbsolutePath()).
-	    parameter("base-uri", uriInfo.getBaseUri());
+	    parameter("uri", resource.getUriInfo().getAbsolutePath()).
+	    parameter("base-uri", resource.getUriInfo().getBaseUri());
+	
+	    if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)
+		builder.parameter("view", resource.getUriInfo().getQueryParameters().getFirst("view"));
+	    
+	    return builder;
     }
     
     public Source getStylesheet()
