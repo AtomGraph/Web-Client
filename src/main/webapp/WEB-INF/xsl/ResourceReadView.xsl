@@ -76,7 +76,10 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 		<title>Graphity</title>
 	    </head>
 	    <body>
-		<xsl:apply-templates/>
+		<xsl:apply-templates>
+		    <xsl:sort select="dc:title" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/>
+		</xsl:apply-templates>
 	    </body>
 	</html>
     </xsl:template>
@@ -87,10 +90,11 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 	    <xsl:value-of select="dc:title"/>
 	</h1>
 	<dl>
-	    <xsl:apply-templates>
+	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>
 	</dl>
+	<hr/>
     </xsl:template>    
 
 </xsl:stylesheet>
