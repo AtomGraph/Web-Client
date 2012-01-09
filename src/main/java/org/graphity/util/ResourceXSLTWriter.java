@@ -56,8 +56,9 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	    resource.getModel().write(bos);
 	}
 	
-	return bos.size(); // is this the right value?
+	//return bos.size(); // is this the right value?
 	//return Integer.valueOf(stream.toByteArray().length).longValue();
+	return -1;
     }
 
     @Override

@@ -68,17 +68,65 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <xsl:key name="datatype-properties" match="*[*]" use="concat(namespace-uri(.), local-name(.))"/>
 
     <xsl:template match="rdf:RDF">
-	<xsl:apply-templates select="*[@rdf:about] | *[@rdf:nodeID]"/>
+	<html>
+	    <head>
+		<title>Graphity</title>
+	    </head>
+	    <body>
+		<xsl:apply-templates/>
+	    </body>
+	</html>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about]">
-	Resource
+    <!-- subject URI resource -->
+    <xsl:template match="*[*][@rdf:about]">
+	<h1>
+	    <xsl:value-of select="dc:title"/>
+	</h1>
+	<dl>
+	    <xsl:apply-templates>
+		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+	    </xsl:apply-templates>
+	</dl>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:nodeID]" mode="rdf:List">
+    <!-- subject blank node -->
+    <xsl:template match="*[*][@rdf:nodeID]" mode="rdf:List">
 	Blank node
     </xsl:template>
     
+    <!-- property -->
+    <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*">
+	<dt>
+	    <a href="{concat(namespace-uri(.), local-name(.))}">
+		<xsl:value-of select="concat(namespace-uri(.), local-name(.))"/>
+	    </a>
+	</dt>
+	<xsl:apply-templates select="node() | @rdf:resource"/>
+    </xsl:template>
+
+    <!-- object resource -->
+    <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource">
+	<dd>
+	    <a href="{.}">
+		<xsl:value-of select="."/>
+	    </a>
+	</dd>
+    </xsl:template>
+
+    <!-- object literal -->
+    <xsl:template match="*[@rdf:about]/*/text() | *[@rdf:nodeID]/*/text()">
+	<dd>
+	    <xsl:value-of select="."/>
+	</dd>	
+    </xsl:template>
+	
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" priority="1">
+	<dd>
+	    <img src="{.}" alt=""/>
+	</dd>
+    </xsl:template>
+
     <!-- traverses linked rdf:List -->
     <xsl:template match="*[@rdf:nodeID]" mode="rdf:List">
         <xsl:apply-templates select="key('resources', rdf:first/@rdf:resource)"/>
