@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
@@ -74,13 +76,17 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	{
 		getXSLTBuilder(resource).transform(entityStream);
 	}
+	catch (URISyntaxException ex)
+	{
+	    Logger.getLogger(ResourceXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
+	}
 	catch (TransformerException ex)
 	{
 	    Logger.getLogger(ResourceXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
     
-    public XSLTBuilder getXSLTBuilder(RDFResource resource) throws TransformerConfigurationException
+    public XSLTBuilder getXSLTBuilder(RDFResource resource) throws TransformerConfigurationException, MalformedURLException, MalformedURLException, MalformedURLException, MalformedURLException, URISyntaxException
     {
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
 	    document(new ByteArrayInputStream(bos.toByteArray())).
@@ -93,9 +99,10 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	    return builder;
     }
     
-    public Source getStylesheet()
+    public Source getStylesheet() throws MalformedURLException, URISyntaxException
     {
-	return new StreamSource(context.getResourceAsStream(XSLT_BASE + "ResourceReadView.xsl"));
+	// using getResource() because getResourceAsStream() does not retain systemId
+	return new StreamSource(context.getResource(XSLT_BASE + "ResourceReadView.xsl").toURI().toString());	
     }
     
 }
