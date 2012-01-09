@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
@@ -191,6 +192,7 @@ public class XSLTBuilder
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
     {
         transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
+	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 	return this;
     }
 

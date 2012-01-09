@@ -11,7 +11,7 @@ xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
 exclude-result-prefixes="rdf foaf">
 
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" priority="1">
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
 	<dd>
 	    <a href="{.}">
 		<img src="{.}" alt=""/>
