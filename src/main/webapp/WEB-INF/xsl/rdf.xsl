@@ -2,6 +2,7 @@
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY java "http://xml.apache.org/xalan/java/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -9,7 +10,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:url="http://xml.apache.org/xalan/java/java.net.URLEncoder"
+xmlns:url="&java;java.net.URLEncoder"
 exclude-result-prefixes="rdf rdfs url">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->

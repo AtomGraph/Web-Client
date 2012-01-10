@@ -19,8 +19,6 @@ import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -43,7 +41,9 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain")
     public Model getModel()
     {
-	if (model == null)
+System.out.println("getURI(): " + getURI());
+
+	//if (model == null)
 	{
 	    Query query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
 	    QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
@@ -59,14 +59,6 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    resource = getModel().createResource(getURI());
 	
 	return resource;
-    }
-    
-    @Override
-    public OutputStream describe()
-    {
-	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	getModel().write(stream);
-	return stream;
     }
     
     public final String getServiceURI()

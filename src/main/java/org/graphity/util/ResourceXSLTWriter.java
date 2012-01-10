@@ -52,12 +52,13 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     @Override
     public long getSize(RDFResource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
+	/*
 	if (bos == null)
 	{
 	    bos = new ByteArrayOutputStream();
 	    resource.getModel().write(bos);
 	}
-	
+	*/
 	//return bos.size(); // is this the right value?
 	//return Integer.valueOf(stream.toByteArray().length).longValue();
 	return -1;
@@ -66,7 +67,7 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     @Override
     public void writeTo(RDFResource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	if (bos == null)
+	//if (bos == null)
 	{
 	    bos = new ByteArrayOutputStream();
 	    resource.getModel().write(bos);
@@ -74,7 +75,7 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	// can we avoid buffering here? I guess not...
 	try
 	{
-		getXSLTBuilder(resource).transform(entityStream);
+	    getXSLTBuilder(resource).transform(entityStream);
 	}
 	catch (URISyntaxException ex)
 	{
@@ -90,7 +91,7 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     {
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
 	    document(new ByteArrayInputStream(bos.toByteArray())).
-	    parameter("uri", resource.getUriInfo().getAbsolutePath()).
+	    parameter("uri", resource.getURI()).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri());
 	
 	    if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)

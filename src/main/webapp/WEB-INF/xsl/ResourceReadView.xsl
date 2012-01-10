@@ -76,6 +76,11 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 		<title>Graphity</title>
 	    </head>
 	    <body>
+		<!-- <p><xsl:value-of select="$uri"/></p> -->
+		<form action="" method="get">
+		    <input type="text" name="uri" value="{$uri}" size="60"/>
+		    <button type="submit">Browse</button>
+		</form>
 		<xsl:apply-templates>
 		    <xsl:sort select="dc:title" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/>
@@ -90,6 +95,8 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 	    <xsl:value-of select="dc:title"/>
 	</h1>
 	<dl>
+	    <dt>Types</dt>
+	    <xsl:apply-templates select="rdf:type/@rdf:resource"/>
 	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>

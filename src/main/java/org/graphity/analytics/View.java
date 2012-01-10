@@ -13,9 +13,8 @@ public class View extends Response
     
     public View(RDFResource resource)
     {
-	response = Response.ok(resource.getURI()).
-		entity(resource).
-		build();
+System.out.println("View()");
+	response = Response.ok(resource).build();
     }
 
     @Override

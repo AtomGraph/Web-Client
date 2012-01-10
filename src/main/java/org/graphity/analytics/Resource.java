@@ -19,18 +19,25 @@ import org.graphity.RDFResourceImpl;
 public class Resource extends RDFResourceImpl
 {
     private Response response = null;
+    //@QueryParam("uri") String uri; // does not inject?
     
     @GET
     @Produces("text/html")
     public Response getResponse() throws TransformerConfigurationException
     {
-	if (response == null) response = new View(this);
-	return response;
+	//Logger.getLogger(Resource.class.getName()).debug("QueryParam('uri'): {uri}");
+System.out.println("@GET");
+	//if (response == null) response = new View(this);
+	//return response;
+	return new View(this);
     }
     
     @Override
     public String getURI()
     {
+	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
+	    return getUriInfo().getQueryParameters().getFirst("uri");
+	
 	return getUriInfo().getAbsolutePathBuilder().
 		host("local.heltnormalt.dk").
 		port(-1).

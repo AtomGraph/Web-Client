@@ -21,6 +21,7 @@ public class Application extends javax.ws.rs.core.Application
         Set<Class<?>> s = new HashSet<Class<?>>();
 	
         s.add(Resource.class);
+        s.add(FrontPageResource.class);
 	
 	s.add(ModelWriter.class);
 	s.add(ResourceXSLTWriter.class);
@@ -33,7 +34,7 @@ public class Application extends javax.ws.rs.core.Application
     {
         Set<Object> s = new HashSet<Object>();
 
-        s.add(new FrontPageResource());
+        //s.add(new FrontPageResource());
 
 	return s;
     }
