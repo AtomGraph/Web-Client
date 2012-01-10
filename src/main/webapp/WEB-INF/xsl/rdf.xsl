@@ -3,20 +3,23 @@
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-exclude-result-prefixes="rdf rdfs">
+xmlns:url="http://xml.apache.org/xalan/java/java.net.URLEncoder"
+exclude-result-prefixes="rdf rdfs url">
+
+    <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
     <!-- property -->
     <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*">
 	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
 	<dt>
-	    <a href="{$this}">
-		<!-- <xsl:for-each select="document(namespace-uri(.))"> -->
+	    <a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
+		<!-- <xsl:value-of select="namespace-uri(.)"/> -->
 		<xsl:for-each select="document('../owl/sioc.owl')">
 		    <xsl:choose>
 			<xsl:when test="key('resources', $this)/rdfs:label">
@@ -35,7 +38,7 @@ exclude-result-prefixes="rdf rdfs">
     <!-- object resource -->
     <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource">
 	<dd>
-	    <a href="{.}">
+	    <a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
 		<xsl:value-of select="."/>
 	    </a>
 	</dd>
