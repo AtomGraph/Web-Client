@@ -48,6 +48,11 @@ exclude-result-prefixes="xsl rdf">
 	    <xsl:for-each select="key('resources', @rdf:about)">
 		<xsl:apply-templates>
 		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:resource" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:datatype" data-type="text" order="ascending"/>
+		    <xsl:sort select="@xml:lang" data-type="text" order="ascending"/>
+		    <xsl:sort select="text()" data-type="text" order="ascending"/>		    
 		</xsl:apply-templates>
 	    </xsl:for-each>
 	</xsl:copy>
@@ -64,6 +69,7 @@ exclude-result-prefixes="xsl rdf">
 		    <xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:datatype" data-type="text" order="ascending"/>
 		    <xsl:sort select="@xml:lang" data-type="text" order="ascending"/>
+		    <xsl:sort select="text()" data-type="text" order="ascending"/>
 		</xsl:apply-templates>
 	    </xsl:for-each>
 	</xsl:copy>
