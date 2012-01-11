@@ -21,11 +21,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
+import javax.xml.transform.Templates;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -36,9 +39,12 @@ import org.w3c.dom.Node;
  */
 public class XSLTBuilder
 {
-    private Transformer transformer = null;
-    private Source doc = null;
+    private Source source = null;
     //private Source stylesheet = null;
+    private SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
+    private Templates templates = null;
+    private TransformerHandler handler = null;
+    private Transformer transformer = null; 
 
     protected static XSLTBuilder newInstance()
     {
@@ -137,7 +143,7 @@ public class XSLTBuilder
 
     public XSLTBuilder document(Source doc)
     {
-	this.doc = doc;
+	this.source = doc;
 	return this;
     }
 
@@ -189,10 +195,14 @@ public class XSLTBuilder
 	return this;
     }
 
+    // http://xml.apache.org/xalan-j/usagepatterns.html#outasin
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
     {
-        transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
-	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        //transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
+	templates = TransformerFactory.newInstance().newTemplates(stylesheet);
+	handler = factory.newTransformerHandler(templates);
+	//transformer = templates.newTransformer();
+	transformer = factory.newTransformer();
 	return this;
     }
 
@@ -236,21 +246,33 @@ public class XSLTBuilder
         return stylesheet(new StreamSource(systemId));
     }
 
-    public XSLTBuilder parameter(String name, Object o)
+    public XSLTBuilder parameter(String name, Object value)
     {
-	transformer.setParameter(name, o);
+	//transformer.setParameter(name, o);
+	handler.getTransformer().setParameter(name, value);
 	return this;
     }
     
     public XSLTBuilder resolver(URIResolver resolver)
     {
-	transformer.setURIResolver(resolver);
+	//transformer.setURIResolver(resolver);
+	handler.getTransformer().setURIResolver(resolver);
 	return this;
     }
 
+    public XSLTBuilder outputProperty(String name, String value)
+    {
+	//transformer.setOutputProperty(name, value);
+	handler.getTransformer().setOutputProperty(name, value);
+	return this;
+    }
+    
     public void transform(Result result) throws TransformerException
     {
-	transformer.transform(doc, result);
+	//transformer.transform(doc, result);
+	handler.setResult(result);
+	transformer.transform(source, new SAXResult(handler));
+	//handler.getTransformer().transform(source, new SAXResult(handler));
     }
 
     public Document transform() throws TransformerException, ParserConfigurationException
@@ -266,16 +288,10 @@ public class XSLTBuilder
     {
 	transform(new StreamResult(out));
     }
-    
-    /*
-    public void display(HttpServletRequest request, OutputStream out) throws IOException, TransformerException, ParserConfigurationException
+
+    public void transform(XSLTBuilder builder) // for chaining stylesheets
     {
-	getTransformer().setURIResolver(resolver);
-	getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-        //getTransformer().setOutputProperty(OutputKeys.METHOD, "xml");
-
-	getTransformer().transform(doc, new StreamResult(out));
+	
     }
-     */
-
+    
 }

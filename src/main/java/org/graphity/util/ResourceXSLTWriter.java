@@ -25,6 +25,8 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.RDFResource;
 
@@ -41,7 +43,8 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     @Context ServletContext context;
     //@Context UriInfo uriInfo;
     private ByteArrayOutputStream bos = null;
-    //private MultivaluedMap<String, String> params = null;
+    private SAXTransformerFactory stf = (SAXTransformerFactory)TransformerFactory.newInstance();
+
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -75,6 +78,28 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	// can we avoid buffering here? I guess not...
 	try
 	{
+	    // http://stackoverflow.com/questions/1312406/efficient-xslt-pipeline-in-java-or-redirecting-results-to-sources
+	    /*
+	    Templates groupRdfXml = stf.newTemplates(new StreamSource(
+	      context.getResource(XSLT_BASE + "group-triples.xsl").toURI().toString()));
+	    Templates rdfXml2xhtml = stf.newTemplates(getStylesheet());
+
+	    TransformerHandler th1 = stf.newTransformerHandler(groupRdfXml);
+	    TransformerHandler th2 = stf.newTransformerHandler(rdfXml2xhtml);
+
+	    th1.setResult(new SAXResult(th2));
+	    th2.setResult(new StreamResult(entityStream));
+
+	    Transformer t = stf.newTransformer();
+	    t.transform(new StreamSource(new ByteArrayInputStream(bos.toByteArray())), new SAXResult(th1));
+	     */
+	    /*
+	    XSLTBuilder pretransform = XSLTBuilder.fromStylesheet().
+		document(new ByteArrayInputStream(bos.toByteArray())).
+		transform(new StreamResult(entityStream));
+
+	     */
+		    
 	    getXSLTBuilder(resource).transform(entityStream);
 	}
 	catch (URISyntaxException ex)
@@ -92,18 +117,18 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
 	    document(new ByteArrayInputStream(bos.toByteArray())).
 	    parameter("uri", resource.getURI()).
-	    parameter("base-uri", resource.getUriInfo().getBaseUri());
+	    parameter("base-uri", resource.getUriInfo().getBaseUri()); // is base uri necessary?
 	
 	    if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)
 		builder.parameter("view", resource.getUriInfo().getQueryParameters().getFirst("view"));
 	    
-	    return builder;
+	return builder;
     }
     
     public Source getStylesheet() throws MalformedURLException, URISyntaxException
     {
 	// using getResource() because getResourceAsStream() does not retain systemId
-	return new StreamSource(context.getResource(XSLT_BASE + "ResourceReadView.xsl").toURI().toString());	
+	return new StreamSource(context.getResource(XSLT_BASE + "ResourceReadView.xsl").toURI().toString());
     }
     
 }

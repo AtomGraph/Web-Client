@@ -80,7 +80,6 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 		<title>Graphity</title>
 	    </head>
 	    <body>
-		<!-- <p><xsl:value-of select="$uri"/></p> -->
 		<form action="" method="get">
 		    <input type="text" name="uri" value="{$uri}" size="60"/>
 		    <button type="submit">Browse</button>
@@ -97,22 +96,22 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<h1>
-	    <a href="{$base-uri}?uri={url:encode(@rdf:about, 'UTF-8')}">
-		<xsl:choose>
-		    <xsl:when test="dc:title">
-			<xsl:value-of select="dc:title"/>
-		    </xsl:when>
-		    <xsl:when test="foaf:name">
-			<xsl:value-of select="foaf:name"/>
-		    </xsl:when>
-		    <xsl:otherwise>
-			<xsl:value-of select="@rdf:about | @rdf:nodeID"/>
-		    </xsl:otherwise>
-		</xsl:choose>
-	    </a>
+	    <xsl:choose>
+		<xsl:when test="rdfs:label">
+		    <xsl:value-of select="rdfs:label[1]"/>
+		</xsl:when>
+		<xsl:when test="dc:title">
+		    <xsl:value-of select="dc:title[1]"/>
+		</xsl:when>
+		<xsl:when test="foaf:name">
+		    <xsl:value-of select="foaf:name[1]"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:value-of select="@rdf:about | @rdf:nodeID"/>
+		</xsl:otherwise>
+	    </xsl:choose>
 	</h1>
 	<dl>
-	    <dt>Types</dt>
 	    <xsl:apply-templates select="rdf:type/@rdf:resource"/>
 	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')][not(@xml:lang) or lang($lang)]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
@@ -120,5 +119,36 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 	</dl>
 	<hr/>
     </xsl:template>    
+
+    <!-- property -->
+    <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*">
+	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
+	<!-- do not repeat property name if it's the same as the previous one -->
+	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
+	    <dt>
+		<a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
+		    <!-- <xsl:value-of select="namespace-uri(.)"/> -->
+		    <xsl:for-each select="document('../owl/sioc.owl')">
+			<xsl:choose>
+			    <xsl:when test="key('resources', $this)/rdfs:label">
+				<xsl:value-of select="key('resources', $this)/rdfs:label"/>
+			    </xsl:when>
+			    <xsl:otherwise>
+				<xsl:value-of select="$this"/>
+			    </xsl:otherwise>
+			</xsl:choose>
+		    </xsl:for-each>
+		</a>
+	    </dt>
+	</xsl:if>
+	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+    </xsl:template>
+
+    <!-- object -->
+    <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource | *[@rdf:about]/*/@rdf:nodeID | *[@rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about]/*/text() | *[@rdf:nodeID]/*/text()">
+	<dd>
+	    <xsl:apply-imports/>
+	</dd>
+    </xsl:template>
 
 </xsl:stylesheet>
