@@ -20,36 +20,58 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 exclude-result-prefixes="xsl rdf">
 
-    <!-- groups triples in RDF/XML by subject to ease further XSLT processing -->
-	<xsl:output indent="yes" method="xml" encoding="UTF-8" media-type="application/rdf+xml"/>
-
+    <!-- groups and sorts triples in RDF/XML to ease further XSLT processing -->
+    <xsl:output indent="yes" method="xml" encoding="UTF-8" media-type="application/rdf+xml"/>
+    <xsl:strip-space elements="*"/>
+  
     <!-- only match subjects (i.e. elements that have property children) -->
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 
     <xsl:template match="rdf:RDF">
         <xsl:copy>
             <!-- URI resources -->
-            <xsl:for-each select="*[@rdf:about][count(. | key('resources', @rdf:about)[1]) = 1]">
-                <xsl:copy>
-                    <xsl:copy-of select="@*"/>
-                    <xsl:for-each select="key('resources', @rdf:about)">
-			<xsl:sort select="@rdf:about" data-type="text" order="ascending"/>
-                        <xsl:copy-of select="*"/>
-                    </xsl:for-each>
-                </xsl:copy>
-            </xsl:for-each>
+            <xsl:apply-templates select="*[@rdf:about][count(. | key('resources', @rdf:about)[1]) = 1]">
+		<xsl:sort select="@rdf:about" data-type="text" order="ascending"/>
+            </xsl:apply-templates>
 
             <!-- blank nodes -->
-            <xsl:for-each select="*[@rdf:nodeID][count(. | key('resources', @rdf:nodeID)[1]) = 1]">
-                <xsl:copy>
-                    <xsl:copy-of select="@*"/>
-                    <xsl:for-each select="key('resources', @rdf:nodeID)">
-			<xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
-                        <xsl:copy-of select="*"/>
-                    </xsl:for-each>
-                </xsl:copy>
-            </xsl:for-each>
+            <xsl:apply-templates select="*[@rdf:nodeID][count(. | key('resources', @rdf:nodeID)[1]) = 1]">
+		<xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/> 
+            </xsl:apply-templates>
         </xsl:copy>
     </xsl:template>
 
+    <!-- subject resource -->
+    <xsl:template match="*[*][@rdf:about]">
+	<xsl:copy>
+	    <xsl:copy-of select="@*"/>
+	    <xsl:for-each select="key('resources', @rdf:about)">
+		<xsl:apply-templates>
+		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+		</xsl:apply-templates>
+	    </xsl:for-each>
+	</xsl:copy>
+    </xsl:template>
+
+    <!-- subject blank node -->
+    <xsl:template match="*[*][@rdf:nodeID]">
+	<xsl:copy>
+	    <xsl:copy-of select="@*"/>
+	    <xsl:for-each select="key('resources', @rdf:nodeID)">
+		<xsl:apply-templates>
+		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:resource" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
+		    <xsl:sort select="@rdf:datatype" data-type="text" order="ascending"/>
+		    <xsl:sort select="@xml:lang" data-type="text" order="ascending"/>
+		</xsl:apply-templates>
+	    </xsl:for-each>
+	</xsl:copy>
+    </xsl:template>
+
+    <!-- property -->
+    <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*">
+	<xsl:copy-of select="."/>
+    </xsl:template>
+    
 </xsl:stylesheet>

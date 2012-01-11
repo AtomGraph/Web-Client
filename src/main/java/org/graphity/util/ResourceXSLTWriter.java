@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -79,28 +80,13 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	// can we avoid buffering here? I guess not...
 	try
 	{
-	    // http://stackoverflow.com/questions/1312406/efficient-xslt-pipeline-in-java-or-redirecting-results-to-sources
-	    /*
-	    Templates groupRdfXml = stf.newTemplates(new StreamSource(
-	      context.getResource(XSLT_BASE + "group-triples.xsl").toURI().toString()));
-	    Templates rdfXml2xhtml = stf.newTemplates(getStylesheet());
-
-	    TransformerHandler th1 = stf.newTransformerHandler(groupRdfXml);
-	    TransformerHandler th2 = stf.newTransformerHandler(rdfXml2xhtml);
-
-	    th1.setResult(new SAXResult(th2));
-	    th2.setResult(new StreamResult(entityStream));
-
-	    Transformer t = stf.newTransformer();
-	    t.transform(new StreamSource(new ByteArrayInputStream(bos.toByteArray())), new SAXResult(th1));
-	     */
-
 	    XSLTBuilder.fromStylesheet(context.getResource(XSLT_BASE + "group-triples.xsl").toURI().toString()).
 		document(new ByteArrayInputStream(bos.toByteArray())).
-		transform(getXSLTBuilder(resource)
-		    .result(new StreamResult(entityStream)));
-		    
-	    //getXSLTBuilder(resource).transform(entityStream);
+		outputProperty(OutputKeys.INDENT, "yes").
+		transform(getXSLTBuilder(resource).
+		    result(new StreamResult(entityStream)));
+
+	    //getXSLTBuilder(resource).transform(entityStream); // no preprocessing
 	}
 	catch (URISyntaxException ex)
 	{
@@ -117,7 +103,8 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
 	    document(new ByteArrayInputStream(bos.toByteArray())).
 	    parameter("uri", resource.getURI()).
-	    parameter("base-uri", resource.getUriInfo().getBaseUri()); // is base uri necessary?
+	    parameter("base-uri", resource.getUriInfo().getBaseUri()).
+	    outputProperty(OutputKeys.INDENT, "yes"); // is base uri necessary?
 	
 	    if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)
 		builder.parameter("view", resource.getUriInfo().getQueryParameters().getFirst("view"));
