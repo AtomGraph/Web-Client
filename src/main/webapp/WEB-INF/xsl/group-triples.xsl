@@ -33,6 +33,7 @@ exclude-result-prefixes="xsl rdf">
                 <xsl:copy>
                     <xsl:copy-of select="@*"/>
                     <xsl:for-each select="key('resources', @rdf:about)">
+			<xsl:sort select="@rdf:about" data-type="text" order="ascending"/>
                         <xsl:copy-of select="*"/>
                     </xsl:for-each>
                 </xsl:copy>
@@ -43,6 +44,7 @@ exclude-result-prefixes="xsl rdf">
                 <xsl:copy>
                     <xsl:copy-of select="@*"/>
                     <xsl:for-each select="key('resources', @rdf:nodeID)">
+			<xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
                         <xsl:copy-of select="*"/>
                     </xsl:for-each>
                 </xsl:copy>

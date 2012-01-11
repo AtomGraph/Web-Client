@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.RDFResource;
 
@@ -93,14 +94,13 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	    Transformer t = stf.newTransformer();
 	    t.transform(new StreamSource(new ByteArrayInputStream(bos.toByteArray())), new SAXResult(th1));
 	     */
-	    /*
-	    XSLTBuilder pretransform = XSLTBuilder.fromStylesheet().
-		document(new ByteArrayInputStream(bos.toByteArray())).
-		transform(new StreamResult(entityStream));
 
-	     */
+	    XSLTBuilder.fromStylesheet(context.getResource(XSLT_BASE + "group-triples.xsl").toURI().toString()).
+		document(new ByteArrayInputStream(bos.toByteArray())).
+		transform(getXSLTBuilder(resource)
+		    .result(new StreamResult(entityStream)));
 		    
-	    getXSLTBuilder(resource).transform(entityStream);
+	    //getXSLTBuilder(resource).transform(entityStream);
 	}
 	catch (URISyntaxException ex)
 	{

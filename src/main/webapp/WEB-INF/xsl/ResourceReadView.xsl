@@ -87,7 +87,7 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 		<xsl:apply-templates select="key('resources', $uri)"/>
 		<xsl:apply-templates select="*[@rdf:about != $uri]">
 		    <xsl:sort select="dc:title" data-type="text" order="ascending"/>
-		    <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/>
+		    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
 		</xsl:apply-templates>
 	    </body>
 	</html>

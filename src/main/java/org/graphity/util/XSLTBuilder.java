@@ -270,7 +270,7 @@ public class XSLTBuilder
     public void transform(Result result) throws TransformerException
     {
 	//transformer.transform(doc, result);
-	handler.setResult(result);
+	result(result);
 	transformer.transform(source, new SAXResult(handler));
 	//handler.getTransformer().transform(source, new SAXResult(handler));
     }
@@ -289,9 +289,20 @@ public class XSLTBuilder
 	transform(new StreamResult(out));
     }
 
-    public void transform(XSLTBuilder builder) // for chaining stylesheets
+    public XSLTBuilder result(Result result)
     {
-	
+	handler.setResult(result);
+	return this;
+    }
+    
+    protected TransformerHandler getTransformerHandler()
+    {
+	return handler;
+    }
+    
+    public void transform(XSLTBuilder next) throws TransformerException // for chaining stylesheets
+    {
+	transform(new SAXResult(next.getTransformerHandler()));
     }
     
 }
