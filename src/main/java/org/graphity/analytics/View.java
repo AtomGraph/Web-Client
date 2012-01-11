@@ -13,7 +13,6 @@ public class View extends Response
     
     public View(RDFResource resource)
     {
-System.out.println("View()");
 	response = Response.ok(resource).build();
     }
 

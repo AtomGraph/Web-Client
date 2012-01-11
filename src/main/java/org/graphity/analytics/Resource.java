@@ -26,7 +26,7 @@ public class Resource extends RDFResourceImpl
     public Response getResponse() throws TransformerConfigurationException
     {
 	//Logger.getLogger(Resource.class.getName()).debug("QueryParam('uri'): {uri}");
-System.out.println("@GET");
+
 	//if (response == null) response = new View(this);
 	//return response;
 	return new View(this);

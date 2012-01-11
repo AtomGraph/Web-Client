@@ -29,7 +29,8 @@ import javax.ws.rs.Produces;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
-    public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
+    //public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
+    public static final String SERVICE_URI = "http://dbpedia.org/sparql";
     
     private com.hp.hpl.jena.rdf.model.Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;

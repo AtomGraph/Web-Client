@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE xsl:stylesheet [
+    <!ENTITY java "http://xml.apache.org/xalan/java/">
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
@@ -20,6 +21,7 @@
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:url="&java;java.net.URLEncoder"
 xmlns:php="http://php.net/xsl"
 xmlns:date="http://exslt.org/dates-and-times"
 xmlns:math="http://exslt.org/math"
@@ -40,6 +42,7 @@ xmlns:exslt="http://exslt.org/common"
 exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sioc hn zodiac list awol exslt">
 
     <xsl:import href="rdf.xsl"/>
+    <xsl:import href="dbpedia.xsl"/>
     <xsl:import href="foaf.xsl"/>
 
     <xsl:output method="xml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
@@ -52,6 +55,7 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <xsl:param name="action" select="false()"/>
     <xsl:param name="php-os"/>
     <xsl:param name="fb-app-id" select="'264143360289485'"/>
+    <xsl:param name="lang" select="'en'"/>
 
     <xsl:variable name="resource" select="/"/>
     <xsl:variable name="lower-case" select="'abcdefghijklmnopqrstuvwxyz'" />
@@ -81,7 +85,8 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 		    <input type="text" name="uri" value="{$uri}" size="60"/>
 		    <button type="submit">Browse</button>
 		</form>
-		<xsl:apply-templates>
+		<xsl:apply-templates select="key('resources', $uri)"/>
+		<xsl:apply-templates select="*[@rdf:about != $uri]">
 		    <xsl:sort select="dc:title" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/>
 		</xsl:apply-templates>
@@ -89,15 +94,27 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 	</html>
     </xsl:template>
 
-    <!-- subject URI resource -->
+    <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<h1>
-	    <xsl:value-of select="dc:title"/>
+	    <a href="{$base-uri}?uri={url:encode(@rdf:about, 'UTF-8')}">
+		<xsl:choose>
+		    <xsl:when test="dc:title">
+			<xsl:value-of select="dc:title"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:name">
+			<xsl:value-of select="foaf:name"/>
+		    </xsl:when>
+		    <xsl:otherwise>
+			<xsl:value-of select="@rdf:about | @rdf:nodeID"/>
+		    </xsl:otherwise>
+		</xsl:choose>
+	    </a>
 	</h1>
 	<dl>
 	    <dt>Types</dt>
 	    <xsl:apply-templates select="rdf:type/@rdf:resource"/>
-	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')]">
+	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')][not(@xml:lang) or lang($lang)]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>
 	</dl>
