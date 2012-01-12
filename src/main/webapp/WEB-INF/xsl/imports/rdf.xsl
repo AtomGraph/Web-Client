@@ -22,12 +22,13 @@ exclude-result-prefixes="g url rdf rdfs">
     <!-- object URI resource -->
     <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
-	    <xsl:value-of select="."/>
+	    <xsl:apply-templates select="." mode="g:label"/>
 	</a>
     </xsl:template>
 
     <!-- object blank node -->
     <xsl:template match="*[@rdf:about]/*/@rdf:nodeID | *[@rdf:nodeID]/*/@rdf:nodeID">
+	<!-- <xsl:apply-templates/> ??? -->
 	<xsl:value-of select="."/>
     </xsl:template>
 

@@ -34,4 +34,13 @@ exclude-result-prefixes="url rdf dbpedia-owl">
 	</xsl:for-each>
     </xsl:template>
 
+    <!-- object URI resource -->
+    <xsl:template match="*[@rdf:about]/*/@rdf:resource[starts-with(., '&dbpedia-owl;')] | *[@rdf:nodeID]/*/@rdf:resource[starts-with(., '&dbpedia-owl;')]"  mode="g:label">
+	<xsl:variable name="uri" select="."/>
+	<xsl:for-each select="document($ontology-uri)">
+	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
+	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
+	</xsl:for-each>
+    </xsl:template>
+
 </xsl:stylesheet>
