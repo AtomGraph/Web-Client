@@ -60,10 +60,10 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
 		    <button type="submit">Browse</button>
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
-		<xsl:apply-templates select="*[@rdf:about != $uri]">
+		<!-- <xsl:apply-templates select="*[@rdf:about != $uri]"> -->
 		    <!-- <xsl:sort select="dc:title" data-type="text" order="ascending"/> -->
 		    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
-		</xsl:apply-templates>
+		<!-- </xsl:apply-templates> -->
 	    </body>
 	</html>
     </xsl:template>
@@ -71,7 +71,7 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<h1>
-	    <xsl:apply-templates select="." mode="g:label"/>
+	    <xsl:apply-templates select="@rdf:about" mode="g:label"/> <!-- what about nodeID? -->
 	</h1>
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>

@@ -4,6 +4,7 @@
     <!ENTITY g "http://graphity.org/ontology/">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY ont-uri "../../owl/rdf.owl">
 ]>
 <xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -16,8 +17,6 @@ xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="g url rdf rdfs">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
-
-    <xsl:param name="ontology-uri" select="'../../owl/rdf.owl'"/>
     
     <!-- object URI resource -->
     <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource">
@@ -50,10 +49,19 @@ exclude-result-prefixes="g url rdf rdfs">
     <!-- rdf:* property -->
     <xsl:template match="*[@rdf:about]/rdf:* | *[@rdf:nodeID]/rdf:*" mode="g:label">
 	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
-	<xsl:for-each select="document($ontology-uri)">
+	<xsl:for-each select="document('&ont-uri;')">
 	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
 	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
 	</xsl:for-each>
     </xsl:template>
-	
+
+    <!-- object URI resource -->
+    <xsl:template match="*[@rdf:about]/*/@rdf:resource[starts-with(., '&rdf;')] | *[@rdf:nodeID]/*/@rdf:resource[starts-with(., '&rdf;')]"  mode="g:label">
+	<xsl:variable name="uri" select="string(.)"/>
+	<xsl:for-each select="document('&ont-uri;')">
+	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
+	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
+	</xsl:for-each>
+    </xsl:template>
+
 </xsl:stylesheet>
