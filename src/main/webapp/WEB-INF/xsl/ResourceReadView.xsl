@@ -1,49 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java "http://xml.apache.org/xalan/java/">
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+    <!ENTITY g "http://graphity.org/ontology/">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY hn "http://semantic-web.dk/ontologies/heltnormalt#">
-    <!ENTITY dc "http://purl.org/dc/elements/1.1/">
-    <!ENTITY dct "http://purl.org/dc/terms/">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
-    <!ENTITY zodiac "http://data.totl.net/zodiac/ontology/">
-    <!ENTITY list "http://jena.hpl.hp.com/ARQ/list#">
-    <!ENTITY awol "http://bblfish.net/work/atom-owl/2006-06-06/AtomOwl.html#">
-    <!ENTITY og "http://ogp.me/ns#">
-    <!ENTITY fb "http://ogp.me/ns/fb#">
 ]>
 <xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:g="&g;"
+xmlns:rdf="&rdf;"
 xmlns:url="&java;java.net.URLEncoder"
 xmlns:php="http://php.net/xsl"
-xmlns:date="http://exslt.org/dates-and-times"
-xmlns:math="http://exslt.org/math"
-xmlns:rdf="&rdf;"
-xmlns:rdfs="&rdfs;"
-xmlns:sparql="&sparql;"
-xmlns:dc="&dc;"
-xmlns:dct="&dct;"
-xmlns:foaf="&foaf;"
-xmlns:sioc="&sioc;"
-xmlns:hn="&hn;"
-xmlns:zodiac="&zodiac;"
-xmlns:list="&list;"
-xmlns:awol="&awol;"
-xmlns:og="&og;"
-xmlns:fb="&fb;"
-xmlns:exslt="http://exslt.org/common"
-exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sioc hn zodiac list awol exslt">
+exclude-result-prefixes="xsl xhtml g rdf php java">
 
-    <xsl:import href="rdf.xsl"/>
-    <xsl:import href="dbpedia.xsl"/>
-    <xsl:import href="foaf.xsl"/>
+    <xsl:import href="imports/rdf.xsl"/>
+    <xsl:import href="imports/dbpedia-owl.xsl"/>
+    <xsl:import href="imports/foaf.xsl"/>
 
     <xsl:output method="xml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
 
@@ -62,6 +35,7 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <xsl:variable name="upper-case" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
     <xsl:key name="resources" match="*[@rdf:about] | *[@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+    <!--
     <xsl:key name="resources-by-domain" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:domain/@rdf:resource"/>
     <xsl:key name="resources-by-type" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-is-part-of" match="*[@rdf:about] | *[@rdf:nodeID]" use="dct:isPartOf/@rdf:resource"/>
@@ -73,7 +47,8 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <xsl:key name="properties" match="*" use="concat(namespace-uri(.), local-name(.))"/>
     <xsl:key name="object-properties" match="*[@rdf:resource or */@rdf:about]" use="concat(namespace-uri(.), local-name(.))"/>
     <xsl:key name="datatype-properties" match="*[*]" use="concat(namespace-uri(.), local-name(.))"/>
-
+    -->
+    
     <xsl:template match="rdf:RDF">
 	<html>
 	    <head>
@@ -86,7 +61,7 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
 		<xsl:apply-templates select="*[@rdf:about != $uri]">
-		    <xsl:sort select="dc:title" data-type="text" order="ascending"/>
+		    <!-- <xsl:sort select="dc:title" data-type="text" order="ascending"/> -->
 		    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
 		</xsl:apply-templates>
 	    </body>
@@ -96,23 +71,10 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<h1>
-	    <xsl:choose>
-		<xsl:when test="rdfs:label">
-		    <xsl:value-of select="rdfs:label[1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title">
-		    <xsl:value-of select="dc:title[1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:name">
-		    <xsl:value-of select="foaf:name[1]"/>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:value-of select="@rdf:about | @rdf:nodeID"/>
-		</xsl:otherwise>
-	    </xsl:choose>
+	    <xsl:apply-templates select="." mode="g:label"/>
 	</h1>
 	<dl>
-	    <xsl:apply-templates select="rdf:type/@rdf:resource"/>
+	    <xsl:apply-templates select="rdf:type"/>
 	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')][not(@xml:lang) or lang($lang)]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>
@@ -122,22 +84,12 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 
     <!-- property -->
     <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*">
-	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
+	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
 	<!-- do not repeat property name if it's the same as the previous one -->
-	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
+	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $uri)">
 	    <dt>
-		<a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
-		    <!-- <xsl:value-of select="namespace-uri(.)"/> -->
-		    <xsl:for-each select="document('../owl/sioc.owl')">
-			<xsl:choose>
-			    <xsl:when test="key('resources', $this)/rdfs:label">
-				<xsl:value-of select="key('resources', $this)/rdfs:label"/>
-			    </xsl:when>
-			    <xsl:otherwise>
-				<xsl:value-of select="$this"/>
-			    </xsl:otherwise>
-			</xsl:choose>
-		    </xsl:for-each>
+		<a href="{$base-uri}?uri={url:encode($uri, 'UTF-8')}">
+		    <xsl:apply-templates select="." mode="g:label"/>
 		</a>
 	    </dt>
 	</xsl:if>
@@ -150,5 +102,5 @@ exclude-result-prefixes="xsl xhtml php date math rdf rdfs sparql dc dct foaf sio
 	    <xsl:apply-imports/>
 	</dd>
     </xsl:template>
-
+	
 </xsl:stylesheet>
