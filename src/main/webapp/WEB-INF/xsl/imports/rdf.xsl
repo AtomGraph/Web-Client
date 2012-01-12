@@ -19,45 +19,45 @@ exclude-result-prefixes="g url rdf rdfs">
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
     
     <!-- object URI resource -->
-    <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
 	    <xsl:apply-templates select="." mode="g:label"/>
 	</a>
     </xsl:template>
 
     <!-- object blank node -->
-    <xsl:template match="*[@rdf:about]/*/@rdf:nodeID | *[@rdf:nodeID]/*/@rdf:nodeID">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
 	<!-- <xsl:apply-templates/> ??? -->
 	<xsl:value-of select="."/>
     </xsl:template>
 
     <!-- object literal -->
-    <xsl:template match="*[@rdf:about]/*/text() | *[@rdf:nodeID]/*/text()">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/text()">
 	<xsl:value-of select="."/>
     </xsl:template>
 
     <!-- subject -->
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="g:label">
-	<xsl:value-of select="@rdf:about | @rdf:nodeID"/>
+    <xsl:template match="@rdf:about | @rdf:resource" mode="g:label">
+	<xsl:value-of select="."/>
     </xsl:template>
     
     <!-- property -->
-    <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*" mode="g:label">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:label">
 	<xsl:value-of select="concat(namespace-uri(.), local-name(.))"/>
     </xsl:template>
 
-    <!-- rdf:* property -->
-    <xsl:template match="*[@rdf:about]/rdf:* | *[@rdf:nodeID]/rdf:*" mode="g:label">
-	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
+    <!-- subject/object URI resource -->
+    <xsl:template match="@rdf:about[starts-with(., '&rdf;')] | @rdf:resource[starts-with(., '&rdf;')]"  mode="g:label">
+	<xsl:variable name="uri" select="string(.)"/>
 	<xsl:for-each select="document('&ont-uri;')">
 	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
 	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
 	</xsl:for-each>
     </xsl:template>
 
-    <!-- object URI resource -->
-    <xsl:template match="*[@rdf:about]/*/@rdf:resource[starts-with(., '&rdf;')] | *[@rdf:nodeID]/*/@rdf:resource[starts-with(., '&rdf;')]"  mode="g:label">
-	<xsl:variable name="uri" select="string(.)"/>
+    <!-- rdf:* property -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/rdf:*" mode="g:label">
+	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
 	<xsl:for-each select="document('&ont-uri;')">
 	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
 	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>

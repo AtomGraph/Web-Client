@@ -73,17 +73,26 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
 	<h1>
 	    <xsl:apply-templates select="@rdf:about" mode="g:label"/> <!-- what about nodeID? -->
 	</h1>
+	<!--
+	<xsl:apply-templates select="rdf:type" mode="g:type">
+
+	</xsl:apply-templates>
+	-->
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>
-	    <xsl:apply-templates select="*[not(concat(namespace-uri(.), local-name(.)) = '&rdf;type')][not(@xml:lang) or lang($lang)]">
+	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>
 	</dl>
 	<hr/>
     </xsl:template>    
 
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:type">
+	<xsl:apply-templates select="@rdf:resource" mode="g:label"/>
+    </xsl:template>
+	
     <!-- property -->
-    <xsl:template match="*[@rdf:about]/* | *[@rdf:nodeID]/*">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
 	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
 	<!-- do not repeat property name if it's the same as the previous one -->
 	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $uri)">
@@ -97,7 +106,7 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
     </xsl:template>
 
     <!-- object -->
-    <xsl:template match="*[@rdf:about]/*/@rdf:resource | *[@rdf:nodeID]/*/@rdf:resource | *[@rdf:about]/*/@rdf:nodeID | *[@rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about]/*/text() | *[@rdf:nodeID]/*/text()">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource | *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about or @rdf:nodeID]/*/text()">
 	<dd>
 	    <xsl:apply-imports/>
 	</dd>
