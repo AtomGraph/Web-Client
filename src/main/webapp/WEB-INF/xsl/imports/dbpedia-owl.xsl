@@ -28,19 +28,26 @@ exclude-result-prefixes="url g rdf rdfs dbpedia-owl">
     
     <!-- subject/object URI resource -->
     <xsl:template match="@rdf:about[starts-with(., '&dbpedia-owl;')] | @rdf:resource[starts-with(., '&dbpedia-owl;')]"  mode="g:label">
-	<xsl:variable name="uri" select="string(.)"/>
+	<xsl:variable name="this" select="string(.)"/>
 	<xsl:for-each select="document('&ont-uri;')">
-	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
+	    <xsl:variable name="label" select="key('resources', $this)/rdfs:label"/>
 	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
 	</xsl:for-each>
     </xsl:template>
 
     <!-- dbpedia-owl:* property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/dbpedia-owl:*" mode="g:label">
-	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
+	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
 	<xsl:for-each select="document('&ont-uri;')">
-	    <xsl:variable name="label" select="key('resources', $uri)/rdfs:label"/>
+	    <xsl:variable name="label" select="key('resources', $this)/rdfs:label"/>
 	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
+	</xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/dbpedia-owl:*" mode="rdfs:domain">
+	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
+	<xsl:for-each select="document('&ont-uri;')">
+	    <xsl:value-of select="key('resources', $this)/rdfs:domain/@rdf:resource"/>
 	</xsl:for-each>
     </xsl:template>
 

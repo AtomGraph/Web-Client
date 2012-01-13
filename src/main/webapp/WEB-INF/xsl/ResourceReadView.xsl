@@ -3,6 +3,7 @@
     <!ENTITY java "http://xml.apache.org/xalan/java/">
     <!ENTITY g "http://graphity.org/ontology/">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
 ]>
 <xsl:stylesheet version="1.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -10,6 +11,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
+xmlns:rdfs="&rdfs;"
 xmlns:url="&java;java.net.URLEncoder"
 xmlns:php="http://php.net/xsl"
 exclude-result-prefixes="xsl xhtml g rdf php java">
@@ -73,36 +75,57 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
 	<h1>
 	    <xsl:apply-templates select="@rdf:about" mode="g:label"/> <!-- what about nodeID? -->
 	</h1>
-	<!--
-	<xsl:apply-templates select="rdf:type" mode="g:type">
-
+	<dl>
+	    <xsl:apply-templates select="rdf:type"/>
+	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
+		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+	    </xsl:apply-templates>	    
+	</dl>
+	<xsl:apply-templates select="rdf:type/@rdf:resource" mode="g:type">
+	    <!-- <xsl:sort select="@rdf:resource | @rdf:nodeID" data-type="text" order="ascending"/> -->
 	</xsl:apply-templates>
-	-->
+	<!--
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>
 	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>
 	</dl>
+	-->
 	<hr/>
     </xsl:template>    
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:type">
-	<xsl:apply-templates select="@rdf:resource" mode="g:label"/>
+    <xsl:template match="rdf:type/@rdf:resource" mode="g:type">
+	<xsl:variable name="this" select="."/>
+	<h2>
+	    <xsl:apply-imports/>
+	</h2>
+	<dl>
+	    <xsl:apply-templates select="../../*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
+		<xsl:with-param name="type" select="$this"/>
+	    </xsl:apply-templates>
+	</dl>
     </xsl:template>
-	
+
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
-	<xsl:variable name="uri" select="concat(namespace-uri(.), local-name(.))"/>
-	<!-- do not repeat property name if it's the same as the previous one -->
-	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $uri)">
-	    <dt>
-		<a href="{$base-uri}?uri={url:encode($uri, 'UTF-8')}">
-		    <xsl:apply-templates select="." mode="g:label"/>
-		</a>
-	    </dt>
+	<xsl:param name="type" select="false()"/>
+	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
+	<xsl:variable name="domain">
+	    <xsl:apply-templates select="." mode="rdfs:domain"/>
+	</xsl:variable>
+	<xsl:if test="(not($type) and not(boolean($domain)))or $type = $domain">
+	    <!-- do not repeat property name if it's the same as the previous one -->
+	    <xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
+		<!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
+		<dt>
+		    <a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
+			<xsl:apply-templates select="." mode="g:label"/>
+		    </a>
+		</dt>
+	    </xsl:if>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
 	</xsl:if>
-	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
     </xsl:template>
 
     <!-- object -->
