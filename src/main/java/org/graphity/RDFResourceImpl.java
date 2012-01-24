@@ -8,8 +8,6 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -23,6 +21,8 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import org.graphity.util.QueryBuilder;
+import org.topbraid.spin.model.Construct;
 
 /**
  *
@@ -32,10 +32,12 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 {
     public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
     //public static final String SERVICE_URI = "http://dbpedia.org/sparql";
+    public static final String QUERY_STRING = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { GRAPH ?graph { ?uri ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp ?uri } } LIMIT 10 } }";
     
-    private com.hp.hpl.jena.rdf.model.Model model = null;
+    private Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
-
+    private Model queryModel = null;
+    private Construct construct = null;
 
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
     // http://openjena.org/wiki/ARQ/Manipulating_SPARQL_using_ARQ
@@ -52,8 +54,6 @@ System.out.println("getURI(): " + getURI());
 	    //QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
 	    //model = qex.execDescribe();
 
-	    QuerySolutionMap initialBinding = new QuerySolutionMap();
-	    initialBinding.add("uri", this);
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
 	    //request.setInitialBinding(initialBinding); // not supported for remote queries?!
 	    model = request.execConstruct();
@@ -64,14 +64,11 @@ System.out.println("getURI(): " + getURI());
     
     public Query getQuery()
     {
-	//String qs = "CONSTRUCT { ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT { ?uri ?forwardProp ?object } } UNION { ?subject ?backwardProp ?uri } }";
-	//String qs = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { ?uri ?forwardProp ?object } LIMIT 10 } UNION { SELECT * WHERE { ?subject ?backwardProp ?uri } LIMIT 10 } }";
-//String qs = "CONSTRUCT{ <" + getURI() + "> ?forwardProp ?object . ?subject ?backwardProp <" + getURI() + "> } WHERE { { SELECT * WHERE { <" + getURI() + "> ?forwardProp ?object } LIMIT 10 } UNION { SELECT * WHERE { ?subject ?backwardProp <" + getURI() + "> } LIMIT 10 } }";
-String qs = "CONSTRUCT{ <" + getURI() + "> ?forwardProp ?object . ?subject ?backwardProp <" + getURI() + "> } WHERE { { SELECT * WHERE { GRAPH ?graph { <" + getURI() + "> ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp <" + getURI() + "> } } LIMIT 10 } }";
-System.out.println(qs);
-	return QueryFactory.create(qs);
+	return QueryBuilder.fromQueryString(QUERY_STRING).
+	    bind("uri", getURI()).
+	    build();
     }
-    
+
     private Resource getResource()
     {
 	if (resource == null)
@@ -373,5 +370,4 @@ System.out.println(qs);
     {
 	return getResource().asNode();
     }
-
 }

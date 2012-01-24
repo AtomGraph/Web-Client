@@ -5,18 +5,17 @@
 
 package org.graphity.analytics.form;
 
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.graphity.form.RDFForm;
-import org.graphity.analytics.model.vocabulary.DublinCore;
 import org.graphity.analytics.model.vocabulary.Reports;
-import org.graphity.analytics.model.vocabulary.Spin;
 import org.graphity.analytics.util.IDGenerator;
+import org.topbraid.spin.vocabulary.SP;
 
 /**
  *
@@ -41,12 +40,12 @@ public class ReportRDFForm extends RDFForm
 	    Resource endpointResource = getModel().createResource(endpointUri);
 	    
 	    getModel().add(reportResource, RDF.type, getModel().createResource(Reports.Report));
-	    getModel().add(queryResource, RDF.type, getModel().createResource(Spin.Select));
+	    getModel().add(queryResource, RDF.type, SP.Select);
 	    getModel().add(endpointResource, RDF.type, getModel().createResource(Reports.Endpoint));
 
 	    getModel().add(reportResource, getModel().createProperty(Reports.query), queryResource);
-	    getModel().add(queryResource, getModel().createProperty(Spin.from), endpointResource);
-	    getModel().add(queryResource, getModel().createProperty(Spin.text), getModel().createTypedLiteral(request.getParameter("query")));
+	    getModel().add(queryResource, SP.from, endpointResource);
+	    getModel().add(queryResource, SP.text, getModel().createTypedLiteral(request.getParameter("query")));
 	}
     }
 
@@ -63,8 +62,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getQueryResource()
     {
         Resource query = null;
-        Resource queryClass = getModel().createResource(Spin.Select);
-        ResIterator iter = getModel().listResourcesWithProperty(RDF.type, queryClass);
+        ResIterator iter = getModel().listResourcesWithProperty(RDF.type, SP.Select);
         if (iter.hasNext()) query = iter.next();
         return query;
     }
@@ -72,8 +70,7 @@ public class ReportRDFForm extends RDFForm
     public Resource getEndpoint()
     {
 	Resource endpoint = null;
-	Property fromProperty = getModel().createProperty(Spin.from);
-	Statement stmt = getModel().getProperty(getQueryResource(), fromProperty);
+	Statement stmt = getModel().getProperty(getQueryResource(), SP.from);
 	if (stmt != null) endpoint = stmt.getResource();
 	return endpoint;
     }
@@ -81,8 +78,7 @@ public class ReportRDFForm extends RDFForm
     public String getQueryString()
     {
 	String queryString = null;
-	Property textProperty = getModel().createProperty(Spin.text);
-	Statement stmt = getModel().getProperty(getQueryResource(), textProperty);
+	Statement stmt = getModel().getProperty(getQueryResource(), SP.text);
 	if (stmt != null) queryString = stmt.getString();
 	return queryString;
     }
@@ -90,8 +86,7 @@ public class ReportRDFForm extends RDFForm
     public String getTitle()
     {
 	String title = null;
-	Property titleProperty = getModel().createProperty(DublinCore.TITLE);
-	Statement stmt = getModel().getProperty(getReport(), titleProperty);
+	Statement stmt = getModel().getProperty(getReport(), DC.title);
 	if (stmt != null) title = stmt.getString();
 	return title;
     }
@@ -99,8 +94,7 @@ public class ReportRDFForm extends RDFForm
     public String getEndpointTitle()
     {
 	String title = null;
-	Property titleProperty = getModel().createProperty(DublinCore.TITLE);
-	Statement stmt = getModel().getProperty(getEndpoint(), titleProperty);
+	Statement stmt = getModel().getProperty(getEndpoint(), DC.title);
 	if (stmt != null) title = stmt.getString();
 	return title;
     }
