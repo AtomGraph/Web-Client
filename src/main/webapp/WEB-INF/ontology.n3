@@ -1,0 +1,7 @@
+@base <http://graphity.org/ontology/>
+
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+<> a owl:Ontology ;
+    dc:title "Graphity ontology".

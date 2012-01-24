@@ -11,6 +11,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
@@ -18,11 +19,11 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.util.FileUtils;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import org.graphity.util.QueryBuilder;
-import org.topbraid.spin.model.Construct;
 
 /**
  *
@@ -36,8 +37,6 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     private Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
-    private Model queryModel = null;
-    private Construct construct = null;
 
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
     // http://openjena.org/wiki/ARQ/Manipulating_SPARQL_using_ARQ
@@ -64,7 +63,10 @@ System.out.println("getURI(): " + getURI());
     
     public Query getQuery()
     {
-	return QueryBuilder.fromQueryString(QUERY_STRING).
+	Model queryModel = ModelFactory.createDefaultModel().read(getServletContext().getResourceAsStream("/WEB-INF/structure.n3"), null, FileUtils.langTurtle);
+
+	//return QueryBuilder.fromQueryString(QUERY_STRING).
+	return QueryBuilder.fromModel(queryModel).
 	    bind("uri", getURI()).
 	    build();
     }

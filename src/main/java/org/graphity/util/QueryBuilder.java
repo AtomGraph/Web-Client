@@ -12,8 +12,10 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.ResourceUtils;
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
+import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.vocabulary.SP;
 
 /**
@@ -40,7 +42,22 @@ public class QueryBuilder
 	return newInstance().query(QueryFactory.create(queryString), null);
     }
 
-    public QueryBuilder query(Query query, String uri)
+    public static QueryBuilder fromModel(Model model)
+    {
+	return newInstance().query(model);
+    }
+
+    protected QueryBuilder query(Model model)
+    {
+	this.model = model;
+	Resource queryRes = model.listResourcesWithProperty(RDF.type, SP.Construct).nextResource();
+		
+	spinQuery = SPINFactory.asQuery(queryRes);
+	
+	return this;
+    }
+    
+    protected QueryBuilder query(Query query, String uri)
     {
 	ARQ2SPIN arq2Spin = new ARQ2SPIN(model);
 	spinQuery = arq2Spin.createQuery(query, uri);
@@ -72,8 +89,9 @@ public class QueryBuilder
 
     public Query build()
     {
-System.out.println("SPIN query in Turtle:");
-model.write(System.out, FileUtils.langTurtle);
+//System.out.println("SPIN query in Turtle:");
+//model.write(System.out, FileUtils.langTurtle);
+System.out.println(spinQuery.toString());
 
 	return ARQFactory.get().createQuery(spinQuery);
     }
