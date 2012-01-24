@@ -42,6 +42,7 @@ public class Resource extends RDFResourceImpl
 		host("local.heltnormalt.dk").
 		port(-1).
 		replacePath("striben").
+		queryParam("view", "rdf").
 		build().toString();
     }
 }

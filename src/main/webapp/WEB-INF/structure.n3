@@ -5,17 +5,27 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix g: <http://graphity.org/ontology/> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix void: <http://rdfs.org/ns/void#> .
 @prefix sp: <http://spinrdf.org/sp#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 
 <> a sioc:Site ;
     dc:title "Graphity" .
+_:dataset a void:Dataset;
+    foaf:homepage <> ;
+    void:sparqlEndpoint <http://de.dydra.com/heltnormalt/testing/sparql> .
+_:endpoint a sd:Service ;
+    sd:endpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
+    sd:supportedLanguage sd:SPARQL11Query .
 
 <classes> a sioc:Forum ;
     sioc:has_host <> ;
     dc:title "Classes"@en ;
-    g:query _:query .
+    g:query _:query ;
+    void:inDataset _:dataset .
 
 _:query    a       sp:Construct ;
       sp:templates ([ sp:object _:object ;

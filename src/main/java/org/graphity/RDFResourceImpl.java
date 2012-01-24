@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import java.util.Date;
 import javax.ws.rs.GET;
@@ -31,8 +32,10 @@ import org.graphity.util.QueryBuilder;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
-    public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
+    //public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
     //public static final String SERVICE_URI = "http://dbpedia.org/sparql";
+    //public static final String SERVICE_URI = "http://de.dydra.com/heltnormalt/testing/sparql";
+    public static final String SERVICE_URI = null;
     public static final String QUERY_STRING = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { GRAPH ?graph { ?uri ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp ?uri } } LIMIT 10 } }";
     
     private Model model = null;
@@ -48,15 +51,24 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 System.out.println("getURI(): " + getURI());
     
 	//if (model == null)
+	if (getServiceURI() != null)
 	{
 	    //Query query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
 	    //QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
 	    //model = qex.execDescribe();
 
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
+	    request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
 	    //request.setInitialBinding(initialBinding); // not supported for remote queries?!
 	    model = request.execConstruct();
 	}
+	else
+	{
+	    model = FileManager.get().loadModel(getURI());
+	    //JenaReader reader = new JenaReader();
+	    //reader.read(model, getURI());
+	}
+	    
 	
 	return model;
     }

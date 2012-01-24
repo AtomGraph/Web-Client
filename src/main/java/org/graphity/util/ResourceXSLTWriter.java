@@ -106,6 +106,9 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()).
 	    outputProperty(OutputKeys.INDENT, "yes"); // is base uri necessary?
 	
+	    if (resource.getServiceURI() != null)
+		builder.parameter("service-uri", resource.getServiceURI());
+	    
 	    if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)
 		builder.parameter("view", resource.getUriInfo().getQueryParameters().getFirst("view"));
 	    

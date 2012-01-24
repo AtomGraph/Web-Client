@@ -11,4 +11,6 @@ package org.graphity;
 public interface RDFResource extends Resource, com.hp.hpl.jena.rdf.model.Resource
 {
     //public OutputStream describe(); // return RDF/XML
+    public String getServiceURI();
+    
 }

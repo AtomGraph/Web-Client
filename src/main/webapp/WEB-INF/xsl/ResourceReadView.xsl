@@ -26,6 +26,7 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
 
     <xsl:param name="uri"/>
     <xsl:param name="base-uri"/>
+    <xsl:param name="service-uri" select="false()"/>
     <xsl:param name="view"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="php-os"/>
@@ -58,7 +59,16 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
 	    </head>
 	    <body>
 		<form action="" method="get">
-		    <input type="text" name="uri" value="{$uri}" size="60"/>
+		    <label for="uri">URI</label>
+		    <input type="text" id="uri" name="uri" value="{$uri}" size="60"/>
+		    <label for="service-uri">SPARQL endpoint</label>
+		    <input type="text" id="service-uri" name="service-uri" size="60">
+			<xsl:if test="$service-uri">
+			    <xsl:attribute name="value">
+				<xsl:value-of select="$service-uri"/>
+			    </xsl:attribute>
+			</xsl:if>
+		    </input>
 		    <button type="submit">Browse</button>
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
