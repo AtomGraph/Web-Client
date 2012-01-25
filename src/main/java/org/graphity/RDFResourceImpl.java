@@ -26,6 +26,9 @@ import com.hp.hpl.jena.util.FileUtils;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import org.graphity.util.QueryBuilder;
 import vocabulary.Graphity;
 
@@ -58,6 +61,7 @@ System.out.println("getURI(): " + getURI());
 System.out.println("getServiceURI(): " + getServiceURI());
 
 	//if (model == null)
+	// query the available SPARQL endpoint (either local or remote)
 	if (getServiceURI() != null)
 	{
 	    //Query query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
@@ -70,11 +74,22 @@ System.out.println("getServiceURI(): " + getServiceURI());
 	}
 	else
 	{
-	    model = FileManager.get().loadModel(getURI());
-	    //JenaReader reader = new JenaReader();
-	    //reader.read(model, getURI());
+	    //if (getUriInfo().getQueryParameters().getFirst("uri") == null)
+	    if (getURI().startsWith(getUriInfo().getBaseUri().toString()))
+		model = getOntModel(); // we're on a local host! load local sitemap
+	    else
+	    // load remote Linked Data
+	    {
+		model = FileManager.get().loadModel(getURI());
+		//JenaReader reader = new JenaReader();
+		//reader.read(model, getURI());
+	    }
+
 	}
-	    
+
+	// RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
+	if (!model.containsResource(model.createResource(getURI())))
+	    throw new WebApplicationException(Response.Status.NOT_FOUND);
 	
 	return model;
     }
@@ -93,7 +108,7 @@ System.out.println("getServiceURI(): " + getServiceURI());
     {	
 	return QueryBuilder.fromResource(getIndividual().
 		getPropertyResourceValue(Graphity.query)).
-	    bind("uri", getURI()).
+	    //bind("subject", getURI()).
 	    build();
     }
 
@@ -109,6 +124,23 @@ System.out.println("getServiceURI(): " + getServiceURI());
     {
 	return getOntModel().getIndividual(getUriInfo().getAbsolutePath().toString());
     }
+
+    @Override
+    public String getURI()
+    {
+	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
+	    return getUriInfo().getQueryParameters().getFirst("uri");
+	
+	return super.getURI();
+	/*
+	return getUriInfo().getAbsolutePathBuilder().
+		host("local.heltnormalt.dk").
+		port(-1).
+		replacePath("striben").
+		queryParam("view", "rdf").
+		build().toString();
+	*/
+    }
     
     @Override
     public final String getServiceURI()
@@ -117,9 +149,10 @@ System.out.println("getServiceURI(): " + getServiceURI());
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    return getUriInfo().getQueryParameters().getFirst("service-uri");
 	
-	// browsing local resource, SPARQL is retrieved from the sitemap
-	return getIndividual
-		().
+	// browsing local resource, SPARQL endpoint is retrieved from the sitemap
+	if (getIndividual() == null) return null;
+	
+	return getIndividual().
 		getPropertyResourceValue(getOntModel().
 		    getProperty("http://rdfs.org/ns/void#inDataset")).
 		getPropertyResourceValue(getOntModel().
@@ -127,11 +160,13 @@ System.out.println("getServiceURI(): " + getServiceURI());
 		getURI();
     }
 
+    /*
     @Override
     public boolean exists()
     {
 	return getModel().containsResource(this);
     }
+     */
 
     @Override
     public Date getLastModified()

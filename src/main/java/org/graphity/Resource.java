@@ -8,7 +8,6 @@ package org.graphity;
 import java.net.URI;
 import java.util.Date;
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -23,7 +22,7 @@ public interface Resource
 	//public Application getApplication();
 	public ServletContext getServletContext();
 
-	public boolean exists() throws Exception;
+	//public boolean exists() throws Exception;
 	public boolean authorize() throws Exception;
 	
 	public Date getLastModified();

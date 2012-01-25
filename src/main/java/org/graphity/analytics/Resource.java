@@ -31,18 +31,5 @@ public class Resource extends RDFResourceImpl
 	//return response;
 	return new View(this);
     }
-    
-    @Override
-    public String getURI()
-    {
-	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	    return getUriInfo().getQueryParameters().getFirst("uri");
-	
-	return getUriInfo().getAbsolutePathBuilder().
-		host("local.heltnormalt.dk").
-		port(-1).
-		replacePath("striben").
-		queryParam("view", "rdf").
-		build().toString();
-    }
+
 }
