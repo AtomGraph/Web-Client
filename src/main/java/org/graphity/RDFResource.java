@@ -12,5 +12,5 @@ public interface RDFResource extends Resource, com.hp.hpl.jena.rdf.model.Resourc
 {
     //public OutputStream describe(); // return RDF/XML
     public String getServiceURI();
-    
+
 }
