@@ -41,17 +41,14 @@ public class QueryBuilder
 	return newInstance().query(QueryFactory.create(queryString), null);
     }
 
-    public static QueryBuilder fromModel(Model model)
+    public static QueryBuilder fromResource(Resource resource)
     {
-	return newInstance().query(model);
+	return newInstance().query(resource);
     }
 
-    protected QueryBuilder query(Model model)
-    {
-	this.model = model;
-	Resource queryRes = model.listResourcesWithProperty(RDF.type, SP.Construct).nextResource();
-		
-	spinQuery = SPINFactory.asQuery(queryRes);
+    protected QueryBuilder query(Resource resource)
+    {		
+	spinQuery = SPINFactory.asQuery(resource);
 	
 	return this;
     }

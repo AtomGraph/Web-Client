@@ -6,6 +6,8 @@ package org.graphity;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
@@ -32,11 +34,14 @@ import org.graphity.util.QueryBuilder;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
+    //@QueryParam("service-uri") String serviceUri = null;
+    //String serviceUri = null;
+    
     //public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
     //public static final String SERVICE_URI = "http://dbpedia.org/sparql";
     //public static final String SERVICE_URI = "http://de.dydra.com/heltnormalt/testing/sparql";
-    public static final String SERVICE_URI = null;
-    public static final String QUERY_STRING = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { GRAPH ?graph { ?uri ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp ?uri } } LIMIT 10 } }";
+
+    //public static final String QUERY_STRING = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { GRAPH ?graph { ?uri ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp ?uri } } LIMIT 10 } }";
     
     private Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
@@ -49,7 +54,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     public Model getModel()
     {
 System.out.println("getURI(): " + getURI());
-    
+System.out.println("getServiceURI(): " + getServiceURI());
+
 	//if (model == null)
 	if (getServiceURI() != null)
 	{
@@ -59,7 +65,6 @@ System.out.println("getURI(): " + getURI());
 
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
 	    request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
-	    //request.setInitialBinding(initialBinding); // not supported for remote queries?!
 	    model = request.execConstruct();
 	}
 	else
@@ -72,18 +77,27 @@ System.out.println("getURI(): " + getURI());
 	
 	return model;
     }
+
+    public OntModel getOntModel()
+    {
+	OntModel ontModel = ModelFactory.createOntologyModel(); // .createDefaultModel().
+	
+	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/ontology.n3"), null, FileUtils.langTurtle);
+	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/structure.n3"), null, FileUtils.langTurtle);
+	
+	return ontModel;
+    }
     
     public Query getQuery()
-    {
-	Model queryModel = ModelFactory.createDefaultModel().read(getServletContext().getResourceAsStream("/WEB-INF/structure.n3"), null, FileUtils.langTurtle);
-
-	//return QueryBuilder.fromQueryString(QUERY_STRING).
-	return QueryBuilder.fromModel(queryModel).
+    {	
+	return QueryBuilder.fromResource(getIndividual().
+		getPropertyResourceValue(getOntModel().
+		    getProperty("http://graphity.org/ontology/query"))).
 	    bind("uri", getURI()).
 	    build();
     }
 
-    private Resource getResource()
+    protected Resource getResource()
     {
 	if (resource == null)
 	    resource = getModel().createResource(getURI());
@@ -91,9 +105,24 @@ System.out.println("getURI(): " + getURI());
 	return resource;
     }
     
+    protected Individual getIndividual()
+    {
+	return getOntModel().getIndividual(getUriInfo().getAbsolutePath().toString());
+    }
+    
+    @Override
     public final String getServiceURI()
     {
-	return SERVICE_URI;
+	if (getUriInfo().getQueryParameters().getFirst("service-uri") != null)
+	    return getUriInfo().getQueryParameters().getFirst("service-uri");
+	
+	return getIndividual
+		().
+		getPropertyResourceValue(getOntModel().
+		    getProperty("http://rdfs.org/ns/void#inDataset")).
+		getPropertyResourceValue(getOntModel().
+		    getProperty("http://rdfs.org/ns/void#sparqlEndpoint")).
+		getURI();
     }
 
     @Override

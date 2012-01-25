@@ -21,34 +21,11 @@ _:endpoint a sd:Service ;
 
 <> a sioc:Site, sioc:Forum, g:Container ;
     dc:title "Graphity" ;
+    g:query g:ConstructLatest ;
     void:inDataset _:dataset .
 
 <classes> a sioc:Forum, g:Container ;
     sioc:has_host <> ;
     dc:title "Classes"@en ;
-    g:query <queries/latest> ;
+    g:query g:ConstructLatest ;
     void:inDataset _:dataset .
-
-<queries/latest>    a       sp:Construct ;
-      sp:templates ([ sp:object _:object ;
-                  sp:predicate _:property ;
-                  sp:subject _:subject
-                ]) ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:limit "10"^^xsd:long ;
-                            sp:where ([ a       sp:NamedGraph ;
-                                        sp:elements ([ sp:object _:object ;
-                                                    sp:predicate _:property ;
-                                                    sp:subject _:subject
-                                                  ]) ;
-                                        sp:graphNameNode
-                                                [ sp:varName "graph"^^xsd:string
-                                                ]
-                                      ])
-                          ]
-                ]) .
-_:subject  sp:varName "uri"^^xsd:string .
-_:property  sp:varName "property"^^xsd:string .
-_:object  sp:varName "object"^^xsd:string .

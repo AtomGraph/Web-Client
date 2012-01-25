@@ -1,5 +1,6 @@
 @base <http://graphity.org/ontology/> .
 
+@prefix : <> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -8,7 +9,8 @@
 @prefix sp: <http://spinrdf.org/sp#> .
 
 : a owl:Ontology ;
-    dc:title "Graphity ontology" .
+    dc:title "Graphity ontology" ;
+    rdfs:seeAlso <http://graphity.org> .
 
 :Container a owl:Class ;
     rdfs:isDefinedBy : ;
@@ -16,15 +18,16 @@
     [
 	a owl:Restriction;
 	owl:onProperty :query;
-	owl:hasValue _:query
+	owl:hasValue :ConstructLatest
     ] .
 
 :query a owl:ObjectProperty ;
     rdfs:isDefinedBy : ;
     rdfs:range sp:Query .
 
-_:query    a       sp:Construct ;
-      sp:templates ([ sp:object _:object ;
+:ConstructLatest    a       sp:Construct ;
+    rdfs:isDefinedBy : ;
+    sp:templates ([ sp:object _:object ;
                   sp:predicate _:property ;
                   sp:subject _:subject
                 ]) ;
