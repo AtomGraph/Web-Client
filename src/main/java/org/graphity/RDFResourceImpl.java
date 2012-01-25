@@ -27,6 +27,7 @@ import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import org.graphity.util.QueryBuilder;
+import vocabulary.Graphity;
 
 /**
  *
@@ -83,7 +84,7 @@ System.out.println("getServiceURI(): " + getServiceURI());
 	OntModel ontModel = ModelFactory.createOntologyModel(); // .createDefaultModel().
 	
 	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/ontology.n3"), null, FileUtils.langTurtle);
-	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/structure.n3"), null, FileUtils.langTurtle);
+	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/sitemap.n3"), null, FileUtils.langTurtle);
 	
 	return ontModel;
     }
@@ -91,8 +92,7 @@ System.out.println("getServiceURI(): " + getServiceURI());
     public Query getQuery()
     {	
 	return QueryBuilder.fromResource(getIndividual().
-		getPropertyResourceValue(getOntModel().
-		    getProperty("http://graphity.org/ontology/query"))).
+		getPropertyResourceValue(Graphity.query)).
 	    bind("uri", getURI()).
 	    build();
     }
@@ -113,9 +113,11 @@ System.out.println("getServiceURI(): " + getServiceURI());
     @Override
     public final String getServiceURI()
     {
-	if (getUriInfo().getQueryParameters().getFirst("service-uri") != null)
+	// browsing remote resource, SPARQL endpoint is either supplied or null (or discovered from voiD?)
+	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    return getUriInfo().getQueryParameters().getFirst("service-uri");
 	
+	// browsing local resource, SPARQL is retrieved from the sitemap
 	return getIndividual
 		().
 		getPropertyResourceValue(getOntModel().

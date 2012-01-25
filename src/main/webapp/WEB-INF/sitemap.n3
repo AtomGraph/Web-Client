@@ -19,12 +19,12 @@ _:endpoint a sd:Service ;
     sd:endpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query .
 
-<> a sioc:Site, sioc:Forum, g:Container ;
+<> a sioc:Site, sioc:Forum ;
     dc:title "Graphity" ;
     g:query g:ConstructLatest ;
     void:inDataset _:dataset .
 
-<classes> a sioc:Forum, g:Container ;
+<classes> a sioc:Forum ;
     sioc:has_host <> ;
     dc:title "Classes"@en ;
     g:query g:ConstructLatest ;

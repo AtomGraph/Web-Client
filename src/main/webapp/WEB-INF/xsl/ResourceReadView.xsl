@@ -37,8 +37,9 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
     <xsl:variable name="lower-case" select="'abcdefghijklmnopqrstuvwxyz'" />
     <xsl:variable name="upper-case" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
-    <xsl:key name="resources" match="*[@rdf:about] | *[@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <!--
+    <xsl:key name="resources" match="*[@rdf:about] | *[@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-domain" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:domain/@rdf:resource"/>
     <xsl:key name="resources-by-type" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-is-part-of" match="*[@rdf:about] | *[@rdf:nodeID]" use="dct:isPartOf/@rdf:resource"/>
@@ -83,7 +84,7 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<h1>
-	    <xsl:apply-templates select="@rdf:about" mode="g:label"/> <!-- what about nodeID? -->
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="g:label"/> <!-- what about nodeID? -->
 	</h1>
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>

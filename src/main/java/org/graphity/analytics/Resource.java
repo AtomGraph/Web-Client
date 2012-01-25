@@ -18,7 +18,7 @@ import org.graphity.RDFResourceImpl;
 @Path("/{path}")
 public class Resource extends RDFResourceImpl
 {
-    private Response response = null;
+    //private Response response = null;
     //@QueryParam("uri") String uri; // does not inject?
     
     @GET

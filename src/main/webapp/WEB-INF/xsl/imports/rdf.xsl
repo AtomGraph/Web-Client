@@ -18,7 +18,7 @@ exclude-result-prefixes="g url rdf rdfs">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
-    <!-- object URI resource -->
+    <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
 	    <xsl:apply-templates select="." mode="g:label"/>
@@ -26,9 +26,10 @@ exclude-result-prefixes="g url rdf rdfs">
     </xsl:template>
 
     <!-- object blank node -->
-    <xsl:template match="@rdf:nodeID">
-	<!-- <xsl:apply-templates/> ??? -->
-	<xsl:value-of select="."/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
+	<xsl:apply-templates select="key('resources', .)"/>
+	<!-- <xsl:value-of select="."/> -->
+	<!-- <xsl:copy-of select=".."/> -->
     </xsl:template>
 
     <!-- object literal -->
