@@ -18,6 +18,7 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
 
     <xsl:import href="imports/rdf.xsl"/>
     <xsl:import href="imports/rdfs.xsl"/>
+    <xsl:import href="imports/owl.xsl"/>
     <xsl:import href="imports/dcelements.xsl"/>
     <xsl:import href="imports/dcterms.xsl"/>
     <xsl:import href="imports/foaf.xsl"/>

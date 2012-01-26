@@ -5,6 +5,7 @@
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY ont-uri "../../owl/rdf.owl">
 ]>
 <xsl:stylesheet version="1.0"
@@ -16,6 +17,7 @@ xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:dc="&dc;"
+xmlns:foaf="&foaf;"
 exclude-result-prefixes="g url rdf rdfs">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
@@ -50,6 +52,12 @@ exclude-result-prefixes="g url rdf rdfs">
 	<xsl:choose>
 	    <xsl:when test="../dc:title">
 		<xsl:value-of select="../dc:title"/>
+	    </xsl:when>
+	    <xsl:when test="../rdfs:label">
+		<xsl:value-of select="../rdfs:label"/>
+	    </xsl:when>
+	    <xsl:when test="../foaf:name">
+		<xsl:value-of select="../foaf:name"/>
 	    </xsl:when>
 	    <xsl:otherwise>
 		<xsl:value-of select="."/>
