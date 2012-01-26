@@ -18,18 +18,22 @@
     rdfs:range sp:Query .
 
 :ConstructLatest    a       sp:Construct ;
-    rdfs:isDefinedBy : ;
-      sp:templates ([ sp:object _:b2 ;
+      sp:templates ([ sp:object _:b4 ;
                   sp:predicate dct:created ;
-                  sp:subject _:b3
-                ] [ sp:object _:b1 ;
-                  sp:predicate _:b5 ;
-                  sp:subject _:b3
+                  sp:subject _:b2
+                ] [ sp:object _:b5 ;
+                  sp:predicate _:b3 ;
+                  sp:subject _:b2
+                ] [ sp:object _:b6 ;
+                  sp:predicate dc:title ;
+                  sp:subject _:b5
                 ]) ;
-      sp:text """PREFIX dct: <http://purl.org/dc/terms/>
+      sp:text """PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
 CONSTRUCT {
     ?subject dct:created ?date .
     ?subject ?property ?object .
+    ?object dc:title ?title .
 }
 WHERE {
     {
@@ -48,33 +52,49 @@ PREFIX dct: <http://purl.org/dc/terms/>
             ?subject ?property ?object .
         } .
     } .
+    OPTIONAL {
+        GRAPH ?objGraph {
+            ?object dc:title ?title .
+        } .
+    } .
 }"""^^xsd:string ;
       sp:where ([ a       sp:SubQuery ;
                   sp:query
                           [ a       sp:Select ;
                             sp:limit "10"^^xsd:long ;
                             sp:orderBy ([ a       sp:Desc ;
-                                        sp:expression _:b2
+                                        sp:expression _:b4
                                       ]) ;
                             sp:where ([ a       sp:NamedGraph ;
-                                        sp:elements ([ sp:object _:b2 ;
+                                        sp:elements ([ sp:object _:b4 ;
                                                     sp:predicate dct:created ;
-                                                    sp:subject _:b3
+                                                    sp:subject _:b2
                                                   ]) ;
-                                        sp:graphNameNode _:b4
+                                        sp:graphNameNode _:b1
                                       ])
                           ]
                 ] [ a       sp:Optional ;
                   sp:elements ([ a       sp:NamedGraph ;
-                              sp:elements ([ sp:object _:b1 ;
-                                          sp:predicate _:b5 ;
-                                          sp:subject _:b3
+                              sp:elements ([ sp:object _:b5 ;
+                                          sp:predicate _:b3 ;
+                                          sp:subject _:b2
                                         ]) ;
-                              sp:graphNameNode _:b4
+                              sp:graphNameNode _:b1
+                            ])
+                ] [ a       sp:Optional ;
+                  sp:elements ([ a       sp:NamedGraph ;
+                              sp:elements ([ sp:object _:b6 ;
+                                          sp:predicate dc:title ;
+                                          sp:subject _:b5
+                                        ]) ;
+                              sp:graphNameNode
+                                      [ sp:varName "objGraph"^^xsd:string
+                                      ]
                             ])
                 ]) .
-_:b1  sp:varName "object"^^xsd:string .
-_:b2  sp:varName "date"^^xsd:string .
-_:b3  sp:varName "subject"^^xsd:string .
-_:b4  sp:varName "graph"^^xsd:string .
-_:b5  sp:varName "property"^^xsd:string .
+_:b1  sp:varName "graph"^^xsd:string .
+_:b2  sp:varName "subject"^^xsd:string .
+_:b3  sp:varName "property"^^xsd:string .
+_:b5  sp:varName "object"^^xsd:string .
+_:b6  sp:varName "title"^^xsd:string .
+_:b4  sp:varName "date"^^xsd:string .

@@ -23,14 +23,12 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
+import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import org.graphity.util.QueryBuilder;
-import vocabulary.Graphity;
+import org.topbraid.spin.vocabulary.SP;
 
 /**
  *
@@ -75,25 +73,30 @@ System.out.println("getServiceURI(): " + getServiceURI());
 	else
 	{
 	    //if (getUriInfo().getQueryParameters().getFirst("uri") == null)
-	    if (getURI().startsWith(getUriInfo().getBaseUri().toString()))
-		model = getOntModel(); // we're on a local host! load local sitemap
-	    else
+	    if (isRemote())
 	    // load remote Linked Data
 	    {
 		model = FileManager.get().loadModel(getURI());
 		//JenaReader reader = new JenaReader();
 		//reader.read(model, getURI());
 	    }
-
+	    else
+		model = getOntModel(); // we're on a local host! load local sitemap
 	}
 
 	// RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
-	if (!model.containsResource(model.createResource(getURI())))
-	    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	//if (!model.containsResource(model.createResource(getURI())))
+	//    throw new WebApplicationException(Response.Status.NOT_FOUND);
 	
 	return model;
     }
-
+    
+    protected boolean isRemote()
+    {
+	// resolve somehow better?
+	return !getURI().startsWith(getUriInfo().getBaseUri().toString());
+    }
+    
     public OntModel getOntModel()
     {
 	OntModel ontModel = ModelFactory.createOntologyModel(); // .createDefaultModel().
@@ -106,8 +109,15 @@ System.out.println("getServiceURI(): " + getServiceURI());
     
     public Query getQuery()
     {	
+	/*
 	return QueryBuilder.fromResource(getIndividual().
 		getPropertyResourceValue(Graphity.query)).
+	    //bind("subject", getURI()).
+	    build();
+	 */
+	return QueryBuilder.fromResource(getOntModel().
+		listResourcesWithProperty(RDF.type, SP.Construct).
+		nextResource()).
 	    //bind("subject", getURI()).
 	    build();
     }
@@ -132,13 +142,15 @@ System.out.println("getServiceURI(): " + getServiceURI());
 	    return getUriInfo().getQueryParameters().getFirst("uri");
 	
 	return super.getURI();
+	
 	/*
 	return getUriInfo().getAbsolutePathBuilder().
 		host("local.heltnormalt.dk").
 		port(-1).
 		replacePath("striben").
 		queryParam("view", "rdf").
-		build().toString();
+		build().
+		toString();
 	*/
     }
     

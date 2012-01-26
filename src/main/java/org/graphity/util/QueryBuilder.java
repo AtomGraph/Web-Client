@@ -11,10 +11,10 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.ResourceUtils;
-import com.hp.hpl.jena.vocabulary.RDF;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.SPINFactory;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 /**
@@ -28,6 +28,8 @@ public class QueryBuilder
 
     protected static QueryBuilder newInstance()
     {
+        // Initialize system functions and templates
+        SPINModuleRegistry.get().init(); 
 	return new QueryBuilder();
     }
     
@@ -47,9 +49,9 @@ public class QueryBuilder
     }
 
     protected QueryBuilder query(Resource resource)
-    {		
+    {
 	spinQuery = SPINFactory.asQuery(resource);
-	
+
 	return this;
     }
     
