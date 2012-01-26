@@ -12,9 +12,10 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:url="&java;java.net.URLEncoder"
 xmlns:php="http://php.net/xsl"
-exclude-result-prefixes="xsl xhtml g rdf php java">
+xmlns:url="java.net.URLEncoder"
+exclude-result-prefixes="xsl xhtml g rdf php url">
+<!-- xmlns:url="&java;java.net.URLEncoder" -->
 
     <xsl:import href="imports/rdf.xsl"/>
     <xsl:import href="imports/rdfs.xsl"/>
@@ -127,10 +128,9 @@ exclude-result-prefixes="xsl xhtml g rdf php java">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
 	<xsl:param name="type" select="false()"/>
 	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
-	<xsl:variable name="domain">
-	    <xsl:apply-templates select="." mode="rdfs:domain"/>
-	</xsl:variable>
-	<xsl:if test="(not($type) and not(boolean($domain)))or $type = $domain">
+	<xsl:variable name="domain"><xsl:apply-templates select="." mode="rdfs:domain"/></xsl:variable>
+
+	<xsl:if test="(not($type) and not(boolean(string($domain)))) or $type = $domain">
 	    <!-- do not repeat property name if it's the same as the previous one -->
 	    <xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
 		<!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
