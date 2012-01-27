@@ -7,7 +7,7 @@
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY ont-uri "../../owl/foaf.owl">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -24,26 +24,6 @@ exclude-result-prefixes="url g rdf rdfs foaf">
 		<img src="{.}" alt=""/>
 	    </a>
 	</dd>
-    </xsl:template>
-
-    <!-- subject/object URI resource -->
-    <xsl:template match="@rdf:about[starts-with(., '&foaf;')] | @rdf:resource[starts-with(., '&foaf;')]"  mode="g:label">
-	<xsl:variable name="this" select="string(.)"/>
-	<xsl:for-each select="document('&ont-uri;')">
-	    <!-- refactor!!! -->
-	    <xsl:variable name="label" select="key('resources', $this)/rdfs:label | key('resources', $this)/@rdfs:label"/>
-	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
-	</xsl:for-each>
-    </xsl:template>
-
-    <!-- foaf:* property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/foaf:*" mode="g:label">
-	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
-	<xsl:for-each select="document('&ont-uri;')">
-	    <!-- refactor!!! -->
-	    <xsl:variable name="label" select="key('resources', $this)/rdfs:label | key('resources', $this)/@rdfs:label"/>
-	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
-	</xsl:for-each>
     </xsl:template>
 
 </xsl:stylesheet>

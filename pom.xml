@@ -54,6 +54,11 @@
             <artifactId>spin</artifactId>
             <version>1.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>9</version>
+        </dependency>
     </dependencies>
 
     <build>

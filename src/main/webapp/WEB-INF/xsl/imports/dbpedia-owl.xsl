@@ -7,7 +7,7 @@
     <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
     <!ENTITY ont-uri "../../owl/dbpedia-owl.owl">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -22,33 +22,6 @@ exclude-result-prefixes="url g rdf rdfs dbpedia-owl">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
 	    <img src="{.}" alt=""/>
 	</a>
-    </xsl:template>
-
-    <!-- LABELS -->
-    
-    <!-- subject/object URI resource -->
-    <xsl:template match="@rdf:about[starts-with(., '&dbpedia-owl;')] | @rdf:resource[starts-with(., '&dbpedia-owl;')]"  mode="g:label">
-	<xsl:variable name="this" select="string(.)"/>
-	<xsl:for-each select="document('&ont-uri;')">
-	    <xsl:variable name="label" select="key('resources', $this)/rdfs:label"/>
-	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
-	</xsl:for-each>
-    </xsl:template>
-
-    <!-- dbpedia-owl:* property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/dbpedia-owl:*" mode="g:label">
-	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
-	<xsl:for-each select="document('&ont-uri;')">
-	    <xsl:variable name="label" select="key('resources', $this)/rdfs:label"/>
-	    <xsl:value-of select="concat(translate(substring($label, 1, 1), $lower-case, $upper-case), substring($label, 2))"/>
-	</xsl:for-each>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/dbpedia-owl:*" mode="rdfs:domain">
-	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
-	<xsl:for-each select="document('&ont-uri;')">
-	    <xsl:value-of select="key('resources', $this)/rdfs:domain/@rdf:resource"/>
-	</xsl:for-each>
     </xsl:template>
 
 </xsl:stylesheet>

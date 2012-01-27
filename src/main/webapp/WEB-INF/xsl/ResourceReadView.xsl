@@ -5,10 +5,11 @@
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
 ]>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -17,13 +18,8 @@ xmlns:url="java.net.URLEncoder"
 exclude-result-prefixes="xsl xhtml g rdf php url">
 <!-- xmlns:url="&java;java.net.URLEncoder" -->
 
-    <xsl:import href="imports/rdf.xsl"/>
-    <xsl:import href="imports/rdfs.xsl"/>
-    <xsl:import href="imports/owl.xsl"/>
-    <xsl:import href="imports/dcelements.xsl"/>
-    <xsl:import href="imports/dcterms.xsl"/>
+    <xsl:import href="imports/default.xsl"/>
     <xsl:import href="imports/foaf.xsl"/>
-    <xsl:import href="imports/sioc.xsl"/>
     <xsl:import href="imports/dbpedia-owl.xsl"/>
 
     <xsl:output method="xml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
@@ -40,8 +36,6 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="lang" select="'en'"/>
 
     <xsl:variable name="resource" select="/"/>
-    <xsl:variable name="lower-case" select="'abcdefghijklmnopqrstuvwxyz'" />
-    <xsl:variable name="upper-case" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <!--
@@ -98,7 +92,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>	    
 	</dl>
-	<xsl:apply-templates select="rdf:type/@rdf:resource" mode="g:type">
+	<xsl:apply-templates select="rdf:type/@rdf:resource[not(empty(rdfs:domain(.)))]" mode="g:type">
 	    <!-- <xsl:sort select="@rdf:resource | @rdf:nodeID" data-type="text" order="ascending"/> -->
 	</xsl:apply-templates>
 	<!--
@@ -126,22 +120,16 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
-	<xsl:param name="type" select="false()"/>
-	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
-	<xsl:variable name="domain"><xsl:apply-templates select="." mode="rdfs:domain"/></xsl:variable>
-
-	<xsl:if test="(not($type) and not(boolean(string($domain)))) or $type = $domain">
-	    <!-- do not repeat property name if it's the same as the previous one -->
-	    <xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
-		<!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
-		<dt>
-		    <a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
-			<xsl:apply-templates select="." mode="g:label"/>
-		    </a>
-		</dt>
-	    </xsl:if>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
+	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
+	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
+	    <dt>
+		<a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
+		    <xsl:value-of select="g:label($this, /)"/>
+		</a>
+	    </dt>
 	</xsl:if>
+	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
     </xsl:template>
 
     <!-- object -->
