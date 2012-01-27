@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.xml.resolver.tools.CatalogResolver;
 import org.graphity.RDFResource;
 
 /**
@@ -104,8 +105,8 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	    document(new ByteArrayInputStream(bos.toByteArray())).
 	    parameter("uri", resource.getURI()).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()).
+	    resolver(new CatalogResolver()).
 	    outputProperty(OutputKeys.INDENT, "yes"); // is base uri necessary?
-	
 	    if (resource.getServiceURI() != null)
 		builder.parameter("service-uri", resource.getServiceURI());
 	    

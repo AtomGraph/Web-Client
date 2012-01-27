@@ -1,0 +1,11 @@
+<!-- http://www.xml.com/pub/a/2004/03/03/catalogs.html -->
+<!-- http://norman.walsh.name/2007/02/06/xmlresolver -->
+<!-- http://xml.apache.org/commons/components/resolver/resolver-article.html -->
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog
+  xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+  <uri name="http://www.w3.org/1999/02/22-rdf-syntax-ns"
+    uri="owl/rdf.owl"/>
+
+</catalog>
