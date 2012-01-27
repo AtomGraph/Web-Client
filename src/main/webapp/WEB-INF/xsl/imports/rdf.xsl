@@ -18,7 +18,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:dc="&dc;"
 xmlns:foaf="&foaf;"
-exclude-result-prefixes="g url rdf rdfs">
+exclude-result-prefixes="g url rdf rdfs dc foaf">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
@@ -48,7 +48,7 @@ exclude-result-prefixes="g url rdf rdfs">
     </xsl:template>
 	
     <!-- subject -->
-    <xsl:template match="@rdf:about | @rdf:resource" mode="g:label">
+    <xsl:template match="@rdf:about" mode="g:label">
 	<xsl:choose>
 	    <xsl:when test="../dc:title">
 		<xsl:value-of select="../dc:title"/>
@@ -64,10 +64,32 @@ exclude-result-prefixes="g url rdf rdfs">
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
-    
+
+    <!-- object -->
+    <xsl:template match="@rdf:resource" mode="g:label">
+	<xsl:choose>
+	    <!-- maybe description is included in the main RDF/XML document? -->
+	    <xsl:when test="key('resources', .)">
+		<xsl:apply-templates select="key('resources', .)/@rdf:about" mode="g:label"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:value-of select="."/>
+	    </xsl:otherwise>
+	</xsl:choose>
+    </xsl:template>
+
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:label">
-	<xsl:value-of select="concat(namespace-uri(.), local-name(.))"/>
+	<xsl:variable name="this" select="concat(namespace-uri(.), local-name(.))"/>
+	<xsl:choose>
+	    <!-- maybe description is included in the main RDF/XML document? -->
+	    <xsl:when test="key('resources', $this)">
+		<xsl:apply-templates select="key('resources', $this)/@rdf:about" mode="g:label"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:value-of select="$this"/>
+	    </xsl:otherwise>
+	</xsl:choose>
     </xsl:template>
 
     <!-- subject/object URI resource -->
