@@ -20,7 +20,7 @@
  * https://github.com/apache/stanbol/blob/trunk/reasoners/web/src/main/java/org/apache/stanbol/reasoners/web/writers/JenaModelWriter.java
  */
 
-package org.graphity.util;
+package org.graphity.provider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -5,6 +5,7 @@
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
+    <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
 ]>
 <xsl:stylesheet version="2.0"
@@ -17,6 +18,7 @@ xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:dc="&dc;"
+xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 exclude-result-prefixes="g url rdf rdfs dc foaf">
 
@@ -50,6 +52,7 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	</a>
     </xsl:template>
 
+    <!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
     <xsl:variable name="ontologies" select="(xs:anyURI('../../owl/rdf.owl'),
 					    xs:anyURI('../../owl/rdfs.owl'),
 					    xs:anyURI('../../owl/owl2.owl'),
@@ -61,19 +64,27 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 					    xs:anyURI('../../owl/dbpedia-owl.owl'))" as="xs:anyURI*"/>
 
     <xsl:function name="g:local-label" as="xs:string?">
+	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
 	<xsl:param name="document" as="document-node()"/>
 	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
 	<xsl:choose>
-	    <xsl:when test="$resource/dc:title | $resource/@dc:title">
-		<xsl:sequence select="$resource/dc:title | $resource/@dc:title"/>
-	    </xsl:when>
 	    <xsl:when test="$resource/rdfs:label | $resource/@rdfs:label">
 		<xsl:sequence select="$resource/rdfs:label | $resource/@rdfs:label"/>
+	    </xsl:when>
+	    <xsl:when test="$resource/foaf:nick | $resource/@foaf:nick">
+		<xsl:sequence select="$resource/foaf:nick | $resource/@foaf:nick"/>
+	    </xsl:when>
+	    <xsl:when test="$resource/dc:title | $resource/@dc:title">
+		<xsl:sequence select="$resource/dc:title | $resource/@dc:title"/>
 	    </xsl:when>
 	    <xsl:when test="$resource/foaf:name | $resource/@foaf:name">
 		<xsl:sequence select="$resource/foaf:name | $resource/@foaf:name"/>
 	    </xsl:when>
+	    <xsl:when test="$resource/dct:title | $resource/@dct:title">
+		<xsl:sequence select="$resource/dct:title | $resource/@dct:title"/>
+	    </xsl:when>
+	    <!-- skos:prefLabel -->
 	</xsl:choose>
     </xsl:function>
 	
@@ -86,8 +97,8 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), lower-case(substring($local-label, 2)))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<!-- <xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, .))[1]" as="xs:string?"/> -->
-		<xsl:variable name="imported-label" select="(document($resource-uri)/g:local-label($resource-uri, .))[1]" as="xs:string?"/>
+		<xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, .))[1]" as="xs:string?"/>
+		<!-- <xsl:variable name="imported-label" select="(document($resource-uri)/g:local-label($resource-uri, .))[1]" as="xs:string?"/> -->
 		<xsl:choose>
 		    <xsl:when test="$imported-label">
 			<xsl:sequence select="concat(upper-case(substring($imported-label, 1, 1)), lower-case(substring($imported-label, 2)))"/>

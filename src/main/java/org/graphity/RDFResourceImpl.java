@@ -28,6 +28,8 @@ import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import org.graphity.util.QueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SP;
 
 /**
@@ -36,6 +38,8 @@ import org.topbraid.spin.vocabulary.SP;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
+    private static final Logger log = LoggerFactory.getLogger(RDFResourceImpl.class);
+    
     // http://stackoverflow.com/questions/5875772/staying-dry-with-jax-rs
     //@QueryParam("service-uri") String serviceUri = null;
     //String serviceUri = null;
@@ -56,8 +60,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain")
     public Model getModel()
     {
-System.out.println("getURI(): " + getURI());
-System.out.println("getServiceURI(): " + getServiceURI());
+	log.debug("getURI(): {}", getURI());
+	log.debug("getServiceURI(): {}", getServiceURI());
 
 	//if (model == null)
 	// query the available SPARQL endpoint (either local or remote)

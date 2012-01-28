@@ -11,6 +11,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.ResourceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.SPINFactory;
@@ -23,6 +25,7 @@ import org.topbraid.spin.vocabulary.SP;
  */
 public class QueryBuilder
 {
+    private static final Logger log = LoggerFactory.getLogger(QueryBuilder.class);
     private Model model = ModelFactory.createDefaultModel();
     private org.topbraid.spin.model.Query spinQuery = null;
 
@@ -87,9 +90,7 @@ public class QueryBuilder
 
     public Query build()
     {
-//System.out.println("SPIN query in Turtle:");
-//model.write(System.out, FileUtils.langTurtle);
-System.out.println(spinQuery.toString());
+	log.trace("Querystring generated from SPIN Model: {}", spinQuery.toString());
 
 	return ARQFactory.get().createQuery(spinQuery);
     }
