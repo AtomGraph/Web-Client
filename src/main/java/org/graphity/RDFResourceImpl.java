@@ -36,6 +36,7 @@ import org.topbraid.spin.vocabulary.SP;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
+    // http://stackoverflow.com/questions/5875772/staying-dry-with-jax-rs
     //@QueryParam("service-uri") String serviceUri = null;
     //String serviceUri = null;
     
