@@ -86,8 +86,8 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), lower-case(substring($local-label, 2)))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, .))[1]" as="xs:string?"/>
-		<!-- <xsl:variable name="imported-label" select="(document($resource-uri)/g:local-label($resource-uri, .))[1]" as="xs:string?"/> -->
+		<!-- <xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, .))[1]" as="xs:string?"/> -->
+		<xsl:variable name="imported-label" select="(document($resource-uri)/g:local-label($resource-uri, .))[1]" as="xs:string?"/>
 		<xsl:choose>
 		    <xsl:when test="$imported-label">
 			<xsl:sequence select="concat(upper-case(substring($imported-label, 1, 1)), lower-case(substring($imported-label, 2)))"/>

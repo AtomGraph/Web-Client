@@ -3,9 +3,10 @@
 <!-- http://xml.apache.org/commons/components/resolver/resolver-article.html -->
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog
-  xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"
+xmlns:xr="http://xmlresolver.org/ns/catalog">
 
   <uri name="http://www.w3.org/1999/02/22-rdf-syntax-ns"
-    uri="owl/rdf.owl"/>
+    uri="owl/rdf.owl" xr:content-type="application/rdf+xml"/>
 
 </catalog>

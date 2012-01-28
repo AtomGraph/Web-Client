@@ -37,7 +37,7 @@ import org.graphity.form.RDFForm;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public class RDFFormReader implements MessageBodyReader<Model>
+public class ModelReader implements MessageBodyReader<Model>
 {
     @Context private HttpServletRequest request;
     private Model model = ModelFactory.createDefaultModel();
@@ -45,7 +45,7 @@ public class RDFFormReader implements MessageBodyReader<Model>
     private List<String> values = new ArrayList<String>();
     private List<Exception> errors = new ArrayList<Exception>();
 
-    public RDFFormReader()
+    public ModelReader()
     {
 	initParamMap();
 	initModel();

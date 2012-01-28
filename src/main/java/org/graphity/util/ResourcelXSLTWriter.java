@@ -30,16 +30,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.apache.xml.resolver.tools.CatalogResolver;
 import org.graphity.RDFResource;
+import org.xmlresolver.Resolver;
 
 /**
  *
  * @author Pumba
  */
 @Provider
-@Produces({"text/html", "application/xml", "application/*+xml", "text/xml"})
-public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
+@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML})
+public class ResourcelXSLTWriter implements MessageBodyWriter<RDFResource>
 {
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
  
@@ -89,13 +89,13 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 
 	    //getXSLTBuilder(resource).transform(entityStream); // no preprocessing
 	}
+
 	catch (URISyntaxException ex)
 	{
-	    Logger.getLogger(ResourceXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	catch (TransformerException ex)
+	    Logger.getLogger(ResourcelXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
+	}	catch (TransformerException ex)
 	{
-	    Logger.getLogger(ResourceXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ResourcelXSLTWriter.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
     
@@ -105,7 +105,7 @@ public class ResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 	    document(new ByteArrayInputStream(bos.toByteArray())).
 	    parameter("uri", resource.getURI()).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()).
-	    resolver(new CatalogResolver()).
+	    resolver(new Resolver()).
 	    outputProperty(OutputKeys.INDENT, "yes"); // is base uri necessary?
 	    if (resource.getServiceURI() != null)
 		builder.parameter("service-uri", resource.getServiceURI());
