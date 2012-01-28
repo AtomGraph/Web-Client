@@ -27,6 +27,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -42,7 +43,8 @@ import org.xmlresolver.Resolver;
 public class ResourcelXSLTWriter implements MessageBodyWriter<RDFResource>
 {
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
- 
+    private URIResolver resolver = new Resolver();
+    
     @Context ServletContext context;
     //@Context UriInfo uriInfo;
     private ByteArrayOutputStream bos = null;
@@ -105,7 +107,7 @@ public class ResourcelXSLTWriter implements MessageBodyWriter<RDFResource>
 	    document(new ByteArrayInputStream(bos.toByteArray())).
 	    parameter("uri", resource.getURI()).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()).
-	    resolver(new Resolver()).
+	    resolver(resolver).
 	    outputProperty(OutputKeys.INDENT, "yes"); // is base uri necessary?
 	    if (resource.getServiceURI() != null)
 		builder.parameter("service-uri", resource.getServiceURI());
