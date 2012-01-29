@@ -26,6 +26,7 @@ public class Application extends javax.ws.rs.core.Application
     public Application()
     {
 	log.debug("Initializing application {}", this.getClass().getCanonicalName());
+	//FileManager.get().
 	FileManager.get().addLocator(new LocatorLinkedData());
     }
 

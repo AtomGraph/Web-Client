@@ -117,10 +117,7 @@ log.trace("Accept header: {}", getAcceptHeader());
     }
 
     @Override
-    public String getName()
-    {
-	return LocatorLinkedData.class.getName();
-    }
+    public String getName() { return "LocatorLinkedData" ; }
 
     protected Map<String, Double> getQualifiedTypes()
     {

@@ -111,7 +111,7 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 if (groupTriples == null || rdf2xhtml == null)
 {
     init();
-    log.error("groupTriples == null || rdf2xhtml == null");
+    log.warn("groupTriples == null || rdf2xhtml == null");
 }
 	    groupTriples.document(new ByteArrayInputStream(bos.toByteArray())).
 	    transform(getXSLTBuilder(resource).
