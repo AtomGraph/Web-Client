@@ -89,7 +89,7 @@ public class DataManager extends FileManager implements URIResolver
 	if (lang != null) syntax = lang.getName();
 	log.debug("Syntax used to load Model: {}", syntax);
 	
-	return super.loadModel(filenameOrURI, null, syntax);
+	return loadModel(filenameOrURI, null, syntax);
     }
     
     /** Add a Linked Data locator */
