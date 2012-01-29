@@ -85,7 +85,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		//model = DataManager.get().loadModel(getURI());
 		DataManager dm = new DataManager();
 		dm.setModelCaching(true);
-		dm.loadModel(getURI());
+		model = dm.loadModel(getURI());
+		log.debug("Number of Model stmts read: {}", model.size());
 		//JenaReader reader = new JenaReader();
 		//reader.read(model, getURI());
 	    }

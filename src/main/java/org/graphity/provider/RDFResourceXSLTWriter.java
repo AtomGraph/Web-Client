@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
 public class RDFResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 {
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
+    private static final Logger log = LoggerFactory.getLogger(RDFResourceXSLTWriter.class) ;
     
     private XSLTBuilder groupTriples = null;
     private XSLTBuilder rdf2xhtml = null;
     // private URIResolver resolver = new Resolver(); // XML-only resolving is not good enough, needs to work on RDF Models
-    private static final Logger log = LoggerFactory.getLogger(RDFResourceXSLTWriter.class) ;
     
     @Context private ServletContext context;
     //@Context private UriInfo uriInfo;
@@ -58,7 +58,7 @@ public class RDFResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     @PostConstruct
     public void init()
     {
-log.debug("@PostConstruct");
+	log.debug("@PostConstruct");
 	try
 	{
 	    groupTriples = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "group-triples.xsl")).

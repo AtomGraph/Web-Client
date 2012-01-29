@@ -30,6 +30,8 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -39,6 +41,8 @@ import org.w3c.dom.Node;
  */
 public class XSLTBuilder
 {
+    private static final Logger log = LoggerFactory.getLogger(XSLTBuilder.class) ;
+
     private Source source = null;
     //private Source stylesheet = null;
     private SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
@@ -143,6 +147,7 @@ public class XSLTBuilder
 
     public XSLTBuilder document(Source doc)
     {
+	log.trace("Loading document Source with system ID: {}", doc.getSystemId());
 	this.source = doc;
 	return this;
     }
@@ -198,6 +203,7 @@ public class XSLTBuilder
     // http://xml.apache.org/xalan-j/usagepatterns.html#outasin
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
     {
+	log.trace("Loading stylesheet Source with system ID: {}", stylesheet.getSystemId());
         //transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
 	templates = TransformerFactory.newInstance().newTemplates(stylesheet);
 	handler = factory.newTransformerHandler(templates);
@@ -248,6 +254,7 @@ public class XSLTBuilder
 
     public XSLTBuilder parameter(String name, Object value)
     {
+	log.trace("Setting transformer parameter {} with value {}", name, value);
 	//transformer.setParameter(name, o);
 	handler.getTransformer().setParameter(name, value);
 	return this;
@@ -255,6 +262,7 @@ public class XSLTBuilder
     
     public XSLTBuilder resolver(URIResolver resolver)
     {
+	log.trace("Setting URIResolver: {}", resolver);
 	//transformer.setURIResolver(resolver);
 	handler.getTransformer().setURIResolver(resolver);
 	return this;
@@ -262,6 +270,7 @@ public class XSLTBuilder
 
     public XSLTBuilder outputProperty(String name, String value)
     {
+	log.trace("Setting transformer OutputProperty {} with value {}", name, value);
 	//transformer.setOutputProperty(name, value);
 	handler.getTransformer().setOutputProperty(name, value);
 	return this;
@@ -286,6 +295,7 @@ public class XSLTBuilder
 
     public void transform(OutputStream out) throws TransformerException
     {
+	log.trace("Transforming document {}", source.getSystemId());
 	transform(new StreamResult(out));
     }
 

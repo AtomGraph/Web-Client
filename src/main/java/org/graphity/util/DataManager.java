@@ -11,34 +11,54 @@ import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import org.openjena.riot.Lang;
+import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Uses portions of Jena code
+ * (c) Copyright 2010 Epimorphics Ltd.
+ * All rights reserved.
+ * 
+ * @see org.openjena.fuseki.FusekiLib
+ * {@link http://openjena.org}
+ * 
  * @author Pumba
  */
 public class DataManager extends FileManager implements URIResolver
 {
+    private static final Map<String, Lang> LANGS = new HashMap<String, Lang>() ;
+    static {
+        LANGS.put(WebContent.contentTypeRDFXML, Lang.RDFXML);
+        LANGS.put(WebContent.contentTypeTurtle1, Lang.TURTLE);
+        LANGS.put(WebContent.contentTypeTurtle2, Lang.TURTLE);
+        LANGS.put(WebContent.contentTypeTurtle3, Lang.TURTLE);
+        LANGS.put(WebContent.contentTypeNTriples, Lang.NTRIPLES);   // text/plain
+        LANGS.put(WebContent.contentTypeNTriplesAlt, Lang.NTRIPLES) ;
+    }    
     private static final Logger log = LoggerFactory.getLogger(DataManager.class) ;
-    
     static DataManager instance = null ;
 
     public DataManager(LocationMapper _mapper)
     {
 	super(_mapper);
-        addLocator( new LocatorLinkedData()) ;
+        addLocator(new LocatorLinkedData()) ;
+	removeLocatorURL();
     }
 
     public DataManager(FileManager filemanager)
     {
 	super(filemanager);
         addLocator(new LocatorLinkedData()) ;
+	removeLocatorURL();
     }
 
     public DataManager()
@@ -62,10 +82,14 @@ public class DataManager extends FileManager implements URIResolver
     public Model loadModel(String filenameOrURI)
     {
 	TypedStream stream = openNoMapOrNull(filenameOrURI);
+	log.debug("Opened stream from filename or URI {} with MIME type {}", filenameOrURI, stream.getMimeType());
 	
-	log.debug("Opened filename or URI {} with media type {}", filenameOrURI, stream.getMimeType());
+	String syntax = null;
+	Lang lang = langFromContentType(stream.getMimeType());
+	if (lang != null) syntax = lang.getName();
+	log.debug("Syntax used to load Model: {}", syntax);
 	
-	return super.loadModel(filenameOrURI);
+	return super.loadModel(filenameOrURI, null, syntax);
     }
     
     /** Add a Linked Data locator */
@@ -87,6 +111,14 @@ public class DataManager extends FileManager implements URIResolver
 		remove(loc);
 	    }
 	}
+    }
+    
+    // ---- To riot.WebContent
+    public static Lang langFromContentType(String mimeType)
+    { 
+        if ( mimeType == null )
+            return null ;
+        return LANGS.get(mimeType.toLowerCase()) ;
     }
     
     /*

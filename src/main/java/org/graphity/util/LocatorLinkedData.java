@@ -22,7 +22,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * http://linkeddatabook.com/editions/1.0/#htoc65
+ * Implementing Linked Data publishing patterns
+ * {@link http://linkeddatabook.com/editions/1.0/#htoc65}
+ * 
+ * Uses portions of Jena code
+ * (c) Copyright 2004, 2005, 2006, 2007, 2008, 2009 Hewlett-Packard Development Company, LP
+ * All rights reserved.
+ * 
+ * @see com.hp.hpl.jena.util.LocatorURL
+ * @see org.openjena.riot.system.ContentNeg
+ * {@link http://openjena.org}
  * 
  * @author Pumba
  */
@@ -73,7 +82,7 @@ public class LocatorLinkedData implements Locator
             return null;
         }
         */
-log.debug("Request Accept header: {}", getAcceptHeader());
+	log.trace("Request Accept header: {}", getAcceptHeader());
 
         try
         {
@@ -88,12 +97,39 @@ log.debug("Request Accept header: {}", getAcceptHeader());
             conn.connect() ;
             InputStream in = new BufferedInputStream(conn.getInputStream());
             
+	    //ContentType type = org.openjena.riot.ContentType.parse(conn.getContentType());
+	    String x = conn.getContentType() ; 
+	    String contentType = null ;
+	    String charset = null ;
+
+	    if ( x.contains(";") )
+	    {
+		String[] xx = x.split("\\s*;\\s*") ;
+		contentType = xx[0] ;
+		charset = xx[1] ;
+	    }
+	    else
+		contentType = x ;
+
+	    if ( charset != null )
+	    {
+		int i = charset.indexOf("charset=") ;
+		if ( i == 0 )
+		    charset = charset.substring("charset=".length()) ;
+	    }
+	    //Charset cs = Charset.forName(charset) ;
+
+	    if ( contentType != null )
+		contentType = contentType.toLowerCase() ;
+	
             if (log.isTraceEnabled())
 	    {
-		log.trace("Found: {} with Content-Type:", filenameOrURI) ;
+		log.trace("Found: {}", filenameOrURI);
+		log.trace("MIME type: {} Charset: {}", contentType, charset);
 	    }
-	    
-            return new TypedStream(in, conn.getContentType()) ; 
+
+	    //return new TypedStream(in, type.getContentType(), type.getCharset());
+            return new TypedStream(in, contentType, charset); 
         }
         catch (java.io.FileNotFoundException ex) 
         {
