@@ -174,7 +174,7 @@ public class LocatorLinkedData implements Locator
     @Override
     public String getName() { return "LocatorLinkedData" ; }
 
-    protected Map<String, Double> getQualifiedTypes()
+    public  Map<String, Double> getQualifiedTypes()
     {
 	return TYPE_MAP;
     }

@@ -88,7 +88,7 @@ public class DataManager extends FileManager implements URIResolver
 	Lang lang = langFromContentType(stream.getMimeType());
 	if (lang != null) syntax = lang.getName();
 	log.debug("Syntax used to load Model: {}", syntax);
-	
+
 	return loadModel(filenameOrURI, null, syntax);
     }
     
