@@ -37,11 +37,27 @@ public class LocatorLinkedData implements Locator
     {
 	Map<String, Double> typeMap = new HashMap<String, Double>();
 	
-	typeMap.put(WebContent.langRDFXML, null);
-	
+	typeMap.put(WebContent.contentTypeRDFXML, null);
+
+	typeMap.put(WebContent.contentTypeN3, 0.9);
+	typeMap.put(WebContent.contentTypeN3Alt1, 0.9);
+	typeMap.put(WebContent.contentTypeN3Alt2, 0.9);	
+
 	typeMap.put(WebContent.contentTypeTurtle1, 0.9);
 	typeMap.put(WebContent.contentTypeTurtle2, 0.9);
 	typeMap.put(WebContent.contentTypeTurtle3, 0.9);
+	
+	typeMap.put(WebContent.contentTypeNTriples, 0.9);
+	typeMap.put(WebContent.contentTypeNTriplesAlt, 0.9);
+	
+	typeMap.put(WebContent.contentTypeTriG, 0.9);
+	typeMap.put(WebContent.contentTypeNQuads, 0.9);
+	typeMap.put(WebContent.contentTypeTriGAlt, 0.9);
+	typeMap.put(WebContent.contentTypeNQuadsAlt, 0.9);
+	
+	typeMap.put(WebContent.contentTypeTextPlain, 0.7);
+	
+	typeMap.put(WebContent.contentTypeXML, 0.5);
 	
 	TYPE_MAP = Collections.unmodifiableMap(typeMap);
     }
@@ -57,7 +73,7 @@ public class LocatorLinkedData implements Locator
             return null;
         }
         */
-log.trace("Accept header: {}", getAcceptHeader());
+log.debug("Request Accept header: {}", getAcceptHeader());
 
         try
         {
@@ -72,7 +88,10 @@ log.trace("Accept header: {}", getAcceptHeader());
             conn.connect() ;
             InputStream in = new BufferedInputStream(conn.getInputStream());
             
-            if (log.isTraceEnabled() ) log.trace("Found: {}", filenameOrURI) ;
+            if (log.isTraceEnabled())
+	    {
+		log.trace("Found: {} with Content-Type:", filenameOrURI) ;
+	    }
 	    
             return new TypedStream(in, conn.getContentType()) ; 
         }

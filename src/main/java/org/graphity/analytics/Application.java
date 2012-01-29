@@ -4,11 +4,11 @@
  */
 package org.graphity.analytics;
 
-import com.hp.hpl.jena.util.FileManager;
 import java.util.HashSet;
 import java.util.Set;
 import org.graphity.provider.ModelWriter;
 import org.graphity.provider.RDFResourceXSLTWriter;
+import org.graphity.util.DataManager;
 import org.graphity.util.LocatorLinkedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +26,8 @@ public class Application extends javax.ws.rs.core.Application
     public Application()
     {
 	log.debug("Initializing application {}", this.getClass().getCanonicalName());
-	//FileManager.get().
-	FileManager.get().addLocator(new LocatorLinkedData());
+	//FileManager.get().addLocator(new LocatorLinkedData());
+	//DataManager.get().addLocator(new LocatorLinkedData()); // added in DataManager.setStdLocators()
     }
 
     @Override

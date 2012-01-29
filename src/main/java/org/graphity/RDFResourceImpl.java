@@ -21,12 +21,12 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import org.graphity.util.DataManager;
 import org.graphity.util.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,11 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    if (isRemote())
 	    // load remote Linked Data
 	    {
-		model = FileManager.get().loadModel(getURI());
+		//model = FileManager.get().loadModel(getURI());
+		//model = DataManager.get().loadModel(getURI());
+		DataManager dm = new DataManager();
+		dm.setModelCaching(true);
+		dm.loadModel(getURI());
 		//JenaReader reader = new JenaReader();
 		//reader.read(model, getURI());
 	    }
