@@ -22,7 +22,9 @@
 :facebookApp a owl:ObjectProperty ;
     rdfs:label "has Facebook app" ;
     rdfs:isDefinedBy : ;
-    rdfs:range gfb-app:type . # Application
+    rdfs:range gfb-app:type .
+gfb-app:type rdfs:label "Facebook application" ;
+    rdfs:isDefinedBy gfb-app: .
 
 :ConstructLatest    a       sp:Construct ;
       sp:templates ([ sp:object _:b4 ;

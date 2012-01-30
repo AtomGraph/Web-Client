@@ -58,7 +58,7 @@ public class RDFResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     @PostConstruct
     public void init()
     {
-	log.debug("@PostConstruct");
+	log.debug("@PostConstruct with @Context ServletContext: {}", context);
 	try
 	{
 	    groupTriples = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "group-triples.xsl")).
