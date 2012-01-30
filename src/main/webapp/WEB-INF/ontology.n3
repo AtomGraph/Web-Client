@@ -8,14 +8,21 @@
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix sp: <http://spinrdf.org/sp#> .
+@prefix gfb-app: <http://graph.facebook.com/schema/application#> .
 
 : a owl:Ontology ;
     dc:title "Graphity ontology" ;
     rdfs:seeAlso <http://graphity.org> .
 
 :query a owl:ObjectProperty ;
+    rdfs:label "has SPIN query" ;
     rdfs:isDefinedBy : ;
     rdfs:range sp:Query .
+
+:facebookApp a owl:ObjectProperty ;
+    rdfs:label "has Facebook app" ;
+    rdfs:isDefinedBy : ;
+    rdfs:range gfb-app:type . # Application
 
 :ConstructLatest    a       sp:Construct ;
       sp:templates ([ sp:object _:b4 ;

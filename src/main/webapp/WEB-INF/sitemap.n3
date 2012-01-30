@@ -11,6 +11,7 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix gfb-app: <http://graph.facebook.com/schema/application#> .
 
 _:dataset a void:Dataset;
     foaf:homepage <> ;
@@ -18,11 +19,15 @@ _:dataset a void:Dataset;
 _:endpoint a sd:Service ;
     sd:endpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query .
+<https://graph.facebook.com/121081534640971#> gfb-app:id "121081534640971"^^xsd:string ;
+    gfb-app:name "Graphity Facebook app" ;
+    rdfs:label "Graphity Facebook app" .
 
 <> a sioc:Site, sioc:Forum ;
     dc:title "Graphity" ;
     g:query g:ConstructLatest ;
-    void:inDataset _:dataset .
+    void:inDataset _:dataset ;
+    g:facebookApp <https://graph.facebook.com/121081534640971#> .
 
 <classes> a sioc:Forum ;
     sioc:has_host <> ;
