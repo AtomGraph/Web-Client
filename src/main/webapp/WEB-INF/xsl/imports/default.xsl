@@ -24,8 +24,11 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
+    <xsl:param name="g:inference" select="true()" as="xs:boolean"/>
+    
     <xsl:key name="resources-by-domain" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:domain/@rdf:resource"/>
     <xsl:key name="resources-by-type" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
+    <xsl:key name="resources-by-subclass" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:subClassOf/@rdf:resource"/>
     
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource">
@@ -112,32 +115,53 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
     </xsl:function>
 
     <xsl:function name="rdfs:domain" as="xs:anyURI*">
-	<xsl:param name="property-uri" as="xs:anyURI"/>
-	<xsl:for-each select="document($ontologies)">
-	    <xsl:sequence select="key('resources', $property-uri, .)/rdfs:domain/@rdf:resource"/>
+	<xsl:param name="property-uri" as="xs:anyURI+"/>
 <xsl:message>$property-uri: <xsl:value-of select="$property-uri"/></xsl:message>
-<xsl:message>rdfs:domain: <xsl:value-of select="key('resources', $property-uri, .)/rdfs:domain/@rdf:resource"/></xsl:message>
+	<xsl:for-each select="document($ontologies)">
+	    <xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
+<xsl:if test="key('resources', $property-uri)/rdfs:domain/@rdf:resource">
+    <xsl:message>rdfs:domain: <xsl:value-of select="key('resources', $property-uri, .)/rdfs:domain/@rdf:resource"/></xsl:message>
+</xsl:if>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="g:inDomainOf" as="xs:anyURI*">
-	<xsl:param name="type-uri" as="xs:anyURI"/>
-	<xsl:for-each select="document($ontologies)">
-	    <xsl:sequence select="key('resources-by-domain', $type-uri, .)/@rdf:about"/>
+	<xsl:param name="type-uri" as="xs:anyURI+"/>
 <xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message>
-<xsl:message>g:inDomainOf: <xsl:value-of select="key('resources-by-domain', $type-uri, .)/@rdf:about"/></xsl:message>
+	<xsl:for-each select="document($ontologies)">
+	    <xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
+	    <xsl:variable name="super-uris" select="rdfs:subClassOf($type-uri)" as="xs:anyURI*"/>
+<!-- <xsl:message>$super-uris: <xsl:value-of select="$super-uris"/></xsl:message> -->
+	    <xsl:if test="not(empty($super-uris))">
+		<xsl:sequence select="g:inDomainOf($super-uris)"/>
+	    </xsl:if>
+<xsl:if test="key('resources-by-domain', $type-uri)/@rdf:about">
+    <xsl:message>g:inDomainOf: <xsl:value-of select="key('resources-by-domain', $type-uri)/@rdf:about"/></xsl:message>
+</xsl:if>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="rdfs:subClassOf" as="xs:anyURI*">
-	<xsl:param name="type-uri" as="xs:anyURI"/>
+	<xsl:param name="type-uri" as="xs:anyURI+"/>
+<xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message>
 	<!-- <xsl:for-each select="document($type-uri)"> -->
 	<xsl:for-each select="document($ontologies)">
-	    <xsl:sequence select="key('resources', $type-uri, .)/rdfs:subClassOf/@rdf:resource"/>
-<!--
+	    <xsl:sequence select="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource"/>
+<xsl:if test="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource">
+    <xsl:message>rdfs:subClassOf: <xsl:value-of select="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource"/></xsl:message>
+</xsl:if>
+	</xsl:for-each>
+    </xsl:function>
+
+    <xsl:function name="g:superClassOf" as="xs:anyURI*">
+	<xsl:param name="type-uri" as="xs:anyURI+"/>
 <xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message>
-<xsl:message>rdfs:subClassOf: <xsl:value-of select="key('resources', $type-uri, .)/rdfs:subClassOf/@rdf:resource"/></xsl:message>
--->
+	<!-- <xsl:for-each select="document($type-uri)"> -->
+	<xsl:for-each select="document($ontologies)">
+	    <xsl:sequence select="key('resources-by-subclass', $type-uri)/@rdf:about"/>
+<xsl:if test="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource">
+    <xsl:message>g:superClassOf: <xsl:value-of select="key('resources-by-subclass', $type-uri)/@rdf:about"/></xsl:message>
+</xsl:if>
 	</xsl:for-each>
     </xsl:function>
 

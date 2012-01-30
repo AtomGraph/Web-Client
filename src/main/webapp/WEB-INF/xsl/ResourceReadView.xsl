@@ -112,7 +112,9 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    <xsl:apply-imports/>
 	</h2>
 	<dl>
-	    <xsl:apply-templates select="../../*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
+	    <!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
+	    <!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
+	    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]">
 		<xsl:with-param name="type" select="$this"/>
 	    </xsl:apply-templates>
 	</dl>
