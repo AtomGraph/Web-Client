@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.graphity.provider.ModelWriter;
 import org.graphity.provider.RDFResourceXSLTWriter;
-import org.graphity.util.DataManager;
 import org.graphity.util.LocatorLinkedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

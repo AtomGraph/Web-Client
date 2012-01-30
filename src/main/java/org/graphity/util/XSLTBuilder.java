@@ -43,8 +43,8 @@ public class XSLTBuilder
 {
     private static final Logger log = LoggerFactory.getLogger(XSLTBuilder.class) ;
 
-    private Source source = null;
-    //private Source stylesheet = null;
+    private Source doc = null;
+    private Source stylesheet = null;
     private SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
     private Templates templates = null;
     private TransformerHandler handler = null;
@@ -100,9 +100,9 @@ public class XSLTBuilder
 	return newInstance().document(systemId);
     }
 
-    public static XSLTBuilder fromStylesheet(Source doc) throws TransformerConfigurationException
+    public static XSLTBuilder fromStylesheet(Source xslt) throws TransformerConfigurationException
     {
-	return newInstance().stylesheet(doc);
+	return newInstance().stylesheet(xslt);
     }
 
     public static XSLTBuilder fromStylesheet(Node n) throws TransformerConfigurationException
@@ -148,7 +148,7 @@ public class XSLTBuilder
     public XSLTBuilder document(Source doc)
     {
 	log.trace("Loading document Source with system ID: {}", doc.getSystemId());
-	this.source = doc;
+	this.doc = doc;
 	return this;
     }
 
@@ -205,10 +205,14 @@ public class XSLTBuilder
     {
 	log.trace("Loading stylesheet Source with system ID: {}", stylesheet.getSystemId());
         //transformer = TransformerFactory.newInstance().newTransformer(stylesheet);
-	templates = TransformerFactory.newInstance().newTemplates(stylesheet);
-	handler = factory.newTransformerHandler(templates);
-	//transformer = templates.newTransformer();
-	transformer = factory.newTransformer();
+
+	//templates =  TransformerFactory.newInstance().newTemplates(stylesheet);
+	//templates = factory.newTemplates(stylesheet);
+	//handler = factory.newTransformerHandler(templates);
+
+	// Saxon way
+	this.stylesheet = stylesheet;
+	handler = factory.newTransformerHandler(stylesheet);
 	return this;
     }
 
@@ -278,10 +282,12 @@ public class XSLTBuilder
     
     public void transform(Result result) throws TransformerException
     {
+	log.trace("TransformerHandler: {}", handler);
+	log.trace("Transformer: {}", transformer);
+	log.trace("Document: {}", doc);
+	log.trace("Result: {}", result);
 	//transformer.transform(doc, result);
-	result(result);
-	transformer.transform(source, new SAXResult(handler));
-	//handler.getTransformer().transform(source, new SAXResult(handler));
+	handler.getTransformer().transform(doc, result);
     }
 
     public Document transform() throws TransformerException, ParserConfigurationException
@@ -295,23 +301,29 @@ public class XSLTBuilder
 
     public void transform(OutputStream out) throws TransformerException
     {
-	log.trace("Transforming document {}", source.getSystemId());
+	log.trace("Transforming document {}", doc.getSystemId());
 	transform(new StreamResult(out));
     }
 
-    public XSLTBuilder result(Result result)
+    public XSLTBuilder result(Result result) throws TransformerConfigurationException
     {
+	handler = factory.newTransformerHandler(stylesheet);
 	handler.setResult(result);
 	return this;
     }
     
-    protected TransformerHandler getTransformerHandler()
+    protected TransformerHandler getTransformerHandler() throws TransformerConfigurationException
     {
 	return handler;
+	//return factory.newTransformerHandler(stylesheet);
     }
     
     public void transform(XSLTBuilder next) throws TransformerException // for chaining stylesheets
     {
+	//result(result);
+	//transformer.transform(doc, new SAXResult(handler));
+	//handler.getTransformer().transform(source, new SAXResult(handler));
+
 	transform(new SAXResult(next.getTransformerHandler()));
     }
     
