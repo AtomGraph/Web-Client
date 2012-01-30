@@ -64,6 +64,21 @@
             <artifactId>saxon</artifactId>
             <version>9.1.0.8</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.oauth</groupId>
+            <artifactId>oauth-signature</artifactId>
+            <version>1.1.1-ea</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.oauth</groupId>
+            <artifactId>oauth-client</artifactId>
+            <version>1.1.1-ea</version>
+        </dependency>
     </dependencies>
 
     <build>

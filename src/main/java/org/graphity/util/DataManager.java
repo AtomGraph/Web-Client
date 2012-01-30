@@ -14,10 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.util.locator.LocatorLinkedDataOauth;
+import org.graphity.util.oauth.OAuth2Parameters;
 import org.openjena.riot.Lang;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
@@ -65,7 +68,11 @@ public class DataManager extends FileManager implements URIResolver
     {
 	super();
 	log.debug("DataManager() constructor");
-        addLocator(new LocatorLinkedData());
+        //addLocator(new LocatorLinkedData());
+	addLocator(new LocatorLinkedDataOauth(
+	    new OAuth2Parameters().
+		clientId("121081534640971").
+		redirectURI(UriBuilder.fromUri("http://semanticreports.com:8080/analytics-1.0-SNAPSHOT/").build())));
 	removeLocatorURL();
     }
     
