@@ -21,6 +21,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:import href="imports/default.xsl"/>
     <xsl:import href="imports/foaf.xsl"/>
     <xsl:import href="imports/dbpedia-owl.xsl"/>
+    <xsl:import href="imports/facebook.xsl"/>
 
     <xsl:output method="xml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
 
