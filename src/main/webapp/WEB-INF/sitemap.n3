@@ -11,6 +11,7 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix lda: <http://purl.org/linked-data/api/vocab#>.
 @prefix gfb-app: <http://graph.facebook.com/schema/application#> .
 
 _:dataset a void:Dataset;
@@ -23,14 +24,17 @@ _:endpoint a sd:Service ;
     gfb-app:name "Graphity Facebook app" ;
     rdfs:label "Graphity Facebook app" .
 
-<> a sioc:Site, sioc:Forum ;
+<> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
     dc:title "Graphity" ;
     g:query g:ConstructLatest ;
     void:inDataset _:dataset ;
+    lda:sparqlEndpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
     g:facebookApp <https://graph.facebook.com/121081534640971#> .
 
-<classes> a sioc:Forum ;
+<classes> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
     dc:title "Classes"@en ;
     g:query g:ConstructLatest ;
     void:inDataset _:dataset .
+[] a lda:ItemEndpoint ;
+  lda:uriTemplate "classes/{name}" .

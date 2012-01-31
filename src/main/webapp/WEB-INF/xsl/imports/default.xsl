@@ -132,9 +132,11 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	    <xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
 	    <xsl:variable name="super-uris" select="rdfs:subClassOf($type-uri)" as="xs:anyURI*"/>
 <!-- <xsl:message>$super-uris: <xsl:value-of select="$super-uris"/></xsl:message> -->
+	    <!-- 
 	    <xsl:if test="not(empty($super-uris))">
 		<xsl:sequence select="g:inDomainOf($super-uris)"/>
 	    </xsl:if>
+	    -->
 <xsl:if test="key('resources-by-domain', $type-uri)/@rdf:about">
     <xsl:message>g:inDomainOf: <xsl:value-of select="key('resources-by-domain', $type-uri)/@rdf:about"/></xsl:message>
 </xsl:if>

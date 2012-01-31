@@ -4,6 +4,8 @@
     <!ENTITY g "http://graphity.org/ontology/">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY gfb-app "http://graph.facebook.com/schema/application#">
+    <!ENTITY oauth "http://tools.ietf.org/html/draft-ietf-oauth-v2-23#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -13,6 +15,8 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
+xmlns:gfb-app="&gfb-app;"
+xmlns:oauth="&oauth;"
 xmlns:php="http://php.net/xsl"
 xmlns:url="java.net.URLEncoder"
 exclude-result-prefixes="xsl xhtml g rdf php url">
@@ -30,12 +34,14 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="uri"/>
     <xsl:param name="base-uri"/>
     <xsl:param name="service-uri" select="false()"/>
-    <xsl:param name="view"/>
+    <xsl:param name="view" as="xs:anyURI"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="php-os"/>
-    <xsl:param name="fb-app-id" select="'264143360289485'"/>
-    <xsl:param name="lang" select="'en'"/>
-
+    <!-- <xsl:param name="fb-app-id" select="'264143360289485'"/> -->
+    <xsl:param name="lang" select="'en'" as="xs:string"/>
+    <xsl:param name="gfb-app:id" select="'121081534640971'" as="xs:string"/>
+    <xsl:param name="oauth:redirect_uri" select="resolve-uri('http://semanticreports:8080')" as="xs:anyURI"/>
+    
     <xsl:variable name="resource" select="/"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
@@ -60,17 +66,20 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    </head>
 	    <body>
 		<form action="" method="get">
-		    <label for="uri">URI</label>
-		    <input type="text" id="uri" name="uri" value="{$uri}" size="60"/>
-		    <label for="service-uri">SPARQL endpoint</label>
-		    <input type="text" id="service-uri" name="service-uri" size="60">
-			<xsl:if test="$service-uri">
-			    <xsl:attribute name="value">
-				<xsl:value-of select="$service-uri"/>
-			    </xsl:attribute>
-			</xsl:if>
-		    </input>
-		    <button type="submit">Browse</button>
+		    <fieldset>
+			<label for="uri">URI</label>
+			<input type="text" id="uri" name="uri" value="{$uri}" size="60"/>
+			<label for="service-uri">SPARQL endpoint</label>
+			<input type="text" id="service-uri" name="service-uri" size="60">
+			    <xsl:if test="$service-uri">
+				<xsl:attribute name="value">
+				    <xsl:value-of select="$service-uri"/>
+				</xsl:attribute>
+			    </xsl:if>
+			</input>
+			<button type="submit">Browse</button>
+		    </fieldset>
+		    <a href="https://www.facebook.com/dialog/oauth?client_id={encode-for-uri($gfb-app:id)}&amp;redirect_uri={encode-for-uri($oauth:redirect_uri)}">Facebook</a>
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
 		<xsl:apply-templates select="*[@rdf:about != $uri]">
