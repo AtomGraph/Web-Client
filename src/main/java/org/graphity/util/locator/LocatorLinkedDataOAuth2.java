@@ -46,7 +46,8 @@ public class LocatorLinkedDataOAuth2 extends LocatorLinkedData
 	    UriBuilder.fromUri(filenameOrURI).queryParam("", values)
 	}
 	 */
-		
+	
+
 	return super.open(filenameOrURI);
     }
 

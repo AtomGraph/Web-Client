@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
-import org.graphity.provider.ModelWriter;
+import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFResourceXSLTWriter;
 import org.graphity.util.LocatorLinkedData;
 import org.slf4j.Logger;
@@ -29,8 +29,6 @@ public class Application extends javax.ws.rs.core.Application
     {
 	log.debug("Initializing application {}", this.getClass().getCanonicalName());
 	log.debug("ServletContext: {}", context);
-	//FileManager.get().addLocator(new LocatorLinkedData());
-	//DataManager.get().addLocator(new LocatorLinkedData()); // added in DataManager.setStdLocators()
     }
 
     @Override
@@ -40,7 +38,7 @@ public class Application extends javax.ws.rs.core.Application
         classes.add(FrontPageResource.class);
         classes.add(OAuthResource.class);
 	
-	classes.add(ModelWriter.class);
+	//classes.add(ModelProvider.class);
 	//classes.add(ResourceXSLTWriter.class);
 
         return classes;
@@ -50,8 +48,8 @@ public class Application extends javax.ws.rs.core.Application
     public Set<Object> getSingletons()
     {
 	//singletons.add(new OAuthResource());
-	
 	singletons.add(new RDFResourceXSLTWriter());
+	singletons.add(new ModelProvider());
 
 	return singletons;
     }

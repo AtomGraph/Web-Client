@@ -179,7 +179,10 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     {
 	// browsing remote resource, SPARQL endpoint is either supplied or null (or discovered from voiD?)
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	    return getUriInfo().getQueryParameters().getFirst("service-uri");
+	{
+	    String serviceUri = getUriInfo().getQueryParameters().getFirst("service-uri");
+	    if (serviceUri == null || serviceUri.isEmpty()) return null;
+	}
 	
 	// browsing local resource, SPARQL endpoint is retrieved from the sitemap
 	if (getIndividual() == null) return null;

@@ -40,25 +40,25 @@ public class LocatorLinkedData implements Locator
     private static Logger log = LoggerFactory.getLogger(LocatorLinkedData.class) ;
     //static final String acceptHeader = "application/rdf+xml,application/xml;q=0.9,*/*;q=0.5" ;
     static final String[] schemeNames = { "http:" , "https:" } ;
-    public static final Map<String, Double> TYPE_MAP;
-    
+    public static final Map<String, Double> TYPE_MAP;    
     static
     {
 	Map<String, Double> typeMap = new HashMap<String, Double>();
 	
 	typeMap.put(WebContent.contentTypeRDFXML, null);
 
+	typeMap.put(WebContent.contentTypeTurtle1, 0.9);
+	typeMap.put(WebContent.contentTypeTurtle2, 0.9);
+	typeMap.put(WebContent.contentTypeTurtle3, 0.9);
+
+	typeMap.put(WebContent.contentTypeNTriples, 0.9);
+	typeMap.put(WebContent.contentTypeNTriplesAlt, 0.9);
+
 	typeMap.put(WebContent.contentTypeN3, 0.9);
 	typeMap.put(WebContent.contentTypeN3Alt1, 0.9);
 	typeMap.put(WebContent.contentTypeN3Alt2, 0.9);	
 
-	typeMap.put(WebContent.contentTypeTurtle1, 0.9);
-	typeMap.put(WebContent.contentTypeTurtle2, 0.9);
-	typeMap.put(WebContent.contentTypeTurtle3, 0.9);
-	
-	typeMap.put(WebContent.contentTypeNTriples, 0.9);
-	typeMap.put(WebContent.contentTypeNTriplesAlt, 0.9);
-	
+
 	typeMap.put(WebContent.contentTypeTriG, 0.9);
 	typeMap.put(WebContent.contentTypeNQuads, 0.9);
 	typeMap.put(WebContent.contentTypeTriGAlt, 0.9);
@@ -179,7 +179,7 @@ public class LocatorLinkedData implements Locator
 	return TYPE_MAP;
     }
     
-    private String getAcceptHeader()
+    public String getAcceptHeader()
     {
 	String header = null;
 

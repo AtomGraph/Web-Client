@@ -62,34 +62,34 @@ public class ModelWriter implements MessageBodyWriter<Model>
     private ByteArrayOutputStream stream = null;
 
     @Override
-    public long getSize(Model t,
+    public long getSize(Model model,
                         Class<?> type,
                         Type genericType,
                         Annotation[] annotations,
                         MediaType mediaType)
     {
         log.debug("Called size of item");
-        stream = toStream(t, mediaType.toString());
+        stream = toStream(model, mediaType.toString());
         log.debug("Returning {} bytes", stream.size());
         return Integer.valueOf(stream.toByteArray().length).longValue();
     }
 
-    public ByteArrayOutputStream toStream(Model t, String mediaType) {
-        log.debug("Serializing model to {}. Statements are {}", mediaType, t.listStatements().toSet().size());
+    public ByteArrayOutputStream toStream(Model model, String mediaType) {
+        log.debug("Serializing model to {}. Statements are {}", mediaType, model.listStatements().toSet().size());
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if (mediaType.equals("application/rdf+xml")) {
-            t.write(stream);
+            model.write(stream);
         } else if (mediaType.equals("application/turtle")) {
             // t.write(stream, "TURTLE");
-            RDFWriter writer = t.getWriter("TURTLE");
+            RDFWriter writer = model.getWriter("TURTLE");
             log.debug("Writer for TURTLE: {}", writer);
-            writer.write(t, stream, null);
+            writer.write(model, stream, null);
         } else if (mediaType.equals("text/turtle")) {
-            t.write(stream, "TURTLE");
+            model.write(stream, "TURTLE");
         } else if (mediaType.equals("text/plain")) {
-            t.write(stream, "TURTLE");
+            model.write(stream, "TURTLE");
         } else if (mediaType.equals("text/n3")) {
-            t.write(stream, "N3");
+            model.write(stream, "N3");
         }
         if(log.isDebugEnabled()){
             log.debug("Written {} bytes to stream", stream.toByteArray().length);

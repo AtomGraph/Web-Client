@@ -37,6 +37,13 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	</a>
     </xsl:template>
 
+    <!-- property -->
+    <!--
+    <xsl:template match="*[node() or @rdf:resource or @rdf:nodeID]">
+	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+    </xsl:template>
+    -->
+    
     <!-- object blank node -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
 	<xsl:apply-templates select="key('resources', .)"/>

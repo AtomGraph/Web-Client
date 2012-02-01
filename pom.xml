@@ -130,5 +130,5 @@
             </plugin>
         </plugins>
     </build>
-
+    <description>Graphity Linked Data browser</description>
 </project>
