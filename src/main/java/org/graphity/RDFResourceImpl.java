@@ -20,12 +20,15 @@ import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import org.graphity.util.DataManager;
 import org.graphity.util.QueryBuilder;
 import org.slf4j.Logger;
@@ -80,6 +83,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    //if (getUriInfo().getQueryParameters().getFirst("uri") == null)
 	    if (isRemote())
 	    // load remote Linked Data
+	    try
 	    {
 		//model = FileManager.get().loadModel(getURI());
 		//model = DataManager.get().loadModel(getURI());
@@ -90,6 +94,10 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		//JenaReader reader = new JenaReader();
 		//reader.read(model, getURI());
 	    }
+	    catch (JenaException ex)
+	    {
+		log.trace("Could not load Model from URI: {}", getURI());
+	    }
 	    else
 		model = getOntModel(); // we're on a local host! load local sitemap
 	}
@@ -97,6 +105,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	// RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
 	//if (!model.containsResource(model.createResource(getURI())))
 	//    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	if (model == null)
+	    throw new WebApplicationException(Response.Status.NOT_FOUND);
 	
 	return model;
     }

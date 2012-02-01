@@ -10,29 +10,21 @@
 package org.graphity.util;
 
 import java.io.File;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
-import javax.xml.transform.Templates;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -46,58 +38,14 @@ public class XSLTBuilder
     private Source doc = null;
     private Source stylesheet = null;
     private SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
-    private Templates templates = null;
+    //private Templates templates = null;
     private TransformerHandler handler = null;
-    private Transformer transformer = null; 
+    //private Transformer transformer = null;
+    private Result result = null; 
 
     protected static XSLTBuilder newInstance()
     {
 	return new XSLTBuilder();
-    }
-    
-    public static XSLTBuilder fromDocument(Source doc)
-    {
-	return newInstance().document(doc);
-    }
-
-    public static XSLTBuilder fromDocument(Node n)
-    {
-	return newInstance().document(n);
-    }
-
-    public static XSLTBuilder fromDocument(Node n, String systemId)
-    {
-	return newInstance().document(n, systemId);
-    }
-
-    public static XSLTBuilder fromDocument(File file)
-    {
-	return newInstance().document(file);
-    }
-
-    public static XSLTBuilder fromDocument(InputStream is)
-    {
-	return newInstance().document(is);
-    }
-
-    public static XSLTBuilder fromDocument(InputStream is, String systemId)
-    {
-	return newInstance().document(is, systemId);
-    }
-
-    public static XSLTBuilder fromDocument(Reader reader)
-    {
-	return newInstance().document(reader);
-    }
-
-    public static XSLTBuilder fromDocument(Reader reader, String systemId)
-    {
-	return newInstance().document(reader, systemId);
-    }
-
-    public static XSLTBuilder fromDocument(String systemId)
-    {
-	return newInstance().document(systemId);
     }
 
     public static XSLTBuilder fromStylesheet(Source xslt) throws TransformerConfigurationException
@@ -200,7 +148,6 @@ public class XSLTBuilder
 	return this;
     }
 
-    // http://xml.apache.org/xalan-j/usagepatterns.html#outasin
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
     {
 	log.trace("Loading stylesheet Source with system ID: {}", stylesheet.getSystemId());
@@ -213,6 +160,7 @@ public class XSLTBuilder
 	// Saxon way
 	this.stylesheet = stylesheet;
 	handler = factory.newTransformerHandler(stylesheet);
+	//transformer = handler.getTransformer();
 	return this;
     }
 
@@ -259,7 +207,7 @@ public class XSLTBuilder
     public XSLTBuilder parameter(String name, Object value)
     {
 	log.trace("Setting transformer parameter {} with value {}", name, value);
-	//transformer.setParameter(name, o);
+	//transformer.setParameter(name, value);
 	handler.getTransformer().setParameter(name, value);
 	return this;
     }
@@ -280,51 +228,34 @@ public class XSLTBuilder
 	return this;
     }
     
-    public void transform(Result result) throws TransformerException
+    public void transform() throws TransformerException
     {
 	log.trace("TransformerHandler: {}", handler);
-	log.trace("Transformer: {}", transformer);
+	//log.trace("Transformer: {}", transformer);
+	log.trace("Transformer: {}", handler.getTransformer());
 	log.trace("Document: {}", doc);
 	log.trace("Result: {}", result);
 	//transformer.transform(doc, result);
 	handler.getTransformer().transform(doc, result);
     }
 
-    public Document transform() throws TransformerException, ParserConfigurationException
-    {
-	Document resDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-	
-	transform(new DOMResult(resDoc));
-	
-	return resDoc;
-    }
-
-    public void transform(OutputStream out) throws TransformerException
-    {
-	log.trace("Transforming document {}", doc.getSystemId());
-	transform(new StreamResult(out));
-    }
-
     public XSLTBuilder result(Result result) throws TransformerConfigurationException
     {
-	handler = factory.newTransformerHandler(stylesheet);
+	this.result = result;
+	handler = factory.newTransformerHandler(stylesheet); // TransformerHandler not reusable in Saxon
 	handler.setResult(result);
 	return this;
     }
     
-    protected TransformerHandler getTransformerHandler() throws TransformerConfigurationException
+    public TransformerHandler getHandler()
     {
 	return handler;
-	//return factory.newTransformerHandler(stylesheet);
     }
     
-    public void transform(XSLTBuilder next) throws TransformerException // for chaining stylesheets
+    // http://xml.apache.org/xalan-j/usagepatterns.html#outasin
+    public XSLTBuilder result(XSLTBuilder next) throws TransformerException // for chaining stylesheets
     {
-	//result(result);
-	//transformer.transform(doc, new SAXResult(handler));
-	//handler.getTransformer().transform(source, new SAXResult(handler));
-
-	transform(new SAXResult(next.getTransformerHandler()));
+	return result(new SAXResult(next.getHandler()));
     }
     
 }

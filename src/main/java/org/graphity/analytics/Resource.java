@@ -15,7 +15,7 @@ import org.graphity.RDFResourceImpl;
  *
  * @author Pumba
  */
-@Path("/{path}")
+//@Path("/{path}")
 public class Resource extends RDFResourceImpl
 {
     //private Response response = null;

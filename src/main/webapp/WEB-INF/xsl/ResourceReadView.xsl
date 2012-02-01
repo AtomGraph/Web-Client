@@ -40,7 +40,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <!-- <xsl:param name="fb-app-id" select="'264143360289485'"/> -->
     <xsl:param name="lang" select="'en'" as="xs:string"/>
     <xsl:param name="gfb-app:id" select="'121081534640971'" as="xs:string"/>
-    <xsl:param name="oauth:redirect_uri" select="resolve-uri('http://semanticreports:8080')" as="xs:anyURI"/>
+    <xsl:param name="oauth:redirect_uri" select="resolve-uri('oauth', $base-uri)" as="xs:anyURI"/>
     
     <xsl:variable name="resource" select="/"/>
 
@@ -63,6 +63,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	<html>
 	    <head>
 		<title>Graphity</title>
+		<base href="{$base-uri}" />
 	    </head>
 	    <body>
 		<form action="" method="get">

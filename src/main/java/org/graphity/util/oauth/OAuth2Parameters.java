@@ -4,13 +4,13 @@
  */
 package org.graphity.util.oauth;
 
-import java.net.URI;
+import java.util.HashMap;
 
 /**
  *
  * @author Pumba
  */
-public class OAuth2Parameters extends com.sun.jersey.oauth.signature.OAuthParameters
+public class OAuth2Parameters extends HashMap<String, String>
 {
     public static final String CLIENT_ID = "client_id";
     public static final String REDIRECT_URI = "redirect_uri";
@@ -20,11 +20,20 @@ public class OAuth2Parameters extends com.sun.jersey.oauth.signature.OAuthParame
 	put(CLIENT_ID, clientId);
 	return this;
     }
-    
-    public OAuth2Parameters redirectURI(URI redirectUri)
+ 
+    public String getClientId()
     {
-	put(REDIRECT_URI, redirectUri.toString());
+	return get(CLIENT_ID);
+    }
+    
+    public OAuth2Parameters redirectURI(String redirectUri)
+    {
+	put(REDIRECT_URI, redirectUri);
 	return this;
     }
 
+    public String redirectURI()
+    {
+	return get(REDIRECT_URI);
+    }
 }
