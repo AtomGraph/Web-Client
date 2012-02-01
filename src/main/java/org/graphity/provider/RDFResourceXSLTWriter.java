@@ -114,9 +114,9 @@ if (groupTriples == null || rdf2xhtml == null)
     log.warn("groupTriples == null || rdf2xhtml == null");
 }
 	    groupTriples.document(new ByteArrayInputStream(bos.toByteArray())).
-	    result(getXSLTBuilder(resource).
-		result(new StreamResult(entityStream))).
-		    transform();
+		result(getXSLTBuilder(resource).
+		    result(new StreamResult(entityStream))).
+		transform();
 
 	    //getXSLTBuilder(resource).transform(entityStream); // no preprocessing
 	} catch (TransformerException ex)
