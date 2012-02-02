@@ -54,8 +54,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, javax.ws.rs.core.MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-	log.trace("HTTP Headers: {}", httpHeaders);
-	log.trace("MediaType: {}", mediaType);
+	log.trace("Reading model with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
 	
 	Model model = ModelFactory.createDefaultModel();
 	
@@ -92,6 +91,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
     @Override
     public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, javax.ws.rs.core.MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
+	log.trace("Writing Model with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
 	String syntax = null;
 	Lang lang = langFromMediaType(mediaType);
 	if (lang != null) syntax = lang.getName();

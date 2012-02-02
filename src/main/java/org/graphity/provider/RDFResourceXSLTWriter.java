@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
@@ -51,7 +52,7 @@ public class RDFResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     
     @Context private ServletContext context;
     //@Context private UriInfo uriInfo;
-    private ByteArrayOutputStream bos = null;
+    //private ByteArrayOutputStream baos = null;
    
     /*
     @PostConstruct
@@ -99,20 +100,24 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
     @Override
     public void writeTo(RDFResource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
+	log.trace("Writing RDFResource with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
 	//if (bos == null)
 	{
-	    bos = new ByteArrayOutputStream();
-	    resource.getModel().write(bos);
 	}
 	// can we avoid buffering here? I guess not...
 	try
 	{
-	    XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "group-triples.xsl")).
-		document(new ByteArrayInputStream(bos.toByteArray())).
-		result(getXSLTBuilder(resource).
-		    result(new StreamResult(entityStream))).
-		transform();
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    resource.getModel().write(baos);
 
+	    XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "group-triples.xsl")).
+		document(new ByteArrayInputStream(baos.toByteArray())).
+		result(getXSLTBuilder(resource).
+		    result(new StreamResult(new OutputStreamWriter(entityStream, "UTF-8")))).
+		transform();
+	    
+	    baos.close();
+	    
 	    //getXSLTBuilder(resource).transform(entityStream); // no preprocessing
 	} catch (TransformerException ex)
 	{
@@ -124,7 +129,7 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
     public XSLTBuilder getXSLTBuilder(RDFResource resource) throws TransformerConfigurationException
     {
 	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "ResourceReadView.xsl")).
-	    document(new ByteArrayInputStream(bos.toByteArray())).
+	    //document(new ByteArrayInputStream(baos.toByteArray())).
 	    parameter("uri", resource.getURI()).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()); // is base uri necessary?
 	    
