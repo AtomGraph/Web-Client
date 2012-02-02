@@ -120,9 +120,10 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     public OntModel getOntModel()
     {
 	OntModel ontModel = ModelFactory.createOntologyModel(); // .createDefaultModel().
-	
-	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/ontology.n3"), null, FileUtils.langTurtle);
-	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/sitemap.n3"), null, FileUtils.langTurtle);
+
+	log.debug("@base: {}", getUriInfo().getBaseUri().toString());
+	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/graphity.ttl"), null, FileUtils.langTurtle);
+	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/sitemap.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
 	
 	return ontModel;
     }
@@ -152,6 +153,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     protected Individual getIndividual()
     {
+	log.debug("getUriInfo().getAbsolutePath().toString(): {}", getUriInfo().getAbsolutePath().toString());
 	return getOntModel().getIndividual(getUriInfo().getAbsolutePath().toString());
     }
 
