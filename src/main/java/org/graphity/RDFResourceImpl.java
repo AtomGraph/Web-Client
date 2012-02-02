@@ -77,11 +77,21 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	client = Client.create(config); // add OAuth filter
     }
 
+    @GET
+    @Produces("text/html; charset=UTF-8")
+    public Response getResponse()
+    {
+	return Response.ok(this).
+	    //type(MediaType.TEXT_HTML).
+	    build();
+
+    }
+
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
     // http://openjena.org/wiki/ARQ/Manipulating_SPARQL_using_ARQ
     @Override
     @GET
-    @Produces("text/plain")
+    @Produces("text/plain; charset=UTF-8")
     public Model getModel()
     {
 	Model model = null; // ModelFactory.createDefaultModel();
