@@ -81,12 +81,12 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
 	<xsl:choose>
 	    <xsl:when test="$resource/rdfs:label[lang($lang) or not(@xml:lang)] | $resource/@rdfs:label">
-		<xsl:sequence select="$resource/rdfs:label[lang($lang) or not(@xml:lang)] | $resource/@rdfs:label[lang($lang)]"/>
+		<xsl:sequence select="($resource/rdfs:label[lang($lang) or not(@xml:lang)] | $resource/@rdfs:label[lang($lang)])[1]"/>
 	    </xsl:when>
 	    <xsl:when test="$resource/foaf:nick | $resource/@foaf:nick">
 		<xsl:sequence select="$resource/foaf:nick | $resource/@foaf:nick"/>
 	    </xsl:when>
-	    <xsl:when test="$resource/dc:title[lang($lang) or not(@xml:lang)] | $resource/@dc:title">
+	    <xsl:when test="($resource/dc:title[lang($lang) or not(@xml:lang)] | $resource/@dc:title)[1]">
 		<xsl:sequence select="$resource/dc:title[lang($lang) or not(@xml:lang)] | $resource/@dc:title"/>
 	    </xsl:when>
 	    <xsl:when test="$resource/foaf:name | $resource/@foaf:name">

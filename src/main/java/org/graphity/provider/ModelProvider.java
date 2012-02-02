@@ -34,12 +34,12 @@ import org.slf4j.LoggerFactory;
 @Consumes({MediaType.APPLICATION_RDF_XML, MediaType.TEXT_TURTLE, MediaType.TEXT_PLAIN})
 public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWriter<Model>
 {
-    public static final Map<javax.ws.rs.core.MediaType, Lang> LANGS = new HashMap<javax.ws.rs.core.MediaType, Lang>();
+    public static final Map<String, Lang> LANGS = new HashMap<String, Lang>();
     static
     {
-        LANGS.put(MediaType.APPLICATION_RDF_XML_TYPE, Lang.RDFXML);
-        LANGS.put(MediaType.TEXT_TURTLE_TYPE, Lang.TURTLE);
-        LANGS.put(MediaType.TEXT_PLAIN_TYPE, Lang.TURTLE);
+        LANGS.put(MediaType.APPLICATION_RDF_XML, Lang.RDFXML);
+        LANGS.put(MediaType.TEXT_TURTLE, Lang.TURTLE);
+        LANGS.put(MediaType.TEXT_PLAIN, Lang.TURTLE);
     }    
     private static final Logger log = LoggerFactory.getLogger(ModelProvider.class) ;
 
@@ -55,11 +55,12 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, javax.ws.rs.core.MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
 	log.trace("HTTP Headers: {}", httpHeaders);
+	log.trace("MediaType: {}", mediaType);
 	
 	Model model = ModelFactory.createDefaultModel();
 	
 	String syntax = null;
-	Lang lang = langFromContentType(mediaType);
+	Lang lang = langFromMediaType(mediaType);
 	if (lang != null) syntax = lang.getName();
 	log.debug("Syntax used to read Model: {}", syntax);
 
@@ -67,11 +68,11 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 	return model.read(entityStream, null, syntax);
     }
     
-    public static Lang langFromContentType(javax.ws.rs.core.MediaType mediaType)
+    public static Lang langFromMediaType(javax.ws.rs.core.MediaType mediaType)
     { 
         if (mediaType == null) return null;
-	
-        return LANGS.get(mediaType) ;
+	log.trace("langFromMediaType({}): {}", mediaType.getType() + "/" + mediaType.getSubtype(), LANGS.get(mediaType.toString()));
+        return LANGS.get(mediaType.getType() + "/" + mediaType.getSubtype());
     }
 
     // WRITER
@@ -92,7 +93,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
     public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, javax.ws.rs.core.MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
 	String syntax = null;
-	Lang lang = langFromContentType(mediaType);
+	Lang lang = langFromMediaType(mediaType);
 	if (lang != null) syntax = lang.getName();
 	log.debug("Syntax used to load Model: {}", syntax);
 

@@ -1,5 +1,6 @@
-#@base <http://linkeddata.dk/> .
+#@base <http://linkeddata.dk/> . # needs to be explicit when deploying, because of missing :8080 port number
 
+@prefix : <ontology/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -14,10 +15,17 @@
 @prefix lda: <http://purl.org/linked-data/api/vocab#>.
 @prefix gfb-app: <http://graph.facebook.com/schema/application#> .
 
+: a owl:Ontology ;
+    dc:title "Graphity Browser ontology" ;
+    # owl:imports <http://graphity.org/ontology/> ;
+    rdfs:seeAlso <http://graphity.org> .
+
 _:dataset a void:Dataset;
     foaf:homepage <> ;
+    rdfs:isDefinedBy : ;
     void:sparqlEndpoint <http://de.dydra.com/heltnormalt/testing/sparql> .
 _:endpoint a sd:Service ;
+    rdfs:isDefinedBy : ;
     sd:endpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
     sd:supportedLanguage sd:SPARQL11Query .
 <https://graph.facebook.com/121081534640971#> gfb-app:id "121081534640971"^^xsd:string ;
@@ -27,6 +35,7 @@ _:endpoint a sd:Service ;
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
     dc:title "Graphity Browser" ;
     g:query g:ConstructLatest ;
+    rdfs:isDefinedBy : ;
     void:inDataset _:dataset ;
     lda:sparqlEndpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
     g:facebookApp <https://graph.facebook.com/121081534640971#> .
@@ -35,6 +44,7 @@ _:endpoint a sd:Service ;
     sioc:has_host <> ;
     dc:title "Classes"@en ;
     g:query g:ConstructLatest ;
+    rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
 [] a lda:ItemEndpoint ;
   lda:uriTemplate "classes/{name}" .

@@ -10,6 +10,7 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -17,23 +18,27 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.provider.ModelProvider;
-import org.graphity.util.DataManager;
 import org.graphity.util.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,28 +50,32 @@ import org.topbraid.spin.vocabulary.SP;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
+    public static final Map<javax.ws.rs.core.MediaType, Double> QUALIFIED_TYPES;    
+    static
+    {
+	Map<javax.ws.rs.core.MediaType, Double> typeMap = new HashMap<javax.ws.rs.core.MediaType, Double>();
+	
+	typeMap.put(MediaType.APPLICATION_RDF_XML_TYPE, null);
+
+	typeMap.put(MediaType.TEXT_TURTLE_TYPE, 0.9);
+	
+	typeMap.put(MediaType.TEXT_PLAIN_TYPE, 0.7);
+	
+	typeMap.put(MediaType.APPLICATION_XML_TYPE, 0.5);
+	
+	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
+    }    
     private static final Logger log = LoggerFactory.getLogger(RDFResourceImpl.class);
     
-    // http://stackoverflow.com/questions/5875772/staying-dry-with-jax-rs
-    //@QueryParam("service-uri") String serviceUri = null;
-    //String serviceUri = null;
-    
-    //public static final String SERVICE_URI = "http://dolph.heltnormalt.dk:82/local/query";
-    //public static final String SERVICE_URI = "http://dbpedia.org/sparql";
-    //public static final String SERVICE_URI = "http://de.dydra.com/heltnormalt/testing/sparql";
-
-    //public static final String QUERY_STRING = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { GRAPH ?graph { ?uri ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp ?uri } } LIMIT 10 } }";
-    
-    //private Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
     private ClientConfig config = new DefaultClientConfig();
-    private Client client = Client.create(config);; 
+    private Client client = null;
 
     public RDFResourceImpl()
     {
 	config.getClasses().add(ModelProvider.class);
+	client = Client.create(config); // add OAuth filter
     }
-	
 
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
     // http://openjena.org/wiki/ARQ/Manipulating_SPARQL_using_ARQ
@@ -75,47 +84,45 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain")
     public Model getModel()
     {
-	Model model = ModelFactory.createDefaultModel();
+	Model model = null; // ModelFactory.createDefaultModel();
 
 	log.debug("getURI(): {}", getURI());
 	log.debug("getServiceURI(): {}", getServiceURI());
 
-	//if (model == null)
 	// query the available SPARQL endpoint (either local or remote)
 	if (getServiceURI() != null)
 	{
-	    //Query query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
-	    //QueryExecution qex = QueryExecutionFactory.sparqlService(getServiceURI(), query);
-	    //model = qex.execDescribe();
-
-	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
-	    request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
-	    model = request.execConstruct();
+	    try
+	    {
+		QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
+		request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
+		log.trace("Request to SPARQL endpoint: {} with query: {}", getServiceURI(), getQuery());
+		if (getQuery().isConstructType()) model = request.execConstruct();
+		if (getQuery().isDescribeType()) model = request.execDescribe();
+	    }
+	    catch (Exception ex)
+	    {
+		log.trace("Could not load Model from SPARQL endpoint: {} with query: {}", getURI(), getQuery());
+		//throw new WebApplicationException("Only CONSTRUCT and DESCRIBE SPARQL queries are supported", Response.Status.BAD_REQUEST);
+	    }
 	}
 	else
 	{
-	    //if (getUriInfo().getQueryParameters().getFirst("uri") == null)
 	    if (isRemote())
 	    // load remote Linked Data
 	    try
 	    {
+		log.trace("Loading Model from URI: {} with Accept header: {}", getURI(), getAcceptHeader());
 		model = client.resource(getURI()).
-			header("Accept", DataManager.getAcceptHeader()).
+			header("Accept", getAcceptHeader()).
 			get(Model.class);
-	
-		/*
-		* DataManager dm = new DataManager();
-		* dm.setModelCaching(true);
-		
-		* model = dm.loadModel(getURI());
-		*/
 		log.debug("Number of Model stmts read: {}", model.size());
 	    }
-	    catch (JenaException ex)
+	    catch (Exception ex)
 	    {
 		log.trace("Could not load Model from URI: {}", getURI());
 	    }
-	    else
+	   else
 		model = getOntModel(); // we're on a local host! load local sitemap
 	}
 
@@ -147,17 +154,14 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     public Query getQuery()
     {	
-	/*
-	return QueryBuilder.fromResource(getIndividual().
-		getPropertyResourceValue(Graphity.query)).
-	    //bind("subject", getURI()).
-	    build();
-	 */
-	return QueryBuilder.fromResource(getOntModel().
-		listResourcesWithProperty(RDF.type, SP.Construct).
-		nextResource()).
-	    //bind("subject", getURI()).
-	    build();
+	ResIterator it = getOntModel().listResourcesWithProperty(RDF.type, SP.Construct);
+	
+	if (it.hasNext())
+	    return QueryBuilder.fromResource(it.nextResource()).
+		//bind("subject", getURI()).
+		build();
+	else
+	    return QueryFactory.create("DESCRIBE <" + getURI() + ">"); // DESCRIBE as default
     }
 
     protected Resource getResource()
@@ -172,6 +176,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     {
 	log.debug("getUriInfo().getAbsolutePath().toString(): {}", getUriInfo().getAbsolutePath().toString());
 	return getOntModel().getIndividual(getUriInfo().getAbsolutePath().toString());
+	//return getOntModel().getIndividual(getUriInfo().getBaseUri().toString());
     }
 
     @Override
@@ -201,8 +206,9 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	{
 	    String serviceUri = getUriInfo().getQueryParameters().getFirst("service-uri");
 	    if (serviceUri == null || serviceUri.isEmpty()) return null;
+	    return serviceUri;
 	}
-	
+	log.trace("getIndividual(): {}", getIndividual());
 	// browsing local resource, SPARQL endpoint is retrieved from the sitemap
 	if (getIndividual() == null) return null;
 	
@@ -214,13 +220,25 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		getURI();
     }
 
-    /*
-    @Override
-    public boolean exists()
+    public String getAcceptHeader()
     {
-	return getModel().containsResource(this);
+	String header = null;
+
+	//for (Map.Entry<String, Double> type : getQualifiedTypes().entrySet())
+	Iterator <Entry<javax.ws.rs.core.MediaType, Double>> it = QUALIFIED_TYPES.entrySet().iterator();
+	while (it.hasNext())
+	{
+	    Entry<javax.ws.rs.core.MediaType, Double> type = it.next();
+	    if (header == null) header = "";
+	    
+	    header += type.getKey();
+	    if (type.getValue() != null) header += ";q=" + type.getValue();
+	    
+	    if (it.hasNext()) header += ",";
+	}
+	
+	return header;
     }
-     */
 
     @Override
     public Date getLastModified()
