@@ -113,7 +113,7 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 	    XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "group-triples.xsl")).
 		document(new ByteArrayInputStream(baos.toByteArray())).
 		result(getXSLTBuilder(resource).
-		    result(new StreamResult(new OutputStreamWriter(entityStream, "UTF-8")))).
+		    result(new StreamResult(entityStream))). // new OutputStreamWriter(entityStream, "UTF-8")
 		transform();
 	    
 	    baos.close();
