@@ -3,16 +3,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.graphity</groupId>
-    <artifactId>analytics</artifactId>
+    <artifactId>browser</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>analytics</name>
-
+    <name>Graphity Browser</name>
+    <description>Graphity Linked Data browser</description>
+    
+    <licenses>
+	<license>
+	    <name>GPL 3</name>
+	    <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+	    <distribution>repo</distribution>
+	</license>
+    </licenses>
+    
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+	<netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
 
  <repositories>
@@ -125,5 +135,4 @@
             </plugin>
         </plugins>
     </build>
-    <description>Graphity Linked Data browser</description>
 </project>

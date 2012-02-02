@@ -1,10 +1,18 @@
 /*
- * Resource.java
+ * Copyright (C) 2012 Martynas Jusevičius <martynas@graphity.org>
  *
- * Created on Ketvirtadienis, 2007, Kovo 29, 17.50
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.graphity;
@@ -17,8 +25,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 /**
- * 
- * @author Pumba
+ *
+ * @author Martynas Jusevičius <martynas@graphity.org>
  */
 abstract public class ResourceImpl implements Resource {
     //@Context private ResourceContext resourceContext;
