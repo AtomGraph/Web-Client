@@ -29,11 +29,11 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
     <xsl:key name="resources-by-domain" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:domain/@rdf:resource"/>
     <xsl:key name="resources-by-type" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-subclass" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:subClassOf/@rdf:resource"/>
-    
+
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
-	    <xsl:value-of select="g:label(., /)"/>
+	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 
@@ -58,7 +58,7 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 
     <xsl:template match="@rdf:about | @rdf:resource" mode="g:type">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
-	    <xsl:value-of select="g:label(., /)"/>
+	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 
@@ -77,10 +77,11 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
 	<xsl:param name="document" as="document-node()"/>
+	<xsl:param name="lang" as="xs:string"/>
 	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
 	<xsl:choose>
-	    <xsl:when test="$resource/rdfs:label | $resource/@rdfs:label">
-		<xsl:sequence select="$resource/rdfs:label | $resource/@rdfs:label"/>
+	    <xsl:when test="$resource/rdfs:label[lang($lang)] | $resource/@rdfs:label">
+		<xsl:sequence select="$resource/rdfs:label[lang($lang)] | $resource/@rdfs:label[lang($lang)]"/>
 	    </xsl:when>
 	    <xsl:when test="$resource/foaf:nick | $resource/@foaf:nick">
 		<xsl:sequence select="$resource/foaf:nick | $resource/@foaf:nick"/>
@@ -101,13 +102,14 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
     <xsl:function name="g:label" as="xs:string?">
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
 	<xsl:param name="document" as="document-node()"/>
-	<xsl:variable name="local-label" select="g:local-label($resource-uri, $document)" as="xs:string?"/>
+	<xsl:param name="lang" as="xs:string"/>
+	<xsl:variable name="local-label" select="g:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
 	<xsl:choose>
 	    <xsl:when test="$local-label">
 		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), substring($local-label, 2))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, .))[1]" as="xs:string?"/>
+		<xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, ., $lang))[1]" as="xs:string?"/>
 		<!-- <xsl:variable name="imported-label" select="(document($resource-uri)/g:local-label($resource-uri, .))[1]" as="xs:string?"/> -->
 		<xsl:choose>
 		    <xsl:when test="$imported-label">

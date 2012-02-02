@@ -138,7 +138,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
 	    <dt>
 		<a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
-		    <xsl:value-of select="g:label($this, /)"/>
+		    <xsl:value-of select="g:label($this, /, $lang)"/>
 		</a>
 	    </dt>
 	</xsl:if>
