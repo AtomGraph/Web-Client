@@ -25,7 +25,7 @@ _:endpoint a sd:Service ;
     rdfs:label "Graphity Facebook app" .
 
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
-    dc:title "Graphity" ;
+    dc:title "Graphity Browser" ;
     g:query g:ConstructLatest ;
     void:inDataset _:dataset ;
     lda:sparqlEndpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;

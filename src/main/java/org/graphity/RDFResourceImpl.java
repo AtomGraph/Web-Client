@@ -53,7 +53,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 
     //public static final String QUERY_STRING = "CONSTRUCT{ ?uri ?forwardProp ?object . ?subject ?backwardProp ?uri } WHERE { { SELECT * WHERE { GRAPH ?graph { ?uri ?forwardProp ?object } } LIMIT 10 } UNION { SELECT * WHERE { GRAPH ?graph { ?subject ?backwardProp ?uri } } LIMIT 10 } }";
     
-    private Model model = null;
+    //private Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
 
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
@@ -63,6 +63,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain")
     public Model getModel()
     {
+	Model model = ModelFactory.createDefaultModel();
+
 	log.debug("getURI(): {}", getURI());
 	log.debug("getServiceURI(): {}", getServiceURI());
 
@@ -89,7 +91,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		//model = DataManager.get().loadModel(getURI());
 		DataManager dm = new DataManager();
 		dm.setModelCaching(true);
-		model = dm.loadModel(getURI());
+		model = dm.loadModel(getURI()); // RDFResource.get()???
 		log.debug("Number of Model stmts read: {}", model.size());
 		//JenaReader reader = new JenaReader();
 		//reader.read(model, getURI());
