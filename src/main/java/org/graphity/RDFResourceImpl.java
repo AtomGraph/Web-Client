@@ -24,11 +24,15 @@ import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import org.graphity.provider.ModelProvider;
 import org.graphity.util.DataManager;
 import org.graphity.util.QueryBuilder;
 import org.slf4j.Logger;
@@ -55,6 +59,14 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     //private Model model = null;
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
+    private ClientConfig config = new DefaultClientConfig();
+    private Client client = Client.create(config);; 
+
+    public RDFResourceImpl()
+    {
+	config.getClasses().add(ModelProvider.class);
+    }
+	
 
     // 2 options here: load RDF/XML directly from getURI(), or via DESCRIBE from SPARQL endpoint
     // http://openjena.org/wiki/ARQ/Manipulating_SPARQL_using_ARQ
@@ -87,14 +99,17 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    // load remote Linked Data
 	    try
 	    {
-		//model = FileManager.get().loadModel(getURI());
-		//model = DataManager.get().loadModel(getURI());
-		DataManager dm = new DataManager();
-		dm.setModelCaching(true);
-		model = dm.loadModel(getURI()); // RDFResource.get()???
+		model = client.resource(getURI()).
+			header("Accept", DataManager.getAcceptHeader()).
+			get(Model.class);
+	
+		/*
+		* DataManager dm = new DataManager();
+		* dm.setModelCaching(true);
+		
+		* model = dm.loadModel(getURI());
+		*/
 		log.debug("Number of Model stmts read: {}", model.size());
-		//JenaReader reader = new JenaReader();
-		//reader.read(model, getURI());
 	    }
 	    catch (JenaException ex)
 	    {

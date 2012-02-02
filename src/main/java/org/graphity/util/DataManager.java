@@ -79,7 +79,7 @@ public class DataManager extends FileManager implements URIResolver
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
     }
 
-    public String getAcceptHeader()
+    public static String getAcceptHeader()
     {
 	String header = null;
 
