@@ -26,6 +26,12 @@
 gfb-app:type rdfs:label "Facebook application" ;
     rdfs:isDefinedBy gfb-app: .
 
+:Describe    a       sp:Describe ;
+      sp:resultNodes (_:uri) ;
+      sp:text "DESCRIBE ?uri"^^xsd:string ;
+      sp:where () .
+_:uri sp:varName "uri"^^xsd:string .
+
 :ConstructLatest    a       sp:Construct ;
       sp:templates ([ sp:object _:b4 ;
                   sp:predicate dct:created ;

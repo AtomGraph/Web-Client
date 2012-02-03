@@ -38,7 +38,8 @@ _:endpoint a sd:Service ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset ;
     lda:sparqlEndpoint <http://de.dydra.com/heltnormalt/testing/sparql> ;
-    g:facebookApp <https://graph.facebook.com/121081534640971#> .
+    g:facebookApp <https://graph.facebook.com/121081534640971#> ;
+    g:defaultQuery g:Describe .
 
 <classes> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;

@@ -23,7 +23,6 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -31,13 +30,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileUtils;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -53,9 +50,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.provider.ModelProvider;
 import org.graphity.util.QueryBuilder;
+import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.vocabulary.SP;
 
 /**
  *
@@ -177,16 +174,33 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     public Query getQuery()
     {	
-	ResIterator it = getOntModel().listResourcesWithProperty(RDF.type, SP.Construct);
-	
-	if (it.hasNext())
-	    return QueryBuilder.fromResource(it.nextResource()).
-		//bind("subject", getURI()).
-		build();
-	else
-	    return QueryFactory.create("DESCRIBE <" + getURI() + ">"); // DESCRIBE as default
+	Query query = getExplicitQuery();
+	if (query == null) query = getDefaultQuery();
+	return query;
     }
 
+    public Query getExplicitQuery()
+    {	
+	Resource queryRes = getIndividual().getPropertyResourceValue(Graphity.query);
+	log.trace("Explicit query resource {} for URI {}", queryRes, getURI());
+	if (queryRes == null) return null;
+	
+	return QueryBuilder.fromResource(queryRes).
+	    bind("uri", getURI()).
+	    build();
+    }
+
+    public Query getDefaultQuery()
+    {
+	Resource queryRes = getBaseIndividual().getPropertyResourceValue(Graphity.defaultQuery);
+	log.trace("Default query resource {} for URI {}", queryRes, getURI());
+	if (queryRes == null) return null;
+		
+	return QueryBuilder.fromResource(queryRes).
+	    bind("uri", getURI()).
+	    build();
+    }
+	
     protected Resource getResource()
     {
 	if (resource == null)
@@ -202,6 +216,12 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	//return getOntModel().getIndividual(getUriInfo().getBaseUri().toString());
     }
 
+    protected Individual getBaseIndividual()
+    {
+	log.debug("getUriInfo().getBaseUri().toString(): {}", getUriInfo().getAbsolutePath().toString());
+	return getOntModel().getIndividual(getUriInfo().getBaseUri().toString());
+    }
+
     @Override
     public String getURI()
     {
@@ -209,16 +229,6 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    return getUriInfo().getQueryParameters().getFirst("uri");
 	
 	return super.getURI();
-	
-	/*
-	return getUriInfo().getAbsolutePathBuilder().
-		host("local.heltnormalt.dk").
-		port(-1).
-		replacePath("striben").
-		queryParam("view", "rdf").
-		build().
-		toString();
-	*/
     }
     
     @Override
@@ -231,11 +241,11 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    if (serviceUri == null || serviceUri.isEmpty()) return null;
 	    return serviceUri;
 	}
-	log.trace("getIndividual(): {}", getIndividual());
+	log.trace("getBaseIndividual(): {}", getBaseIndividual());
 	// browsing local resource, SPARQL endpoint is retrieved from the sitemap
-	if (getIndividual() == null) return null;
+	if (getBaseIndividual() == null) return null;
 	
-	return getIndividual().
+	return getBaseIndividual().
 		getPropertyResourceValue(getOntModel().
 		    getProperty("http://rdfs.org/ns/void#inDataset")).
 		getPropertyResourceValue(getOntModel().
