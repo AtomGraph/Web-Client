@@ -47,5 +47,17 @@ _:endpoint a sd:Service ;
     g:query g:ConstructLatest ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
-[] a lda:ItemEndpoint ;
-  lda:uriTemplate "classes/{name}" .
+#[] a lda:ItemEndpoint ;
+#  lda:uriTemplate "classes/{name}" .
+
+:ClassItem rdfs:subClassOf
+[
+	a owl:Restriction;
+	owl:onProperty sioc:has_container;
+	owl:hasValue <classes>
+] ,
+[
+	a owl:Restriction;
+	owl:onProperty g:query;
+	owl:hasValue :ConstructItem
+] .
