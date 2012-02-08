@@ -17,7 +17,6 @@
 
 package org.graphity.analytics;
 
-import com.sun.jersey.spi.resource.Singleton;
 import javax.ws.rs.Path;
 
 /**
@@ -25,7 +24,7 @@ import javax.ws.rs.Path;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/")
-@Singleton
+//@Singleton
 public class FrontPageResource extends Resource
 {
     

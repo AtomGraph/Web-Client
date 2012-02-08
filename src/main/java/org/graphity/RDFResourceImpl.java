@@ -22,7 +22,9 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -110,40 +112,35 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	log.debug("getServiceURI(): {}", getServiceURI());
 
 	// query the available SPARQL endpoint (either local or remote)
-	if (getServiceURI() != null)
+	if (getServiceURI() == null && isRemote())
 	{
-	    try
-	    {
-		QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
-		request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
-		log.trace("Request to SPARQL endpoint: {} with query: {}", getServiceURI(), getQuery());
-		if (getQuery().isConstructType()) model = request.execConstruct();
-		if (getQuery().isDescribeType()) model = request.execDescribe();
-	    }
-	    catch (Exception ex)
-	    {
-		log.trace("Could not load Model from SPARQL endpoint: {} with query: {}", getURI(), getQuery());
-		//throw new WebApplicationException("Only CONSTRUCT and DESCRIBE SPARQL queries are supported", Response.Status.BAD_REQUEST);
-	    }
+		// load remote Linked Data
+		try
+		{
+		    log.trace("Loading Model from URI: {} with Accept header: {}", getURI(), getAcceptHeader());
+		    model = client.resource(getURI()).
+			    header("Accept", getAcceptHeader()).
+			    get(Model.class);
+		    log.debug("Number of Model stmts read: {}", model.size());
+		}
+		catch (Exception ex)
+		{
+		    log.trace("Could not load Model from URI: {}", getURI());
+		}
 	}
 	else
 	{
-	    if (isRemote())
-	    // load remote Linked Data
 	    try
 	    {
-		log.trace("Loading Model from URI: {} with Accept header: {}", getURI(), getAcceptHeader());
-		model = client.resource(getURI()).
-			header("Accept", getAcceptHeader()).
-			get(Model.class);
+		if (getQuery().isConstructType()) model = getQueryExecution().execConstruct();
+		if (getQuery().isDescribeType()) model = getQueryExecution().execDescribe();
+		//model = getOntModel(); // we're on a local host! load local sitemap
 		log.debug("Number of Model stmts read: {}", model.size());
 	    }
 	    catch (Exception ex)
 	    {
-		log.trace("Could not load Model from URI: {}", getURI());
+		log.trace("Could not execute Query: {}", getQuery());
 	    }
-	   else
-		model = getOntModel(); // we're on a local host! load local sitemap
 	}
 
 	// RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
@@ -172,16 +169,40 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	return ontModel;
     }
     
+    public QueryExecution getQueryExecution()
+    {
+	if (getServiceURI() != null)
+	{
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
+	    request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
+	    log.trace("Request to SPARQL endpoint: {} with query: {}", getServiceURI(), getQuery());	    
+	    return request;
+	}
+	else
+	{
+	    log.trace("Querying Model: {} with query: {}", getOntModel(), getQuery());
+	    return QueryExecutionFactory.create(getQuery(), getOntModel());
+	    //return QueryExecutionFactory.create(getDefaultQuery(), getOntModel());
+	}
+    }
+    
     public Query getQuery()
-    {	
-	Query query = getExplicitQuery();
+    {
+	Query query = null;
+	if (!isRemote()) query = getExplicitQuery();
+	if (getServiceURI() == null) query = getDefaultQuery();
 	if (query == null) query = getDefaultQuery();
+	if (query == null) query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
 	return query;
     }
 
     public Query getExplicitQuery()
-    {	
+    {
+	if (getIndividual() == null)  return null; // in case of most remote URIs
 	Resource queryRes = getIndividual().getPropertyResourceValue(Graphity.query);
+	//getOntModel().getIndividual(Graphity.ConstructItem.getURI());
+	//QueryExecutionFactory.
+	
 	log.trace("Explicit query resource {} for URI {}", queryRes, getURI());
 	if (queryRes == null) return null;
 	
@@ -192,6 +213,10 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 
     public Query getDefaultQuery()
     {
+log.trace("Default query {} for URI {}", "DESCRIBE <" + getURI() + ">", getURI());
+return QueryFactory.create("DESCRIBE <" + getURI() + ">");
+
+	/*
 	Resource queryRes = getBaseIndividual().getPropertyResourceValue(Graphity.defaultQuery);
 	log.trace("Default query resource {} for URI {}", queryRes, getURI());
 	if (queryRes == null) return null;
@@ -199,6 +224,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	return QueryBuilder.fromResource(queryRes).
 	    bind("uri", getURI()).
 	    build();
+	 */
     }
 	
     protected Resource getResource()
