@@ -146,12 +146,14 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()); // is base uri necessary?
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("uri") != null)
+	{
 	    rdf2xhtml.parameter("uri", resource.getUriInfo().getQueryParameters().getFirst("uri"));
 	
-	if (resource.getUriInfo().getQueryParameters().getFirst("service-uri") != null &&
-		!resource.getUriInfo().getQueryParameters().getFirst("service-uri").isEmpty())
-	    rdf2xhtml.parameter("service-uri", resource.getUriInfo().getQueryParameters().getFirst("service-uri"));
-	else
+	    if (resource.getUriInfo().getQueryParameters().getFirst("service-uri") != null &&
+		    !resource.getUriInfo().getQueryParameters().getFirst("service-uri").isEmpty())
+		rdf2xhtml.parameter("service-uri", resource.getUriInfo().getQueryParameters().getFirst("service-uri"));
+	}
+	else // browsing localhost
 	    rdf2xhtml.parameter("service-uri", resource.getSPARQLResource());
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)

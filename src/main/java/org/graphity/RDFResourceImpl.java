@@ -20,7 +20,9 @@ package org.graphity;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -46,6 +48,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -80,6 +83,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     private static final Logger log = LoggerFactory.getLogger(RDFResourceImpl.class);
     
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
+    private Model model = null; // ModelFactory.createDefaultModel()
+    //private OntModel ontModel = null;
     private ClientConfig config = new DefaultClientConfig();
     private Client client = null;
 
@@ -87,6 +92,17 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     {
 	config.getClasses().add(ModelProvider.class);
 	client = Client.create(config); // add OAuth filter
+    }
+    
+    @PostConstruct
+    public void init()
+    {
+	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
+	//OntDocumentManager.getInstance().addAltEntry(ontologyUri, getServletContext().getRealPath("/WEB-INF/ontology.ttl"));
+	// reading OntModel is necessary to give the right base URI
+	OntModel ontModel = ModelFactory.createOntologyModel();
+	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/ontology.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
+	OntDocumentManager.getInstance().addModel(ontologyUri, ontModel);
     }
 
     @GET
@@ -106,15 +122,15 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain; charset=UTF-8")
     public Model getModel()
     {
-	Model model = null; // ModelFactory.createDefaultModel();
-
-	log.debug("getURI(): {}", getURI());
-	log.debug("getServiceURI(): {}", getSPARQLResource());
-
-	// query the available SPARQL endpoint (either local or remote)
-	// getServiceURI() == null 
-	if (getFirstParameter("service-uri") == null && getFirstParameter("uri") != null) //  && isRemote()
+	//Model model = null; // ModelFactory.createDefaultModel();
+	if (model == null)
 	{
+	    log.debug("getURI(): {}", getURI());
+	    log.debug("getSPARQLResource(): {}", getSPARQLResource());
+
+	    // query the available SPARQL endpoint (either local or remote)
+	    if (getFirstParameter("service-uri") == null && getFirstParameter("uri") != null) //  && isRemote()
+	    {
 		// load remote Linked Data
 		try
 		{
@@ -128,48 +144,40 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		{
 		    log.trace("Could not load Model from URI: {}", getFirstParameter("uri"));
 		}
-	}
-	else
-	{
-	    try
-	    {
-		if (getQuery().isConstructType()) model = getQueryExecution().execConstruct();
-		if (getQuery().isDescribeType()) model = getQueryExecution().execDescribe();
-		//model = getOntModel(); // we're on a local host! load local sitemap
-		log.debug("Number of Model stmts read: {}", model.size());
 	    }
-	    catch (Exception ex)
+	    else
 	    {
-		log.trace("Could not execute Query: {}", getQuery());
+		try
+		{
+		    if (getQuery().isConstructType()) model = getQueryExecution().execConstruct();
+		    if (getQuery().isDescribeType()) model = getQueryExecution().execDescribe();
+		    //model = getOntModel(); // we're on a local host! load local sitemap
+		    log.debug("Number of Model stmts read: {}", model.size());
+		}
+		catch (Exception ex)
+		{
+		    log.trace("Could not execute Query: {}", getQuery());
+		}
 	    }
-	}
 
-	// RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
-	//if (!model.containsResource(model.createResource(getURI())))
-	//    throw new WebApplicationException(Response.Status.NOT_FOUND);
-	if (model == null)
-	    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
+	    //if (!model.containsResource(model.createResource(getURI())))
+	    //    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	    if (model == null)
+		throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
 	
 	return model;
     }
     
-    /*
-    protected boolean isRemote()
-    {
-	// resolve somehow better?
-	return !getURI().startsWith(getUriInfo().getBaseUri().toString());
-    }
-     */
-    
     public OntModel getOntModel()
     {
-	OntModel ontModel = ModelFactory.createOntologyModel(); // .createDefaultModel().
-
-	log.debug("@base: {}", getUriInfo().getBaseUri().toString());
-	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/graphity.ttl"), null, FileUtils.langTurtle);
-	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/sitemap.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
-	
-	return ontModel;
+	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
+	//log.debug("getOntModel().size(): {}", OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF).size());
+	//OntDocumentManager.getInstance().getModel(ontologyUri).write(System.out);
+	//OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF).write(System.out);
+	return OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF);
+	//return ModelFactory.createOntologyModel();
     }
     
     public QueryExecution getQueryExecution()

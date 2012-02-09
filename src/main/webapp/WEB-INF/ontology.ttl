@@ -17,7 +17,7 @@
 
 : a owl:Ontology ;
     dc:title "Graphity Browser ontology" ;
-    # owl:imports <http://graphity.org/ontology/> ;
+    owl:imports <http://graphity.org/ontology/> ;
     rdfs:seeAlso <http://graphity.org> .
 
 _:dataset a void:Dataset;

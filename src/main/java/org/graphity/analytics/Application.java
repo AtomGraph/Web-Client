@@ -17,13 +17,16 @@
 
 package org.graphity.analytics;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFResourceXSLTWriter;
 import org.graphity.util.LocatorLinkedData;
+import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +40,27 @@ public class Application extends javax.ws.rs.core.Application
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
     @Context private ServletContext context = null;
+    //@Context private UriInfo uriInfo = null;
     
-    public Application()
+    @PostConstruct
+    public void init()
     {
-	log.debug("Initializing application {}", this.getClass().getCanonicalName());
-	log.debug("ServletContext: {}", context);
-    }
+	log.debug("Application.init() ServletContext: {}", context);
+	//log.debug("Application.init() UriInfo.getBaseUri(): {}", uriInfo.getBaseUri().toString());
+	
+	//OntModel ontModel = ModelFactory.createOntologyModel();
+	try
+	{
+	    // http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
+	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), context.getRealPath("/WEB-INF/graphity.ttl"));
+	    //ontModel.read(context.getResourceAsStream("/WEB-INF/ontology.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
+	} catch (Exception ex)
+	{
+	    log.warn("Could not load ontology", ex);
+	}
 
+    }
+    
     @Override
     public Set<Class<?>> getClasses()
     {
