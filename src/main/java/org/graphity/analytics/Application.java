@@ -18,6 +18,12 @@
 package org.graphity.analytics;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.OWL2;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -43,17 +49,20 @@ public class Application extends javax.ws.rs.core.Application
     //@Context private UriInfo uriInfo = null;
     
     @PostConstruct
-    public void init()
+    public void init() // initialize locally cached ontologies
     {
 	log.debug("Application.init() ServletContext: {}", context);
-	//log.debug("Application.init() UriInfo.getBaseUri(): {}", uriInfo.getBaseUri().toString());
-	
-	//OntModel ontModel = ModelFactory.createOntologyModel();
 	try
 	{
 	    // http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
+	    OntDocumentManager.getInstance().addAltEntry(RDF.getURI(), context.getRealPath("/WEB-INF/owl/rdf.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(RDFS.getURI(), context.getRealPath("/WEB-INF/owl/rdfs.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(OWL2.getURI(), context.getRealPath("/WEB-INF/owl/owl2.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(DC.getURI(), context.getRealPath("/WEB-INF/owl/dcterms.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(DCTerms.getURI(), context.getRealPath("/WEB-INF/owl/dcterms.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(FOAF.getURI(), context.getRealPath("/WEB-INF/owl/foaf.owl"));
+	    
 	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), context.getRealPath("/WEB-INF/graphity.ttl"));
-	    //ontModel.read(context.getResourceAsStream("/WEB-INF/ontology.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
 	} catch (Exception ex)
 	{
 	    log.warn("Could not load ontology", ex);

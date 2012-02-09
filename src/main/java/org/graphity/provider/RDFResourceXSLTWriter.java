@@ -39,9 +39,11 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.RDFResource;
+import org.graphity.util.OntResolver;
 import org.graphity.util.XSLTBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +62,7 @@ public class RDFResourceXSLTWriter implements MessageBodyWriter<RDFResource>
     
     //private XSLTBuilder groupTriples = null;
     //private XSLTBuilder rdf2xhtml = null;
-    // private URIResolver resolver = new Resolver(); // XML-only resolving is not good enough, needs to work on RDF Models
+    private URIResolver resolver = new OntResolver(); // XML-only resolving is not good enough, needs to work on RDF Models
     
     @Context private ServletContext context;
     //@Context private UriInfo uriInfo;
@@ -143,6 +145,7 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "ResourceReadView.xsl")).
 	    //document(new ByteArrayInputStream(baos.toByteArray())).
 	    //parameter("uri", resource.getURI()).
+	    resolver(resolver).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()); // is base uri necessary?
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("uri") != null)
