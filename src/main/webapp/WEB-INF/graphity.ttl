@@ -34,6 +34,8 @@ gfb-app:type rdfs:label "Facebook application" ;
       sp:where () .
 _:uri sp:varName "uri"^^xsd:string .
 
+# =============================
+
 :ConstructLatest    a       sp:Construct ;
       sp:templates ([ sp:object _:dateVar ;
                   sp:predicate dct:created ;
@@ -115,6 +117,103 @@ _:oVar  sp:varName "o"^^xsd:string .
 _:graphVar  sp:varName "graph"^^xsd:string .
 _:titleVar  sp:varName "title"^^xsd:string .
 _:dateVar  sp:varName "date"^^xsd:string .
+
+# =============================
+
+_:typeVar  sp:varName "type"^^xsd:string .
+
+:ConstructLatestClasses    a       sp:Construct ;
+      sp:templates ([ sp:object _:oVar ;
+                  sp:predicate _:pVar ;
+                  sp:subject _:sVar
+                ] [ sp:object _:titleVar ;
+                  sp:predicate dc:title ;
+                  sp:subject _:oVar
+                ]) ;
+      sp:text """PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT {
+    ?s ?p ?o .
+    ?o dc:title ?title .
+}
+WHERE {
+    {
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT *
+        WHERE {
+            GRAPH ?graph {
+                ?s dct:created ?date .
+                ?s a ?type .
+                FILTER ((?type = owl:Class) || (?type = rdfs:Class)) .
+            } .
+        }
+        LIMIT 10
+    } .
+    OPTIONAL {
+        GRAPH ?graph {
+            ?s ?p ?o .
+        } .
+    } .
+    OPTIONAL {
+        GRAPH ?objGraph {
+            ?o dc:title ?title .
+        } .
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:limit "10"^^xsd:long ;
+                            sp:where ([ a       sp:NamedGraph ;
+                                        sp:elements ([ sp:object
+                                                            [ sp:varName "date"^^xsd:string
+                                                            ] ;
+                                                    sp:predicate dct:created ;
+                                                    sp:subject _:sVar
+                                                  ] [ sp:object _:typeVar ;
+                                                    sp:predicate rdf:type ;
+                                                    sp:subject _:sVar
+                                                  ] [ a       sp:Filter ;
+                                                    sp:expression
+                                                            [ a       sp:or ;
+                                                              sp:arg1 [ a       sp:eq ;
+                                                                        sp:arg1 _:typeVar ;
+                                                                        sp:arg2 owl:Class
+                                                                      ] ;
+                                                              sp:arg2 [ a       sp:eq ;
+                                                                        sp:arg1 _:typeVar ;
+                                                                        sp:arg2 rdfs:Class
+                                                                      ]
+                                                            ]
+                                                  ]) ;
+                                        sp:graphNameNode _:graphVar
+                                      ])
+                          ]
+                ] [ a       sp:Optional ;
+                  sp:elements ([ a       sp:NamedGraph ;
+                              sp:elements ([ sp:object _:oVar ;
+                                          sp:predicate _:pVar ;
+                                          sp:subject _:sVar
+                                        ]) ;
+                              sp:graphNameNode _:graphVar
+                            ])
+                ] [ a       sp:Optional ;
+                  sp:elements ([ a       sp:NamedGraph ;
+                              sp:elements ([ sp:object _:titleVar ;
+                                          sp:predicate dc:title ;
+                                          sp:subject _:oVar
+                                        ]) ;
+                              sp:graphNameNode
+                                      [ sp:varName "objGraph"^^xsd:string
+                                      ]
+                            ])
+                ]) .
+
+# =============================
 
 :ConstructItem    a       sp:Construct ;
       sp:templates ([ sp:object _:b3 ;

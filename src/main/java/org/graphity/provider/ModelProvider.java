@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-@Produces({MediaType.APPLICATION_RDF_XML, MediaType.TEXT_TURTLE})
+@Produces({MediaType.APPLICATION_RDF_XML, MediaType.TEXT_TURTLE, MediaType.TEXT_PLAIN})
 @Consumes({MediaType.APPLICATION_RDF_XML, MediaType.TEXT_TURTLE, MediaType.TEXT_PLAIN})
 public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWriter<Model>
 {

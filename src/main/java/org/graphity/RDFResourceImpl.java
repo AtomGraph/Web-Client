@@ -109,23 +109,24 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	Model model = null; // ModelFactory.createDefaultModel();
 
 	log.debug("getURI(): {}", getURI());
-	log.debug("getServiceURI(): {}", getServiceURI());
+	log.debug("getServiceURI(): {}", getSPARQLResource());
 
 	// query the available SPARQL endpoint (either local or remote)
-	if (getServiceURI() == null && isRemote())
+	// getServiceURI() == null 
+	if (getFirstParameter("service-uri") == null && getFirstParameter("uri") != null) //  && isRemote()
 	{
 		// load remote Linked Data
 		try
 		{
-		    log.trace("Loading Model from URI: {} with Accept header: {}", getURI(), getAcceptHeader());
-		    model = client.resource(getURI()).
+		    log.trace("Loading Model from URI: {} with Accept header: {}", getFirstParameter("uri"), getAcceptHeader());
+		    model = client.resource(getFirstParameter("uri")).
 			    header("Accept", getAcceptHeader()).
 			    get(Model.class);
 		    log.debug("Number of Model stmts read: {}", model.size());
 		}
 		catch (Exception ex)
 		{
-		    log.trace("Could not load Model from URI: {}", getURI());
+		    log.trace("Could not load Model from URI: {}", getFirstParameter("uri"));
 		}
 	}
 	else
@@ -152,11 +153,13 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	return model;
     }
     
+    /*
     protected boolean isRemote()
     {
 	// resolve somehow better?
 	return !getURI().startsWith(getUriInfo().getBaseUri().toString());
     }
+     */
     
     public OntModel getOntModel()
     {
@@ -171,11 +174,14 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     public QueryExecution getQueryExecution()
     {
-	if (getServiceURI() != null)
+	if (getFirstParameter("service-uri") != null || getSPARQLResource() != null)
 	{
-	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getServiceURI(), getQuery());
+	    String serviceUri = (getFirstParameter("service-uri") != null) ?
+		    getFirstParameter("service-uri") : getSPARQLResource().getURI();
+	    
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceUri, getQuery());
 	    request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
-	    log.trace("Request to SPARQL endpoint: {} with query: {}", getServiceURI(), getQuery());	    
+	    log.trace("Request to SPARQL endpoint: {} with query: {}", serviceUri, getQuery());	    
 	    return request;
 	}
 	else
@@ -188,20 +194,30 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     
     public Query getQuery()
     {
-	Query query = null;
-	if (!isRemote()) query = getExplicitQuery();
-	if (getServiceURI() == null) query = getDefaultQuery();
-	if (query == null) query = getDefaultQuery();
-	if (query == null) query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
-	return query;
+	if (getFirstParameter("service-uri") != null)
+	{
+	    if (getFirstParameter("uri") == null) // ?uri=&service-uri=http://dbpedia.org/sparql
+		return getExplicitQuery();
+	    else // ?uri=http://dbpedia.org/resource/Vilnius&service-uri=http://dbpedia.org/sparql
+		return getDescribeQuery(getFirstParameter("uri"));
+	}
+	else
+	{
+	    if (getSPARQLResource() != null)
+		return getExplicitQuery();
+	    else
+		return getDescribeQuery(getURI());  // query OntModel
+	}
+
+	//if (query == null) query = getDefaultQuery();
+	//if (query == null) query = QueryFactory.create("DESCRIBE <" + getURI() + ">");
+	//return null;
     }
 
     public Query getExplicitQuery()
     {
-	if (getIndividual() == null)  return null; // in case of most remote URIs
+	if (getIndividual() == null) return null;
 	Resource queryRes = getIndividual().getPropertyResourceValue(Graphity.query);
-	//getOntModel().getIndividual(Graphity.ConstructItem.getURI());
-	//QueryExecutionFactory.
 	
 	log.trace("Explicit query resource {} for URI {}", queryRes, getURI());
 	if (queryRes == null) return null;
@@ -211,10 +227,10 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    build();
     }
 
-    public Query getDefaultQuery()
+    public Query getDescribeQuery(String uri)
     {
-log.trace("Default query {} for URI {}", "DESCRIBE <" + getURI() + ">", getURI());
-return QueryFactory.create("DESCRIBE <" + getURI() + ">");
+log.trace("Default query {} for URI {}", "DESCRIBE <" + uri + ">", uri);
+return QueryFactory.create("DESCRIBE <" + uri + ">");
 
 	/*
 	Resource queryRes = getBaseIndividual().getPropertyResourceValue(Graphity.defaultQuery);
@@ -222,7 +238,7 @@ return QueryFactory.create("DESCRIBE <" + getURI() + ">");
 	if (queryRes == null) return null;
 		
 	return QueryBuilder.fromResource(queryRes).
-	    bind("uri", getURI()).
+	    bind("uri", uri).
 	    build();
 	 */
     }
@@ -237,46 +253,54 @@ return QueryFactory.create("DESCRIBE <" + getURI() + ">");
     
     protected Individual getIndividual()
     {
-	log.debug("getUriInfo().getAbsolutePath().toString(): {}", getUriInfo().getAbsolutePath().toString());
-	return getOntModel().getIndividual(getUriInfo().getAbsolutePath().toString());
+	log.debug("getUriInfo().getAbsolutePath().toString(): {}", getURI());
+	return getOntModel().getIndividual(getURI());
 	//return getOntModel().getIndividual(getUriInfo().getBaseUri().toString());
     }
 
     protected Individual getBaseIndividual()
     {
-	log.debug("getUriInfo().getBaseUri().toString(): {}", getUriInfo().getAbsolutePath().toString());
+	log.debug("getUriInfo().getBaseUri().toString(): {}", getUriInfo().getBaseUri().toString());
 	return getOntModel().getIndividual(getUriInfo().getBaseUri().toString());
     }
 
+    /*
     @Override
     public String getURI()
     {
-	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	    return getUriInfo().getQueryParameters().getFirst("uri");
+	if (getFirstParameter("uri") != null)
+	    return getFirstParameter("uri");
 	
 	return super.getURI();
     }
+    */
+    
+    private String getFirstParameter(String name)
+    {
+	if (getUriInfo().getQueryParameters().getFirst(name) != null &&
+		!getUriInfo().getQueryParameters().getFirst(name).isEmpty())
+	    return getUriInfo().getQueryParameters().getFirst(name);
+	return null;
+    }
     
     @Override
-    public final String getServiceURI()
+    public com.hp.hpl.jena.rdf.model.Resource getSPARQLResource()
     {
-	// browsing remote resource, SPARQL endpoint is either supplied or null (or discovered from voiD?)
-	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	{
-	    String serviceUri = getUriInfo().getQueryParameters().getFirst("service-uri");
-	    if (serviceUri == null || serviceUri.isEmpty()) return null;
-	    return serviceUri;
-	}
 	log.trace("getBaseIndividual(): {}", getBaseIndividual());
-	// browsing local resource, SPARQL endpoint is retrieved from the sitemap
 	if (getBaseIndividual() == null) return null;
-	
+
+	return getBaseIndividual().
+		getPropertyResourceValue(getOntModel().
+		    getProperty("http://purl.org/linked-data/api/vocab#sparqlEndpoint"));
+
+	/*
 	return getBaseIndividual().
 		getPropertyResourceValue(getOntModel().
 		    getProperty("http://rdfs.org/ns/void#inDataset")).
 		getPropertyResourceValue(getOntModel().
 		    getProperty("http://rdfs.org/ns/void#sparqlEndpoint")).
 		getURI();
+	 */
     }
 
     public String getAcceptHeader()

@@ -142,11 +142,17 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
     {
 	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "ResourceReadView.xsl")).
 	    //document(new ByteArrayInputStream(baos.toByteArray())).
-	    parameter("uri", resource.getURI()).
+	    //parameter("uri", resource.getURI()).
 	    parameter("base-uri", resource.getUriInfo().getBaseUri()); // is base uri necessary?
-	    
-	if (resource.getServiceURI() != null)
-	    rdf2xhtml.parameter("service-uri", resource.getServiceURI());
+
+	if (resource.getUriInfo().getQueryParameters().getFirst("uri") != null)
+	    rdf2xhtml.parameter("uri", resource.getUriInfo().getQueryParameters().getFirst("uri"));
+	
+	if (resource.getUriInfo().getQueryParameters().getFirst("service-uri") != null &&
+		!resource.getUriInfo().getQueryParameters().getFirst("service-uri").isEmpty())
+	    rdf2xhtml.parameter("service-uri", resource.getUriInfo().getQueryParameters().getFirst("service-uri"));
+	else
+	    rdf2xhtml.parameter("service-uri", resource.getSPARQLResource());
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)
 	    rdf2xhtml.parameter("view", resource.getUriInfo().getQueryParameters().getFirst("view"));

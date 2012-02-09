@@ -23,5 +23,5 @@ package org.graphity;
  */
 public interface RDFResource extends Resource, com.hp.hpl.jena.rdf.model.Resource
 {
-    public String getServiceURI();
+    public com.hp.hpl.jena.rdf.model.Resource getSPARQLResource();
 }

@@ -80,7 +80,14 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 			</input>
 			<button type="submit">Browse</button>
 		    </fieldset>
-		    <a href="https://www.facebook.com/dialog/oauth?client_id={encode-for-uri($gfb-app:id)}&amp;redirect_uri={encode-for-uri($oauth:redirect_uri)}">Facebook</a>
+		    <ul>
+			<li>
+			    <a href="https://www.facebook.com/dialog/oauth?client_id={encode-for-uri($gfb-app:id)}&amp;redirect_uri={encode-for-uri($oauth:redirect_uri)}">Facebook</a>
+			</li>
+			<li>
+			    <a href="classes">Classes</a>
+			</li>
+		    </ul>
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
 		<xsl:apply-templates select="*[@rdf:about != $uri]">

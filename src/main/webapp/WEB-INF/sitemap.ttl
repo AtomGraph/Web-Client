@@ -12,7 +12,7 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
-@prefix lda: <http://purl.org/linked-data/api/vocab#>.
+@prefix lda: <http://purl.org/linked-data/api/vocab#> .
 @prefix gfb-app: <http://graph.facebook.com/schema/application#> .
 
 : a owl:Ontology ;
@@ -44,7 +44,7 @@ _:endpoint a sd:Service ;
 <classes> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
     dc:title "Classes"@en ;
-    g:query g:ConstructLatest ;
+    g:query g:ConstructLatestClasses ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
 #[] a lda:ItemEndpoint ;
