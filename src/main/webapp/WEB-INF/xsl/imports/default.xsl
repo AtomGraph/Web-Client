@@ -104,13 +104,18 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	<xsl:param name="document" as="document-node()"/>
 	<xsl:param name="lang" as="xs:string"/>
 	<xsl:variable name="local-label" select="g:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
+<xsl:message>
+$resource-uri: <xsl:value-of select="$resource-uri"/>
+document($resource-uri): <xsl:copy-of select="document(substring-before($resource-uri, '#'))"/>
+</xsl:message>
+
 	<xsl:choose>
 	    <xsl:when test="$local-label">
 		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), substring($local-label, 2))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
 		<!-- <xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, ., $lang))[1]" as="xs:string?"/> -->
-		<xsl:variable name="imported-label" select="(document($resource-uri)/g:local-label($resource-uri, ., $lang))[1]" as="xs:string?"/>
+		<xsl:variable name="imported-label" select="g:local-label($resource-uri, document(substring-before($resource-uri, '#')), $lang)[1]" as="xs:string?"/>
 		<xsl:choose>
 		    <xsl:when test="$imported-label">
 			<xsl:sequence select="concat(upper-case(substring($imported-label, 1, 1)), substring($imported-label, 2))"/>

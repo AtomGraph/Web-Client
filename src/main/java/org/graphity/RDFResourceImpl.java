@@ -102,6 +102,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	// reading OntModel is necessary to give the right base URI
 	OntModel ontModel = ModelFactory.createOntologyModel();
 	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/ontology.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
+	log.debug("Adding OntModel with URI: {} to OntDocumentManager", ontologyUri);
 	OntDocumentManager.getInstance().addModel(ontologyUri, ontModel);
     }
 

@@ -18,7 +18,9 @@
 package org.graphity.analytics;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.OWL2;
@@ -33,6 +35,7 @@ import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFResourceXSLTWriter;
 import org.graphity.util.LocatorLinkedData;
 import org.graphity.vocabulary.Graphity;
+import org.graphity.vocabulary.SIOC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,14 +58,27 @@ public class Application extends javax.ws.rs.core.Application
 	try
 	{
 	    // http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
-	    OntDocumentManager.getInstance().addAltEntry(RDF.getURI(), context.getRealPath("/WEB-INF/owl/rdf.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(RDFS.getURI(), context.getRealPath("/WEB-INF/owl/rdfs.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(OWL2.getURI(), context.getRealPath("/WEB-INF/owl/owl2.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(DC.getURI(), context.getRealPath("/WEB-INF/owl/dcterms.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(DCTerms.getURI(), context.getRealPath("/WEB-INF/owl/dcterms.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(FOAF.getURI(), context.getRealPath("/WEB-INF/owl/foaf.owl"));
+	    //OntDocumentManager.getInstance().setCacheModels(false);
+	    log.debug("OntDocumentManager is caching Models: {}", OntDocumentManager.getInstance().getCacheModels());
 	    
-	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), context.getRealPath("/WEB-INF/graphity.ttl"));
+	    // move this to external configuration
+	    OntDocumentManager.getInstance().addAltEntry(RDF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdf.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(RDFS.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdfs.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(OWL2.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/owl2.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(DC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcelements.rdf"));
+	    OntDocumentManager.getInstance().addAltEntry(DCTerms.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcterms.rdf"));
+	    OntDocumentManager.getInstance().addAltEntry(FOAF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/foaf.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(SIOC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/sioc.owl"));
+	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), "file:///" + context.getRealPath("/WEB-INF/graphity.ttl"));
+
+	    OntDocumentManager.getInstance().addModel(RDF.getURI(), ModelFactory.createOntologyModel().read(RDF.getURI()));
+	    OntDocumentManager.getInstance().addModel(RDFS.getURI(), ModelFactory.createOntologyModel().read(RDFS.getURI()));
+	    OntDocumentManager.getInstance().addModel(OWL2.getURI(), ModelFactory.createOntologyModel().read(OWL2.getURI()));
+	    OntDocumentManager.getInstance().addModel(DC.getURI(), ModelFactory.createOntologyModel().read(DC.getURI()));
+	    OntDocumentManager.getInstance().addModel(DCTerms.getURI(), ModelFactory.createOntologyModel().read(DCTerms.getURI()));
+	    OntDocumentManager.getInstance().addModel(FOAF.getURI(), ModelFactory.createOntologyModel().read(FOAF.getURI()));
+	    OntDocumentManager.getInstance().addModel(SIOC.getURI(), ModelFactory.createOntologyModel().read(SIOC.getURI()));
+	    OntDocumentManager.getInstance().addModel(Graphity.getURI(), ModelFactory.createOntologyModel().read(Graphity.getURI(), FileUtils.langTurtle));
 	} catch (Exception ex)
 	{
 	    log.warn("Could not load ontology", ex);

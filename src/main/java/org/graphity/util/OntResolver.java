@@ -22,6 +22,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.util.Iterator;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -47,6 +49,19 @@ public class OntResolver implements URIResolver
 	Model model = OntDocumentManager.getInstance().getModel(uri);
 	if (model == null)
 	{
+	    // first stripping the URI to find ontology in the cache
+	    Iterator<String> it = OntDocumentManager.getInstance().listDocuments();
+	    while (it.hasNext())
+	    {
+		String docURI = it.next();
+		log.debug("URI listed in OntDocumentManager: {}", docURI);
+		if (uri.startsWith(removeFragmentId(docURI)))
+		{
+		    log.debug("Found Document URI: {} for URI: {}", docURI, uri);
+		    return resolve(docURI, base);
+		}
+	    }
+		    
 	    log.debug("Could not resolve URI: {}", uri);
 	    //return null;
 	    model = ModelFactory.createDefaultModel();
@@ -64,4 +79,8 @@ public class OntResolver implements URIResolver
 	}
     }
 
+    public static String removeFragmentId(String uri)
+    {
+	return UriBuilder.fromUri(uri).fragment(null).build().toString();
+    }
 }
