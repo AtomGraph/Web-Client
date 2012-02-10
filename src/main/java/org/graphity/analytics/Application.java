@@ -57,6 +57,7 @@ public class Application extends javax.ws.rs.core.Application
 	log.debug("Application.init() ServletContext: {}", context);
 	try
 	{
+	    // http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms
 	    // http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
 	    //OntDocumentManager.getInstance().setCacheModels(false);
 	    log.debug("OntDocumentManager is caching Models: {}", OntDocumentManager.getInstance().getCacheModels());

@@ -144,9 +144,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
 	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
 	    <dt>
-		<a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
-		    <xsl:value-of select="g:label($this, /, $lang)"/>
-		</a>
+		<xsl:apply-imports/>
 	    </dt>
 	</xsl:if>
 	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>

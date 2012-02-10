@@ -83,7 +83,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
     public static Lang langFromMediaType(javax.ws.rs.core.MediaType mediaType)
     { 
         if (mediaType == null) return null;
-	log.trace("langFromMediaType({}): {}", mediaType.getType() + "/" + mediaType.getSubtype(), LANGS.get(mediaType.toString()));
+	log.trace("langFromMediaType({}): {}", mediaType.getType() + "/" + mediaType.getSubtype(), LANGS.get(mediaType.getType() + "/" + mediaType.getSubtype()));
         return LANGS.get(mediaType.getType() + "/" + mediaType.getSubtype());
     }
 
