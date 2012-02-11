@@ -71,8 +71,9 @@ public class Application extends javax.ws.rs.core.Application
 	    OntDocumentManager.getInstance().addAltEntry(FOAF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/foaf.owl"));
 	    OntDocumentManager.getInstance().addAltEntry(SIOC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/sioc.owl"));
 	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), "file:///" + context.getRealPath("/WEB-INF/graphity.ttl"));
+	    OntDocumentManager.getInstance().addAltEntry("http://rdfs.org/ns/void#", "file:///" + context.getRealPath("/WEB-INF/owl/void.owl"));
 	    OntDocumentManager.getInstance().addAltEntry("http://dbpedia.org/ontology/", "file:///" + context.getRealPath("/WEB-INF/owl/dbpedia-owl.owl"));
-
+	    
 	    OntDocumentManager.getInstance().addModel(RDF.getURI(), ModelFactory.createOntologyModel().read(RDF.getURI()));
 	    OntDocumentManager.getInstance().addModel(RDFS.getURI(), ModelFactory.createOntologyModel().read(RDFS.getURI()));
 	    OntDocumentManager.getInstance().addModel(OWL2.getURI(), ModelFactory.createOntologyModel().read(OWL2.getURI()));
@@ -81,6 +82,7 @@ public class Application extends javax.ws.rs.core.Application
 	    OntDocumentManager.getInstance().addModel(FOAF.getURI(), ModelFactory.createOntologyModel().read(FOAF.getURI()));
 	    OntDocumentManager.getInstance().addModel(SIOC.getURI(), ModelFactory.createOntologyModel().read(SIOC.getURI()));
 	    OntDocumentManager.getInstance().addModel(Graphity.getURI(), ModelFactory.createOntologyModel().read(Graphity.getURI(), FileUtils.langTurtle));
+	    OntDocumentManager.getInstance().addModel("http://rdfs.org/ns/void#", ModelFactory.createOntologyModel().read("http://rdfs.org/ns/void#"));
 	    OntDocumentManager.getInstance().addModel("http://dbpedia.org/ontology/", ModelFactory.createOntologyModel().read("http://dbpedia.org/ontology/"));
 	} catch (Exception ex)
 	{
