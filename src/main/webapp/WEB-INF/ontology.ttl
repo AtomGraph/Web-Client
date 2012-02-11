@@ -20,21 +20,30 @@
     owl:imports <http://graphity.org/ontology/> ;
     dc:title "Graphity Browser ontology" ;
     rdfs:label "Graphity Browser ontology" ;
-    dct:created "2012-02-11T03:17:00+01:00"^^xsd:dateTime ;
+    dct:modified "2012-02-11T03:17:00+01:00"^^xsd:dateTime ;
+    dct:license <http://opendatacommons.org/licenses/odbl/1.0/> ;
     dc:creator <http://semantic-web.dk#martynas> .
 
 _:dataset a void:Dataset;
     foaf:homepage <> ;
     rdfs:isDefinedBy : ;
     void:sparqlEndpoint <http://de.dydra.com/graphity/browser/sparql> .
-_:endpoint a sd:Service ;
+_:service a sd:Service ;
     rdfs:isDefinedBy : ;
     sd:endpoint <http://de.dydra.com/graphity/browser/sparql> ;
+    dc:title "Default Graphity SPARQL endpoint";
     g:apiKey "2hwmvJSgCSV3fa3xGIb9"^^xsd:string ;
     sd:supportedLanguage sd:SPARQL11Query .
 <https://graph.facebook.com/121081534640971#> gfb-app:id "121081534640971"^^xsd:string ;
     gfb-app:name "Graphity Facebook app" ;
     rdfs:label "Graphity Facebook app" .
+
+<http://data.kasabi.com/dataset/airports> a void:Dataset ;
+    dc:title "Airports" ;
+    void:sparqlEndpoint <http://api.kasabi.com/dataset/airports/apis/sparql> .
+_:airports-service a sd:Service ;
+    sd:endpoint <http://api.kasabi.com/dataset/airports/apis/sparql> ;
+    g:apiKey "ad4afcb0f52e872b3923b5d254bb07844f224cc5"^^xsd:string .
 
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
     dc:title "Graphity Browser" ;
