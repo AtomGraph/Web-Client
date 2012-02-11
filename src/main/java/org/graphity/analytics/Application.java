@@ -73,7 +73,8 @@ public class Application extends javax.ws.rs.core.Application
 	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), "file:///" + context.getRealPath("/WEB-INF/graphity.ttl"));
 	    OntDocumentManager.getInstance().addAltEntry("http://rdfs.org/ns/void#", "file:///" + context.getRealPath("/WEB-INF/owl/void.owl"));
 	    OntDocumentManager.getInstance().addAltEntry("http://dbpedia.org/ontology/", "file:///" + context.getRealPath("/WEB-INF/owl/dbpedia-owl.owl"));
-	    
+	    OntDocumentManager.getInstance().addAltEntry("http://graph.facebook.com/schema/user#", "file:///" + context.getRealPath("/WEB-INF/owl/gfb-user.owl"));
+
 	    OntDocumentManager.getInstance().addModel(RDF.getURI(), ModelFactory.createOntologyModel().read(RDF.getURI()));
 	    OntDocumentManager.getInstance().addModel(RDFS.getURI(), ModelFactory.createOntologyModel().read(RDFS.getURI()));
 	    OntDocumentManager.getInstance().addModel(OWL2.getURI(), ModelFactory.createOntologyModel().read(OWL2.getURI()));
@@ -84,6 +85,7 @@ public class Application extends javax.ws.rs.core.Application
 	    OntDocumentManager.getInstance().addModel(Graphity.getURI(), ModelFactory.createOntologyModel().read(Graphity.getURI(), FileUtils.langTurtle));
 	    OntDocumentManager.getInstance().addModel("http://rdfs.org/ns/void#", ModelFactory.createOntologyModel().read("http://rdfs.org/ns/void#"));
 	    OntDocumentManager.getInstance().addModel("http://dbpedia.org/ontology/", ModelFactory.createOntologyModel().read("http://dbpedia.org/ontology/"));
+	    OntDocumentManager.getInstance().addModel("http://graph.facebook.com/schema/user#", ModelFactory.createOntologyModel().read("http://graph.facebook.com/schema/user#"));
 	} catch (Exception ex)
 	{
 	    log.warn("Could not load ontology", ex);

@@ -111,6 +111,16 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/html; charset=UTF-8")
     public Response getResponse()
     {
+	if (getUriInfo().getQueryParameters().getFirst("accept") != null)
+	{
+	    if (getUriInfo().getQueryParameters().getFirst("accept").equals(MediaType.APPLICATION_RDF_XML))
+		return Response.ok(getModel(), MediaType.APPLICATION_RDF_XML_TYPE).
+		    build();
+	    if (getUriInfo().getQueryParameters().getFirst("accept").equals(MediaType.TEXT_TURTLE))
+		return Response.ok(getModel(), MediaType.TEXT_TURTLE_TYPE).
+		    build();
+	}
+	    
 	return Response.ok(this).
 	    //type(MediaType.TEXT_HTML).
 	    build();

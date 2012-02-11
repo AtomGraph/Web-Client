@@ -101,6 +101,12 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 			<li>
 			    <a href="classes">Classes</a>
 			</li>
+			<li>
+			    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
+			</li>
+			<li>
+			    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}">Turtle</a>
+			</li>
 		    </ul>
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
