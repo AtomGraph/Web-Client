@@ -118,7 +118,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	</h1>
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>
-	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
+	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>	    
 	</dl>

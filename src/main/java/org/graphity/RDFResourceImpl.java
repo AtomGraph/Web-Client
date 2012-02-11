@@ -34,6 +34,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -181,6 +182,29 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	//return ModelFactory.createOntologyModel();
     }
     
+    public Resource getService()
+    {
+	ResIterator it = getOntModel().listResourcesWithProperty(
+		getOntModel().getObjectProperty("http://www.w3.org/ns/sparql-service-description#endpoint"),
+		getSPARQLResource());
+	if (it.hasNext()) return it.nextResource();
+	else return null;
+    }
+    
+    public String getServiceApiKey()
+    {
+	Statement stmt = getService().getProperty(Graphity.apiKey);
+	if (stmt != null)
+	{
+	    log.debug("API key: {} found for SPARQL service: {}", stmt.getLiteral().getLexicalForm(), getService());
+	    return stmt.getLiteral().getLexicalForm();
+	}
+	else
+	    log.debug("API key not found for SPARQL service: {}", getService());
+	
+	return null;
+    }
+    
     public QueryExecution getQueryExecution()
     {
 	if (getFirstParameter("service-uri") != null || getSPARQLResource() != null)
@@ -189,7 +213,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		    getFirstParameter("service-uri") : getSPARQLResource().getURI();
 	    
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceUri, getQuery());
-	    request.setBasicAuthentication("M6aF7uEY9RBQLEVyxjUG", "X".toCharArray());
+	    request.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
 	    log.trace("Request to SPARQL endpoint: {} with query: {}", serviceUri, getQuery());	    
 	    return request;
 	}

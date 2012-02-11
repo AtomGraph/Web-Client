@@ -9,12 +9,20 @@
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix sp: <http://spinrdf.org/sp#> .
-@prefix g:       <http://graphity.org/ontology/> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix g: <http://graphity.org/ontology/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix gfb-app: <http://graph.facebook.com/schema/application#> .
 
 : a owl:Ontology ;
     dc:title "Graphity ontology" ;
-    rdfs:seeAlso <http://graphity.org> .
+    rdfs:label "Graphity ontology" ;
+    dct:created "2012-02-09T20:54:00+01:00"^^xsd:dateTime ;
+    rdfs:seeAlso <http://graphity.org> ;
+    dc:creator <http://semantic-web.dk#martynas> .
+<http://semantic-web.dk#martynas> a foaf:Person ;
+     foaf:mbox <mailto:martynas@graphity.org> ;
+     foaf:name "Martynas Jusevičius" .
 
 :query a owl:ObjectProperty ;
     rdfs:label "has SPIN query" ;
@@ -27,6 +35,11 @@
     rdfs:range gfb-app:type .
 gfb-app:type rdfs:label "Facebook application" ;
     rdfs:isDefinedBy gfb-app: .
+g:apiKey a owl:DatatypeProperty ;
+    rdfs:label "SPARQL endpoint authentication key" ;
+    rdfs:domain sd:Service ;
+    rdfs:range xsd:string .
+
 
 :Describe    a       sp:Describe ;
       sp:resultNodes (_:uri) ;

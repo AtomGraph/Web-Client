@@ -46,6 +46,8 @@ public class Graphity
     
     public static final Property query = m_model.createProperty( NS + "query" );
     
+    public static final Property apiKey = m_model.createProperty( NS + "apiKey" );
+    
     public static final Property defaultQuery = m_model.createProperty( NS + "defaultQuery" );
     
     public static final Resource ConstructItem = m_model.createResource( NS + "ConstructItem" );
