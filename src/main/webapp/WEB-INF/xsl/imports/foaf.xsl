@@ -18,11 +18,9 @@ xmlns:foaf="&foaf;"
 exclude-result-prefixes="url g rdf rdfs foaf">
     
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
-	<dd>
-	    <a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
-		<img src="{.}" alt=""/>
-	    </a>
-	</dd>
+	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
+	    <img src="{.}" alt=""/>
+	</a>
     </xsl:template>
 
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="g:EditMode">

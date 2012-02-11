@@ -4,7 +4,7 @@
     <!ENTITY g "http://graphity.org/ontology/">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY gfb-app "http://graph.facebook.com/schema/application#">
+    <!ENTITY void "http://rdfs.org/ns/void#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -14,12 +14,12 @@ xmlns:url="&java;java.net.URLEncoder"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:gfb-app="&gfb-app;"
-exclude-result-prefixes="url g rdf rdfs gfb-app">
+xmlns:void="&void;"
+exclude-result-prefixes="url g rdf rdfs void">
     
-    <xsl:template match="gfb-app:icon_url/@rdf:resource | gfb-app:logo_url/@rdf:resource">
-	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
-	    <img src="{.}" alt=""/>
+    <xsl:template match="void:sparqlEndpoint/@rdf:resource">
+	<a href="{$base-uri}?service-uri={url:encode(., 'UTF-8')}">
+	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 

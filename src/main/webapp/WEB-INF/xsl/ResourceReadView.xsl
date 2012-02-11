@@ -24,6 +24,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 
     <xsl:import href="imports/default.xsl"/>
     <xsl:import href="imports/foaf.xsl"/>
+    <xsl:import href="imports/void.xsl"/>
     <xsl:import href="imports/dbpedia-owl.xsl"/>
     <xsl:import href="imports/facebook.xsl"/>
 
