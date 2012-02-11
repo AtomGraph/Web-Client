@@ -17,7 +17,8 @@
 package org.graphity.util;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,8 +46,9 @@ public class OntResolver implements URIResolver
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("Resolved absolute URI: {}", uri);
-	
-	Model model = OntDocumentManager.getInstance().getModel(uri);
+	log.debug("CacheModels: {}", OntDocumentManager.getInstance().getCacheModels());
+	//Model model = OntDocumentManager.getInstance().getModel(uri);
+	OntModel model = OntDocumentManager.getInstance().getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF);
 	if (model == null)
 	{
 	    // first stripping the URI to find ontology in the cache
@@ -54,7 +56,6 @@ public class OntResolver implements URIResolver
 	    while (it.hasNext())
 	    {
 		String docURI = it.next();
-		log.debug("URI listed in OntDocumentManager: {}", docURI);
 		if (uri.startsWith(removeFragmentId(docURI)))
 		{
 		    log.debug("Found Document URI: {} for URI: {}", docURI, uri);
@@ -64,7 +65,7 @@ public class OntResolver implements URIResolver
 		    
 	    log.debug("Could not resolve URI: {}", uri);
 	    //return null;
-	    model = ModelFactory.createDefaultModel();
+	    model = (OntModel)ModelFactory.createDefaultModel();
 	}
 	//else
 	{

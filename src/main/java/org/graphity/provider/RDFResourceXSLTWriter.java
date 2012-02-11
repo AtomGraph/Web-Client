@@ -159,8 +159,8 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 	else // browsing localhost
 	    rdf2xhtml.parameter("service-uri", resource.getSPARQLResource());
 
-	if (resource.getUriInfo().getQueryParameters().getFirst("view") != null)
-	    rdf2xhtml.parameter("view", resource.getUriInfo().getQueryParameters().getFirst("view"));
+	if (resource.getUriInfo().getQueryParameters().getFirst("mode") != null)
+	    rdf2xhtml.parameter("mode", resource.getUriInfo().getQueryParameters().getFirst("mode"));
 	    
 	return rdf2xhtml;
     }

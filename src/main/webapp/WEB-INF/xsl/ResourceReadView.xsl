@@ -35,7 +35,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="uri"/>
     <xsl:param name="base-uri"/>
     <xsl:param name="service-uri" select="false()"/>
-    <xsl:param name="view" as="xs:anyURI"/>
+    <xsl:param name="mode" as="xs:anyURI?"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="php-os"/>
     <!-- <xsl:param name="fb-app-id" select="'264143360289485'"/> -->
@@ -59,7 +59,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:key name="object-properties" match="*[@rdf:resource or */@rdf:about]" use="concat(namespace-uri(.), local-name(.))"/>
     <xsl:key name="datatype-properties" match="*[*]" use="concat(namespace-uri(.), local-name(.))"/>
     -->
-    
+    	
     <xsl:template match="rdf:RDF">
 	<html>
 	    <head>
@@ -107,6 +107,12 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 			<li>
 			    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}">Turtle</a>
 			</li>
+			<li>
+			    <a href="?uri={encode-for-uri($uri)}&amp;mode={encode-for-uri('&g;EditMode')}">Edit mode</a>
+			</li>
+			<li>
+			    <a href="?uri={encode-for-uri($uri)}">Read mode</a>
+			</li>
 		    </ul>
 		</form>
 		<xsl:apply-templates select="key('resources', $uri)"/>
@@ -149,13 +155,32 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	<h2>
 	    <xsl:apply-imports/>
 	</h2>
-	<dl>
-	    <!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
-	    <!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
-	    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]">
-		<xsl:with-param name="type" select="$this"/>
-	    </xsl:apply-templates>
-	</dl>
+<xsl:message>
+    $mode: <xsl:value-of select="$mode"/>
+</xsl:message>
+???
+	<xsl:choose>
+	    <xsl:when test="$mode = '&g;EditMode'">
+		<form action="" method="post" enctype="multipart/form-data">
+		    <dl>
+			<!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
+			<!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
+			<xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
+			    <xsl:with-param name="type" select="$this"/>
+			</xsl:apply-templates>
+		    </dl>
+		</form>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<dl>
+		    <!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
+		    <!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
+		    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]">
+			<xsl:with-param name="type" select="$this"/>
+		    </xsl:apply-templates>
+		</dl>
+	    </xsl:otherwise>
+	</xsl:choose>
     </xsl:template>
 
     <!-- property -->
@@ -190,7 +215,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    </dt>
 	    <dd>
 		<select name="ou">
-		    <xsl:apply-templates select="following-sibling::*[concat(namespace-uri(), local-name()) = $this]/@rdf:*" mode="g:EditMode"/>
+		    <xsl:apply-templates select="//@rdf:*" mode="g:EditMode"/>
 		</select>
 	    </dd>
 	</xsl:if>
