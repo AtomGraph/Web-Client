@@ -31,7 +31,7 @@ _:dataset a void:Dataset;
 _:service a sd:Service ;
     rdfs:isDefinedBy : ;
     sd:endpoint <http://de.dydra.com/graphity/browser/sparql> ;
-    dc:title "Default Graphity SPARQL endpoint";
+    dc:title "Default Graphity SPARQL endpoint" ;
     g:apiKey "2hwmvJSgCSV3fa3xGIb9"^^xsd:string ;
     sd:supportedLanguage sd:SPARQL11Query .
 <https://graph.facebook.com/121081534640971#> gfb-app:id "121081534640971"^^xsd:string ;

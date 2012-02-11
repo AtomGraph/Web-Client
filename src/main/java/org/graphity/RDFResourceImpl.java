@@ -185,7 +185,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     public Resource getService()
     {
 	ResIterator it = getOntModel().listResourcesWithProperty(
-		getOntModel().getObjectProperty("http://www.w3.org/ns/sparql-service-description#endpoint"),
+		getOntModel().getProperty("http://www.w3.org/ns/sparql-service-description#endpoint"),
 		getSPARQLResource());
 	if (it.hasNext()) return it.nextResource();
 	else return null;
