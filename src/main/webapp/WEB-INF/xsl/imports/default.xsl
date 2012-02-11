@@ -20,7 +20,7 @@ xmlns:rdfs="&rdfs;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
-exclude-result-prefixes="g url rdf rdfs dc foaf">
+exclude-result-prefixes="g url rdf rdfs dc dct foaf">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
@@ -37,6 +37,21 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	</a>
     </xsl:template>
 
+    <!-- subject -->
+    <xsl:template match="@rdf:about" mode="g:EditMode">
+	<label for="{generate-id()}">????
+	    <xsl:value-of select="g:label(., /, $lang)"/>
+	</label>
+	<input type="text" name="su" id="{generate-id()}" value="{.}"/>
+    </xsl:template>
+	
+    <!-- object -->
+    <xsl:template match="@rdf:resource" mode="g:EditMode">
+	<option value="{.}">
+	    <xsl:value-of select="g:label(., /, $lang)"/>
+	</option>
+    </xsl:template>
+
     <!-- property -->
     <xsl:template match="*[node() or @rdf:resource or @rdf:nodeID]">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
@@ -44,7 +59,15 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	    <xsl:value-of select="g:label($this, /, $lang)"/>
 	</a>
     </xsl:template>
-    
+
+    <xsl:template match="*[node() or @rdf:resource or @rdf:nodeID]" mode="g:EditMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
+	<label for="{generate-id()}">
+	    <xsl:value-of select="g:label($this, /, $lang)"/>
+	</label>
+	<input type="hidden" name="pu" value="{$this}"/>
+    </xsl:template>
+
     <!-- object blank node -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
 	<xsl:apply-templates select="key('resources', .)"/>
@@ -55,7 +78,20 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about | @rdf:resource" mode="g:type">
+    <xsl:template match="text()" mode="g:EditMode">
+	<xsl:choose>
+	    <xsl:when test="string-length(.) &lt; 20">
+		<input type="text" name="ol" id="{generate-id(..)}" value="{.}"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<textarea name="ol" id="{generate-id(..)}" cols="{80}" rows="{string-length(.) div 80}">
+		    <xsl:value-of select="."/>
+		</textarea>
+	    </xsl:otherwise>
+	</xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about | @rdf:resource" mode="g:TypeMode">
 	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
@@ -69,20 +105,20 @@ exclude-result-prefixes="g url rdf rdfs dc foaf">
 	<xsl:param name="lang" as="xs:string"/>
 	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
 	<xsl:choose>
-	    <xsl:when test="$resource/rdfs:label[lang($lang) or not(@xml:lang)] | $resource/@rdfs:label">
-		<xsl:sequence select="($resource/rdfs:label[lang($lang) or not(@xml:lang)] | $resource/@rdfs:label[lang($lang)])[1]"/>
+	    <xsl:when test="$resource/rdfs:label[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@rdfs:label">
+		<xsl:sequence select="($resource/rdfs:label[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@rdfs:label[lang($lang)])[1]"/>
 	    </xsl:when>
-	    <xsl:when test="$resource/foaf:nick | $resource/@foaf:nick">
-		<xsl:sequence select="$resource/foaf:nick | $resource/@foaf:nick"/>
+	    <xsl:when test="$resource/foaf:nick[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@foaf:nick">
+		<xsl:sequence select="$resource/foaf:nick[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@foaf:nick"/>
 	    </xsl:when>
-	    <xsl:when test="($resource/dc:title[lang($lang) or not(@xml:lang)] | $resource/@dc:title)[1]">
-		<xsl:sequence select="$resource/dc:title[lang($lang) or not(@xml:lang)] | $resource/@dc:title"/>
+	    <xsl:when test="($resource/dc:title[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@dc:title)[1]">
+		<xsl:sequence select="$resource/dc:title[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@dc:title"/>
 	    </xsl:when>
-	    <xsl:when test="$resource/foaf:name | $resource/@foaf:name">
-		<xsl:sequence select="$resource/foaf:name | $resource/@foaf:name"/>
+	    <xsl:when test="$resource/foaf:name[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@foaf:name">
+		<xsl:sequence select="$resource/foaf:name[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@foaf:name"/>
 	    </xsl:when>
-	    <xsl:when test="$resource/dct:title | $resource/@dct:title">
-		<xsl:sequence select="$resource/dct:title | $resource/@dct:title"/>
+	    <xsl:when test="$resource/dct:title[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@dct:title">
+		<xsl:sequence select="$resource/dct:title[count(../dc:title) = 1 or lang($lang) or not(@xml:lang)] | $resource/@dct:title"/>
 	    </xsl:when>
 	    <!-- skos:prefLabel -->
 	</xsl:choose>

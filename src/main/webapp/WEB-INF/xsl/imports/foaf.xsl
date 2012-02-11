@@ -25,4 +25,10 @@ exclude-result-prefixes="url g rdf rdfs foaf">
 	</dd>
     </xsl:template>
 
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="g:EditMode">
+	<input type="text" name="ol" id="{generate-id(..)}" value="{.}"/><br/>
+	<input type="file" name="ol" id="{generate-id(..)}"/><br/>
+	<img src="{.}" alt=""/>
+    </xsl:template>
+
 </xsl:stylesheet>

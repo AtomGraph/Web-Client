@@ -118,12 +118,12 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	</h1>
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>
-	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]">
+	    <xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
 		<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
 	    </xsl:apply-templates>	    
 	</dl>
 <!-- <xsl:value-of select="rdfs:domain(.)"/> -->
-	<xsl:apply-templates select="rdf:type/@rdf:resource[not(empty(g:inDomainOf(.)))]" mode="g:type">
+	<xsl:apply-templates select="rdf:type/@rdf:resource[not(empty(g:inDomainOf(.)))]" mode="g:TypeMode">
 	    <!-- <xsl:sort select="@rdf:resource | @rdf:nodeID" data-type="text" order="ascending"/> -->
 	</xsl:apply-templates>
 	<!--
@@ -137,7 +137,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	<hr/>
     </xsl:template>    
 
-    <xsl:template match="rdf:type/@rdf:resource" mode="g:type">
+    <xsl:template match="rdf:type/@rdf:resource" mode="g:TypeMode">
 	<xsl:variable name="this" select="."/>
 	<h2>
 	    <xsl:apply-imports/>
@@ -163,11 +163,42 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
     </xsl:template>
 
-    <!-- object -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:EditMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
+	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
+	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
+	    <dt>
+		<xsl:apply-imports/>
+	    </dt>
+	</xsl:if>
+	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="g:EditMode"/>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@rdf:resource or @rdf:nodeID]" mode="g:EditMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
+	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
+	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
+	    <dt>
+		<xsl:apply-imports/>
+	    </dt>
+	    <dd>
+		<select name="ou">
+		    <xsl:apply-templates select="following-sibling::*[concat(namespace-uri(), local-name()) = $this]/@rdf:*" mode="g:EditMode"/>
+		</select>
+	    </dd>
+	</xsl:if>
+    </xsl:template>
+
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource | *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about or @rdf:nodeID]/*/text()">
 	<dd>
 	    <xsl:apply-imports/>
 	</dd>
     </xsl:template>
-	
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource | *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about or @rdf:nodeID]/*/text()" mode="g:EditMode">
+	<dd>
+	    <xsl:apply-imports/>
+	</dd>
+    </xsl:template>
+
 </xsl:stylesheet>
