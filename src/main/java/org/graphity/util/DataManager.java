@@ -17,18 +17,27 @@
 
 package org.graphity.util;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -62,14 +71,32 @@ public class DataManager extends FileManager implements URIResolver
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
     //sstatic DataManager instance = null;
-    
+
+    private ClientConfig config = new DefaultClientConfig();
+
+    public DataManager(LocationMapper _mapper)
+    {
+	super(_mapper);
+	config.getClasses().add(ModelProvider.class);
+    }
+
+    public DataManager(FileManager filemanager)
+    {
+	super(filemanager);
+	config.getClasses().add(ModelProvider.class);
+    }
+
+    public DataManager()
+    {
+	config.getClasses().add(ModelProvider.class);
+    }
+
     @Override
     public Model loadModel(String filenameOrURI)
     {
 	// http://blogs.oracle.com/enterprisetechtips/entry/consuming_restful_web_services_with#regp
-	
-	ClientConfig config = new DefaultClientConfig();
-	config.getClasses().add(ModelProvider.class);
+
+	log.trace("Loading Model from URI: {} with Accept header: {}", filenameOrURI, getAcceptHeader());
 
 	return Client.create(config).
 		resource(filenameOrURI).
@@ -81,16 +108,46 @@ public class DataManager extends FileManager implements URIResolver
     public Source resolve(String href, String base) throws TransformerException
     {
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
+	String uri = URI.create(base).resolve(href).toString();
+	//log.debug("Resolved absolute URI: {}", uri);
+	log.debug("CacheModels: {}", OntDocumentManager.getInstance().getCacheModels());
+	Model model = OntDocumentManager.getInstance().getModel(uri);
+	//OntDocumentManager.getInstance().
+	//OntModel model = OntDocumentManager.getInstance().getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF);
+	if (model == null)
+	{
+	    // first stripping the URI to find ontology in the cache
+	    Iterator<String> it = OntDocumentManager.getInstance().listDocuments();
+	    while (it.hasNext())
+	    {
+		String docURI = it.next();
+		if (uri.startsWith(removeFragmentId(docURI)))
+		{
+		    log.debug("Found Document URI: {} for URI: {}", docURI, uri);
+		    return resolve(docURI, base);
+		}
+	    }
+		    
+	    log.debug("Could not resolve URI: {}", uri);
+	    //return null;
+	    model = ModelFactory.createDefaultModel();
+	}
+	//else
+	{
+	    log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
 
-	Model model = loadModel(href, base, null);
-	log.debug("Number of Model stmts read: {}", model.size());
-	
-	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
-	model.write(stream);
-	
-	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-	
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+	    ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
+	    model.write(stream);
+
+	    log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+
+	    return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+	}
+    }
+
+    public static String removeFragmentId(String uri)
+    {
+	return UriBuilder.fromUri(uri).fragment(null).build().toString();
     }
 
     public static String getAcceptHeader()
@@ -111,6 +168,44 @@ public class DataManager extends FileManager implements URIResolver
 	}
 	
 	return header;
+    }
+
+    @Override
+    public Model getFromCache(String filenameOrURI)
+    { 
+        if ( ! getCachingModels() )
+            return null; 
+        return super.getFromCache(filenameOrURI) ;
+    }
+    
+    @Override
+    public boolean hasCachedModel(String filenameOrURI)
+    { 
+        if ( ! getCachingModels() )
+            return false ; 
+        return super.hasCachedModel(filenameOrURI) ;
+    }
+    
+    @Override
+    // http://linuxsoftwareblog.com/?p=843
+    public void addCacheModel(String uri, Model m)
+    { 
+        if ( getCachingModels() )
+            super.addCacheModel(uri, m) ;
+	
+	
+	Dataset ds = DatasetFactory.create();
+	//ds.getNamedModel(uri).wr
+		
+	GraphStore graphStore = GraphStoreFactory.create(ds);
+	//DatasetFactory.
+	//UpdateFactory.
+	//ds.getNamedModel(uri)
+	//graphStore.
+	//graphStore.ad
+	//UpdateFactory.create().
+	//Update data = new UpdateDataInsert();
+	//ds.getNamedModel(uri)
     }
 
 }

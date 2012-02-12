@@ -41,6 +41,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="lang" select="'en'" as="xs:string"/>
     <xsl:param name="gfb-app:id" select="'121081534640971'" as="xs:string"/>
     <xsl:param name="oauth:redirect_uri" select="resolve-uri('oauth', $base-uri)" as="xs:anyURI"/>
+    <xsl:param name="rdf:type" as="xs:string?"/>
     
     <xsl:variable name="resource" select="/"/>
 
@@ -95,6 +96,9 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 		    </fieldset>
 		    <ul>
 			<li>
+			    <a href="/">Home</a>
+			</li>
+			<li>
 			    <a href="https://www.facebook.com/dialog/oauth?client_id={encode-for-uri($gfb-app:id)}&amp;redirect_uri={encode-for-uri($oauth:redirect_uri)}">Facebook</a>
 			</li>
 			<li>
@@ -106,18 +110,12 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 			<li>
 			    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}">Turtle</a>
 			</li>
-			<li>
-			    <a href="?uri={encode-for-uri($uri)}&amp;mode={encode-for-uri('&g;EditMode')}">Edit mode</a>
-			</li>
-			<li>
-			    <a href="?uri={encode-for-uri($uri)}">Read mode</a>
-			</li>
 		    </ul>
 		</form>
 		<xsl:choose>
 		    <xsl:when test="$mode = '&g;EditMode'">
 			<xsl:apply-templates select="key('resources', $uri)" mode="g:EditMode"/>
-			<xsl:apply-templates select="*[@rdf:about != $uri]" mode="g:EditMode">
+			<xsl:apply-templates select="*[@rdf:about != $uri]">
 			    <!-- <xsl:sort select="dc:title" data-type="text" order="ascending"/> -->
 			    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
 			</xsl:apply-templates>			
@@ -138,6 +136,8 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<h1>
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+	    <a href="?uri={encode-for-uri(@rdf:about)}&amp;mode={encode-for-uri('&g;EditMode')}">Edit</a>
+	    <!-- &amp;{encode-for-uri('rdf:type')}={} -->
 	</h1>
 	<dl>
 	    <xsl:apply-templates select="rdf:type"/>

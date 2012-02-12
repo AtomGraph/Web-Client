@@ -55,6 +55,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.provider.ModelProvider;
+import org.graphity.util.DataManager;
 import org.graphity.util.QueryBuilder;
 import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
@@ -146,10 +147,13 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		// load remote Linked Data
 		try
 		{
-		    log.trace("Loading Model from URI: {} with Accept header: {}", getFirstParameter("uri"), getAcceptHeader());
+		    DataManager manager = new DataManager();
+		    /*
 		    model = client.resource(getFirstParameter("uri")).
 			    header("Accept", getAcceptHeader()).
 			    get(Model.class);
+		     */
+		    model = manager.loadModel(getFirstParameter("uri"));
 		    log.debug("Number of Model stmts read: {}", model.size());
 		}
 		catch (Exception ex)
@@ -344,26 +348,6 @@ return QueryFactory.create("DESCRIBE <" + uri + ">");
 		    getProperty("http://rdfs.org/ns/void#sparqlEndpoint")).
 		getURI();
 	 */
-    }
-
-    public String getAcceptHeader()
-    {
-	String header = null;
-
-	//for (Map.Entry<String, Double> type : getQualifiedTypes().entrySet())
-	Iterator <Entry<javax.ws.rs.core.MediaType, Double>> it = QUALIFIED_TYPES.entrySet().iterator();
-	while (it.hasNext())
-	{
-	    Entry<javax.ws.rs.core.MediaType, Double> type = it.next();
-	    if (header == null) header = "";
-	    
-	    header += type.getKey();
-	    if (type.getValue() != null) header += ";q=" + type.getValue();
-	    
-	    if (it.hasNext()) header += ",";
-	}
-	
-	return header;
     }
 
     @Override

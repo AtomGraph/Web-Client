@@ -17,6 +17,7 @@
 
 package org.graphity.provider;
 
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -163,6 +164,8 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 	    rdf2xhtml.parameter("mode", resource.getUriInfo().getQueryParameters().getFirst("mode"));
 	if (resource.getUriInfo().getQueryParameters().getFirst("lang") != null)
 	    rdf2xhtml.parameter("lang", resource.getUriInfo().getQueryParameters().getFirst("lang"));
+	if (resource.getUriInfo().getQueryParameters().getFirst("rdf:type") != null)
+	    rdf2xhtml.parameter("{" + RDF.getURI()+ "}type", resource.getUriInfo().getQueryParameters().getFirst("rdf:type"));
 	    
 	return rdf2xhtml;
     }
