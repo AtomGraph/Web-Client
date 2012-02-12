@@ -161,6 +161,8 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("mode") != null)
 	    rdf2xhtml.parameter("mode", resource.getUriInfo().getQueryParameters().getFirst("mode"));
+	if (resource.getUriInfo().getQueryParameters().getFirst("lang") != null)
+	    rdf2xhtml.parameter("lang", resource.getUriInfo().getQueryParameters().getFirst("lang"));
 	    
 	return rdf2xhtml;
     }

@@ -38,7 +38,6 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="mode" as="xs:anyURI?"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="php-os"/>
-    <!-- <xsl:param name="fb-app-id" select="'264143360289485'"/> -->
     <xsl:param name="lang" select="'en'" as="xs:string"/>
     <xsl:param name="gfb-app:id" select="'121081534640971'" as="xs:string"/>
     <xsl:param name="oauth:redirect_uri" select="resolve-uri('oauth', $base-uri)" as="xs:anyURI"/>
