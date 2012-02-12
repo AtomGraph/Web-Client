@@ -4,6 +4,7 @@
     <!ENTITY g "http://graphity.org/ontology/">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
@@ -17,6 +18,7 @@ xmlns:url="&java;java.net.URLEncoder"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
+xmlns:xsd="&xsd;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
@@ -76,6 +78,12 @@ exclude-result-prefixes="g url rdf rdfs dc dct foaf">
     <!-- object literal -->
     <xsl:template match="text()">
 	<xsl:value-of select="."/>
+    </xsl:template>
+
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime']">
+	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
+	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
+	<xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $lang, (), ())"/>
     </xsl:template>
 
     <xsl:template match="text()" mode="g:EditMode">

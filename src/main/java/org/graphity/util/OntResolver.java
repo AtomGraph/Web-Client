@@ -19,6 +19,7 @@ package org.graphity.util;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,8 +48,9 @@ public class OntResolver implements URIResolver
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("Resolved absolute URI: {}", uri);
 	log.debug("CacheModels: {}", OntDocumentManager.getInstance().getCacheModels());
-	//Model model = OntDocumentManager.getInstance().getModel(uri);
-	OntModel model = OntDocumentManager.getInstance().getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF);
+	Model model = OntDocumentManager.getInstance().getModel(uri);
+	//OntDocumentManager.getInstance().
+	//OntModel model = OntDocumentManager.getInstance().getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF);
 	if (model == null)
 	{
 	    // first stripping the URI to find ontology in the cache
@@ -65,7 +67,7 @@ public class OntResolver implements URIResolver
 		    
 	    log.debug("Could not resolve URI: {}", uri);
 	    //return null;
-	    model = (OntModel)ModelFactory.createDefaultModel();
+	    model = ModelFactory.createDefaultModel();
 	}
 	//else
 	{
