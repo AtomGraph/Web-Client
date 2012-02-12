@@ -234,9 +234,11 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    </dt>
 	</xsl:if>
 	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="g:EditMode"/>
-	<dd>
-	    <button>Add</button>
-	</dd>
+	<xsl:if test="position() = last()">
+	    <dd>
+		<button>Add</button>
+	    </dd>
+	</xsl:if>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource | *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about or @rdf:nodeID]/*/text()">
