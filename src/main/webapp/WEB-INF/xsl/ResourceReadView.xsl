@@ -35,7 +35,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="uri"/>
     <xsl:param name="base-uri"/>
     <xsl:param name="service-uri" select="false()"/>
-    <xsl:param name="mode" as="xs:anyURI?"/>
+    <xsl:param name="mode" as="xs:string?"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="php-os"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
@@ -114,11 +114,22 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 			</li>
 		    </ul>
 		</form>
-		<xsl:apply-templates select="key('resources', $uri)"/>
-		<xsl:apply-templates select="*[@rdf:about != $uri]">
-		    <!-- <xsl:sort select="dc:title" data-type="text" order="ascending"/> -->
-		    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
-		</xsl:apply-templates>
+		<xsl:choose>
+		    <xsl:when test="$mode = '&g;EditMode'">
+			<xsl:apply-templates select="key('resources', $uri)" mode="g:EditMode"/>
+			<xsl:apply-templates select="*[@rdf:about != $uri]" mode="g:EditMode">
+			    <!-- <xsl:sort select="dc:title" data-type="text" order="ascending"/> -->
+			    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
+			</xsl:apply-templates>			
+		    </xsl:when>
+		    <xsl:otherwise>			
+			<xsl:apply-templates select="key('resources', $uri)"/>
+			<xsl:apply-templates select="*[@rdf:about != $uri]">
+			    <!-- <xsl:sort select="dc:title" data-type="text" order="ascending"/> -->
+			    <!-- <xsl:sort select="@rdf:about | @rdf:nodeID" data-type="text" order="ascending"/> -->
+			</xsl:apply-templates>
+		    </xsl:otherwise>
+		</xsl:choose>
 	    </body>
 	</html>
     </xsl:template>
@@ -149,6 +160,22 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	<hr/>
     </xsl:template>    
 
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="g:EditMode">
+	<h1>
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+	</h1>
+	<form action="" method="post" enctype="multipart/form-data">
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="g:EditMode"/>
+	    <dl>
+		<xsl:apply-templates select="rdf:type" mode="g:EditMode"/>
+		<xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
+		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+		</xsl:apply-templates>	    
+	    </dl>
+	</form>
+	<hr/>
+    </xsl:template>    
+
     <xsl:template match="rdf:type/@rdf:resource" mode="g:TypeMode">
 	<xsl:variable name="this" select="."/>
 	<h2>
@@ -157,29 +184,22 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 <xsl:message>
     $mode: <xsl:value-of select="$mode"/>
 </xsl:message>
-???
-	<xsl:choose>
-	    <xsl:when test="$mode = '&g;EditMode'">
-		<form action="" method="post" enctype="multipart/form-data">
-		    <dl>
-			<!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
-			<!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
-			<xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
-			    <xsl:with-param name="type" select="$this"/>
-			</xsl:apply-templates>
-		    </dl>
-		</form>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<dl>
+	<dl>
+	    <xsl:choose>
+		<xsl:when test="$mode = '&g;EditMode'">
+		    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
+			<xsl:with-param name="type" select="$this"/>
+		    </xsl:apply-templates>
+		</xsl:when>
+		<xsl:otherwise>
 		    <!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
 		    <!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
 		    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]">
 			<xsl:with-param name="type" select="$this"/>
 		    </xsl:apply-templates>
-		</dl>
-	    </xsl:otherwise>
-	</xsl:choose>
+		</xsl:otherwise>
+	    </xsl:choose>
+	</dl>
     </xsl:template>
 
     <!-- property -->
@@ -212,12 +232,11 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    <dt>
 		<xsl:apply-imports/>
 	    </dt>
-	    <dd>
-		<select name="ou">
-		    <xsl:apply-templates select="//@rdf:*" mode="g:EditMode"/>
-		</select>
-	    </dd>
 	</xsl:if>
+	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="g:EditMode"/>
+	<dd>
+	    <button>Add</button>
+	</dd>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource | *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID | *[@rdf:about or @rdf:nodeID]/*/text()">

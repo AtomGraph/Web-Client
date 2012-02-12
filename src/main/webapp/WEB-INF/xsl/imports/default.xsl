@@ -22,7 +22,7 @@ xmlns:xsd="&xsd;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
-exclude-result-prefixes="g url rdf rdfs dc dct foaf">
+exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
@@ -41,17 +41,17 @@ exclude-result-prefixes="g url rdf rdfs dc dct foaf">
 
     <!-- subject -->
     <xsl:template match="@rdf:about" mode="g:EditMode">
-	<label for="{generate-id()}">????
-	    <xsl:value-of select="g:label(., /, $lang)"/>
-	</label>
-	<input type="text" name="su" id="{generate-id()}" value="{.}"/>
+	<input type="hidden" name="su" id="{generate-id()}" value="{.}"/>
     </xsl:template>
 	
     <!-- object -->
     <xsl:template match="@rdf:resource" mode="g:EditMode">
+	<!--
 	<option value="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</option>
+	-->
+	<input type="text" name="ou" id="{generate-id(..)}" value="{.}"/>
     </xsl:template>
 
     <!-- property -->
