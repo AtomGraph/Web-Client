@@ -37,7 +37,6 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.MediaType;
 import org.graphity.util.locator.LocatorLinkedData;
-import org.openjena.riot.Lang;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,14 +136,14 @@ public class DataManager extends FileManager implements URIResolver
     }
     */
 
-    private static final Map<String, Lang> LANGS = new HashMap<String, Lang>() ;
+    private static final Map<String, String> LANGS = new HashMap<String, String>() ;
     static {
-        LANGS.put(WebContent.contentTypeRDFXML, Lang.RDFXML);
-        LANGS.put(WebContent.contentTypeTurtle1, Lang.TURTLE);
-        LANGS.put(WebContent.contentTypeTurtle2, Lang.TURTLE);
-        LANGS.put(WebContent.contentTypeTurtle3, Lang.TURTLE);
-        LANGS.put(WebContent.contentTypeNTriples, Lang.NTRIPLES); // text/plain
-        LANGS.put(WebContent.contentTypeNTriplesAlt, Lang.NTRIPLES) ;
+        LANGS.put(WebContent.contentTypeRDFXML, WebContent.langRDFXML);
+        LANGS.put(WebContent.contentTypeTurtle1, WebContent.langTurtle);
+        LANGS.put(WebContent.contentTypeTurtle2, WebContent.langTurtle);
+        LANGS.put(WebContent.contentTypeTurtle3, WebContent.langTurtle);
+        LANGS.put(WebContent.contentTypeNTriples, WebContent.langNTriple); // text/plain
+        LANGS.put(WebContent.contentTypeNTriplesAlt, WebContent.langNTriple) ;
     }
     
     public DataManager(FileManager fMgr)
@@ -158,14 +157,21 @@ public class DataManager extends FileManager implements URIResolver
     public Model loadModel(String filenameOrURI)
     {
 	TypedStream stream = openNoMapOrNull(filenameOrURI);
-	log.debug("Opened stream from filename or URI {} with MIME type {}", filenameOrURI, stream.getMimeType());
+	
+	if (stream != null)
+	{
+	    log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, stream);
 
-	String syntax = null;
-	Lang lang = langFromContentType(stream.getMimeType());
-	if (lang != null) syntax = lang.getName();
-	log.debug("Syntax used to load Model: {}", syntax);
+	    String syntax = langFromContentType(stream.getMimeType());
+	    log.debug("Syntax used to load Model: {}", syntax);
 
-	return super.loadModel(filenameOrURI, null, syntax);
+	    if (syntax != null) // do not read if MimeType/syntax are not known
+		return super.loadModel(filenameOrURI, null, syntax);
+	}
+	else
+	    log.debug("Could not open stream for filename or URI: {}", filenameOrURI);
+	
+	return ModelFactory.createDefaultModel();
     }
     
     /** Add a Linked Data locator */
@@ -193,7 +199,7 @@ public class DataManager extends FileManager implements URIResolver
     }
     
     // ---- To riot.WebContent
-    public static Lang langFromContentType(String mimeType)
+    public static String langFromContentType(String mimeType)
     {
         if ( mimeType == null )
             return null ;
@@ -219,7 +225,8 @@ public class DataManager extends FileManager implements URIResolver
 		}
 		catch (Exception ex)
 		{
-		    log.debug("Syntax error reading Model from URI: {}", uri, ex);
+		    log.debug("Syntax error reading Model from URI", ex);
+		    model = ModelFactory.createDefaultModel(); // return empty Model
 		    //return null;
 		}
 	    else

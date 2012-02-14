@@ -66,8 +66,6 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("CacheModels: {}", getCacheModels());
-log.debug("DataManager.get(): {} getFileManager(): {}", DataManager.get(), getFileManager());
-
 
 	// first look for a cached match
 	Model model = getModel(uri);
@@ -89,6 +87,7 @@ log.debug("DataManager.get(): {} getFileManager(): {}", DataManager.get(), getFi
 		    catch (Exception ex)
 		    {
 			log.debug("Syntax error reading Model from URI: {}", uri, ex);
+			model = ModelFactory.createDefaultModel(); // return empty Model
 			//return null;
 		    }
 		else

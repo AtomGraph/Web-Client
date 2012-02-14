@@ -37,7 +37,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -115,8 +114,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		// load remote Linked Data
 		try
 		{
-		    //model = DataManager.get().loadModel(getFirstParameter("uri"));
-		    model = FileManager.get().loadModel(getFirstParameter("uri"));
+		    model = DataManager.get().loadModel(getFirstParameter("uri"));
 		    log.debug("Number of Model stmts read: {}", model.size());
 		}
 		catch (Exception ex)
