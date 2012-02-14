@@ -17,9 +17,10 @@
 
 package org.graphity.analytics;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -31,9 +32,10 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
+import org.graphity.manager.DataManager;
 import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFResourceXSLTWriter;
-import org.graphity.util.LocatorLinkedData;
+import org.graphity.manager.OntDataManager;
 import org.graphity.vocabulary.Graphity;
 import org.graphity.vocabulary.SIOC;
 import org.slf4j.Logger;
@@ -45,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Application extends javax.ws.rs.core.Application
 {
-    private static final Logger log = LoggerFactory.getLogger(LocatorLinkedData.class);
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
     @Context private ServletContext context = null;
@@ -59,33 +61,43 @@ public class Application extends javax.ws.rs.core.Application
 	{
 	    // http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms
 	    // http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
-	    //OntDocumentManager.getInstance().setCacheModels(false);
-	    log.debug("OntDocumentManager is caching Models: {}", OntDocumentManager.getInstance().getCacheModels());
 	    
 	    // move this to external configuration
-	    OntDocumentManager.getInstance().addAltEntry(RDF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdf.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(RDFS.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdfs.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(OWL2.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/owl2.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(DC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcelements.rdf"));
-	    OntDocumentManager.getInstance().addAltEntry(DCTerms.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcterms.rdf"));
-	    OntDocumentManager.getInstance().addAltEntry(FOAF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/foaf.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(SIOC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/sioc.owl"));
-	    OntDocumentManager.getInstance().addAltEntry(Graphity.getURI(), "file:///" + context.getRealPath("/WEB-INF/graphity.ttl"));
-	    OntDocumentManager.getInstance().addAltEntry("http://rdfs.org/ns/void#", "file:///" + context.getRealPath("/WEB-INF/owl/void.owl"));
-	    OntDocumentManager.getInstance().addAltEntry("http://dbpedia.org/ontology/", "file:///" + context.getRealPath("/WEB-INF/owl/dbpedia-owl.owl"));
-	    OntDocumentManager.getInstance().addAltEntry("http://graph.facebook.com/schema/user#", "file:///" + context.getRealPath("/WEB-INF/owl/gfb-user.owl"));
+	    FileManager.get().setModelCaching(true);
+	    FileManager.get().getLocationMapper().addAltEntry(SIOC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/sioc.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry(RDF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdf.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry(RDFS.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdfs.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry(OWL2.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/owl2.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry(DC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcelements.rdf"));
+	    FileManager.get().getLocationMapper().addAltEntry(DCTerms.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcterms.rdf"));
+	    FileManager.get().getLocationMapper().addAltEntry(FOAF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/foaf.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry(Graphity.getURI(), "file:///" + context.getRealPath("/WEB-INF/graphity.ttl"));
+	    FileManager.get().getLocationMapper().addAltEntry("http://rdfs.org/ns/void#", "file:///" + context.getRealPath("/WEB-INF/owl/void.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry("http://dbpedia.org/ontology/", "file:///" + context.getRealPath("/WEB-INF/owl/dbpedia-owl.owl"));
+	    FileManager.get().getLocationMapper().addAltEntry("http://graph.facebook.com/schema/user#", "file:///" + context.getRealPath("/WEB-INF/owl/gfb-user.owl"));
 
-	    OntDocumentManager.getInstance().addModel(RDF.getURI(), ModelFactory.createOntologyModel().read(RDF.getURI()));
-	    OntDocumentManager.getInstance().addModel(RDFS.getURI(), ModelFactory.createOntologyModel().read(RDFS.getURI()));
-	    OntDocumentManager.getInstance().addModel(OWL2.getURI(), ModelFactory.createOntologyModel().read(OWL2.getURI()));
-	    OntDocumentManager.getInstance().addModel(DC.getURI(), ModelFactory.createOntologyModel().read(DC.getURI()));
-	    OntDocumentManager.getInstance().addModel(DCTerms.getURI(), ModelFactory.createOntologyModel().read(DCTerms.getURI()));
-	    OntDocumentManager.getInstance().addModel(FOAF.getURI(), ModelFactory.createOntologyModel().read(FOAF.getURI()));
-	    OntDocumentManager.getInstance().addModel(SIOC.getURI(), ModelFactory.createOntologyModel().read(SIOC.getURI()));
-	    OntDocumentManager.getInstance().addModel(Graphity.getURI(), ModelFactory.createOntologyModel().read(Graphity.getURI(), FileUtils.langTurtle));
-	    OntDocumentManager.getInstance().addModel("http://rdfs.org/ns/void#", ModelFactory.createOntologyModel().read("http://rdfs.org/ns/void#"));
-	    OntDocumentManager.getInstance().addModel("http://dbpedia.org/ontology/", ModelFactory.createOntologyModel().read("http://dbpedia.org/ontology/"));
-	    OntDocumentManager.getInstance().addModel("http://graph.facebook.com/schema/user#", ModelFactory.createOntologyModel().read("http://graph.facebook.com/schema/user#"));
+	    //log.debug("FileManager.get(): {}", FileManager.get());
+	    //log.debug("OntDataManager.getInstance().getFileManager(): {}", OntDataManager.getInstance().getFileManager());
+	    //FileManager.setGlobalFileManager(DataManager.get());
+	    OntDataManager.getInstance().setFileManager(DataManager.get());
+	    log.debug("OntDataManager is caching Models: {}", OntDataManager.getInstance().getCacheModels());
+	    log.debug("FileManager.get(): {}", FileManager.get());
+	    log.debug("DataManager.get(): {}", DataManager.get());
+	    log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
+	    log.debug("OntDataManager.getInstance().getFileManager(): {}", OntDataManager.getInstance().getFileManager());
+	    
+	    OntDataManager.getInstance().addModel(RDF.getURI(), DataManager.get().loadModel(RDF.getURI()));
+	    OntDataManager.getInstance().addModel(RDFS.getURI(), DataManager.get().loadModel(RDFS.getURI()));
+	    OntDataManager.getInstance().addModel(OWL2.getURI(), DataManager.get().loadModel(OWL2.getURI()));
+	    OntDataManager.getInstance().addModel(DC.getURI(), DataManager.get().loadModel(DC.getURI()));
+	    OntDataManager.getInstance().addModel(DCTerms.getURI(), DataManager.get().loadModel(DCTerms.getURI()));
+	    OntDataManager.getInstance().addModel(FOAF.getURI(), DataManager.get().loadModel(FOAF.getURI()));
+	    OntDataManager.getInstance().addModel(SIOC.getURI(), DataManager.get().loadModel(SIOC.getURI()));
+	    OntDataManager.getInstance().addModel(Graphity.getURI(), DataManager.get().loadModel(Graphity.getURI(), FileUtils.langTurtle));
+	    OntDataManager.getInstance().addModel("http://rdfs.org/ns/void#", DataManager.get().loadModel("http://rdfs.org/ns/void#"));
+	    OntDataManager.getInstance().addModel("http://dbpedia.org/ontology/", DataManager.get().loadModel("http://dbpedia.org/ontology/"));
+	    OntDataManager.getInstance().addModel("http://graph.facebook.com/schema/user#", DataManager.get().loadModel("http://graph.facebook.com/schema/user#"));
+
 	} catch (Exception ex)
 	{
 	    log.warn("Could not load ontology", ex);

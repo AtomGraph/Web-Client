@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.util;
+package org.graphity.manager;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -35,9 +35,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class OntResolver implements URIResolver
+public class OntDataManager extends OntDocumentManager implements URIResolver
 {
-    private static final Logger log = LoggerFactory.getLogger(OntResolver.class);
+    private static OntDataManager s_instance = null;
+    private static final Logger log = LoggerFactory.getLogger(DataManager.class);
+    
+    public static OntDataManager getInstance()
+    {
+        if (s_instance == null) {
+            s_instance = new OntDataManager();
+        }
+        return s_instance;
+    }
+    /*
+    @Override
+    public void addAltEntry( String docURI, String locationURL )
+    {
+	//getFileManager().addAltEntry(docURI, locationURL);
+	
+	log.debug("Adding altEntry; Document URI: {} Location URL: {}", docURI, locationURL);
+    }
+	*/
     
     @Override
     public Source resolve(String href, String base) throws TransformerException
@@ -79,9 +97,10 @@ public class OntResolver implements URIResolver
 	    return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
 	}
     }
-
+    
     public static String removeFragmentId(String uri)
     {
 	return UriBuilder.fromUri(uri).fragment(null).build().toString();
     }
+
 }

@@ -20,7 +20,6 @@ package org.graphity;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
@@ -40,22 +39,14 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileUtils;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import org.graphity.provider.ModelProvider;
-import org.graphity.util.DataManager;
+import org.graphity.manager.DataManager;
+import org.graphity.manager.OntDataManager;
 import org.graphity.util.QueryBuilder;
 import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
@@ -67,45 +58,23 @@ import org.slf4j.LoggerFactory;
  */
 abstract public class RDFResourceImpl extends ResourceImpl implements RDFResource
 {
-    public static final Map<javax.ws.rs.core.MediaType, Double> QUALIFIED_TYPES;    
-    static
-    {
-	Map<javax.ws.rs.core.MediaType, Double> typeMap = new HashMap<javax.ws.rs.core.MediaType, Double>();
-	
-	typeMap.put(MediaType.APPLICATION_RDF_XML_TYPE, null);
-
-	typeMap.put(MediaType.TEXT_TURTLE_TYPE, 0.9);
-	
-	typeMap.put(MediaType.TEXT_PLAIN_TYPE, 0.7);
-	
-	typeMap.put(MediaType.APPLICATION_XML_TYPE, 0.5);
-	
-	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
-    }    
     private static final Logger log = LoggerFactory.getLogger(RDFResourceImpl.class);
     
     private com.hp.hpl.jena.rdf.model.Resource resource = null;
     private Model model = null; // ModelFactory.createDefaultModel()
     //private OntModel ontModel = null;
-    private ClientConfig config = new DefaultClientConfig();
-    private Client client = null;
-
-    public RDFResourceImpl()
-    {
-	config.getClasses().add(ModelProvider.class);
-	client = Client.create(config); // add OAuth filter
-    }
     
     @PostConstruct
     public void init()
     {
 	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
-	//OntDocumentManager.getInstance().addAltEntry(ontologyUri, getServletContext().getRealPath("/WEB-INF/ontology.ttl"));
-	// reading OntModel is necessary to give the right base URI
-	OntModel ontModel = ModelFactory.createOntologyModel();
-	ontModel.read(getServletContext().getResourceAsStream("/WEB-INF/ontology.ttl"), getUriInfo().getBaseUri().toString(), FileUtils.langTurtle);
-	log.debug("Adding OntModel with URI: {} to OntDocumentManager", ontologyUri);
-	OntDocumentManager.getInstance().addModel(ontologyUri, ontModel);
+	OntDataManager.getInstance().addAltEntry(ontologyUri, getServletContext().getRealPath("/WEB-INF/ontology.ttl"));
+	// reading OntModel is necessary to give the right base URI:
+	if (OntDataManager.getInstance().getModel(ontologyUri) == null)
+	{
+	    log.debug("Adding OntModel with URI: {} to OntDocumentManager", ontologyUri);
+	    OntDataManager.getInstance().addModel(ontologyUri, OntDataManager.getInstance().getFileManager().loadModel(ontologyUri, getUriInfo().getBaseUri().toString(), FileUtils.langTurtle));
+	}
     }
 
     @GET
@@ -135,7 +104,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain; charset=UTF-8")
     public Model getModel()
     {
-	//Model model = null; // ModelFactory.createDefaultModel();
+	OntDataManager.getInstance().setFileManager(DataManager.get());
 	if (model == null)
 	{
 	    log.debug("getURI(): {}", getURI());
@@ -147,13 +116,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		// load remote Linked Data
 		try
 		{
-		    DataManager manager = new DataManager();
-		    /*
-		    model = client.resource(getFirstParameter("uri")).
-			    header("Accept", getAcceptHeader()).
-			    get(Model.class);
-		     */
-		    model = manager.loadModel(getFirstParameter("uri"));
+		    model = DataManager.get().loadModel(getFirstParameter("uri"));
 		    log.debug("Number of Model stmts read: {}", model.size());
 		}
 		catch (Exception ex)
@@ -190,9 +153,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     {
 	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
 	//log.debug("getOntModel().size(): {}", OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF).size());
-	//OntDocumentManager.getInstance().getModel(ontologyUri).write(System.out);
-	//OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF).write(System.out);
-	return OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF);
+	return OntDataManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF);
 	//return ModelFactory.createOntologyModel();
     }
     

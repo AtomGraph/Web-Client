@@ -15,15 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.util;
+package org.graphity.manager;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.update.GraphStore;
-import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.api.client.Client;
@@ -59,18 +53,16 @@ public class DataManager extends FileManager implements URIResolver
 	Map<javax.ws.rs.core.MediaType, Double> typeMap = new HashMap<javax.ws.rs.core.MediaType, Double>();
 	
 	typeMap.put(MediaType.APPLICATION_RDF_XML_TYPE, null);
-
 	typeMap.put(MediaType.TEXT_TURTLE_TYPE, 0.9);
-	
 	typeMap.put(MediaType.TEXT_PLAIN_TYPE, 0.7);
-	
 	typeMap.put(MediaType.APPLICATION_XML_TYPE, 0.5);
 	
 	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }    
 
+    private static DataManager s_instance = null;
+
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
-    //sstatic DataManager instance = null;
 
     private ClientConfig config = new DefaultClientConfig();
 
@@ -90,18 +82,40 @@ public class DataManager extends FileManager implements URIResolver
     {
 	config.getClasses().add(ModelProvider.class);
     }
+    
+    public static DataManager get() {
+        if (s_instance == null) {
+            s_instance = new DataManager(FileManager.get());
+	    log.debug("new DataManager({}): {}", FileManager.get(), s_instance);
+        }
+        return s_instance;
+    }
 
     @Override
     public Model loadModel(String filenameOrURI)
     {
 	// http://blogs.oracle.com/enterprisetechtips/entry/consuming_restful_web_services_with#regp
+	if (hasCachedModel(filenameOrURI))
+	{
+	    log.debug("Model cache hit: " + filenameOrURI);
+	    return getFromCache(filenameOrURI);
+	}
+	// Make sure we load from HTTP as the last resort, otherwise handle with FileManager
+	if (!mapURI(filenameOrURI).equals(filenameOrURI))
+	{
+	    log.debug("loadModel({}) mapped to {} handled by FileManager", filenameOrURI, mapURI(filenameOrURI));
+	    return super.loadModel(filenameOrURI);
+	}
 
 	log.trace("Loading Model from URI: {} with Accept header: {}", filenameOrURI, getAcceptHeader());
-
-	return Client.create(config).
+	Model m = Client.create(config).
 		resource(filenameOrURI).
 		header("Accept", getAcceptHeader()).
 		get(Model.class);
+	
+	addCacheModel(filenameOrURI, m);
+	
+	return m;
     }
     
     @Override
@@ -110,39 +124,15 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("Resolved absolute URI: {}", uri);
-	log.debug("CacheModels: {}", OntDocumentManager.getInstance().getCacheModels());
-	Model model = OntDocumentManager.getInstance().getModel(uri);
-	//OntDocumentManager.getInstance().
-	//OntModel model = OntDocumentManager.getInstance().getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF);
-	if (model == null)
-	{
-	    // first stripping the URI to find ontology in the cache
-	    Iterator<String> it = OntDocumentManager.getInstance().listDocuments();
-	    while (it.hasNext())
-	    {
-		String docURI = it.next();
-		if (uri.startsWith(removeFragmentId(docURI)))
-		{
-		    log.debug("Found Document URI: {} for URI: {}", docURI, uri);
-		    return resolve(docURI, base);
-		}
-	    }
-		    
-	    log.debug("Could not resolve URI: {}", uri);
-	    //return null;
-	    model = ModelFactory.createDefaultModel();
-	}
-	//else
-	{
-	    log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
+	Model model = loadModel(uri);
 
-	    ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
-	    model.write(stream);
+	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
 
-	    log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
+	model.write(stream);
+	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
-	    return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
-	}
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
     }
 
     public static String removeFragmentId(String uri)
@@ -170,6 +160,7 @@ public class DataManager extends FileManager implements URIResolver
 	return header;
     }
 
+    /*
     @Override
     public Model getFromCache(String filenameOrURI)
     { 
@@ -207,5 +198,6 @@ public class DataManager extends FileManager implements URIResolver
 	//Update data = new UpdateDataInsert();
 	//ds.getNamedModel(uri)
     }
-
+    */
+    
 }

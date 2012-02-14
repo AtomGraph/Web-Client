@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.util.locator;
+package org.graphity.manager.locator;
 
 import com.hp.hpl.jena.util.TypedStream;
-import org.graphity.util.LocatorLinkedData;
 import org.graphity.util.oauth.OAuth2Parameters;
 import org.graphity.util.oauth.OAuth2Secrets;
 import org.slf4j.Logger;
