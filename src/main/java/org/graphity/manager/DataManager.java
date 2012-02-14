@@ -18,6 +18,7 @@
 package org.graphity.manager;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.api.client.Client;
@@ -124,10 +125,20 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("Resolved absolute URI: {}", uri);
-	Model model = loadModel(uri);
-
-	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
-
+	
+	Model model = null;
+	try
+	{
+	    model = loadModel(uri);
+	    log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
+	}
+	catch (Exception ex)
+	{
+	    log.debug("Syntax error reading Model from URI: {}", uri, ex);
+	    //return null;
+	    model = ModelFactory.createDefaultModel();
+	}
+	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
 	model.write(stream);
 	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
