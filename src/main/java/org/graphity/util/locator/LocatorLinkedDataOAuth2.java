@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.manager.locator;
+package org.graphity.util.locator;
 
 import com.hp.hpl.jena.util.TypedStream;
 import org.graphity.util.oauth.OAuth2Parameters;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.manager.locator;
+package org.graphity.util.locator;
 
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
@@ -53,7 +53,7 @@ public class LocatorLinkedData implements Locator
     private static Logger log = LoggerFactory.getLogger(LocatorLinkedData.class) ;
     //static final String acceptHeader = "application/rdf+xml,application/xml;q=0.9,*/*;q=0.5" ;
     static final String[] schemeNames = { "http:" , "https:" } ;
-    public static final Map<String, Double> TYPE_MAP;    
+    public static final Map<String, Double> QUALIFIED_TYPES;    
     static
     {
 	Map<String, Double> typeMap = new HashMap<String, Double>();
@@ -81,7 +81,7 @@ public class LocatorLinkedData implements Locator
 	
 	typeMap.put(WebContent.contentTypeXML, 0.5);
 	
-	TYPE_MAP = Collections.unmodifiableMap(typeMap);
+	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }
     
     @Override
@@ -189,7 +189,7 @@ public class LocatorLinkedData implements Locator
 
     public  Map<String, Double> getQualifiedTypes()
     {
-	return TYPE_MAP;
+	return QUALIFIED_TYPES;
     }
     
     public String getAcceptHeader()

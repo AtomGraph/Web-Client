@@ -37,6 +37,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -44,8 +45,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import org.graphity.manager.DataManager;
-import org.graphity.manager.OntDataManager;
+import org.graphity.util.manager.DataManager;
+import org.graphity.util.manager.OntDataManager;
 import org.graphity.util.QueryBuilder;
 import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
@@ -103,7 +104,6 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     @Produces("text/plain; charset=UTF-8")
     public Model getModel()
     {
-	OntDataManager.getInstance().setFileManager(DataManager.get());
 	if (model == null)
 	{
 	    log.debug("getURI(): {}", getURI());
@@ -115,7 +115,8 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		// load remote Linked Data
 		try
 		{
-		    model = DataManager.get().loadModel(getFirstParameter("uri"));
+		    //model = DataManager.get().loadModel(getFirstParameter("uri"));
+		    model = FileManager.get().loadModel(getFirstParameter("uri"));
 		    log.debug("Number of Model stmts read: {}", model.size());
 		}
 		catch (Exception ex)

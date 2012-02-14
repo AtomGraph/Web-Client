@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.manager;
+package org.graphity.util.manager;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import java.io.ByteArrayInputStream;
@@ -38,7 +39,9 @@ import org.slf4j.LoggerFactory;
 public class OntDataManager extends OntDocumentManager implements URIResolver
 {
     private static OntDataManager s_instance = null;
-    private static final Logger log = LoggerFactory.getLogger(DataManager.class);
+    private static final Logger log = LoggerFactory.getLogger(OntDataManager.class);
+
+    protected boolean resolveUncached = true;
     
     public static OntDataManager getInstance()
     {
@@ -62,40 +65,50 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
     {
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
-	//log.debug("Resolved absolute URI: {}", uri);
-	log.debug("CacheModels: {}", OntDocumentManager.getInstance().getCacheModels());
-	Model model = OntDocumentManager.getInstance().getModel(uri);
-	//OntDocumentManager.getInstance().
-	//OntModel model = OntDocumentManager.getInstance().getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF);
-	if (model == null)
+	//log.debug("CacheModels: {}", getCacheModels());
+log.debug("DataManager.get(): {} getFileManager(): {}", DataManager.get(), getFileManager());
+
+
+	// first look for a cached match
+	Model model = getModel(uri);
+	if (model == null) // URI not cached, 
 	{
-	    // first stripping the URI to find ontology in the cache
-	    Iterator<String> it = OntDocumentManager.getInstance().listDocuments();
-	    while (it.hasNext())
+	    log.debug("No cached Model for URI: {}", uri);
+	    
+	    String docURI = findDocumentURI(uri); // try to find and resolve its ontology
+	    if (docURI != null)
+		return resolve(docURI, base);
+	    else
 	    {
-		String docURI = it.next();
-		if (uri.startsWith(removeFragmentId(docURI)))
+		if (resolveUncached) // if true, can significantly slow down the transformation
+		    try
+		    {
+			log.debug("Getting Ontology for URI: {}", uri);
+			model = getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF); // load from web
+		    }
+		    catch (Exception ex)
+		    {
+			log.debug("Syntax error reading Model from URI: {}", uri, ex);
+			//return null;
+		    }
+		else
 		{
-		    log.debug("Found Document URI: {} for URI: {}", docURI, uri);
-		    return resolve(docURI, base);
+		    log.debug("Defaulting to empty Model for URI: {}", uri);
+		    model = ModelFactory.createDefaultModel(); // return empty Model
 		}
 	    }
-		    
-	    log.debug("Could not resolve URI: {}", uri);
-	    //return null;
-	    model = ModelFactory.createDefaultModel();
 	}
-	//else
-	{
-	    log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
+	else log.debug("Cached Model for URI: {}", uri);
 
-	    ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
-	    model.write(stream);
+	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
+	log.debug("Model {} for URI: {}", getModel(uri), uri);
+	
+	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
+	model.write(stream);
 
-	    log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
-	    return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
-	}
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
     }
     
     public static String removeFragmentId(String uri)
@@ -103,4 +116,19 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 	return UriBuilder.fromUri(uri).fragment(null).build().toString();
     }
 
+    public String findDocumentURI(String uri)
+    {
+	Iterator<String> it = listDocuments();
+	while (it.hasNext())
+	{
+	    String docURI = it.next();
+	    if (uri.startsWith(removeFragmentId(docURI)))
+	    {
+		log.debug("Found Document URI: {} for URI: {}", docURI, uri);
+		return docURI;
+	    }
+	}
+	
+	return null;
+    }
 }

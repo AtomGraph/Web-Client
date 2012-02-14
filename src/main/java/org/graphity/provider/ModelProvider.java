@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 @Consumes({MediaType.APPLICATION_RDF_XML, MediaType.TEXT_TURTLE, MediaType.TEXT_PLAIN})
 public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWriter<Model>
 {
+    //private @Context UriInfo uriInfo = null;
+    
     public static final Map<String, Lang> LANGS = new HashMap<String, Lang>();
     static
     {
@@ -68,6 +70,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, javax.ws.rs.core.MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
 	log.trace("Reading model with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
+	//log.debug("Request URI: {}", uriInfo.getRequestUri());
 	
 	Model model = ModelFactory.createDefaultModel();
 	

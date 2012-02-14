@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.manager;
+package org.graphity.util.manager;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.hp.hpl.jena.util.Locator;
+import com.hp.hpl.jena.util.TypedStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
@@ -38,14 +36,23 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.MediaType;
-import org.graphity.provider.ModelProvider;
+import org.graphity.util.locator.LocatorLinkedData;
+import org.openjena.riot.Lang;
+import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+* Uses portions of Jena code
+* (c) Copyright 2010 Epimorphics Ltd.
+* All rights reserved.
+*
+* @see org.openjena.fuseki.FusekiLib
+* {@link http://openjena.org}
+*
  * @author Martynas Jusevičius <martynas@graphity.org>
- */
+*/
+
 public class DataManager extends FileManager implements URIResolver
 {
     public static final Map<javax.ws.rs.core.MediaType, Double> QUALIFIED_TYPES;    
@@ -65,8 +72,21 @@ public class DataManager extends FileManager implements URIResolver
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    private ClientConfig config = new DefaultClientConfig();
+    protected boolean resolveUncached = true;
 
+    public static DataManager get() {
+        if (s_instance == null) {
+            s_instance = new DataManager(FileManager.get());
+	    log.debug("new DataManager({}): {}", FileManager.get(), s_instance);
+        }
+        return s_instance;
+    }
+
+    /*
+     * JAX-RS implementation. Not used because ModelProvider cannot simply access base URI from Client
+     * 
+    private ClientConfig config = new DefaultClientConfig();
+    
     public DataManager(LocationMapper _mapper)
     {
 	super(_mapper);
@@ -84,39 +104,100 @@ public class DataManager extends FileManager implements URIResolver
 	config.getClasses().add(ModelProvider.class);
     }
     
-    public static DataManager get() {
-        if (s_instance == null) {
-            s_instance = new DataManager(FileManager.get());
-	    log.debug("new DataManager({}): {}", FileManager.get(), s_instance);
-        }
-        return s_instance;
-    }
-
     @Override
     public Model loadModel(String filenameOrURI)
     {
 	// http://blogs.oracle.com/enterprisetechtips/entry/consuming_restful_web_services_with#regp
+	log.debug("Loading models using cache? getCachingModels: {}", getCachingModels());
 	if (hasCachedModel(filenameOrURI))
 	{
 	    log.debug("Model cache hit: " + filenameOrURI);
 	    return getFromCache(filenameOrURI);
 	}
+	
 	// Make sure we load from HTTP as the last resort, otherwise handle with FileManager
-	if (!mapURI(filenameOrURI).equals(filenameOrURI))
+	String mappedURI = mapURI(filenameOrURI);
+	if (!mappedURI.startsWith("http:"))
 	{
 	    log.debug("loadModel({}) mapped to {} handled by FileManager", filenameOrURI, mapURI(filenameOrURI));
 	    return super.loadModel(filenameOrURI);
 	}
+	else
+	{
+	    log.trace("Loading Model from URI: {} with Accept header: {}", filenameOrURI, getAcceptHeader());
+	    Model m = Client.create(config).
+		    resource(filenameOrURI).
+		    header("Accept", getAcceptHeader()).
+		    get(Model.class);
 
-	log.trace("Loading Model from URI: {} with Accept header: {}", filenameOrURI, getAcceptHeader());
-	Model m = Client.create(config).
-		resource(filenameOrURI).
-		header("Accept", getAcceptHeader()).
-		get(Model.class);
-	
-	addCacheModel(filenameOrURI, m);
-	
-	return m;
+	    addCacheModel(filenameOrURI, m);
+
+	    return m;
+	}
+    }
+    */
+
+    private static final Map<String, Lang> LANGS = new HashMap<String, Lang>() ;
+    static {
+        LANGS.put(WebContent.contentTypeRDFXML, Lang.RDFXML);
+        LANGS.put(WebContent.contentTypeTurtle1, Lang.TURTLE);
+        LANGS.put(WebContent.contentTypeTurtle2, Lang.TURTLE);
+        LANGS.put(WebContent.contentTypeTurtle3, Lang.TURTLE);
+        LANGS.put(WebContent.contentTypeNTriples, Lang.NTRIPLES); // text/plain
+        LANGS.put(WebContent.contentTypeNTriplesAlt, Lang.NTRIPLES) ;
+    }
+    
+    public DataManager(FileManager fMgr)
+    {
+	super(fMgr);
+	addLocatorLinkedData();
+	removeLocatorURL();
+    }
+    
+    @Override
+    public Model loadModel(String filenameOrURI)
+    {
+	TypedStream stream = openNoMapOrNull(filenameOrURI);
+	log.debug("Opened stream from filename or URI {} with MIME type {}", filenameOrURI, stream.getMimeType());
+
+	String syntax = null;
+	Lang lang = langFromContentType(stream.getMimeType());
+	if (lang != null) syntax = lang.getName();
+	log.debug("Syntax used to load Model: {}", syntax);
+
+	return super.loadModel(filenameOrURI, null, syntax);
+    }
+    
+    /** Add a Linked Data locator */
+    public final void addLocatorLinkedData()
+    {
+        Locator loc = new LocatorLinkedData() ;
+        addLocator(loc) ;
+    }
+
+    private void removeLocatorURL()
+    {
+	Locator locURL = null;
+	Iterator<Locator> it = locators();
+	while (it.hasNext())
+	{
+	    Locator loc = it.next();
+	    if (loc.getName().equals("LocatorURL")) locURL = loc;
+	}
+	// remove() needs to be called outside the iterator
+	if (locURL != null)
+	{
+	    log.debug("Removing Locator: {}", locURL);
+	    remove(locURL);
+	}
+    }
+    
+    // ---- To riot.WebContent
+    public static Lang langFromContentType(String mimeType)
+    {
+        if ( mimeType == null )
+            return null ;
+        return LANGS.get(mimeType.toLowerCase()) ;
     }
     
     @Override
@@ -124,20 +205,33 @@ public class DataManager extends FileManager implements URIResolver
     {
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
-	//log.debug("Resolved absolute URI: {}", uri);
 	
-	Model model = null;
-	try
+	Model model = getFromCache(uri);
+	if (model == null) // URI not cached, 
 	{
-	    model = loadModel(uri);
-	    log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
+	    log.debug("No cached Model for URI: {}", uri);
+
+	    if (resolveUncached)
+		try
+		{
+		    log.debug("Loading Model for URI: {}", uri);
+		    model = loadModel(uri);
+		}
+		catch (Exception ex)
+		{
+		    log.debug("Syntax error reading Model from URI: {}", uri, ex);
+		    //return null;
+		}
+	    else
+	    {
+		log.debug("Defaulting to empty Model for URI: {}", uri);
+		model = ModelFactory.createDefaultModel(); // return empty Model
+	    }
 	}
-	catch (Exception ex)
-	{
-	    log.debug("Syntax error reading Model from URI: {}", uri, ex);
-	    //return null;
-	    model = ModelFactory.createDefaultModel();
-	}
+	else log.debug("Cached Model for URI: {}", uri);
+
+	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
+	log.debug("Model for URI: {} is cached? {}", uri, hasCachedModel(uri));
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
 	model.write(stream);
