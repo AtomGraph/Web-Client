@@ -234,31 +234,42 @@ public class DataManager extends FileManager implements URIResolver
 		try
 		{
 		    log.debug("Loading Model for URI: {}", uri);
-		    model = loadModel(uri);
+		    return getSource(loadModel(uri));
 		}
 		catch (Exception ex)
 		{
 		    log.debug("Syntax error reading Model from URI", ex);
-		    model = ModelFactory.createDefaultModel(); // return empty Model
+		    return getDefaultSource(); // return empty Model
 		    //return null;
 		}
 	    else
 	    {
 		log.debug("Defaulting to empty Model for URI: {}", uri);
-		model = ModelFactory.createDefaultModel(); // return empty Model
+		return getDefaultSource(); // return empty Model
 	    }
 	}
 	else
+	{
 	    log.debug("Cached Model for URI: {}", uri);
+	    return getSource(model);
+	}
+    }
 
-	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
-	log.debug("Model for URI: {} is cached? {}", uri, hasCachedModel(uri));
+    protected Source getDefaultSource()
+    {
+	return getSource(ModelFactory.createDefaultModel());
+    }
+    
+    protected Source getSource(Model model)
+    {
+	log.debug("Number of Model stmts read: {}", model.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
 	model.write(stream);
+
 	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
     }
 
     public boolean isResolvingUncached()
