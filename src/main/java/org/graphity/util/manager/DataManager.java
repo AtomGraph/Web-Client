@@ -71,7 +71,7 @@ public class DataManager extends FileManager implements URIResolver
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    protected boolean resolveUncached = true;
+    protected boolean resolveUncached = false;
 
     public static DataManager get() {
         if (s_instance == null) {

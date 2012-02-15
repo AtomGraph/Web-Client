@@ -50,15 +50,6 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
         }
         return s_instance;
     }
-    /*
-    @Override
-    public void addAltEntry( String docURI, String locationURL )
-    {
-	//getFileManager().addAltEntry(docURI, locationURL);
-	
-	log.debug("Adding altEntry; Document URI: {} Location URL: {}", docURI, locationURL);
-    }
-	*/
     
     @Override
     public Source resolve(String href, String base) throws TransformerException

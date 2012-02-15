@@ -67,7 +67,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     public void init()
     {
 	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
-	OntDataManager.getInstance().addAltEntry(ontologyUri, getServletContext().getRealPath("/WEB-INF/ontology.ttl"));
+	OntDataManager.getInstance().addAltEntry(ontologyUri, "ontology.ttl");
 	// reading OntModel is necessary to give the right base URI:
 	if (OntDataManager.getInstance().getModel(ontologyUri) == null)
 	{

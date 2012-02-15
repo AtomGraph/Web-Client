@@ -147,7 +147,7 @@ public class LocatorLinkedData implements Locator
         catch (java.io.FileNotFoundException ex) 
         {
             if (log.isTraceEnabled())
-		log.trace("LocatorURL: not found: {}", filenameOrURI);
+		log.trace("LocatorLinkedData: not found: {}", filenameOrURI);
 	    
             return null ;
         }
@@ -173,7 +173,7 @@ public class LocatorLinkedData implements Locator
         catch (java.net.SocketException ex)
         {
             if (log.isTraceEnabled() )
-                log.trace("LocatorURL: not found (SocketException): {}", filenameOrURI);
+                log.trace("LocatorLinkedData: not found (SocketException): {}", filenameOrURI);
             return null ;
         }
         // And IOExceptions we don't expect

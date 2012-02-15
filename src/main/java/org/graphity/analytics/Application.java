@@ -60,21 +60,9 @@ public class Application extends javax.ws.rs.core.Application
 	    // http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms
 	    // http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
 	    
+	    FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/"));
+	    FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/owl/"));
 	    
-	    // move this to external configuration
-	    //FileManager.get().setModelCaching(true);
-	    FileManager.get().getLocationMapper().addAltEntry(SIOC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/sioc.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry(RDF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdf.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry(RDFS.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/rdfs.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry(OWL2.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/owl2.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry(DC.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcelements.rdf"));
-	    FileManager.get().getLocationMapper().addAltEntry(DCTerms.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/dcterms.rdf"));
-	    FileManager.get().getLocationMapper().addAltEntry(FOAF.getURI(), "file:///" + context.getRealPath("/WEB-INF/owl/foaf.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry(Graphity.getURI(), "file:///" + context.getRealPath("/WEB-INF/graphity.ttl"));
-	    FileManager.get().getLocationMapper().addAltEntry("http://rdfs.org/ns/void#", "file:///" + context.getRealPath("/WEB-INF/owl/void.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry("http://dbpedia.org/ontology/", "file:///" + context.getRealPath("/WEB-INF/owl/dbpedia-owl.owl"));
-	    FileManager.get().getLocationMapper().addAltEntry("http://graph.facebook.com/schema/user#", "file:///" + context.getRealPath("/WEB-INF/owl/gfb-user.owl"));
-
 	    //log.debug("FileManager.get(): {}", FileManager.get());
 	    log.debug("OntDataManager.getInstance().getFileManager(): {}", OntDataManager.getInstance().getFileManager());
 	    //FileManager.setGlobalFileManager(DataManager.get());
