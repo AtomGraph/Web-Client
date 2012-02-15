@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -156,8 +155,20 @@ public class DataManager extends FileManager implements URIResolver
     @Override
     public Model loadModel(String filenameOrURI)
     {
+	return readModel(ModelFactory.createDefaultModel(), filenameOrURI);
+    }
+
+    @Override
+    public Model readModel(Model model, String filenameOrURI)
+    {
+	String mappedURI = mapURI(filenameOrURI);
+	if (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:")) // if URI is mapped and local
+	{
+	    log.debug("URI {} is mapped to {}, letting FileManager.readModel() handle it", filenameOrURI, mappedURI);
+	    return super.readModel(model, mappedURI); // let FileManager handle
+	}
+
 	TypedStream stream = openNoMapOrNull(filenameOrURI);
-	
 	if (stream != null)
 	{
 	    log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, stream);
@@ -166,12 +177,15 @@ public class DataManager extends FileManager implements URIResolver
 	    log.debug("Syntax used to load Model: {}", syntax);
 
 	    if (syntax != null) // do not read if MimeType/syntax are not known
-		return super.loadModel(filenameOrURI, null, syntax);
+	    {
+		log.debug("URI {} syntax is {}, letting FileManager.readModel() handle it", filenameOrURI, syntax);
+		return super.readModel(model, filenameOrURI, null, syntax); // let FileManager handle syntax
+	    }
 	}
 	else
 	    log.debug("Could not open stream for filename or URI: {}", filenameOrURI);
 	
-	return ModelFactory.createDefaultModel();
+	return model;
     }
     
     /** Add a Linked Data locator */
@@ -250,26 +264,6 @@ public class DataManager extends FileManager implements URIResolver
     public static String removeFragmentId(String uri)
     {
 	return UriBuilder.fromUri(uri).fragment(null).build().toString();
-    }
-
-    public static String getAcceptHeader()
-    {
-	String header = null;
-
-	//for (Map.Entry<String, Double> type : getQualifiedTypes().entrySet())
-	Iterator <Entry<javax.ws.rs.core.MediaType, Double>> it = QUALIFIED_TYPES.entrySet().iterator();
-	while (it.hasNext())
-	{
-	    Entry<javax.ws.rs.core.MediaType, Double> type = it.next();
-	    if (header == null) header = "";
-	    
-	    header += type.getKey();
-	    if (type.getValue() != null) header += ";q=" + type.getValue();
-	    
-	    if (it.hasNext()) header += ",";
-	}
-	
-	return header;
     }
 
     /*

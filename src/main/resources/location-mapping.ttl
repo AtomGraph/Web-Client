@@ -4,7 +4,7 @@
    
    [ lm:name "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ; lm:altName "rdf.owl" ] ,
    [ lm:name "http://www.w3.org/2000/01/rdf-schema#" ; lm:altName "rdfs.owl" ] ,
-   [ lm:name "http://www.w3.org/2002/07/owl" ; lm:altName "owl2.owl" ] ,
+   [ lm:name "http://www.w3.org/2002/07/owl#" ; lm:altName "owl2.owl" ] ,
    [ lm:name "http://purl.org/dc/elements/1.1/" ; lm:altName "dcelements.rdf" ] ,
    [ lm:name "http://purl.org/dc/terms/" ; lm:altName "dcterms.rdf" ] ,
    [ lm:name "http://xmlns.com/foaf/0.1/" ; lm:altName "foaf.owl" ] ,
