@@ -25,16 +25,13 @@ import com.hp.hpl.jena.util.TypedStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.MediaType;
 import org.graphity.util.locator.LocatorLinkedData;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
@@ -53,6 +50,24 @@ import org.slf4j.LoggerFactory;
 
 public class DataManager extends FileManager implements URIResolver
 {
+    private static DataManager s_instance = null;
+
+    private static final Logger log = LoggerFactory.getLogger(DataManager.class);
+
+    protected boolean resolvingUncached = false;
+
+    public static DataManager get() {
+        if (s_instance == null) {
+            s_instance = new DataManager(FileManager.get());
+	    log.debug("new DataManager({}): {}", FileManager.get(), s_instance);
+        }
+        return s_instance;
+    }
+
+    /*
+     * JAX-RS implementation. Not used because ModelProvider cannot simply access base URI from Client
+     * 
+
     public static final Map<javax.ws.rs.core.MediaType, Double> QUALIFIED_TYPES;    
     static
     {
@@ -66,23 +81,6 @@ public class DataManager extends FileManager implements URIResolver
 	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }    
 
-    private static DataManager s_instance = null;
-
-    private static final Logger log = LoggerFactory.getLogger(DataManager.class);
-
-    protected boolean resolveUncached = false;
-
-    public static DataManager get() {
-        if (s_instance == null) {
-            s_instance = new DataManager(FileManager.get());
-	    log.debug("new DataManager({}): {}", FileManager.get(), s_instance);
-        }
-        return s_instance;
-    }
-
-    /*
-     * JAX-RS implementation. Not used because ModelProvider cannot simply access base URI from Client
-     * 
     private ClientConfig config = new DefaultClientConfig();
     
     public DataManager(LocationMapper _mapper)
@@ -135,8 +133,9 @@ public class DataManager extends FileManager implements URIResolver
     }
     */
 
-    private static final Map<String, String> LANGS = new HashMap<String, String>() ;
-    static {
+    public static final Map<String, String> LANGS = new HashMap<String, String>() ;
+    static
+    {
         LANGS.put(WebContent.contentTypeRDFXML, WebContent.langRDFXML);
         LANGS.put(WebContent.contentTypeTurtle1, WebContent.langTurtle);
         LANGS.put(WebContent.contentTypeTurtle2, WebContent.langTurtle);
@@ -231,7 +230,7 @@ public class DataManager extends FileManager implements URIResolver
 	{
 	    log.debug("No cached Model for URI: {}", uri);
 
-	    if (resolveUncached)
+	    if (resolvingUncached)
 		try
 		{
 		    log.debug("Loading Model for URI: {}", uri);
@@ -249,7 +248,8 @@ public class DataManager extends FileManager implements URIResolver
 		model = ModelFactory.createDefaultModel(); // return empty Model
 	    }
 	}
-	else log.debug("Cached Model for URI: {}", uri);
+	else
+	    log.debug("Cached Model for URI: {}", uri);
 
 	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
 	log.debug("Model for URI: {} is cached? {}", uri, hasCachedModel(uri));
@@ -261,9 +261,14 @@ public class DataManager extends FileManager implements URIResolver
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
     }
 
-    public static String removeFragmentId(String uri)
+    public boolean isResolvingUncached()
     {
-	return UriBuilder.fromUri(uri).fragment(null).build().toString();
+	return resolvingUncached;
+    }
+
+    public void setResolvingUncached(boolean resolvingUncached)
+    {
+	this.resolvingUncached = resolvingUncached;
     }
 
     /*

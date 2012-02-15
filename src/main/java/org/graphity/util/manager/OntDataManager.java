@@ -20,10 +20,13 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.FileUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -41,7 +44,19 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
     private static OntDataManager s_instance = null;
     private static final Logger log = LoggerFactory.getLogger(OntDataManager.class);
 
-    protected boolean resolveUncached = true;
+    public static final List<String> IGNORED_EXT = new ArrayList<String>();
+    static
+    {
+	IGNORED_EXT.add("html"); IGNORED_EXT.add("htm"); // GRDDL or <link> inspection could be used to analyzed HTML
+	IGNORED_EXT.add("jpg");	IGNORED_EXT.add("gif");	IGNORED_EXT.add("png"); // binary image formats
+	IGNORED_EXT.add("avi"); IGNORED_EXT.add("mpg"); IGNORED_EXT.add("wmv"); // binary video formats
+	IGNORED_EXT.add("mp3"); IGNORED_EXT.add("wav"); // binary sound files
+	IGNORED_EXT.add("zip"); IGNORED_EXT.add("rar"); // binary archives
+	IGNORED_EXT.add("pdf"); IGNORED_EXT.add("ps"); IGNORED_EXT.add("doc"); // binary documents
+	IGNORED_EXT.add("exe"); // binary executables
+    }
+    
+    protected boolean resolvingUncached = true;
     
     public static OntDataManager getInstance()
     {
@@ -57,6 +72,7 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("CacheModels: {}", getCacheModels());
+	log.debug("Filename extension: {} ignored: {}", FileUtils.getFilenameExt(uri), IGNORED_EXT.contains(FileUtils.getFilenameExt(uri)));
 
 	// first look for a cached match
 	Model model = getModel(uri);
@@ -69,7 +85,7 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 		return resolve(docURI, base);
 	    else
 	    {
-		if (resolveUncached) // if true, can significantly slow down the transformation
+		if (resolvingUncached) // if true, can significantly slow down the transformation
 		    try
 		    {
 			log.debug("Getting Ontology for URI: {}", uri);
@@ -88,7 +104,8 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 		}
 	    }
 	}
-	else log.debug("Cached Model for URI: {}", uri);
+	else
+	    log.debug("Cached Model for URI: {}", uri);
 
 	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
 	log.debug("Model {} for URI: {}", getModel(uri), uri);
