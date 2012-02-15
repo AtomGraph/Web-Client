@@ -72,10 +72,14 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 	log.debug("Resolving URI: {} against base URI: {}", href, base);
 	String uri = URI.create(base).resolve(href).toString();
 	//log.debug("CacheModels: {}", getCacheModels());
-	log.debug("Filename extension: {} ignored: {}", FileUtils.getFilenameExt(uri), IGNORED_EXT.contains(FileUtils.getFilenameExt(uri)));
+	
+	if (isIgnored(uri))
+	{
+	    log.debug("URI ignored by file extension: {}", uri);
+	    return getDefaultSource();
+	}
 
-	// first look for a cached match
-	Model model = getModel(uri);
+	Model model = getModel(uri); // first look for a cached match
 	if (model == null) // URI not cached, 
 	{
 	    log.debug("No cached Model for URI: {}", uri);
@@ -89,33 +93,48 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 		    try
 		    {
 			log.debug("Getting Ontology for URI: {}", uri);
-			model = getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF); // load from web
+			return getSource(getOntology(uri, OntModelSpec.OWL_MEM_RDFS_INF)); // load from web
 		    }
 		    catch (Exception ex)
 		    {
 			log.debug("Syntax error reading Model from URI: {}", uri, ex);
-			model = ModelFactory.createDefaultModel(); // return empty Model
+			return getDefaultSource(); // return empty Model
 			//return null;
 		    }
 		else
 		{
 		    log.debug("Defaulting to empty Model for URI: {}", uri);
-		    model = ModelFactory.createDefaultModel(); // return empty Model
+		    return getDefaultSource(); // return empty Model
 		}
 	    }
 	}
 	else
+	{
 	    log.debug("Cached Model for URI: {}", uri);
+	    return getSource(model);
+	}
+    }
 
-	log.debug("Number of Model stmts read: {} from URI: {}", model.size(), uri);
-	log.debug("Model {} for URI: {}", getModel(uri), uri);
+    protected Source getDefaultSource()
+    {
+	return getSource(ModelFactory.createDefaultModel());
+    }
+    
+    protected Source getSource(Model model)
+    {
+	log.debug("Number of Model stmts read: {}", model.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
 	model.write(stream);
 
 	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
+    }
+    
+    public boolean isIgnored(String filenameOrURI)
+    {
+	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
     }
     
     public static String removeFragmentId(String uri)
