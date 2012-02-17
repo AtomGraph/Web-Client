@@ -45,7 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.RDFResource;
 import org.graphity.util.XSLTBuilder;
-import org.graphity.util.manager.OntDataManager;
+import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +59,11 @@ import org.slf4j.LoggerFactory;
 public class RDFResourceXSLTWriter implements MessageBodyWriter<RDFResource>
 {
     public static final String XSLT_BASE = "/WEB-INF/xsl/";
-    private static final Logger log = LoggerFactory.getLogger(RDFResourceXSLTWriter.class) ;
+    private static final Logger log = LoggerFactory.getLogger(RDFResourceXSLTWriter.class);
     
     //private XSLTBuilder groupTriples = null;
     //private XSLTBuilder rdf2xhtml = null;
-    private URIResolver resolver = OntDataManager.getInstance(); // OntDataManager.getInstance(); // XML-only resolving is not good enough, needs to work on RDF Models
+    private URIResolver resolver = DataManager.get(); // OntDataManager.getInstance(); // XML-only resolving is not good enough, needs to work on RDF Models
     
     @Context private ServletContext context;
     //@Context private UriInfo uriInfo;

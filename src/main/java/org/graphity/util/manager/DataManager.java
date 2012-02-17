@@ -54,7 +54,7 @@ public class DataManager extends FileManager implements URIResolver
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    protected boolean resolvingUncached = false;
+    protected boolean resolvingUncached = true;
 
     public static DataManager get() {
         if (s_instance == null) {
@@ -173,13 +173,14 @@ public class DataManager extends FileManager implements URIResolver
 	    log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, stream);
 
 	    String syntax = langFromContentType(stream.getMimeType());
-	    log.debug("Syntax used to load Model: {}", syntax);
 
 	    if (syntax != null) // do not read if MimeType/syntax are not known
 	    {
 		log.debug("URI {} syntax is {}, letting FileManager.readModel() handle it", filenameOrURI, syntax);
 		return super.readModel(model, filenameOrURI, null, syntax); // let FileManager handle syntax
 	    }
+	    else
+		log.debug("Syntax for URI {} unknown, ignoring", filenameOrURI);
 	}
 	else
 	    log.debug("Could not open stream for filename or URI: {}", filenameOrURI);

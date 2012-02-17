@@ -17,6 +17,7 @@
 package org.graphity.util.manager;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -56,7 +57,7 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 	IGNORED_EXT.add("exe"); // binary executables
     }
     
-    protected boolean resolvingUncached = true;
+    protected boolean resolvingUncached = false;
     
     public static OntDataManager getInstance()
     {
@@ -84,10 +85,12 @@ public class OntDataManager extends OntDocumentManager implements URIResolver
 	{
 	    log.debug("No cached Model for URI: {}", uri);
 	    
+	    /*
 	    String docURI = findDocumentURI(uri); // try to find and resolve its ontology
 	    if (docURI != null)
 		return resolve(docURI, base);
 	    else
+	     */
 	    {
 		if (resolvingUncached) // if true, can significantly slow down the transformation
 		    try
