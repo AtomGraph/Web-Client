@@ -17,16 +17,21 @@
 package org.graphity.util.locator;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.JenaException;
+import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.vocabulary.LocationMappingVocab;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +52,7 @@ public class PrefixMapper extends LocationMapper
 
     public PrefixMapper(String config)
     {
-        super(config);
+        initFromPath(config, true) ;
     }
     
     public PrefixMapper(LocationMapper locMapper)
@@ -63,7 +68,6 @@ public class PrefixMapper extends LocationMapper
     
     public void addAltPrefixEntry(String uriPrefix, String alt)
     {
-	log.debug("altPrefixLocations: {}", altPrefixLocations);
 	log.debug("PrefixMapper.addAltPrefixEntry({}, {})", uriPrefix, alt);
         altPrefixLocations.put(uriPrefix, alt);
     }
@@ -78,6 +82,8 @@ public class PrefixMapper extends LocationMapper
     @Override
     public String altMapping(String uri, String otherwise)
     {
+	log.debug("PrefixMapper.altMapping({}, {})", uri, otherwise);
+
         if (getAltEntry(uri) != null) 
             return getAltEntry(uri) ;
 	
@@ -204,5 +210,67 @@ public class PrefixMapper extends LocationMapper
                 }
             }
         }
+    }
+
+    private void initFromPath(String configPath, boolean configMustExist)
+    {
+        if ( configPath == null || configPath.length() == 0 )
+        {
+            log.warn("Null configuration") ;
+            return ;
+        }
+        
+        // Make a file manager to look for the location mapping file
+        FileManager fm = new FileManager() ;
+        fm.addLocatorFile() ;
+        fm.addLocatorClassLoader(fm.getClass().getClassLoader()) ;
+        
+        try {
+            String uriConfig = null ; 
+            InputStream in = null ;
+            
+            StringTokenizer pathElems = new StringTokenizer( configPath, FileManager.PATH_DELIMITER );
+            while (pathElems.hasMoreTokens()) {
+                String uri = pathElems.nextToken();
+                if ( uri == null || uri.length() == 0 )
+                    break ;
+                
+                in = fm.openNoMap(uri) ;
+                if ( in != null )
+                {
+                    uriConfig = uri ;
+                    break ;
+                }
+            }
+
+            if ( in == null )
+            {
+                if ( ! configMustExist )
+                    log.debug("Failed to find configuration: "+configPath) ;
+                return ;
+            }
+            String syntax = FileUtils.guessLang(uriConfig) ;
+            Model model = ModelFactory.createDefaultModel() ;
+            model.read(in, uriConfig, syntax) ;
+            processConfig(model) ;
+        } catch (JenaException ex)
+        {
+            LoggerFactory.getLogger(LocationMapper.class).warn("Error in configuration file: "+ex.getMessage()) ;
+        }
+    }
+    
+    @Override
+    public String toString()
+    {
+	String s = super.toString();
+	
+        for ( Iterator<String> iter = listAltPrefixEntries() ; iter.hasNext() ; )
+        {
+            String k = iter.next() ;
+            String v = getAltPrefixEntry(k) ;
+            s = s+"(Prefix:"+k+"=>"+v+") " ;
+        }
+	
+        return s ;
     }
 }

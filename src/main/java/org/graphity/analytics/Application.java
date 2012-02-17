@@ -54,7 +54,7 @@ public class Application extends javax.ws.rs.core.Application
 
 //PrefixMapper pm = new PrefixMapper(); pm.addAltPrefixEntry("shit", "fuck");
 
-	//LocationMapper.setGlobalLocationMapper(new PrefixMapper("location-mapping.ttl"));
+	LocationMapper.setGlobalLocationMapper(new PrefixMapper("location-mapping.ttl"));
 	//FileManager.get().setLocationMapper(new PrefixMapper());
 	log.debug("LocationMapper.get(): {}", LocationMapper.get());
 	log.debug("FileManager.get().getLocationMapper(): {}", FileManager.get().getLocationMapper());
