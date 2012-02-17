@@ -87,29 +87,14 @@ public class PrefixMapper extends LocationMapper
         if (getAltEntry(uri) != null) 
             return getAltEntry(uri) ;
 	
-        String newStart = null ;
-        String oldStart = null ;
-        for ( Iterator<String> iter = listAltPrefixes() ; iter.hasNext() ;)
+        for ( Iterator<String> iter = listAltPrefixEntries() ; iter.hasNext() ;)
         {
             String prefix = iter.next() ;
-            if ( uri.startsWith(prefix) )
-            {
-		if (getAltPrefixEntry(prefix) != null)
-		    return getAltPrefixEntry(prefix);
-		
-                String s = getAltPrefix(prefix) ;
-                if ( newStart == null || newStart.length() < s.length() )
-                {
-                    oldStart = prefix ;
-                    newStart = s ;
-                }
-            }
+            if ( uri.startsWith(prefix) && getAltPrefixEntry(prefix) != null)
+		return getAltPrefixEntry(prefix);
         }
         
-        if ( newStart != null )
-            return newStart+uri.substring(oldStart.length()) ;
-        
-        return otherwise ;
+        return super.altMapping(uri, otherwise);
     }
 
     @Override

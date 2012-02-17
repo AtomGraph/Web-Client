@@ -19,7 +19,6 @@ package org.graphity.analytics;
 
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
-import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -29,7 +28,6 @@ import org.graphity.util.manager.DataManager;
 import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFResourceXSLTWriter;
 import org.graphity.util.locator.PrefixMapper;
-import org.graphity.util.manager.OntDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,27 +50,18 @@ public class Application extends javax.ws.rs.core.Application
 	// http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms
 	// http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
 
-//PrefixMapper pm = new PrefixMapper(); pm.addAltPrefixEntry("shit", "fuck");
-
-	LocationMapper.setGlobalLocationMapper(new PrefixMapper("location-mapping.ttl"));
-	//FileManager.get().setLocationMapper(new PrefixMapper());
+	LocationMapper mapper = new PrefixMapper("location-mapping.ttl");
+	LocationMapper.setGlobalLocationMapper(mapper);
 	log.debug("LocationMapper.get(): {}", LocationMapper.get());
 	log.debug("FileManager.get().getLocationMapper(): {}", FileManager.get().getLocationMapper());
 	FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/"));
 	FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/owl/"));
 
-	//log.debug("FileManager.get(): {}", FileManager.get());
-	log.debug("OntDataManager.getInstance().getFileManager(): {}", OntDataManager.getInstance().getFileManager());
-	//FileManager.setGlobalFileManager(DataManager.get());
-	//FileManager.get().addLocator(new LocatorLinkedData());
-	//removeLocatorURL(DataManager.get()).addLocator(new LocatorLinkedData());
+	DataManager.get().setLocationMapper(mapper);
 	DataManager.get().setModelCaching(true);
-	OntDataManager.getInstance().setFileManager(DataManager.get());
-	log.debug("OntDataManager is caching Models: {}", OntDataManager.getInstance().getCacheModels());
 	log.debug("FileManager.get(): {}", FileManager.get());
 	log.debug("DataManager.get(): {}", DataManager.get());
 	log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
-	log.debug("OntDataManager.getInstance().getFileManager(): {}", OntDataManager.getInstance().getFileManager());
     }
     
     @Override

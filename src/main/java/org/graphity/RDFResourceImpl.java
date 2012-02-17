@@ -20,6 +20,7 @@ package org.graphity;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
@@ -45,7 +46,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.util.manager.DataManager;
-import org.graphity.util.manager.OntDataManager;
 import org.graphity.util.QueryBuilder;
 import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
@@ -67,12 +67,12 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     public void init()
     {
 	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
-	OntDataManager.getInstance().addAltEntry(ontologyUri, "ontology.ttl");
+	OntDocumentManager.getInstance().addAltEntry(ontologyUri, "ontology.ttl");
 	// reading OntModel is necessary to give the right base URI:
-	if (OntDataManager.getInstance().getModel(ontologyUri) == null)
+	if (OntDocumentManager.getInstance().getModel(ontologyUri) == null)
 	{
 	    log.debug("Adding OntModel with URI: {} to OntDocumentManager", ontologyUri);
-	    OntDataManager.getInstance().addModel(ontologyUri, OntDataManager.getInstance().getFileManager().loadModel(ontologyUri, getUriInfo().getBaseUri().toString(), FileUtils.langTurtle));
+	    OntDocumentManager.getInstance().addModel(ontologyUri, OntDocumentManager.getInstance().getFileManager().loadModel(ontologyUri, getUriInfo().getBaseUri().toString(), FileUtils.langTurtle));
 	}
     }
 
@@ -151,7 +151,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     {
 	String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology").build().toString();
 	//log.debug("getOntModel().size(): {}", OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF).size());
-	return OntDataManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF);
+	return OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF);
 	//return ModelFactory.createOntologyModel();
     }
     
