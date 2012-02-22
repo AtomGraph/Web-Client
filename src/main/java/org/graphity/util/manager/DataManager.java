@@ -169,7 +169,15 @@ public class DataManager extends FileManager implements URIResolver
     @Override
     public Model loadModel(String filenameOrURI)
     {
-	return readModel(ModelFactory.createDefaultModel(), filenameOrURI);
+	log.debug("loadModel({})", filenameOrURI);
+        if (hasCachedModel(filenameOrURI)) return getFromCache(filenameOrURI) ;  
+
+	Model m = ModelFactory.createDefaultModel();
+	readModel(m, filenameOrURI);
+	
+	addCacheModel(filenameOrURI, m);
+	
+        return m ;
     }
 
     @Override
