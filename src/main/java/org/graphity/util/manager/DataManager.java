@@ -177,7 +177,7 @@ public class DataManager extends FileManager implements URIResolver
 	
 	addCacheModel(filenameOrURI, m);
 	
-        return m ;
+        return m;
     }
 
     @Override

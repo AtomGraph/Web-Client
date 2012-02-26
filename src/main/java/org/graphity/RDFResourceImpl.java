@@ -38,7 +38,10 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.FileUtils;
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
@@ -47,7 +50,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.util.manager.DataManager;
 import org.graphity.util.QueryBuilder;
+import org.graphity.util.UpdateProcessRemote;
 import org.graphity.vocabulary.Graphity;
+import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,25 +110,45 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
     {
 	if (model == null)
 	{
-	    log.debug("getURI(): {}", getURI());
-	    log.debug("getSPARQLResource(): {}", getSPARQLResource());
-
-	    // query the available SPARQL endpoint (either local or remote)
 	    if (getFirstParameter("service-uri") == null && getFirstParameter("uri") != null) //  && isRemote()
 	    {
 		// load remote Linked Data
 		try
 		{
-		    model = DataManager.get().loadModel(getFirstParameter("uri"));
+		    String uri = getFirstParameter("uri");
+		    log.debug("Loading Model from URI: {}", uri);
+
+		    model = DataManager.get().loadModel(uri);
 		    log.debug("Number of Model stmts read: {}", model.size());
+		    
+		    log.debug("Caching model to SPARQL endpoint");
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    model.write(baos, WebContent.langNTriples);
+
+		    String graphUri = getUriInfo().getBaseUriBuilder().path("graphs").path("xx").build().toString();
+		    
+		    //UpdateDataInsert;
+		    UpdateRequest request = UpdateFactory.create();
+		    // http://www.w3.org/TR/sparql11-update/#insertData
+		    request.add("CREATE GRAPH <" + graphUri + ">")
+			   .add("INSERT DATA { GRAPH <" + graphUri + "> {"
+			    + baos.toString() +
+			    "} }");
+			    //add("INSERT DATA { <" + uri + "> }");
+
+		    UpdateProcessRemote process = new UpdateProcessRemote(request, getSPARQLResource().getURI());
+		    process.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
+		    process.execute();
 		}
 		catch (Exception ex)
 		{
 		    log.trace("Could not load Model from URI: {}", getFirstParameter("uri"));
+		    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 		}
 	    }
 	    else
 	    {
+		log.debug("Querying SPARQL endpoint");
 		try
 		{
 		    if (getQuery().isConstructType()) model = getQueryExecution().execConstruct();
@@ -134,14 +159,15 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		catch (Exception ex)
 		{
 		    log.trace("Could not execute Query: {}", getQuery());
+		    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 		}
 	    }
 
 	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
 	    //if (!model.containsResource(model.createResource(getURI())))
 	    //    throw new WebApplicationException(Response.Status.NOT_FOUND);
-	    if (model == null)
-		throw new WebApplicationException(Response.Status.NOT_FOUND);
+	    //if (model == null)
+	    //	throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
 	
 	return model;
