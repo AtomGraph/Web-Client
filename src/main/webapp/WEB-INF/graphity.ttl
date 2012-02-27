@@ -55,33 +55,53 @@ _:uri sp:varName "uri"^^xsd:string .
 
 :ConstructLatest    a       sp:Construct ;
       sp:templates ([ sp:object _:dateVar ;
-                  sp:predicate dct:created ;
+                  sp:predicate <http://purl.org/dc/terms/date> ;
                   sp:subject _:sVar
                 ] [ sp:object _:oVar ;
                   sp:predicate _:pVar ;
                   sp:subject _:sVar
                 ] [ sp:object _:titleVar ;
-                  sp:predicate dc:title ;
+                  sp:predicate <http://purl.org/dc/elements/1.1/title> ;
                   sp:subject _:oVar
                 ]) ;
-      sp:text """PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dct: <http://purl.org/dc/terms/>
-CONSTRUCT {
-    ?s dct:created ?date .
+      sp:text """CONSTRUCT {
+    ?s <http://purl.org/dc/elements/1.1/date> ?date .
+    ?s <http://purl.org/dc/terms/date> ?date .
+    ?s <http://purl.org/dc/terms/created> ?date .
+    ?s <http://purl.org/dc/terms/modified> ?date .
     ?s ?p ?o .
-    ?o dc:title ?title .
+    ?o <http://purl.org/dc/elements/1.1/title> ?title .
 }
 WHERE {
     {
-PREFIX dct: <http://purl.org/dc/terms/>
         SELECT *
         WHERE {
-            GRAPH ?graph {
-                ?s dct:created ?date .
+            {
+                GRAPH ?graph {
+                    ?s <http://purl.org/dc/elements/1.1/date> ?date .
+                } .
+            }
+            UNION
+            {
+                GRAPH ?graph {
+                    ?s <http://purl.org/dc/terms/date> ?date .
+                } .
+            }
+            UNION
+            {
+                GRAPH ?graph {
+                    ?s <http://purl.org/dc/terms/created> ?date .
+                } .
+            }
+            UNION
+            {
+                GRAPH ?graph {
+                    ?s <http://purl.org/dc/terms/modified> ?date .
+                } .
             } .
         }
         ORDER BY DESC (?date)
-        LIMIT 10
+        LIMIT 30
     } .
     OPTIONAL {
         GRAPH ?graph {
@@ -90,23 +110,43 @@ PREFIX dct: <http://purl.org/dc/terms/>
     } .
     OPTIONAL {
         GRAPH ?objGraph {
-            ?o dc:title ?title .
+            ?o <http://purl.org/dc/elements/1.1/title> ?title .
         } .
     } .
 }"""^^xsd:string ;
       sp:where ([ a       sp:SubQuery ;
                   sp:query
                           [ a       sp:Select ;
-                            sp:limit "10"^^xsd:long ;
+                            sp:limit "30"^^xsd:long ;
                             sp:orderBy ([ a       sp:Desc ;
                                         sp:expression _:dateVar
                                       ]) ;
-                            sp:where ([ a       sp:NamedGraph ;
-                                        sp:elements ([ sp:object _:dateVar ;
-                                                    sp:predicate dct:created ;
-                                                    sp:subject _:sVar
-                                                  ]) ;
-                                        sp:graphNameNode _:graphVar
+                            sp:where ([ a       sp:Union ;
+                                        sp:elements (([ a       sp:NamedGraph ;
+                                                      sp:elements ([ sp:object _:dateVar ;
+                                                                  sp:predicate <http://purl.org/dc/elements/1.1/date> ;
+                                                                  sp:subject _:sVar
+                                                                ]) ;
+                                                      sp:graphNameNode _:graphVar
+                                                    ]) ([ a       sp:NamedGraph ;
+                                                      sp:elements ([ sp:object _:dateVar ;
+                                                                  sp:predicate <http://purl.org/dc/terms/date> ;
+                                                                  sp:subject _:sVar
+                                                                ]) ;
+                                                      sp:graphNameNode _:graphVar
+                                                    ]) ([ a       sp:NamedGraph ;
+                                                      sp:elements ([ sp:object _:dateVar ;
+                                                                  sp:predicate <http://purl.org/dc/terms/created> ;
+                                                                  sp:subject _:sVar
+                                                                ]) ;
+                                                      sp:graphNameNode _:graphVar
+                                                    ]) ([ a       sp:NamedGraph ;
+                                                      sp:elements ([ sp:object _:dateVar ;
+                                                                  sp:predicate <http://purl.org/dc/terms/modified> ;
+                                                                  sp:subject _:sVar
+                                                                ]) ;
+                                                      sp:graphNameNode _:graphVar
+                                                    ]))
                                       ])
                           ]
                 ] [ a       sp:Optional ;
@@ -120,7 +160,7 @@ PREFIX dct: <http://purl.org/dc/terms/>
                 ] [ a       sp:Optional ;
                   sp:elements ([ a       sp:NamedGraph ;
                               sp:elements ([ sp:object _:titleVar ;
-                                          sp:predicate dc:title ;
+                                          sp:predicate <http://purl.org/dc/elements/1.1/title> ;
                                           sp:subject _:oVar
                                         ]) ;
                               sp:graphNameNode

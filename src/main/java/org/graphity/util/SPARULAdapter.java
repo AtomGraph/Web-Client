@@ -38,7 +38,18 @@ public class SPARULAdapter // implements org.openjena.fuseki.DatasetAccessor
     
     public void add(Model data)
     {
-	
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	data.write(baos, WebContent.langNTriples);
+
+	//UpdateDataInsert;
+	// http://www.w3.org/TR/sparql11-update/#insertData
+	UpdateRequest request = UpdateFactory.create("INSERT DATA { "
+	    + baos.toString() +
+	    "}", Syntax.syntaxSPARQL_11);
+
+	UpdateProcessRemote process = new UpdateProcessRemote(request, endpoint);
+	//process.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
+	process.execute();	
     }
     
     public void add(String graphUri, Model data)
@@ -58,7 +69,7 @@ public class SPARULAdapter // implements org.openjena.fuseki.DatasetAccessor
 	process.execute();
     }
     
-    public boolean containsModel(String graphURI)
+    public boolean containsModel(String graphUri)
     {
 	return false;
     }

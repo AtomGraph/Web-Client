@@ -164,26 +164,26 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	return model;
     }
     
-    public Model createGraphMetaModel(Resource graph)
+    public Model createGraphMetaModel(Resource graph) // String uri
     {
 	Model metaModel = ModelFactory.createDefaultModel();
 	
 	metaModel.add(metaModel.createLiteralStatement(graph, DCTerms.created, new GregorianCalendar()));
 	//metaModel.add(metaModel.createStatement(graph, DCTerms.creator, user));
-	
+
 	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://www.w3.org/2004/03/trix/rdfg-1/Graph")));
 	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://purl.org/net/opmv/ns#Artifact")));
 	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#DataItem")));
 	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://www.w3.org/ns/sparql-service-description#NamedGraph")));
 	
-	metaModel.add(metaModel.createStatement(graph, metaModel.createProperty("http://purl.org/net/opmv/ns#wasGeneratedBy"), metaModel.createResource("creation")));
-	metaModel.add(metaModel.createStatement(metaModel.createResource("creation"), RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#HTTPBasedDataAccess")));
-	//metaModel.add(metaModel.createStatement(metaModel.createResource("creation"), metaModel.createProperty("http://purl.org/net/opmv/ns#wasPerformedBy"), user));
-	metaModel.add(metaModel.createStatement(metaModel.createResource("creation"), metaModel.createProperty("http://purl.org/net/provenance/types#exchangedHTTPMessage"), metaModel.createResource("request")));
-	metaModel.add(metaModel.createStatement(metaModel.createResource("request"), RDF.type, metaModel.createResource("http://www.w3.org/2011/http#Request")));
+	metaModel.add(metaModel.createStatement(graph, metaModel.createProperty("http://purl.org/net/opmv/ns#wasGeneratedBy"), metaModel.createResource(AnonId.create("creation"))));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("creation")), RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#HTTPBasedDataAccess")));
+	//metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("creation")), metaModel.createProperty("http://purl.org/net/opmv/ns#wasPerformedBy"), user));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("creation")), metaModel.createProperty("http://purl.org/net/provenance/types#exchangedHTTPMessage"), metaModel.createResource(AnonId.create("request"))));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("request")), RDF.type, metaModel.createResource("http://www.w3.org/2011/http#Request")));
 
-	//metaModel.add(metaModel.createLiteralStatement(metaModel.createResource("request"), metaModel.createProperty("http://www.w3.org/2011/http#methodName"), "GET"));
-	//metaModel.add(metaModel.createLiteralStatement(metaModel.createResource("request"), metaModel.createProperty("http://www.w3.org/2011/http#absoluteURI"), "GET"));
+	metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#methodName"), "GET"));
+	//metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#absoluteURI"), uri));
 
 	log.debug("No of stmts in the metamodel: {} for GRAPH: {}", metaModel.size(), graph.getURI());
 	
