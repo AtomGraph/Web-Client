@@ -30,19 +30,22 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.FileUtils;
-import java.io.ByteArrayOutputStream;
+import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -50,9 +53,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.util.manager.DataManager;
 import org.graphity.util.QueryBuilder;
-import org.graphity.util.UpdateProcessRemote;
+import org.graphity.util.SPARULAdapter;
 import org.graphity.vocabulary.Graphity;
-import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,26 +121,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		    log.debug("Loading Model from URI: {}", uri);
 
 		    model = DataManager.get().loadModel(uri);
-		    log.debug("Number of Model stmts read: {}", model.size());
-		    
-		    log.debug("Caching model to SPARQL endpoint");
-		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		    model.write(baos, WebContent.langNTriples);
-
-		    String graphUri = getUriInfo().getBaseUriBuilder().path("graphs").path("xx").build().toString();
-		    
-		    //UpdateDataInsert;
-		    UpdateRequest request = UpdateFactory.create();
-		    // http://www.w3.org/TR/sparql11-update/#insertData
-		    request.add("CREATE GRAPH <" + graphUri + ">")
-			   .add("INSERT DATA { GRAPH <" + graphUri + "> {"
-			    + baos.toString() +
-			    "} }");
-			    //add("INSERT DATA { <" + uri + "> }");
-
-		    UpdateProcessRemote process = new UpdateProcessRemote(request, getSPARQLResource().getURI());
-		    process.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
-		    process.execute();
+		    log.debug("Number of Model stmts read: {}", model.size());		    
 		}
 		catch (Exception ex)
 		{
@@ -163,6 +146,14 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 	    }
 
+	    log.debug("Caching model to SPARQL endpoint");
+	    SPARULAdapter adapter = new SPARULAdapter(getSPARQLResource().getURI());
+	    String graphUri = getUriInfo().getBaseUriBuilder().
+		path("graphs/{graphId}").
+		build(UUID.randomUUID().toString()).toString();
+	    adapter.add(graphUri, model);
+	    adapter.add(createGraphMetaModel(ResourceFactory.createResource(graphUri)));
+
 	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
 	    //if (!model.containsResource(model.createResource(getURI())))
 	    //    throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -171,6 +162,32 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	}
 	
 	return model;
+    }
+    
+    public Model createGraphMetaModel(Resource graph)
+    {
+	Model metaModel = ModelFactory.createDefaultModel();
+	
+	metaModel.add(metaModel.createLiteralStatement(graph, DCTerms.created, new GregorianCalendar()));
+	//metaModel.add(metaModel.createStatement(graph, DCTerms.creator, user));
+	
+	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://www.w3.org/2004/03/trix/rdfg-1/Graph")));
+	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://purl.org/net/opmv/ns#Artifact")));
+	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#DataItem")));
+	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://www.w3.org/ns/sparql-service-description#NamedGraph")));
+	
+	metaModel.add(metaModel.createStatement(graph, metaModel.createProperty("http://purl.org/net/opmv/ns#wasGeneratedBy"), metaModel.createResource("creation")));
+	metaModel.add(metaModel.createStatement(metaModel.createResource("creation"), RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#HTTPBasedDataAccess")));
+	//metaModel.add(metaModel.createStatement(metaModel.createResource("creation"), metaModel.createProperty("http://purl.org/net/opmv/ns#wasPerformedBy"), user));
+	metaModel.add(metaModel.createStatement(metaModel.createResource("creation"), metaModel.createProperty("http://purl.org/net/provenance/types#exchangedHTTPMessage"), metaModel.createResource("request")));
+	metaModel.add(metaModel.createStatement(metaModel.createResource("request"), RDF.type, metaModel.createResource("http://www.w3.org/2011/http#Request")));
+
+	//metaModel.add(metaModel.createLiteralStatement(metaModel.createResource("request"), metaModel.createProperty("http://www.w3.org/2011/http#methodName"), "GET"));
+	//metaModel.add(metaModel.createLiteralStatement(metaModel.createResource("request"), metaModel.createProperty("http://www.w3.org/2011/http#absoluteURI"), "GET"));
+
+	log.debug("No of stmts in the metamodel: {} for GRAPH: {}", metaModel.size(), graph.getURI());
+	
+	return metaModel;
     }
     
     public OntModel getOntModel()

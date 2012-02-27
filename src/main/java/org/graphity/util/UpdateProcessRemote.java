@@ -25,8 +25,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
-import java.io.UnsupportedEncodingException;
-import org.openjena.atlas.lib.Base64;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +63,6 @@ public class UpdateProcessRemote implements UpdateProcessor
     @Override
     public void execute()
     {
-	//String reqStr = request.toString() ;
-	//HttpOp.execHttpPost(endpoint, WebContent.contentTypeSPARQLUpdate, reqStr) ;
-
 	Client client = Client.create();
 	WebResource wr = client.resource(endpoint).queryParam("auth_token", "2hwmvJSgCSV3fa3xGIb9");
 	client.addFilter(new LoggingFilter(System.out));
@@ -88,11 +83,13 @@ public class UpdateProcessRemote implements UpdateProcessor
 	    }
 	*/
 	
-	log.debug("Sending SPARUL request {} to endpoint {}", endpoint, request.toString());
+	String reqStr = request.toString().replaceFirst("CREATE <", "CREATE GRAPH <"); // Jena bug fixed in 2.7.0
+
+	log.debug("Sending SPARUL request {} to endpoint {}", reqStr, endpoint);
 	ClientResponse response =
 	wr.type(WebContent.contentTypeSPARQLUpdate).
 	accept(WebContent.contentTypeResultsXML).
-	post(ClientResponse.class, request.toString());
+	post(ClientResponse.class, reqStr);
 	
 	log.debug("SPARQL endpoint response: {}", response);
     }

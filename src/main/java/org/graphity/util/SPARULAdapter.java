@@ -16,14 +16,26 @@
  */
 package org.graphity.util;
 
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateRequest;
+import java.io.ByteArrayOutputStream;
+import org.openjena.riot.WebContent;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class SPARULAccessor // implements org.openjena.fuseki.DatasetAccessor
+public class SPARULAdapter // implements org.openjena.fuseki.DatasetAccessor
 {
+    private String endpoint = null;
+    
+    public SPARULAdapter(String endpoint)
+    {
+	this.endpoint = endpoint;
+    }
+    
     public void add(Model data)
     {
 	
@@ -31,7 +43,19 @@ public class SPARULAccessor // implements org.openjena.fuseki.DatasetAccessor
     
     public void add(String graphUri, Model data)
     {
-	
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	data.write(baos, WebContent.langNTriples);
+
+	//UpdateDataInsert;
+	// http://www.w3.org/TR/sparql11-update/#insertData
+	UpdateRequest request = UpdateFactory.create("CREATE GRAPH <" + graphUri + ">", Syntax.syntaxSPARQL_11).
+	   add("INSERT DATA { GRAPH <" + graphUri + "> {"
+	    + baos.toString() +
+	    "} }");
+
+	UpdateProcessRemote process = new UpdateProcessRemote(request, endpoint);
+	//process.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
+	process.execute();
     }
     
     public boolean containsModel(String graphURI)
