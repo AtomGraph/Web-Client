@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sd="http://www.w3.org/ns/sparql-service-description#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#namedGraph">
+    <rdfs:domain>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#GraphCollection">
+        <rdfs:label>An instance of sd:GraphCollection represents a collection of zero or more named graph descriptions. Each named graph belonging to an sd:GraphCollection should be linked with the sd:namedGraph predicate.</rdfs:label>
+      </rdfs:Class>
+    </rdfs:domain>
+    <rdfs:label>Relates an instance of sd:GraphCollection to the description of one of its named graphs. The description of such a named graph must include the sd:name and sd:graph properties.</rdfs:label>
+
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#NamedGraph">
+        <rdfs:label>An instance of sd:NamedGraph represents a named graph having a name (via sd:name) and a graph description (via sd:graph).</rdfs:label>
+      </rdfs:Class>
+    </rdfs:range>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#availableGraphDescriptions">
+    <rdfs:domain>
+
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#Service">
+        <rdfs:label>An instance of sd:Service represents a SPARQL service made available via the SPARQL Protocol.</rdfs:label>
+      </rdfs:Class>
+    </rdfs:domain>
+    <rdfs:label>Relates an instance of sd:Service to a description of the graphs that may be used in the construction of a dataset either via the SPARQL Protocol or with FROM/FROM NAMED clauses in the query.</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/ns/sparql-service-description#GraphCollection"/>
+  </rdf:Property>
+  <sd:Language rdf:about="http://www.w3.org/ns/sparql-service-description#SPARQL11Update">
+
+    <rdfs:label>The sd:Language representing the SPARQL 1.1 Update language.</rdfs:label>
+  </sd:Language>
+  <sd:Language rdf:about="http://www.w3.org/ns/sparql-service-description#SPARQL10Query">
+    <rdfs:label>The sd:Language representing the SPARQL 1.0 Query language.</rdfs:label>
+  </sd:Language>
+  <rdf:Description rdf:about="http://www.w3.org/ns/sparql-service-description#">
+    <dc:date>2011-05-10</dc:date>
+
+    <dc:creator>
+      <foaf:Person rdf:about="http://kasei.us/about/foaf.xrdf#greg">
+        <foaf:workplaceHomepage rdf:resource="http://tw.rpi.edu"/>
+        <foaf:name>Gregory Todd Williams</foaf:name>
+        <rdfs:seeAlso rdf:resource="http://www.cs.rpi.edu/%7Ewillig4/"/>
+        <rdfs:seeAlso rdf:resource="http://kasei.us/about/foaf.xrdf"/>
+      </foaf:Person>
+    </dc:creator>
+
+    <dc:creator>
+      <foaf:Person rdf:about="http://www.ivan-herman.net/foaf#me">
+        <foaf:workplaceHomepage rdf:resource="http://www.w3.org"/>
+        <foaf:title>Semantic Web Activity Lead</foaf:title>
+        <rdfs:seeAlso rdf:resource="http://www.ivan-herman.net/foaf"/>
+        <foaf:name>Ivan Herman</foaf:name>
+        <foaf:mbox rdf:resource="mailto:ivan@w3.org"/>
+      </foaf:Person>
+
+    </dc:creator>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#extensionFunction">
+    <rdfs:subPropertyOf>
+      <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#feature">
+        <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+        <rdfs:label>Relates an instance of sd:Service with a resource representing a supported feature.</rdfs:label>
+      </rdf:Property>
+
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service to a function that may be used in a SPARQL FILTER/HAVING clause or a project expression.</rdfs:label>
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#Function">
+        <rdfs:label>An instance of sd:Function represents a function that may be used in a SPARQL FILTER/HAVING clause or a project expression.</rdfs:label>
+      </rdfs:Class>
+    </rdfs:range>
+
+  </rdf:Property>
+  <rdf:Description rdf:about="http://www.w3.org/ns/sparql-service-description#RequiresDataset">
+    <rdfs:label>When used as the object of the sd:feature property, indicates that the query processor requires an explicit dataset declaration (based on either FROM/FROM NAMED clauses in the query or the appropriate SPARQL Protocol parameters).</rdfs:label>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#graph">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#NamedGraph"/>
+    <rdfs:label>Relates a named graph to its graph description.</rdfs:label>
+  </rdf:Property>
+
+  <sd:Language rdf:about="http://www.w3.org/ns/sparql-service-description#SPARQL11Query">
+    <rdfs:label>The sd:Language representing the SPARQL 1.1 Query language.</rdfs:label>
+  </sd:Language>
+  <rdf:Description rdf:about="http://www.w3.org/ns/sparql-service-description#EmptyGraphs">
+    <rdfs:label>When used as the object of the sd:feature property, indicates that the underlying graph store supports empty graphs. Such support impacts operations that might otherwise trigger the removal of a graph from the graph store.</rdfs:label>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#defaultDatasetDescription">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+
+    <rdfs:label>Relates an instance of sd:Service to a description of the default dataset available when no explicit dataset is specified.</rdfs:label>
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#Dataset">
+        <rdfs:label>An instance of sd:Dataset represents a SPARQL Dataset comprised of a default graph and zero or more named graphs.</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/sparql-service-description#GraphCollection"/>
+      </rdfs:Class>
+    </rdfs:range>
+  </rdf:Property>
+
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#defaultEntailmentRegime">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/ns/sparql-service-description#feature"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service with a resource representing an entailment regime used for basic graph pattern matching. This property is intended for use when a single entailment regime by default applies to all graphs in the dataset. In situations where a different entailment regime applies to a specific graph in the dataset, the sd:entailmentRegime should be used to indicate this fact in the description of that graph.</rdfs:label>
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#EntailmentRegime">
+        <rdfs:label>An instance of sd:EntailmentRegime represents an entailment regime used in basic graph pattern matching (as described in SPARQL 12.6 @@ updated section and add link when Query1.1 doc stabilizes).</rdfs:label>
+      </rdfs:Class>
+
+    </rdfs:range>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#supportedEntailmentProfile">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/ns/sparql-service-description#feature"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service with a resource representing a supported profile of the default entailment regime (as declared by sd:defaultEntailmentRegime).</rdfs:label>
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#EntailmentProfile">
+
+        <rdfs:label>An instance of sd:EntailmentProfile represents a profile of an entailment regime. An entailment profile may imply restrictions on what constitutes valid RDF with respect to entailment.</rdfs:label>
+      </rdfs:Class>
+    </rdfs:range>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#supportedLanguage">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/ns/sparql-service-description#feature"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service to a SPARQL language subset (e.g. Query and Update) that it implements.</rdfs:label>
+
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#Language">
+        <rdfs:label>An instance of sd:Language represents one of the SPARQL language, including specific configuration providing particular features or extensions. sd:SPARQL10Query, sd:SPARQL11Query, and sd:SPARQL11Update are pre-defined SPARQL language instances.</rdfs:label>
+      </rdfs:Class>
+    </rdfs:range>
+  </rdf:Property>
+  <rdf:Description rdf:about="http://www.w3.org/ns/sparql-service-description#UnionDefaultGraph">
+    <rdfs:label>When used as the object of the sd:feature property, indicates that the default graph of the dataset used during query evaluation is comprised of the union of all the named graphs in the dataset.</rdfs:label>
+
+  </rdf:Description>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#resultFormat">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service to a format that is supported for serializing query results.</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#languageExtension">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/ns/sparql-service-description#feature"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+
+    <rdfs:label>Relates an instance of sd:Service to a resource representing an implemented extension to the SPARQL Query or Update language.</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#entailmentRegime">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#NamedGraph"/>
+    <rdfs:label>Relates a named graph with a resource representing an entailment regime used for basic graph pattern matching over that graph.</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/ns/sparql-service-description#EntailmentRegime"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#propertyFeature">
+
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/ns/sparql-service-description#feature"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service to a resource representing an implemented feature to the SPARQL Query or Update language that is accessed by using the named property.</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#url">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>The service URL of an sd:Service supporting the SparqlQuery interface.</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#defaultGraph">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Dataset"/>
+    <rdfs:label>Relates an instance of sd:Dataset to the description of its default graph.</rdfs:label>
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#Graph">
+        <rdfs:label>An instance of sd:Graph represents the description of an RDF graph.</rdfs:label>
+      </rdfs:Class>
+
+    </rdfs:range>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#inputFormat">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service to a format that is supported for parsing RDF input (for example, via a SPARQL 1.1 Update LOAD statement or an HTTP PUT as described by SPARQL 1.1 Uniform HTTP Protocol for Managing RDF Graphs).</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#extensionAggregate">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/ns/sparql-service-description#feature"/>
+
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+    <rdfs:label>Relates an instance of sd:Service to an aggregate operation that may be used in a SPARQL HAVING clause or project expression.</rdfs:label>
+    <rdfs:range>
+      <rdfs:Class rdf:about="http://www.w3.org/ns/sparql-service-description#Aggregate">
+        <rdfs:label>An instance of sd:Aggregate represents an aggregate operation that may be used in a SPARQL aggregate query HAVING clause or project expression.</rdfs:label>
+      </rdfs:Class>
+    </rdfs:range>
+  </rdf:Property>
+
+  <rdf:Description rdf:about="http://www.w3.org/ns/sparql-service-description#DereferencesURIs">
+    <rdfs:label>When used as the object of the sd:feature property, indicates that a SPARQL service will dereference URIs used in a FROM or FROM NAMED clause and use the resulting RDF in the dataset during query evaluation.</rdfs:label>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://www.w3.org/ns/sparql-service-description#name">
+    <rdfs:domain rdf:resource="http://www.w3.org/ns/sparql-service-description#NamedGraph"/>
+    <rdfs:label>Relates a named graph to the name by which it may be referenced in a FROM/FROM NAMED clause.</rdfs:label>
+  </rdf:Property>
+</rdf:RDF>

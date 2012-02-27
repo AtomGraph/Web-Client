@@ -53,7 +53,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.util.manager.DataManager;
 import org.graphity.util.QueryBuilder;
-import org.graphity.util.SPARULAdapter;
+import org.graphity.util.SPARQLAdapter;
 import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,14 +146,18 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 	    }
 
-	    log.debug("Caching model to SPARQL endpoint");
-	    SPARULAdapter adapter = new SPARULAdapter(getSPARQLResource().getURI());
-	    String graphUri = getUriInfo().getBaseUriBuilder().
-		path("graphs/{graphId}").
-		build(UUID.randomUUID().toString()).toString();
-	    adapter.add(graphUri, model);
-	    adapter.add(createGraphMetaModel(ResourceFactory.createResource(graphUri)));
-
+	    if (getFirstParameter("uri") != null)
+	    {
+		log.debug("Caching model to SPARQL endpoint");
+		SPARQLAdapter adapter = new SPARQLAdapter(getSPARQLResource().getURI());
+		String graphUri = getUriInfo().getBaseUriBuilder().
+		    path("graphs/{graphId}").
+		    build(UUID.randomUUID().toString()).toString();
+		adapter.add(graphUri, model);
+		adapter.add(createGraphMetaModel(ResourceFactory.createResource(graphUri),
+		    getFirstParameter("uri"), getFirstParameter("service-uri")));
+	    }
+	    
 	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
 	    //if (!model.containsResource(model.createResource(getURI())))
 	    //    throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -164,7 +168,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	return model;
     }
     
-    public Model createGraphMetaModel(Resource graph) // String uri
+    public Model createGraphMetaModel(Resource graph, String uri, String endpoint)
     {
 	Model metaModel = ModelFactory.createDefaultModel();
 	
@@ -176,14 +180,17 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#DataItem")));
 	metaModel.add(metaModel.createStatement(graph, RDF.type, metaModel.createResource("http://www.w3.org/ns/sparql-service-description#NamedGraph")));
 	
-	metaModel.add(metaModel.createStatement(graph, metaModel.createProperty("http://purl.org/net/opmv/ns#wasGeneratedBy"), metaModel.createResource(AnonId.create("creation"))));
-	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("creation")), RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#HTTPBasedDataAccess")));
-	//metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("creation")), metaModel.createProperty("http://purl.org/net/opmv/ns#wasPerformedBy"), user));
-	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("creation")), metaModel.createProperty("http://purl.org/net/provenance/types#exchangedHTTPMessage"), metaModel.createResource(AnonId.create("request"))));
+	metaModel.add(metaModel.createStatement(graph, metaModel.createProperty("http://purl.org/net/opmv/ns#retrievedBy"), metaModel.createResource(AnonId.create("access"))));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("access")), RDF.type, metaModel.createResource("http://purl.org/net/provenance/ns#DataAccess")));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("access")), RDF.type, metaModel.createResource("http://purl.org/net/provenance/types#HTTPBasedDataAccess")));
+	//metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("access")), metaModel.createProperty("http://purl.org/net/opmv/ns#wasPerformedBy"), user));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("access")), metaModel.createProperty("http://purl.org/net/provenance/types#exchangedHTTPMessage"), metaModel.createResource(AnonId.create("request"))));
+	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("access")), metaModel.createProperty("http://purl.org/net/provenance/ns#accessedResource"), metaModel.createResource(uri)));
+	if (endpoint != null) metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("access")), metaModel.createProperty("http://purl.org/net/provenance/ns#accessedService"), metaModel.createResource(endpoint)));
+	
 	metaModel.add(metaModel.createStatement(metaModel.createResource(AnonId.create("request")), RDF.type, metaModel.createResource("http://www.w3.org/2011/http#Request")));
-
 	metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#methodName"), "GET"));
-	//metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#absoluteURI"), uri));
+	metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#absoluteURI"), uri));
 
 	log.debug("No of stmts in the metamodel: {} for GRAPH: {}", metaModel.size(), graph.getURI());
 	
@@ -226,7 +233,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	if (getFirstParameter("service-uri") != null || getSPARQLResource() != null)
 	{
 	    String serviceUri = (getFirstParameter("service-uri") != null) ?
-		    getFirstParameter("service-uri") : getSPARQLResource().getURI();
+		getFirstParameter("service-uri") : getSPARQLResource().getURI();
 	    
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceUri, getQuery());
 	    request.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());

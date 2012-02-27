@@ -22,7 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class CacheAdapter extends SPARULAdapter
+public class CacheAdapter extends SPARQLAdapter
 {
 
     public CacheAdapter(String endpoint)

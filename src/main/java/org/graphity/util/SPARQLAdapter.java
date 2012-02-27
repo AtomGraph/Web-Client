@@ -16,8 +16,12 @@
  */
 package org.graphity.util;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import java.io.ByteArrayOutputStream;
@@ -27,13 +31,18 @@ import org.openjena.riot.WebContent;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class SPARULAdapter // implements org.openjena.fuseki.DatasetAccessor
+public class SPARQLAdapter // implements org.openjena.fuseki.DatasetAccessor
 {
     private String endpoint = null;
     
-    public SPARULAdapter(String endpoint)
+    public SPARQLAdapter(String endpoint)
     {
 	this.endpoint = endpoint;
+    }
+
+    public String getEndpoint()
+    {
+	return endpoint;
     }
     
     public void add(Model data)
@@ -47,7 +56,7 @@ public class SPARULAdapter // implements org.openjena.fuseki.DatasetAccessor
 	    + baos.toString() +
 	    "}", Syntax.syntaxSPARQL_11);
 
-	UpdateProcessRemote process = new UpdateProcessRemote(request, endpoint);
+	UpdateProcessRemote process = new UpdateProcessRemote(request, getEndpoint());
 	//process.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
 	process.execute();	
     }
@@ -64,14 +73,16 @@ public class SPARULAdapter // implements org.openjena.fuseki.DatasetAccessor
 	    + baos.toString() +
 	    "} }");
 
-	UpdateProcessRemote process = new UpdateProcessRemote(request, endpoint);
+	UpdateProcessRemote process = new UpdateProcessRemote(request, getEndpoint());
 	//process.setBasicAuthentication(getServiceApiKey(), "X".toCharArray());
 	process.execute();
     }
     
     public boolean containsModel(String graphUri)
     {
-	return false;
+	Query query = QueryFactory.create("ASK { <" + graphUri + "> ?p ?o }");
+	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getEndpoint(), query);
+	return request.execAsk();
     }
     
 }

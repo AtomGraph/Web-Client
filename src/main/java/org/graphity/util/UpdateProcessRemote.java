@@ -85,7 +85,7 @@ public class UpdateProcessRemote implements UpdateProcessor
 	
 	String reqStr = request.toString().replaceFirst("CREATE <", "CREATE GRAPH <"); // Jena bug fixed in 2.7.0
 
-	log.debug("Sending SPARUL request {} to endpoint {}", reqStr, endpoint);
+	log.debug("Sending SPARQL request {} to endpoint {}", reqStr, endpoint);
 	ClientResponse response =
 	wr.type(WebContent.contentTypeSPARQLUpdate).
 	accept(WebContent.contentTypeResultsXML).

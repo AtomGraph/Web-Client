@@ -13,6 +13,7 @@
    [ lm:name "http://rdfs.org/ns/void#" ; lm:altName "void.owl" ] ,
    [ lm:name "http://dbpedia.org/ontology/" ; lm:altName "dbpedia-owl.owl" ] ,
    [ lm:name "http://graph.facebook.com/schema/user#" ; lm:altName "gfb-user.owl" ],
+   [ lm:name "http://www.w3.org/ns/sparql-service-description#" ; lm:altName "sparql-service.owl" ],
 
    [ lm:prefix "http://www.w3.org/1999/02/22-rdf-syntax-ns" ; lm:altName "rdf.owl" ] ,
    [ lm:prefix "http://www.w3.org/2000/01/rdf-schema" ; lm:altName "rdfs.owl" ] ,
@@ -24,6 +25,7 @@
    [ lm:prefix "http://graphity.org/ontology/" ; lm:altName "graphity.ttl" ] ,
    [ lm:prefix "http://rdfs.org/ns/void" ; lm:altName "void.owl" ] ,
    [ lm:prefix "http://dbpedia.org/ontology/" ; lm:altName "dbpedia-owl.owl" ] ,
-   [ lm:prefix "http://graph.facebook.com/schema/user" ; lm:altName "gfb-user.owl" ]
+   [ lm:prefix "http://graph.facebook.com/schema/user" ; lm:altName "gfb-user.owl" ] ,
+   [ lm:prefix "http://www.w3.org/ns/sparql-service-description" ; lm:altName "sparql-service.owl" ]
 
 .
