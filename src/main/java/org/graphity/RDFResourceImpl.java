@@ -146,6 +146,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 	    }
 
+	    /*
 	    if (getFirstParameter("uri") != null)
 	    {
 		log.debug("Caching model to SPARQL endpoint");
@@ -157,6 +158,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		adapter.add(createGraphMetaModel(ResourceFactory.createResource(graphUri),
 		    getFirstParameter("uri"), getFirstParameter("service-uri")));
 	    }
+	    */
 	    
 	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
 	    //if (!model.containsResource(model.createResource(getURI())))

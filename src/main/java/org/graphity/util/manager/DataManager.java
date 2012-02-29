@@ -19,12 +19,14 @@ package org.graphity.util.manager;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -190,23 +192,29 @@ public class DataManager extends FileManager implements URIResolver
 	    return super.readModel(model, mappedURI); // let FileManager handle
 	}
 
-	TypedStream stream = openNoMapOrNull(filenameOrURI);
-	if (stream != null)
+	TypedStream in = openNoMapOrNull(filenameOrURI);
+	if (in != null)
 	{
-	    log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, stream);
+	    log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, in);
 
-	    String syntax = langFromContentType(stream.getMimeType());
+	    String syntax = langFromContentType(in.getMimeType());
 
 	    if (syntax != null) // do not read if MimeType/syntax are not known
 	    {
-		log.debug("URI {} syntax is {}, letting FileManager.readModel() handle it", filenameOrURI, syntax);
-		return super.readModel(model, filenameOrURI, null, syntax); // let FileManager handle syntax
+		log.debug("URI {} syntax is {}, reading it", filenameOrURI, syntax);
+
+		model.read(in.getInput(), filenameOrURI, syntax) ;
+		try { in.getInput().close(); } catch (IOException ex) {}
 	    }
 	    else
 		log.debug("Syntax for URI {} unknown, ignoring", filenameOrURI);
 	}
 	else
-	    log.debug("Could not open stream for filename or URI: {}", filenameOrURI);
+        {
+            if ( log.isDebugEnabled() )
+                log.debug("Failed to locate '"+mappedURI+"'") ;
+            throw new NotFoundException("Not found: "+filenameOrURI) ;
+        }
 	
 	return model;
     }
@@ -268,7 +276,7 @@ public class DataManager extends FileManager implements URIResolver
 		}
 		catch (Exception ex)
 		{
-		    log.debug("Syntax error reading Model from URI", ex);
+		    log.debug("Could not read Model from URI (not found or syntax error)", ex);
 		    return getDefaultSource(); // return empty Model
 		    //return null;
 		}

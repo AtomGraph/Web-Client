@@ -177,29 +177,29 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     </xsl:template>    
 
     <xsl:template match="rdf:type/@rdf:resource" mode="g:TypeMode">
-	<xsl:variable name="this" select="."/>
-	<h2>
-	    <xsl:apply-imports/>
-	</h2>
-<xsl:message>
-    $mode: <xsl:value-of select="$mode"/>
-</xsl:message>
-	<dl>
-	    <xsl:choose>
-		<xsl:when test="$mode = '&g;EditMode'">
-		    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
-			<xsl:with-param name="type" select="$this"/>
-		    </xsl:apply-templates>
-		</xsl:when>
-		<xsl:otherwise>
-		    <!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
-		    <!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
-		    <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]">
-			<xsl:with-param name="type" select="$this"/>
-		    </xsl:apply-templates>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</dl>
+	<xsl:variable name="in-domain-properties" select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"/>
+<!-- ?<xsl:value-of select="g:inDomainOf(.)"/>? -->
+	<xsl:if test="$in-domain-properties">
+	    <h2>
+		<xsl:apply-imports/>
+	    </h2>
+	    <dl>
+		<xsl:choose>
+		    <xsl:when test="$mode = '&g;EditMode'">
+			<xsl:apply-templates select="$in-domain-properties" mode="g:EditMode">
+			    <xsl:with-param name="type" select="."/>
+			</xsl:apply-templates>
+		    </xsl:when>
+		    <xsl:otherwise>
+			<!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
+			<!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
+			<xsl:apply-templates select="$in-domain-properties">
+			    <xsl:with-param name="type" select="."/>
+			</xsl:apply-templates>
+		    </xsl:otherwise>
+		</xsl:choose>
+	    </dl>
+	</xsl:if>
     </xsl:template>
 
     <!-- property -->
@@ -209,6 +209,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
 	    <dt>
 		<xsl:apply-imports/>
+!<xsl:value-of select="rdfs:domain($this)"/>!
 	    </dt>
 	</xsl:if>
 	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
