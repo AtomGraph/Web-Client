@@ -59,7 +59,8 @@ public class DataManager extends FileManager implements URIResolver
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    protected boolean resolvingUncached = true;
+    protected boolean resolvingUncached = false;
+    protected boolean resolvingMapped = true;
 
     public static DataManager get() {
         if (s_instance == null) {
@@ -182,6 +183,12 @@ public class DataManager extends FileManager implements URIResolver
         return m;
     }
 
+    public boolean isMapped(String filenameOrURI)
+    {
+	String mappedURI = mapURI(filenameOrURI);
+	return (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:"));
+    }
+    
     @Override
     public Model readModel(Model model, String filenameOrURI)
     {
@@ -268,7 +275,7 @@ public class DataManager extends FileManager implements URIResolver
 	{
 	    log.debug("No cached Model for URI: {}", uri);
 
-	    if (resolvingUncached)
+	    if (resolvingUncached || (resolvingMapped && isMapped(uri)))
 		try
 		{
 		    log.debug("Loading Model for URI: {}", uri);
