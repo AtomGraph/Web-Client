@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -173,6 +174,8 @@ public class DataManager extends FileManager implements URIResolver
     public Model loadModel(String filenameOrURI)
     {
 	log.debug("loadModel({})", filenameOrURI);
+	filenameOrURI = UriBuilder.fromUri(filenameOrURI).fragment(null).build().toString(); // remove document fragments
+	
         if (hasCachedModel(filenameOrURI)) return getFromCache(filenameOrURI) ;  
 
 	Model m = ModelFactory.createDefaultModel();
