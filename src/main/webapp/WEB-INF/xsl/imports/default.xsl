@@ -190,12 +190,14 @@ exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
 	<xsl:for-each select="$type-uri">
 	    <xsl:for-each select="document(g:document-uri(.))">
 		<xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
+<!--		
 		<xsl:variable name="super-uris" select="rdfs:subClassOf($type-uri)" as="xs:anyURI*"/>
     <xsl:message>$super-uris: <xsl:value-of select="$super-uris"/></xsl:message>
 		<xsl:if test="not(empty($super-uris))">
 		    <xsl:sequence select="g:inDomainOf($super-uris)"/>
 		</xsl:if>
-    <!-- <xsl:sequence select="g:inDomainOf(rdfs:subClassOf($type-uri))"/> -->
+-->
+
     <xsl:if test="key('resources-by-domain', $type-uri)/@rdf:about">
 	<xsl:message>g:inDomainOf: <xsl:value-of select="key('resources-by-domain', $type-uri)/@rdf:about"/></xsl:message>
     </xsl:if>
