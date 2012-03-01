@@ -146,20 +146,27 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 	    }
 
-	    /*
-	    if (getFirstParameter("uri") != null)
+	    // cache Model to SPARQL endpoint
+	    if (!model.isEmpty() && getFirstParameter("uri") != null)
 	    {
-		log.debug("Caching model to SPARQL endpoint");
-		SPARQLAdapter adapter = new SPARQLAdapter(getSPARQLResource().getURI());
-		String graphUri = getUriInfo().getBaseUriBuilder().
-		    path("graphs/{graphId}").
-		    build(UUID.randomUUID().toString()).toString();
-		adapter.add(graphUri, model);
-		adapter.add(createGraphMetaModel(ResourceFactory.createResource(graphUri),
-		    getFirstParameter("uri"), getFirstParameter("service-uri")));
+		Thread thread = new Thread()
+		{
+		    @Override
+		    public void run()
+		    {
+			log.debug("Caching model to SPARQL endpoint");
+			SPARQLAdapter adapter = new SPARQLAdapter(getSPARQLResource().getURI());
+			String graphUri = getUriInfo().getBaseUriBuilder().
+			    path("graphs/{graphId}").
+			    build(UUID.randomUUID().toString()).toString();
+			adapter.add(graphUri, model);
+			adapter.add(createGraphMetaModel(ResourceFactory.createResource(graphUri),
+			    getFirstParameter("uri"), getFirstParameter("service-uri")));
+		    }
+		};
+		thread.start();
 	    }
-	    */
-	    
+  
 	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found
 	    //if (!model.containsResource(model.createResource(getURI())))
 	    //    throw new WebApplicationException(Response.Status.NOT_FOUND);
