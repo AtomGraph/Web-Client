@@ -26,6 +26,8 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import java.io.ByteArrayOutputStream;
 import org.openjena.riot.WebContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,6 +35,8 @@ import org.openjena.riot.WebContent;
  */
 public class SPARQLAdapter // implements org.openjena.fuseki.DatasetAccessor
 {
+    private static final Logger log = LoggerFactory.getLogger(SPARQLAdapter.class);
+    
     private String endpoint = null;
     
     public SPARQLAdapter(String endpoint)
