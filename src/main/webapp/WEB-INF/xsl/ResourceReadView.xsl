@@ -6,6 +6,8 @@
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY gfb-app "http://graph.facebook.com/schema/application#">
     <!ENTITY oauth "http://tools.ietf.org/html/draft-ietf-oauth-v2-23#">
+    <!ENTITY g-maps "http://maps.googleapis.com/maps/api/js">
+    <!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -16,10 +18,12 @@ xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:gfb-app="&gfb-app;"
+xmlns:g-maps="&g-maps;"
 xmlns:oauth="&oauth;"
+xmlns:geo="&geo;"
 xmlns:php="http://php.net/xsl"
 xmlns:url="java.net.URLEncoder"
-exclude-result-prefixes="xsl xhtml g rdf php url">
+exclude-result-prefixes="xsl xhtml xs g rdf rdfs php url gfb-app g-maps oauth geo">
 <!-- xmlns:url="&java;java.net.URLEncoder" -->
 
     <xsl:import href="imports/default.xsl"/>
@@ -40,12 +44,14 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:param name="php-os"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
     <xsl:param name="gfb-app:id" select="'121081534640971'" as="xs:string"/>
+    <xsl:param name="g-maps:key" select="'AIzaSyATfQRHyNn8HBo7Obi3ytqybeSHoqAbRYA'" as="xs:string"/>
     <xsl:param name="oauth:redirect_uri" select="resolve-uri('oauth', $base-uri)" as="xs:anyURI"/>
     <xsl:param name="rdf:type" as="xs:string?"/>
     
     <xsl:variable name="resource" select="/"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+
     <!--
     <xsl:key name="resources" match="*[@rdf:about] | *[@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-type" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
@@ -55,7 +61,7 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
     <xsl:key name="resources-by-subject" match="*[@rdf:about] | *[@rdf:nodeID]" use="dc:subject/@rdf:resource"/>
     <xsl:key name="uri-resources" match="*[@rdf:about]" use="@rdf:about"/>
     <xsl:key name="bnodes" match="*[@rdf:nodeID]" use="@rdf:nodeID"/>
-    <xsl:key name="properties" match="*" use="concat(namespace-uri(.), local-name(.))"/>
+    <xsl:key name="properties" match="*[node()] | *[@rdf:resource] | *[@rdf:nodeID]" use="concat(namespace-uri(.), local-name(.))"/>
     <xsl:key name="object-properties" match="*[@rdf:resource or */@rdf:about]" use="concat(namespace-uri(.), local-name(.))"/>
     <xsl:key name="datatype-properties" match="*[*]" use="concat(namespace-uri(.), local-name(.))"/>
     -->
@@ -78,8 +84,27 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 		  })();
 		  ]]>
 		</script>
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key={$g-maps:key}&amp;sensor=false">&#160;</script>
+		<xsl:if test="//*[geo:lat and geo:long]">
+		    <script type="text/javascript">
+		      function initialize() {
+			var myOptions = {
+			<xsl:if test="key('resources', $uri)[geo:lat and geo:long]">
+			  center: new google.maps.LatLng(<xsl:value-of select="key('resources', $uri)/geo:lat"/>, <xsl:value-of select="key('resources', $uri)/geo:long"/>),
+			</xsl:if>
+			  zoom: 8,
+			  mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+			var map = new google.maps.Map(document.getElementById("map_canvas"),
+			    myOptions);
+		      }
+		    </script>
+		</xsl:if>
 	    </head>
 	    <body>
+		<xsl:if test="//*[geo:lat and geo:long]">
+		     <xsl:attribute name="onload">initialize();</xsl:attribute>
+		</xsl:if>
 		<form action="" method="get">
 		    <fieldset>
 			<label for="uri">URI</label>
@@ -112,6 +137,11 @@ exclude-result-prefixes="xsl xhtml g rdf php url">
 			</li>
 		    </ul>
 		</form>
+
+		<xsl:if test="//*[geo:lat and geo:long]">
+		    <div id="map_canvas" style="width:100%; height:100%; background-color: red;">&#160;</div>
+		</xsl:if>
+		
 		<xsl:choose>
 		    <xsl:when test="$mode = '&g;EditMode'">
 			<xsl:apply-templates select="key('resources', $uri)" mode="g:EditMode"/>
