@@ -146,8 +146,10 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 	    }
 
+	    if (model.isEmpty()) throw new WebApplicationException(Response.Status.NOT_FOUND);
+		
 	    // cache Model to SPARQL endpoint
-	    if (!model.isEmpty() && getFirstParameter("uri") != null)
+	    if (getFirstParameter("uri") != null)
 	    {
 		Thread thread = new Thread()
 		{
