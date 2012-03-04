@@ -35,7 +35,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
@@ -48,7 +47,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.graphity.util.manager.DataManager;
 import org.graphity.util.QueryBuilder;
-import org.graphity.util.SPARQLAdapter;
 import org.graphity.util.SPARQLCacheAdapter;
 import org.graphity.vocabulary.Graphity;
 import org.slf4j.Logger;
@@ -121,7 +119,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 		catch (Exception ex)
 		{
-		    log.trace("Could not load Model from URI: {}", getFirstParameter("uri"));
+		    log.trace("Could not load Model from URI: {}", getFirstParameter("uri"), ex);
 		    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 		}
 	    }
@@ -137,7 +135,7 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 		}
 		catch (Exception ex)
 		{
-		    log.trace("Could not execute Query: {}", getQuery());
+		    log.trace("Could not execute Query: {}", getQuery(), ex);
 		    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 		}
 	    }
@@ -147,15 +145,12 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 	    // cache Model to SPARQL endpoint
 	    if (getFirstParameter("uri") != null)
 	    {
-		/*
 		Thread thread = new Thread()
 		{
 		    @Override
 		    public void run()
 		    {
-		 * 
-		 */
-			SPARQLCacheAdapter adapter = new SPARQLCacheAdapter(getUriInfo(), getSPARQLResource().getURI());
+			SPARQLCacheAdapter adapter = new SPARQLCacheAdapter(getUriInfo().getBaseUriBuilder(), getSPARQLResource().getURI());
 			if (!adapter.containsModel(getFirstParameter("uri")))
 			{
 			    log.debug("Caching Model with URI {} to SPARQL endpoint", getFirstParameter("uri"));
@@ -163,12 +158,9 @@ abstract public class RDFResourceImpl extends ResourceImpl implements RDFResourc
 			}
 			else
 			    log.debug("Skipping Model with URI {}, already cached", getFirstParameter("uri"));
-			/*
 		    }
 		};
 		thread.start();
-			 * 
-			 */
 	    }
   
 	    // RDF/XML description must include some statements about this URI, otherwise it's 404 Not Found

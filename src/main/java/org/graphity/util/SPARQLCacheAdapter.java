@@ -29,7 +29,7 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.GregorianCalendar;
 import java.util.UUID;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,17 +41,17 @@ public class SPARQLCacheAdapter extends SPARQLAdapter
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLCacheAdapter.class);
     
-    private UriInfo uriInfo = null;
+    private UriBuilder uriBuilder = null;
     
-    public SPARQLCacheAdapter(UriInfo uriInfo, String endpoint)
+    public SPARQLCacheAdapter(UriBuilder uriBuilder, String endpoint)
     {
 	super(endpoint);
-	this.uriInfo = uriInfo;
+	this.uriBuilder = uriBuilder;
     }
 
-    public UriInfo getUriInfo()
+    public UriBuilder getUriBuilder()
     {
-	return uriInfo;
+	return uriBuilder;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SPARQLCacheAdapter extends SPARQLAdapter
 
     public void add(String filenameOrURI, Model data, String endpoint)
     {
-	String graphUri = getUriInfo().getBaseUriBuilder().
+	String graphUri = getUriBuilder().
 	    path("graphs/{graphId}").
 	    build(UUID.randomUUID().toString()).toString();
 

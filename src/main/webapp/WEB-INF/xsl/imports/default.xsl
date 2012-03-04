@@ -162,6 +162,12 @@ exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
 		    <xsl:when test="$imported-label">
 			<xsl:sequence select="concat(upper-case(substring($imported-label, 1, 1)), substring($imported-label, 2))"/>
 		    </xsl:when>
+		    <xsl:when test="substring-after($resource-uri, '#')">
+			<xsl:sequence select="substring-after($resource-uri, '#')"/>
+		    </xsl:when>
+		    <xsl:when test="contains($resource-uri, '/')">
+			<xsl:sequence select="tokenize($resource-uri, '/')[last()]"/>
+		    </xsl:when>
 		    <xsl:otherwise>
 			<xsl:sequence select="$resource-uri"/>
 		    </xsl:otherwise>
