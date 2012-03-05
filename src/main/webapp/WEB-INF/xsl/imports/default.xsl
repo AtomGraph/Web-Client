@@ -14,7 +14,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:url="&java;java.net.URLEncoder"
+xmlns:url="&java;java.net.URLDecoder"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -34,7 +34,7 @@ exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
 
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource">
-	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
@@ -57,7 +57,7 @@ exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
     <!-- property -->
     <xsl:template match="*[node() or @rdf:resource or @rdf:nodeID]">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<a href="{$base-uri}?uri={url:encode($this, 'UTF-8')}">
+	<a href="{$base-uri}?uri={encode-for-uri($this)}">
 	    <xsl:value-of select="g:label($this, /, $lang)"/>
 	</a>
     </xsl:template>
@@ -100,7 +100,7 @@ exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
     </xsl:template>
 
     <xsl:template match="@rdf:about | @rdf:resource" mode="g:TypeMode">
-	<a href="{$base-uri}?uri={url:encode(., 'UTF-8')}">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
@@ -166,7 +166,7 @@ exclude-result-prefixes="xhtml g url rdf rdfs xsd dc dct foaf">
 			<xsl:sequence select="substring-after($resource-uri, '#')"/>
 		    </xsl:when>
 		    <xsl:when test="contains($resource-uri, '/')">
-			<xsl:sequence select="tokenize($resource-uri, '/')[last()]"/>
+			<xsl:sequence select="translate(url:decode(tokenize($resource-uri, '/')[last()], 'UTF-8'), '_', ' ')"/>
 		    </xsl:when>
 		    <xsl:otherwise>
 			<xsl:sequence select="$resource-uri"/>
