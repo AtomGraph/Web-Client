@@ -35,6 +35,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
@@ -143,7 +144,7 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
     
     public XSLTBuilder getXSLTBuilder(RDFResource resource) throws TransformerConfigurationException
     {
-	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "ResourceReadView.xsl")).
+	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet(context, XSLT_BASE + "Resource.xsl")).
 	    //document(new ByteArrayInputStream(baos.toByteArray())).
 	    //parameter("uri", resource.getURI()).
 	    resolver(resolver).
@@ -151,14 +152,17 @@ if (rdf2xhtml == null) log.debug("rdf2xhtml == null");
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("uri") != null)
 	{
-	    rdf2xhtml.parameter("uri", resource.getUriInfo().getQueryParameters().getFirst("uri"));
+	    rdf2xhtml.parameter("uri",
+		UriBuilder.fromUri(resource.getUriInfo().getQueryParameters().getFirst("uri")).build());
 	
 	    if (resource.getUriInfo().getQueryParameters().getFirst("service-uri") != null &&
 		    !resource.getUriInfo().getQueryParameters().getFirst("service-uri").isEmpty())
-		rdf2xhtml.parameter("service-uri", resource.getUriInfo().getQueryParameters().getFirst("service-uri"));
+		rdf2xhtml.parameter("service-uri",
+			UriBuilder.fromUri(resource.getUriInfo().getQueryParameters().getFirst("service-uri")).build());
 	}
 	else // browsing localhost
-	    rdf2xhtml.parameter("service-uri", resource.getSPARQLResource());
+	    rdf2xhtml.parameter("service-uri",
+		    UriBuilder.fromUri(resource.getSPARQLResource().getURI()).build());
 
 	if (resource.getUriInfo().getQueryParameters().getFirst("mode") != null)
 	    rdf2xhtml.parameter("mode", resource.getUriInfo().getQueryParameters().getFirst("mode"));
