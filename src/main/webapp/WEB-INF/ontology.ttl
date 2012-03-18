@@ -27,10 +27,10 @@
 _:dataset a void:Dataset;
     foaf:homepage <> ;
     rdfs:isDefinedBy : ;
-    void:sparqlEndpoint <http://de.dydra.com/graphity/browser/sparql> .
+    void:sparqlEndpoint <http://dydra.com/graphity/browser/sparql> .
 _:service a sd:Service ;
     rdfs:isDefinedBy : ;
-    sd:endpoint <http://de.dydra.com/graphity/browser/sparql> ;
+    sd:endpoint <http://dydra.com/graphity/browser/sparql> ;
     dc:title "Default Graphity SPARQL endpoint" ;
     g:apiKey "2hwmvJSgCSV3fa3xGIb9"^^xsd:string ;
     sd:supportedLanguage sd:SPARQL11Query .
@@ -50,7 +50,7 @@ _:airports-service a sd:Service ;
     g:query g:ConstructLatest ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset ;
-    lda:sparqlEndpoint <http://de.dydra.com/graphity/browser/sparql> ;
+    lda:sparqlEndpoint <http://dydra.com/graphity/browser/sparql> ;
     g:facebookApp <https://graph.facebook.com/121081534640971#> ;
     g:defaultQuery g:Describe .
 
