@@ -478,7 +478,7 @@ public class DataManager extends FileManager implements URIResolver
 	    log.debug("isSPARQLService({}): {}", uri, isSPARQLService(uri));
 	    log.debug("isMapped({}): {}", uri, isMapped(uri));
 
-	    if (resolvingUncached || uri.contains("youtube.com") || // ugly hack!!!
+	    if (resolvingUncached ||
 		    (resolvingSPARQL && isSPARQLService(uri)) ||
 		    (resolvingMapped && isMapped(uri)))
 		try
