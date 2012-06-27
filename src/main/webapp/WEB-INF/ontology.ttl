@@ -1,12 +1,9 @@
-#@base <http://linkeddata.dk/> . # needs to be explicit when deploying, because of missing :8080 port number
-
 @prefix : <ontology/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix g: <http://graphity.org/ontology/> .
-@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix void: <http://rdfs.org/ns/void#> .
 @prefix sp: <http://spinrdf.org/sp#> .
 @prefix dct: <http://purl.org/dc/terms/> .
@@ -14,16 +11,7 @@
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix dbpedia: <http://dbpedia.org/resource/> .
 @prefix lda: <http://purl.org/linked-data/api/vocab#> .
-@prefix gfb-app: <http://graph.facebook.com/schema/application#> .
-@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix qb: <http://purl.org/linked-data/cube#> .
-@prefix sdmx-dimension: <http://purl.org/linked-data/sdmx/2009/dimension#> .
 @prefix doap: <http://usefulinc.com/ns/doap#> .
-@prefix awol: <http://bblfish.net/work/atom-owl/2006-06-06/AtomOwl.html#> .
-@prefix vis: <http://graphity.org/ontologies/visualizations#> .
-@prefix vis-google: <http://graphity.org/ontologies/visualizations/google#> .
-@prefix mm: <http://politiken.dk/politik/meningsmaaleren/> .
-@prefix party:   <http://politiken.dk/politik/parti/> .
 
 : a owl:Ontology ;
     owl:imports <http://graphity.org/ontology/> ;
@@ -37,22 +25,15 @@
 _:dataset a void:Dataset;
     foaf:homepage <> ;
     rdfs:isDefinedBy : ;
-    void:sparqlEndpoint <http://dydra.com/graphity/browser/sparql> .
-_:service a sd:Service ;
-    rdfs:isDefinedBy : ;
-    sd:endpoint <http://dydra.com/graphity/browser/sparql> ;
-    dct:title "Graphity" ;
-    dct:description "Default Graphity SPARQL endpoint" ;
-    sd:supportedLanguage sd:SPARQL11Query .
-<https://graph.facebook.com/121081534640971#> gfb-app:id "121081534640971"^^xsd:string ;
-    gfb-app:name "Graphity Facebook app" ;
-    rdfs:label "Graphity Facebook app" .
+    void:sparqlEndpoint <sparql> .
+
 <http://graphity.org#browser> a doap:Project ;
     dct:title "Graphity Browser" ;
     doap:repository <https://github.com/Graphity/graphity-browser.git> ;
     doap:browse <https://github.com/Graphity/graphity-browser> ;
     doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
     doap:maintainer <http://semantic-web.dk#martynas> ;
+    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
     doap:programming-language dbpedia:XSLT,
 	<http://dbpedia.org/resource/Java_%28programming_language%29> .
 
@@ -68,64 +49,14 @@ _:service a sd:Service ;
 	dbpedia:Web_browser ,
 	dbpedia:Open_source ;
     dct:creator <http://semantic-web.dk#martynas> ;
-    g:query g:SelectServices ;
+    # g:query g:SelectServices ;
     rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    #g:service <http://dydra.com/graphity/browser/sparql> ;
-    g:facebookApp <https://graph.facebook.com/121081534640971#> .
-
-<sign%20up> a rdf:Resource ;
-    dct:title "Sign up"@en ;
-    dct:created "2012-06-15"^^xsd:date .
-
-<feedback> a rdf:Resource ;
-    dct:title "Feedback"@en ;
-    dct:created "2012-06-23"^^xsd:date .
+    void:inDataset _:dataset .
 
 <sparql> a rdf:Resource ;
     sioc:has_host <> ;
     dct:title "SPARQL endpoint"@en ;
     rdfs:isDefinedBy : .
-
-<endpoints> a sioc:Forum, lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "Endpoints"@en ;
-    g:query g:SelectServices ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset .
-
-<ontologies> a sioc:Forum, lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "Ontologies"@en ;
-    g:query g:SelectOntologies ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service .
-
-<people> a sioc:Forum, lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "People"@en ;
-    g:query g:SelectPersons ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service .
-
-<images> a sioc:Forum, lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "Images"@en ;
-    g:query g:SelectImages ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service ;
-    g:mode g:ImageMode .
-
-<locations> a sioc:Forum, lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "Locations"@en ;
-    g:query g:SelectLocations ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service .
 
 <search> a lda:ListEndpoint ;
     sioc:has_host <> ;
@@ -135,473 +66,24 @@ _:service a sd:Service ;
     void:inDataset _:dataset ;
     g:service _:service .
 
+<ontologies> a sioc:Forum, lda:ListEndpoint ;
+    sioc:has_host <> ;
+    dct:title "Ontologies"@en ;
+    g:query g:SelectOntologies ;
+    rdfs:isDefinedBy : ;
+    void:inDataset _:dataset ;
+    g:service _:service .
+
 <classes> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
     dct:title "Classes"@en ;
     g:query g:SelectClasses ;
     rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service .
+    void:inDataset _:dataset .
 
 <queries> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
     dct:title "Queries"@en ;
     g:query g:SelectQueries ;
     rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    #g:service _:service
-    .
-
-# DOCUMENTS
-
-<about> a foaf:Document ;
-    dct:title "About"@en ;
-    dct:created "2012-06-15"^^xsd:date ;
-    # sioc:content "Established in October 2011" 
-    awol:content [ a awol:XML ;
-        awol:type "application/xhtml+xml" ;
-        awol:xml '<div xmlns="http://www.w3.org/1999/xhtml"><h3 id="Graphity">Graphity</h3><h3 id="linkeddata.dk">linkeddata.dk</h3><h3 id="Linked%20Data">Linked Data</h3></div>'^^rdf:XMLLiteral ;
-        awol:lang "da"
-    ] .
-
-<products> a foaf:Document ;
-    dct:title "Products"@en ;
-    dct:created "2012-06-24"^^xsd:date ;
-    # sioc:content "Products" .
-    awol:content [ a awol:XML ;
-        awol:type "application/xhtml+xml" ;
-        awol:xml '<div xmlns="http://www.w3.org/1999/xhtml"><p>shiiiit</p></div>'^^rdf:XMLLiteral ;
-        awol:lang "da"
-    ] .
-  
-<services> a foaf:Document ;
-    dct:title "Services"@en ;
-    dct:created "2012-06-24"^^xsd:date ;
-    sioc:content "Services" .
-
-<cases> a foaf:Document ;
-    dct:title "Cases"@en ;
-    dct:created "2012-06-24"^^xsd:date ;
-    sioc:content "Cases" .
-
-<contact> a foaf:Document ;
-    dct:title "Contact"@en ;
-    dct:created "2012-06-24"^^xsd:date ;
-    sioc:content "Contact" .
-
-# QUERIES
-
-_:b1  sp:varName "obs"^^xsd:string .
-_:b2  sp:varName "date"^^xsd:string .
-
-<queries/politiken/polls>    a       sp:Select, sp:Query, sioc:Post ;
-    dct:title "Meningsmålinger folketingsvalg"@da ;
-    dct:title "Danish parliament polls"@en ;
-    dct:description "Udvikling af antallet af partiers mandater over tid"@da ;
-    dct:description "Development of parliamentary mandates by parties over time"@en ;
-    dct:created "2012-05-11"^^xsd:date ;
-    dct:subject <http://dbpedia.org/resource/Denmark> ,
-	<http://dbpedia.org/resource/Opinion_poll> ,
-	<http://dbpedia.org/resource/Folketing> ,
-	<http://dbpedia.org/resource/Election> ;
-
-      #g:service _:Politiken ;
-      vis:visualizedBy [ a vis-google:LineChart ;
-                        vis:binding [ a vis-google:LineChartLabelBinding ;
-			                vis:variable _:b2 # date on X
-                                    ] ,
-				    [ a vis-google:LineChartValueBinding ;
-			                vis:variable _:b4 # seats on Y
-                                    ]
-			] ;
-      sp:text """PREFIX mm: <http://politiken.dk/politik/meningsmaaleren/>
-PREFIX party: <http://politiken.dk/politik/parti/>
-PREFIX qb: <http://purl.org/linked-data/cube#>
-PREFIX sdmx-dimension: <http://purl.org/linked-data/sdmx/2009/dimension#>
-SELECT ?date ((AVG(?A)) AS ?A) ((AVG(?B)) AS ?B) ((AVG(?C)) AS ?C) ((AVG(?F)) AS ?F) ((AVG(?K)) AS ?K) ((AVG(?O)) AS ?O) ((AVG(?OE)) AS ?OE) ((AVG(?V)) AS ?V) ((AVG(?Y)) AS ?Y)
-WHERE {
-    GRAPH ?g {
-        ?obs a qb:Observation .
-        ?obs sdmx-dimension:refPeriod ?date .
-        OPTIONAL {
-            ?obs mm:party party:A .
-            ?obs mm:seatCount ?A .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:B .
-            ?obs mm:seatCount ?B .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:C .
-            ?obs mm:seatCount ?C .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:F .
-            ?obs mm:seatCount ?F .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:K .
-            ?obs mm:seatCount ?K .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:O .
-            ?obs mm:seatCount ?O .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:OE .
-            ?obs mm:seatCount ?OE .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:V .
-            ?obs mm:seatCount ?V .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:Y .
-            ?obs mm:seatCount ?Y .
-        } .
-    } .
-}
-GROUP BY ?date
-ORDER BY DESC(?date)"""^^xsd:string .
-
-# =============
-
-<queries/politiken/polls/annual>    a       sp:Select, sp:Query, sioc:Post ;
-    dct:title "Meningsmålinger folketingsvalg (årligt)"@da ;
-    dct:title "Danish parliament polls (annual)"@en ;
-    dct:description "Udvikling af antallet af hovedpartiers mandater over de sidste år"@da ;
-    dct:description "Development of parliamentary mandates of main parties over the last years"@en ;
-    dct:created "2012-06-14"^^xsd:date ;
-    dct:subject <http://dbpedia.org/resource/Denmark> ,
-	<http://dbpedia.org/resource/Opinion_poll> ,
-	<http://dbpedia.org/resource/Folketing> ,
-	<http://dbpedia.org/resource/Election> ;
-
-      #g:service _:Politiken ;
-      vis:visualizedBy [ a vis-google:ColumnChart ;
-                        vis:binding [ a vis-google:ColumnChartLabelBinding ;
-			                vis:variable _:b2 # date on X
-                                    ] ,
-				    [ a vis-google:ColumnChartValueBinding ;
-			                vis:variable _:b4 # seats on Y
-                                    ]
-			] ;
-      sp:text """PREFIX mm: <http://politiken.dk/politik/meningsmaaleren/>
-PREFIX party: <http://politiken.dk/politik/parti/>
-PREFIX qb: <http://purl.org/linked-data/cube#>
-PREFIX sdmx-dimension: <http://purl.org/linked-data/sdmx/2009/dimension#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-SELECT ?year ((AVG(?Ac)) AS ?A) ((AVG(?Bc)) AS ?B) ((AVG(?Oc)) AS ?O) ((AVG(?Vc)) AS ?V)
-WHERE {
-    GRAPH ?g {
-        ?obs a qb:Observation .
-        ?obs sdmx-dimension:refPeriod ?date .
-        BIND(year(?date) AS ?year)
-        OPTIONAL {
-            ?obs mm:party party:A .
-            ?obs mm:seatCount ?Ac .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:B .
-            ?obs mm:seatCount ?Bc .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:O .
-            ?obs mm:seatCount ?Oc .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:V .
-            ?obs mm:seatCount ?Vc .
-        } .
-        OPTIONAL {
-            ?obs mm:party party:Y .
-            ?obs mm:seatCount ?Yc .
-        } .
-    } .
-}
-GROUP BY ?year
-ORDER BY ?year"""^^xsd:string .
-
-# =============
-
-<queries/denmark/schools/vanl%C3%B8se>    a       sp:Select, sp:Query, sioc:Post ;
-    g:service _:SchoolsInDenmark ;
-    dct:title "Skoler i Vanløse"@da ;
-    dct:title "Schools in Vanløse"@en ;
-    dct:created "2012-06-11"^^xsd:date ;
-    dct:description "Danske skoler med postnummer 2720"@da ;
-    dct:description "Danish schools with postal code 2720"@en ;
-    dct:subject <http://dbpedia.org/resource/Denmark> ,
-	<http://dbpedia.org/resource/School> ,
-	<http://dbpedia.org/resource/Copenhagen> ,
-	<http://dbpedia.org/resource/Vanl%C3%B8se> ;
-
-    sp:text """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
-
-SELECT DISTINCT ?school ?title ?address
-WHERE
-{
-  GRAPH ?g
-  {
-    ?school dbpedia-owl:postalCode "2720" ;
-      dc:title ?title ;
-      dbpedia-owl:address ?address
-  }
-}
-ORDER BY ?title
-LIMIT 50"""^^xsd:string .
-
-# =============
-
-<queries/world-bank/denmark/gdp-vs-household>    a       sp:Select, sp:Query, sioc:Post ;
-    dct:title "Annual danish growth rates" ;
-    dct:description "Annual GDP growth compared to annual growth of household expenditure" ;
-    dct:created "2012-05-13"^^xsd:date ;
-    dct:subject <http://dbpedia.org/resource/Gross_domestic_product> ,
-	<http://dbpedia.org/resource/Denmark> ,
-	<http://dbpedia.org/resource/World_Bank> ,
-	<http://dbpedia.org/resource/Household_final_consumption_expenditure> ;
-    vis:visualizedBy [ a vis-google:LineChart ;
-		    vis:binding [ a vis-google:LineChartLabelBinding ;
-				    vis:variable    [ sp:varName "period"^^xsd:string
-						    ]
-				] ,
-				[ a vis-google:LineChartValueBinding ;
-				    vis:variable [ sp:varName "gdpGrowth"^^xsd:string
-						    ]
-				] ,
-				[ a vis-google:LineChartValueBinding ;
-				    vis:variable [ sp:varName "hhGrowth"^^xsd:string
-						    ]
-				]
-		    ] ;
-    sp:text """PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX sdmx-dimension: <http://purl.org/linked-data/sdmx/2009/dimension#>
-PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
-PREFIX qb: <http://purl.org/linked-data/cube#>
-PREFIX year: <http://reference.data.gov.uk/id/year/>
-PREFIX property: <http://worldbank.270a.info/property/>
-PREFIX indicator: <http://worldbank.270a.info/classification/indicator/>
-PREFIX country: <http://worldbank.270a.info/classification/country/>
-
-PREFIX g-meta: <http://worldbank.270a.info/graph/meta>
-PREFIX g-indicators: <http://worldbank.270a.info/graph/world-development-indicators>
-
-SELECT ?period (xsd:float(?gg) AS ?gdpGrowth) (xsd:float(?hhg) AS ?hhGrowth)
-WHERE {
-    GRAPH g-indicators: {
-        ?gdpObs property:indicator indicator:NY.GDP.MKTP.KD.ZG ;
-            sdmx-dimension:refArea ?country ;
-            sdmx-dimension:refPeriod ?period ;
-            sdmx-measure:obsValue ?gg .
-        ?hhObs property:indicator indicator:NE.CON.PRVT.KD.ZG ;
-            sdmx-dimension:refArea ?country ;
-            sdmx-dimension:refPeriod ?period ;
-            sdmx-measure:obsValue ?hhg .
-	FILTER (?country = country:DK)
-        #BIND(SUBSTR(STR(?period), 38, 4) AS ?year)
-        #FILTER (xsd:int(?year) >= 1990)
-    }
-
-    GRAPH g-meta: {
-        ?country skos:prefLabel ?countryPrefLabel .
-    }
-}
-ORDER BY ?period"""^^xsd:string .
-
-# DATASOURCES
-
-_:Politiken a sd:Service ;
-    dct:title "Politiken" ;
-    dct:description "RDF data from Politiken" ;
-    foaf:homepage <http://politiken.dk> ;
-    foaf:logo <https://upload.wikimedia.org/wikipedia/commons/b/b6/Politiken_newspaper_logo.svg> ;
-    sd:endpoint <http://dydra.com/graphity/politiken/sparql> .
-
-_:DBPedia a void:Dataset, sd:Service ;
-    dct:title "DBPedia" ;
-    dct:description "RDF data extracted from Wikipedia" ;
-    foaf:homepage <http://dbpedia.org/> ;
-    foaf:logo <http://wiki.dbpedia.org/images/dbpedia_logo.png> ;
-    void:sparqlEndpoint <http://dbpedia.org/sparql> ;
-    sd:endpoint <http://dbpedia.org/sparql> ;
-    void:exampleResource <http://dbpedia.org/resource/Berlin> ,
-	<http://dbpedia.org/resource/Physics> ,
-	<http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
-    sd:supportedLanguage sd:SPARQL11Query ;
-    void:triples "550000000"^^xsd:integer .
-
-_:Enipedia a sd:Service ;
-    dct:title "Enipedia" ;
-    dct:description "Enipedia is an active exploration into the applications of wikis and the semantic web for energy and industry issues" ;
-    foaf:homepage <http://enipedia.tudelft.nl/wiki/Enipedia> ;
-    foaf:logo <http://enipedia.tudelft.nl/enipedia/images/b/bd/eni.png> ;
-    void:sparqlEndpoint <http://enipedia.tudelft.nl/sparql/sparql> ;
-    sd:endpoint <http://enipedia.tudelft.nl/sparql/sparql> ;
-    void:triples "4317758"^^xsd:integer .
-
-_:OpenEI a void:Dataset, sd:Service ;
-    dct:title "OpenEI" ;
-    dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
-    void:sparqlEndpoint <http://en.openei.org/sparql> ;
-    sd:endpoint <http://en.openei.org/sparql> ;
-    void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
-    void:triples "17231136"^^xsd:integer .
-
-_:LinkedGeoData a void:Dataset, sd:Service ;
-    dct:title "LinkedGeoData" ;
-    dct:description "RDF data extracted from OpenStreetMap.org" ;
-    dct:creator <http://aksw.org> ;
-    foaf:homepage <http://linkedgeodata.org/> ;
-    foaf:logo <http://linkedgeodata.org/files/lgdlogo.png> ;
-    void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
-    sd:endpoint <http://linkedgeodata.org/sparql> ;
-    void:exampleResource <http://linkedgeodata.org/triplify/node264695865> .
-
-_:OrdnanceSurvey a void:Dataset, sd:Service ;
-    dct:title "Ordnance Survey Linked Data" ;
-    dct:description "Ordnance Survey is Great Britain's national mapping agency, providing the most accurate and up-to-date geographic data, relied on by government, business and individuals" ;
-    dct:creator <http://data.ordnancesurvey.co.uk/id/ordnancesurvey> ;
-    foaf:homepage <http://www.ordnancesurvey.co.uk> ;
-    foaf:logo <http://www.ordnancesurvey.co.uk/oswebsite/images/ui/logo.png> ;
-    void:sparqlEndpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ;
-    sd:endpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ;
-    void:exampleResource <http://data.ordnancesurvey.co.uk/id/postcodeunit/SO164GU> ,
-	<http://data.ordnancesurvey.co.uk/id/7000000000037256> .
-
-_:EurostatFUBerlin a void:Dataset, sd:Service ;
-    dct:title "Eurostat (FU Berlin)" ;
-    dct:description "Detailed statistics on the EU and candidate countries, and various statistical publications for sale" ;
-    foaf:homepage <http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/> ;
-    foaf:logo <http://epp.eurostat.ec.europa.eu/portal/page/portal/PGP_ADM_IMAGES/PGE_IMAGES_TEMPLATES/logo.png> ;
-    void:sparqlEndpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ;
-    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ;
-    void:exampleResource <http://www4.wiwiss.fu-berlin.de/eurostat/resource/countries/Danmark> ;
-    void:triples "8850"^^xsd:integer .
-
-_:EurostatQCrumb a void:Dataset, sd:Service ;
-    dct:title "Eurostat (OntologyCentral)" ;
-    dct:description "Experimental Eurostat wrapper to Linked Data" ;
-    foaf:homepage <http://estatwrap.ontologycentral.com/> ;
-    foaf:logo <http://epp.eurostat.ec.europa.eu/portal/page/portal/PGP_ADM_IMAGES/PGE_IMAGES_TEMPLATES/logo.png> ;
-    void:sparqlEndpoint <http://qcrumb.com/sparql> ;
-    sd:endpoint <http://qcrumb.com/sparql> ;
-    void:exampleResource <http://estatwrap.ontologycentral.com/dic/geo#AT> ,
-	<http://estatwrap.ontologycentral.com/data/teilm020> ,
-	<http://estatwrap.ontologycentral.com/data/tsieb020> .
-
-_:UKStatistics a void:Dataset, sd:Service ;
-    dct:title "UK Statistics" ;
-    dct:description "This site contains Linked Data relating to UK Statistics" ;
-    foaf:homepage <http://data.gov.uk/> ;
-    void:sparqlEndpoint <http://services.data.gov.uk/statistics/sparql> ;
-    sd:endpoint <http://services.data.gov.uk/statistics/sparql> ;
-    void:exampleResource <http://statistics.data.gov.uk/id/local-authority-district/00AK> ;
-    void:triples "343733"^^xsd:integer .
-
-<http://data.kasabi.com/dataset/airports> a void:Dataset ;
-    dct:title "Airports" ;
-    dct:description "The Airports dataset" ;
-    void:sparqlEndpoint <http://api.kasabi.com/dataset/airports/apis/sparql> .
-_:Airports a sd:Service ;
-    dct:title "Airports" ;
-    dct:description "The Airports SPARQL endpoint" ;
-    sd:endpoint <http://api.kasabi.com/dataset/airports/apis/sparql> .
-
-_:SWDogFood a void:Dataset, sd:Service ;
-    dct:title "Semantic Web Dog Food Corpus" ;
-    dct:description "Information on papers that were presented, people who attended, and other things that have to do with the main conferences and workshops in the area of Semantic Web research" ;
-    foaf:homepage <http://data.semanticweb.org/> ;
-    foaf:logo <http://data.semanticweb.org/images/bones_small.png> ;
-    void:sparqlEndpoint <http://data.semanticweb.org/sparql> ;
-    sd:endpoint <http://data.semanticweb.org/sparql> ;
-    void:exampleResource <http://data.semanticweb.org/conference/dc/2010/paper/main/A-1004> ,
-	<http://data.semanticweb.org/organization/w3c> ,
-	<http://data.semanticweb.org/person/ora-lassila> ;
-    void:triples "221690"^^xsd:integer .
-
-_:LinkedMDB a void:Dataset, sd:Service ;
-    dct:title "Linked Movie DataBase" ;
-    dct:description "The project aims at publishing the first open semantic web database for movies, including a large number of interlinks to several datasets on the open data cloud and references to related webpages." ;
-    foaf:homepage <http://www.linkedmdb.org/> ;
-    void:sparqlEndpoint <http://data.linkedmdb.org/sparql> ;
-    sd:endpoint <http://data.linkedmdb.org/sparql> ;
-    void:exampleResource <http://data.linkedmdb.org/resource/film/2014> .
-
-_:Health a void:Dataset, sd:Service ;
-    dct:title "Health Data Community" ;
-    dct:description "Public resource designed to bring together high-value datasets, tools, and applications using data about health and health care to support your need for better knowledge and to help you to solve problems" ;
-    foaf:homepage <http://www.data.gov/communities/health> ;
-    void:sparqlEndpoint <http://health.data.gov/sparql> ;
-    sd:endpoint <http://health.data.gov/sparql> ;
-    void:exampleResource <http://health.data.gov/id/ahrqp/2011-12-14/recordset/3065/record/19> .
-
-_:Commerce a void:Dataset, sd:Service ;
-    dct:title "The Linked Open Commerce Dataspace" ;
-    dct:description "An Emerging, Open Architecture for Global e-Commerce based on Linked Data" ;
-    foaf:homepage <http://linkedopencommerce.com> ;
-    void:sparqlEndpoint <http://linkedopencommerce.com/sparql> ;
-    sd:endpoint <http://linkedopencommerce.com/sparql> ;
-    void:exampleResource <http://openean.kaufkauf.net/id/businessentities/GLN_6079860000028> ,
-	<http://rdf4ecommerce.esolda.com/camcorder/model_110401#model> .
-
-_:WorldBank a void:Dataset, sd:Service ;
-    dct:title "World Bank Linked Data" ;
-    dct:description "This site contains The World Bank data published using the Linked Data design principles" ;
-    foaf:homepage <http://worldbank.270a.info> ;
-    void:sparqlEndpoint <http://worldbank.270a.info/sparql> ;
-    sd:endpoint <http://worldbank.270a.info/sparql> ;
-    void:exampleResource <http://worldbank.270a.info/classification/country/FR> ,
-	<http://worldbank.270a.info/dataset/world-development-indicators> .
-
-_:Nature a void:Dataset, sd:Service ;
-    dct:title "NPG Linked Data Platform" ;
-    dct:description "The Linked Data Platform provides access to datasets from NPG published as linked data and made available through SPARQL services" ;
-    foaf:homepage <http://data.nature.com> ;
-    void:sparqlEndpoint <http://data.nature.com/sparql> ;
-    sd:endpoint <http://data.nature.com/sparql> ;
-    void:exampleResource <http://dx.doi.org/10.1038/nm.2129> .
-
-_:OpenDataCommunities a void:Dataset, sd:Service ;
-    dct:title "Open Data Communities" ;
-    dct:description "This site is the Department for Communities and Local Government's first step towards more open, accessible and re-usable data." ;
-    foaf:homepage <http://opendatacommunities.org> ;
-    void:sparqlEndpoint <http://opendatacommunities.org/sparql> ;
-    sd:endpoint <http://opendatacommunities.org/sparql> ;
-    void:exampleResource <http://opendatacommunities.org/id/housing/homelessness-decisions/2011-Q3/E09000033/rejected-not-priority> .
-
-_:SchoolsInDenmark a void:Dataset, sd:Service ;
-    dct:title "Schools in Denmark" ;
-    dct:description "Dataset with geo-located school information (Denmark only)" ;
-    dct:source <http://oiorest.dk/danmark> ;
-    dct:subject <http://dbpedia.org/resource/Denmark> ;
-    void:sparqlEndpoint <http://semantic-web.dk/projects/schools/sparql> ;
-    sd:endpoint <http://semantic-web.dk/projects/schools/sparql> ;
-    void:exampleResource <http://semantic-web.dk/projects/schools/resource/101172> .
-
-_:Reegle a void:Dataset, sd:Service ;
-    dct:title "reegle Data" ;
-    dct:description "Energy policy reports for more than 160 countries; clean energy stakeholders; project output documents; more than 3000 clean energy terms from our thesaurus" ;
-    foaf:homepage <http://data.reegle.info> ;
-    foaf:logo <http://data.reegle.info/images/reegle_data_logo.png> ;
-    void:sparqlEndpoint <http://sparql.reegle.info> ;
-    sd:endpoint <http://sparql.reegle.info> ;
-    void:exampleResource <http://reegle.info/actors/2354> ,
-	<http://reegle.info/countries/AT> .
-
-_:LinkedLifeData a void:Dataset, sd:Service ;
-    dct:title "LinkedLifeData" ;
-    dct:description "A semantic data integration platform for the biomedical domain" ;
-    foaf:homepage <http://linkedlifedata.com> ;
-    foaf:logo <http://linkedlifedata.com/img/logo-large.png> ;
-    void:sparqlEndpoint <http://linkedlifedata.com/sparql> ;
-    sd:endpoint <http://linkedlifedata.com/sparql> ;
-    void:exampleResource <http://linkedlifedata.com/resource/entrezgene/id/7158> ,
-	<http://linkedlifedata.com/resource/drug-target/16> ;
-    void:triples "1000000000"^^xsd:integer .
+    void:inDataset _:dataset .

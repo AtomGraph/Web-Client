@@ -144,35 +144,15 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 		</xsl:for-each>
 		<meta name="DC.title" content="Graphity"/>
 		<meta name="keywords" content="Linked Data, RDF, SPARQL, Semantic Web, browser, open source" xml:lang="en" lang="en"/>
-      
-		<link href="static/img/icons/graphity.png" rel="icon" type="image/png"/>
-		<link href="static/css/core.css" rel="stylesheet" type="text/css" media="screen" />
-		
-		<script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js"></script>
-		<script type="text/javascript">
-		<![CDATA[
-		  var _gaq = _gaq || [];
-		  _gaq.push(['_setAccount', 'UA-1004105-8']);
-		  _gaq.push(['_trackPageview']);
-
-		  (function() {
-		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		  })();
-		  ]]>
-		</script>
-	    </head>
+      	    </head>
 	    <body>
-
+		<xsl:apply-templates/>
 	    </body>
 	</html>
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-	<div id="wrapper-in" class="clearfix">
-
-	</div>
+	<xsl:apply-templates mode="g:ListMode"/>
     </xsl:template>
 
     <!-- matches if the RDF/XML document includes resource description where @rdf:about = $uri -->
@@ -253,7 +233,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 
 	    <xsl:if test="@rdf:about">
 		<div class="actions clearfix">
-			<!--
 			<img src="static/img/temp/fb.gif" width="100" style="float: left; margin-top: 2px;" />
 			<div class="share">
 				<strong>Share:</strong>
@@ -269,7 +248,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 					<li><a href="#">3</a></li>
 				</ul>
 			</div>
-			-->
 			<div class="export">
 				<strong>Export:</strong>
 				<ul>
@@ -279,14 +257,11 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 					<li>
 					    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}">Turtle</a>
 					</li>
-					<!--
-					<li><a href="#">Turtle</a></li>
-					<li><a href="#">ePub</a></li>
-					-->
 				</ul>
 			</div>
 		</div>
 	    </xsl:if>
+	    -->
     </div>
 </xsl:if>
 
