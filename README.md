@@ -28,7 +28,7 @@ Java
         * [`org.graphity.browser.provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located in `WEB-INF/xsl` and its subfolders. They translate request parameters into XSLT parameters.
         * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
 	    * [`org.graphity.browser.resource.SPARQLResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLResource.java): SPARQL endpoint
-	    * [`org.graphity.browser.resource.SearchResource`]((https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SearchResource.java)): Search/autocomplete resource (_unfinished_)
+	    * [`org.graphity.browser.resource.SearchResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SearchResource.java): Search/autocomplete resource (_unfinished_)
     * [`org.graphity.model`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/model): Graphity model interfaces
         * [`org.graphity.model.LinkedDataResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/model/LinkedDataResource.java): Prototypical RDF Resource interface
         * [`org.graphity.model.impl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/model/impl): Implementations of Graphity model interfaces
