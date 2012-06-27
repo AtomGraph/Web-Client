@@ -44,7 +44,7 @@ exclude-result-prefixes="#all">
 	
 	<xsl:param name="special-json-chars" select="document('special-json-chars.xml')//character"/>
 
-	<xsl:key name="binding-by-name" match="sparql:binding" use="@name"/> 
+	<xsl:key name="binding-by-name" match="sparql:binding" use="@name"/>
 	<xsl:variable name="numeric-variables" select="sparql:variable[count(key('binding-by-name', @name)) = count(key('binding-by-name', @name)[string(number(sparql:literal)) != 'NaN'])]"/> 
 
 	<!-- 
