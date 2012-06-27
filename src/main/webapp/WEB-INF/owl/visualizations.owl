@@ -1,0 +1,1433 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY sp "http://spinrdf.org/sp#" >
+    <!ENTITY vann "http://purl.org/vocab/vann/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http:/graphity.org/ontologies/visualizations#"
+     xml:base="http:/graphity.org/ontologies/visualizations"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:sp="http://spinrdf.org/sp#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:vann="http://purl.org/vocab/vann/">
+    <owl:Ontology rdf:about="http:/graphity.org/ontologies/visualizations#">
+        <rdfs:label>Google Visualization API Ontology</rdfs:label>
+        <owl:imports rdf:resource="http://spinrdf.org/sp"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#areaChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#areaChartLabelBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#areaChartOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#areaChartOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#areaChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#areaChartValueBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#barChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#barChartLabelBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#BarChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#barChartOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#barChartOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#BarChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#barChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#barChartValueBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#BarChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#binding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#binding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#columnChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#columnChartLabelBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#columnChartOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#columnChartOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#columnChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#columnChartValueBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#dataType -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#dataType">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#dateBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#dateBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#lineChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#lineChartLabelBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#LineChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#lineChartOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#lineChartOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#LineChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#lineChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#lineChartValueBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#LineChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#mapLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#mapLabelBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Map"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#MapLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#mapLatBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#mapLatBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Map"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#MapLatBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#mapLngBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#mapLngBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Map"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#MapLngBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#mapOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#mapOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Map"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#MapOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#name -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#name">
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#numericBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#numericBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#option -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#option">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#order -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#order">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#package -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#package">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#Package"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#pieChartLabelBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#pieChartLabelBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#PieChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#PieChartLabelBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#stringBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#pieChartOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#pieChartOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#PieChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#PieChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#pieChartValueBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#pieChartValueBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#PieChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#PieChartValueBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#scatterChartOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#scatterChartOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#scatterChartXBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#scatterChartXBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartXBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#scatterChartYBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#scatterChartYBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChart"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartYBinding"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#numericBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#stringBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#stringBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#tableBinding -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#tableBinding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Table"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#tableOption -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#tableOption">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Table"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#TableOption"/>
+        <rdfs:subPropertyOf rdf:resource="http:/graphity.org/ontologies/visualizations#option"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#value -->
+
+    <rdf:Description rdf:about="http:/graphity.org/ontologies/visualizations#value">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </rdf:Description>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#variableName -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#variableName">
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#visualizedBy -->
+
+    <owl:ObjectProperty rdf:about="http:/graphity.org/ontologies/visualizations#visualizedBy">
+        <rdfs:domain rdf:resource="&sp;Select"/>
+        <rdfs:range rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/vocab/vann/preferredNamespacePrefix -->
+
+    <owl:DatatypeProperty rdf:about="&vann;preferredNamespacePrefix"/>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#name -->
+
+    <owl:DatatypeProperty rdf:about="http:/graphity.org/ontologies/visualizations#name">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#order -->
+
+    <owl:DatatypeProperty rdf:about="http:/graphity.org/ontologies/visualizations#order">
+        <rdfs:range rdf:resource="&xsd;integer"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#value -->
+
+    <owl:DatatypeProperty rdf:about="http:/graphity.org/ontologies/visualizations#value">
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+        <rdfs:domain rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#variableName -->
+
+    <owl:DatatypeProperty rdf:about="http:/graphity.org/ontologies/visualizations#variableName">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#decimal -->
+
+    <owl:Class rdf:about="&xsd;decimal"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#double -->
+
+    <owl:Class rdf:about="&xsd;double"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#float -->
+
+    <owl:Class rdf:about="&xsd;float"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#integer -->
+
+    <owl:Class rdf:about="&xsd;integer"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#string -->
+
+    <owl:Class rdf:about="&xsd;string"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#AreaChart -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#AreaChart">
+        <rdfs:label>Area chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:someValuesFrom rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartValueBinding"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#AreaChartHAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#AreaChartHAxisTitle">
+        <rdfs:label>Title of the horizotal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#AreaChartLabelBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#AreaChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#AreaChartOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#AreaChartOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#AreaChartVAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#AreaChartVAxisTitle">
+        <rdfs:label>Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#AreaChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#AreaChartValueBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#AreaChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#BarChart -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#BarChart">
+        <rdfs:label>Bar chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:someValuesFrom rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartValueBinding"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#BarChartHAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#BarChartHAxisTitle">
+        <rdfs:label>Title of the horizotal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#BarChartLabelBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#BarChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#BarChartOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#BarChartOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#BarChartVAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#BarChartVAxisTitle">
+        <rdfs:label>Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#BarChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#BarChartValueBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#BarChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#Binding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#Binding">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ColumnChart -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ColumnChart">
+        <rdfs:label>Column chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:someValuesFrom rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartValueBinding"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ColumnChartHAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ColumnChartHAxisTitle">
+        <rdfs:label>Title of the horizontal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ColumnChartLabelBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ColumnChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ColumnChartOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ColumnChartOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ColumnChartVAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ColumnChartVAxisTitle">
+        <rdfs:label>Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#ColumnChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ColumnChartValueBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ColumnChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChart -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChart">
+        <rdfs:label>Line chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:someValuesFrom rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartValueBinding"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChartHAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChartHAxisTitle">
+        <rdfs:label>Title of the horizontal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChartLabelBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChartOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChartOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChartTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChartTitle">
+        <rdfs:label>Title of the chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue>title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChartVAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChartVAxisTitle">
+        <rdfs:label>Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#LineChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#LineChartValueBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#LineChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#Map -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#Map">
+        <rdfs:label>Map</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#MapPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#MapLngBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#MapLabelBinding"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#MapLatBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#MapAddressBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#MapAddressBinding">
+        <rdfs:label>Address binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#MapLabelBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#MapLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">2</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#MapLatBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#MapLatBinding">
+        <rdfs:label>Latitude binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#MapLngBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#MapLngBinding">
+        <rdfs:label>Longitude binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#MapOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#MapOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#NumericBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#NumericBinding">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#dataType"/>
+                <owl:onClass>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="&xsd;decimal"/>
+                            <rdf:Description rdf:about="&xsd;double"/>
+                            <rdf:Description rdf:about="&xsd;float"/>
+                            <rdf:Description rdf:about="&xsd;integer"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:onClass>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#Option -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#Option">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#Package -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#Package">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#PieChart -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#PieChart">
+        <rdfs:label>Pie chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#PieChartValueBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#PieChartLabelBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#PieChartLabelBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#PieChartLabelBinding">
+        <rdfs:label>Label binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#StringBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#PieChartOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#PieChartOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#PieChartValueBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#PieChartValueBinding">
+        <rdfs:label>Value binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ScatterChart -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ScatterChart">
+        <rdfs:label>Scatter chart</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:someValuesFrom rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartYBinding"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#CoreChartPackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#binding"/>
+                <owl:onClass rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartXBinding"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ScatterChartHAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ScatterChartHAxisTitle">
+        <rdfs:label>Title of the horizontal axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">hAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ScatterChartOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ScatterChartOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ScatterChartVAxisTitle -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ScatterChartVAxisTitle">
+        <rdfs:label>Title of the vertical axis</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#ScatterChartOption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#name"/>
+                <owl:hasValue rdf:datatype="&xsd;string">vAxis.title</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#value"/>
+                <owl:allValuesFrom rdf:resource="&xsd;string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ScatterChartXBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ScatterChartXBinding">
+        <rdfs:label>X binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#order"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#ScatterChartYBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#ScatterChartYBinding">
+        <rdfs:label>Y binding</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#NumericBinding"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#StringBinding -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#StringBinding">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Binding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#dataType"/>
+                <owl:onClass rdf:resource="&xsd;string"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#Table -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#Table">
+        <rdfs:label>Table</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Visualization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http:/graphity.org/ontologies/visualizations#package"/>
+                <owl:hasValue rdf:resource="http:/graphity.org/ontologies/visualizations#TablePackage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#TableOption -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#TableOption">
+        <rdfs:subClassOf rdf:resource="http:/graphity.org/ontologies/visualizations#Option"/>
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#Visualization -->
+
+    <owl:Class rdf:about="http:/graphity.org/ontologies/visualizations#Visualization">
+        <rdfs:isDefinedBy rdf:resource="http:/graphity.org/ontologies/visualizations#"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations# -->
+
+    <owl:Thing rdf:about="http:/graphity.org/ontologies/visualizations#">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <vann:preferredNamespacePrefix>gvis</vann:preferredNamespacePrefix>
+    </owl:Thing>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#CoreChartPackage -->
+
+    <Package rdf:about="http:/graphity.org/ontologies/visualizations#CoreChartPackage">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdf:type rdf:resource="&owl;Thing"/>
+    </Package>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#MapPackage -->
+
+    <Package rdf:about="http:/graphity.org/ontologies/visualizations#MapPackage">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdf:type rdf:resource="&owl;Thing"/>
+    </Package>
+    
+
+
+    <!-- http:/graphity.org/ontologies/visualizations#TablePackage -->
+
+    <Package rdf:about="http:/graphity.org/ontologies/visualizations#TablePackage">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdf:type rdf:resource="&owl;Thing"/>
+    </Package>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
+

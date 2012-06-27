@@ -1,7 +1,0 @@
-ASK
-{
-    GRAPH ?g
-    {
-        ?uri ?p ?o
-    }
-}

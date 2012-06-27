@@ -34,6 +34,16 @@ public class MediaType extends javax.ws.rs.core.MediaType
     public final static String TEXT_TURTLE = "text/turtle";
     /** "text/turtle" */
     public final static MediaType TEXT_TURTLE_TYPE = new MediaType("text","turtle");
+
+    /** "application/sparql-results+xml" */
+    public final static String APPLICATION_SPARQL_RESULTS_XML = "application/sparql-results+xml";
+    /** "application/sparql-results+xml" */
+    public final static MediaType APPLICATION_SPARQL_RESULTS_XML_TYPE = new MediaType("application","sparql-results+xml");
+
+    /** "application/sparql-results+json" */
+    public final static String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
+    /** "application/sparql-results+json" */
+    public final static MediaType APPLICATION_SPARQL_RESULTS_JSON_TYPE = new MediaType("application","sparql-results+json");
     
     public MediaType(String type, String subtype, Map<String, String> parameters)
     {

@@ -1,0 +1,1191 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY ns "http://rdfs.org/sioc/ns#" >
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/" >
+    <!ENTITY doap "http://usefulinc.com/ns/doap#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY flow "http://www.w3.org/2005/01/wf/flow#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.ifi.uzh.ch/ddis/evoont/2008/11/bom#"
+     xml:base="http://www.ifi.uzh.ch/ddis/evoont/2008/11/bom"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ns="http://rdfs.org/sioc/ns#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:flow="http://www.w3.org/2005/01/wf/flow#"
+     xmlns:doap="http://usefulinc.com/ns/doap#">
+    <owl:Ontology rdf:about="">
+        <dc:contributor>Jonas Tappolet</dc:contributor>
+        <owl:versionInfo>4.1</owl:versionInfo>
+        <dc:creator
+            >Dynamic and Distributed Systems Group, University of Zurich, http:www.ifi.uzh.ch/ddis</dc:creator>
+        <dc:rights xml:lang="en"
+            >licensed under a Creative Commons Attribution 2.5 Switzerland License, see http:www.ifi.uzh.ch/ddis/evo</dc:rights>
+        <owl:imports rdf:resource="http://purl.org/dc/elements/1.1/"/>
+        <owl:imports rdf:resource="http://rdfs.org/sioc/ns"/>
+        <owl:imports rdf:resource="http://usefulinc.com/ns/doap"/>
+        <owl:imports rdf:resource="http://www.ifi.uzh.ch/ddis/evoont/2008/11/vom"/>
+        <owl:imports rdf:resource="http://xmlns.com/foaf/0.1/"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&dc;contributor"/>
+    <owl:AnnotationProperty rdf:about="&dc;creator"/>
+    <owl:AnnotationProperty rdf:about="&dc;rights"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#blocks -->
+
+    <owl:ObjectProperty rdf:about="blocks">
+        <rdfs:range rdf:resource="Issue"/>
+        <rdfs:domain rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#dependsOn -->
+
+    <owl:ObjectProperty rdf:about="dependsOn">
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="blocks"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#fixes -->
+
+    <owl:ObjectProperty rdf:about="fixes">
+        <rdfs:domain rdf:resource="&doap;Version"/>
+        <rdfs:range rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasActivity -->
+
+    <owl:ObjectProperty rdf:about="hasActivity">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:range rdf:resource="Activity"/>
+        <rdfs:domain rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasAssignee -->
+
+    <owl:ObjectProperty rdf:about="hasAssignee">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="isAssigneeOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasAttachment -->
+
+    <owl:ObjectProperty rdf:about="hasAttachment">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:range rdf:resource="Attachment"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="isAttachmentOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasCcPerson -->
+
+    <owl:ObjectProperty rdf:about="hasCcPerson">
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="isCcPersonOf"/>
+        <rdfs:range rdf:resource="&foaf;Person"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasComment -->
+
+    <owl:ObjectProperty rdf:about="hasComment">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:range rdf:resource="Comment"/>
+        <rdfs:domain rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasCommentor -->
+
+    <owl:ObjectProperty rdf:about="hasCommentor">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Comment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasComponent -->
+
+    <owl:ObjectProperty rdf:about="hasComponent">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:range rdf:resource="Component"/>
+        <rdfs:domain rdf:resource="Product"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasComputerSystem -->
+
+    <owl:ObjectProperty rdf:about="hasComputerSystem">
+        <rdfs:range rdf:resource="ComputerSystem"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="isComputerSystemOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasCreator -->
+
+    <owl:ObjectProperty rdf:about="hasCreator">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&ns;User"/>
+        <owl:inverseOf rdf:resource="isCreatorOf"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="Attachment"/>
+                    <rdf:Description rdf:about="Comment"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasInvolvedPerson -->
+
+    <owl:ObjectProperty rdf:about="hasInvolvedPerson">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&ns;User"/>
+        <rdfs:domain rdf:resource="Activity"/>
+        <owl:inverseOf rdf:resource="isInvolvedPersonOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasMilestone -->
+
+    <owl:ObjectProperty rdf:about="hasMilestone">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="Milestone"/>
+        <owl:inverseOf rdf:resource="isMilestoneOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasPriority -->
+
+    <owl:ObjectProperty rdf:about="hasPriority">
+        <rdfs:range rdf:resource="Priority"/>
+        <owl:inverseOf rdf:resource="isPriorityOf"/>
+        <rdfs:domain rdf:resource="&flow;Task"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasReporter -->
+
+    <owl:ObjectProperty rdf:about="hasReporter">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&ns;User"/>
+        <rdfs:domain rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasSeverity -->
+
+    <owl:ObjectProperty rdf:about="hasSeverity">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="Severity"/>
+    </owl:ObjectProperty>
+    
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasResolution -->
+
+    <owl:ObjectProperty rdf:about="hasResolution">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="Resolution"/>
+    </owl:ObjectProperty>
+
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hasState -->
+
+    <owl:ObjectProperty rdf:about="hasState">
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="isStateOf"/>
+        <rdfs:range rdf:resource="&flow;State"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#hostsIssue -->
+
+    <owl:ObjectProperty rdf:about="hostsIssue"/>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#inProject -->
+
+    <owl:ObjectProperty rdf:about="inProject">
+        <rdfs:range rdf:resource="&doap;Project"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="hostsIssue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isActivityOf -->
+
+    <owl:ObjectProperty rdf:about="isActivityOf">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Activity"/>
+        <rdfs:range rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="hasActivity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isAssigneeOf -->
+
+    <owl:ObjectProperty rdf:about="isAssigneeOf">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="&ns;User"/>
+        <rdfs:range rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isAttachmentOf -->
+
+    <owl:ObjectProperty rdf:about="isAttachmentOf">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Attachment"/>
+        <rdfs:range rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isCcPersonOf -->
+
+    <owl:ObjectProperty rdf:about="isCcPersonOf">
+        <rdfs:domain rdf:resource="&ns;User"/>
+        <rdfs:range rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isCommentOf -->
+
+    <owl:ObjectProperty rdf:about="isCommentOf">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Comment"/>
+        <rdfs:range rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="hasComment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isCommentorOf -->
+
+    <owl:ObjectProperty rdf:about="isCommentorOf">
+        <rdfs:domain rdf:resource="&ns;User"/>
+        <rdfs:range rdf:resource="Comment"/>
+        <owl:inverseOf rdf:resource="hasCommentor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isComponentOf -->
+
+    <owl:ObjectProperty rdf:about="isComponentOf">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Component"/>
+        <rdfs:range rdf:resource="Product"/>
+        <owl:inverseOf rdf:resource="hasComponent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isComputerSystemOf -->
+
+    <owl:ObjectProperty rdf:about="isComputerSystemOf">
+        <rdfs:domain rdf:resource="ComputerSystem"/>
+        <rdfs:range rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isCreatorOf -->
+
+    <owl:ObjectProperty rdf:about="isCreatorOf">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="&ns;User"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="Attachment"/>
+                    <rdf:Description rdf:about="Comment"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isFixedBy -->
+
+    <owl:ObjectProperty rdf:about="isFixedBy">
+        <rdfs:range rdf:resource="&doap;Version"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="fixes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isInvolvedPersonOf -->
+
+    <owl:ObjectProperty rdf:about="isInvolvedPersonOf">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="&ns;User"/>
+        <rdfs:range rdf:resource="Activity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isIssueOf -->
+
+    <owl:ObjectProperty rdf:about="isIssueOf">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="Component"/>
+        <rdfs:domain rdf:resource="Issue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isMilestoneOf -->
+
+    <owl:ObjectProperty rdf:about="isMilestoneOf">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:range rdf:resource="Issue"/>
+        <rdfs:domain rdf:resource="Milestone"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isPriorityOf -->
+
+    <owl:ObjectProperty rdf:about="isPriorityOf"/>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isReporterOf -->
+
+    <owl:ObjectProperty rdf:about="isReporterOf">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="&ns;User"/>
+        <rdfs:range rdf:resource="Issue"/>
+        <owl:inverseOf rdf:resource="hasReporter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#isStateOf -->
+
+    <owl:ObjectProperty rdf:about="isStateOf"/>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#moreImportant -->
+
+    <owl:ObjectProperty rdf:about="moreImportant">
+        <rdfs:range rdf:resource="Priority"/>
+        <rdfs:domain rdf:resource="Priority"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#added -->
+
+    <owl:DatatypeProperty rdf:about="added">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Activity"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#bugURL -->
+
+    <owl:DatatypeProperty rdf:about="bugURL">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#date -->
+
+    <owl:DatatypeProperty rdf:about="date">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Comment"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#dateOpened -->
+
+    <owl:DatatypeProperty rdf:about="dateOpened">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#description -->
+
+    <owl:DatatypeProperty rdf:about="description">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#fileName -->
+
+    <owl:DatatypeProperty rdf:about="fileName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Attachment"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#keyword -->
+
+    <owl:DatatypeProperty rdf:about="keyword">
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#lastModified -->
+
+    <owl:DatatypeProperty rdf:about="lastModified">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Issue"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#name -->
+
+    <owl:DatatypeProperty rdf:about="name">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#number -->
+
+    <owl:DatatypeProperty rdf:about="number">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="Comment"/>
+                    <rdf:Description rdf:about="Issue"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#os -->
+
+    <owl:DatatypeProperty rdf:about="os">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="ComputerSystem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#performed -->
+
+    <owl:DatatypeProperty rdf:about="performed">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Activity"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#platform -->
+
+    <owl:DatatypeProperty rdf:about="platform">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="ComputerSystem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#removed -->
+
+    <owl:DatatypeProperty rdf:about="removed">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Activity"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#target -->
+
+    <owl:DatatypeProperty rdf:about="target">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Milestone"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#text -->
+
+    <owl:DatatypeProperty rdf:about="text">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Comment"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#type -->
+
+    <owl:DatatypeProperty rdf:about="type">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Attachment"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#version -->
+
+    <owl:DatatypeProperty rdf:about="version">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="Component"/>
+                    <rdf:Description rdf:about="Product"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#what -->
+
+    <owl:DatatypeProperty rdf:about="what">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="Activity"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://rdfs.org/sioc/ns#Thread -->
+
+    <owl:Class rdf:about="&ns;Thread"/>
+    
+
+
+    <!-- http://rdfs.org/sioc/ns#User -->
+
+    <owl:Class rdf:about="&ns;User"/>
+    
+
+
+    <!-- http://usefulinc.com/ns/doap#Project -->
+
+    <owl:Class rdf:about="&doap;Project">
+        <owl:disjointWith rdf:resource="Activity"/>
+        <owl:disjointWith rdf:resource="Attachment"/>
+        <owl:disjointWith rdf:resource="Comment"/>
+        <owl:disjointWith rdf:resource="Component"/>
+        <owl:disjointWith rdf:resource="ComputerSystem"/>
+        <owl:disjointWith rdf:resource="Milestone"/>
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://usefulinc.com/ns/doap#Version -->
+
+    <owl:Class rdf:about="&doap;Version"/>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Activity -->
+
+    <owl:Class rdf:about="Activity">
+        <owl:disjointWith rdf:resource="Attachment"/>
+        <owl:disjointWith rdf:resource="Comment"/>
+        <owl:disjointWith rdf:resource="Component"/>
+        <owl:disjointWith rdf:resource="ComputerSystem"/>
+        <owl:disjointWith rdf:resource="Milestone"/>
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >Activities form a certain kind of log, tracking the changes occuring to an Issue</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Attachment -->
+
+    <owl:Class rdf:about="Attachment">
+        <owl:disjointWith rdf:resource="Comment"/>
+        <owl:disjointWith rdf:resource="Component"/>
+        <owl:disjointWith rdf:resource="ComputerSystem"/>
+        <owl:disjointWith rdf:resource="Milestone"/>
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >Attachments are files sent in together with the Issue&#39;s text or a comment</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Blocker -->
+
+    <owl:Class rdf:about="Blocker">
+        <rdfs:subClassOf rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >a blocker denotes an issue which needs to be fixed in order to fix dependant defects.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Closed -->
+
+    <owl:Class rdf:about="Closed">
+        <rdfs:subClassOf rdf:resource="&flow;TerminalState"/>
+        <rdfs:comment xml:lang="en"
+            >The issue is closed, no more work or actions are planned on this issue</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Comment -->
+
+    <owl:Class rdf:about="Comment">
+        <owl:disjointWith rdf:resource="Component"/>
+        <owl:disjointWith rdf:resource="ComputerSystem"/>
+        <owl:disjointWith rdf:resource="Milestone"/>
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >A comment on a certain Issue</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Component -->
+
+    <owl:Class rdf:about="Component">
+        <owl:disjointWith rdf:resource="ComputerSystem"/>
+        <owl:disjointWith rdf:resource="Milestone"/>
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >a Component of the software system an Issue may refer to.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#ComputerSystem -->
+
+    <owl:Class rdf:about="ComputerSystem">
+        <owl:disjointWith rdf:resource="Milestone"/>
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >A ComputerSystem is the definition of an execution enviroment.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Critical -->
+
+    <owl:Class rdf:about="Critical">
+        <rdfs:subClassOf rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >The issue is of critical importance for the software project</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Defect -->
+
+    <owl:Class rdf:about="Defect">
+        <rdfs:subClassOf rdf:resource="Issue"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="hasSeverity"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="Blocker"/>
+                            <rdf:Description rdf:about="Critical"/>
+                            <rdf:Description rdf:about="Major"/>
+                            <rdf:Description rdf:about="Minor"/>
+                            <rdf:Description rdf:about="Trivial"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="Enhancement"/>
+        <rdfs:comment xml:lang="en"
+            >A Defect is an Issue which is particularly about the malfunction of a software system.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Duplicate -->
+
+    <owl:Class rdf:about="Duplicate">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Fixed"/>
+        <owl:disjointWith rdf:resource="Invalid"/>
+        <owl:disjointWith rdf:resource="Later"/>
+        <owl:disjointWith rdf:resource="Remind"/>
+        <owl:disjointWith rdf:resource="ThirdParty"/>
+        <owl:disjointWith rdf:resource="WontFix"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >this issue has already been addressed elsewhere</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Enhancement -->
+
+    <owl:Class rdf:about="Enhancement">
+        <rdfs:subClassOf rdf:resource="Issue"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="hasSeverity"/>
+                <owl:allValuesFrom rdf:resource="Feature"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >An Enhancement is an Issue related to the functional extension of a software system.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Feature -->
+
+    <owl:Class rdf:about="Feature">
+        <rdfs:subClassOf rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >Work-around classification for features
+</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Fixed -->
+
+    <owl:Class rdf:about="Fixed">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Invalid"/>
+        <owl:disjointWith rdf:resource="Later"/>
+        <owl:disjointWith rdf:resource="Remind"/>
+        <owl:disjointWith rdf:resource="ThirdParty"/>
+        <owl:disjointWith rdf:resource="WontFix"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >the issue is fixed</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Invalid -->
+
+    <owl:Class rdf:about="Invalid">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Later"/>
+        <owl:disjointWith rdf:resource="Remind"/>
+        <owl:disjointWith rdf:resource="ThirdParty"/>
+        <owl:disjointWith rdf:resource="WontFix"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >The description / content of the issue is insufficient</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Issue -->
+
+    <owl:Class rdf:about="Issue">
+        <rdfs:subClassOf rdf:resource="&ns;Thread"/>
+        <rdfs:subClassOf rdf:resource="&flow;Task"/>
+        <rdfs:comment xml:lang="en"
+            >An Issue is an entity defining a certain topic concerning the development of a software system. An issue can be classified or discussed about.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Later -->
+
+    <owl:Class rdf:about="Later">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Remind"/>
+        <owl:disjointWith rdf:resource="ThirdParty"/>
+        <owl:disjointWith rdf:resource="WontFix"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >For various reasons, an issue may be fixed in a later stage of the project</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Major -->
+
+    <owl:Class rdf:about="Major">
+        <rdfs:subClassOf rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >Major importance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Milestone -->
+
+    <owl:Class rdf:about="Milestone">
+        <owl:disjointWith rdf:resource="Product"/>
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >A Milestone refers to a planned version of a software system.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Minor -->
+
+    <owl:Class rdf:about="Minor">
+        <rdfs:subClassOf rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >Minor importance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Open -->
+
+    <owl:Class rdf:about="Open">
+        <rdfs:subClassOf rdf:resource="&flow;NonTerminalState"/>
+        <owl:disjointWith rdf:resource="Resolved"/>
+        <owl:disjointWith rdf:resource="Verified"/>
+        <rdfs:comment xml:lang="en"
+            >The initial state of an issue</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#P1 -->
+
+    <owl:Class rdf:about="P1">
+        <rdfs:subClassOf rdf:resource="Priority"/>
+        <owl:disjointWith rdf:resource="P2"/>
+        <owl:disjointWith rdf:resource="P3"/>
+        <owl:disjointWith rdf:resource="P4"/>
+        <owl:disjointWith rdf:resource="P5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#P2 -->
+
+    <owl:Class rdf:about="P2">
+        <rdfs:subClassOf rdf:resource="Priority"/>
+        <owl:disjointWith rdf:resource="P3"/>
+        <owl:disjointWith rdf:resource="P4"/>
+        <owl:disjointWith rdf:resource="P5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#P3 -->
+
+    <owl:Class rdf:about="P3">
+        <rdfs:subClassOf rdf:resource="Priority"/>
+        <owl:disjointWith rdf:resource="P4"/>
+        <owl:disjointWith rdf:resource="P5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#P4 -->
+
+    <owl:Class rdf:about="P4">
+        <rdfs:subClassOf rdf:resource="Priority"/>
+        <owl:disjointWith rdf:resource="P5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#P5 -->
+
+    <owl:Class rdf:about="P5">
+        <rdfs:subClassOf rdf:resource="Priority"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Priority -->
+
+    <owl:Class rdf:about="Priority"/>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Product -->
+
+    <owl:Class rdf:about="Product">
+        <owl:disjointWith rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >a Product is a functionally independant software system.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Remind -->
+
+    <owl:Class rdf:about="Remind">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="ThirdParty"/>
+        <owl:disjointWith rdf:resource="WontFix"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >This issue is marked as a reminder for later development work.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Resolution -->
+
+    <owl:Class rdf:about="Resolution">
+        <owl:disjointWith rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >The resolution gives a hint about the inner state of an issue</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Resolved -->
+
+    <owl:Class rdf:about="Resolved">
+        <rdfs:subClassOf rdf:resource="&flow;NonTerminalState"/>
+        <owl:disjointWith rdf:resource="Verified"/>
+        <rdfs:comment xml:lang="en"
+            >State of an issue when it is believed to be fixed. This state may change when an issue goes into another fixing cycle.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Severity -->
+
+    <owl:Class rdf:about="Severity">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:comment xml:lang="en"
+            >Severity classifies issues</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#ThirdParty -->
+
+    <owl:Class rdf:about="ThirdParty">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="WontFix"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >This issue is due to a bug in a third party software component.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Trivial -->
+
+    <owl:Class rdf:about="Trivial">
+        <rdfs:subClassOf rdf:resource="Severity"/>
+        <rdfs:comment xml:lang="en"
+            >Trivial importance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#Verified -->
+
+    <owl:Class rdf:about="Verified">
+        <rdfs:subClassOf rdf:resource="&flow;NonTerminalState"/>
+        <rdfs:comment xml:lang="en"
+            >State of an issue when it has been approved</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#WontFix -->
+
+    <owl:Class rdf:about="WontFix">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <owl:disjointWith rdf:resource="WorksForMe"/>
+        <rdfs:comment xml:lang="en"
+            >This issue won&#39;t be fixed (various reasons, i.e. it&#39;s a feature not a bug)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ifi.unizh.ch/ddis/evoont/2008/02/bom#WorksForMe -->
+
+    <owl:Class rdf:about="WorksForMe">
+        <rdfs:subClassOf rdf:resource="Resolution"/>
+        <rdfs:comment xml:lang="en"
+            >The described malfunction cannot be reproduced</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- http://www.w3.org/2005/01/wf/flow#NonTerminalState -->
+
+    <owl:Class rdf:about="&flow;NonTerminalState"/>
+    
+
+
+    <!-- http://www.w3.org/2005/01/wf/flow#State -->
+
+    <owl:Class rdf:about="&flow;State"/>
+    
+
+
+    <!-- http://www.w3.org/2005/01/wf/flow#Task -->
+
+    <owl:Class rdf:about="&flow;Task"/>
+    
+
+
+    <!-- http://www.w3.org/2005/01/wf/flow#TerminalState -->
+
+    <owl:Class rdf:about="&flow;TerminalState"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/Person -->
+
+    <owl:Class rdf:about="&foaf;Person"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.842) http://owlapi.sourceforge.net -->
+
+

@@ -56,7 +56,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
         LANGS.put(MediaType.TEXT_TURTLE, Lang.TURTLE);
         LANGS.put(MediaType.TEXT_PLAIN, Lang.TURTLE);
     }    
-    private static final Logger log = LoggerFactory.getLogger(ModelProvider.class) ;
+    private static final Logger log = LoggerFactory.getLogger(ModelProvider.class);
 
     // READER
     

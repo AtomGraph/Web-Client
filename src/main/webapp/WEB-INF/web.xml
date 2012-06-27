@@ -7,7 +7,7 @@
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.graphity.analytics.Application</param-value>
+            <param-value>org.graphity.browser.Application</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

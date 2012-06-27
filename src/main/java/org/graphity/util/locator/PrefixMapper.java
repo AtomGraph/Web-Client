@@ -16,12 +16,7 @@
  */
 package org.graphity.util.locator;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
@@ -72,13 +67,29 @@ public class PrefixMapper extends LocationMapper
         altPrefixLocations.put(uriPrefix, alt);
     }
 
-    public String getAltPrefixEntry(String uriPrefix) 
+    public String getPrefixAltEntry(String uriPrefix) 
     {
         return altPrefixLocations.get(uriPrefix) ;
     }
 
     public Iterator<String> listAltPrefixEntries()  { return altPrefixLocations.keySet().iterator() ; } 
 
+    public String getPrefix(String uri)
+    {
+	String prefix = null;
+	
+        for (Iterator<String> iter = listAltPrefixEntries(); iter.hasNext();)
+        {
+            String candPrefix = iter.next() ;
+	    // make sure we get the longest matching prefix
+            if (uri.startsWith(candPrefix) &&
+		    (prefix == null || candPrefix.length() > prefix.length()))
+		prefix = candPrefix;
+        }
+	
+	return prefix;
+    }
+    
     @Override
     public String altMapping(String uri, String otherwise)
     {
@@ -87,12 +98,9 @@ public class PrefixMapper extends LocationMapper
         if (getAltEntry(uri) != null) 
             return getAltEntry(uri) ;
 	
-        for ( Iterator<String> iter = listAltPrefixEntries() ; iter.hasNext() ;)
-        {
-            String prefix = iter.next() ;
-            if ( uri.startsWith(prefix) && getAltPrefixEntry(prefix) != null)
-		return getAltPrefixEntry(prefix);
-        }
+	String prefix = getPrefix(uri);
+	if (prefix != null && getPrefixAltEntry(prefix) != null)
+	    return getPrefixAltEntry(prefix);
         
         return super.altMapping(uri, otherwise);
     }
@@ -130,7 +138,7 @@ public class PrefixMapper extends LocationMapper
             Resource e = model.createResource() ;
             model.add(r, LocationMappingVocab.mapping, e) ;
             String k = iter.next() ;
-            String v = getAltPrefixEntry(k) ;
+            String v = getPrefixAltEntry(k) ;
             model.add(e, LocationMappingVocab.prefix, k) ;
             model.add(e, LocationMappingVocab.altName, v) ;
         }
@@ -252,7 +260,7 @@ public class PrefixMapper extends LocationMapper
         for ( Iterator<String> iter = listAltPrefixEntries() ; iter.hasNext() ; )
         {
             String k = iter.next() ;
-            String v = getAltPrefixEntry(k) ;
+            String v = getPrefixAltEntry(k) ;
             s = s+"(Prefix:"+k+"=>"+v+") " ;
         }
 	

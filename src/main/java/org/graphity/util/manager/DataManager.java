@@ -17,9 +17,11 @@
 
 package org.graphity.util.manager;
 
+import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.NotFoundException;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.Locator;
@@ -27,18 +29,20 @@ import com.hp.hpl.jena.util.TypedStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.net.URLDecoder;
+import java.util.*;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.adapter.DatasetGraphAccessorHTTP;
 import org.graphity.util.locator.LocatorLinkedData;
+import org.graphity.util.locator.PrefixMapper;
+import org.openjena.fuseki.DatasetAccessor;
+import org.openjena.fuseki.http.DatasetAdapter;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +64,10 @@ public class DataManager extends FileManager implements URIResolver
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
+    private List<SPARQLService> services = new ArrayList<SPARQLService>() ;
     protected boolean resolvingUncached = false;
     protected boolean resolvingMapped = true;
+    protected boolean resolvingSPARQL = true;
 
     public static DataManager get() {
         if (s_instance == null) {
@@ -178,28 +184,150 @@ public class DataManager extends FileManager implements URIResolver
 	
         if (hasCachedModel(filenameOrURI)) return getFromCache(filenameOrURI) ;  
 
-	Model m = ModelFactory.createDefaultModel();
-	readModel(m, filenameOrURI);
+	Model m = null;
+	if (isSPARQLService(filenameOrURI))
+	{
+	    SPARQLService service = findSPARQLService(filenameOrURI);
+	    log.debug("URI {} is a SPARQL service, executing Query on SparqlService: {}", service.getURI());
+	    
+	    m = loadModel(service, parseQuery(filenameOrURI));
+	}
+	else
+	{
+	    log.debug("URI {} is *not* a SPARQL service, reading Model from TypedStream", filenameOrURI);
+
+	    m = ModelFactory.createDefaultModel();
+	    readModel(m, filenameOrURI);
+	}
 	
 	addCacheModel(filenameOrURI, m);
 	
         return m;
     }
 
+    public Model loadModel(String serviceURI, Query query)
+    {
+	if (isSPARQLService(serviceURI))
+	    return loadModel(findSPARQLService(serviceURI), query);
+	else
+	{
+	    log.debug("Remote service {} Query: {} ", serviceURI, query);
+
+	    if (!(query.isConstructType() || query.isDescribeType()))
+		return null;
+
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
+
+	    if (query.isConstructType()) return request.execConstruct();
+	    if (query.isDescribeType()) return request.execDescribe();
+
+	    return null;
+	}
+    }
+	
+    public Model loadModel(SPARQLService service, Query query)
+    {
+	log.debug("Remote service {} Query: {} ", service.getURI(), query);
+	
+	if (!(query.isConstructType() || query.isDescribeType()))
+	    return null;
+		
+	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
+
+	if (service.getUser() != null && service.getPassword() != null)
+	{
+	    log.debug("HTTP Basic authentication with username: {}", service.getUser());
+	    request.setBasicAuthentication(service.getUser(), service.getPassword());
+	}
+	if (service.getApiKey() != null)
+	{
+	    log.debug("Authentication with API key: {}", service.getApiKey());
+	    ((QueryEngineHTTP) request).addParam("apikey", service.getApiKey());
+	}
+	
+	if (query.isConstructType()) return request.execConstruct();
+	if (query.isDescribeType()) return request.execDescribe();
+	
+	return null;
+    }
+    
+    public Model loadModel(Model model, Query query)
+    {
+	log.debug("Local Model Query: {}", query);
+	
+	if (!(query.isConstructType() || query.isDescribeType()))
+	    return null;
+		
+	QueryExecution qex = QueryExecutionFactory.create(query, model);
+
+	if (query.isConstructType()) return qex.execConstruct();
+	if (query.isDescribeType()) return qex.execDescribe();
+	
+	return null;
+    }
+    
     public boolean isMapped(String filenameOrURI)
     {
 	String mappedURI = mapURI(filenameOrURI);
 	return (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:"));
     }
     
+    public SPARQLService findSPARQLService(String filenameOrURI)
+    {
+	Iterator<SPARQLService> it = sparqlServices();
+	
+	while (it.hasNext())
+	{
+	    SPARQLService service = it.next();
+	    if (filenameOrURI.startsWith(service.getURI()))
+		return service;
+	}
+	
+	return null;
+    }
+
+    public boolean isSPARQLService(String filenameOrURI)
+    {
+	return findSPARQLService(filenameOrURI) != null;
+    }
+    
+    public void addSPARQLService(SPARQLService service)
+    {
+	log.debug("Adding SPARQLService: {}", service.getName());
+	services.add(service);
+    }
+
+    public void addSPARQLService(String serviceURI, String user, char[] password)
+    {
+	services.add(new SPARQLService(serviceURI, user, password));
+    }
+
+    public void addSPARQLService(String serviceURI, String apiKey)
+    {
+	services.add(new SPARQLService(serviceURI, apiKey));
+    }
+
+    public Iterator<SPARQLService> sparqlServices()
+    {
+	return services.listIterator();
+    }    
+    
     @Override
-    public Model readModel(Model model, String filenameOrURI)
+    public Model readModel(Model model, String filenameOrURI) // does not use SparqlServices!!!
     {
 	String mappedURI = mapURI(filenameOrURI);
 	if (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:")) // if URI is mapped and local
 	{
 	    log.debug("URI {} is mapped to {}, letting FileManager.readModel() handle it", filenameOrURI, mappedURI);
-	    return super.readModel(model, mappedURI); // let FileManager handle
+
+	    String baseURI = null;
+	    if (getLocationMapper() instanceof PrefixMapper)
+		baseURI = ((PrefixMapper)getLocationMapper()).getPrefix(filenameOrURI);
+	    else
+		baseURI = filenameOrURI;
+	    log.debug("FileManager.readModel() URI: {} Base URI: {}", filenameOrURI, baseURI);
+
+	    return super.readModel(model, mappedURI, baseURI, null); // let FileManager handle
 	}
 
 	TypedStream in = openNoMapOrNull(filenameOrURI);
@@ -220,12 +348,12 @@ public class DataManager extends FileManager implements URIResolver
 		log.debug("Syntax for URI {} unknown, ignoring", filenameOrURI);
 	}
 	else
-        {
-            if ( log.isDebugEnabled() )
-                log.debug("Failed to locate '"+mappedURI+"'") ;
-            throw new NotFoundException("Not found: "+filenameOrURI) ;
-        }
-	
+	{
+	    if ( log.isDebugEnabled() )
+		log.debug("Failed to locate '"+filenameOrURI+"'") ;
+	    throw new NotFoundException("Not found: "+filenameOrURI) ;
+	}
+
 	return model;
     }
     
@@ -260,7 +388,77 @@ public class DataManager extends FileManager implements URIResolver
             return null ;
         return LANGS.get(mimeType.toLowerCase()) ;
     }
+
+    public ResultSet loadResultSet(String filenameOrURI)
+    {
+	if (isSPARQLService(filenameOrURI))
+	    return loadResultSet(findSPARQLService(filenameOrURI), parseQuery(filenameOrURI));
+	else
+	{
+	    Query query = parseQuery(filenameOrURI);
+	    if (!(query.isSelectType()))
+		return null;
+
+	    String serviceURI = UriBuilder.fromUri(filenameOrURI).
+		    queryParam("query", (String)null).
+		    build().toString();
+	    
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
+	    return request.execSelect();
+	}
+    }
+
+    public ResultSet loadResultSet(String serviceURI, Query query)
+    {
+	if (isSPARQLService(serviceURI))
+	    return loadResultSet(findSPARQLService(serviceURI), query);
+	else
+	{
+	    log.debug("Remote service {} Query execution: {} ", serviceURI, query);
+
+	    if (!query.isSelectType())
+		return null;
+
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
+
+	    return request.execSelect();
+	}
+    }
+
+    public ResultSet loadResultSet(SPARQLService service, Query query)
+    {
+	log.debug("Remote service {} Query execution: {} ", service.getURI(), query);
+
+	if (!query.isSelectType())
+	    return null;
+	
+	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
+	if (service.getUser() != null && service.getPassword() != null)
+	{
+	    log.debug("HTTP Basic authentication with username: {}", service.getUser());
+	    request.setBasicAuthentication(service.getUser(), service.getPassword());
+	}
+	if (service.getApiKey() != null)
+	{
+	    log.debug("Authentication with API key param: {}", service.getApiKey());
+	    ((QueryEngineHTTP) request).addParam("apikey", service.getApiKey());
+	}
+
+	return request.execSelect();
+    }
     
+    public ResultSet loadResultSet(Model model, Query query)
+    {
+	log.debug("Local Model Query: {}", query);
+
+	if (!query.isSelectType())
+	    return null;
+	
+	QueryExecution qex = QueryExecutionFactory.create(query, model);
+	
+	return qex.execSelect();
+    }
+
     @Override
     public Source resolve(String href, String base) throws TransformerException
     {
@@ -277,18 +475,28 @@ public class DataManager extends FileManager implements URIResolver
 	if (model == null) // URI not cached, 
 	{
 	    log.debug("No cached Model for URI: {}", uri);
+	    log.debug("isSPARQLService({}): {}", uri, isSPARQLService(uri));
+	    log.debug("isMapped({}): {}", uri, isMapped(uri));
 
-	    if (resolvingUncached || (resolvingMapped && isMapped(uri)))
+	    if (resolvingUncached || uri.contains("youtube.com") || // ugly hack!!!
+		    (resolvingSPARQL && isSPARQLService(uri)) ||
+		    (resolvingMapped && isMapped(uri)))
 		try
 		{
+		    Query query = parseQuery(uri);
+		    if (query != null && (query.isSelectType() || query.isAskType()))
+		    {
+			log.debug("Loading ResultSet for URI: {}", uri);
+			return getSource(loadResultSet(uri));
+		    }
+
 		    log.debug("Loading Model for URI: {}", uri);
 		    return getSource(loadModel(uri));
 		}
 		catch (Exception ex)
 		{
-		    log.debug("Could not read Model from URI (not found or syntax error)", ex);
+		    log.debug("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
 		    return getDefaultSource(); // return empty Model
-		    //return null;
 		}
 	    else
 	    {
@@ -312,7 +520,7 @@ public class DataManager extends FileManager implements URIResolver
     {
 	log.debug("Number of Model stmts read: {}", model.size());
 	
-	ByteArrayOutputStream stream = new ByteArrayOutputStream(); // byte buffer - possible to avoid?
+	ByteArrayOutputStream stream = new ByteArrayOutputStream();
 	model.write(stream);
 
 	log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
@@ -320,6 +528,18 @@ public class DataManager extends FileManager implements URIResolver
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
     }
 
+    protected Source getSource(ResultSet results)
+    {
+	log.debug("ResultVars: {}", results.getResultVars());
+	
+	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	ResultSetFormatter.outputAsXML(stream, results);
+	
+	log.debug("SPARQL XML result bytes written: {}", stream.toByteArray().length);
+	
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+    }
+    
     public boolean isIgnored(String filenameOrURI)
     {
 	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
@@ -335,44 +555,65 @@ public class DataManager extends FileManager implements URIResolver
 	this.resolvingUncached = resolvingUncached;
     }
 
-    /*
-    @Override
-    public Model getFromCache(String filenameOrURI)
-    { 
-        if ( ! getCachingModels() )
-            return null; 
-        return super.getFromCache(filenameOrURI) ;
-    }
-    
-    @Override
-    public boolean hasCachedModel(String filenameOrURI)
-    { 
-        if ( ! getCachingModels() )
-            return false ; 
-        return super.hasCachedModel(filenameOrURI) ;
-    }
-    
-    @Override
-    // http://linuxsoftwareblog.com/?p=843
-    public void addCacheModel(String uri, Model m)
-    { 
-        if ( getCachingModels() )
-            super.addCacheModel(uri, m) ;
+    public Query parseQuery(String uri)
+    {
+	//String queryString = UriBuilder.fromUri(uri).build().getQuery();
+	String queryString = uri.substring(uri.indexOf("?") + 1); // TO-DO: query might be missing
+
+	if (queryString != null)
+	{
+	    String[] params = queryString.split("&");
+	    for (String param : params)
+	    {
+		String[] array = param.split("=");
+		if (array[0].equals("query"))
+		{
+		    try
+		    {
+			String sparqlString = URLDecoder.decode(array[1], "UTF-8");
+			log.debug("Query string: {} from URI: {}", sparqlString, uri);
+
+			return QueryFactory.create(sparqlString);
+		    } catch (UnsupportedEncodingException ex)
+		    {
+			log.warn("UTF-8 encoding unsupported", ex);
+		    }
+
+		}
+	    }
+	}
 	
+	return null;
+    }
+
+    // uses graph store protocol - expects /sparql service!
+    public void putModel(String serviceURI, String graphURI, Model model)
+    {
+	log.debug("PUTting Model to service {} with GRAPH URI {}", serviceURI, graphURI);
 	
-	Dataset ds = DatasetFactory.create();
-	//ds.getNamedModel(uri).wr
+	DatasetGraphAccessorHTTP http = null;
 		
-	GraphStore graphStore = GraphStoreFactory.create(ds);
-	//DatasetFactory.
-	//UpdateFactory.
-	//ds.getNamedModel(uri)
-	//graphStore.
-	//graphStore.ad
-	//UpdateFactory.create().
-	//Update data = new UpdateDataInsert();
-	//ds.getNamedModel(uri)
+	if (isSPARQLService(serviceURI)) // service registered with credentials
+	{
+	    SPARQLService service = findSPARQLService(serviceURI);
+	    serviceURI = serviceURI.replace("/sparql", "/service"); // TO-DO: better to avoid this and make generic
+	    log.debug("URI {} is a SPARQL service, sending PUT with credentials: {}", serviceURI, service.getUser());
+	    http = new DatasetGraphAccessorHTTP(serviceURI, service.getUser(), service.getPassword());
+	}
+	else // no credentials
+	{
+	    serviceURI.replace("/sparql", "/service");
+	    log.debug("URI {} is *not* a SPARQL service, sending PUT without credentials", serviceURI);
+	    http = new DatasetGraphAccessorHTTP(serviceURI);
+	}
+	
+	DatasetAccessor accessor = new DatasetAdapter(http);
+	accessor.putModel(graphURI, model);
     }
-    */
-    
+
+    public void putModel(String serviceURI, Model model)
+    {
+	
+    }
+
 }

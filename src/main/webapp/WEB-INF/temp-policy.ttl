@@ -1,7 +1,0 @@
-@prefix ont-man: <http://jena.hpl.hp.com/schemas/2003/03/ont-manager#> .
-
-[] a ont-man:OntologySpec ;
-    ont-man:publicURI : ;
-    ont-man:altURL </WEB-INF/ontology.ttl> .
-    # ont-man:language owl: ;
-    # ont-man:prefix "g"^^xsd:string .

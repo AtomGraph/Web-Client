@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2012 Martynas Jusevičius <martynas@graphity.org>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE xsl:stylesheet [
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY atom "http://www.w3.org/2005/Atom">
+    <!ENTITY atom-owl "http://bblfish.net/work/atom-owl/2006-06-06/#">
+    <!ENTITY media "http://search.yahoo.com/mrss/">
+    <!ENTITY dct "http://purl.org/dc/terms/">
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+    <!ENTITY dbpedia "http://dbpedia.org/resource/">
+    <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
+    <!ENTITY time "http://www.w3.org/2006/time#">
+    <!ENTITY tzont "http://www.w3.org/2006/timezone#">
+]>
+<xsl:stylesheet version="2.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:grddl="http://www.w3.org/2003/g/data-view#"
+xmlns:rdf="&rdf;"
+xmlns:rdfs="&rdfs;"
+xmlns:atom="&atom;"
+xmlns:atom-owl="&atom-owl;"
+xmlns:media="&media;"
+xmlns:dct="&dct;"
+xmlns:foaf="&foaf;"
+xmlns:sioc="&sioc;"
+xmlns:dbpedia="&dbpedia;"
+xmlns:dbpedia-owl="&dbpedia-owl;"
+xmlns:time="&time;"
+xmlns:tzont="&tzont;"
+>
+
+    <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+    
+    <xsl:param name="uri" as="xs:anyURI"/>
+
+    <!-- http://bblfish.net/work/atom-owl/2006-06-06/AtomOwl.html -->
+    <!-- https://developers.google.com/youtube/2.0/developers_guide_protocol#Retrieving_and_searching_for_videos -->
+    <!-- https://developers.google.com/youtube/2.0/developers_guide_protocol#orderbysp -->
+    
+    <xsl:template match="/">
+	<rdf:RDF>
+<xsl:message>   
+    <xsl:copy-of select="."/>
+</xsl:message>
+	    <xsl:apply-templates/>
+	</rdf:RDF>
+    </xsl:template>
+
+    <xsl:template match="atom:feed">
+	<atom-owl:Feed rdf:about="{atom:id}">
+	    <xsl:apply-templates select="*[not(self::atom:entry)]"/>
+	</atom-owl:Feed>
+	
+	<xsl:apply-templates select="atom:entry"/>
+    </xsl:template>
+
+    <xsl:template match="atom:published">
+	<dct:issued rdf:datatype="&xsd;dateTime">
+	    <xsl:value-of select="."/>
+	</dct:issued>
+    </xsl:template>
+
+    <xsl:template match="atom:updated">
+	<dct:modified rdf:datatype="&xsd;dateTime">
+	    <xsl:value-of select="."/>
+	</dct:modified>
+    </xsl:template>
+
+    <xsl:template match="atom:entry">
+	<atom-owl:Entry rdf:about="{atom:id}">
+	    <rdf:type rdf:resource="&sioc;Post"/>
+	    
+	    <xsl:apply-templates/>
+	</atom-owl:Entry>
+    </xsl:template>
+
+    <xsl:template match="atom:title">
+	<dct:title>
+	    <xsl:value-of select="."/>
+	</dct:title>
+    </xsl:template>
+
+    <xsl:template match="atom:content">
+	<dct:description>
+	    <xsl:value-of select="."/>
+	</dct:description>
+    </xsl:template>
+
+    <xsl:template match="atom:logo">
+	<foaf:logo rdf:resource="{.}"/>
+    </xsl:template>
+
+    <!-- ignore other elements, otherwise they will produce unwanted text nodes -->
+    <xsl:template match="*"/>
+
+</xsl:stylesheet>

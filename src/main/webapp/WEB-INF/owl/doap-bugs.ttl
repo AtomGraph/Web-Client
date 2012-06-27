@@ -1,0 +1,238 @@
+# This ontology.
+@prefix dbug:     <http://ontologi.es/doap-bugs#> .
+
+# Related
+@prefix bom:      <http://www.ifi.uzh.ch/ddis/evoont/2008/11/bom#> .
+@prefix doap:     <http://usefulinc.com/ns/doap#> .
+@prefix flow:     <http://www.w3.org/2005/01/wf/flow#> .
+@prefix sioc:     <http://rdfs.org/sioc/ns#> .
+
+# Stock imports.
+@prefix cc:       <http://creativecommons.org/ns#> .
+@prefix dc:       <http://purl.org/dc/terms/> .
+@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
+@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
+@prefix link:     <http://www.w3.org/2006/link#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
+@prefix status:   <http://ontologi.es/status#> .
+@prefix vann:     <http://purl.org/vocab/vann/> .
+@prefix vs:       <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix xhv:      <http://www.w3.org/1999/xhtml/vocab#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+
+dbug:
+	a owl:Ontology ;
+	rdfs:label "DOAP Bugs"@en ;
+	rdfs:comment "EvoOnt BOM is way too overcomplicated. Let's subclass it..."@en ;
+	dc:created "2010-01-08"^^xsd:date ;
+	dc:issued "2010-01-08"^^xsd:date ;
+	dc:modified "2010-08-31"^^xsd:date ,  # link to timbl's "flow" schema.
+		"2011-02-15"^^xsd:date ;           # add dbug:SecurityIssue & dbug:affects
+	dc:creator <http://tobyinkster.co.uk/#i> ;
+	vann:preferredNamespacePrefix "dbug" ;
+	vann:preferredNamespaceUri "http://ontologi.es/doap-bugs#" .
+
+dbug:Issue
+	a owl:Class ;
+	rdfs:label "Issue"@en ;
+	rdfs:comment "Provide a quick summary as an rdfs:label and a more extensive summary (if necessary) as an rdfs:comment."@en ;
+	rdfs:subClassOf bom:Issue ;
+	owl:disjointWith foaf:Document .
+
+dbug:Enhancement
+	a owl:Class ;
+	rdfs:label "Enhancement"@en ;
+	rdfs:subClasssOf dbug:Issue , bom:Enhancement .
+
+dbug:Bug
+	a owl:Class ;
+	rdfs:label "Bug"@en ;
+	rdfs:subClassOf dbug:Issue , bom:Defect .
+
+dbug:SecurityIssue
+	a owl:Class ;
+	rdfs:label "Security Issue"@en ;
+	rdfs:comment "An issue that in some way compromises the security of affected versions of its project."@en ;
+	rdfs:subClassOf dbug:Issue , bom:Defect .
+
+dbug:page
+	a owl:ObjectProperty ;
+	rdfs:label "page"@en ;
+	rdfs:subPropertyOf foaf:isPrimaryTopicOf , foaf:page , rdfs:seeAlso ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range foaf:Document .
+
+dbug:reporter
+	a owl:ObjectProperty ;
+	rdfs:label "reporter"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range foaf:Agent .
+
+dbug:assignee
+	a owl:ObjectProperty ;
+	rdfs:label "assignee"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range foaf:Agent ;
+	rdfs:subPropertyOf flow:assignee .
+
+dbug:blocks
+	a owl:ObjectProperty ;
+	rdfs:label "blocks"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range dbug:Issue ;
+	rdfs:subPropertyOf bom:blocks , [ owl:inverseOf flow:dependent ] .
+	
+dbug:classification
+	a owl:ObjectProperty ;
+	rdfs:label "classification"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range skos:Concept .
+	
+dbug:severity
+	a owl:ObjectProperty ;
+	rdfs:label "severity"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range dbug:SeverityLevel ;
+	rdfs:subPropertyOf bom:hasSeverity , dbug:classification .
+
+dbug:status
+	a owl:ObjectProperty ;
+	rdfs:label "status"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range dbug:StatusType ;
+	rdfs:subPropertyOf dbug:classification .
+
+dbug:affects
+	a owl:ObjectProperty ;
+	rdfs:label "affects"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range doap:Version .
+
+dbug:fixed-in
+	a owl:ObjectProperty ;
+	rdfs:label "fixed in"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range doap:Version .
+
+dbug:comment
+	a owl:ObjectProperty ;
+	rdfs:label "comment"@en ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range sioc:Post ;
+	rdfs:subPropertyOf bom:hasComment , [ owl:inverseOf foaf:topic ] .
+
+dbug:issue
+	a owl:ObjectProperty ;
+	rdfs:label "issue"@en ;
+	rdfs:domain doap:Project ;
+	rdfs:range dbug:Issue .
+
+dbug:id
+	a owl:DatatypeProperty ;
+	rdfs:label "identifier"@en ;
+	rdfs:subPropertyOf dc:identifier ;
+	rdfs:domain dbug:Issue ;
+	rdfs:range xsd:string .
+
+# Severity Levels - for dbug:severity
+
+dbug:SeverityLevel
+	a owl:Class ;
+	rdfs:label "Severity Level"@en ;
+	rdfs:subClassOf bom:Severity , skos:Concept .
+
+dbug:SEVERITY_LEVELS
+	a skos:ConceptScheme ;
+	rdfs:label "Built-in Severity Levels"@en ;
+	rdfs:comment "Please use these unless you have an important requirement to use your own severity level scheme. If you do design your own scheme, use skos:closeMatch, skos:exactMatch and so on to link to the definitions here."@en .
+
+dbug:critical
+	a dbug:SeverityLevel ;
+	skos:inScheme dbug:SEVERITY_LEVELS ;
+	rdfs:label "critical"@en ;
+	skos:prefLabel "critical"@en .
+	
+dbug:major
+	a dbug:SeverityLevel ;
+	skos:inScheme dbug:SEVERITY_LEVELS ;
+	rdfs:label "major"@en ;
+	skos:prefLabel "major"@en .
+
+dbug:minor
+	a dbug:SeverityLevel ;
+	skos:inScheme dbug:SEVERITY_LEVELS ;
+	rdfs:label "minor"@en ;
+	skos:prefLabel "minor"@en .
+	
+dbug:trivial
+	a dbug:SeverityLevel ;
+	skos:inScheme dbug:SEVERITY_LEVELS ;
+	rdfs:label "trivial"@en ;
+	skos:prefLabel "trivial"@en .
+
+# Status Types - for dbug:status
+
+dbug:StatusType
+	a owl:Class ;
+	rdfs:label "Status Type"@en ;
+	rdfs:subClassOf skos:Concept .
+
+dbug:STATUS_TYPES
+	a skos:ConceptScheme ;
+	rdfs:label "Built-in Status Types"@en ;
+	rdfs:comment "Please use these unless you have an important requirement to use your own status scheme. If you do design your own scheme, use skos:closeMatch, skos:exactMatch and so on to link to the definitions here."@en .
+	
+dbug:new
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "new"@en ;
+	skos:prefLabel "new"@en .
+
+dbug:confirmed
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "confirmed"@en ;
+	skos:prefLabel "confirmed"@en .
+	
+dbug:fixed
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "fixed"@en ;
+	skos:prefLabel "fixed"@en .
+	
+dbug:wont-fix
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "won't fix"@en ;
+	skos:prefLabel "won't fix"@en .
+	
+dbug:works-for-me
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "works for me"@en ;
+	skos:prefLabel "works for me"@en .
+	
+dbug:invalid
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "invalid"@en ;
+	skos:prefLabel "invalid"@en .
+	
+dbug:in-progress
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "in progress"@en ;
+	skos:prefLabel "in progress"@en .
+	
+dbug:third-party
+	a dbug:StatusType ;
+	skos:inScheme dbug:STATUS_TYPES ;
+	rdfs:label "third-party"@en ;
+	skos:prefLabel "third-party"@en ;
+	skos:definition "The issue is related to a third-party component."@en .
+	

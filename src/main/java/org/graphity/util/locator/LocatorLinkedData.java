@@ -50,10 +50,10 @@ import org.slf4j.LoggerFactory;
  */
 public class LocatorLinkedData implements Locator
 {
-    private static Logger log = LoggerFactory.getLogger(LocatorLinkedData.class) ;
-    //static final String acceptHeader = "application/rdf+xml,application/xml;q=0.9,*/*;q=0.5" ;
+    private static Logger log = LoggerFactory.getLogger(LocatorLinkedData.class);
+    private URLConnection conn  = null;
     static final String[] schemeNames = { "http:" , "https:" } ;
-    public static final Map<String, Double> QUALIFIED_TYPES;    
+    public static final Map<String, Double> QUALIFIED_TYPES;
     static
     {
 	Map<String, Double> typeMap = new HashMap<String, Double>();
@@ -64,7 +64,7 @@ public class LocatorLinkedData implements Locator
 	typeMap.put(WebContent.contentTypeTurtle2, 0.9);
 	typeMap.put(WebContent.contentTypeTurtle3, 0.9);
 
-	typeMap.put(WebContent.contentTypeNTriples, 0.9);
+	//typeMap.put(WebContent.contentTypeNTriples, 0.9);
 	typeMap.put(WebContent.contentTypeNTriplesAlt, 0.9);
 
 	typeMap.put(WebContent.contentTypeN3, 0.9);
@@ -77,9 +77,9 @@ public class LocatorLinkedData implements Locator
 	typeMap.put(WebContent.contentTypeTriGAlt, 0.9);
 	typeMap.put(WebContent.contentTypeNQuadsAlt, 0.9);
 	
-	typeMap.put(WebContent.contentTypeTextPlain, 0.7);
+	//typeMap.put(WebContent.contentTypeTextPlain, 0.7);
 	
-	typeMap.put(WebContent.contentTypeXML, 0.5);
+	//typeMap.put(WebContent.contentTypeXML, 0.5);
 	
 	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }
@@ -88,10 +88,10 @@ public class LocatorLinkedData implements Locator
     public TypedStream open(String filenameOrURI)
     {
 	/*
-        if ( ! acceptByScheme(filenameOrURI) )
+        if ( !acceptByScheme(filenameOrURI))
         {
-            if (log.isTraceEnabled() )
-                log.trace("Not found : "+filenameOrURI) ; 
+            if (log.isTraceEnabled())
+                log.trace("Not found : "+filenameOrURI);
             return null;
         }
         */
@@ -99,50 +99,24 @@ public class LocatorLinkedData implements Locator
 
         try
         {
-            URL url = new URL(filenameOrURI);
-            URLConnection conn = url.openConnection();
-            conn.setRequestProperty("Accept", getAcceptHeader()) ;
-            conn.setRequestProperty("Accept-Charset", "utf-8,*") ;
-            conn.setDoInput(true) ;
-            conn.setDoOutput(false) ;
+	    URLConnection c = getURLConnection(filenameOrURI);
+            c.setRequestProperty("Accept", getAcceptHeader()) ;
+            c.setRequestProperty("Accept-Charset", "utf-8,*") ;
+            c.setDoInput(true) ;
+            c.setDoOutput(false) ;
             // Default is true.  See javadoc for HttpURLConnection
             //((HttpURLConnection)conn).setInstanceFollowRedirects(true) ;
-            conn.connect() ;
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            
-	    //ContentType type = org.openjena.riot.ContentType.parse(conn.getContentType());
-	    String x = conn.getContentType() ; 
-	    String contentType = null ;
-	    String charset = null ;
-
-	    if ( x.contains(";") )
-	    {
-		String[] xx = x.split("\\s*;\\s*") ;
-		contentType = xx[0] ;
-		charset = xx[1] ;
-	    }
-	    else
-		contentType = x ;
-
-	    if ( charset != null )
-	    {
-		int i = charset.indexOf("charset=") ;
-		if ( i == 0 )
-		    charset = charset.substring("charset=".length()) ;
-	    }
-	    //Charset cs = Charset.forName(charset) ;
-
-	    if ( contentType != null )
-		contentType = contentType.toLowerCase() ;
+            c.connect() ;
+            InputStream in = new BufferedInputStream(c.getInputStream());
 	
             if (log.isTraceEnabled())
 	    {
 		log.trace("Found: {}", filenameOrURI);
-		log.trace("MIME type: {} Charset: {}", contentType, charset);
+		log.trace("MIME type: {} Charset: {}", getContentType(c), getCharset(c));
 	    }
 
 	    //return new TypedStream(in, type.getContentType(), type.getCharset());
-            return new TypedStream(in, contentType, charset); 
+            return new TypedStream(in, getContentType(c), getCharset(c)); 
         }
         catch (java.io.FileNotFoundException ex) 
         {
@@ -185,8 +159,22 @@ public class LocatorLinkedData implements Locator
     }
 
     @Override
-    public String getName() { return "LocatorLinkedData" ; }
+    public String getName()
+    {
+	return "LocatorLinkedData";
+    }
 
+    public URLConnection getURLConnection(String filenameOrURI) throws MalformedURLException, IOException
+    {
+	if (conn == null)
+	{
+	    URL url = new URL(filenameOrURI);
+	    return url.openConnection();
+	}
+	else
+	    return conn;
+    }
+    
     public  Map<String, Double> getQualifiedTypes()
     {
 	return QUALIFIED_TYPES;
@@ -210,6 +198,79 @@ public class LocatorLinkedData implements Locator
 	}
 	
 	return header;
+    }
+
+    public String getContentType(String filenameOrURI)
+    {
+	try
+	{
+	    return getContentType(getURLConnection(filenameOrURI));
+	} catch (MalformedURLException ex)
+	{
+	    log.error("Malformed URL", ex);
+	} catch (IOException ex)
+	{
+	    log.error("IO exception", ex);
+	}
+	
+	return null;
+    }
+    
+    public String getContentType(URLConnection conn)
+    {
+	//ContentType type = org.openjena.riot.ContentType.parse(conn.getContentType());
+	String contentType = null;
+	String x = conn.getContentType(); 
+
+	if ( x.contains(";") )
+	{
+	    String[] xx = x.split("\\s*;\\s*") ;
+	    contentType = xx[0] ;
+	}
+	else
+	    contentType = x ;
+
+	if ( contentType != null )
+	    contentType = contentType.toLowerCase() ;
+
+	return contentType;
+    }
+
+    public String getCharset(String filenameOrURI)
+    {
+	try
+	{
+	    return getCharset(getURLConnection(filenameOrURI));
+	} catch (MalformedURLException ex)
+	{
+	    log.error("Malformed URL", ex);
+	} catch (IOException ex)
+	{
+	    log.error("IO exception", ex);
+	}
+	
+	return null;
+    }
+    
+    public String getCharset(URLConnection conn)
+    {
+	String charset = null ;
+	String x = conn.getContentType(); 
+	if ( x.contains(";") )
+	{
+	    String[] xx = x.split("\\s*;\\s*") ;
+	    charset = xx[1] ;
+	}
+
+	if ( charset != null )
+	{
+	    int i = charset.indexOf("charset=") ;
+	    if ( i == 0 )
+		charset = charset.substring("charset=".length()) ;
+	}
+	//Charset cs = Charset.forName(charset) ;
+
+	return charset;
     }
     
 }

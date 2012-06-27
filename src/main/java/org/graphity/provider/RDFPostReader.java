@@ -17,13 +17,9 @@
 
 package org.graphity.provider;
 
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.*;
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.core.util.ReaderWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -32,9 +28,6 @@ import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -42,48 +35,46 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import org.graphity.form.RDFForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Reads RDF/POST encoding http://www.lsrn.org/semweb/rdfpost.html
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class RDFPostReader implements MessageBodyReader<Model>
 {
-    @Context private HttpServletRequest request;
-    private Model model = ModelFactory.createDefaultModel();
-    private List<String> keys = new ArrayList<String>();
-    private List<String> values = new ArrayList<String>();
-    private List<Exception> errors = new ArrayList<Exception>();
+    private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class) ;
+    
+    @Context private HttpContext hrc;
+    private List<String> keys = null; //new ArrayList<String>();
+    private List<String> values = null; // new ArrayList<String>();
 
-    public RDFPostReader()
+    protected void initKeysValues(String body, String charsetName)
     {
-	initParamMap();
-	initModel();
-    }
+	keys = new ArrayList<String>();
+	values = new ArrayList<String>();
 
-    private void initParamMap()
-    {
-	// using getQueryString() even with POST method because request.getParameterNames() does not guarantee order
-	String queryString = request.getQueryString();
-	String[] params = queryString.split("&");
+	String[] params = body.split("&");
 
 	for (String param : params)
 	{
-	    System.out.println(param);
+	    log.trace("Parameter: {}", param);
+	    
 	    String[] array = param.split("=");
 	    String key = null;
 	    String value = null;
 
 	    try
 	    {
-		key = URLDecoder.decode(array[0], "UTF-8");
-		if (array.length > 1) value = URLDecoder.decode(array[1], "UTF-8");
+		key = URLDecoder.decode(array[0], charsetName);
+		if (array.length > 1) value = URLDecoder.decode(array[1], charsetName);
 	    } catch (UnsupportedEncodingException ex)
 	    {
-		Logger.getLogger(RDFForm.class.getName()).log(Level.SEVERE, null, ex);
+		log.warn("Unsupported encoding", ex);
 	    }
 
             if (value != null) // && key != null
@@ -94,10 +85,19 @@ public class RDFPostReader implements MessageBodyReader<Model>
 	}
     }
 
-    // http://www.lsrn.org/semweb/rdfpost.html
-    private void initModel()
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	Statement stmt = null;
+	return type == Model.class;
+    }
+
+    @Override
+    public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
+    {
+	// hrc.getRequest().getFormParameters() returns same info, but ordering is lost	
+	initKeysValues(hrc.getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name());
+	Model model = ModelFactory.createDefaultModel();
+
 	Resource subject = null;
 	Property property = null;
 	RDFNode object = null;
@@ -149,22 +149,10 @@ public class RDFPostReader implements MessageBodyReader<Model>
 
 	    if (subject != null && property != null && object != null)
 	    {
-		stmt = model.createStatement(subject, property, object);
-		model.add(stmt);
+		model.add(model.createStatement(subject, property, object));
 	    }
 	}
-	//model.write(System.out);
-    }
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-    {
-	return type == Model.class;
-    }
-
-    @Override
-    public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
-    {
 	return model;
     }
     

@@ -30,10 +30,28 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:foaf="&foaf;"
 exclude-result-prefixes="g rdf rdfs foaf">
-    
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}">
-	    <img src="{.}" alt=""/>
+
+    <xsl:template match="foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:page/@rdf:resource">
+	<a href="{.}">
+	    <xsl:value-of select="."/>
+	</a>
+    </xsl:template>
+
+    <xsl:template match="foaf:mbox/@rdf:resource">
+	<a href="{.}">
+	    <xsl:value-of select="substring-after(., 'mailto:')"/>
+	</a>
+    </xsl:template>
+
+    <xsl:template match="foaf:phone/@rdf:resource">
+	<a href="{.}">
+	    <xsl:value-of select="substring-after(., 'tel:')"/>
+	</a>
+    </xsl:template>
+
+    <xsl:template match="foaf:Image/@rdf:about | *[rdf:type/@rdf:resource = '&foaf;Image']/@rdf:about | foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}">
+	    <img src="{.}" alt="{g:label(., /, $lang)}"/>
 	</a>
     </xsl:template>
 
