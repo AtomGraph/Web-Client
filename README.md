@@ -13,23 +13,27 @@ Installation
 Graphity Browser is a [Maven Web application](http://maven.apache.org/guides/mini/guide-webapp.html).
 Maven dependencies are discovered automatically from `pom.xml`, others (such as [SPIN API](http://topbraid.org/spin/api/)) are included as `.jar` files in the `/lib` folder (and can be "installed locally" using Maven).
 
-Structure
+Java code
 =========
 
-Java classes
-----
+Browser JAX-RS application
+-------------------
+
+* [`org.graphity.browser`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser): Classes shared by all Graphity Browser applications
+    * [`org.graphity.browser.Application`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Application.java): Subclass to get an entry point to the webapp. [JAX-RS](http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) Resources, [`Provider`s](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/ext/Providers.html), and configuration is initialized here
+    * [`org.graphity.browser.Resource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Resource.java): Base class for all Browser Resources and apps built on it. Subclass of ``LinkedDataResourceImpl``.
+    * [`org.graphity.browser.locator`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/locator): Pluggable classes for [GRDDL](http://www.w3.org/TR/grddl/) import of 3rd party REST APIs and XML formats. Implement Jena's [`Locator`](http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html) interface. Need to be added to `DataManager` to take effect.
+    * [`org.graphity.browser.provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider): Browser-specific `Provider` subclasses
+        * [`org.graphity.browser.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider/xslt): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located [`here`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt) and its subfolders. They translate request parameters into XSLT parameters.
+    * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
+        * [`org.graphity.browser.resource.SPARQLResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLResource.java): SPARQL endpoint
+        * [`org.graphity.browser.resource.SearchResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SearchResource.java): Search/autocomplete resource (_unfinished_)
+
+Core classes
+------------
 
 * [`org.graphity`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity): Classes shared by all Graphity applications
     * [`org.graphity.adapter`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/adapter): [`DatasetAdapter`](http://jena.apache.org/documentation/javadoc/fuseki/org/apache/jena/fuseki/http/DatasetAdapter.html)-related wrappers for Model caching via Graph store protocol
-    * [`org.graphity.browser`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser): Classes shared by all Graphity Browser applications
-        * [`org.graphity.browser.Application`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Application.java): Subclass to get an entry point to the webapp. [JAX-RS](http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) Resources, [`Provider`s](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/ext/Providers.html), and configuration is initialized here
-        * [`org.graphity.browser.Resource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Resource.java): Base class for all Browser Resources and apps built on it. Subclass of ``LinkedDataResourceImpl``.
-        * [`org.graphity.browser.locator`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/locator): Pluggable classes for [GRDDL](http://www.w3.org/TR/grddl/) import of 3rd party REST APIs and XML formats. Implement Jena's [`Locator`](http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html) interface. Need to be added to `DataManager` to take effect.
-        * [`org.graphity.browser.provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider): Browser-specific `Provider` subclasses
-            * [`org.graphity.browser.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider/xslt): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located [`here`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt) and its subfolders. They translate request parameters into XSLT parameters.
-        * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
-            * [`org.graphity.browser.resource.SPARQLResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLResource.java): SPARQL endpoint
-            * [`org.graphity.browser.resource.SearchResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SearchResource.java): Search/autocomplete resource (_unfinished_)
     * [`org.graphity.model`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/model): Graphity model interfaces
         * [`org.graphity.model.LinkedDataResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/model/LinkedDataResource.java): Prototypical RDF Resource interface
         * [`org.graphity.model.impl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/model/impl): Implementations of Graphity model interfaces
@@ -54,23 +58,26 @@ Java classes
     * [`org.graphity.vocabulary`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/vocabulary): Graphity ontologies as classes with Jena `Resource`s
 
 XSLT stylesheets
-----------------
+================
 
-* [`resources/org/graphity`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity)
-    * [`browser`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser)
-        * [`provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider)
-            * [`xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt)
-                * [`imports`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt/imports): Ontology-specific stylesheets (e.g. overriding templates for certain properties), imported by the master stylesheet
-                    * [`default.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/imports/default.xsl): Default templates and functions for rendering RDF/XML subject/predicate/object nodes as XHTML elements. Design-independent.
-                * [`Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
-                * [`rdfxml2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/rdfxml2google-wire.xsl): Generic conversion from RDF/XML to Google [`DataTable`](https://developers.google.com/chart/interactive/docs/reference#DataTable)
-                * [`sparql2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/sparql2google-wire.xsl): Generic conversion from SPARQL XML results to Google `DataTable`
-    * [`util`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/util)
-        * [`locator`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/util/locator)
-            * [`grddl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/util/locator/grddl): XSLT stylesheets for use with `LocatorGRDDL` and its subclasses
+XHTML
+-----
+
+* [`resources/org/graphity/browser/provider/xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt)
+    * [`imports`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt/imports): Ontology-specific stylesheets (e.g. overriding templates for certain properties), imported by the master stylesheet
+        * [`default.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/imports/default.xsl): Default templates and functions for rendering RDF/XML subject/predicate/object nodes as XHTML elements. Design-independent.
+    * [`Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
+    * [`rdfxml2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/rdfxml2google-wire.xsl): Generic conversion from RDF/XML to Google [`DataTable`](https://developers.google.com/chart/interactive/docs/reference#DataTable)
+    * [`sparql2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/sparql2google-wire.xsl): Generic conversion from SPARQL XML results to Google `DataTable`
+
+GRDDL
+-----
+
+* [`resources/org/graphity/util/locator/grddl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/util/locator/grddl): XSLT stylesheets for use with `LocatorGRDDL` and its subclasses
+    * [`atom-grddl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/util/locator/grddl/atom-grddl.xsl): Atom to RDF transformation (_unfinished_)
 
 Ontologies
----------------------
+==========
 
 * [`resources/org/graphity/browser/vocabulary`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/vocabulary): Contains cached local copies of popular ontologies
     * [`graphity.ttl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/vocabulary/graphity.ttl) : Ontology reused by all Graphity applications
