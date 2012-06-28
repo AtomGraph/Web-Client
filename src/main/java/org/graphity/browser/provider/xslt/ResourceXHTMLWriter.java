@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.browser.provider;
+package org.graphity.browser.provider.xslt;
 
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -25,7 +25,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -52,7 +51,6 @@ import org.slf4j.LoggerFactory;
 @Produces({MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML})
 public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 {
-    public static final String XSLT_BASE = "xsl/";
     private static final Logger log = LoggerFactory.getLogger(ResourceXHTMLWriter.class);
 
     //@Context private ServletContext context;
@@ -111,7 +109,7 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 		queryStream.close();
 	    }
 
-	    XSLTBuilder.fromStylesheet(getStylesheet(XSLT_BASE + "group-triples.xsl")).
+	    XSLTBuilder.fromStylesheet(getStylesheet("group-triples.xsl")).
 		document(new ByteArrayInputStream(modelStream.toByteArray())).
 		result(rdf2xhtml).
 		transform();
@@ -129,7 +127,7 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
     
     public XSLTBuilder getXSLTBuilder() throws TransformerConfigurationException
     {
-	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet(XSLT_BASE + "Resource.xsl")).
+	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet("Resource.xsl")).
 	    resolver(resolver).
 	    parameter("base-uri", uriInfo.getBaseUri()).
 	    parameter("absolute-path", uriInfo.getAbsolutePath()); // is base URI necessary?
@@ -167,12 +165,12 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	return rdf2xhtml;
     }
     
-    public Source getStylesheet(String path)
+    public Source getStylesheet(String filename)
     {
 	// using getResource() because getResourceAsStream() does not retain systemId
 	try
 	{
-	    URL xsltUrl = this.getClass().getClassLoader().getResource(path);  //context.getResource(path);
+	    URL xsltUrl = this.getClass().getResource(filename);  //context.getResource(path);
 	    if (xsltUrl == null) throw new FileNotFoundException();
 	    String xsltUri = xsltUrl.toURI().toString();
 	    log.debug("XSLT stylesheet URI: {}", xsltUri);
@@ -180,12 +178,12 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	}
 	catch (IOException ex)
 	{
-	    log.error("Cannot read internal XSLT stylesheet resource: {}", path);
+	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
 	    return null;
 	}
 	catch (URISyntaxException ex)
 	{
-	    log.error("Cannot read internal XSLT stylesheet resource: {}", path);
+	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
 	    return null;
 	}
 	//return null;

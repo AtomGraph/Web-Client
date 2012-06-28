@@ -19,12 +19,15 @@ package org.graphity.browser;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
-import org.graphity.browser.provider.ResourceXHTMLWriter;
+import org.graphity.browser.provider.xslt.ResourceXHTMLWriter;
 import org.graphity.browser.resource.OAuthResource;
 import org.graphity.browser.resource.SPARQLResource;
 import org.graphity.browser.resource.SearchResource;
@@ -32,6 +35,7 @@ import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFPostReader;
 import org.graphity.provider.ResultSetWriter;
 import org.graphity.util.locator.PrefixMapper;
+import org.graphity.util.locator.grddl.LocatorAtom;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class Application extends javax.ws.rs.core.Application
 {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
+    
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
     @Context private ServletContext context = null;
@@ -58,8 +63,7 @@ public class Application extends javax.ws.rs.core.Application
 	LocationMapper.setGlobalLocationMapper(mapper);
 	log.debug("LocationMapper.get(): {}", LocationMapper.get());
 	log.debug("FileManager.get().getLocationMapper(): {}", FileManager.get().getLocationMapper());
-	FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/"));
-	FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/owl/"));
+	FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/")); // necessary?
 	
 	DataManager.get().setLocationMapper(mapper);
 	DataManager.get().setModelCaching(false);
@@ -70,6 +74,17 @@ public class Application extends javax.ws.rs.core.Application
 	OntDocumentManager.getInstance().setFileManager(DataManager.get());
 	log.debug("OntDocumentManager.getInstance(): {}", OntDocumentManager.getInstance());
 	log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
+
+	try
+	{
+	    DataManager.get().addLocator(new LocatorAtom());
+	} catch (MalformedURLException ex)
+	{
+	    log.error("Malformed Locator stylesheet URL", ex);
+	} catch (URISyntaxException ex)
+	{
+	    log.error("Malformed Locator stylesheet URI", ex);
+	}
     }
     
     @Override

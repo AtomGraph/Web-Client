@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.browser.locator;
+package org.graphity.util.locator.grddl;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -34,9 +34,9 @@ public class LocatorAtom extends LocatorGRDDL
 {
     private static final Logger log = LoggerFactory.getLogger(LocatorAtom.class);
 
-    public LocatorAtom(ServletContext context) throws MalformedURLException, URISyntaxException
+    public LocatorAtom() throws MalformedURLException, URISyntaxException
     {
-	super(new StreamSource(context.getResource("/WEB-INF/xsl/grddl/atom-grddl.xsl").toURI().toString()));
+	super(new StreamSource(LocatorAtom.class.getResource("atom-grddl.xsl").toURI().toString()));
     }
 
     @Override
