@@ -411,22 +411,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 	</div>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="g:EditMode">
-	<h1>
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
-	</h1>
-	<form action="" method="post" enctype="multipart/form-data">
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="g:EditMode"/>
-	    <dl>
-		<xsl:apply-templates select="rdf:type" mode="g:EditMode"/>
-		<xsl:apply-templates select="*[not(self::rdf:type)][not(@xml:lang) or lang($lang)]" mode="g:EditMode">
-		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
-		</xsl:apply-templates>	    
-	    </dl>
-	</form>
-	<hr/>
-    </xsl:template>    
-
     <xsl:template match="rdf:type/@rdf:resource" mode="g:TypeMode">
 	<xsl:variable name="in-domain-properties" select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current()) or rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"/>
 	
@@ -440,20 +424,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 		    <xsl:apply-imports/>
 		</h2>
 		<dl class="list-default clearfix">
-		    <xsl:choose>
-			<xsl:when test="$mode = '&g;EditMode'">
-			    <xsl:apply-templates select="$in-domain-properties" mode="g:EditMode">
-				<xsl:with-param name="type" select="."/>
-			    </xsl:apply-templates>
-			</xsl:when>
-			<xsl:otherwise>
-			    <!-- <xsl:apply-templates select="../../*[xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(current())][not(@xml:lang) or lang($lang)]"> -->
-			    <!-- <xsl:apply-templates select="../../*[rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = xs:anyURI(current())][not(@xml:lang) or lang($lang)]"> --> <!-- not(self::rdf:type) --> 
-			    <xsl:apply-templates select="$in-domain-properties[not(self::foaf:depiction)][not(self::owl:sameAs)]">
-				<xsl:with-param name="type" select="."/>
-			    </xsl:apply-templates>
-			</xsl:otherwise>
-		    </xsl:choose>
+			<xsl:apply-templates select="$in-domain-properties[not(self::foaf:depiction)][not(self::owl:sameAs)]">
+			    <xsl:with-param name="type" select="."/>
+			</xsl:apply-templates>
 		</dl>
 	</div>
     </xsl:template>
@@ -488,33 +461,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
 		<xsl:apply-templates select="key('resources', .)"/>
 	    </dd>
 	</xsl:for-each>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:EditMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
-	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
-	    <dt>
-		<xsl:apply-imports/>
-	    </dt>
-	</xsl:if>
-	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="g:EditMode"/>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@rdf:resource or @rdf:nodeID]" mode="g:EditMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<xsl:if test="not(concat(namespace-uri(preceding-sibling::*[1]), local-name(preceding-sibling::*[1])) = $this)">
-	    <!-- @xml:lang = preceding-sibling::*[1]/@xml:lang -->
-	    <dt>
-		<xsl:apply-imports/>
-	    </dt>
-	</xsl:if>
-	<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="g:EditMode"/>
-	<xsl:if test="position() = last()">
-	    <dd>
-		<button>Add</button>
-	    </dd>
-	</xsl:if>
     </xsl:template>
 
     <xsl:template match="g:XSLTMode/@rdf:about | *[rdf:type/@rdf:resource = '&g;XSLTMode']/@rdf:about">
