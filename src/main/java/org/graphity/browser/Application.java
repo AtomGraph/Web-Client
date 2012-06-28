@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
@@ -90,10 +89,11 @@ public class Application extends javax.ws.rs.core.Application
     @Override
     public Set<Class<?>> getClasses()
     {
-        classes.add(Resource.class);
         classes.add(OAuthResource.class);
         classes.add(SearchResource.class);
         classes.add(SPARQLResource.class);
+	
+        classes.add(Resource.class); // handles the rest
 	
         return classes;
     }
