@@ -45,76 +45,36 @@ public class SPARQLResource extends Resource
     @Override
     public Response getResponse()
     {
-	if (mode != null && mode.equals("EmbedMode"))
-	{
-	    log.debug("?mode parameter: {}", mode);
-	    
-	    if (queryString == null || queryString.isEmpty())
-		throw new WebApplicationException(Response.Status.BAD_REQUEST);
-	    
-	    Query query = QueryFactory.create(queryString);
-	    query.setLimit(MAX_LIMIT);
+	if (queryString == null || queryString.isEmpty())
+	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
 
-	    if (getEndpointURI() != null)
-	    {
-		// ModelEmbedWriter
-		if (query.isDescribeType() || query.isConstructType())
-		    return Response.ok(DataManager.get().loadModel(getEndpointURI(), query),
-			    MediaType.TEXT_HTML).build();
-		// ResultSetEmbedWriter
-		if (query.isSelectType())
-		    return Response.ok(DataManager.get().loadResultSet(getEndpointURI(), query), MediaType.TEXT_HTML).
-			build();
-	    }
-	    else
-	    {
-		// ModelEmbedWriter
-		if (query.isDescribeType() || query.isConstructType())
-		    return Response.ok(DataManager.get().loadModel(getOntModel(), query),
-			    MediaType.TEXT_HTML).build();
-		// ResultSetEmbedWriter
-		if (query.isSelectType())
-		    return Response.ok(DataManager.get().loadResultSet(getOntModel(), query), MediaType.TEXT_HTML).
-			build();		
-	    }
+	Query query = QueryFactory.create(queryString);
+	query.setLimit(MAX_LIMIT);
+
+	if (getEndpointURI() != null)
+	{
+	    // ModelEmbedWriter
+	    if (query.isDescribeType() || query.isConstructType())
+		return Response.ok(DataManager.get().loadModel(getEndpointURI(), query),
+			MediaType.TEXT_HTML).build();
+	    // ResultSetEmbedWriter
+	    if (query.isSelectType())
+		return Response.ok(DataManager.get().loadResultSet(getEndpointURI(), query), MediaType.TEXT_HTML).
+		    build();
 	}
-		
-	return super.getResponse();
-    }
-
-    // queries are handled via EmbedMode from the client side
-    /*
-    @Override
-    public Query getQuery()
-    {
-	if (queryString != null && !queryString.isEmpty())
+	else
 	{
-	    log.debug("?query parameter: {}", queryString);
-	    Query query = QueryFactory.create(queryString);
-	    if (query.isConstructType() || query.isDescribeType())
-		return query;
+	    // ModelEmbedWriter
+	    if (query.isDescribeType() || query.isConstructType())
+		return Response.ok(DataManager.get().loadModel(getOntModel(), query),
+			MediaType.TEXT_HTML).build();
+	    // ResultSetEmbedWriter
+	    if (query.isSelectType())
+		return Response.ok(DataManager.get().loadResultSet(getOntModel(), query), MediaType.TEXT_HTML).
+		    build();		
 	}
 	
-	return super.getQuery();
-    }
-    */
-
-    @Override
-    public String getEndpointURI()
-    {
-	/*
-	if (queryString != null && !queryString.isEmpty())
-	{
-	    log.debug("?query parameter: {}", queryString);
-	    Query query = QueryFactory.create(queryString);
-	    if (query.isConstructType() || query.isDescribeType())
-		return null;
-	}
-	*/
-	if (mode == null || !mode.equals("EmbedMode"))
-	    return null;
-
-	return super.getEndpointURI();
+	return super.getResponse();
     }
 
 }
