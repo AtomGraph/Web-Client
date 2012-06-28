@@ -16,6 +16,15 @@ Maven dependencies are discovered automatically from `pom.xml`, others (such as 
 Java code
 =========
 
+Used libraries
+---------
+
+* [Apache Jena](http://jena.apache.org)
+* [TopBraid SPIN API](http://topbraid.org/spin/api/)
+* [Saxonica Saxon](http://saxon.sourceforge.net)
+* [Jersey](http://jersey.java.net)
+* [SL4J](http://www.slf4j.org)
+
 Browser JAX-RS application
 -------------------
 
@@ -31,6 +40,8 @@ Browser JAX-RS application
 Core classes
 ------------
 
+The plan is to spin these off as a standalone artifact.
+
 * [`org.graphity`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity): Classes shared by all Graphity applications
     * [`org.graphity.adapter`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/adapter): [`DatasetAdapter`](http://jena.apache.org/documentation/javadoc/fuseki/org/apache/jena/fuseki/http/DatasetAdapter.html)-related wrappers for Model caching via Graph store protocol
     * [`org.graphity.model`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/model): Graphity model interfaces
@@ -43,7 +54,7 @@ Core classes
         * [`org.graphity.provider.ResultSetWriter`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/provider/ResultSetWriter.java): Writes [`ResultSet`](http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/query/ResultSet.html) with SPARQL results into `Response`
         * [`org.graphity.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/provider/xslt): Abstract base classes for XSLT transformation-based `Response` writers
     * [`org.graphity.util`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/util): Utility classes
-        * [`org.graphity.util.QueryBuilder`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/util/QueryBuilder.java): Builds Jena [`Query`](http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/query/Query.html) or [SPIN](http://spinrdf.org/spin.html) [`Query`](www.topquadrant.com/topbraid/spin/api/javadoc/org/topbraid/spin/model/class-use/Query.html) from components (e.g. `LIMIT`/`OFFSET` parameters; RDF resources specifying `OPTIONAL` or a subquery)
+        * [`org.graphity.util.QueryBuilder`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/util/QueryBuilder.java): Builds Jena [`Query`](http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/query/Query.html) or SPIN [`Query`](www.topquadrant.com/topbraid/spin/api/javadoc/org/topbraid/spin/model/class-use/Query.html) from components (e.g. `LIMIT`/`OFFSET` parameters; RDF resources specifying `OPTIONAL` or a subquery)
         * [`org.graphity.util.XSLTBuilder`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/util/XSLTBuilder.java): Builds XSLT transformation out of components. Chaining is possible.
         * [`org.graphity.util.locator`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/util/locator): Pluggable classes for retrieving RDF from URIs. Implement Jena's [`Locator`](http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html) interface.
             * [`org.graphity.util.locator.grddl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/util/locator): Pluggable classes for [GRDDL](http://www.w3.org/TR/grddl/) import of 3rd party REST APIs and XML formats. Implement Jena's [`Locator`](http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html) interface. Need to be added to `DataManager` to take effect.

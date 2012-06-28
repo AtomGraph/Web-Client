@@ -94,6 +94,12 @@
             <groupId>org.openjena</groupId>
             <artifactId>fuseki</artifactId>
             <version>0.2.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tdb</artifactId>
+                    <groupId>com.hp.hpl.jena</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

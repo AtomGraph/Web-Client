@@ -30,7 +30,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.MediaType;
-import org.graphity.browser.adapter.SPARQLCacheAdapter;
 import org.graphity.model.impl.LinkedDataResourceImpl;
 import org.graphity.util.QueryBuilder;
 import org.graphity.util.locator.PrefixMapper;
