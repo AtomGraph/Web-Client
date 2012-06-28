@@ -39,8 +39,6 @@ public class SPARQLResource extends Resource
     private static final long MAX_LIMIT = 100;
     
     private @QueryParam("query") String queryString = null;
-    private @QueryParam("accept") String accept = null;
-    private @QueryParam("mode") String mode = null;
     
     @Override
     public Response getResponse()
