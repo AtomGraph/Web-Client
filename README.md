@@ -13,6 +13,8 @@ Installation
 Graphity Browser is a [Maven Web application](http://maven.apache.org/guides/mini/guide-webapp.html).
 Maven dependencies are discovered automatically from `pom.xml`, others (such as [SPIN API](http://topbraid.org/spin/api/)) are included as `.jar` files in the `/lib` folder (and can be "installed locally" using Maven).
 
+Basic version of Graphity core is also available in a [PHP version](https://github.com/Graphity/graphity-core).
+
 Java code
 =========
 
