@@ -97,7 +97,6 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	    builder.document(new ByteArrayInputStream(modelStream.toByteArray())).
 		parameter("base-uri", uriInfo.getBaseUri()).
 		parameter("absolute-path", uriInfo.getAbsolutePath()).
-		parameter("uri", UriBuilder.fromUri(resource.getURI()).build()).
 		parameter("http-headers", httpHeaders.toString()).
 		result(new StreamResult(entityStream));
 	    
@@ -125,6 +124,9 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 		rdf2xhtml.parameter(key, resource.getUriInfo().getQueryParameters().getFirst(key));
 	    }
 	    */
+	    
+	    if (uriInfo.getQueryParameters().getFirst("uri") != null)
+		builder.parameter("uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("uri")).build());
 	    if (uriInfo.getQueryParameters().getFirst("service-uri") != null)
 		builder.parameter("service-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("service-uri")).build());
 	    if (uriInfo.getQueryParameters().getFirst("query") != null)

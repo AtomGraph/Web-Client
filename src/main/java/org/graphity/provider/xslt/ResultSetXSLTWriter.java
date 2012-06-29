@@ -29,8 +29,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import org.graphity.util.XSLTBuilder;
 import org.slf4j.Logger;
@@ -40,9 +42,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public abstract class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
+public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
 {
     private static final Logger log = LoggerFactory.getLogger(ResultSetXSLTWriter.class);
+
+    private XSLTBuilder builder = null;
+    
+    public ResultSetXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
+    {
+	builder = XSLTBuilder.fromStylesheet(stylesheet).
+	    resolver(resolver);
+    }
     
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -78,6 +88,9 @@ public abstract class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet
 	}
     }
 
-    abstract public XSLTBuilder getXSLTBuilder() throws TransformerConfigurationException;
+    public XSLTBuilder getXSLTBuilder()
+    {
+	return builder;
+    }
 
 }

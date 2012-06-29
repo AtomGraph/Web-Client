@@ -85,10 +85,11 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql gfb-app g-maps oauth
     
     <xsl:preserve-space elements="pre"/>
 
-    <xsl:param name="uri" as="xs:anyURI?"/>
     <xsl:param name="base-uri" as="xs:anyURI"/>
     <xsl:param name="absolute-path" as="xs:anyURI"/>
     <xsl:param name="http-headers" as="xs:string"/>
+
+    <xsl:param name="uri" select="$absolute-path" as="xs:anyURI"/>
     <xsl:param name="service-uri" select="key('resources', $uri, $ont-model)/lda:sparqlEndpoint/@rdf:resource" as="xs:anyURI?"/> <!-- select="xs:anyURI(concat($base-uri, 'sparql'))"  -->
     <xsl:param name="query-uri" as="xs:anyURI?"/>
     <xsl:param name="query-bnode-id" as="xs:string?"/>
