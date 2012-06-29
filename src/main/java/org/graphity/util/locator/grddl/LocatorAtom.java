@@ -16,12 +16,10 @@
  */
 package org.graphity.util.locator.grddl;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 import org.graphity.util.locator.LocatorGRDDL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +32,9 @@ public class LocatorAtom extends LocatorGRDDL
 {
     private static final Logger log = LoggerFactory.getLogger(LocatorAtom.class);
 
-    public LocatorAtom() throws MalformedURLException, URISyntaxException
+    public LocatorAtom(Source stylesheet) throws TransformerConfigurationException
     {
-	super(new StreamSource(LocatorAtom.class.getResource("atom-grddl.xsl").toURI().toString()));
+	super(stylesheet);
     }
 
     @Override

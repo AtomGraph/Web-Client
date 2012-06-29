@@ -44,16 +44,10 @@ public class LocatorGRDDL extends LocatorLinkedData
     private Source stylesheet = null;
     private XSLTBuilder builder = null;
     
-    public LocatorGRDDL(Source stylesheet)
+    public LocatorGRDDL(Source stylesheet) throws TransformerConfigurationException
     {
 	this.stylesheet = stylesheet;
-	try
-	{
-	    builder = XSLTBuilder.fromStylesheet(stylesheet);
-	} catch (TransformerConfigurationException ex)
-	{
-	    log.error("Error in transformer configuration", ex);
-	}
+	builder = XSLTBuilder.fromStylesheet(stylesheet);
     }
 
     @Override

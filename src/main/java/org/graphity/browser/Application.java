@@ -21,7 +21,6 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
@@ -75,16 +74,13 @@ public class Application extends javax.ws.rs.core.Application
 	OntDocumentManager.getInstance().setFileManager(DataManager.get());
 	log.debug("OntDocumentManager.getInstance(): {}", OntDocumentManager.getInstance());
 	log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
-
+	
 	try
 	{
-	    DataManager.get().addLocator(new LocatorAtom());
-	} catch (MalformedURLException ex)
+	    DataManager.get().addLocator(new LocatorAtom(getStylesheet("org/graphity/util/locator/grddl/atom-grddl.xsl")));
+	} catch (TransformerConfigurationException ex)
 	{
-	    log.error("Malformed Locator stylesheet URL", ex);
-	} catch (URISyntaxException ex)
-	{
-	    log.error("Malformed Locator stylesheet URI", ex);
+	    log.error("XSLT stylesheet error", ex);
 	}
     }
     
