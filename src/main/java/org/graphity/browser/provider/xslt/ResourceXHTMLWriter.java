@@ -18,13 +18,13 @@
 package org.graphity.browser.provider.xslt;
 
 import com.hp.hpl.jena.util.ResourceUtils;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
-import java.net.URL;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -38,7 +38,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.Resource;
 import org.graphity.util.XSLTBuilder;
-import org.graphity.util.manager.DataManager;
+import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +53,15 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceXHTMLWriter.class);
 
-    //@Context private ServletContext context;
+    private XSLTBuilder builder = null;
+	
     @Context private UriInfo uriInfo;
 
-    private URIResolver resolver = DataManager.get(); // OntDataManager.getInstance(); // XML-only resolving is not good enough, needs to work on RDF Models
+    public ResourceXHTMLWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
+    {
+	builder = XSLTBuilder.fromStylesheet(stylesheet).
+	    resolver(resolver);
+    }
        
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -87,9 +92,11 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	try
 	{
 	    ByteArrayOutputStream modelStream = new ByteArrayOutputStream();
-	    resource.getModel().write(modelStream);
+	    resource.getModel().write(modelStream, WebContent.langRDFXML);
 
-	    XSLTBuilder rdf2xhtml = getXSLTBuilder().
+	    builder.document(new ByteArrayInputStream(modelStream.toByteArray())).
+		parameter("base-uri", uriInfo.getBaseUri()).
+		parameter("absolute-path", uriInfo.getAbsolutePath()).
 		parameter("uri", UriBuilder.fromUri(resource.getURI()).build()).
 		parameter("http-headers", httpHeaders.toString()).
 		result(new StreamResult(entityStream));
@@ -97,96 +104,52 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	    if (resource.getSPINResource() != null)
 	    {
 		if (resource.getSPINResource().isURIResource())
-		    rdf2xhtml.parameter("query-uri", UriBuilder.fromPath(resource.getSPINResource().getURI()).build());
+		    builder.parameter("query-uri", UriBuilder.fromPath(resource.getSPINResource().getURI()).build());
 		if (resource.getSPINResource().isAnon())
-		    rdf2xhtml.parameter("query-bnode-id", resource.getSPINResource().getId().getLabelString());
+		    builder.parameter("query-bnode-id", resource.getSPINResource().getId().getLabelString());
 		
 		ByteArrayOutputStream queryStream = new ByteArrayOutputStream();
 		//resource.getQueryBuilder().buildSPIN().getModel().write(queryStream); // don't need the whole ontology
 		ResourceUtils.reachableClosure(resource.getQueryBuilder().buildSPIN()).write(queryStream);
 		
-		rdf2xhtml.parameter("query-model", new StreamSource(new ByteArrayInputStream(queryStream.toByteArray())));
+		builder.parameter("query-model", new StreamSource(new ByteArrayInputStream(queryStream.toByteArray())));
 		queryStream.close();
 	    }
 
-	    XSLTBuilder.fromStylesheet(getStylesheet("group-triples.xsl")).
-		document(new ByteArrayInputStream(modelStream.toByteArray())).
-		result(rdf2xhtml).
-		transform();
-	    
+	    // set all query string &parameters as XSLT $parameters (using the first value)
+	    /*
+	    Iterator<String> it = resource.getUriInfo().getQueryParameters().keySet().iterator();
+	    while (it.hasNext())
+	    {
+		String key = it.next();
+		rdf2xhtml.parameter(key, resource.getUriInfo().getQueryParameters().getFirst(key));
+	    }
+	    */
+	    if (uriInfo.getQueryParameters().getFirst("service-uri") != null)
+		builder.parameter("service-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("service-uri")).build());
+	    if (uriInfo.getQueryParameters().getFirst("query") != null)
+		builder.parameter("query", uriInfo.getQueryParameters().getFirst("query"));
+	    if (uriInfo.getQueryParameters().getFirst("mode") != null)
+		builder.parameter("mode", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("mode")).build());
+	    if (uriInfo.getQueryParameters().getFirst("lang") != null)
+		builder.parameter("lang", uriInfo.getQueryParameters().getFirst("lang"));
+	    if (uriInfo.getQueryParameters().getFirst("offset") != null)
+		builder.parameter("offset", Integer.parseInt(uriInfo.getQueryParameters().getFirst("offset")));
+	    if (uriInfo.getQueryParameters().getFirst("limit") != null)
+		builder.parameter("limit", Integer.parseInt(uriInfo.getQueryParameters().getFirst("limit")));
+	    if (uriInfo.getQueryParameters().getFirst("order-by") != null)
+		builder.parameter("order-by", uriInfo.getQueryParameters().getFirst("order-by"));
+	    if (uriInfo.getQueryParameters().getFirst("desc") != null)
+		builder.parameter("desc", Boolean.parseBoolean(uriInfo.getQueryParameters().getFirst("desc")));
+
+	    builder.transform();
 	    modelStream.close();
-	    
-	    //getXSLTBuilder(resource).transform(entityStream); // no preprocessing
 	}
 	catch (TransformerException ex)
 	{
 	    log.error("XSLT transformation failed", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
-    }
-    
-    public XSLTBuilder getXSLTBuilder() throws TransformerConfigurationException
-    {
-	XSLTBuilder rdf2xhtml = XSLTBuilder.fromStylesheet(getStylesheet("Resource.xsl")).
-	    resolver(resolver).
-	    parameter("base-uri", uriInfo.getBaseUri()).
-	    parameter("absolute-path", uriInfo.getAbsolutePath()); // is base URI necessary?
-
-	// set all query string &parameters as XSLT $parameters (using the first value)
-	/*
-	Iterator<String> it = resource.getUriInfo().getQueryParameters().keySet().iterator();
-	while (it.hasNext())
-	{
-	    String key = it.next();
-	    rdf2xhtml.parameter(key, resource.getUriInfo().getQueryParameters().getFirst(key));
-	}
-	*/ 
-
-	if (uriInfo.getQueryParameters().getFirst("service-uri") != null)
-	    rdf2xhtml.parameter("service-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("service-uri")).build());
-	if (uriInfo.getQueryParameters().getFirst("query") != null)
-	    rdf2xhtml.parameter("query", uriInfo.getQueryParameters().getFirst("query"));
-	if (uriInfo.getQueryParameters().getFirst("mode") != null)
-	    rdf2xhtml.parameter("mode", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("mode")).build());
-	if (uriInfo.getQueryParameters().getFirst("lang") != null)
-	    rdf2xhtml.parameter("lang", uriInfo.getQueryParameters().getFirst("lang"));
-	if (uriInfo.getQueryParameters().getFirst("offset") != null)
-	    rdf2xhtml.parameter("offset", Integer.parseInt(uriInfo.getQueryParameters().getFirst("offset")));
-	if (uriInfo.getQueryParameters().getFirst("limit") != null)
-	    rdf2xhtml.parameter("limit", Integer.parseInt(uriInfo.getQueryParameters().getFirst("limit")));
-	if (uriInfo.getQueryParameters().getFirst("order-by") != null)
-	    rdf2xhtml.parameter("order-by", uriInfo.getQueryParameters().getFirst("order-by"));
-	if (uriInfo.getQueryParameters().getFirst("desc") != null)
-	    rdf2xhtml.parameter("desc", Boolean.parseBoolean(uriInfo.getQueryParameters().getFirst("desc")));
-
-	if (uriInfo.getQueryParameters().getFirst("rdf:type") != null)
-	    rdf2xhtml.parameter("{" + RDF.getURI()+ "}type", uriInfo.getQueryParameters().getFirst("rdf:type"));
-	    
-	return rdf2xhtml;
-    }
-    
-    public Source getStylesheet(String filename)
-    {
-	// using getResource() because getResourceAsStream() does not retain systemId
-	try
-	{
-	    URL xsltUrl = this.getClass().getResource(filename);  //context.getResource(path);
-	    if (xsltUrl == null) throw new FileNotFoundException();
-	    String xsltUri = xsltUrl.toURI().toString();
-	    log.debug("XSLT stylesheet URI: {}", xsltUri);
-	    return new StreamSource(xsltUri);
-	}
-	catch (IOException ex)
-	{
-	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
-	    return null;
-	}
-	catch (URISyntaxException ex)
-	{
-	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
-	    return null;
-	}
-	//return null;
     }
     
 }

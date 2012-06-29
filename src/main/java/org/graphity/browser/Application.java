@@ -19,17 +19,22 @@ package org.graphity.browser;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.provider.xslt.ResourceXHTMLWriter;
-import org.graphity.browser.resource.OAuthResource;
 import org.graphity.browser.resource.SPARQLResource;
-import org.graphity.browser.resource.SearchResource;
 import org.graphity.provider.ModelProvider;
 import org.graphity.provider.RDFPostReader;
 import org.graphity.provider.ResultSetWriter;
@@ -55,8 +60,6 @@ public class Application extends javax.ws.rs.core.Application
     public void init() // initialize locally cached ontologies
     {
 	log.debug("Application.init() ServletContext: {}", context);
-	// http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms
-	// http://incubator.apache.org/jena/documentation/ontology/#compound_ontology_documents_and_imports_processing
 
 	LocationMapper mapper = new PrefixMapper("location-mapping.ttl");
 	LocationMapper.setGlobalLocationMapper(mapper);
@@ -89,8 +92,6 @@ public class Application extends javax.ws.rs.core.Application
     @Override
     public Set<Class<?>> getClasses()
     {
-        classes.add(OAuthResource.class);
-        classes.add(SearchResource.class);
         classes.add(SPARQLResource.class);
 	
         classes.add(Resource.class); // handles the rest
@@ -107,9 +108,40 @@ public class Application extends javax.ws.rs.core.Application
 	singletons.add(new RDFPostReader());
 
 	// browser-specific
-	singletons.add(new ResourceXHTMLWriter());
+	try
+	{
+	    singletons.add(new ResourceXHTMLWriter(getStylesheet("org/graphity/browser/provider/xslt/Resource.xsl"), DataManager.get()));
+	}
+	catch (TransformerConfigurationException ex)
+	{
+	    log.error("XSLT stylesheet error", ex);
+	}
 
 	return singletons;
+    }
+
+    public Source getStylesheet(String filename)
+    {
+	// using getResource() because getResourceAsStream() does not retain systemId
+	try
+	{
+	    URL xsltUrl = this.getClass().getClassLoader().getResource(filename);  //context.getResource(path);
+	    if (xsltUrl == null) throw new FileNotFoundException();
+	    String xsltUri = xsltUrl.toURI().toString();
+	    log.debug("XSLT stylesheet URI: {}", xsltUri);
+	    return new StreamSource(xsltUri);
+	}
+	catch (IOException ex)
+	{
+	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
+	    return null;
+	}
+	catch (URISyntaxException ex)
+	{
+	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
+	    return null;
+	}
+	//return null;
     }
 
 }

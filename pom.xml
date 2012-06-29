@@ -8,6 +8,19 @@
 
     <name>Graphity Browser</name>
     <description>Graphity Linked Data browser</description>
+
+    <developers>
+	<developer>
+		<id>martynas</id>
+		<email>martynas@graphity.org</email>
+		<roles>
+			<role>Developer</role>
+			<role>Founder</role>
+		</roles>
+		<organization>Graphity</organization>
+		<organizationUrl>http://graphity.org</organizationUrl>
+	</developer>
+    </developers>
     
     <licenses>
 	<license>
