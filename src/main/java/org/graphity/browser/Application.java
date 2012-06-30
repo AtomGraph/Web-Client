@@ -20,7 +20,6 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
@@ -78,9 +77,18 @@ public class Application extends javax.ws.rs.core.Application
 	try
 	{
 	    DataManager.get().addLocator(new LocatorAtom(getStylesheet("org/graphity/util/locator/grddl/atom-grddl.xsl")));
-	} catch (TransformerConfigurationException ex)
+	}
+	catch (TransformerConfigurationException ex)
 	{
 	    log.error("XSLT stylesheet error", ex);
+	}
+	catch (FileNotFoundException ex)
+	{
+	    log.error("XSLT stylesheet not found", ex);
+	}
+	catch (URISyntaxException ex)
+	{
+	    log.error("XSLT stylesheet URI error", ex);
 	}
     }
     
@@ -105,7 +113,8 @@ public class Application extends javax.ws.rs.core.Application
 	// browser-specific
 	try
 	{
-	    singletons.add(new ResourceXHTMLWriter(getStylesheet("org/graphity/browser/provider/xslt/Resource.xsl"), DataManager.get()));
+	    //singletons.add(new ResourceXHTMLWriter(getStylesheet("org/graphity/browser/provider/xslt/Resource.xsl"), DataManager.get()));
+	    singletons.add(new ResourceXHTMLWriter(new StreamSource(context.getRealPath("/WEB-INF/Resource.xsl")), DataManager.get()));
 	}
 	catch (TransformerConfigurationException ex)
 	{
@@ -115,28 +124,14 @@ public class Application extends javax.ws.rs.core.Application
 	return singletons;
     }
 
-    public Source getStylesheet(String filename)
+    public Source getStylesheet(String filename) throws FileNotFoundException, URISyntaxException
     {
 	// using getResource() because getResourceAsStream() does not retain systemId
-	try
-	{
-	    URL xsltUrl = this.getClass().getClassLoader().getResource(filename);  //context.getResource(path);
-	    if (xsltUrl == null) throw new FileNotFoundException();
-	    String xsltUri = xsltUrl.toURI().toString();
-	    log.debug("XSLT stylesheet URI: {}", xsltUri);
-	    return new StreamSource(xsltUri);
-	}
-	catch (IOException ex)
-	{
-	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
-	    return null;
-	}
-	catch (URISyntaxException ex)
-	{
-	    log.error("Cannot read internal XSLT stylesheet resource: {}", filename);
-	    return null;
-	}
-	//return null;
+	URL xsltUrl = this.getClass().getClassLoader().getResource(filename);
+	if (xsltUrl == null) throw new FileNotFoundException();
+	String xsltUri = xsltUrl.toURI().toString();
+	log.debug("XSLT stylesheet URI: {}", xsltUri);
+	return new StreamSource(xsltUri);
     }
 
 }
