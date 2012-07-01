@@ -43,33 +43,35 @@ public class SPARQLResource extends Resource
     @Override
     public Response getResponse()
     {
-	if (queryString == null || queryString.isEmpty())
-	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
-
-	Query query = QueryFactory.create(queryString);
-	query.setLimit(MAX_LIMIT);
-
-	if (getEndpointURI() != null)
+	if (queryString != null)
 	{
-	    // ModelEmbedWriter
-	    if (query.isDescribeType() || query.isConstructType())
-		return Response.ok(DataManager.get().loadModel(getEndpointURI(), query),
-			MediaType.TEXT_HTML).build();
-	    // ResultSetEmbedWriter
-	    if (query.isSelectType())
-		return Response.ok(DataManager.get().loadResultSet(getEndpointURI(), query), MediaType.TEXT_HTML).
-		    build();
-	}
-	else
-	{
-	    // ModelEmbedWriter
-	    if (query.isDescribeType() || query.isConstructType())
-		return Response.ok(DataManager.get().loadModel(getOntModel(), query),
-			MediaType.TEXT_HTML).build();
-	    // ResultSetEmbedWriter
-	    if (query.isSelectType())
-		return Response.ok(DataManager.get().loadResultSet(getOntModel(), query), MediaType.TEXT_HTML).
-		    build();		
+	    if (queryString.isEmpty()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
+
+	    Query query = QueryFactory.create(queryString);
+	    query.setLimit(MAX_LIMIT);
+
+	    if (getEndpointURI() != null)
+	    {
+		// ModelEmbedWriter
+		if (query.isDescribeType() || query.isConstructType())
+		    return Response.ok(DataManager.get().loadModel(getEndpointURI(), query),
+			    MediaType.TEXT_HTML).build();
+		// ResultSetEmbedWriter
+		if (query.isSelectType())
+		    return Response.ok(DataManager.get().loadResultSet(getEndpointURI(), query), MediaType.TEXT_HTML).
+			build();
+	    }
+	    else
+	    {
+		// ModelEmbedWriter
+		if (query.isDescribeType() || query.isConstructType())
+		    return Response.ok(DataManager.get().loadModel(getOntModel(), query),
+			    MediaType.TEXT_HTML).build();
+		// ResultSetEmbedWriter
+		if (query.isSelectType())
+		    return Response.ok(DataManager.get().loadResultSet(getOntModel(), query), MediaType.TEXT_HTML).
+			build();		
+	    }
 	}
 	
 	return super.getResponse();
