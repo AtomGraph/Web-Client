@@ -140,7 +140,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 			    <form action="" method="get" class="form-inline">
 
 				<div class="input-append">
-				    <input type="text" name="uri" class="input-xlarge">
+				    <input type="text" name="uri" class="input-xxlarge">
 					<xsl:if test="not(starts-with($uri, $base-uri))">
 					    <xsl:attribute name="value">
 						<xsl:value-of select="$uri"/>
@@ -216,7 +216,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		</xsl:if>
 
 		<xsl:if test="@rdf:about and not(self::foaf:Image or rdf:type/@rdf:resource = '&foaf;Image')">
-		    <h1>
+		    <h1 class="page-header">
 			<xsl:apply-templates select="@rdf:about"/>
 		    </h1>
 		</xsl:if>
@@ -231,16 +231,16 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		<xsl:if test="rdfs:comment[lang($lang) or not(@xml:lang)] or dc:description[lang($lang) or not(@xml:lang)] or dct:description[lang($lang) or not(@xml:lang)] or dbpedia-owl:abstract[lang($lang) or not(@xml:lang)]">
 		    <p>
 			<xsl:if test="rdfs:comment[lang($lang) or not(@xml:lang)]">
-			    <xsl:value-of select="substring(rdfs:comment[lang($lang) or not(@xml:lang)][1], 1, 300)"/>
+			    <xsl:value-of select="rdfs:comment[lang($lang) or not(@xml:lang)][1]"/>
 			</xsl:if>
 			<xsl:if test="dc:description[lang($lang) or not(@xml:lang)]">
-			    <xsl:value-of select="substring(dc:description[lang($lang) or not(@xml:lang)][1], 1, 300)"/>
+			    <xsl:value-of select="dc:description[lang($lang) or not(@xml:lang)][1]"/>
 			</xsl:if>
 			<xsl:if test="dct:description[lang($lang) or not(@xml:lang)]">
-			    <xsl:value-of select="substring(dct:description[lang($lang) or not(@xml:lang)][1], 1, 300)"/>
+			    <xsl:value-of select="dct:description[lang($lang) or not(@xml:lang)][1]"/>
 			</xsl:if>
 			<xsl:if test="dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1]">
-			    <xsl:value-of select="substring(dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1], 1, 300)"/>
+			    <xsl:value-of select="dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1]"/>
 			</xsl:if>
 		    </p>
 		</xsl:if>
@@ -249,7 +249,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		    <ul class="inline">
 			<xsl:for-each select="rdf:type/@rdf:resource">
 			    <li>
-				<xsl:apply-templates select="."/>
+				<xsl:apply-templates select=".">
+				    <xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
+				</xsl:apply-templates>
 			    </li>
 			</xsl:for-each>
 		    </ul>
@@ -405,11 +407,11 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <!-- ADDITIONAL MODES -->
     
     <xsl:template match="*[@rdf:about]" mode="SidebarNav">
-	<xsl:apply-templates mode="SidebarNav"/>
+	<xsl:apply-templates mode="SidebarNav">
+	    <xsl:sort select="g:label(xs:anyURI(concat(namespace-uri(.), local-name(.))), /, $lang)" data-type="text" order="ascending"/>
+	</xsl:apply-templates>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="SidebarNav"/>
-
     <xsl:template match="rdfs:seeAlso[1] | owl:sameAs[1] | dc:subject[1] | dct:subject[1]" mode="SidebarNav" priority="1">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
 	
@@ -427,6 +429,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	    </ul>
 	</div>
     </xsl:template>
+
+    <!-- ignore all other properties -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="SidebarNav"/>
 
     <xsl:template match="rdfs:seeAlso/@rdf:resource | owl:sameAs/@rdf:resource | dc:subject/@rdf:resource | dct:subject/@rdf:resource" mode="SidebarNav">
 	<li>
