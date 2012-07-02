@@ -23,7 +23,8 @@
     dct:creator <http://semantic-web.dk#martynas> ;
     rdfs:seeAlso <sparql> .
 
-_:dataset a void:Dataset;
+_:dataset a void:Dataset ;
+    dct:title "The dataset of this application" ;
     foaf:homepage <> ;
     rdfs:isDefinedBy : ;
     void:sparqlEndpoint <sparql> .
@@ -32,20 +33,35 @@ _:dataset a void:Dataset;
 
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
     dct:title "Linked Data Browser" ;
-    dct:description "Generic Linked Data and SPARQL endpoint browser"@en ;
+    dct:description "Generic Linked Data and SPARQL endpoint browser" ;
     dct:subject dbpedia:Linked_Data,
-	dbpedia:Resource_Description_Framework ,
 	dbpedia:SPARQL ,
-	dbpedia:Semantic_web ,
-	dbpedia:Web_browser ,
-	dbpedia:Open_source ;
+	dbpedia:Web_browser ;
     dct:creator <http://semantic-web.dk#martynas> ;
     # g:query g:SelectServices ;
     doap:implements [ a doap:Project ;
 	dct:title "Graphity Browser" ;
 	doap:name "Graphity Browser" ;
+	dct:created "2012-01-05"^^xsd:date ;
 	doap:homepage <http://graphity.org> ;
+	dct:subject dbpedia:Linked_Data ,
+	    dbpedia:Resource_Description_Framework ,
+	    dbpedia:SPARQL ,
+	    dbpedia:Semantic_web ,
+	    dbpedia:Web_browser ,
+	    <http://dbpedia.org/resource/Category:Web_application_frameworks> ,
+	    dbpedia:Open_source ;
+	dct:hasPart <http://dbpedia.org/resource/Jena_%28framework%29> ,
+	    dbpedia:Saxon_XSLT ;
+	doap:release [ a doap:Version ;
+	    dct:title "Graphity Browser 1.0" ;
+	    doap:revision "1.0.0" ;
+	    doap:file-release <https://github.com/Graphity/graphity-browser/zipball/v1.0.0> ,
+		<https://github.com/Graphity/graphity-core/graphity-browser/v1.0.0> ] ;
+	doap:file-release <https://github.com/Graphity/graphity-browser/zipball/master> ,
+	    <https://github.com/Graphity/graphity-browser/tarball/master> ;
 	doap:repository [ a doap:GitRepository ;
+	    dct:title "Graphity Browser source code repository" ;
 	    doap:location <https://github.com/Graphity/graphity-browser.git> ;
 	    doap:browse <https://github.com/Graphity/graphity-browser> ] ;
 	doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
@@ -58,12 +74,12 @@ _:dataset a void:Dataset;
 
 <sparql> a rdf:Resource ;
     sioc:has_host <> ;
-    dct:title "SPARQL endpoint"@en ;
+    dct:title "SPARQL endpoint" ;
     rdfs:isDefinedBy : .
 
 <ontologies> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
-    dct:title "Ontologies"@en ;
+    dct:title "Ontologies" ;
     g:query g:SelectOntologies ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset ;
@@ -71,7 +87,7 @@ _:dataset a void:Dataset;
 
 <classes> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
-    dct:title "Classes"@en ;
+    dct:title "Classes" ;
     g:query g:SelectClasses ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
