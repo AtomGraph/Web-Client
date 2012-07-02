@@ -33,8 +33,9 @@ _:dataset a void:Dataset ;
 
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
     dct:title "Linked Data Browser" ;
-    dct:description "Generic Linked Data and SPARQL endpoint browser" ;
+    dct:description "This application is a basic example of how a generic Linked Data and SPARQL endpoint browser could look like. You're welcome to use it as it is, or as a starting point for your own Linked Data web application. If you come up with something reusable, don't forget to contribute back!" ;
     dct:subject dbpedia:Linked_Data,
+	dbpedia:Resource_Description_Framework ,
 	dbpedia:SPARQL ,
 	dbpedia:Web_browser ;
     dct:creator <http://semantic-web.dk#martynas> ;
@@ -48,7 +49,6 @@ _:dataset a void:Dataset ;
 	    dbpedia:Resource_Description_Framework ,
 	    dbpedia:SPARQL ,
 	    dbpedia:Semantic_web ,
-	    dbpedia:Web_browser ,
 	    <http://dbpedia.org/resource/Category:Web_application_frameworks> ,
 	    dbpedia:Open_source ;
 	dct:hasPart <http://dbpedia.org/resource/Jena_%28framework%29> ,
@@ -80,14 +80,15 @@ _:dataset a void:Dataset ;
 <ontologies> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
     dct:title "Ontologies" ;
+    dct:description "An example of a resource selecting ontologies using SPARQL query generated from SPIN RDF descriptions" ;
     g:query g:SelectOntologies ;
     rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service .
+    void:inDataset _:dataset .
 
 <classes> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
     dct:title "Classes" ;
+    dct:description "An example of a resource selecting classes using SPARQL query generated from SPIN RDF descriptions" ;
     g:query g:SelectClasses ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .

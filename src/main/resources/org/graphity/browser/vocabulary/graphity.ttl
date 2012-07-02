@@ -303,6 +303,33 @@ gfb-app:type rdfs:label "Facebook application" ;
 			]
                 ]) .
 
+# =============================
+
+:SelectClasses    a       sp:Select ;
+      sp:distinct "true"^^xsd:boolean ;
+      sp:resultVariables (:SubjectVar) ;
+      #sp:limit "20"^^xsd:long ;
+      sp:where (:UnionDefaultNamed
+		[ a       sp:Filter ;
+                  sp:expression
+                          [ a       sp:eq ;
+                            sp:arg1 :PredicateVar ;
+                            sp:arg2 rdf:type
+                          ]
+                ] [ a       sp:Filter ;
+                  sp:expression
+			[ a       sp:or ;
+				    sp:arg1 [ a	    sp:eq ;
+						sp:arg1 :ObjectVar ;
+						sp:arg2 owl:Class
+					    ] ;
+				    sp:arg2 [ a	    sp:eq ;
+						sp:arg1 :ObjectVar ;
+						sp:arg2 rdfs:Class
+					    ]
+			]
+		]) .
+
 # =================
 
 :SelectQueries    a       sp:Select ;

@@ -98,7 +98,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:variable name="select-query" select="key('resources', concat($query-uri, $query-bnode-id), $query-model)"/>
 	
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="resources-by-type" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdf:type/@rdf:resource"/> <!-- concat(namespace-uri(.), local-name(.)) -->    
+    <xsl:key name="resources-by-host" match="*[@rdf:about]" use="sioc:has_host/@rdf:resource"/> <!-- concat(namespace-uri(.), local-name(.)) -->    
     
     <xsl:template match="/">
 	<html>
@@ -143,30 +143,34 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 			    <a class="brand" href="/">
 				<xsl:value-of select="g:label($base-uri, /, $lang)"/>
 			    </a>
-			    
-			    <form action="" method="get" class="form-inline">
 
-				<div class="input-append">
-				    <input type="text" name="uri" class="input-xxlarge">
-					<xsl:if test="not(starts-with($uri, $base-uri))">
-					    <xsl:attribute name="value">
-						<xsl:value-of select="$uri"/>
-					    </xsl:attribute>
-					</xsl:if>
-				    </input>
-				    <button type="submit" class="btn btn-primary">Go</button>
-
-				    <xsl:if test="$service-uri">
-					<input type="hidden" name="service-uri" value="{$service-uri}"/>
-				    </xsl:if>
-				</div>
-			    </form>
-			    
 			    <div class="nav-collapse">
+				<form action="" method="get" class="navbar-form pull-left">
+				    <div class="input-append">
+					<input type="text" name="uri" class="input-xxlarge">
+					    <xsl:if test="not(starts-with($uri, $base-uri))">
+						<xsl:attribute name="value">
+						    <xsl:value-of select="$uri"/>
+						</xsl:attribute>
+					    </xsl:if>
+					</input>
+					<button type="submit" class="btn btn-primary">Go</button>
+
+					<xsl:if test="$service-uri">
+					    <input type="hidden" name="service-uri" value="{$service-uri}"/>
+					</xsl:if>
+				    </div>
+				</form>
+			    
 				<ul class="nav">
-				    <xsl:for-each select="key('resources-by-type', '&sioc;Forum', $ont-model)">
-					<li class="active">
-					    <xsl:apply-templates select="@rdf:resource"/>
+				    <!-- make menu links for all resources in the ontology, except base URI -->
+				    <xsl:for-each select="key('resources-by-host', $base-uri, $ont-model)/@rdf:about[not(. = $base-uri)]">
+					<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
+					<li>
+					    <xsl:if test=". = $uri">
+						<xsl:attribute name="class">active</xsl:attribute>
+					    </xsl:if>
+					    <xsl:apply-templates select="."/>
 					</li>
 				    </xsl:for-each>
 				</ul>
@@ -184,7 +188,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		    </div>
 		    
 		    <div class="footer">
-			<p>Company 2012</p>
+			<p>Company <xsl:value-of select="format-date(current-date(), '[Y]', $lang, (), ())"/></p>
 		    </div>
 		</div>
 	    </body>
@@ -214,7 +218,11 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <!-- matches if the RDF/XML document includes resource description where @rdf:about = $uri -->
     <xsl:template match="rdf:RDF[key('resources', $uri)]">
 	<div class="span8">
+	    <!-- the main resource, which matches the request URI -->
 	    <xsl:apply-templates select="key('resources', $uri)"/>
+	    
+	    <!-- secondary resources (except the main one and blank nodes) that came with the response -->
+	    <!-- <xsl:apply-templates select="*[@rdf:about] except key('resources', $uri)" mode="g:ListMode"/> -->
 	</div>
 
 	<div class="span4">
