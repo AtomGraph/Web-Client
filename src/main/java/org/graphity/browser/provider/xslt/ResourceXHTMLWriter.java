@@ -127,6 +127,8 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	    
 	    if (uriInfo.getQueryParameters().getFirst("uri") != null)
 		builder.parameter("uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("uri")).build());
+	    else
+		builder.parameter("uri", null);
 	    if (uriInfo.getQueryParameters().getFirst("service-uri") != null)
 		builder.parameter("service-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("service-uri")).build());
 	    if (uriInfo.getQueryParameters().getFirst("query") != null)

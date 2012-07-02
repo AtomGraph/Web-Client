@@ -15,9 +15,10 @@
 
 : a owl:Ontology ;
     owl:imports <http://graphity.org/ontology/> ;
-    dct:title "Graphity Browser ontology" ;
-    rdfs:label "Graphity Browser ontology" ;
-    dct:modified "2012-02-11T03:17:00+01:00"^^xsd:dateTime ;
+    dct:title "Linked Data Browser ontology" ;
+    rdfs:label "Linked Data Browser ontology" ;
+    dct:created "2012-02-11T03:17:00+01:00"^^xsd:dateTime ;
+    dct:modified "2012-07-01T01:30:00+01:00"^^xsd:dateTime ;
     dct:license <http://opendatacommons.org/licenses/odbl/1.0/> ;
     dct:creator <http://semantic-web.dk#martynas> ;
     rdfs:seeAlso <sparql> .
@@ -27,20 +28,10 @@ _:dataset a void:Dataset;
     rdfs:isDefinedBy : ;
     void:sparqlEndpoint <sparql> .
 
-<http://graphity.org#browser> a doap:Project ;
-    dct:title "Graphity Browser" ;
-    doap:repository <https://github.com/Graphity/graphity-browser.git> ;
-    doap:browse <https://github.com/Graphity/graphity-browser> ;
-    doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
-    doap:maintainer <http://semantic-web.dk#martynas> ;
-    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-    doap:programming-language dbpedia:XSLT,
-	<http://dbpedia.org/resource/Java_%28programming_language%29> .
-
 # RESOURCES
 
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
-    dct:title "Graphity Browser" ;
+    dct:title "Linked Data Browser" ;
     dct:description "Generic Linked Data and SPARQL endpoint browser"@en ;
     dct:subject dbpedia:Linked_Data,
 	dbpedia:Resource_Description_Framework ,
@@ -50,6 +41,18 @@ _:dataset a void:Dataset;
 	dbpedia:Open_source ;
     dct:creator <http://semantic-web.dk#martynas> ;
     # g:query g:SelectServices ;
+    doap:implements [ a doap:Project ;
+	dct:title "Graphity Browser" ;
+	doap:name "Graphity Browser" ;
+	doap:homepage <http://graphity.org> ;
+	doap:repository [ a doap:GitRepository ;
+	    doap:location <https://github.com/Graphity/graphity-browser.git> ;
+	    doap:browse <https://github.com/Graphity/graphity-browser> ] ;
+	doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
+	doap:maintainer <http://semantic-web.dk#martynas> ;
+	doap:license <http://dbpedia.org/resource/GNU_General_Public_License> ;
+	doap:programming-language dbpedia:XSLT,
+	    <http://dbpedia.org/resource/Java_%28programming_language%29> ] ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
 
@@ -57,14 +60,6 @@ _:dataset a void:Dataset;
     sioc:has_host <> ;
     dct:title "SPARQL endpoint"@en ;
     rdfs:isDefinedBy : .
-
-<search> a lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "Search"@en ;
-    g:query g:ConstructRegex ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset ;
-    g:service _:service .
 
 <ontologies> a sioc:Forum, lda:ListEndpoint ;
     sioc:has_host <> ;
@@ -78,12 +73,5 @@ _:dataset a void:Dataset;
     sioc:has_host <> ;
     dct:title "Classes"@en ;
     g:query g:SelectClasses ;
-    rdfs:isDefinedBy : ;
-    void:inDataset _:dataset .
-
-<queries> a sioc:Forum, lda:ListEndpoint ;
-    sioc:has_host <> ;
-    dct:title "Queries"@en ;
-    g:query g:SelectQueries ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
