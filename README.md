@@ -37,7 +37,6 @@ Browser JAX-RS application
         * [`org.graphity.browser.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider/xslt): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located [`here`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt) and its subfolders. They translate request parameters into XSLT parameters.
     * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
         * [`org.graphity.browser.resource.SPARQLResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLResource.java): SPARQL endpoint
-        * [`org.graphity.browser.resource.SearchResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SearchResource.java): Search/autocomplete resource (_unfinished_)
 
 Core classes
 ------------
@@ -79,9 +78,9 @@ XHTML
 * [`resources/org/graphity/browser/provider/xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt)
     * [`imports`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt/imports): Ontology-specific stylesheets (e.g. overriding templates for certain properties), imported by the master stylesheet
         * [`default.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/imports/default.xsl): Default templates and functions for rendering RDF/XML subject/predicate/object nodes as XHTML elements. Design-independent.
-    * [`Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
     * [`rdfxml2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/rdfxml2google-wire.xsl): Generic conversion from RDF/XML to Google [`DataTable`](https://developers.google.com/chart/interactive/docs/reference#DataTable)
     * [`sparql2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/sparql2google-wire.xsl): Generic conversion from SPARQL XML results to Google `DataTable`
+* [`webapp/WEB-INF/Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
 
 GRDDL
 -----
@@ -94,7 +93,7 @@ Ontologies
 
 * [`resources/org/graphity/browser/vocabulary`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/vocabulary): Contains cached local copies of popular ontologies
     * [`graphity.ttl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/vocabulary/graphity.ttl) : Ontology reused by all Graphity applications
-* [`WEB-INF/ontology.ttl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/webapp/WEB-INF/ontology.ttl): Application-specific ontology, imports general Graphity ontology. Contains metadata of JAX-RS Resources as well as SPIN query Resources used by them.
+* [`webapp/WEB-INF/ontology.ttl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/webapp/WEB-INF/ontology.ttl): Application-specific ontology, imports general Graphity ontology. Contains metadata of JAX-RS Resources as well as SPIN query Resources used by them.
 
 Tools
 =====

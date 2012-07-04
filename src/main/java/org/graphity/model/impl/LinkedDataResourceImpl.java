@@ -41,10 +41,44 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 {
     private static final Logger log = LoggerFactory.getLogger(LinkedDataResourceImpl.class);
 
-    @Context private UriInfo uriInfo = null;
-    private @QueryParam("uri") String uri = null;
-    private @QueryParam("service-uri") String serviceUri = null;
-    private @QueryParam("accept") String accept = null;
+    private String uri, endpointUri, accept = null;
+    private Query query = null;
+    private Model model = null;
+    
+    public LinkedDataResourceImpl(@Context UriInfo uriInfo,
+	@QueryParam("uri") String uri,
+	@QueryParam("endpoint-uri") String endpointUri,
+	@QueryParam("accept") String accept)
+    {
+	if (uri == null) setURI(uriInfo.getAbsolutePath().toString());
+	else setURI(uri);
+	setEndpointURI(endpointUri);
+	this.accept = accept;
+	
+	setQuery(QueryFactory.create("DESCRIBE <" + getURI() + ">"));
+	log.debug("Default query {} for URI {}", "DESCRIBE <" + getURI() + ">", uri);
+
+	try
+	{
+	    if (getEndpointURI() != null) // in case we have an endpoint, first try loading using SPARQL
+	    {
+		log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
+		setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
+	    }
+	    if (getModel() == null || getModel().isEmpty()) // otherwise (no endpoint or no result) load directly from URI (Linked Data)
+	    {
+		log.debug("Loading Model from URI: {}", getURI());
+		setModel(DataManager.get().loadModel(getURI()));
+	    }
+
+	    log.debug("Number of Model stmts read: {}", getModel().size());
+	}
+	catch (Exception ex)
+	{
+	    log.trace("Could not load Model from URI: {}", getURI(), ex);
+	    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+	}
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
@@ -53,69 +87,58 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 	if (accept != null)
 	{
 	    if (accept.equals(MediaType.APPLICATION_RDF_XML))
-		return Response.ok(getModel(), MediaType.APPLICATION_RDF_XML_TYPE).
-		    build();
+		return Response.ok(model, MediaType.APPLICATION_RDF_XML_TYPE).build();
 	    if (accept.equals(MediaType.TEXT_TURTLE))
-		return Response.ok(getModel(), MediaType.TEXT_TURTLE_TYPE).
-		    build();
+		return Response.ok(model, MediaType.TEXT_TURTLE_TYPE).build();
 	}
-	    
-	return Response.ok(this).
-	    build();
+
+	return Response.ok(this).build();
     }
 
     @GET
     @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     @Override
-    public Model getModel()
+    public final Model getModel()
     {
-	Model model = null;
-
-	try
-	{
-	    if (getEndpointURI() != null) // in case we have an endpoint, first try loading using SPARQL
-	    {
-		log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
-		model = DataManager.get().loadModel(getEndpointURI(), getQuery());
-	    }
-	    if (model == null || model.isEmpty()) // otherwise (no endpoint or no result) load directly from URI (Linked Data)
-	    {
-		log.debug("Loading Model from URI: {}", getURI());
-		model = DataManager.get().loadModel(getURI());
-	    }
-
-	    log.debug("Number of Model stmts read: {}", model.size());
-	}
-	catch (Exception ex)
-	{
-	    log.trace("Could not load Model from URI: {}", getURI(), ex);
-	    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
-	}
-	
 	return model;
     }
 
-    @Override
-    public Query getQuery()
+    protected final void setModel(Model model)
     {
-	log.debug("Default query {} for URI {}", "DESCRIBE <" + getURI() + ">", getURI());
-	return QueryFactory.create("DESCRIBE <" + getURI() + ">");
+	this.model = model;
     }
 
     @Override
-    public String getURI()
+    public final Query getQuery()
     {
-	if (uri != null && !uri.isEmpty()) return uri;
+	return query;
+    }
 
-	return uriInfo.getAbsolutePath().toString();
+    protected final void setQuery(Query query)
+    {
+	this.query = query;
+    }
+
+    @Override
+    public final String getURI()
+    {
+	return uri;
+    }
+
+    protected final void setURI(String uri)
+    {
+	this.uri = uri;
     }
     
     @Override
-    public String getEndpointURI()
+    public final String getEndpointURI()
     {
-	if (serviceUri == null || serviceUri.isEmpty()) return null;
-	
-	return serviceUri;
+	return endpointUri;
+    }
+
+    protected final void setEndpointURI(String endpointUri)
+    {
+	this.endpointUri = endpointUri;
     }
 
 }

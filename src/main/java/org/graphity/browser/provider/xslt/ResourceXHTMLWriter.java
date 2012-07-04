@@ -102,7 +102,7 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 		
 		ByteArrayOutputStream queryStream = new ByteArrayOutputStream();
 		//resource.getQueryBuilder().buildSPIN().getModel().write(queryStream); // don't need the whole ontology
-		ResourceUtils.reachableClosure(resource.getQueryBuilder(resource.getSPINResource()).buildSPIN()).write(queryStream);
+		ResourceUtils.reachableClosure(resource.getQueryBuilder().buildSPIN()).write(queryStream);
 		
 		builder.parameter("query-model", new StreamSource(new ByteArrayInputStream(queryStream.toByteArray())));
 		queryStream.close();

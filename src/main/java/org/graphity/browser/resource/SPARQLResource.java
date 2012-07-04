@@ -16,12 +16,12 @@
  */
 package org.graphity.browser.resource;
 
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.graphity.browser.Resource;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
@@ -37,63 +37,55 @@ public class SPARQLResource extends Resource
     private static final Logger log = LoggerFactory.getLogger(SPARQLResource.class);
     private static final long MAX_LIMIT = 100;
     
-    private Query query = null;
-    private Model model = null;
     private ResultSet resultSet = null;
     private Response response = null;
     
-    public SPARQLResource(@QueryParam("query") String queryString)
+    public SPARQLResource(@Context UriInfo uriInfo,
+	@QueryParam("uri") String uri,
+	@QueryParam("service-uri") String serviceUri,
+	@QueryParam("accept") String accept,
+	@QueryParam("limit") @DefaultValue("10") long limit,
+	@QueryParam("offset") @DefaultValue("0") long offset,
+	@QueryParam("order-by") String orderBy,
+	@QueryParam("desc") @DefaultValue("true") boolean desc,
+	@QueryParam("query") String queryString)
     {
-	super();
+	super(uriInfo, uri, serviceUri, accept, limit, offset, orderBy, desc);
 
 	if (queryString != null)
 	{
 	    if (queryString.isEmpty()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
-	    query = QueryFactory.create(queryString);
-	    if (query.isUnknownType()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
-	    log.debug("Submitted SPARQL query: {}", query);
+	    setQuery(QueryFactory.create(queryString));
+	    if (getQuery().isUnknownType()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	    log.debug("Submitted SPARQL query: {}", getQuery());
 	    
-	    query.setLimit(MAX_LIMIT);
+	    getQuery().setLimit(MAX_LIMIT);
 
-	    if (query.isConstructType() || query.isDescribeType())
+	    if (getQuery().isConstructType() || getQuery().isDescribeType())
 	    {
 		if (getEndpointURI() != null)
-		    model = DataManager.get().loadModel(getEndpointURI(), query);
+		    setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
 		else
-		    model = DataManager.get().loadModel(getOntModel(), query);
+		    setModel(DataManager.get().loadModel(getOntModel(), getQuery()));
 		
-		response = Response.ok(model).build();
+		response = Response.ok(getModel()).build();
 	    }
-	    if (query.isSelectType() || query.isAskType())
+	    if (getQuery().isSelectType() || getQuery().isAskType())
 	    {
 		if (getEndpointURI() != null)
-		    resultSet = DataManager.get().loadResultSet(getEndpointURI(), query);
+		    resultSet = DataManager.get().loadResultSet(getEndpointURI(), getQuery());
 		else
-		    resultSet = DataManager.get().loadResultSet(getOntModel(), query);
+		    resultSet = DataManager.get().loadResultSet(getOntModel(), getQuery());
 		
 		response = Response.ok(resultSet).build();
 	    }
-	    
-	    if (resultSet == response) response = super.getResponse();
 	}
-    }
-
-    @Override
-    public Query getQuery()
-    {
-	return query;
     }
 
     @Override
     public Response getResponse()
     {
 	return response;
-    }
-    
-    @Override
-    public Model getModel()
-    {
-	return model;
     }
 
     @GET
