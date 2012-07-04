@@ -67,6 +67,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:import href="classes/org/graphity/browser/provider/xslt/group-sort-triples.xsl"/>
 
     <xsl:include href="includes/sparql.xsl"/>
+    <xsl:include href="includes/rdf-post.xsl"/>
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
@@ -78,13 +79,12 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 
     <xsl:param name="uri" select="$absolute-path" as="xs:anyURI"/>
     <xsl:param name="service-uri" select="key('resources', $uri, $ont-model)/g:service/@rdf:resource" as="xs:anyURI?"/> <!-- select="xs:anyURI(concat($base-uri, 'sparql'))"  -->
-    <xsl:param name="query-uri" as="xs:anyURI?"/>
-    <xsl:param name="query-bnode-id" as="xs:string?"/>
-    <xsl:param name="query-model" select="document($query-uri)" as="document-node()?"/>
     <xsl:param name="mode" select="if (key('resources', $uri, $ont-model)/g:mode/@rdf:resource) then key('resources', $uri, $ont-model)/g:mode/@rdf:resource else xs:anyURI('&g;ListMode')" as="xs:anyURI"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
 
+    <xsl:param name="query-uri" as="xs:anyURI?"/>
+    <xsl:param name="query-model" select="document($query-uri)" as="document-node()?"/>
     <xsl:param name="query" select="$select-query/sp:text" as="xs:string?"/>
     <xsl:param name="offset" select="$select-query/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-query/sp:limit" as="xs:integer?"/>
@@ -95,7 +95,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 
     <xsl:variable name="ont-model" select="document(resolve-uri('ontology/', $base-uri))" as="document-node()"/>
     <xsl:variable name="graphity-ont-model" select="document('&g;')" as="document-node()"/>
-    <xsl:variable name="select-query" select="key('resources', concat($query-uri, $query-bnode-id), $query-model)"/>
+    <xsl:variable name="select-query" select="key('resources', $query-uri, $query-model)"/>
 	
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-host" match="*[@rdf:about]" use="sioc:has_host/@rdf:resource"/> <!-- concat(namespace-uri(.), local-name(.)) -->    
@@ -132,7 +132,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 			ul.inline { margin-left: 0; }
 			.inline li { display: inline; }
 			.well-small { background-color: #FAFAFA ; }
-			/* dd .well-small { padding-left: 1em; } */
+			textarea#query-string { font-family: monospace; }
 		    ]]>
 		</style>    
       	    </head>
@@ -180,6 +180,11 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		</div>
 
 		<div class="container-fluid">
+$mode: <xsl:value-of select="$mode"/><br/>
+$query-uri: <xsl:value-of select="$query-uri"/><br/>
+$query-model: <xsl:copy-of select="$query-model"/><br/>
+$select-query: <xsl:copy-of select="$select-query"/><br/>
+$query: <xsl:value-of select="$query"/>
 		    <div class="row-fluid">
 			<xsl:variable name="grouped-rdf">
 			    <xsl:apply-templates mode="g:GroupTriples"/>
@@ -201,6 +206,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	    <div class="btn-group pull-right">
 		<xsl:if test="$uri != $absolute-path">
 		    <a href="{$uri}" class="btn">Source</a>
+		</xsl:if>
+		<xsl:if test="$query">
+		    <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}" class="btn">SPARQL</a>
 		</xsl:if>
 		<a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
 		<a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>

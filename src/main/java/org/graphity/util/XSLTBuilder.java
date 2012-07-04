@@ -199,6 +199,11 @@ public class XSLTBuilder
 	handler.setResult(result);
 	return this;
     }
+
+    public Transformer getTransformer()
+    {
+	return transformer;
+    }
     
     public TransformerHandler getHandler()
     {

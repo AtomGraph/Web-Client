@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-@Produces({MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML})
+@Produces({MediaType.APPLICATION_XHTML_XML})
 public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceXHTMLWriter.class);
@@ -72,15 +72,6 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
     @Override
     public long getSize(Resource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	/*
-	if (bos == null)
-	{
-	    bos = new ByteArrayOutputStream();
-	    resource.getModel().write(bos);
-	}
-	*/
-	//return bos.size(); // is this the right value?
-	//return Integer.valueOf(stream.toByteArray().length).longValue();
 	return -1;
     }
 
@@ -94,6 +85,8 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	    ByteArrayOutputStream modelStream = new ByteArrayOutputStream();
 	    resource.getModel().write(modelStream, WebContent.langRDFXML);
 
+	    builder.getTransformer().clearParameters(); // remove previously set param values
+
 	    builder.document(new ByteArrayInputStream(modelStream.toByteArray())).
 		parameter("base-uri", uriInfo.getBaseUri()).
 		parameter("absolute-path", uriInfo.getAbsolutePath()).
@@ -104,31 +97,19 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	    {
 		if (resource.getSPINResource().isURIResource())
 		    builder.parameter("query-uri", UriBuilder.fromPath(resource.getSPINResource().getURI()).build());
-		if (resource.getSPINResource().isAnon())
-		    builder.parameter("query-bnode-id", resource.getSPINResource().getId().getLabelString());
+		//if (resource.getSPINResource().isAnon()) // anonId is not reusable as @rdf:nodeID
+		//    builder.parameter("query-bnode-id", resource.getSPINResource().getId().getLabelString());
 		
 		ByteArrayOutputStream queryStream = new ByteArrayOutputStream();
 		//resource.getQueryBuilder().buildSPIN().getModel().write(queryStream); // don't need the whole ontology
-		ResourceUtils.reachableClosure(resource.getQueryBuilder().buildSPIN()).write(queryStream);
+		ResourceUtils.reachableClosure(resource.getQueryBuilder(resource.getSPINResource()).buildSPIN()).write(queryStream);
 		
 		builder.parameter("query-model", new StreamSource(new ByteArrayInputStream(queryStream.toByteArray())));
 		queryStream.close();
 	    }
 
-	    // set all query string &parameters as XSLT $parameters (using the first value)
-	    /*
-	    Iterator<String> it = resource.getUriInfo().getQueryParameters().keySet().iterator();
-	    while (it.hasNext())
-	    {
-		String key = it.next();
-		rdf2xhtml.parameter(key, resource.getUriInfo().getQueryParameters().getFirst(key));
-	    }
-	    */
-	    
 	    if (uriInfo.getQueryParameters().getFirst("uri") != null)
 		builder.parameter("uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("uri")).build());
-	    else
-		builder.parameter("uri", null);
 	    if (uriInfo.getQueryParameters().getFirst("service-uri") != null)
 		builder.parameter("service-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("service-uri")).build());
 	    if (uriInfo.getQueryParameters().getFirst("query") != null)

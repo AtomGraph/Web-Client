@@ -60,7 +60,6 @@ public class Resource extends LinkedDataResourceImpl
     public void init()
     {
 	String ontologyUri = uriInfo.getBaseUri().toString();
-	//String ontologyUri = getUriInfo().getBaseUriBuilder().path("ontology/").build().toString();
 	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "ontology.ttl");
 	((PrefixMapper)LocationMapper.get()).addAltPrefixEntry(ontologyUri, "ontology.ttl");
 	log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
@@ -69,8 +68,8 @@ public class Resource extends LinkedDataResourceImpl
     @Override
     public Model getModel()
     {
-	final Model model; // any side-effects?
-	
+	Model model = null;
+
 	if (getEndpointURI() == null && getAbsolutePath().equals(getURI())) // local URI
 	{
 	    log.debug("Querying local OntModel with Query: {}", getQuery());
@@ -98,20 +97,15 @@ public class Resource extends LinkedDataResourceImpl
 
     public com.hp.hpl.jena.rdf.model.Resource getSPINResource()
     {
-	if (getResource() != null && getResource().hasProperty(Graphity.query))
+	if (getResource().hasProperty(Graphity.query))
 	    return getResource().getPropertyResourceValue(Graphity.query);
 	
 	ARQ2SPIN arq2SPIN = new ARQ2SPIN(ModelFactory.createDefaultModel());
 	return arq2SPIN.createQuery(super.getQuery(), null); // turn default DESCRIBE into SPIN Resource
     }
 
-    public QueryBuilder getQueryBuilder()
+    public QueryBuilder getQueryBuilder(com.hp.hpl.jena.rdf.model.Resource queryRes)
     {
-	com.hp.hpl.jena.rdf.model.Resource queryRes = getSPINResource();
-	
-	log.trace("Explicit query resource {} for URI {}", queryRes, getURI());
-	if (queryRes == null) return null;
-
 	if (SPINFactory.asQuery(queryRes) instanceof Select) // wrap SELECT into CONSTRUCT { ?s ?p ?o }
 	{
 	    QueryBuilder selectBuilder = QueryBuilder.fromResource(queryRes).
@@ -126,18 +120,18 @@ public class Resource extends LinkedDataResourceImpl
 		optional(getOntModel().getResource(Graphity.SPOOptional.getURI()));
 	}
 	
-	//if (SPINFactory.asQuery(queryRes) instanceof Construct) // CONSTRUCT / DESCRIBE?
-	    return QueryBuilder.fromResource(queryRes);
-		//bind("uri", getURI()).
+	return QueryBuilder.fromResource(queryRes);
     }
     
     @Override
     public Query getQuery()
     {
-	if (getQueryBuilder() != null)
+	if (getSPINResource() != null)
 	{
-	    log.debug("getQueryBuilder().build(): {}", getQueryBuilder().build());
-	    return getQueryBuilder().build();
+	    log.trace("Explicit query resource {} for URI {}", getSPINResource(), getURI());
+	    Query query = getQueryBuilder(getSPINResource()).build();
+	    log.debug("getQueryBuilder().build(): {}", query);
+	    return query;
 	}
 
 	return super.getQuery();
@@ -166,9 +160,13 @@ public class Resource extends LinkedDataResourceImpl
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response post(Model model)
+    public Response addModel(Model rdfPost)
     {
-	log.debug("POSTed Model: {} size: {}", model, model.size());
+	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
+
+	getOntModel().add(rdfPost);
+	// we add the RDF submitted with the RDF/POST form in this case
+	// the posted Model could be saved using DataManager.putModel() for example
 	
 	return getResponse();
     }

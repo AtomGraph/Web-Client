@@ -64,11 +64,8 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 	    build();
     }
 
-    // http://openjena.org/wiki/ARQ/Manipulating_SPARQL_using_ARQ
-    //@Override
     @GET
     @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    //@Produces(MediaType.TEXT_TURTLE + "; charset=UTF-8")
     @Override
     public Model getModel()
     {
@@ -108,8 +105,7 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     @Override
     public String getURI()
     {
-	if (uri != null && !uri.isEmpty())
-	    return uri;
+	if (uri != null && !uri.isEmpty()) return uri;
 
 	return uriInfo.getAbsolutePath().toString();
     }
@@ -117,6 +113,8 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     @Override
     public String getEndpointURI()
     {
+	if (serviceUri == null || serviceUri.isEmpty()) return null;
+	
 	return serviceUri;
     }
 

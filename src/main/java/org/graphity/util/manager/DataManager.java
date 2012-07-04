@@ -207,15 +207,15 @@ public class DataManager extends FileManager implements URIResolver
 
     public Model loadModel(String serviceURI, Query query)
     {
+	log.debug("Remote service {} Query: {} ", serviceURI, query);
+	
+	if (!(query.isConstructType() || query.isDescribeType()))
+	    return null;
+
 	if (isSPARQLService(serviceURI))
 	    return loadModel(findSPARQLService(serviceURI), query);
 	else
 	{
-	    log.debug("Remote service {} Query: {} ", serviceURI, query);
-
-	    if (!(query.isConstructType() || query.isDescribeType()))
-		return null;
-
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
 
 	    if (query.isConstructType()) return request.execConstruct();

@@ -38,8 +38,7 @@ xmlns:sparql="&sparql;"
 xmlns:sd="&sd;"
 exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql sd">
 
-    <xsl:param name="default-query" as="xs:string">
-PREFIX rdf: &lt;&rdf;&gt;
+    <xsl:param name="default-query" as="xs:string">PREFIX rdf: &lt;&rdf;&gt;
 PREFIX rdfs: &lt;&rdfs;&gt;
 PREFIX owl: &lt;&owl;&gt;
 PREFIX xsd: &lt;&xsd;&gt;
@@ -53,20 +52,20 @@ WHERE
 LIMIT 100</xsl:param>
 
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" priority="1">
-	<div class="well">
-	    <xsl:choose>
-		<xsl:when test="$service-uri">
+	<xsl:choose>
+	    <xsl:when test="$service-uri">
+		<div class="well">
 		    <h1>
 			<a href="{$absolute-path}?service-uri={encode-for-uri($service-uri)}">
 			    <xsl:value-of select="g:label($service-uri, /, $lang)"/>
 			</a>
 		    </h1>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:apply-templates select="." mode="g:ListMode"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</div>
+		</div>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:next-match/>
+	    </xsl:otherwise>
+	</xsl:choose>
 	
 	<form action="" method="get" id="query-form">
 	    <fieldset>
@@ -76,7 +75,7 @@ LIMIT 100</xsl:param>
 		    </label>
 		    <input type="text" name="service-uri" id="endpoint-uri" value="{$service-uri}" class="input-xlarge"/>
 		</div>
-		<textarea id="query-string" name="query" class="input-xlarge" rows="10">
+		<textarea id="query-string" name="query" class="span12" rows="10">
 		    <xsl:choose>
 			<xsl:when test="$query">
 			    <xsl:value-of select="$query"/>
@@ -93,9 +92,11 @@ LIMIT 100</xsl:param>
 	    </fieldset>
 	</form>
 
+	<!--
 	<xsl:if test="$query">
 	    <iframe frameborder="0" src="{$base-uri}sparql?query={encode-for-uri($query)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}&amp;mode=EmbedMode"/>
 	</xsl:if>
+	-->
     </xsl:template>
 
 </xsl:stylesheet>

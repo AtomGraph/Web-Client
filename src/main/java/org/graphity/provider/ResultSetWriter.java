@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-@Produces({org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML, org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML})
+@Produces({org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML, org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON})
 public class ResultSetWriter implements MessageBodyWriter<ResultSet>
 {
     private static final Logger log = LoggerFactory.getLogger(ResultSetWriter.class);
