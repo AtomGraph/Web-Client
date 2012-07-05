@@ -68,9 +68,9 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 	if (accept != null)
 	{
 	    if (accept.equals(MediaType.APPLICATION_RDF_XML))
-		return Response.ok(model, MediaType.APPLICATION_RDF_XML_TYPE).build();
+		return Response.ok(getModel(), MediaType.APPLICATION_RDF_XML_TYPE).build();
 	    if (accept.equals(MediaType.TEXT_TURTLE))
-		return Response.ok(model, MediaType.TEXT_TURTLE_TYPE).build();
+		return Response.ok(getModel(), MediaType.TEXT_TURTLE_TYPE).build();
 	}
 
 	return Response.ok(this).build();
