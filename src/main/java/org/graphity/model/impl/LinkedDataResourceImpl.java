@@ -24,9 +24,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import org.graphity.MediaType;
 import org.graphity.model.LinkedDataResource;
 import org.graphity.util.manager.DataManager;
@@ -45,38 +43,21 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     private Query query = null;
     private Model model = null;
     
-    public LinkedDataResourceImpl(@Context UriInfo uriInfo,
+    public LinkedDataResourceImpl(
 	@QueryParam("uri") String uri,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") String accept)
     {
-	if (uri == null) setURI(uriInfo.getAbsolutePath().toString());
-	else setURI(uri);
+	setURI(uri);
 	setEndpointURI(endpointUri);
+	log.debug("URI: {} Endpoint URI: {}", getURI(), getEndpointURI());
+		
 	this.accept = accept;
 	
-	setQuery(QueryFactory.create("DESCRIBE <" + getURI() + ">"));
-	log.debug("Default query {} for URI {}", "DESCRIBE <" + getURI() + ">", uri);
-
-	try
+	if (getURI() != null)
 	{
-	    if (getEndpointURI() != null) // in case we have an endpoint, first try loading using SPARQL
-	    {
-		log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
-		setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
-	    }
-	    if (getModel() == null || getModel().isEmpty()) // otherwise (no endpoint or no result) load directly from URI (Linked Data)
-	    {
-		log.debug("Loading Model from URI: {}", getURI());
-		setModel(DataManager.get().loadModel(getURI()));
-	    }
-
-	    log.debug("Number of Model stmts read: {}", getModel().size());
-	}
-	catch (Exception ex)
-	{
-	    log.trace("Could not load Model from URI: {}", getURI(), ex);
-	    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+	    setQuery(QueryFactory.create("DESCRIBE <" + getURI() + ">"));
+	    log.debug("Query {} for URI {}", getQuery(), getURI());
 	}
     }
 
@@ -98,8 +79,32 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     @GET
     @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     @Override
-    public final Model getModel()
+    public Model getModel()
     {
+	if (getURI() == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+	
+	if (model == null)
+	    try
+	    {
+		if (getEndpointURI() != null) // in case we have an endpoint, first try loading using SPARQL
+		{
+		    log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
+		    model = DataManager.get().loadModel(getEndpointURI(), getQuery());
+		}
+		if (model == null || model.isEmpty()) // otherwise (no endpoint or no result) load directly from URI (Linked Data)
+		{
+		    log.debug("Loading Model from URI: {}", getURI());
+		    model = DataManager.get().loadModel(getURI());
+		}
+
+		log.debug("Number of Model stmts read: {}", getModel().size());
+	    }
+	    catch (Exception ex)
+	    {
+		log.trace("Could not load Model from URI: {}", getURI(), ex);
+		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+	    }
+
 	return model;
     }
 

@@ -80,6 +80,8 @@ public class SPARQLResource extends Resource
 		response = Response.ok(resultSet).build();
 	    }
 	}
+	else
+	    response = super.getResponse();
     }
 
     @Override

@@ -44,10 +44,11 @@ import org.topbraid.spin.model.Select;
 @Path("/{path: .*}")
 public class Resource extends LinkedDataResourceImpl
 {
+    private UriInfo uriInfo = null;
     private OntModel ontModel = null;
     private QueryBuilder qb = null;
     private com.hp.hpl.jena.rdf.model.Resource resource, spinRes = null;
- 
+
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
     public Resource(@Context UriInfo uriInfo,
@@ -59,8 +60,11 @@ public class Resource extends LinkedDataResourceImpl
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc)
     {
-	super(uriInfo, uri, serviceUri, accept);
-	
+	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, serviceUri, accept);
+	//super(uri, serviceUri, accept);
+	//if (uri == null) setURI(uriInfo.getAbsolutePath().toString());
+	this.uriInfo = uriInfo;
+
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
 	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "ontology.ttl");
@@ -70,6 +74,7 @@ public class Resource extends LinkedDataResourceImpl
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);
 
 	resource = ontModel.createResource(getURI());
+	log.debug("Resource: {} with URI: {}", resource, getURI());
 
 	if (resource.hasProperty(Graphity.query))
 	{
@@ -91,28 +96,35 @@ public class Resource extends LinkedDataResourceImpl
 	    }
 	    else
 		qb = QueryBuilder.fromResource(spinRes); // CONSTRUCT
-
+	    
 	    setQuery(qb.build());
 	    log.debug("Query generated with QueryBuilder: {}", getQuery());
 	}
+	//else
+	//    qb = QueryBuilder.fromQuery(super.getQuery()); // default DESCRIBE
 	
 	if (getEndpointURI() == null && resource.hasProperty(Graphity.service))
 	    setEndpointURI(resource.getPropertyResourceValue(Graphity.service).
 		getPropertyResourceValue(ontModel.
 		    getProperty("http://www.w3.org/ns/sparql-service-description#endpoint")).getURI());
-	
-	    log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
-	    setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
+    }
 
-	if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI())) // local URI
+    @Override
+    public Model getModel()
+    {
+	//log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
+	//setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
+
+	 // local URI
+	if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
 	{
-	    log.debug("Querying local OntModel with Query: {}", getQuery());
-	    setModel(DataManager.get().loadModel(ontModel, getQuery()));
+	    log.debug("Querying local OntModel: {} with Query: {}", ontModel, getQuery());
+	    return DataManager.get().loadModel(ontModel, getQuery());
 	}
 	
-	if (getModel().isEmpty()) // || !model.containsResource(model.createResource(uri)))
-	    throw new WebApplicationException(Response.Status.NOT_FOUND);
-
+	//if (getModel().isEmpty()) // || !model.containsResource(model.createResource(uri)))
+	//    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	return super.getModel();
     }
 
     public OntModel getOntModel()
