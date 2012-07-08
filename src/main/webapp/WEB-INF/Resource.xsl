@@ -180,7 +180,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		</div>
 
 		<div class="container-fluid">
-$mode: <xsl:value-of select="$mode"/><br/>
+<xsl:copy-of select="."/><br/>
 $query-uri: <xsl:value-of select="$query-uri"/><br/>
 $query-model: <xsl:copy-of select="$query-model"/><br/>
 $select-query: <xsl:copy-of select="$select-query"/><br/>

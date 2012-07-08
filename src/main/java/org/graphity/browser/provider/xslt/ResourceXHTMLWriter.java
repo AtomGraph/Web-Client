@@ -17,7 +17,6 @@
 
 package org.graphity.browser.provider.xslt;
 
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.ByteArrayInputStream;
@@ -38,7 +37,6 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.Resource;
-import org.graphity.browser.resource.SPARQLResource;
 import org.graphity.util.XSLTBuilder;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
@@ -89,12 +87,7 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	try
 	{
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-	    // default transformation works on Model; there is a specific case of ResultSet
-	    if (resource instanceof SPARQLResource && ((SPARQLResource)resource).getResultSet() != null)
-		ResultSetFormatter.outputAsXML(baos, ((SPARQLResource)resource).getResultSet());
-	    else
-		resource.getModel().write(baos, WebContent.langRDFXML);
+	    resource.getModel().write(baos, WebContent.langRDFXML);
 
 	    builder.getTransformer().clearParameters(); // remove previously set param values
 

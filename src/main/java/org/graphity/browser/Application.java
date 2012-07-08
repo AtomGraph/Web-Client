@@ -66,13 +66,11 @@ public class Application extends javax.ws.rs.core.Application
 	
 	DataManager.get().setLocationMapper(mapper);
 	DataManager.get().setModelCaching(false);
-	log.debug("FileManager.get(): {}", FileManager.get());
-	log.debug("DataManager.get(): {}", DataManager.get());
+	log.debug("FileManager.get(): {} DataManager.get(): {}", FileManager.get(), DataManager.get());
 	log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
 	
 	OntDocumentManager.getInstance().setFileManager(DataManager.get());
-	log.debug("OntDocumentManager.getInstance(): {}", OntDocumentManager.getInstance());
-	log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
+	log.debug("OntDocumentManager.getInstance(): {} OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance(), OntDocumentManager.getInstance().getFileManager());
 	
 	try
 	{

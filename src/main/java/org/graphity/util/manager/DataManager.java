@@ -141,7 +141,7 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Remote service {} Query: {} ", endpointURI, query);
 	
 	if (!(query.isConstructType() || query.isDescribeType()))
-	    return null;
+	    throw new QueryExecException("Query to load Model must be CONSTRUCT or DESCRIBE"); // return null;
 
 	if (isSPARQLService(endpointURI))
 	    return loadModel(findSPARQLService(endpointURI), query);
@@ -161,7 +161,7 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Remote service {} Query: {} ", service.getURI(), query);
 	
 	if (!(query.isConstructType() || query.isDescribeType()))
-	    return null;
+	    throw new QueryExecException("Query to load Model must be CONSTRUCT or DESCRIBE"); // return null;
 		
 	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
 
@@ -328,11 +328,11 @@ public class DataManager extends FileManager implements URIResolver
 	{
 	    Query query = parseQuery(filenameOrURI);
 	    if (!(query.isSelectType()))
-		return null;
+		throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
 
 	    String endpointURI = UriBuilder.fromUri(filenameOrURI).
-		    queryParam("query", (String)null).
-		    build().toString();
+		replaceQuery(null).
+		build().toString();
 	    
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
 	    return request.execSelect();

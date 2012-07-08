@@ -16,6 +16,7 @@
  */
 package org.graphity.browser.resource;
 
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import javax.ws.rs.*;
@@ -37,8 +38,8 @@ public class SPARQLResource extends Resource
     private static final Logger log = LoggerFactory.getLogger(SPARQLResource.class);
     private static final long MAX_LIMIT = 100;
     
+    private Query query = null;
     private ResultSet resultSet = null;
-    private Response response = null;
     
     public SPARQLResource(@Context UriInfo uriInfo,
 	@QueryParam("uri") String uri,
@@ -55,25 +56,27 @@ public class SPARQLResource extends Resource
 	if (queryString != null)
 	{
 	    if (queryString.isEmpty()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
-	    setQuery(QueryFactory.create(queryString));
-	    if (getQuery().isUnknownType()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
-	    log.debug("Submitted SPARQL query: {}", getQuery());
+	    query = QueryFactory.create(queryString);
+	    if (query.isUnknownType()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	    log.debug("Submitted SPARQL query: {}", query);
 	    
-	    getQuery().setLimit(MAX_LIMIT);
+	    query.setLimit(MAX_LIMIT);
 
-	    if (getQuery().isConstructType() || getQuery().isDescribeType())
+	    if (query.isConstructType() || query.isDescribeType())
 	    {
+		setQuery(query);
+
 		if (getEndpointURI() != null)
 		    setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
 		else
 		    setModel(DataManager.get().loadModel(getOntModel(), getQuery()));
 	    }
-	    if (getQuery().isSelectType() || getQuery().isAskType())
+	    if (query.isSelectType() || query.isAskType())
 	    {
 		if (getEndpointURI() != null)
-		    resultSet = DataManager.get().loadResultSet(getEndpointURI(), getQuery());
+		    resultSet = DataManager.get().loadResultSet(getEndpointURI(), query);
 		else
-		    resultSet = DataManager.get().loadResultSet(getOntModel(), getQuery());
+		    resultSet = DataManager.get().loadResultSet(getOntModel(), query);
 	    }
 	}
     }

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
@@ -37,12 +38,13 @@ xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
+xmlns:sparql="&sparql;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:skos="&skos;"
 xmlns:list="&list;"
-exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
+exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos list">
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
@@ -52,13 +54,13 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
     <xsl:key name="resources-by-range" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:range/@rdf:resource"/>
 
     <!-- subject/object resource -->
-    <xsl:template match="@rdf:about | @rdf:resource">
+    <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
 	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[starts-with(., $base-uri)] | @rdf:resource[starts-with(., $base-uri)]">
+    <xsl:template match="@rdf:about[starts-with(., $base-uri)] | @rdf:resource[starts-with(., $base-uri)] | sparql:uri[starts-with(., $base-uri)]">
 	<a href="{.}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
@@ -109,8 +111,8 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype]">
-	<span title="{../@rdf:datatype}">
+    <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]">
+	<span title="{../@rdf:datatype | @datatype}">
 	    <xsl:value-of select="."/>
 	</span>
     </xsl:template>

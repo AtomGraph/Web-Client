@@ -46,8 +46,12 @@ PREFIX xsd: &lt;&xsd;&gt;
 SELECT DISTINCT *
 WHERE
 {
-    GRAPH ?g
     { ?s ?p ?o }
+    UNION
+    {
+	GRAPH ?g
+	{ ?s ?p ?o }
+    }
 }
 LIMIT 100</xsl:param>
 
@@ -92,11 +96,47 @@ LIMIT 100</xsl:param>
 	    </fieldset>
 	</form>
 
-	<!--
 	<xsl:if test="$query">
-	    <iframe frameborder="0" src="{$base-uri}sparql?query={encode-for-uri($query)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}&amp;mode=EmbedMode"/>
+	    <xsl:apply-templates select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query)), $base-uri))/sparql:sparql"/>
 	</xsl:if>
-	-->
+    </xsl:template>
+
+    <xsl:template match="sparql:sparql">
+	<table class="table table-bordered table-striped">
+	    <xsl:apply-templates/>
+	</table>
+    </xsl:template>
+    
+    <xsl:template match="sparql:head">
+	<thead>
+	    <tr>
+		<xsl:apply-templates/>
+	    </tr>
+	</thead>
+    </xsl:template>
+
+    <xsl:template match="sparql:variable">
+	<th>
+	    <xsl:value-of select="@name"/>
+	</th>
+    </xsl:template>
+
+    <xsl:template match="sparql:results">
+	<tbody>
+	    <xsl:apply-templates/>
+	</tbody>
+    </xsl:template>
+
+    <xsl:template match="sparql:result">
+	<tr>
+	    <xsl:apply-templates/>
+	</tr>
+    </xsl:template>
+
+    <xsl:template match="sparql:binding">
+	<td>
+	    <xsl:apply-templates/>
+	</td>
     </xsl:template>
 
 </xsl:stylesheet>
