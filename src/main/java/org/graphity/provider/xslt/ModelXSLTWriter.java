@@ -46,11 +46,15 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model>
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
     private XSLTBuilder builder = null;
-    
+
+    public ModelXSLTWriter(XSLTBuilder builder) throws TransformerConfigurationException
+    {
+	this.builder = builder;
+    }
+
     public ModelXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	builder = XSLTBuilder.fromStylesheet(stylesheet).
-	    resolver(resolver);
+	this(XSLTBuilder.fromStylesheet(stylesheet).resolver(resolver));
     }
 
     @Override

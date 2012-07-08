@@ -49,6 +49,7 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 	@QueryParam("accept") String accept)
     {
 	setURI(uri);
+	if (endpointUri != null && endpointUri.isEmpty()) endpointUri = null;
 	setEndpointURI(endpointUri);
 	log.debug("URI: {} Endpoint URI: {}", getURI(), getEndpointURI());
 		
@@ -104,6 +105,8 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 		log.trace("Could not load Model from URI: {}", getURI(), ex);
 		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 	    }
+	
+	if (model.isEmpty()) throw new WebApplicationException(Response.Status.NOT_FOUND);
 
 	return model;
     }

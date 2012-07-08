@@ -42,7 +42,7 @@ public class SPARQLResource extends Resource
     
     public SPARQLResource(@Context UriInfo uriInfo,
 	@QueryParam("uri") String uri,
-	@QueryParam("service-uri") String serviceUri,
+	@QueryParam("endpoint-uri") String serviceUri,
 	@QueryParam("accept") String accept,
 	@QueryParam("limit") @DefaultValue("10") long limit,
 	@QueryParam("offset") @DefaultValue("0") long offset,
@@ -67,8 +67,6 @@ public class SPARQLResource extends Resource
 		    setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
 		else
 		    setModel(DataManager.get().loadModel(getOntModel(), getQuery()));
-		
-		response = Response.ok(getModel()).build();
 	    }
 	    if (getQuery().isSelectType() || getQuery().isAskType())
 	    {
@@ -76,18 +74,8 @@ public class SPARQLResource extends Resource
 		    resultSet = DataManager.get().loadResultSet(getEndpointURI(), getQuery());
 		else
 		    resultSet = DataManager.get().loadResultSet(getOntModel(), getQuery());
-		
-		response = Response.ok(resultSet).build();
 	    }
 	}
-	else
-	    response = super.getResponse();
-    }
-
-    @Override
-    public Response getResponse()
-    {
-	return response;
     }
 
     @GET

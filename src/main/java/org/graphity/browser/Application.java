@@ -30,7 +30,6 @@ import javax.ws.rs.core.Context;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.browser.provider.xslt.ModelXHTMLWriter;
 import org.graphity.browser.provider.xslt.ResourceXHTMLWriter;
 import org.graphity.browser.resource.SPARQLResource;
 import org.graphity.provider.ModelProvider;
@@ -115,7 +114,6 @@ public class Application extends javax.ws.rs.core.Application
 	try
 	{
 	    singletons.add(new ResourceXHTMLWriter(new StreamSource(context.getRealPath("/WEB-INF/Resource.xsl")), DataManager.get()));
-	    singletons.add(new ModelXHTMLWriter(new StreamSource(context.getRealPath("/WEB-INF/Resource.xsl")), DataManager.get()));
 	}
 	catch (TransformerConfigurationException ex)
 	{

@@ -77,76 +77,7 @@ public class DataManager extends FileManager implements URIResolver
         return s_instance;
     }
 
-    /*
-     * JAX-RS implementation. Not used because ModelProvider cannot simply access base URI from Client
-     * 
-
-    public static final Map<javax.ws.rs.core.MediaType, Double> QUALIFIED_TYPES;    
-    static
-    {
-	Map<javax.ws.rs.core.MediaType, Double> typeMap = new HashMap<javax.ws.rs.core.MediaType, Double>();
-	
-	typeMap.put(MediaType.APPLICATION_RDF_XML_TYPE, null);
-	typeMap.put(MediaType.TEXT_TURTLE_TYPE, 0.9);
-	typeMap.put(MediaType.TEXT_PLAIN_TYPE, 0.7);
-	typeMap.put(MediaType.APPLICATION_XML_TYPE, 0.5);
-	
-	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
-    }    
-
-    private ClientConfig config = new DefaultClientConfig();
-    
-    public DataManager(LocationMapper _mapper)
-    {
-	super(_mapper);
-	config.getClasses().add(ModelProvider.class);
-    }
-
-    public DataManager(FileManager filemanager)
-    {
-	super(filemanager);
-	config.getClasses().add(ModelProvider.class);
-    }
-
-    public DataManager()
-    {
-	config.getClasses().add(ModelProvider.class);
-    }
-    
-    @Override
-    public Model loadModel(String filenameOrURI)
-    {
-	// http://blogs.oracle.com/enterprisetechtips/entry/consuming_restful_web_services_with#regp
-	log.debug("Loading models using cache? getCachingModels: {}", getCachingModels());
-	if (hasCachedModel(filenameOrURI))
-	{
-	    log.debug("Model cache hit: " + filenameOrURI);
-	    return getFromCache(filenameOrURI);
-	}
-	
-	// Make sure we load from HTTP as the last resort, otherwise handle with FileManager
-	String mappedURI = mapURI(filenameOrURI);
-	if (!mappedURI.startsWith("http:"))
-	{
-	    log.debug("loadModel({}) mapped to {} handled by FileManager", filenameOrURI, mapURI(filenameOrURI));
-	    return super.loadModel(filenameOrURI);
-	}
-	else
-	{
-	    log.trace("Loading Model from URI: {} with Accept header: {}", filenameOrURI, getAcceptHeader());
-	    Model m = Client.create(config).
-		    resource(filenameOrURI).
-		    header("Accept", getAcceptHeader()).
-		    get(Model.class);
-
-	    addCacheModel(filenameOrURI, m);
-
-	    return m;
-	}
-    }
-    */
-
-    public static final Map<String, String> LANGS = new HashMap<String, String>() ;
+   public static final Map<String, String> LANGS = new HashMap<String, String>() ;
     static
     {
         LANGS.put(WebContent.contentTypeRDFXML, WebContent.langRDFXML);
@@ -205,18 +136,18 @@ public class DataManager extends FileManager implements URIResolver
         return m;
     }
 
-    public Model loadModel(String serviceURI, Query query)
+    public Model loadModel(String endpointURI, Query query)
     {
-	log.debug("Remote service {} Query: {} ", serviceURI, query);
+	log.debug("Remote service {} Query: {} ", endpointURI, query);
 	
 	if (!(query.isConstructType() || query.isDescribeType()))
 	    return null;
 
-	if (isSPARQLService(serviceURI))
-	    return loadModel(findSPARQLService(serviceURI), query);
+	if (isSPARQLService(endpointURI))
+	    return loadModel(findSPARQLService(endpointURI), query);
 	else
 	{
-	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
 
 	    if (query.isConstructType()) return request.execConstruct();
 	    if (query.isDescribeType()) return request.execDescribe();
@@ -256,7 +187,7 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Local Model Query: {}", query);
 	
 	if (!(query.isConstructType() || query.isDescribeType()))
-	    return null;
+	    throw new QueryExecException("Query to load Model must be CONSTRUCT or DESCRIBE"); // return null;
 		
 	QueryExecution qex = QueryExecutionFactory.create(query, model);
 
@@ -297,14 +228,14 @@ public class DataManager extends FileManager implements URIResolver
 	services.add(service);
     }
 
-    public void addSPARQLService(String serviceURI, String user, char[] password)
+    public void addSPARQLService(String endpointURI, String user, char[] password)
     {
-	services.add(new SPARQLService(serviceURI, user, password));
+	services.add(new SPARQLService(endpointURI, user, password));
     }
 
-    public void addSPARQLService(String serviceURI, String apiKey)
+    public void addSPARQLService(String endpointURI, String apiKey)
     {
-	services.add(new SPARQLService(serviceURI, apiKey));
+	services.add(new SPARQLService(endpointURI, apiKey));
     }
 
     public Iterator<SPARQLService> sparqlServices()
@@ -399,27 +330,27 @@ public class DataManager extends FileManager implements URIResolver
 	    if (!(query.isSelectType()))
 		return null;
 
-	    String serviceURI = UriBuilder.fromUri(filenameOrURI).
+	    String endpointURI = UriBuilder.fromUri(filenameOrURI).
 		    queryParam("query", (String)null).
 		    build().toString();
 	    
-	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
 	    return request.execSelect();
 	}
     }
 
-    public ResultSet loadResultSet(String serviceURI, Query query)
+    public ResultSet loadResultSet(String endpointURI, Query query)
     {
-	if (isSPARQLService(serviceURI))
-	    return loadResultSet(findSPARQLService(serviceURI), query);
+	if (isSPARQLService(endpointURI))
+	    return loadResultSet(findSPARQLService(endpointURI), query);
 	else
 	{
-	    log.debug("Remote service {} Query execution: {} ", serviceURI, query);
+	    log.debug("Remote service {} Query execution: {} ", endpointURI, query);
 
 	    if (!query.isSelectType())
-		return null;
+		throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
 
-	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(serviceURI, query);
+	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
 
 	    return request.execSelect();
 	}
@@ -430,7 +361,7 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Remote service {} Query execution: {} ", service.getURI(), query);
 
 	if (!query.isSelectType())
-	    return null;
+	    throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
 	
 	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
 	if (service.getUser() != null && service.getPassword() != null)
@@ -452,7 +383,7 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Local Model Query: {}", query);
 
 	if (!query.isSelectType())
-	    return null;
+	    throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
 	
 	QueryExecution qex = QueryExecutionFactory.create(query, model);
 	
@@ -587,31 +518,31 @@ public class DataManager extends FileManager implements URIResolver
     }
 
     // uses graph store protocol - expects /sparql service!
-    public void putModel(String serviceURI, String graphURI, Model model)
+    public void putModel(String endpointURI, String graphURI, Model model)
     {
-	log.debug("PUTting Model to service {} with GRAPH URI {}", serviceURI, graphURI);
+	log.debug("PUTting Model to service {} with GRAPH URI {}", endpointURI, graphURI);
 	
 	DatasetGraphAccessorHTTP http = null;
 		
-	if (isSPARQLService(serviceURI)) // service registered with credentials
+	if (isSPARQLService(endpointURI)) // service registered with credentials
 	{
-	    SPARQLService service = findSPARQLService(serviceURI);
-	    serviceURI = serviceURI.replace("/sparql", "/service"); // TO-DO: better to avoid this and make generic
-	    log.debug("URI {} is a SPARQL service, sending PUT with credentials: {}", serviceURI, service.getUser());
-	    http = new DatasetGraphAccessorHTTP(serviceURI, service.getUser(), service.getPassword());
+	    SPARQLService service = findSPARQLService(endpointURI);
+	    endpointURI = endpointURI.replace("/sparql", "/service"); // TO-DO: better to avoid this and make generic
+	    log.debug("URI {} is a SPARQL service, sending PUT with credentials: {}", endpointURI, service.getUser());
+	    http = new DatasetGraphAccessorHTTP(endpointURI, service.getUser(), service.getPassword());
 	}
 	else // no credentials
 	{
-	    serviceURI.replace("/sparql", "/service");
-	    log.debug("URI {} is *not* a SPARQL service, sending PUT without credentials", serviceURI);
-	    http = new DatasetGraphAccessorHTTP(serviceURI);
+	    endpointURI.replace("/sparql", "/service");
+	    log.debug("URI {} is *not* a SPARQL service, sending PUT without credentials", endpointURI);
+	    http = new DatasetGraphAccessorHTTP(endpointURI);
 	}
 	
 	DatasetAccessor accessor = new DatasetAdapter(http);
 	accessor.putModel(graphURI, model);
     }
 
-    public void putModel(String serviceURI, Model model)
+    public void putModel(String endpointURI, Model model)
     {
 	
     }

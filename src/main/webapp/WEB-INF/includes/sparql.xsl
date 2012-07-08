@@ -53,11 +53,11 @@ LIMIT 100</xsl:param>
 
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" priority="1">
 	<xsl:choose>
-	    <xsl:when test="$service-uri">
+	    <xsl:when test="$endpoint-uri">
 		<div class="well">
 		    <h1>
-			<a href="{$absolute-path}?service-uri={encode-for-uri($service-uri)}">
-			    <xsl:value-of select="g:label($service-uri, /, $lang)"/>
+			<a href="{$absolute-path}?endpoint-uri={encode-for-uri($endpoint-uri)}">
+			    <xsl:value-of select="g:label($endpoint-uri, /, $lang)"/>
 			</a>
 		    </h1>
 		</div>
@@ -73,7 +73,7 @@ LIMIT 100</xsl:param>
 		    <label for="endpoint-uri" class="control-label">
 			<xsl:value-of select="g:label(xs:anyURI('&sd;endpoint'), /, $lang)"/>
 		    </label>
-		    <input type="text" name="service-uri" id="endpoint-uri" value="{$service-uri}" class="input-xlarge"/>
+		    <input type="text" name="endpoint-uri" id="endpoint-uri" value="{$endpoint-uri}" class="input-xlarge"/>
 		</div>
 		<textarea id="query-string" name="query" class="span12" rows="10">
 		    <xsl:choose>
@@ -94,7 +94,7 @@ LIMIT 100</xsl:param>
 
 	<!--
 	<xsl:if test="$query">
-	    <iframe frameborder="0" src="{$base-uri}sparql?query={encode-for-uri($query)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}&amp;mode=EmbedMode"/>
+	    <iframe frameborder="0" src="{$base-uri}sparql?query={encode-for-uri($query)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}&amp;mode=EmbedMode"/>
 	</xsl:if>
 	-->
     </xsl:template>

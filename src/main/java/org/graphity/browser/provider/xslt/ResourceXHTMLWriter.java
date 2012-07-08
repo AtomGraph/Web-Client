@@ -17,6 +17,7 @@
 
 package org.graphity.browser.provider.xslt;
 
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.ByteArrayInputStream;
@@ -37,6 +38,7 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.Resource;
+import org.graphity.browser.resource.SPARQLResource;
 import org.graphity.util.XSLTBuilder;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
@@ -57,12 +59,16 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	
     @Context private UriInfo uriInfo;
 
+    public ResourceXHTMLWriter(XSLTBuilder builder) throws TransformerConfigurationException
+    {
+	this.builder = builder;
+    }
+
     public ResourceXHTMLWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	builder = XSLTBuilder.fromStylesheet(stylesheet).
-	    resolver(resolver);
+	this(XSLTBuilder.fromStylesheet(stylesheet).resolver(resolver));
     }
-       
+
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
@@ -78,16 +84,21 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
     @Override
     public void writeTo(Resource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	log.trace("Writing RDFResource with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
+	log.trace("Writing Resource with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
 
 	try
 	{
-	    ByteArrayOutputStream modelStream = new ByteArrayOutputStream();
-	    resource.getModel().write(modelStream, WebContent.langRDFXML);
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+	    // default transformation works on Model; there is a specific case of ResultSet
+	    if (resource instanceof SPARQLResource && ((SPARQLResource)resource).getResultSet() != null)
+		ResultSetFormatter.outputAsXML(baos, ((SPARQLResource)resource).getResultSet());
+	    else
+		resource.getModel().write(baos, WebContent.langRDFXML);
 
 	    builder.getTransformer().clearParameters(); // remove previously set param values
 
-	    builder.document(new ByteArrayInputStream(modelStream.toByteArray())).
+	    builder.document(new ByteArrayInputStream(baos.toByteArray())).
 		parameter("base-uri", uriInfo.getBaseUri()).
 		parameter("absolute-path", uriInfo.getAbsolutePath()).
 		parameter("http-headers", httpHeaders.toString()).
@@ -110,8 +121,8 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 
 	    if (uriInfo.getQueryParameters().getFirst("uri") != null)
 		builder.parameter("uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("uri")).build());
-	    if (uriInfo.getQueryParameters().getFirst("service-uri") != null)
-		builder.parameter("service-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("service-uri")).build());
+	    if (uriInfo.getQueryParameters().getFirst("endpoint-uri") != null)
+		builder.parameter("endpoint-uri", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("endpoint-uri")).build());
 	    if (uriInfo.getQueryParameters().getFirst("query") != null)
 		builder.parameter("query", uriInfo.getQueryParameters().getFirst("query"));
 	    if (uriInfo.getQueryParameters().getFirst("mode") != null)
@@ -128,7 +139,7 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 		builder.parameter("desc", Boolean.parseBoolean(uriInfo.getQueryParameters().getFirst("desc")));
 
 	    builder.transform();
-	    modelStream.close();
+	    baos.close();
 	}
 	catch (TransformerException ex)
 	{
@@ -136,5 +147,5 @@ public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
     }
-    
+
 }

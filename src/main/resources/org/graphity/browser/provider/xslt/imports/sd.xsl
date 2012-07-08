@@ -32,13 +32,13 @@ xmlns:sd="&sd;"
 exclude-result-prefixes="g rdf rdfs sd">
     
     <xsl:template match="sd:endpoint/@rdf:resource">
-	<a href="{$base-uri}sparql?service-uri={encode-for-uri(.)}">
+	<a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(.)}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 
     <xsl:template match="sd:Service[sd:endpoint/@rdf:resource]/@rdf:about | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:about | sd:Service[sd:endpoint/@rdf:resource]/@rdf:nodeID | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:nodeID ">
-	<a href="{$base-uri}sparql?service-uri={encode-for-uri(../sd:endpoint/@rdf:resource)}">
+	<a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(../sd:endpoint/@rdf:resource)}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>

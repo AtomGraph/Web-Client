@@ -53,7 +53,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
 
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}" title="{.}">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
@@ -86,7 +86,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
     <!-- property -->
     <xsl:template match="*[node()[ancestor::rdf:RDF] or @rdf:resource or @rdf:nodeID]">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<a href="{$base-uri}?uri={encode-for-uri($this)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}" title="{$this}">
+	<a href="{$base-uri}?uri={encode-for-uri($this)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{$this}">
 	    <xsl:value-of select="g:label($this, /, $lang)"/>
 	</a>
     </xsl:template>
@@ -324,7 +324,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
 	
     <xsl:function name="g:query">
 	<xsl:param name="query" as="xs:string"/>
-	<xsl:param name="service-uri" as="xs:anyURI"/>
+	<xsl:param name="endpoint-uri" as="xs:anyURI"/>
 	<xsl:param name="accept" as="xs:string?"/>
 
 	<xsl:variable name="query-string" select="concat('query=', encode-for-uri($query))" as="xs:string"/>
@@ -338,7 +338,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd dc dct foaf skos list">
 	</xsl:variable>
 	-->
 	
-	<xsl:sequence select="document(concat($service-uri, '?', $query-string))"/>
+	<xsl:sequence select="document(concat($endpoint-uri, '?', $query-string))"/>
     </xsl:function>
 	
 </xsl:stylesheet>

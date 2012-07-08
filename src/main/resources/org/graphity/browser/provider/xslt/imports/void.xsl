@@ -32,7 +32,7 @@ xmlns:void="&void;"
 exclude-result-prefixes="g rdf rdfs void">
     
     <xsl:template match="void:sparqlEndpoint/@rdf:resource">
-	<a href="{$base-uri}?service-uri={encode-for-uri(.)}">
+	<a href="{$base-uri}?endpoint-uri={encode-for-uri(.)}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>

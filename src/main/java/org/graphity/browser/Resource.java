@@ -53,7 +53,7 @@ public class Resource extends LinkedDataResourceImpl
 
     public Resource(@Context UriInfo uriInfo,
 	@QueryParam("uri") String uri,
-	@QueryParam("service-uri") String serviceUri,
+	@QueryParam("endpoint-uri") String serviceUri,
 	@QueryParam("accept") String accept,
 	@QueryParam("limit") @DefaultValue("10") long limit,
 	@QueryParam("offset") @DefaultValue("0") long offset,
@@ -61,8 +61,6 @@ public class Resource extends LinkedDataResourceImpl
 	@QueryParam("desc") @DefaultValue("true") boolean desc)
     {
 	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, serviceUri, accept);
-	//super(uri, serviceUri, accept);
-	//if (uri == null) setURI(uriInfo.getAbsolutePath().toString());
 	this.uriInfo = uriInfo;
 
 	// ontology URI is base URI-dependent
@@ -80,9 +78,13 @@ public class Resource extends LinkedDataResourceImpl
 	{
 	    spinRes = resource.getPropertyResourceValue(Graphity.query);
 	    log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
-	    
+
+spinRes.canAs(Select.class);
+
 	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into CONSTRUCT { ?s ?p ?o }
 	    {
+		log.trace("Explicit query is SELECT, wrapping into CONSTRUCT");
+
 		QueryBuilder selectBuilder = QueryBuilder.fromResource(spinRes).
 		    limit(limit).
 		    offset(offset);
@@ -112,29 +114,19 @@ public class Resource extends LinkedDataResourceImpl
     @Override
     public Model getModel()
     {
-	//log.debug("Querying remote service: {} with Query: {}", getEndpointURI(), getQuery());
-	//setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
-
-	 // local URI
+	// local URI
 	if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
 	{
 	    log.debug("Querying local OntModel: {} with Query: {}", ontModel, getQuery());
 	    return DataManager.get().loadModel(ontModel, getQuery());
 	}
 	
-	//if (getModel().isEmpty()) // || !model.containsResource(model.createResource(uri)))
-	//    throw new WebApplicationException(Response.Status.NOT_FOUND);
 	return super.getModel();
     }
 
     public OntModel getOntModel()
     {
 	return ontModel;
-    }
-
-    protected com.hp.hpl.jena.rdf.model.Resource getResource()
-    {
-	return resource;
     }
 
     public com.hp.hpl.jena.rdf.model.Resource getSPINResource()

@@ -50,7 +50,7 @@ exclude-result-prefixes="g rdf rdfs foaf">
     </xsl:template>
 
     <xsl:template match="foaf:Image/@rdf:about | *[rdf:type/@rdf:resource = '&foaf;Image']/@rdf:about | foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}">
 	    <img src="{.}" alt="{g:label(., /, $lang)}"/>
 	</a>
     </xsl:template>

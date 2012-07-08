@@ -78,7 +78,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:param name="http-headers" as="xs:string"/>
 
     <xsl:param name="uri" select="$absolute-path" as="xs:anyURI"/>
-    <xsl:param name="service-uri" select="key('resources', $uri, $ont-model)/g:service/@rdf:resource" as="xs:anyURI?"/> <!-- select="xs:anyURI(concat($base-uri, 'sparql'))"  -->
+    <xsl:param name="endpoint-uri" select="key('resources', $uri, $ont-model)/g:service/@rdf:resource" as="xs:anyURI?"/> <!-- select="xs:anyURI(concat($base-uri, 'sparql'))"  -->
     <xsl:param name="mode" select="if (key('resources', $uri, $ont-model)/g:mode/@rdf:resource) then key('resources', $uri, $ont-model)/g:mode/@rdf:resource else xs:anyURI('&g;ListMode')" as="xs:anyURI"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
@@ -156,8 +156,8 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 					</input>
 					<button type="submit" class="btn btn-primary">Go</button>
 
-					<xsl:if test="$service-uri">
-					    <input type="hidden" name="service-uri" value="{$service-uri}"/>
+					<xsl:if test="$endpoint-uri">
+					    <input type="hidden" name="endpoint-uri" value="{$endpoint-uri}"/>
 					</xsl:if>
 				    </div>
 				</form>
@@ -208,7 +208,7 @@ $query: <xsl:value-of select="$query"/>
 		    <a href="{$uri}" class="btn">Source</a>
 		</xsl:if>
 		<xsl:if test="$query">
-		    <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}" class="btn">SPARQL</a>
+		    <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">SPARQL</a>
 		</xsl:if>
 		<a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
 		<a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
@@ -479,7 +479,7 @@ $query: <xsl:value-of select="$query"/>
     </xsl:template>
 	
     <xsl:template match="rdf:type/@rdf:resource">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($service-uri) then (concat('&amp;service-uri=', encode-for-uri($service-uri))) else ()}" title="{.}" class="btn">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{.}" class="btn">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
