@@ -97,7 +97,14 @@ LIMIT 100</xsl:param>
 	</form>
 
 	<xsl:if test="$query">
-	    <xsl:apply-templates select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query)), $base-uri))/sparql:sparql"/>
+	    <xsl:variable name="result-doc" select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query)), $base-uri))"/>
+	    
+	    <xsl:if test="$result-doc/rdf:RDF">
+		<xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="g:ListMode"/>
+	    </xsl:if>
+	    <xsl:if test="$result-doc/sparql:sparql">
+		<xsl:apply-templates select="$result-doc/sparql:sparql"/>
+	    </xsl:if>
 	</xsl:if>
     </xsl:template>
 
