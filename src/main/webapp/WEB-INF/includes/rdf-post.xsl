@@ -113,9 +113,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl foaf dbpedia uuid">
 		<li>
 		    <a href="http://www.lsrn.org/semweb/rdfpost.html">RDF/POST Encoding for RDF</a>
 		</li>
-		<li>
-		    <a href="http://opendatacommons.org/licenses/odbl/1.0/">Open Database License (ODbL) v1.0</a>
-		</li>
 	    </ul>
 	</div>
     </xsl:template>

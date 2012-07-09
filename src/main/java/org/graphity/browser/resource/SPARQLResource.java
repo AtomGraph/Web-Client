@@ -23,6 +23,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.graphity.MediaType;
 import org.graphity.browser.Resource;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class SPARQLResource extends Resource
     
     private Query query = null;
     private ResultSet resultSet = null;
+    private String accept = null;
     
     public SPARQLResource(@Context UriInfo uriInfo,
 	@QueryParam("uri") String uri,
@@ -52,6 +54,7 @@ public class SPARQLResource extends Resource
 	@QueryParam("query") String queryString)
     {
 	super(uriInfo, uri, serviceUri, accept, limit, offset, orderBy, desc);
+	this.accept = accept;
 
 	if (queryString != null)
 	{
@@ -86,6 +89,22 @@ public class SPARQLResource extends Resource
     public ResultSet getResultSet()
     {
 	return resultSet;
+    }
+
+    @Override
+    public Response getResponse()
+    {
+	if (accept != null && getResultSet() != null)
+	{
+	    log.debug("Accept param: {}, writing SPARQL XML results (JSON or Turtle)", accept);
+
+	    if (accept.equals(MediaType.APPLICATION_SPARQL_RESULTS_XML))
+		return Response.ok(getResultSet(), MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE).build();
+	    if (accept.equals(MediaType.APPLICATION_SPARQL_RESULTS_JSON))
+		return Response.ok(getResultSet(), MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE).build();
+	}
+
+	return super.getResponse();
     }
     
 }

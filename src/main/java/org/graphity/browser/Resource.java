@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Select;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
  *
@@ -48,6 +49,7 @@ public class Resource extends LinkedDataResourceImpl
     private OntModel ontModel = null;
     private QueryBuilder qb = null;
     private com.hp.hpl.jena.rdf.model.Resource resource, spinRes = null;
+    private String accept = null;
 
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
@@ -60,8 +62,9 @@ public class Resource extends LinkedDataResourceImpl
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc)
     {
-	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, serviceUri, accept);
+	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, serviceUri);
 	this.uriInfo = uriInfo;
+	this.accept = accept;
 
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
@@ -71,6 +74,8 @@ public class Resource extends LinkedDataResourceImpl
 	ontModel = OntDocumentManager.getInstance().
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);
 
+	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
+	
 	resource = ontModel.createResource(getURI());
 	log.debug("Resource: {} with URI: {}", resource, getURI());
 
@@ -78,8 +83,6 @@ public class Resource extends LinkedDataResourceImpl
 	{
 	    spinRes = resource.getPropertyResourceValue(Graphity.query);
 	    log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
-
-spinRes.canAs(Select.class);
 
 	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into CONSTRUCT { ?s ?p ?o }
 	    {
@@ -117,8 +120,8 @@ spinRes.canAs(Select.class);
 	// local URI
 	if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
 	{
-	    log.debug("Querying local OntModel: {} with Query: {}", ontModel, getQuery());
-	    return DataManager.get().loadModel(ontModel, getQuery());
+	    log.debug("Querying local OntModel: {} with Query: {}", getOntModel(), getQuery());
+	    return DataManager.get().loadModel(getOntModel(), getQuery());
 	}
 	
 	return super.getModel();
@@ -145,11 +148,28 @@ spinRes.canAs(Select.class);
     {
 	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
 
-	//getOntModel().add(rdfPost);
+	setModel(rdfPost);
 	// we add the RDF submitted with the RDF/POST form in this case
 	// the posted Model could be saved using DataManager.putModel() for example
 	
 	return getResponse();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
+    public Response getResponse()
+    {
+	if (accept != null)
+	{
+	    log.debug("Accept param: {}, writing RDF/XML or Turtle", accept);
+
+	    if (accept.equals(MediaType.APPLICATION_RDF_XML))
+		return Response.ok(getModel(), MediaType.APPLICATION_RDF_XML_TYPE).build();
+	    if (accept.equals(MediaType.TEXT_TURTLE))
+		return Response.ok(getModel(), MediaType.TEXT_TURTLE_TYPE).build();
+	}
+
+	return Response.ok(this).build(); // uses ResourceXHTMLWriter
     }
 
 }

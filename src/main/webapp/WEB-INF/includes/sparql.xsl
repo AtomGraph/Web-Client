@@ -99,10 +99,26 @@ LIMIT 100</xsl:param>
 	<xsl:if test="$query">
 	    <xsl:variable name="result-doc" select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query)), $base-uri))"/>
 	    
+	    <!-- result of CONSTRUCT or DESCRIBE -->
 	    <xsl:if test="$result-doc/rdf:RDF">
+		<div class="nav row-fluid">
+		    <div class="btn-group pull-right">
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+		    </div>
+		</div>
+
 		<xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="g:ListMode"/>
 	    </xsl:if>
+	    <!-- result of SELECT or ASK -->
 	    <xsl:if test="$result-doc/sparql:sparql">
+		<div class="nav row-fluid">
+		    <div class="btn-group pull-right">
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+xml')}" class="btn">XML</a>
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+json')}" class="btn">JSON</a>
+		    </div>
+		</div>
+
 		<xsl:apply-templates select="$result-doc/sparql:sparql"/>
 	    </xsl:if>
 	</xsl:if>

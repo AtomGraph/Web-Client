@@ -39,42 +39,24 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 {
     private static final Logger log = LoggerFactory.getLogger(LinkedDataResourceImpl.class);
 
-    private String uri, endpointUri, accept = null;
+    private String uri, endpointUri = null;
     private Query query = null;
     private Model model = null;
     
     public LinkedDataResourceImpl(
 	@QueryParam("uri") String uri,
-	@QueryParam("endpoint-uri") String endpointUri,
-	@QueryParam("accept") String accept)
+	@QueryParam("endpoint-uri") String endpointUri)
     {
 	setURI(uri);
 	if (endpointUri != null && endpointUri.isEmpty()) endpointUri = null;
 	setEndpointURI(endpointUri);
 	log.debug("URI: {} Endpoint URI: {}", getURI(), getEndpointURI());
-		
-	this.accept = accept;
 	
 	if (getURI() != null)
 	{
 	    setQuery(QueryFactory.create("DESCRIBE <" + getURI() + ">"));
 	    log.debug("Query {} for URI {}", getQuery(), getURI());
 	}
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
-    public Response getResponse()
-    {
-	if (accept != null)
-	{
-	    if (accept.equals(MediaType.APPLICATION_RDF_XML))
-		return Response.ok(getModel(), MediaType.APPLICATION_RDF_XML_TYPE).build();
-	    if (accept.equals(MediaType.TEXT_TURTLE))
-		return Response.ok(getModel(), MediaType.TEXT_TURTLE_TYPE).build();
-	}
-
-	return Response.ok(this).build();
     }
 
     @GET

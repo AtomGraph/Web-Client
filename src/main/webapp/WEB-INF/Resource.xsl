@@ -67,6 +67,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:import href="classes/org/graphity/browser/provider/xslt/group-sort-triples.xsl"/>
 
     <xsl:include href="includes/sparql.xsl"/>
+    <xsl:include href="includes/frontpage.xsl"/>
     <xsl:include href="includes/rdf-post.xsl"/>
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
@@ -203,16 +204,16 @@ $query: <xsl:value-of select="$query"/>
     <xsl:template match="rdf:RDF">
 	<div class="span8">
 	    <div class="nav row-fluid">
-	    <div class="btn-group pull-right">
-		<xsl:if test="$uri != $absolute-path">
-		    <a href="{$uri}" class="btn">Source</a>
-		</xsl:if>
-		<xsl:if test="$query">
-		    <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">SPARQL</a>
-		</xsl:if>
-		<a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-		<a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-	    </div>
+		<div class="btn-group pull-right">
+		    <xsl:if test="$uri != $absolute-path">
+			<a href="{$uri}" class="btn">Source</a>
+		    </xsl:if>
+		    <xsl:if test="$query">
+			<a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">SPARQL</a>
+		    </xsl:if>
+		    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+		    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+		</div>
 	    </div>
 
 	    <xsl:apply-templates mode="g:ListMode"/>

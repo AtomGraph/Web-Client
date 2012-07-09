@@ -5,6 +5,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix g: <http://graphity.org/ontology/> .
 @prefix void: <http://rdfs.org/ns/void#> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp: <http://spinrdf.org/sp#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -99,3 +100,47 @@ _:dataset a void:Dataset ;
     g:query g:SelectClasses ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
+
+# SERVICES / DATASETS
+
+_:DBPedia a void:Dataset, sd:Service ;
+    dct:title "DBPedia" ;
+    dct:description "RDF data extracted from Wikipedia" ;
+    foaf:homepage <http://dbpedia.org/> ;
+    foaf:logo <http://wiki.dbpedia.org/images/dbpedia_logo.png> ;
+    void:sparqlEndpoint <http://dbpedia.org/sparql> ;
+    sd:endpoint <http://dbpedia.org/sparql> ;
+    void:exampleResource <http://dbpedia.org/resource/Berlin> ,
+	<http://dbpedia.org/resource/Physics> ,
+	<http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
+    sd:supportedLanguage sd:SPARQL11Query ;
+    void:triples "550000000"^^xsd:integer .
+
+_:OpenEI a void:Dataset, sd:Service ;
+    dct:title "OpenEI" ;
+    dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
+    void:sparqlEndpoint <http://en.openei.org/sparql> ;
+    sd:endpoint <http://en.openei.org/sparql> ;
+    void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
+    void:triples "17231136"^^xsd:integer .
+
+_:LinkedGeoData a void:Dataset, sd:Service ;
+    dct:title "LinkedGeoData" ;
+    dct:description "RDF data extracted from OpenStreetMap.org" ;
+    dct:creator <http://aksw.org> ;
+    foaf:homepage <http://linkedgeodata.org/> ;
+    foaf:logo <http://linkedgeodata.org/files/lgdlogo.png> ;
+    void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
+    sd:endpoint <http://linkedgeodata.org/sparql> ;
+    void:exampleResource <http://linkedgeodata.org/triplify/node264695865> .
+
+_:LinkedLifeData a void:Dataset, sd:Service ;
+    dct:title "LinkedLifeData" ;
+    dct:description "A semantic data integration platform for the biomedical domain" ;
+    foaf:homepage <http://linkedlifedata.com> ;
+    foaf:logo <http://linkedlifedata.com/img/logo-large.png> ;
+    void:sparqlEndpoint <http://linkedlifedata.com/sparql> ;
+    sd:endpoint <http://linkedlifedata.com/sparql> ;
+    void:exampleResource <http://linkedlifedata.com/resource/entrezgene/id/7158> ,
+	<http://linkedlifedata.com/resource/drug-target/16> ;
+    void:triples "1000000000"^^xsd:integer .
