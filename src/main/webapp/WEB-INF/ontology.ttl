@@ -40,7 +40,7 @@ _:dataset a void:Dataset ;
 	dbpedia:SPARQL ,
 	dbpedia:Web_browser ;
     dct:creator <http://semantic-web.dk#martynas> ;
-    # g:query g:SelectServices ;
+    g:query g:SelectServices ;
     doap:implements [ a doap:Project ;
 	dct:title "Graphity Browser" ;
 	doap:name "Graphity Browser" ;

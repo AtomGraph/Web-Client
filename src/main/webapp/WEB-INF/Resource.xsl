@@ -181,11 +181,13 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		</div>
 
 		<div class="container-fluid">
+<!--
 <xsl:copy-of select="."/><br/>
 $query-uri: <xsl:value-of select="$query-uri"/><br/>
 $query-model: <xsl:copy-of select="$query-model"/><br/>
 $select-query: <xsl:copy-of select="$select-query"/><br/>
 $query: <xsl:value-of select="$query"/>
+-->
 		    <div class="row-fluid">
 			<xsl:variable name="grouped-rdf">
 			    <xsl:apply-templates mode="g:GroupTriples"/>

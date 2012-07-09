@@ -22,9 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
-    <!ENTITY dbpedia "http://dbpedia.org/resource/">
     <!ENTITY dct "http://purl.org/dc/terms/">
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+    <!ENTITY void "http://rdfs.org/ns/void#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -35,26 +35,64 @@ xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
-xmlns:foaf="&foaf;"
-xmlns:dbpedia="&dbpedia;"
 xmlns:dct="&dct;"
-xmlns:uuid="java:java.util.UUID"
-exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl foaf dbpedia uuid">
+xmlns:foaf="&foaf;"
+xmlns:void="&void;"
+exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void">
     
     <xsl:template match="rdf:RDF[$uri = $base-uri]">
 	<div class="span2">
 	</div>
 
 	<div class="span8">
-	    <xsl:apply-templates mode="g:ListMode"/>
+	    <h1 class="page-header">Explore Linked Data</h1>
+
+	    <xsl:for-each-group select="*" group-ending-with="*[position() mod 2 = 0]">
+		<xsl:sort select="void:triples" data-type="number" order="descending"/>
+		<div class="row-fluid">
+		    <xsl:apply-templates select="current-group()" mode="g:ListMode"/>
+		</div>
+	    </xsl:for-each-group>
 	</div>
     </xsl:template>
 
     <xsl:template match="*[*][$uri = $base-uri]" mode="g:ListMode" priority="1">
-	<div class="span2">
-	    SERVICE
+	<div class="span6 well">
+	    <xsl:if test="foaf:depiction/@rdf:resource or foaf:logo/@rdf:resource">
+		<xsl:apply-templates select="(foaf:depiction/@rdf:resource | foaf:logo/@rdf:resource)[1]"/>
+	    </xsl:if>
+	    <h1>
+		<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+	    </h1>
+	    <xsl:if test="rdf:type/@rdf:resource">
+		<ul class="inline">
+		    <xsl:for-each select="rdf:type/@rdf:resource">
+			<li>
+			    <xsl:apply-templates select=".">
+				<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
+			    </xsl:apply-templates>
+			</li>
+		    </xsl:for-each>
+		</ul>
+	    </xsl:if>
+	    <xsl:if test="dct:description">
+		<p>
+		    <xsl:value-of select="dct:description"/>
+		</p>
+	    </xsl:if>
+	    <p>
+		<a class="btn btn-primary">SPARQL query</a>
+		<xsl:if test="void:exampleResource">
+		    <a class="btn btn-primary" href="?uri={void:exampleResource[1]/@rdf:resource}">Example resource</a>
+		</xsl:if>
+	    </p>
 	</div>
-	
+    </xsl:template>
+
+    <xsl:template match="foaf:depiction/@rdf:resource | foaf:logo/@rdf:resource">
+	<a href="{$base-uri}?uri={encode-for-uri(../../@rdf:nodeID)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}">
+	    <img src="{.}" alt="{g:label(../../@rdf:nodeID, /, $lang)}" />
+	</a>
     </xsl:template>
 	
 </xsl:stylesheet>
