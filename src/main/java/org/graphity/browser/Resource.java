@@ -102,8 +102,6 @@ public class Resource extends LinkedDataResourceImpl
 	    setQuery(qb.build());
 	    log.debug("Query generated with QueryBuilder: {}", getQuery());
 	}
-	//else
-	//    qb = QueryBuilder.fromQuery(super.getQuery()); // default DESCRIBE
 	
 	if (getEndpointURI() == null && resource.hasProperty(Graphity.service))
 	    setEndpointURI(resource.getPropertyResourceValue(Graphity.service).
@@ -111,17 +109,33 @@ public class Resource extends LinkedDataResourceImpl
 		    getProperty("http://www.w3.org/ns/sparql-service-description#endpoint")).getURI());
     }
 
+    @GET
+    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     @Override
     public Model getModel()
     {
+	Model model = null;
+	
 	// local URI
 	if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
 	{
 	    log.debug("Querying local OntModel: {} with Query: {}", getOntModel(), getQuery());
-	    return DataManager.get().loadModel(getOntModel(), getQuery());
+	    model = DataManager.get().loadModel(getOntModel(), getQuery());
 	}
+	else
+	    try
+	    {
+		model = super.getModel();
+	    }
+	    catch (Exception ex)
+	    {
+		log.trace("Could not load Model from URI: {}", getURI(), ex);
+		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+	    }
 	
-	return super.getModel();
+	if (model.isEmpty()) throw new WebApplicationException(Response.Status.NOT_FOUND);
+	
+	return model;
     }
 
     public OntModel getOntModel()
@@ -141,13 +155,12 @@ public class Resource extends LinkedDataResourceImpl
     
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response addModel(Model rdfPost)
+    @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
+    public Response postModel(Model rdfPost)
     {
 	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
 
 	setModel(rdfPost);
-	// we add the RDF submitted with the RDF/POST form in this case
-	// the posted Model could be saved using DataManager.putModel() for example
 	
 	return getResponse();
     }

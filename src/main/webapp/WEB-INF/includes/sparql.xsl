@@ -97,7 +97,7 @@ LIMIT 100</xsl:param>
 	</form>
 
 	<xsl:if test="$query">
-	    <xsl:variable name="result-doc" select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query), if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else (), '&amp;embed=true'), $base-uri))"/>
+	    <xsl:variable name="result-doc" select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query), if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()), $base-uri))"/>
 	    
 	    <!-- result of CONSTRUCT or DESCRIBE -->
 	    <xsl:if test="$result-doc/rdf:RDF">

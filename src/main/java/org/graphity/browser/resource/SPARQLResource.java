@@ -19,6 +19,8 @@ package org.graphity.browser.resource;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.sun.jersey.api.core.HttpRequestContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -39,10 +41,12 @@ public class SPARQLResource extends Resource
     private static final Logger log = LoggerFactory.getLogger(SPARQLResource.class);
     private static final long MAX_LIMIT = 100;
     
+    //private @Context HttpRequestContext request = null;
     private Query query = null;
+    private Model resultModel = null;
     private ResultSet resultSet = null;
     private String accept = null;
-    
+
     public SPARQLResource(@Context UriInfo uriInfo,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") String accept,
@@ -60,29 +64,12 @@ public class SPARQLResource extends Resource
 	{
 	    if (queryString == null || queryString.isEmpty())
 		throw new WebApplicationException(Response.Status.BAD_REQUEST);
-	    
+
 	    query = QueryFactory.create(queryString);
 	    if (query.isUnknownType()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	    log.debug("Submitted SPARQL query: {}", query);
 	    
 	    query.setLimit(MAX_LIMIT);
-
-	    if (query.isConstructType() || query.isDescribeType())
-	    {
-		setQuery(query);
-
-		if (getEndpointURI() != null)
-		    setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
-		else
-		    setModel(DataManager.get().loadModel(getOntModel(), getQuery()));
-	    }
-	    if (query.isSelectType() || query.isAskType())
-	    {
-		if (getEndpointURI() != null)
-		    resultSet = DataManager.get().loadResultSet(getEndpointURI(), query);
-		else
-		    resultSet = DataManager.get().loadResultSet(getOntModel(), query);
-	    }
 	}
 	else
 	    setEndpointURI(null);
@@ -92,9 +79,42 @@ public class SPARQLResource extends Resource
     @Produces({org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML + "; charset=UTF-8", org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON + "; charset=UTF-8"})
     public ResultSet getResultSet()
     {
+	if (resultSet == null && (query.isSelectType() || query.isAskType()))
+	{
+	    if (getEndpointURI() != null)
+		resultSet = DataManager.get().loadResultSet(getEndpointURI(), query);
+	    else
+		resultSet = DataManager.get().loadResultSet(getOntModel(), query);
+	}
+
 	return resultSet;
     }
 
+    public Model getResultModel()
+    {
+	if (resultModel == null && (query.isConstructType() || query.isDescribeType()))
+	{
+	    if (getEndpointURI() != null)
+		//setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
+		resultModel = DataManager.get().loadModel(getEndpointURI(), query);
+	    else
+		//setModel(DataManager.get().loadModel(getOntModel(), getQuery()));
+		resultModel = DataManager.get().loadModel(getOntModel(), query);
+	}
+	    
+	return resultModel;
+    }
+
+    /*
+    @Override
+    public Model getModel()
+    {
+	if (getResultModel() != null) return getResultModel();
+	
+	return super.getModel();
+    }
+    */
+    
     @Override
     public Response getResponse()
     {
