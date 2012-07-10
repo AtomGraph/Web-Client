@@ -70,35 +70,12 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
 	<xsl:value-of select="g:label(., /, $lang)"/>
     </xsl:template>
 
-    <!-- subject -->
-    <xsl:template match="@rdf:about" mode="g:EditMode">
-	<input type="hidden" name="su" id="{generate-id()}" value="{.}"/>
-    </xsl:template>
-	
-    <!-- object -->
-    <xsl:template match="@rdf:resource" mode="g:EditMode">
-	<!--
-	<option value="{.}">
-	    <xsl:value-of select="g:label(., /, $lang)"/>
-	</option>
-	-->
-	<input type="text" name="ou" id="{generate-id(..)}" value="{.}"/>
-    </xsl:template>
-
     <!-- property -->
     <xsl:template match="*[node()[ancestor::rdf:RDF] or @rdf:resource or @rdf:nodeID]">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
 	<a href="{$base-uri}?uri={encode-for-uri($this)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{$this}">
 	    <xsl:value-of select="g:label($this, /, $lang)"/>
 	</a>
-    </xsl:template>
-
-    <xsl:template match="*[node() or @rdf:resource or @rdf:nodeID]" mode="g:EditMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<label for="{generate-id()}">
-	    <xsl:value-of select="g:label($this, /, $lang)"/>
-	</label>
-	<input type="hidden" name="pu" value="{$this}"/>
     </xsl:template>
 
     <!-- object blank node -->
@@ -117,34 +94,18 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;date']" priority="1">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1">
 	<span title="{../@rdf:datatype}">
 	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime']" priority="1">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}">
 	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $lang, (), ())"/>
 	</span>
-    </xsl:template>
-
-    <xsl:template match="text()" mode="g:EditMode">
-	<xsl:choose>
-	    <xsl:when test="string-length(.) &lt; 20">
-		<input type="text" name="ol" id="{generate-id(..)}" value="{.}"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<textarea name="ol" id="{generate-id(..)}" cols="{80}" rows="{string-length(.) div 80}">
-		    <xsl:value-of select="."/>
-		</textarea>
-	    </xsl:otherwise>
-	</xsl:choose>
-	<xsl:if test="../@rdf:datatype">
-	    <input type="hidden" name="lt" value="{../@rdf:datatype}"/>
-	</xsl:if>
     </xsl:template>
 
     <xsl:template match="@rdf:about | @rdf:resource" mode="g:TypeMode">

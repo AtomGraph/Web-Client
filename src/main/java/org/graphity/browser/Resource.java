@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Select;
-import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
  *
@@ -74,8 +73,6 @@ public class Resource extends LinkedDataResourceImpl
 	ontModel = OntDocumentManager.getInstance().
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);
 
-	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
-	
 	resource = ontModel.createResource(getURI());
 	log.debug("Resource: {} with URI: {}", resource, getURI());
 

@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY void "http://rdfs.org/ns/void#">
+    <!ENTITY sd "http://www.w3.org/ns/sparql-service-description#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -38,7 +39,8 @@ xmlns:owl="&owl;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:void="&void;"
-exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void">
+xmlns:sd="&sd;"
+exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void sd">
     
     <xsl:template match="rdf:RDF[$uri = $base-uri]">
 	<div class="span2">
@@ -59,7 +61,11 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void">
     <xsl:template match="*[*][$uri = $base-uri]" mode="g:ListMode" priority="1">
 	<div class="span6 well">
 	    <xsl:if test="foaf:depiction/@rdf:resource or foaf:logo/@rdf:resource">
-		<xsl:apply-templates select="(foaf:depiction/@rdf:resource | foaf:logo/@rdf:resource)[1]"/>
+		<p>
+		    <a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(sd:endpoint/@rdf:resource)}">
+			<img src="{foaf:depiction/@rdf:resource | foaf:logo/@rdf:resource}" alt="{g:label(@rdf:about | @rdf:nodeID, /, $lang)}"/>
+		    </a>
+		</p>
 	    </xsl:if>
 	    <h1>
 		<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
@@ -87,12 +93,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void">
 		</xsl:if>
 	    </p>
 	</div>
-    </xsl:template>
-
-    <xsl:template match="foaf:depiction/@rdf:resource | foaf:logo/@rdf:resource">
-	<a href="{$base-uri}?uri={encode-for-uri(../../@rdf:nodeID)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}">
-	    <img src="{.}" alt="{g:label(../../@rdf:nodeID, /, $lang)}" />
-	</a>
     </xsl:template>
 	
 </xsl:stylesheet>

@@ -44,21 +44,23 @@ public class SPARQLResource extends Resource
     private String accept = null;
     
     public SPARQLResource(@Context UriInfo uriInfo,
-	@QueryParam("uri") String uri,
-	@QueryParam("endpoint-uri") String serviceUri,
+	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") String accept,
 	@QueryParam("limit") @DefaultValue("10") long limit,
 	@QueryParam("offset") @DefaultValue("0") long offset,
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc,
+	@QueryParam("embed") @DefaultValue("false") boolean embed,
 	@QueryParam("query") String queryString)
     {
-	super(uriInfo, uri, serviceUri, accept, limit, offset, orderBy, desc);
+	super(uriInfo, null, endpointUri, accept, limit, offset, orderBy, desc);
 	this.accept = accept;
 
 	if (queryString != null)
 	{
-	    if (queryString.isEmpty()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	    if (queryString == null || queryString.isEmpty())
+		throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	    
 	    query = QueryFactory.create(queryString);
 	    if (query.isUnknownType()) throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	    log.debug("Submitted SPARQL query: {}", query);
@@ -82,6 +84,8 @@ public class SPARQLResource extends Resource
 		    resultSet = DataManager.get().loadResultSet(getOntModel(), query);
 	    }
 	}
+	else
+	    setEndpointURI(null);
     }
 
     @GET
@@ -106,5 +110,5 @@ public class SPARQLResource extends Resource
 
 	return super.getResponse();
     }
-    
+
 }

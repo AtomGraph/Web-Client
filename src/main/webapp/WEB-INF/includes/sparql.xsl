@@ -79,7 +79,7 @@ LIMIT 100</xsl:param>
 		    </label>
 		    <input type="text" name="endpoint-uri" id="endpoint-uri" value="{$endpoint-uri}" class="input-xlarge"/>
 		</div>
-		<textarea id="query-string" name="query" class="span12" rows="10">
+		<textarea id="query-string" name="query" class="span12" rows="15">
 		    <xsl:choose>
 			<xsl:when test="$query">
 			    <xsl:value-of select="$query"/>
@@ -97,7 +97,7 @@ LIMIT 100</xsl:param>
 	</form>
 
 	<xsl:if test="$query">
-	    <xsl:variable name="result-doc" select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query)), $base-uri))"/>
+	    <xsl:variable name="result-doc" select="document(resolve-uri(concat('sparql?query=', encode-for-uri($query), if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else (), '&amp;embed=true'), $base-uri))"/>
 	    
 	    <!-- result of CONSTRUCT or DESCRIBE -->
 	    <xsl:if test="$result-doc/rdf:RDF">

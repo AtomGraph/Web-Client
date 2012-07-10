@@ -40,6 +40,7 @@ import org.graphity.util.locator.grddl.LocatorAtom;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
  *
@@ -71,7 +72,9 @@ public class Application extends javax.ws.rs.core.Application
 	
 	OntDocumentManager.getInstance().setFileManager(DataManager.get());
 	log.debug("OntDocumentManager.getInstance(): {} OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance(), OntDocumentManager.getInstance().getFileManager());
-	
+
+	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
+
 	try
 	{
 	    DataManager.get().addLocator(new LocatorAtom(getStylesheet("org/graphity/util/locator/grddl/atom-grddl.xsl")));

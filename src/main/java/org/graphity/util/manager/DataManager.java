@@ -26,6 +26,7 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,6 +34,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.Map.Entry;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -115,7 +118,7 @@ public class DataManager extends FileManager implements URIResolver
 	
         if (hasCachedModel(filenameOrURI)) return getFromCache(filenameOrURI) ;  
 
-	Model m = null;
+	Model m;
 	if (isSPARQLService(filenameOrURI))
 	{
 	    SPARQLService service = findSPARQLService(filenameOrURI);
@@ -173,7 +176,7 @@ public class DataManager extends FileManager implements URIResolver
 	if (service.getApiKey() != null)
 	{
 	    log.debug("Authentication with API key: {}", service.getApiKey());
-	    ((QueryEngineHTTP) request).addParam("apikey", service.getApiKey());
+	    request.addParam("apikey", service.getApiKey());
 	}
 	
 	if (query.isConstructType()) return request.execConstruct();
@@ -251,7 +254,7 @@ public class DataManager extends FileManager implements URIResolver
 	{
 	    log.debug("URI {} is mapped to {}, letting FileManager.readModel() handle it", filenameOrURI, mappedURI);
 
-	    String baseURI = null;
+	    String baseURI;
 	    if (getLocationMapper() instanceof PrefixMapper)
 		baseURI = ((PrefixMapper)getLocationMapper()).getPrefix(filenameOrURI);
 	    else
@@ -320,26 +323,7 @@ public class DataManager extends FileManager implements URIResolver
         return LANGS.get(mimeType.toLowerCase()) ;
     }
 
-    public ResultSet loadResultSet(String filenameOrURI)
-    {
-	if (isSPARQLService(filenameOrURI))
-	    return loadResultSet(findSPARQLService(filenameOrURI), parseQuery(filenameOrURI));
-	else
-	{
-	    Query query = parseQuery(filenameOrURI);
-	    if (!(query.isSelectType()))
-		throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
-
-	    String endpointURI = UriBuilder.fromUri(filenameOrURI).
-		replaceQuery(null).
-		build().toString();
-	    
-	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
-	    return request.execSelect();
-	}
-    }
-
-    public ResultSet loadResultSet(String endpointURI, Query query)
+    public ResultSet loadResultSet(String endpointURI, Query query, MultivaluedMap<String, String> params)
     {
 	if (isSPARQLService(endpointURI))
 	    return loadResultSet(findSPARQLService(endpointURI), query);
@@ -348,12 +332,24 @@ public class DataManager extends FileManager implements URIResolver
 	    log.debug("Remote service {} Query execution: {} ", endpointURI, query);
 
 	    if (!query.isSelectType())
-		throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
+		throw new QueryExecException("Query to load ResultSet must be SELECT or ASK"); // return null
 
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
-
+	    if (params != null)
+		for (Entry<String, List<String>> entry : params.entrySet())
+		    if (!entry.getKey().equals("query")) // query param is handled separately
+			for (String value : entry.getValue())
+			{
+			    log.trace("Adding param to SPARQL request with name: {} and value: {}", entry.getKey(), value);
+			    request.addParam(entry.getKey(), value);
+			}
 	    return request.execSelect();
-	}
+	}	
+    }
+    
+    public ResultSet loadResultSet(String endpointURI, Query query)
+    {
+	return loadResultSet(endpointURI, query, null);
     }
 
     public ResultSet loadResultSet(SPARQLService service, Query query)
@@ -361,7 +357,7 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Remote service {} Query execution: {} ", service.getURI(), query);
 
 	if (!query.isSelectType())
-	    throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
+	    throw new QueryExecException("Query to load ResultSet must be SELECT or ASK"); // return null
 	
 	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
 	if (service.getUser() != null && service.getPassword() != null)
@@ -372,7 +368,7 @@ public class DataManager extends FileManager implements URIResolver
 	if (service.getApiKey() != null)
 	{
 	    log.debug("Authentication with API key param: {}", service.getApiKey());
-	    ((QueryEngineHTTP) request).addParam("apikey", service.getApiKey());
+	    request.addParam("apikey", service.getApiKey());
 	}
 
 	return request.execSelect();
@@ -383,11 +379,41 @@ public class DataManager extends FileManager implements URIResolver
 	log.debug("Local Model Query: {}", query);
 
 	if (!query.isSelectType())
-	    throw new QueryExecException("Query to load Model must be SELECT or ASK"); // return null
+	    throw new QueryExecException("Query to load ResultSet must be SELECT or ASK"); // return null
 	
 	QueryExecution qex = QueryExecutionFactory.create(query, model);
 	
 	return qex.execSelect();
+    }
+
+    // uses graph store protocol - expects /sparql service!
+    public void putModel(String endpointURI, String graphURI, Model model)
+    {
+	log.debug("PUTting Model to service {} with GRAPH URI {}", endpointURI, graphURI);
+	
+	DatasetGraphAccessorHTTP http;
+		
+	if (isSPARQLService(endpointURI)) // service registered with credentials
+	{
+	    SPARQLService service = findSPARQLService(endpointURI);
+	    endpointURI = endpointURI.replace("/sparql", "/service"); // TO-DO: better to avoid this and make generic
+	    log.debug("URI {} is a SPARQL service, sending PUT with credentials: {}", endpointURI, service.getUser());
+	    http = new DatasetGraphAccessorHTTP(endpointURI, service.getUser(), service.getPassword());
+	}
+	else // no credentials
+	{
+	    endpointURI.replace("/sparql", "/service");
+	    log.debug("URI {} is *not* a SPARQL service, sending PUT without credentials", endpointURI);
+	    http = new DatasetGraphAccessorHTTP(endpointURI);
+	}
+	
+	DatasetAccessor accessor = new DatasetAdapter(http);
+	accessor.putModel(graphURI, model);
+    }
+
+    public void putModel(String endpointURI, Model model)
+    {
+	
     }
 
     @Override
@@ -415,10 +441,17 @@ public class DataManager extends FileManager implements URIResolver
 		try
 		{
 		    Query query = parseQuery(uri);
-		    if (query != null && (query.isSelectType() || query.isAskType()))
+		    if (query != null)
 		    {
-			log.debug("Loading ResultSet for URI: {}", uri);
-			return getSource(loadResultSet(uri));
+			if (query.isSelectType() || query.isAskType())
+			{
+			    log.debug("Loading ResultSet for URI: {}", uri);
+			    return getSource(loadResultSet(UriBuilder.fromUri(uri).
+				    replaceQuery(null).
+				    build().toString(),
+				query, parseParamMap(uri)));
+			}
+			// TO-DO: CONSTRUCT/DESCRIBE case
 		    }
 
 		    log.debug("Loading Model for URI: {}", uri);
@@ -486,65 +519,56 @@ public class DataManager extends FileManager implements URIResolver
 	this.resolvingUncached = resolvingUncached;
     }
 
-    public Query parseQuery(String uri)
+    public static MultivaluedMap<String, String> parseParamMap(String uri)
     {
-	//String queryString = UriBuilder.fromUri(uri).build().getQuery();
-	String queryString = uri.substring(uri.indexOf("?") + 1); // TO-DO: query might be missing
-
-	if (queryString != null)
+	if (uri.indexOf("?") > 0)
 	{
-	    String[] params = queryString.split("&");
-	    for (String param : params)
-	    {
-		String[] array = param.split("=");
-		if (array[0].equals("query"))
-		{
-		    try
-		    {
-			String sparqlString = URLDecoder.decode(array[1], "UTF-8");
-			log.debug("Query string: {} from URI: {}", sparqlString, uri);
-
-			return QueryFactory.create(sparqlString);
-		    } catch (UnsupportedEncodingException ex)
-		    {
-			log.warn("UTF-8 encoding unsupported", ex);
-		    }
-
-		}
-	    }
+	    String queryString = uri.substring(uri.indexOf("?") + 1);
+	    return getParamMap(queryString);
 	}
 	
 	return null;
     }
+    
+    public static MultivaluedMap<String, String> getParamMap(String query)  
+    {  
+	String[] params = query.split("&");
+	MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+	
+	for (String param : params)  
+	{
+	    try
+	    {
+		String name = URLDecoder.decode(param.split("=")[0], "UTF-8");
+		String value = URLDecoder.decode(param.split("=")[1], "UTF-8");
+		map.add(name, value);
+	    }
+	    catch (UnsupportedEncodingException ex)
+	    {
+		log.warn("Could not URL-decode query string component", ex);
+	    }
+	}
 
-    // uses graph store protocol - expects /sparql service!
-    public void putModel(String endpointURI, String graphURI, Model model)
-    {
-	log.debug("PUTting Model to service {} with GRAPH URI {}", endpointURI, graphURI);
-	
-	DatasetGraphAccessorHTTP http = null;
-		
-	if (isSPARQLService(endpointURI)) // service registered with credentials
-	{
-	    SPARQLService service = findSPARQLService(endpointURI);
-	    endpointURI = endpointURI.replace("/sparql", "/service"); // TO-DO: better to avoid this and make generic
-	    log.debug("URI {} is a SPARQL service, sending PUT with credentials: {}", endpointURI, service.getUser());
-	    http = new DatasetGraphAccessorHTTP(endpointURI, service.getUser(), service.getPassword());
-	}
-	else // no credentials
-	{
-	    endpointURI.replace("/sparql", "/service");
-	    log.debug("URI {} is *not* a SPARQL service, sending PUT without credentials", endpointURI);
-	    http = new DatasetGraphAccessorHTTP(endpointURI);
-	}
-	
-	DatasetAccessor accessor = new DatasetAdapter(http);
-	accessor.putModel(graphURI, model);
+	return map;
     }
 
-    public void putModel(String endpointURI, Model model)
+    public static Query parseQuery(String uri)
     {
+	if (uri.indexOf("?") > 0)
+	{
+	    //String queryString = UriBuilder.fromUri(uri).build().getQuery();
+	    String queryString = uri.substring(uri.indexOf("?") + 1);
+	    MultivaluedMap<String, String> paramMap = getParamMap(queryString);
+	    if (paramMap.containsKey("query"))
+	    {
+		String sparqlString = paramMap.getFirst("query");
+		log.debug("Query string: {} from URI: {}", sparqlString, uri);
+
+		return QueryFactory.create(sparqlString);
+	    }
+	}
 	
+	return null;
     }
 
 }
