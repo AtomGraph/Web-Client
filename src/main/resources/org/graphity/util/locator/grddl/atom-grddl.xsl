@@ -27,8 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
     <!ENTITY dbpedia "http://dbpedia.org/resource/">
     <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
-    <!ENTITY time "http://www.w3.org/2006/time#">
-    <!ENTITY tzont "http://www.w3.org/2006/timezone#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
@@ -44,8 +42,6 @@ xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:dbpedia="&dbpedia;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
-xmlns:time="&time;"
-xmlns:tzont="&tzont;"
 >
 
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
@@ -58,9 +54,6 @@ xmlns:tzont="&tzont;"
     
     <xsl:template match="/">
 	<rdf:RDF>
-<xsl:message>   
-    <xsl:copy-of select="."/>
-</xsl:message>
 	    <xsl:apply-templates/>
 	</rdf:RDF>
     </xsl:template>
@@ -105,10 +98,32 @@ xmlns:tzont="&tzont;"
 	</dct:description>
     </xsl:template>
 
+    <xsl:template match="atom:author">
+	<sioc:has_creator>
+	    <sioc:UserAccount rdf:about="{atom:uri}">
+		<xsl:apply-templates/>
+	    </sioc:UserAccount>
+	</sioc:has_creator>
+    </xsl:template>
+
+    <xsl:template match="atom:name">
+	<sioc:name>
+	    <xsl:value-of select="."/>
+	</sioc:name>
+    </xsl:template>
+
+    <xsl:template match="atom:category">
+	<dct:subject rdf:resource="&dbpedia;{encode-for-uri(@term)}"/>
+    </xsl:template>
+	
     <xsl:template match="atom:logo">
 	<foaf:logo rdf:resource="{.}"/>
     </xsl:template>
 
+    <xsl:template match="atom:link[@rel = 'alternate']">
+	<dct:hasFormat rdf:resource="{@href}"/>
+    </xsl:template>
+	
     <!-- ignore other elements, otherwise they will produce unwanted text nodes -->
     <xsl:template match="*"/>
 
