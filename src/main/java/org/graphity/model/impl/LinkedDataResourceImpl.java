@@ -39,7 +39,7 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     
     public LinkedDataResourceImpl(String uri, String endpointUri)
     {
-	setURI(uri);
+	this.uri = uri;
 	if (endpointUri != null && endpointUri.isEmpty()) endpointUri = null;
 	setEndpointURI(endpointUri);
 	log.debug("URI: {} Endpoint URI: {}", getURI(), getEndpointURI());
@@ -75,11 +75,6 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
 	return model;
     }
 
-    protected final void setModel(Model model)
-    {
-	this.model = model;
-    }
-
     @Override
     public final Query getQuery()
     {
@@ -95,11 +90,6 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     public final String getURI()
     {
 	return uri;
-    }
-
-    protected final void setURI(String uri)
-    {
-	this.uri = uri;
     }
     
     @Override

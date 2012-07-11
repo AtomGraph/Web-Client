@@ -45,6 +45,7 @@ import org.topbraid.spin.model.Select;
 public class Resource extends LinkedDataResourceImpl
 {
     private UriInfo uriInfo = null;
+    private Model model = null;
     private OntModel ontModel = null;
     private QueryBuilder qb = null;
     private com.hp.hpl.jena.rdf.model.Resource resource, spinRes = null;
@@ -114,28 +115,38 @@ public class Resource extends LinkedDataResourceImpl
     @Override
     public Model getModel()
     {
-	Model model = null;
-	
-	// local URI
-	if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
+	if (model == null)
 	{
-	    log.debug("Querying local OntModel: {} with Query: {}", getOntModel(), getQuery());
-	    model = DataManager.get().loadModel(getOntModel(), getQuery());
+	    // local URI
+	    if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
+	    {
+		log.debug("Querying local OntModel: {} with Query: {}", getOntModel(), getQuery());
+		model = DataManager.get().loadModel(getOntModel(), getQuery());
+	    }
+	    else
+		try
+		{
+		    model = super.getModel(); // load from remote resource
+		}
+		catch (Exception ex)
+		{
+		    log.trace("Error while loading Model from URI: {}", getURI(), ex);
+		    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+		}
+
+	    if (model.isEmpty())
+	    {
+		log.trace("Loaded Model is empty");
+		throw new WebApplicationException(Response.Status.NOT_FOUND);
+	    }
 	}
-	else
-	    try
-	    {
-		model = super.getModel();
-	    }
-	    catch (Exception ex)
-	    {
-		log.trace("Could not load Model from URI: {}", getURI(), ex);
-		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
-	    }
-	
-	if (model.isEmpty()) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	
 	return model;
+    }
+
+    protected final void setModel(Model model)
+    {
+	this.model = model;
     }
 
     public OntModel getOntModel()
