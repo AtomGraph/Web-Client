@@ -78,9 +78,9 @@ _:dataset a void:Dataset ;
     dct:title "SPARQL endpoint" ;
     rdfs:isDefinedBy : .
 
-<rdf-post> a rdf:Resource ;
+<post> a rdf:Resource ;
     sioc:has_host <> ;
-    dct:title "RDF/POST form" ;
+    dct:title "New post" ;
     dct:description "An example of a form with RDF/POST encoding, which can be used for a complete read/write RDF roundtrip" ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .

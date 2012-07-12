@@ -67,7 +67,7 @@ LIMIT 100</xsl:param>
 		</div>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:next-match/>
+		<xsl:apply-templates select="." mode="Header"/>
 	    </xsl:otherwise>
 	</xsl:choose>
 	

@@ -22,7 +22,7 @@
     dct:modified "2012-02-09T20:54:00+01:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "http://graphity.org/ontology/" ;
     vann:preferredNamespacePrefix "g";
-    rdfs:seeAlso <http://graphity.org> ;
+    foaf:homepage <http://graphity.org> ;
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
     dc:creator <http://semantic-web.dk#martynas> .
 <http://semantic-web.dk#martynas> a foaf:Person ;
@@ -64,6 +64,8 @@ gfb-app:type rdfs:label "Facebook application" ;
 
 :ListMode a :XSLTMode ;
     dct:title "List" .
+:EditMode a :XSLTMode ;
+    dct:title "Edit" .
 :TableMode a :XSLTMode ;
     dct:title "Table" .
 :ImageMode a :XSLTMode ;

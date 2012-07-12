@@ -42,6 +42,7 @@ xmlns:void="&void;"
 xmlns:sd="&sd;"
 exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void sd">
     
+    <!-- overrides default rendering -->
     <xsl:template match="rdf:RDF[$uri = $base-uri]">
 	<div class="span2">
 	</div>

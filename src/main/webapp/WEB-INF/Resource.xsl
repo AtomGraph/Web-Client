@@ -68,7 +68,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 
     <xsl:include href="includes/sparql.xsl"/>
     <xsl:include href="includes/frontpage.xsl"/>
-    <xsl:include href="includes/rdf-post.xsl"/>
+    <xsl:include href="includes/post.xsl"/>
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
@@ -140,7 +140,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	    <body>
 		<div class="navbar navbar-fixed-top">
 		    <div class="navbar-inner">
-			<div class="container-fluid">	    
+			<div class="container-fluid">    
 			    <a class="brand" href="/">
 				<xsl:value-of select="g:label($base-uri, /, $lang)"/>
 			    </a>
@@ -162,16 +162,14 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 					</xsl:if>
 				    </div>
 				</form>
-			    
+				
 				<ul class="nav">
-				    <!-- make menu links for all resources in the ontology, except base URI -->
-				    <xsl:for-each select="key('resources-by-host', $base-uri, $ont-model)/@rdf:about[not(. = $base-uri)]">
-					<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
+				    <xsl:for-each select="key('resources', resolve-uri('sparql', $base-uri), $ont-model)">
 					<li>
-					    <xsl:if test=". = $uri">
+					    <xsl:if test="@rdf:about = $uri">
 						<xsl:attribute name="class">active</xsl:attribute>
 					    </xsl:if>
-					    <xsl:apply-templates select="."/>
+					    <xsl:apply-templates select="@rdf:about"/>
 					</li>
 				    </xsl:for-each>
 				</ul>
@@ -181,13 +179,23 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		</div>
 
 		<div class="container-fluid">
-<!--
-<xsl:copy-of select="."/><br/>
-$query-uri: <xsl:value-of select="$query-uri"/><br/>
-$query-model: <xsl:copy-of select="$query-model"/><br/>
-$select-query: <xsl:copy-of select="$select-query"/><br/>
-$query: <xsl:value-of select="$query"/>
--->
+		    <div class="nav-collapse">
+			<ul class="nav nav-pills">
+			    <!-- make menu links for all resources in the ontology, except base URI -->
+			    <xsl:for-each select="key('resources-by-host', $base-uri, $ont-model)/@rdf:about[not(. = $base-uri)][not(. = resolve-uri('sparql', $base-uri))]">
+				<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
+				<li>
+				    <xsl:if test=". = $uri">
+					<xsl:attribute name="class">active</xsl:attribute>
+				    </xsl:if>
+				    <xsl:apply-templates select="."/>
+				</li>
+			    </xsl:for-each>
+			</ul>
+		    </div>
+		</div>
+
+		<div class="container-fluid">
 		    <div class="row-fluid">
 			<xsl:variable name="grouped-rdf">
 			    <xsl:apply-templates mode="g:GroupTriples"/>
@@ -227,102 +235,32 @@ $query: <xsl:value-of select="$query"/>
     </xsl:template>
 
     <!-- matches if the RDF/XML document includes resource description where @rdf:about = $uri -->
-    <xsl:template match="rdf:RDF[key('resources', $uri)]">
+    <xsl:template match="rdf:RDF[key('resources', $uri) or count(*) = 1]">
 	<div class="span8">
 	    <!-- the main resource, which matches the request URI -->
-	    <xsl:apply-templates select="key('resources', $uri)"/>
+	    <xsl:choose>
+		<xsl:when test="key('resources', $uri)">
+		    <xsl:apply-templates select="key('resources', $uri)"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:apply-templates/>
+		</xsl:otherwise>
+	    </xsl:choose>
 	    
 	    <!-- secondary resources (except the main one and blank nodes) that came with the response -->
 	    <!-- <xsl:apply-templates select="*[@rdf:about] except key('resources', $uri)" mode="g:ListMode"/> -->
 	</div>
 
 	<div class="span4">
-	    <xsl:apply-templates select="key('resources', $uri)" mode="SidebarNav"/>
+	    <xsl:apply-templates mode="SidebarNav"/>
 	</div>
     </xsl:template>
 
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<div>
-	    <xsl:if test="@rdf:about or foaf:depiction/@rdf:resource or foaf:logo/@rdf:resource or rdf:type/@rdf:resource or rdfs:comment[lang($lang) or not(@xml:lang)] or dc:description[lang($lang) or not(@xml:lang)] or dct:description[lang($lang) or not(@xml:lang)] or dbpedia-owl:abstract[lang($lang) or not(@xml:lang)]">
-		<div class="well well-large">
-		    <xsl:if test="self::foaf:Image or rdf:type/@rdf:resource = '&foaf;Image' or foaf:img/@rdf:resource or foaf:depiction/@rdf:resource or foaf:logo/@rdf:resource">
-			<p style="margin: auto;">
-			    <xsl:choose>
-				<xsl:when test="self::foaf:Image or rdf:type/@rdf:resource = '&foaf;Image'">
-				    <xsl:apply-templates select="@rdf:about"/>
-				</xsl:when>
-				<xsl:when test="foaf:img/@rdf:resource">
-				    <xsl:apply-templates select="foaf:img[1]/@rdf:resource"/>
-				</xsl:when>
-				<xsl:when test="foaf:depiction/@rdf:resource">
-				    <xsl:apply-templates select="foaf:depiction[1]/@rdf:resource"/>
-				</xsl:when>
-				<xsl:when test="foaf:logo/@rdf:resource">
-				    <xsl:apply-templates select="foaf:logo[1]/@rdf:resource"/>
-				</xsl:when>
-			    </xsl:choose>
-			</p>
-		    </xsl:if>
-
-		    <xsl:if test="@rdf:about">
-			<div class="btn-group pull-right">
-			    <xsl:choose>
-				<xsl:when test="@rdf:about != $absolute-path">
-				    <a href="{@rdf:about}" class="btn">Source</a>
-				    <a href="?uri={encode-for-uri(@rdf:about)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-				    <a href="?uri={encode-for-uri(@rdf:about)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-				</xsl:when>
-				<xsl:otherwise>
-				    <a href="{@rdf:about}?accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-				    <a href="{@rdf:about}?accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-				</xsl:otherwise>
-			    </xsl:choose>
-			</div>
-		    </xsl:if>
-
-		    <xsl:if test="@rdf:about">
-			<h1 class="page-header">
-			    <xsl:apply-templates select="@rdf:about"/>
-			</h1>
-		    </xsl:if>
-		    <xsl:if test="@rdf:nodeID">
-			<h2>
-			    <xsl:apply-templates select="@rdf:nodeID"/>
-			</h2>
-		    </xsl:if>
-
-		    <xsl:if test="rdfs:comment[lang($lang) or not(@xml:lang)] or dc:description[lang($lang) or not(@xml:lang)] or dct:description[lang($lang) or not(@xml:lang)] or dbpedia-owl:abstract[lang($lang) or not(@xml:lang)]">
-			<p>
-			    <xsl:if test="rdfs:comment[lang($lang) or not(@xml:lang)]">
-				<xsl:value-of select="rdfs:comment[lang($lang) or not(@xml:lang)][1]"/>
-			    </xsl:if>
-			    <xsl:if test="dc:description[lang($lang) or not(@xml:lang)]">
-				<xsl:value-of select="dc:description[lang($lang) or not(@xml:lang)][1]"/>
-			    </xsl:if>
-			    <xsl:if test="dct:description[lang($lang) or not(@xml:lang)]">
-				<xsl:value-of select="dct:description[lang($lang) or not(@xml:lang)][1]"/>
-			    </xsl:if>
-			    <xsl:if test="dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1]">
-				<xsl:value-of select="dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1]"/>
-			    </xsl:if>
-			</p>
-		    </xsl:if>
-
-		    <xsl:if test="rdf:type/@rdf:resource">
-			<ul class="inline">
-			    <xsl:for-each select="rdf:type/@rdf:resource">
-				<li>
-				    <xsl:apply-templates select=".">
-					<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
-				    </xsl:apply-templates>
-				</li>
-			    </xsl:for-each>
-			</ul>
-		    </xsl:if>
-		</div>
-	    </xsl:if>
-
+	    <xsl:apply-templates select="." mode="Header"/>
+	    
 	    <div class="row-fluid">
 		<xsl:variable name="no-domain-properties" select="*[not(self::rdf:type)][not(self::foaf:img)][not(self::foaf:depiction)][not(self::foaf:logo)][not(self::owl:sameAs)][not(self::rdfs:comment)][not(self::rdfs:seeAlso)][not(self::dc:title)][not(self::dct:title)][not(self::dc:description)][not(self::dct:description)][not(self::dct:subject)][not(self::dbpedia-owl:abstract)][not(self::sioc:content)][not(rdfs:domain(xs:anyURI(concat(namespace-uri(.), local-name(.)))) = current()/rdf:type/@rdf:resource)][not(@xml:lang) or lang($lang)]"/>
 		<xsl:variable name="domain-types" select="rdf:type/@rdf:resource[../../*/xs:anyURI(concat(namespace-uri(.), local-name(.))) = g:inDomainOf(.)]"/>
@@ -446,6 +384,91 @@ $query: <xsl:value-of select="$query"/>
 	</xsl:for-each>
     </xsl:template>
 
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="Header">
+	<!-- <xsl:if test="@rdf:about or foaf:depiction/@rdf:resource or foaf:logo/@rdf:resource or rdf:type/@rdf:resource or rdfs:comment[lang($lang) or not(@xml:lang)] or dc:description[lang($lang) or not(@xml:lang)] or dct:description[lang($lang) or not(@xml:lang)] or dbpedia-owl:abstract[lang($lang) or not(@xml:lang)]"> -->
+	<div class="well well-large">
+	    <xsl:if test="self::foaf:Image or rdf:type/@rdf:resource = '&foaf;Image' or foaf:img/@rdf:resource or foaf:depiction/@rdf:resource or foaf:logo/@rdf:resource">
+		<p style="margin: auto;">
+		    <xsl:choose>
+			<xsl:when test="self::foaf:Image or rdf:type/@rdf:resource = '&foaf;Image'">
+			    <xsl:apply-templates select="@rdf:about"/>
+			</xsl:when>
+			<xsl:when test="foaf:img/@rdf:resource">
+			    <xsl:apply-templates select="foaf:img[1]/@rdf:resource"/>
+			</xsl:when>
+			<xsl:when test="foaf:depiction/@rdf:resource">
+			    <xsl:apply-templates select="foaf:depiction[1]/@rdf:resource"/>
+			</xsl:when>
+			<xsl:when test="foaf:logo/@rdf:resource">
+			    <xsl:apply-templates select="foaf:logo[1]/@rdf:resource"/>
+			</xsl:when>
+		    </xsl:choose>
+		</p>
+	    </xsl:if>
+
+	    <xsl:if test="@rdf:about">
+		<div class="btn-group pull-right">
+		    <xsl:choose>
+			<xsl:when test="@rdf:about != $absolute-path">
+			    <a href="{@rdf:about}" class="btn">Source</a>
+			    <a href="?uri={encode-for-uri(@rdf:about)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+			    <a href="?uri={encode-for-uri(@rdf:about)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+			</xsl:when>
+			<xsl:otherwise>
+			    <a href="{@rdf:about}?accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+			    <a href="{@rdf:about}?accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+			</xsl:otherwise>
+		    </xsl:choose>
+		</div>
+	    </xsl:if>
+
+	    <xsl:if test="@rdf:about">
+		<h1 class="page-header">
+		    <xsl:apply-templates select="@rdf:about"/>
+		</h1>
+	    </xsl:if>
+	    <xsl:if test="@rdf:nodeID">
+		<h2>
+		    <xsl:apply-templates select="@rdf:nodeID"/>
+		</h2>
+	    </xsl:if>
+
+	    <xsl:if test="rdfs:comment[lang($lang) or not(@xml:lang)] or dc:description[lang($lang) or not(@xml:lang)] or dct:description[lang($lang) or not(@xml:lang)] or dbpedia-owl:abstract[lang($lang) or not(@xml:lang)] or sioc:content[lang($lang) or not(@xml:lang)]">
+		<p>
+		    <xsl:choose>
+			<xsl:when test="rdfs:comment[lang($lang) or not(@xml:lang)]">
+			    <xsl:value-of select="rdfs:comment[lang($lang) or not(@xml:lang)][1]"/>
+			</xsl:when>
+			<xsl:when test="dc:description[lang($lang) or not(@xml:lang)]">
+			    <xsl:value-of select="dc:description[lang($lang) or not(@xml:lang)][1]"/>
+			</xsl:when>
+			<xsl:when test="dct:description[lang($lang) or not(@xml:lang)]">
+			    <xsl:value-of select="dct:description[lang($lang) or not(@xml:lang)][1]"/>
+			</xsl:when>
+			<xsl:when test="dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1]">
+			    <xsl:value-of select="dbpedia-owl:abstract[lang($lang) or not(@xml:lang)][1]"/>
+			</xsl:when>
+			<xsl:when test="sioc:content[lang($lang) or not(@xml:lang)]">
+			    <xsl:value-of select="substring(sioc:content[lang($lang) or not(@xml:lang)][1], 1, 300)"/>
+			</xsl:when>
+		    </xsl:choose>
+		</p>
+	    </xsl:if>
+
+	    <xsl:if test="rdf:type/@rdf:resource">
+		<ul class="inline">
+		    <xsl:for-each select="rdf:type/@rdf:resource">
+			<li>
+			    <xsl:apply-templates select=".">
+				<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
+			    </xsl:apply-templates>
+			</li>
+		    </xsl:for-each>
+		</ul>
+	    </xsl:if>
+	</div>
+    </xsl:template>
+	
     <!-- ADDITIONAL MODES -->
     
     <xsl:template match="*[@rdf:about]" mode="SidebarNav">
