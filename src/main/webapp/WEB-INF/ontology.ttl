@@ -110,7 +110,7 @@ _:DBPedia a void:Dataset, sd:Service ;
     foaf:logo <http://wiki.dbpedia.org/images/dbpedia_logo.png> ;
     void:sparqlEndpoint <http://dbpedia.org/sparql> ;
     sd:endpoint <http://dbpedia.org/sparql> ;
-    void:exampleResource <http://dbpedia.org/resource/Berlin> ,
+    void:exampleResource <http://dbpedia.org/resource/Copenhagen> ,
 	<http://dbpedia.org/resource/Physics> ,
 	<http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
     sd:supportedLanguage sd:SPARQL11Query ;
@@ -121,7 +121,7 @@ _:OpenEI a void:Dataset, sd:Service ;
     dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
     void:sparqlEndpoint <http://en.openei.org/sparql> ;
     sd:endpoint <http://en.openei.org/sparql> ;
-    void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
+    void:exampleResource <http://en.openei.org/lod/resource/wiki/Denmark> ;
     void:triples "17231136"^^xsd:integer .
 
 _:LinkedGeoData a void:Dataset, sd:Service ;
@@ -132,7 +132,7 @@ _:LinkedGeoData a void:Dataset, sd:Service ;
     foaf:logo <http://linkedgeodata.org/files/lgdlogo.png> ;
     void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
     sd:endpoint <http://linkedgeodata.org/sparql> ;
-    void:exampleResource <http://linkedgeodata.org/triplify/node264695865> .
+    void:exampleResource <http://linkedgeodata.org/triplify/node586436651> .
 
 _:LinkedLifeData a void:Dataset, sd:Service ;
     dct:title "LinkedLifeData" ;

@@ -45,21 +45,25 @@ public class SPARQLResource extends Resource
     private Query query = null;
     private Model resultModel = null;
     private ResultSet resultSet = null;
-    private String accept = null;
+    private String accept, endpointUri = null;
 
     public SPARQLResource(@Context UriInfo uriInfo,
 	@QueryParam("endpoint-uri") String endpointUri,
-	@QueryParam("accept") String accept,
+	//@QueryParam("accept") String accept,
 	@QueryParam("limit") @DefaultValue("10") long limit,
 	@QueryParam("offset") @DefaultValue("0") long offset,
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc,
-	@QueryParam("embed") @DefaultValue("false") boolean embed,
-	@QueryParam("query") String queryString)
+	@QueryParam("query") Query query
+	    )
     {
-	super(uriInfo, null, endpointUri, accept, limit, offset, orderBy, desc);
-	this.accept = accept;
-
+	super(uriInfo, null, null, limit, offset, orderBy, desc);
+	//this.accept = accept;
+	this.query = query;
+	this.query.setLimit(MAX_LIMIT);
+	this.endpointUri = endpointUri;
+	
+	/*
 	if (queryString != null)
 	{
 	    if (queryString == null || queryString.isEmpty())
@@ -71,32 +75,36 @@ public class SPARQLResource extends Resource
 	    
 	    query.setLimit(MAX_LIMIT);
 	}
-	else
-	    setEndpointURI(null);
+	*/ 
     }
 
     @GET
     @Produces({org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML + "; charset=UTF-8", org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON + "; charset=UTF-8"})
     public ResultSet getResultSet()
     {
-	if (resultSet == null && (query.isSelectType() || query.isAskType()))
+	log.debug("Submitted SPARQL query: {}", query);
+	if (query != null && (query.isSelectType() || query.isAskType()))
 	{
-	    if (getEndpointURI() != null)
-		resultSet = DataManager.get().loadResultSet(getEndpointURI(), query);
+	    if (endpointUri != null)
+		return DataManager.get().loadResultSet(endpointUri, query);
 	    else
-		resultSet = DataManager.get().loadResultSet(getOntModel(), query);
+		return DataManager.get().loadResultSet(getOntModel(), query);
 	}
 
 	return resultSet;
     }
 
-    public Model getResultModel()
+    //@GET
+    //@Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
+    //public Model getResultModel(@QueryParam("query") String queryString)
+    @Override
+    public Model getXXX()
     {
-	if (resultModel == null && (query.isConstructType() || query.isDescribeType()))
+	if (query != null && (query.isConstructType() || query.isDescribeType()))
 	{
-	    if (getEndpointURI() != null)
+	    if (endpointUri != null)
 		//setModel(DataManager.get().loadModel(getEndpointURI(), getQuery()));
-		resultModel = DataManager.get().loadModel(getEndpointURI(), query);
+		resultModel = DataManager.get().loadModel(endpointUri, query);
 	    else
 		//setModel(DataManager.get().loadModel(getOntModel(), getQuery()));
 		resultModel = DataManager.get().loadModel(getOntModel(), query);
@@ -109,15 +117,19 @@ public class SPARQLResource extends Resource
     @Override
     public Model getModel()
     {
-	if (getResultModel() != null) return getResultModel();
+	//if (getResultModel() != null) return getResultModel();
 	
 	return super.getModel();
     }
     */
     
     @Override
+    //public Response getResponse(@QueryParam("accept") String accept)
     public Response getResponse()
     {
+	//setModel(super.getModel());
+
+	/*
 	if (accept != null && getResultSet() != null)
 	{
 	    log.debug("Accept param: {}, writing SPARQL XML results (JSON or Turtle)", accept);
@@ -127,7 +139,9 @@ public class SPARQLResource extends Resource
 	    if (accept.equals(MediaType.APPLICATION_SPARQL_RESULTS_JSON))
 		return Response.ok(getResultSet(), MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE).build();
 	}
-
+	*/
+	
+	//return super.getResponse(accept);
 	return super.getResponse();
     }
 

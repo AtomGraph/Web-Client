@@ -55,16 +55,16 @@ public class Resource extends LinkedDataResourceImpl
 
     public Resource(@Context UriInfo uriInfo,
 	@QueryParam("uri") String uri,
-	@QueryParam("endpoint-uri") String serviceUri,
-	@QueryParam("accept") String accept,
+	@QueryParam("endpoint-uri") String endpointUri,
+	//@QueryParam("accept") String accept,
 	@QueryParam("limit") @DefaultValue("10") long limit,
 	@QueryParam("offset") @DefaultValue("0") long offset,
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc)
     {
-	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, serviceUri);
+	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, endpointUri);
 	this.uriInfo = uriInfo;
-	this.accept = accept;
+	//this.accept = accept;
 
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
@@ -110,8 +110,6 @@ public class Resource extends LinkedDataResourceImpl
 		    getProperty("http://www.w3.org/ns/sparql-service-description#endpoint")).getURI());
     }
 
-    @GET
-    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     @Override
     public Model getModel()
     {
@@ -173,11 +171,20 @@ public class Resource extends LinkedDataResourceImpl
 
 	setModel(rdfPost);
 	
+	//return getResponse(null);
 	return getResponse();
     }
 
     @GET
+    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
+    public Model getXXX()
+    {
+	return getModel();
+    }
+    
+    @GET
     @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
+    //public Response getResponse(@QueryParam("accept") String accept)
     public Response getResponse()
     {
 	if (accept != null)

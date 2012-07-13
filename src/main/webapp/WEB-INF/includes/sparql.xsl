@@ -55,13 +55,18 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
+    <xsl:key name="resources-by-endpoint" match="*[@rdf:about] | *[@rdf:nodeID]" use="sd:endpoint/@rdf:resource"/>
+
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" priority="1">
 	<xsl:choose>
+	    <xsl:when test="key('resources-by-endpoint', $endpoint-uri, $ont-model)">
+		<xsl:apply-templates select="key('resources-by-endpoint', $endpoint-uri, $ont-model)" mode="Header"/>
+	    </xsl:when>
 	    <xsl:when test="$endpoint-uri">
 		<div class="well">
 		    <h1>
 			<a href="{$absolute-path}?endpoint-uri={encode-for-uri($endpoint-uri)}">
-			    <xsl:value-of select="g:label($endpoint-uri, /, $lang)"/>
+			    <xsl:value-of select="g:label($endpoint-uri, $ont-model, $lang)"/>
 			</a>
 		    </h1>
 		</div>

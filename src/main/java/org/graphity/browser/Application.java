@@ -17,6 +17,7 @@
 package org.graphity.browser;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
@@ -33,6 +34,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.provider.xslt.ResourceXHTMLWriter;
 import org.graphity.browser.resource.SPARQLResource;
 import org.graphity.provider.ModelProvider;
+import org.graphity.provider.QueryParamProvider;
 import org.graphity.provider.RDFPostReader;
 import org.graphity.provider.ResultSetWriter;
 import org.graphity.util.locator.PrefixMapper;
@@ -110,6 +112,7 @@ public class Application extends javax.ws.rs.core.Application
 	singletons.add(new ModelProvider());
 	singletons.add(new ResultSetWriter());
 	singletons.add(new RDFPostReader());
+	singletons.add(new QueryParamProvider(Query.class));
 
 	// browser-specific
 	try

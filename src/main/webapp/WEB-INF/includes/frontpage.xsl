@@ -88,7 +88,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void sd">
 		</p>
 	    </xsl:if>
 	    <p>
-		<a class="btn btn-primary">SPARQL query</a>
 		<xsl:if test="void:exampleResource">
 		    <a class="btn btn-primary" href="?uri={void:exampleResource[1]/@rdf:resource}">Example resource</a>
 		</xsl:if>
