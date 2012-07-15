@@ -108,8 +108,8 @@ LIMIT 100</xsl:param>
 	    <xsl:if test="$result-doc/rdf:RDF">
 		<div class="nav row-fluid">
 		    <div class="btn-group pull-right">
-			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/rdf+xml')}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">RDF/XML</a>
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('text/turtle')}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">Turtle</a>
 		    </div>
 		</div>
 
@@ -119,8 +119,8 @@ LIMIT 100</xsl:param>
 	    <xsl:if test="$result-doc/sparql:sparql">
 		<div class="nav row-fluid">
 		    <div class="btn-group pull-right">
-			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+xml')}" class="btn">XML</a>
-			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+json')}" class="btn">JSON</a>
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+xml')}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">XML</a>
+			<a href="{$absolute-path}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+json')}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" class="btn">JSON</a>
 		    </div>
 		</div>
 

@@ -24,9 +24,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.graphity.MediaType;
 import org.graphity.model.impl.LinkedDataResourceImpl;
 import org.graphity.util.QueryBuilder;
 import org.graphity.util.locator.PrefixMapper;
@@ -49,14 +49,14 @@ public class Resource extends LinkedDataResourceImpl
     private OntModel ontModel = null;
     private QueryBuilder qb = null;
     private com.hp.hpl.jena.rdf.model.Resource resource, spinRes = null;
-    private String accept = null;
+    private MediaType acceptType = MediaType.APPLICATION_XHTML_XML_TYPE;
 
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
     public Resource(@Context UriInfo uriInfo,
 	@QueryParam("uri") String uri,
 	@QueryParam("endpoint-uri") String endpointUri,
-	//@QueryParam("accept") String accept,
+	@QueryParam("accept") MediaType acceptType,
 	@QueryParam("limit") @DefaultValue("10") long limit,
 	@QueryParam("offset") @DefaultValue("0") long offset,
 	@QueryParam("order-by") String orderBy,
@@ -64,8 +64,8 @@ public class Resource extends LinkedDataResourceImpl
     {
 	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, endpointUri);
 	this.uriInfo = uriInfo;
-	//this.accept = accept;
-
+	this.acceptType = acceptType;
+	
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
 	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "ontology.ttl");
@@ -170,13 +170,12 @@ public class Resource extends LinkedDataResourceImpl
 	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
 
 	setModel(rdfPost);
-	
-	//return getResponse(null);
+
 	return getResponse();
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
+    @Produces({org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     public Model getXXX()
     {
 	return getModel();
@@ -184,20 +183,24 @@ public class Resource extends LinkedDataResourceImpl
     
     @GET
     @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
-    //public Response getResponse(@QueryParam("accept") String accept)
     public Response getResponse()
     {
-	if (accept != null)
+	if (getAcceptType() != null)
 	{
-	    log.debug("Accept param: {}, writing RDF/XML or Turtle", accept);
+	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
 
-	    if (accept.equals(MediaType.APPLICATION_RDF_XML))
-		return Response.ok(getModel(), MediaType.APPLICATION_RDF_XML_TYPE).build();
-	    if (accept.equals(MediaType.TEXT_TURTLE))
-		return Response.ok(getModel(), MediaType.TEXT_TURTLE_TYPE).build();
+	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
+		return Response.ok(getModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
+	    if (getAcceptType().equals(org.graphity.MediaType.TEXT_TURTLE_TYPE))
+		return Response.ok(getModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
 	}
 
 	return Response.ok(this).build(); // uses ResourceXHTMLWriter
+    }
+
+    public MediaType getAcceptType()
+    {
+	return acceptType;
     }
 
 }
