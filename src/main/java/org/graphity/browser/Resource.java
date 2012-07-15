@@ -176,7 +176,7 @@ public class Resource extends LinkedDataResourceImpl
 
     @GET
     @Produces({org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    public Model getXXX()
+    public Model getResponseModel()
     {
 	return getModel();
     }

@@ -252,7 +252,14 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	</div>
 
 	<div class="span4">
-	    <xsl:apply-templates mode="SidebarNav"/>
+	    <xsl:choose>
+		<xsl:when test="key('resources', $uri)">
+		    <xsl:apply-templates select="key('resources', $uri)" mode="SidebarNav"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:apply-templates mode="SidebarNav"/>
+		</xsl:otherwise>
+	    </xsl:choose>
 	</div>
     </xsl:template>
 

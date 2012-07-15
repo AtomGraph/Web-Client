@@ -82,7 +82,7 @@ public class SPARQLResource extends Resource
     //@GET
     //@Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     @Override
-    public Model getXXX()
+    public Model getResponseModel()
     {
 	if (resultModel == null && query != null && (query.isConstructType() || query.isDescribeType()))
 	{
@@ -107,14 +107,14 @@ public class SPARQLResource extends Resource
 	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
 		return Response.ok(getResultSet(), org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE).build();
 	}
-	if (getAcceptType() != null && getXXX() != null)
+	if (getAcceptType() != null && getResponseModel() != null)
 	{
 	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
 
 	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
-		return Response.ok(getXXX(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
+		return Response.ok(getResponseModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
 	    if (getAcceptType().equals(org.graphity.MediaType.TEXT_TURTLE_TYPE))
-		return Response.ok(getXXX(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
+		return Response.ok(getResponseModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
 	}
 
 	return super.getResponse();
