@@ -116,13 +116,15 @@ _:DBPedia a void:Dataset, sd:Service ;
     sd:supportedLanguage sd:SPARQL11Query ;
     void:triples "550000000"^^xsd:integer .
 
-_:OpenEI a void:Dataset, sd:Service ;
-    dct:title "OpenEI" ;
-    dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
-    void:sparqlEndpoint <http://en.openei.org/sparql> ;
-    sd:endpoint <http://en.openei.org/sparql> ;
-    void:exampleResource <http://en.openei.org/lod/resource/wiki/Denmark> ;
-    void:triples "17231136"^^xsd:integer .
+_:Reegle a void:Dataset, sd:Service ;
+    dct:title "reegle Data" ;
+    dct:description "Energy policy reports for more than 160 countries; clean energy stakeholders; project output documents; more than 3000 clean energy terms from our thesaurus" ;
+    foaf:homepage <http://data.reegle.info> ;
+    foaf:logo <http://data.reegle.info/images/reegle_data_logo.png> ;
+    void:sparqlEndpoint <http://sparql.reegle.info> ;
+    sd:endpoint <http://sparql.reegle.info> ;
+    void:exampleResource <http://reegle.info/actors/2354> ,
+	<http://reegle.info/countries/DK> .
 
 _:LinkedGeoData a void:Dataset, sd:Service ;
     dct:title "LinkedGeoData" ;

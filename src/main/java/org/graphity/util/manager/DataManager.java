@@ -122,7 +122,7 @@ public class DataManager extends FileManager implements URIResolver
 	if (isSPARQLService(filenameOrURI))
 	{
 	    SPARQLService service = findSPARQLService(filenameOrURI);
-	    log.debug("URI {} is a SPARQL service, executing Query on SparqlService: {}", service.getURI());
+	    log.debug("URI {} is a SPARQL service, executing Query on SparqlService: {}", service.getEndpointURI());
 	    
 	    m = loadModel(service, parseQuery(filenameOrURI));
 	}
@@ -139,7 +139,7 @@ public class DataManager extends FileManager implements URIResolver
         return m;
     }
 
-    public Model loadModel(String endpointURI, Query query)
+    public Model loadModel(String endpointURI, Query query, MultivaluedMap<String, String> params)
     {
 	log.debug("Remote service {} Query: {} ", endpointURI, query);
 	
@@ -151,22 +151,34 @@ public class DataManager extends FileManager implements URIResolver
 	else
 	{
 	    QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(endpointURI, query);
-
+	    if (params != null)
+		for (Entry<String, List<String>> entry : params.entrySet())
+		    if (!entry.getKey().equals("query")) // query param is handled separately
+			for (String value : entry.getValue())
+			{
+			    log.trace("Adding param to SPARQL request with name: {} and value: {}", entry.getKey(), value);
+			    request.addParam(entry.getKey(), value);
+			}
 	    if (query.isConstructType()) return request.execConstruct();
 	    if (query.isDescribeType()) return request.execDescribe();
 
 	    return null;
 	}
     }
+    
+    public Model loadModel(String endpointURI, Query query)
+    {
+	return loadModel(endpointURI, query, null);
+    }
 	
     public Model loadModel(SPARQLService service, Query query)
     {
-	log.debug("Remote service {} Query: {} ", service.getURI(), query);
+	log.debug("Remote service {} Query: {} ", service.getEndpointURI(), query);
 	
 	if (!(query.isConstructType() || query.isDescribeType()))
 	    throw new QueryExecException("Query to load Model must be CONSTRUCT or DESCRIBE"); // return null;
 		
-	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
+	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getEndpointURI(), query);
 
 	if (service.getUser() != null && service.getPassword() != null)
 	{
@@ -213,7 +225,7 @@ public class DataManager extends FileManager implements URIResolver
 	while (it.hasNext())
 	{
 	    SPARQLService service = it.next();
-	    if (filenameOrURI.startsWith(service.getURI()))
+	    if (filenameOrURI.startsWith(service.getEndpointURI()))
 		return service;
 	}
 	
@@ -354,12 +366,12 @@ public class DataManager extends FileManager implements URIResolver
 
     public ResultSet loadResultSet(SPARQLService service, Query query)
     {
-	log.debug("Remote service {} Query execution: {} ", service.getURI(), query);
+	log.debug("Remote service {} Query execution: {} ", service.getEndpointURI(), query);
 
 	if (!query.isSelectType())
 	    throw new QueryExecException("Query to load ResultSet must be SELECT or ASK"); // return null
 	
-	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getURI(), query);
+	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(service.getEndpointURI(), query);
 	if (service.getUser() != null && service.getPassword() != null)
 	{
 	    log.debug("HTTP Basic authentication with username: {}", service.getUser());
@@ -445,21 +457,28 @@ public class DataManager extends FileManager implements URIResolver
 		    {
 			if (query.isSelectType() || query.isAskType())
 			{
-			    log.debug("Loading ResultSet for URI: {}", uri);
+			    log.trace("Loading ResultSet for URI: {} using Query: {}", uri, query);
 			    return getSource(loadResultSet(UriBuilder.fromUri(uri).
 				    replaceQuery(null).
 				    build().toString(),
 				query, parseParamMap(uri)));
 			}
-			// TO-DO: CONSTRUCT/DESCRIBE case
+			if (query.isConstructType() || query.isDescribeType())
+			{
+			    log.trace("Loading Model for URI: {} using Query: {}", uri, query);
+			    return getSource(loadModel(UriBuilder.fromUri(uri).
+				    replaceQuery(null).
+				    build().toString(),
+				query, parseParamMap(uri)));
+			}
 		    }
 
-		    log.debug("Loading Model for URI: {}", uri);
+		    log.trace("Loading Model for URI: {}", uri);
 		    return getSource(loadModel(uri));
 		}
 		catch (Exception ex)
 		{
-		    log.debug("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
+		    log.warn("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
 		    return getDefaultSource(); // return empty Model
 		}
 	    else

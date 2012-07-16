@@ -20,10 +20,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import org.graphity.browser.Resource;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
@@ -40,11 +37,12 @@ public class SPARQLResource extends Resource
     private static final long MAX_LIMIT = 100;
     
     private Query query = null;
-    private Model resultModel = null;
+    private Model model = null;
     private ResultSet resultSet = null;
     private String endpointUri = null;
 
     public SPARQLResource(@Context UriInfo uriInfo,
+	@Context HttpHeaders headers,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") MediaType acceptType,
 	@QueryParam("limit") @DefaultValue("10") long limit,
@@ -53,8 +51,7 @@ public class SPARQLResource extends Resource
 	@QueryParam("desc") @DefaultValue("true") boolean desc,
 	@QueryParam("query") Query query)
     {
-	super(uriInfo, null, null, acceptType, limit, offset, orderBy, desc);
-	log.debug("Accept type: {}", acceptType);
+	super(uriInfo, headers, null, null, acceptType, limit, offset, orderBy, desc);
 	this.query = query;
 	if (query != null)
 	{
@@ -79,20 +76,17 @@ public class SPARQLResource extends Resource
 	return resultSet;
     }
 
-    //@GET
-    //@Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    @Override
-    public Model getResponseModel()
+    public Model getResultModel()
     {
-	if (resultModel == null && query != null && (query.isConstructType() || query.isDescribeType()))
+	if (model == null && query != null && (query.isConstructType() || query.isDescribeType()))
 	{
 	    if (endpointUri != null)
-		resultModel = DataManager.get().loadModel(endpointUri, query);
+		model = DataManager.get().loadModel(endpointUri, query);
 	    else
-		resultModel = DataManager.get().loadModel(getOntModel(), query);
+		model = DataManager.get().loadModel(getOntModel(), query);
 	}
 	    
-	return resultModel;
+	return model;
     }
     
     @Override
@@ -102,19 +96,21 @@ public class SPARQLResource extends Resource
 	{
 	    log.debug("Accept param: {}, writing SPARQL results (XML or JSON)", getAcceptType());
 
+	    // uses ResultSetWriter
 	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
 		return Response.ok(getResultSet(), org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE).build();
 	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
 		return Response.ok(getResultSet(), org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE).build();
 	}
-	if (getAcceptType() != null && getResponseModel() != null)
+	if (getAcceptType() != null && getResultModel() != null)
 	{
 	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
 
+	    // uses ModelProvider
 	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
-		return Response.ok(getResponseModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
+		return Response.ok(getResultModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
 	    if (getAcceptType().equals(org.graphity.MediaType.TEXT_TURTLE_TYPE))
-		return Response.ok(getResponseModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
+		return Response.ok(getResultModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
 	}
 
 	return super.getResponse();

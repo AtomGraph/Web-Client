@@ -23,10 +23,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import org.graphity.model.impl.LinkedDataResourceImpl;
 import org.graphity.util.QueryBuilder;
 import org.graphity.util.locator.PrefixMapper;
@@ -54,6 +51,7 @@ public class Resource extends LinkedDataResourceImpl
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
     public Resource(@Context UriInfo uriInfo,
+	@Context HttpHeaders headers,
 	@QueryParam("uri") String uri,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") MediaType acceptType,
@@ -64,8 +62,12 @@ public class Resource extends LinkedDataResourceImpl
     {
 	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, endpointUri);
 	this.uriInfo = uriInfo;
-	this.acceptType = acceptType;
-	
+	if (acceptType != null) this.acceptType = acceptType;
+	else // probably needs try/catch
+	    if (headers.getAcceptableMediaTypes().get(0).equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
+	    this.acceptType = headers.getAcceptableMediaTypes().get(0);
+	log.debug("AcceptType: {} Acceptable MediaTypes: {}", this.acceptType, headers.getAcceptableMediaTypes());
+
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
 	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "ontology.ttl");
@@ -173,22 +175,16 @@ public class Resource extends LinkedDataResourceImpl
 
 	return getResponse();
     }
-
-    @GET
-    @Produces({org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    public Model getResponseModel()
-    {
-	return getModel();
-    }
     
     @GET
-    @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
+    @Produces({MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8",org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     public Response getResponse()
     {
 	if (getAcceptType() != null)
 	{
 	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
 
+	    // uses ModelProvider
 	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
 		return Response.ok(getModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
 	    if (getAcceptType().equals(org.graphity.MediaType.TEXT_TURTLE_TYPE))

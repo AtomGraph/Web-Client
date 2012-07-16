@@ -27,37 +27,37 @@ public class SPARQLService
 {
     private static Logger log = LoggerFactory.getLogger(SPARQLService.class);
     
-    private String uri = null;
+    private String endpointUri = null;
     private String user = null;
     private char[] password = null;
     private String apiKey = null;
     
-    private SPARQLService(String uri)
+    private SPARQLService(String endpointUri)
     {
-	this.uri = uri;	
+	this.endpointUri = endpointUri;	
     }
     
-    public SPARQLService(String uri, String user, char[] password)
+    public SPARQLService(String endpointUri, String user, char[] password)
     {
-	this(uri);
+	this(endpointUri);
 	this.user = user;
 	this.password = password;
     }
 
-    public SPARQLService(String uri, String apiKey)
+    public SPARQLService(String endpointUri, String apiKey)
     {
-	this(uri);
+	this(endpointUri);
 	this.apiKey = apiKey;
     }
 
-    public String getURI()
+    public String getEndpointURI()
     {
-	return uri;
+	return endpointUri;
     }
 
     public String getName()
     {
-	return "SparqlService(" + uri + ")";
+	return "SparqlService(" + endpointUri + ")";
     }
 
     public char[] getPassword()

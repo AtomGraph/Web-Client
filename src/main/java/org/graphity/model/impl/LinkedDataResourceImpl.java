@@ -40,8 +40,7 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     public LinkedDataResourceImpl(String uri, String endpointUri)
     {
 	this.uri = uri;
-	if (endpointUri != null && endpointUri.isEmpty()) endpointUri = null;
-	setEndpointURI(endpointUri);
+	if (endpointUri != null && endpointUri.isEmpty()) setEndpointURI(endpointUri);
 	log.debug("URI: {} Endpoint URI: {}", getURI(), getEndpointURI());
 	
 	if (getURI() != null)
@@ -54,8 +53,6 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     @Override
     public Model getModel()
     {
-	//if (getURI() == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-	
 	if (model == null)
 	{
 	    if (getEndpointURI() != null) // in case we have an endpoint, first try loading using SPARQL
