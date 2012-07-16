@@ -166,7 +166,7 @@ public class Resource extends LinkedDataResourceImpl
     
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8")
+    @Produces({MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8",org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     public Response postModel(Model rdfPost)
     {
 	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
