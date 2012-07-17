@@ -99,8 +99,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:variable name="select-query" select="if ($query-uri) then key('resources', $query-uri, $query-model) else ()" as="element()?"/>
 	
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="resources-by-host" match="*[@rdf:about]" use="sioc:has_host/@rdf:resource"/> <!-- concat(namespace-uri(.), local-name(.)) -->    
-    
+    <xsl:key name="resources-by-host" match="*[@rdf:about]" use="sioc:has_host/@rdf:resource"/>
+    <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(.), local-name(.))"/>
+	
     <xsl:template match="/">
 	<html>
 	    <head>
@@ -230,7 +231,10 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	</div>
 
 	<div class="span4">
-	    <xsl:apply-templates mode="SidebarNav"/>
+	    <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(.), local-name(.))">
+		<xsl:sort select="g:label(xs:anyURI(concat(namespace-uri(.), local-name(.))), /, $lang)" data-type="text" order="ascending"/>
+		<xsl:apply-templates select="current-group()[1]" mode="SidebarNav"/>
+	    </xsl:for-each-group>
 	</div>
     </xsl:template>
 
@@ -254,10 +258,16 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	<div class="span4">
 	    <xsl:choose>
 		<xsl:when test="key('resources', $uri)">
-		    <xsl:apply-templates select="key('resources', $uri)" mode="SidebarNav"/>
+		    <xsl:for-each-group select="key('resources', $uri)/*" group-by="concat(namespace-uri(.), local-name(.))">
+			<xsl:sort select="g:label(xs:anyURI(concat(namespace-uri(.), local-name(.))), /, $lang)" data-type="text" order="ascending"/>
+			<xsl:apply-templates select="current-group()[1]" mode="SidebarNav"/>
+		    </xsl:for-each-group>
 		</xsl:when>
 		<xsl:otherwise>
-		    <xsl:apply-templates mode="SidebarNav"/>
+		    <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(.), local-name(.))">
+			<xsl:sort select="g:label(xs:anyURI(concat(namespace-uri(.), local-name(.))), /, $lang)" data-type="text" order="ascending"/>
+			<xsl:apply-templates select="current-group()[1]" mode="SidebarNav"/>
+		    </xsl:for-each-group>
 		</xsl:otherwise>
 	    </xsl:choose>
 	</div>
@@ -477,14 +487,14 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     </xsl:template>
 	
     <!-- ADDITIONAL MODES -->
-    
+
     <xsl:template match="*[@rdf:about]" mode="SidebarNav">
 	<xsl:apply-templates mode="SidebarNav">
 	    <xsl:sort select="g:label(xs:anyURI(concat(namespace-uri(.), local-name(.))), /, $lang)" data-type="text" order="ascending"/>
 	</xsl:apply-templates>
     </xsl:template>
     
-    <xsl:template match="rdfs:seeAlso[1] | owl:sameAs[1] | dc:subject[1] | dct:subject[1]" mode="SidebarNav" priority="1">
+    <xsl:template match="rdfs:seeAlso| owl:sameAs | dc:subject | dct:subject" mode="SidebarNav" priority="1">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
 	
 	<div class="well sidebar-nav">
@@ -495,9 +505,10 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	    </h2>
 		
 	    <ul class="nav nav-pills nav-stacked">
-		<xsl:apply-templates select="../*[concat(namespace-uri(.), local-name(.)) = $this]/@rdf:resource" mode="SidebarNav">
-		    <xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
-		</xsl:apply-templates>
+		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
+		    <xsl:sort select="g:label(@rdf:resource, /, $lang)" data-type="text" order="ascending"/>
+		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="SidebarNav"/>
+		</xsl:for-each-group>
 	    </ul>
 	</div>
     </xsl:template>

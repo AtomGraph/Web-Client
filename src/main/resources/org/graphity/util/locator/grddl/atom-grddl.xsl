@@ -113,7 +113,7 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
     </xsl:template>
 
     <xsl:template match="atom:category">
-	<dct:subject rdf:resource="&dbpedia;{encode-for-uri(@term)}"/>
+	<dct:subject rdf:resource="&dbpedia;{encode-for-uri(concat(upper-case(substring(@term, 1, 1)), substring(@term, 2)))}"/>
     </xsl:template>
 	
     <xsl:template match="atom:logo">
