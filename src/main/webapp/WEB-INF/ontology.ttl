@@ -11,6 +11,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix dbpedia: <http://dbpedia.org/resource/> .
+@prefix dbpedia-owl: <http://dbpedia.org/ontology/> .
 @prefix lda: <http://purl.org/linked-data/api/vocab#> .
 @prefix doap: <http://usefulinc.com/ns/doap#> .
 
@@ -19,7 +20,7 @@
     dct:title "Linked Data Browser ontology" ;
     rdfs:label "Linked Data Browser ontology" ;
     dct:created "2012-02-11T03:17:00+01:00"^^xsd:dateTime ;
-    dct:modified "2012-07-01T01:30:00+01:00"^^xsd:dateTime ;
+    dct:modified "2012-07-17T10:11:00+01:00"^^xsd:dateTime ;
     dct:license <http://opendatacommons.org/licenses/odbl/1.0/> ;
     dct:creator <http://semantic-web.dk#martynas> ;
     rdfs:seeAlso <sparql> .
@@ -67,8 +68,8 @@ _:dataset a void:Dataset ;
 	    doap:browse <https://github.com/Graphity/graphity-browser> ] ;
 	doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
 	doap:maintainer <http://semantic-web.dk#martynas> ;
-	doap:license <http://dbpedia.org/resource/GNU_General_Public_License> ;
-	doap:programming-language dbpedia:XSLT,
+	doap:license dbpedia:GNU_General_Public_License ;
+	dbpedia-owl:programmingLanguage dbpedia:XSLT,
 	    <http://dbpedia.org/resource/Java_%28programming_language%29> ] ;
     rdfs:isDefinedBy : ;
     void:inDataset _:dataset .
