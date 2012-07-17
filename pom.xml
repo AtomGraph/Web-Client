@@ -52,7 +52,7 @@
 <scm>
     <url>https://github.com/Graphity/graphity-browser</url>
     <connection>scm:git:git://github.com/Graphity/graphity-browser.git</connection>
-    <developerConnection>scm:git:git@github.com:Graphity/graphity-browser.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:pumba-lt/graphity-browser.git</developerConnection>
 </scm>
   
     <dependencies>
