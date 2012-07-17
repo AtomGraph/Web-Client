@@ -47,11 +47,15 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     private static final Logger log = LoggerFactory.getLogger(ResultSetXSLTWriter.class);
 
     private XSLTBuilder builder = null;
-    
+
+    public ResultSetXSLTWriter(XSLTBuilder builder) throws TransformerConfigurationException
+    {
+	this.builder = builder;
+    }
+
     public ResultSetXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	builder = XSLTBuilder.fromStylesheet(stylesheet).
-	    resolver(resolver);
+	this(XSLTBuilder.fromStylesheet(stylesheet).resolver(resolver));
     }
     
     @Override

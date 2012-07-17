@@ -11,37 +11,22 @@ Installation
 ============
 
 Graphity Browser is a [Maven Web application](http://maven.apache.org/guides/mini/guide-webapp.html).
-Maven dependencies are discovered automatically from `pom.xml`, others (such as [SPIN API](http://topbraid.org/spin/api/)) are included as `.jar` files in the `/lib` folder (and can be "installed locally" using Maven).
 
-Basic version of Graphity core is also available in a [PHP version](https://github.com/Graphity/graphity-core).
+You have the following options to install Graphity:
+* checkout the source code from the Git repository and build it as a Maven webapp
+* [download](https://github.com/Graphity/graphity-browser/downloads) the project as a standalone `.war` webapp and deploy it in a servlet container (such as Tomcat)
+* [download](https://github.com/Graphity/graphity-browser/downloads) the project as a `.jar` library and include it in your Java project (Maven repository is not available yet)
 
 Java code
 =========
 
-Used libraries
----------
+Core packages
+-------------
 
-* [Apache Jena](http://jena.apache.org)
-* [TopBraid SPIN API](http://topbraid.org/spin/api/)
-* [Saxonica Saxon](http://saxon.sourceforge.net)
-* [Jersey](http://jersey.java.net)
-* [SL4J](http://www.slf4j.org)
-
-Browser JAX-RS application
--------------------
-
-* [`org.graphity.browser`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser): Classes shared by all Graphity Browser applications
-    * [`org.graphity.browser.Application`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Application.java): Subclass to get an entry point to the webapp. [JAX-RS](http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) Resources, [`Provider`s](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/ext/Providers.html), and configuration is initialized here
-    * [`org.graphity.browser.Resource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Resource.java): Base class for all Browser Resources and apps built on it. Subclass of ``LinkedDataResourceImpl``.
-    * [`org.graphity.browser.provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider): Browser-specific `Provider` subclasses
-        * [`org.graphity.browser.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider/xslt): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located [`here`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt) and its subfolders. They translate request parameters into XSLT parameters.
-    * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
-        * [`org.graphity.browser.resource.SPARQLResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLResource.java): SPARQL endpoint
-
-Core classes
-------------
-
+They contain Jena- and JAX-RS-compatible convenience classes for reading Linked Data resources from URIs, SPARQL endpoints, and HTML forms; writing out Linked Data and SPARQL responses either raw or via XSLT; building SPARQL queries and XSLT transformations, and more.
 The plan is to spin these off as a standalone artifact.
+
+*Basic version of Graphity core is also available in a [PHP version](https://github.com/Graphity/graphity-core).*
 
 * [`org.graphity`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity): Classes shared by all Graphity applications
     * [`org.graphity.adapter`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/adapter): [`DatasetAdapter`](http://jena.apache.org/documentation/javadoc/fuseki/org/apache/jena/fuseki/http/DatasetAdapter.html)-related wrappers for Model caching via Graph store protocol
@@ -69,6 +54,31 @@ The plan is to spin these off as a standalone artifact.
         * [`org.graphity.util.oauth`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/util/oauth): Classes related to JAX-RS implementation of OAuth
     * [`org.graphity.vocabulary`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/vocabulary): Graphity ontologies as classes with Jena `Resource`s
 
+Browser JAX-RS application
+--------------------------
+
+This generic Linked Data browser is an example of a JAX-RS webapp that can be built on Graphity core.
+3rd party Linked Data webapps can be rapidly built by including, extending, or overriding the relevant classes and XSLT stylesheets from this package.
+
+* [`org.graphity.browser`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser): Classes shared by all Graphity Browser applications
+    * [`org.graphity.browser.Application`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Application.java): Subclass to get an entry point to the webapp. [JAX-RS](http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) Resources, [`Provider`s](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/ext/Providers.html), and configuration is initialized here
+    * [`org.graphity.browser.Resource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Resource.java): Base class for all Browser Resources and apps built on it. Subclass of ``LinkedDataResourceImpl``.
+    * [`org.graphity.browser.provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider): Browser-specific `Provider` subclasses
+        * [`org.graphity.browser.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider/xslt): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located [`here`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt) and its subfolders. They translate request parameters into XSLT parameters.
+    * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
+        * [`org.graphity.browser.resource.SPARQLResource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLResource.java): SPARQL endpoint
+
+Used libraries
+--------------
+
+* [Apache Jena](http://jena.apache.org)
+* [TopBraid SPIN API](http://topbraid.org/spin/api/)
+* [Saxonica Saxon](http://saxon.sourceforge.net)
+* [Jersey](http://jersey.java.net)
+* [SL4J](http://www.slf4j.org)
+
+Maven dependencies are discovered automatically from `pom.xml`, others (such as SPIN API) are included as `.jar` files in the `/lib` folder (and can be "installed locally" using Maven).
+
 XSLT stylesheets
 ================
 
@@ -87,6 +97,34 @@ GRDDL
 
 * [`resources/org/graphity/util/locator/grddl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/util/locator/grddl): XSLT stylesheets for use with `LocatorGRDDL` and its subclasses
     * [`atom-grddl.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/util/locator/grddl/atom-grddl.xsl): Atom to RDF transformation (_unfinished_)
+
+Usage in your project
+---------------------
+
+In order to include the above stylesheets into your own Maven project, you can add the following execution for `maven-dependency-plugin` to your `pom.xml`:
+
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <version>2.1</version>
+      <executions>
+        <execution>
+          <id>resource-dependencies</id>
+          <phase>generate-resources</phase>
+          <goals>
+            <goal>unpack-dependencies</goal>
+          </goals>
+          <configuration>
+            <includeArtifactIds>browser</includeArtifactIds>
+            <includeGroupIds>org.graphity</includeGroupIds>
+            <includes>**\/*.xsl</includes>
+            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+
+This will copy all reusable `.xsl` files from Graphity's `resource` folder.
 
 Ontologies
 ==========
