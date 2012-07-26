@@ -3,7 +3,7 @@
 
     <groupId>org.graphity</groupId>
     <artifactId>browser</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Graphity Browser</name>
@@ -113,6 +113,11 @@
                     <groupId>com.hp.hpl.jena</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.expath</groupId>
+            <artifactId>zip</artifactId>
+            <version>0.6</version>
         </dependency>
     </dependencies>
 

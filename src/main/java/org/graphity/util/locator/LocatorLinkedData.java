@@ -108,15 +108,21 @@ public class LocatorLinkedData implements Locator
             //((HttpURLConnection)conn).setInstanceFollowRedirects(true) ;
             c.connect() ;
             InputStream in = new BufferedInputStream(c.getInputStream());
-	
+	    String contentType = getContentType(c);
+	    
             if (log.isTraceEnabled())
 	    {
 		log.trace("Found: {}", filenameOrURI);
-		log.trace("MIME type: {} Charset: {}", getContentType(c), getCharset(c));
+		log.trace("MIME type: {} Charset: {}", contentType, getCharset(c));
 	    }
 
-	    //return new TypedStream(in, type.getContentType(), type.getCharset());
-            return new TypedStream(in, getContentType(c), getCharset(c)); 
+	    if (!getQualifiedTypes().containsKey(contentType))
+	    {
+		log.debug("Returned content type {} is not acceptable - TypedStream will not be read", contentType);
+		return null;
+	    }
+		
+            return new TypedStream(in, contentType, getCharset(c)); 
         }
         catch (java.io.FileNotFoundException ex) 
         {
@@ -184,7 +190,6 @@ public class LocatorLinkedData implements Locator
     {
 	String header = null;
 
-	//for (Map.Entry<String, Double> type : getQualifiedTypes().entrySet())
 	Iterator <Entry<String, Double>> it = getQualifiedTypes().entrySet().iterator();
 	while (it.hasNext())
 	{
@@ -219,7 +224,7 @@ public class LocatorLinkedData implements Locator
     public String getContentType(URLConnection conn)
     {
 	//ContentType type = org.openjena.riot.ContentType.parse(conn.getContentType());
-	String contentType = null;
+	String contentType;
 	String x = conn.getContentType(); 
 
 	if ( x.contains(";") )

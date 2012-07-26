@@ -50,5 +50,5 @@ public class LocatorAtom extends LocatorGRDDL
 	xmlType.put("application/atom+xml", null);
 	return xmlType;
     }
-    
+
 }

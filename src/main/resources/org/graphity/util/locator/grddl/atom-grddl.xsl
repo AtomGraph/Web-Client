@@ -42,15 +42,13 @@ xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:dbpedia="&dbpedia;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
+exclude-result-prefixes="xsl xs grddl rdf rdfs atom atom-owl media dct foaf sioc dbpedia dbpedia-owl"
 >
 
-    <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
-    
-    <xsl:param name="uri" as="xs:anyURI"/>
+    <xsl:output method="xml" indent="yes" encoding="UTF-8" media-type="application/rdf+xml"/>
 
+    <!-- Transforms Atom feeds into RDF/XML descriptions using established vocabularies -->
     <!-- http://bblfish.net/work/atom-owl/2006-06-06/AtomOwl.html -->
-    <!-- https://developers.google.com/youtube/2.0/developers_guide_protocol#Retrieving_and_searching_for_videos -->
-    <!-- https://developers.google.com/youtube/2.0/developers_guide_protocol#orderbysp -->
     
     <xsl:template match="/">
 	<rdf:RDF>
