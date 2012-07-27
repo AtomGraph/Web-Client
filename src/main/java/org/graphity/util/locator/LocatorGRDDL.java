@@ -20,7 +20,6 @@ import com.hp.hpl.jena.util.TypedStream;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.UriBuilder;
@@ -59,25 +58,27 @@ public class LocatorGRDDL extends LocatorLinkedData
 	TypedStream ts = super.open(filenameOrURI);
 	if (ts == null) return null; // don't transform if there's no stream
 
-	ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
 	try
 	{
+	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 	    getXSLTBuilder().document(new StreamSource(ts.getInput())).
 	    result(new StreamResult(bos)).
 	    parameter("uri", UriBuilder.fromUri(filenameOrURI).build()).
 	    transform();
+	    
+	    log.trace("GRDDL RDF/XML output: {}", bos.toString());
+
+	    return new TypedStream(new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray())),
+		    WebContent.contentTypeRDFXML,
+		    "UTF-8");
 	}
 	catch (TransformerException ex)
 	{
-	    log.error("Error in transformation", ex);
+	    log.error("Error in GRDDL XSLT transformation", ex);
 	}
 
-	log.trace("GRDDL RDF/XML output: {}", bos.toString());
-
-	return new TypedStream(new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray())),
-		WebContent.contentTypeRDFXML,
-		"UTF-8");
+	return null;
     }
 
     @Override
