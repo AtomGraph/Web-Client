@@ -37,6 +37,7 @@ import org.graphity.provider.ModelProvider;
 import org.graphity.provider.QueryParamProvider;
 import org.graphity.provider.RDFPostReader;
 import org.graphity.provider.ResultSetWriter;
+import org.graphity.util.locator.LocatorGRDDL;
 import org.graphity.util.locator.PrefixMapper;
 import org.graphity.util.locator.grddl.LocatorAtom;
 import org.graphity.util.manager.DataManager;
@@ -80,6 +81,7 @@ public class Application extends javax.ws.rs.core.Application
 	try
 	{
 	    DataManager.get().addLocator(new LocatorAtom(getStylesheet("org/graphity/util/locator/grddl/atom-grddl.xsl")));
+	    DataManager.get().addLocator(new LocatorGRDDL(getStylesheet("org/graphity/util/locator/grddl/twitter-grddl.xsl")));
 	}
 	catch (TransformerConfigurationException ex)
 	{
