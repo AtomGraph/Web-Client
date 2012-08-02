@@ -25,6 +25,7 @@ import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import org.graphity.model.impl.LinkedDataResourceImpl;
+import org.graphity.util.ModelUtils;
 import org.graphity.util.QueryBuilder;
 import org.graphity.util.locator.PrefixMapper;
 import org.graphity.util.manager.DataManager;
@@ -191,7 +192,9 @@ public class Resource extends LinkedDataResourceImpl
 		return Response.ok(getModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
 	}
 
-	return Response.ok(this).build(); // uses ResourceXHTMLWriter
+	return Response.ok(this).
+		tag(getEntityTag()).
+		build(); // uses ResourceXHTMLWriter
     }
 
     public MediaType getAcceptType()
@@ -199,4 +202,9 @@ public class Resource extends LinkedDataResourceImpl
 	return acceptType;
     }
 
+    public EntityTag getEntityTag()
+    {
+	return new EntityTag(Long.toHexString(ModelUtils.hashModel(getModel())));
+    }
+    
 }

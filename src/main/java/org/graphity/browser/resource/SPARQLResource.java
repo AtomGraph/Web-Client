@@ -116,4 +116,12 @@ public class SPARQLResource extends Resource
 	return super.getResponse();
     }
 
+    @Override
+    public EntityTag getEntityTag()
+    {
+	if (getResultModel() != null || getResultSet() != null) return null; // don't cache with query results
+	
+	return super.getEntityTag();
+    }
+
 }
