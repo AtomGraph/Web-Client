@@ -4,7 +4,6 @@
     <groupId>org.graphity</groupId>
     <artifactId>browser</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
 
     <name>Graphity Browser</name>
     <description>Graphity Linked Data browser</description>
@@ -171,4 +170,5 @@
             </plugin>
         </plugins>
     </build>
+    <packaging>war</packaging>
 </project>

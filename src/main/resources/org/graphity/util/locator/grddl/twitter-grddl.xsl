@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
     <!ENTITY dbpedia "http://dbpedia.org/resource/">
     <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
-    <!ENTITY time "http://www.w3.org/2006/time#">
-    <!ENTITY tzont "http://www.w3.org/2006/timezone#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
@@ -38,8 +36,6 @@ xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:dbpedia="&dbpedia;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
-xmlns:time="&time;"
-xmlns:tzont="&tzont;"
 >
 
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>

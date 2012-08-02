@@ -16,12 +16,9 @@
    [ lm:name "http://www.w3.org/2004/02/skos/core#" ; lm:altName "org/graphity/browser/vocabulary/skos.owl" ],
    [ lm:name "http://spinrdf.org/sp#" ; lm:altName "org/graphity/browser/vocabulary/spin.owl" ],
    [ lm:name "http://graphity.org/ontology/" ; lm:altName "org/graphity/browser/vocabulary/graphity.ttl" ] ,
-   [ lm:name "http://graphity.org/ontologies/visualizations#" ; lm:altName "org/graphity/browser/vocabulary/visualizations.ttl" ],
-   [ lm:name "http://graphity.org/ontologies/visualizations/google#" ; lm:altName "org/graphity/browser/vocabulary/google-vis.ttl" ],
    [ lm:name "http://www.w3.org/2006/time#" ; lm:altName "org/graphity/browser/vocabulary/time.owl" ],
    [ lm:name "http://usefulinc.com/ns/doap#" ; lm:altName "org/graphity/browser/vocabulary/doap.owl" ],
-   [ lm:name "http://ontologi.es/doap-bugs#" ; lm:altName "org/graphity/browser/vocabulary/doap-bugs.ttl" ],
-   [ lm:name "http://www.ifi.uzh.ch/ddis/evoont/2008/11/bom#" ; lm:altName "org/graphity/browser/vocabulary/bom.owl" ],
+   [ lm:name "http://purl.org/goodrelations/v1#" ; lm:altName "org/graphity/browser/vocabulary/goodrelations.owl" ],
 
    [ lm:prefix "http://www.w3.org/1999/02/22-rdf-syntax-ns" ; lm:altName "org/graphity/browser/vocabulary/rdf.owl" ] ,
    [ lm:prefix "http://www.w3.org/2000/01/rdf-schema" ; lm:altName "org/graphity/browser/vocabulary/rdfs.owl" ] ,
@@ -37,10 +34,7 @@
    [ lm:prefix "http://www.w3.org/2004/02/skos/core" ; lm:altName "org/graphity/browser/vocabulary/skos.owl" ],
    [ lm:prefix "http://spinrdf.org/sp" ; lm:altName "org/graphity/browser/vocabulary/spin.owl" ],
    [ lm:prefix "http://graphity.org/ontology/" ; lm:altName "org/graphity/browser/vocabulary/graphity.ttl" ] ,
-   [ lm:prefix "http://graphity.org/ontologies/visualizations" ; lm:altName "org/graphity/browser/vocabulary/visualizations.ttl" ],
-   [ lm:prefix "http://graphity.org/ontologies/visualizations/google" ; lm:altName "org/graphity/browser/vocabulary/google-vis.ttl" ],
    [ lm:prefix "http://www.w3.org/2006/time" ; lm:altName "org/graphity/browser/vocabulary/time.owl" ],
    [ lm:prefix "http://usefulinc.com/ns/doap" ; lm:altName "org/graphity/browser/vocabulary/doap.owl" ],
-   [ lm:prefix "http://ontologi.es/doap-bugs" ; lm:altName "org/graphity/browser/vocabulary/doap-bugs.ttl" ],
-   [ lm:prefix "http://www.ifi.uzh.ch/ddis/evoont/2008/11/bom" ; lm:altName "org/graphity/browser/vocabulary/bom.owl" ]
+   [ lm:prefix "http://purl.org/goodrelations/v1" ; lm:altName "org/graphity/browser/vocabulary/goodrelations.owl" ]
 .

@@ -40,7 +40,7 @@ abstract public class LinkedDataResourceImpl implements LinkedDataResource
     public LinkedDataResourceImpl(String uri, String endpointUri)
     {
 	this.uri = uri;
-	if (endpointUri != null && endpointUri.isEmpty()) setEndpointURI(endpointUri);
+	if (endpointUri != null && !endpointUri.isEmpty()) setEndpointURI(endpointUri);
 	log.debug("URI: {} Endpoint URI: {}", getURI(), getEndpointURI());
 	
 	if (getURI() != null)

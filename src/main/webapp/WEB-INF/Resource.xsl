@@ -104,7 +104,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	<html>
 	    <head>
 		<title>
-		    <xsl:text>Graphity</xsl:text>
+		    <xsl:text>Linked Data browser</xsl:text>
 		    <xsl:if test="$uri">
 			<xsl:text> - </xsl:text><xsl:value-of select="g:label($uri, /, $lang)"/>
 			<xsl:if test="not(starts-with($uri, $base-uri))">
@@ -118,7 +118,6 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		    <meta name="author" content="{dct:creator/@rdf:resource}"/>
 		    <meta name="description" content="{dct:description}" xml:lang="{dct:description/@xml:lang}" lang="{dct:description/@xml:lang}"/>
 		</xsl:for-each>
-		<meta name="DC.title" content="Graphity"/>
 		<meta name="keywords" content="Linked Data, RDF, SPARQL, Semantic Web, browser, open source" xml:lang="en" lang="en"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		
