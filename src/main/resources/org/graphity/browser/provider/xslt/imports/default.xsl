@@ -55,13 +55,13 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
 
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{.}">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 
     <xsl:template match="@rdf:about[starts-with(., $base-uri)] | @rdf:resource[starts-with(., $base-uri)] | sparql:uri[starts-with(., $base-uri)]">
-	<a href="{.}" title="{.}">
+	<a href="{.}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
@@ -73,7 +73,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
     <!-- property -->
     <xsl:template match="*[node()[ancestor::rdf:RDF] or @rdf:resource or @rdf:nodeID]">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<a href="{$base-uri}?uri={encode-for-uri($this)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{$this}">
+	<a href="{$base-uri}?uri={encode-for-uri($this)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}" title="{$this}">
 	    <xsl:value-of select="g:label($this, /, $lang)"/>
 	</a>
     </xsl:template>
@@ -109,10 +109,44 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
     </xsl:template>
 
     <xsl:template match="@rdf:about | @rdf:resource" mode="g:TypeMode">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}">
+	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
+
+    <xsl:function name="g:local-label" as="xs:string?">
+	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
+	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
+	<xsl:param name="resource-uri" as="xs:anyURI"/>
+	<xsl:param name="document" as="document-node()"/>
+	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
+
+	<xsl:for-each select="$resource">
+	    <xsl:choose>
+		<xsl:when test="rdfs:label | @rdfs:label">
+		    <xsl:sequence select="(rdfs:label | @rdfs:label)[1]"/>
+		</xsl:when>
+		<xsl:when test="foaf:nick | @foaf:nick">
+		    <xsl:sequence select="(foaf:nick | @foaf:nick)[1]"/>
+		</xsl:when>
+		<xsl:when test="foaf:firstName and foaf:lastName">
+		    <xsl:sequence select="concat(foaf:firstName[1], ' ', foaf:lastName[1])"/>
+		</xsl:when>
+		<xsl:when test="foaf:name | @foaf:name">
+		    <xsl:sequence select="(foaf:name | @foaf:name)[1]"/>
+		</xsl:when>
+		<xsl:when test="dc:title | @dc:title">
+		    <xsl:sequence select="(dc:title | @dc:title)[1]"/>
+		</xsl:when>
+		<xsl:when test="dct:title | @dct:title">
+		    <xsl:sequence select="(dct:title | @dct:title)[1]"/>
+		</xsl:when>
+		<xsl:when test="skos:prefLabel | @skos:prefLabel">
+		    <xsl:sequence select="(skos:prefLabel | @skos:prefLabel)[1]"/>
+		</xsl:when>
+	    </xsl:choose>
+	</xsl:for-each>
+    </xsl:function>
 
     <xsl:function name="g:local-label" as="xs:string?">
 	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
@@ -127,41 +161,20 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
 		<xsl:when test="rdfs:label[lang($lang)]">
 		    <xsl:sequence select="rdfs:label[lang($lang)][1]"/>
 		</xsl:when>
-		<xsl:when test="rdfs:label | @rdfs:label">
-		    <xsl:sequence select="(rdfs:label | @rdfs:label)[1]"/>
-		</xsl:when>
 		<xsl:when test="foaf:nick[lang($lang)]">
 		    <xsl:sequence select="foaf:nick[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick | @foaf:nick">
-		    <xsl:sequence select="(foaf:nick | @foaf:nick)[1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:firstName and foaf:lastName">
-		    <xsl:sequence select="concat(foaf:firstName[1], ' ', foaf:lastName[1])"/>
 		</xsl:when>
 		<xsl:when test="foaf:name[lang($lang)]">
 		    <xsl:sequence select="foaf:name[lang($lang)][1]"/>
 		</xsl:when>
-		<xsl:when test="foaf:name | @foaf:name">
-		    <xsl:sequence select="(foaf:name | @foaf:name)[1]"/>
-		</xsl:when>
 		<xsl:when test="dc:title[lang($lang)]">
 		    <xsl:sequence select="dc:title[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title | @dc:title">
-		    <xsl:sequence select="(dc:title | @dc:title)[1]"/>
 		</xsl:when>
 		<xsl:when test="dct:title[lang($lang)]">
 		    <xsl:sequence select="dct:title[lang($lang)][1]"/>
 		</xsl:when>
-		<xsl:when test="dct:title | @dct:title">
-		    <xsl:sequence select="(dct:title | @dct:title)[1]"/>
-		</xsl:when>
 		<xsl:when test="skos:prefLabel[lang($lang)]">
 		    <xsl:sequence select="skos:prefLabel[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel | @skos:prefLabel">
-		    <xsl:sequence select="(skos:prefLabel | @skos:prefLabel)[1]"/>
 		</xsl:when>
 	    </xsl:choose>
 	</xsl:for-each>
@@ -184,16 +197,23 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
 	<xsl:param name="document" as="document-node()"/>
 	<xsl:param name="lang" as="xs:string"/>
-	<xsl:variable name="local-label" select="g:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
+	<xsl:variable name="local-lang-label" select="g:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
+	<xsl:variable name="local-label" select="g:local-label($resource-uri, $document)" as="xs:string?"/>
 
 	<xsl:choose>
+	    <xsl:when test="$local-lang-label"> <!-- try localized label first -->
+		<xsl:sequence select="concat(upper-case(substring($local-lang-label, 1, 1)), substring($local-lang-label, 2))"/>
+	    </xsl:when>
 	    <xsl:when test="$local-label">
 		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), substring($local-label, 2))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<!-- <xsl:variable name="imported-label" select="(document($ontologies)/g:local-label($resource-uri, ., $lang))[1]" as="xs:string?"/> -->
-		<xsl:variable name="imported-label" select="g:local-label($resource-uri, document(g:document-uri($resource-uri)), $lang)[1]" as="xs:string?"/>
+		<xsl:variable name="imported-lang-label" select="g:local-label($resource-uri, document(g:document-uri($resource-uri)), $lang)" as="xs:string?"/>
+		<xsl:variable name="imported-label" select="g:local-label($resource-uri, document(g:document-uri($resource-uri)))" as="xs:string?"/>
 		<xsl:choose>
+		    <xsl:when test="$imported-lang-label">
+			<xsl:sequence select="concat(upper-case(substring($imported-lang-label, 1, 1)), substring($imported-lang-label, 2))"/>
+		    </xsl:when>
 		    <xsl:when test="$imported-label">
 			<xsl:sequence select="concat(upper-case(substring($imported-label, 1, 1)), substring($imported-label, 2))"/>
 		    </xsl:when>
