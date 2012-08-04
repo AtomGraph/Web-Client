@@ -15,15 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.model;
+package org.graphity.ldp.util.oauth;
+
+import java.util.HashMap;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface LinkedDataResource extends Resource
+public class OAuth2Parameters extends HashMap<String, String>
 {
+    public static final String CLIENT_ID = "client_id";
+    public static final String REDIRECT_URI = "redirect_uri";
 
-    public String getURI();
+    public OAuth2Parameters clientId(String clientId)
+    {
+	put(CLIENT_ID, clientId);
+	return this;
+    }
+ 
+    public String getClientId()
+    {
+	return get(CLIENT_ID);
+    }
     
+    public OAuth2Parameters redirectURI(String redirectUri)
+    {
+	put(REDIRECT_URI, redirectUri);
+	return this;
+    }
+
+    public String redirectURI()
+    {
+	return get(REDIRECT_URI);
+    }
 }

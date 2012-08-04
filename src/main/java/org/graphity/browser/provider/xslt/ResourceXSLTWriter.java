@@ -49,20 +49,20 @@ import org.slf4j.LoggerFactory;
 @Provider
 @Singleton
 @Produces({MediaType.APPLICATION_XHTML_XML})
-public class ResourceXHTMLWriter implements MessageBodyWriter<Resource>
+public class ResourceXSLTWriter implements MessageBodyWriter<Resource>
 {
-    private static final Logger log = LoggerFactory.getLogger(ResourceXHTMLWriter.class);
+    private static final Logger log = LoggerFactory.getLogger(ResourceXSLTWriter.class);
 
     private XSLTBuilder builder = null;
 	
     @Context private UriInfo uriInfo;
 
-    public ResourceXHTMLWriter(XSLTBuilder builder) throws TransformerConfigurationException
+    public ResourceXSLTWriter(XSLTBuilder builder) throws TransformerConfigurationException
     {
 	this.builder = builder;
     }
 
-    public ResourceXHTMLWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
+    public ResourceXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
 	this(XSLTBuilder.fromStylesheet(stylesheet).resolver(resolver));
     }

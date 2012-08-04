@@ -14,16 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.graphity.model;
+
+import com.hp.hpl.jena.rdf.model.Model;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface LinkedDataResource extends Resource
+public interface Resource
 {
 
-    public String getURI();
-    
+    public Model getModel();
+
 }

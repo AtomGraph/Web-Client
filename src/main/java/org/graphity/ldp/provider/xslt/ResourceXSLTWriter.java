@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.provider.xslt;
+package org.graphity.ldp.provider.xslt;
 
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.ByteArrayInputStream;
@@ -94,9 +94,6 @@ public class ResourceXSLTWriter implements MessageBodyWriter<LinkedDataResource>
 		parameter("absolute-path", uriInfo.getAbsolutePath()).
 		parameter("http-headers", httpHeaders.toString()).
 		result(new StreamResult(entityStream));
-	    
-	    if (resource.getEndpointURI() != null)
-		builder.parameter("endpoint-uri", UriBuilder.fromUri(resource.getEndpointURI()).build());
 
 	    builder.transform();
 	    baos.close();

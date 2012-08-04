@@ -31,12 +31,12 @@ import javax.ws.rs.core.Context;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.browser.provider.xslt.ResourceXHTMLWriter;
-import org.graphity.browser.resource.SPARQLResource;
-import org.graphity.provider.ModelProvider;
-import org.graphity.provider.QueryParamProvider;
-import org.graphity.provider.RDFPostReader;
-import org.graphity.provider.ResultSetWriter;
+import org.graphity.browser.provider.xslt.ResourceXSLTWriter;
+import org.graphity.browser.resource.SPARQLEndpoint;
+import org.graphity.ldp.provider.ModelProvider;
+import org.graphity.ldp.provider.QueryParamProvider;
+import org.graphity.ldp.provider.RDFPostReader;
+import org.graphity.ldp.provider.ResultSetWriter;
 import org.graphity.util.locator.LocatorGRDDL;
 import org.graphity.util.locator.PrefixMapper;
 import org.graphity.util.locator.grddl.LocatorAtom;
@@ -100,7 +100,7 @@ public class Application extends javax.ws.rs.core.Application
     @Override
     public Set<Class<?>> getClasses()
     {
-        classes.add(SPARQLResource.class);
+        classes.add(SPARQLEndpoint.class);
 	
         classes.add(Resource.class); // handles the rest
 	
@@ -119,7 +119,7 @@ public class Application extends javax.ws.rs.core.Application
 	// browser-specific
 	try
 	{
-	    singletons.add(new ResourceXHTMLWriter(new StreamSource(context.getRealPath("/WEB-INF/Resource.xsl")), DataManager.get()));
+	    singletons.add(new ResourceXSLTWriter(new StreamSource(context.getRealPath("/WEB-INF/Resource.xsl")), DataManager.get()));
 	}
 	catch (TransformerConfigurationException ex)
 	{

@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.graphity.ldp.model.impl;
 
-package org.graphity.model.impl;
-
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import org.graphity.model.LinkedDataResource;
-import org.graphity.util.manager.DataManager;
+import org.graphity.model.ResourceFactory;
+import org.graphity.model.SPARQLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,37 +28,44 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class LinkedDataResourceImpl implements LinkedDataResource
+abstract public class SPARQLResourceBase extends ResourceBase implements SPARQLResource
 {
-    private static final Logger log = LoggerFactory.getLogger(LinkedDataResourceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(SPARQLResourceBase.class);
 
-    private String uri = null;
+    private String endpointUri = null;
+    private Query query = null;
     private Model model = null;
-    
-    public LinkedDataResourceImpl(String uri)
+
+    public SPARQLResourceBase(String endpointUri, Query query)
     {
-	this.uri = uri;
-	log.debug("URI: {}", getURI());
+	this.endpointUri = endpointUri;
+	this.query = query;
+	log.debug("Endpoint URI: {} Query: {}", endpointUri, query);
+    }
+
+    public SPARQLResourceBase(String endpointUri, String uri)
+    {
+	this(endpointUri, QueryFactory.create("DESCRIBE <" + uri + ">"));
     }
 
     @Override
     public Model getModel()
     {
-	if (model == null)
-	{
-	    log.debug("Loading Model from URI: {}", getURI());
-	    model = DataManager.get().loadModel(getURI());
-
-	    log.debug("Number of Model stmts read: {}", model.size());
-	}
+	if (model == null) model = ResourceFactory.createSPARQLResource(endpointUri, query).getModel();
 
 	return model;
     }
 
     @Override
-    public final String getURI()
+    public String getEndpointURI()
     {
-	return uri;
+	return endpointUri;
     }
 
+    @Override
+    public Query getQuery()
+    {
+	return query;
+    }
+    
 }

@@ -14,28 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.graphity.model;
 
-package org.graphity.util.oauth;
+import com.hp.hpl.jena.query.Query;
+import org.graphity.model.impl.LinkedDataResourceImpl;
+import org.graphity.model.impl.SPARQLResourceImpl;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class OAuth2Secrets
+public class ResourceFactory
 {
-    public static final String CLIENT_SECRET = "client_secret";
-    public static final String ACESS_TOKEN = "access_token";
+    public static LinkedDataResource createLinkedDataResource(String uri)
+    {
+	return new LinkedDataResourceImpl(uri);
+    }
+    
+    public static SPARQLResource createSPARQLResource(String endpointUri, Query query)
+    {
+	return new SPARQLResourceImpl(endpointUri, query);
+    }
 
-    private String clientSecret = null;
-    
-    public OAuth2Secrets clientSecret(String clientSecret)
+    public static SPARQLResource createSPARQLResource(String endpointUri, String uri)
     {
-	this.clientSecret = clientSecret;
-	return this;
+	return new SPARQLResourceImpl(endpointUri, uri);
     }
-    
-    public String getClientSecret()
-    {
-	return clientSecret;
-    }
+
 }

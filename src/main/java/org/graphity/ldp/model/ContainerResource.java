@@ -14,39 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.graphity.util.oauth;
-
-import java.util.HashMap;
+package org.graphity.ldp.model;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class OAuth2Parameters extends HashMap<String, String>
+public interface ContainerResource extends Resource
 {
-    public static final String CLIENT_ID = "client_id";
-    public static final String REDIRECT_URI = "redirect_uri";
-
-    public OAuth2Parameters clientId(String clientId)
-    {
-	put(CLIENT_ID, clientId);
-	return this;
-    }
- 
-    public String getClientId()
-    {
-	return get(CLIENT_ID);
-    }
+    public Long getLimit();
     
-    public OAuth2Parameters redirectURI(String redirectUri)
-    {
-	put(REDIRECT_URI, redirectUri);
-	return this;
-    }
+    public Long getOffset();
+    
+    public String getOrderBy();
+    
+    public boolean getDesc();
 
-    public String redirectURI()
-    {
-	return get(REDIRECT_URI);
-    }
 }

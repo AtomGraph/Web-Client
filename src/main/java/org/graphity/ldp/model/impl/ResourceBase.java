@@ -14,50 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.graphity.ldp.model.impl;
 
-package org.graphity.model.impl;
-
-import com.hp.hpl.jena.rdf.model.Model;
-import org.graphity.model.LinkedDataResource;
-import org.graphity.util.manager.DataManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import org.graphity.ldp.model.Resource;
+import org.graphity.util.ModelUtils;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class LinkedDataResourceImpl implements LinkedDataResource
+abstract public class ResourceBase implements Resource
 {
-    private static final Logger log = LoggerFactory.getLogger(LinkedDataResourceImpl.class);
-
-    private String uri = null;
-    private Model model = null;
+    private @Context UriInfo uriInfo = null;
     
-    public LinkedDataResourceImpl(String uri)
+    @Override
+    public String getURI()
     {
-	this.uri = uri;
-	log.debug("URI: {}", getURI());
+	return uriInfo.getAbsolutePath().toString();
     }
 
     @Override
-    public Model getModel()
+    public Response getResponse()
     {
-	if (model == null)
-	{
-	    log.debug("Loading Model from URI: {}", getURI());
-	    model = DataManager.get().loadModel(getURI());
-
-	    log.debug("Number of Model stmts read: {}", model.size());
-	}
-
-	return model;
+	return Response.ok(getModel()).tag(getEntityTag()).build();
     }
 
     @Override
-    public final String getURI()
+    public EntityTag getEntityTag()
     {
-	return uri;
+	return new EntityTag(Long.toHexString(ModelUtils.hashModel(getModel())));
     }
 
 }

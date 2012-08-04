@@ -18,8 +18,8 @@
 package org.graphity.util.locator;
 
 import com.hp.hpl.jena.util.TypedStream;
-import org.graphity.util.oauth.OAuth2Parameters;
-import org.graphity.util.oauth.OAuth2Secrets;
+import org.graphity.ldp.util.oauth.OAuth2Parameters;
+import org.graphity.ldp.util.oauth.OAuth2Secrets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

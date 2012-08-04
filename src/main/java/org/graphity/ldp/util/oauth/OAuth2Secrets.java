@@ -15,15 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.model;
+package org.graphity.ldp.util.oauth;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface LinkedDataResource extends Resource
+public class OAuth2Secrets
 {
+    public static final String CLIENT_SECRET = "client_secret";
+    public static final String ACESS_TOKEN = "access_token";
 
-    public String getURI();
+    private String clientSecret = null;
     
+    public OAuth2Secrets clientSecret(String clientSecret)
+    {
+	this.clientSecret = clientSecret;
+	return this;
+    }
+    
+    public String getClientSecret()
+    {
+	return clientSecret;
+    }
 }

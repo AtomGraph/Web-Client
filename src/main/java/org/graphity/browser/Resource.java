@@ -24,7 +24,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import org.graphity.model.impl.LinkedDataResourceImpl;
+import org.graphity.ldp.model.impl.ContainerResourceBase;
 import org.graphity.util.ModelUtils;
 import org.graphity.util.QueryBuilder;
 import org.graphity.util.locator.PrefixMapper;
@@ -40,7 +40,7 @@ import org.topbraid.spin.model.Select;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/{path: .*}")
-public class Resource extends LinkedDataResourceImpl
+public class Resource extends ContainerResourceBase
 {
     private UriInfo uriInfo = null;
     private Model model = null;
@@ -168,7 +168,7 @@ public class Resource extends LinkedDataResourceImpl
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8",org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    public Response postModel(Model rdfPost)
+    public Response post(Model rdfPost)
     {
 	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
 

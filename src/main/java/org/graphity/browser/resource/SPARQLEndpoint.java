@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/sparql")
-public class SPARQLResource extends Resource
+public class SPARQLEndpoint extends Resource
 {
-    private static final Logger log = LoggerFactory.getLogger(SPARQLResource.class);
+    private static final Logger log = LoggerFactory.getLogger(SPARQLEndpoint.class);
     private static final long MAX_LIMIT = 100;
     
     private Query query = null;
@@ -41,7 +41,7 @@ public class SPARQLResource extends Resource
     private ResultSet resultSet = null;
     private String endpointUri = null;
 
-    public SPARQLResource(@Context UriInfo uriInfo,
+    public SPARQLEndpoint(@Context UriInfo uriInfo,
 	@Context HttpHeaders headers,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") MediaType acceptType,

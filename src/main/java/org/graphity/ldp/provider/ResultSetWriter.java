@@ -14,27 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.provider.xslt;
+package org.graphity.ldp.provider;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.stream.StreamResult;
-import org.graphity.util.XSLTBuilder;
+import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,21 +35,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
+@Provider
+@Produces({org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML, org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON})
+public class ResultSetWriter implements MessageBodyWriter<ResultSet>
 {
-    private static final Logger log = LoggerFactory.getLogger(ResultSetXSLTWriter.class);
-
-    private XSLTBuilder builder = null;
-
-    public ResultSetXSLTWriter(XSLTBuilder builder) throws TransformerConfigurationException
-    {
-	this.builder = builder;
-    }
-
-    public ResultSetXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
-    {
-	this(XSLTBuilder.fromStylesheet(stylesheet).resolver(resolver));
-    }
+    private static final Logger log = LoggerFactory.getLogger(ResultSetWriter.class);
     
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -65,7 +48,7 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     }
 
     @Override
-    public long getSize(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    public long getSize(ResultSet t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
 	return -1;
     }
@@ -73,28 +56,10 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     @Override
     public void writeTo(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	try
-	{
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    ResultSetFormatter.outputAsXML(baos, results);
-	    
-	    getXSLTBuilder().
-		document(new ByteArrayInputStream(baos.toByteArray())).
-		result(new StreamResult(entityStream)).
-		transform();
-		    
-	    baos.close();
-	}
-	catch (TransformerException ex)
-	{
-	    log.error("XSLT transformation failed", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-	}
+	if (mediaType.equals(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
+	    ResultSetFormatter.outputAsJSON(entityStream, results);
+	else
+	    ResultSetFormatter.outputAsXML(entityStream, results);
     }
-
-    public XSLTBuilder getXSLTBuilder()
-    {
-	return builder;
-    }
-
+    
 }
