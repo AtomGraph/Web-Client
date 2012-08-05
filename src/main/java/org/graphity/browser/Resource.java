@@ -127,14 +127,14 @@ public class Resource extends ResourceBase
 	    try
 	    {
 		model = getResource().getModel();
-		//if (model == null || model.isEmpty()) model = ResourceFactory.getResource(uri).getModel(); // fallback
 	    }
 	    catch (Exception ex)
 	    {
 		log.trace("Error while loading Model from URI: {}", uri, ex);
 		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 	    }
-
+	    //if (model == null || model.isEmpty()) model = ResourceFactory.getResource(uri).getModel(); // fallback
+	
 	    if (model.isEmpty())
 	    {
 		log.trace("Loaded Model is empty");
