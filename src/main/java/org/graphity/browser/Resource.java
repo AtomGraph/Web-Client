@@ -126,14 +126,19 @@ public class Resource extends ResourceBase
 	if (model == null)
 	    try
 	    {
+		log.debug("Loading Model from local Model or remote URI or endpoint");
 		model = getResource().getModel();
+		if (model.isEmpty() && uri != null && endpointUri != null) // fallback to Linked Data
+		{
+		    log.debug("Model not loaded from SPARQL endpoint {}, falling back to LD URI: {}", endpointUri, uri);
+		    model = ResourceFactory.getResource(uri).getModel();
+		}
 	    }
 	    catch (Exception ex)
 	    {
 		log.trace("Error while loading Model from URI: {}", uri, ex);
 		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 	    }
-	    //if (model == null || model.isEmpty()) model = ResourceFactory.getResource(uri).getModel(); // fallback
 	
 	    if (model.isEmpty())
 	    {
