@@ -21,8 +21,10 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import org.graphity.model.QueriedResource;
 import org.graphity.model.ResourceFactory;
-import org.graphity.model.SPARQLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +32,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-abstract public class SPARQLContainerResourceBase extends ContainerResourceBase implements SPARQLResource
+abstract public class QueriedContainerResourceBase extends ContainerResourceBase implements QueriedResource
 {
-    private static final Logger log = LoggerFactory.getLogger(SPARQLContainerResourceBase.class);
+    private static final Logger log = LoggerFactory.getLogger(QueriedContainerResourceBase.class);
 
     private String endpointUri = null;
     private Query query = null;
     private Model model = null;
 
-    public SPARQLContainerResourceBase(
+    public QueriedContainerResourceBase(
+	@Context UriInfo uriInfo,
 	String endpointUri,
 	Query query,
 	@QueryParam("limit") @DefaultValue("20") Long limit,
@@ -46,34 +49,28 @@ abstract public class SPARQLContainerResourceBase extends ContainerResourceBase 
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") Boolean desc)
     {
-	super(limit, offset, orderBy, desc);
+	super(uriInfo, limit, offset, orderBy, desc);
 	this.endpointUri = endpointUri;
 	this.query = query;
 	log.debug("Endpoint URI: {} Query: {}", endpointUri, query);
     }
 
-    public SPARQLContainerResourceBase(String endpointUri, Query query)
+    public QueriedContainerResourceBase(@Context UriInfo uriInfo, String endpointUri, Query query)
     {
-	this(endpointUri, query, null, null, null, null);
+	this(uriInfo, endpointUri, query, null, null, null, null);
     }
 
-    public SPARQLContainerResourceBase(String endpointUri, String uri)
+    public QueriedContainerResourceBase(@Context UriInfo uriInfo, String endpointUri, String uri)
     {
-	this(endpointUri, QueryFactory.create("DESCRIBE <" + uri + ">"));
+	this(uriInfo, endpointUri, QueryFactory.create("DESCRIBE <" + uri + ">"));
     }
 
     @Override
     public Model getModel()
     {
-	if (model == null) model = ResourceFactory.createSPARQLResource(endpointUri, query).getModel();
+	if (model == null) model = ResourceFactory.getResource(endpointUri, query).getModel();
 
 	return model;
-    }
-
-    @Override
-    public String getEndpointURI()
-    {
-	return endpointUri;
     }
 
     @Override
@@ -81,5 +78,10 @@ abstract public class SPARQLContainerResourceBase extends ContainerResourceBase 
     {
 	return query;
     }
-    
+
+    protected void setQuery(Query query)
+    {
+	this.query = query;
+    }
+
 }

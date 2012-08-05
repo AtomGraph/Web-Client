@@ -20,12 +20,13 @@ package org.graphity.browser;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import org.graphity.ldp.model.impl.ContainerResourceBase;
-import org.graphity.util.ModelUtils;
+import org.graphity.ldp.model.impl.ResourceBase;
+import org.graphity.model.ResourceFactory;
 import org.graphity.util.QueryBuilder;
 import org.graphity.util.locator.PrefixMapper;
 import org.graphity.util.manager.DataManager;
@@ -40,13 +41,15 @@ import org.topbraid.spin.model.Select;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/{path: .*}")
-public class Resource extends ContainerResourceBase
+public class Resource extends ResourceBase
 {
-    private UriInfo uriInfo = null;
+    private String uri = null;
     private Model model = null;
     private OntModel ontModel = null;
+    private String endpointUri = null;
+    private Query query = null;
     private QueryBuilder qb = null;
-    private com.hp.hpl.jena.rdf.model.Resource resource, spinRes = null;
+    private com.hp.hpl.jena.rdf.model.Resource spinRes = null;
     private MediaType acceptType = MediaType.APPLICATION_XHTML_XML_TYPE;
 
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
@@ -61,12 +64,15 @@ public class Resource extends ContainerResourceBase
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc)
     {
-	super(uri == null ? uriInfo.getAbsolutePath().toString() : uri, endpointUri);
-	this.uriInfo = uriInfo;
+	super(uriInfo);
+	this.uri = uri;
+	this.endpointUri = endpointUri;
+	
 	if (acceptType != null) this.acceptType = acceptType;
-	else // probably needs try/catch
-	    if (headers.getAcceptableMediaTypes().get(0).equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
-	    this.acceptType = headers.getAcceptableMediaTypes().get(0);
+	else
+	    if (headers.getAcceptableMediaTypes().get(0).isCompatible(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE) ||
+		headers.getAcceptableMediaTypes().get(0).isCompatible(org.graphity.MediaType.TEXT_TURTLE_TYPE))
+		    this.acceptType = headers.getAcceptableMediaTypes().get(0);
 	log.debug("AcceptType: {} Acceptable MediaTypes: {}", this.acceptType, headers.getAcceptableMediaTypes());
 
 	// ontology URI is base URI-dependent
@@ -77,13 +83,13 @@ public class Resource extends ContainerResourceBase
 	ontModel = OntDocumentManager.getInstance().
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);
 
-	resource = ontModel.createResource(getURI());
-	log.debug("Resource: {} with URI: {}", resource, getURI());
+	com.hp.hpl.jena.rdf.model.Resource resource = ontModel.createResource(super.getURI());
+	log.debug("Resource: {} with URI: {}", resource, super.getURI());
 
 	if (resource.hasProperty(Graphity.query))
 	{
 	    spinRes = resource.getPropertyResourceValue(Graphity.query);
-	    log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
+	    log.trace("Explicit query resource {} for URI {}", spinRes, super.getURI());
 
 	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into CONSTRUCT { ?s ?p ?o }
 	    {
@@ -103,58 +109,76 @@ public class Resource extends ContainerResourceBase
 	    else
 		qb = QueryBuilder.fromResource(spinRes); // CONSTRUCT
 	    
-	    setQuery(qb.build());
-	    log.debug("Query generated with QueryBuilder: {}", getQuery());
+	    query = qb.build();
+	    log.debug("Query generated with QueryBuilder: {}", query);
 	}
 	
-	if (getEndpointURI() == null && resource.hasProperty(Graphity.service))
-	    setEndpointURI(resource.getPropertyResourceValue(Graphity.service).
+	if (this.endpointUri == null && resource.hasProperty(Graphity.service))
+	    this.endpointUri = resource.getPropertyResourceValue(Graphity.service).
 		getPropertyResourceValue(ontModel.
-		    getProperty("http://www.w3.org/ns/sparql-service-description#endpoint")).getURI());
+		    getProperty("http://www.w3.org/ns/sparql-service-description#endpoint")).getURI();
+    }
+
+    @Override
+    public String getURI()
+    {
+	if (uri != null) return uri;
+	
+	return super.getURI();
     }
 
     @Override
     public Model getModel()
     {
 	if (model == null)
-	{
-	    // local URI
-	    if (getEndpointURI() == null && uriInfo.getAbsolutePath().toString().equals(getURI()))
+	    try
 	    {
-		log.debug("Querying local OntModel: {} with Query: {}", getOntModel(), getQuery());
-		model = DataManager.get().loadModel(getOntModel(), getQuery());
+		model = getResource().getModel();
+		//if (model == null || model.isEmpty()) model = ResourceFactory.getResource(uri).getModel(); // fallback
 	    }
-	    else
-		try
-		{
-		    model = super.getModel(); // load from remote resource
-		}
-		catch (Exception ex)
-		{
-		    log.trace("Error while loading Model from URI: {}", getURI(), ex);
-		    throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
-		}
+	    catch (Exception ex)
+	    {
+		log.trace("Error while loading Model from URI: {}", uri, ex);
+		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+	    }
 
 	    if (model.isEmpty())
 	    {
 		log.trace("Loaded Model is empty");
 		throw new WebApplicationException(Response.Status.NOT_FOUND);
 	    }
-	}
 	
 	return model;
     }
 
-    protected final void setModel(Model model)
+    private org.graphity.model.Resource getResource()
+    {
+	if (uri == null && endpointUri == null) // local URI
+	{
+	    if (query != null) return ResourceFactory.getResource(getOntModel(), query);
+	    else return ResourceFactory.getResource(getOntModel(), getURI());
+	}
+	else // remote URI or endpoint
+	{
+	    if (endpointUri != null)
+	    {
+		if (query != null) return ResourceFactory.getResource(endpointUri, query);
+		else return ResourceFactory.getResource(endpointUri, uri);
+	    }
+	    else return ResourceFactory.getResource(uri);
+	}
+    }
+
+    protected void setModel(Model model)
     {
 	this.model = model;
     }
 
-    public OntModel getOntModel()
+    protected OntModel getOntModel()
     {
 	return ontModel;
     }
-
+    
     public com.hp.hpl.jena.rdf.model.Resource getSPINResource()
     {
 	return spinRes;
@@ -167,7 +191,7 @@ public class Resource extends ContainerResourceBase
     
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces({MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8",org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
+    @Override
     public Response post(Model rdfPost)
     {
 	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
@@ -177,34 +201,46 @@ public class Resource extends ContainerResourceBase
 	return getResponse();
     }
     
+    @Override
     @GET
     @Produces({MediaType.APPLICATION_XHTML_XML + "; charset=UTF-8",org.graphity.MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", org.graphity.MediaType.TEXT_TURTLE + "; charset=UTF-8"})
     public Response getResponse()
     {
 	if (getAcceptType() != null)
 	{
-	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
-
 	    // uses ModelProvider
-	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
-		return Response.ok(getModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
-	    if (getAcceptType().equals(org.graphity.MediaType.TEXT_TURTLE_TYPE))
-		return Response.ok(getModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
+	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
+	    {
+		log.debug("Accept param: {}, writing RDF/XML", getAcceptType());
+		return Response.ok(getModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).
+			tag(getEntityTag()).build();
+	    }
+	    if (getAcceptType().isCompatible(org.graphity.MediaType.TEXT_TURTLE_TYPE))
+	    {
+		log.debug("Accept param: {}, writing Turtle", getAcceptType());
+		return Response.ok(getModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).
+			tag(getEntityTag()).build();
+	    }
 	}
 
-	return Response.ok(this).
-		tag(getEntityTag()).
-		build(); // uses ResourceXHTMLWriter
+	return Response.ok(this).tag(getEntityTag()).build(); // uses ResourceXHTMLWriter
     }
 
-    public MediaType getAcceptType()
+    protected MediaType getAcceptType()
     {
 	return acceptType;
     }
 
-    public EntityTag getEntityTag()
+    @Override
+    public Response put(Model model)
     {
-	return new EntityTag(Long.toHexString(ModelUtils.hashModel(getModel())));
+	throw new WebApplicationException(405); // method not allowed
+    }
+
+    @Override
+    public Response delete()
+    {
+	throw new WebApplicationException(405); // method not allowed
     }
     
 }

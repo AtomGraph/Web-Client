@@ -22,10 +22,10 @@ import com.hp.hpl.jena.query.Query;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface SPARQLResource extends Resource
+public interface QueriedResource extends Resource
 {
 
-    public String getEndpointURI();
+    //public String getEndpointURI();
     
     public Query getQuery();
     

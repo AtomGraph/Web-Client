@@ -99,7 +99,7 @@ public class ResourceXSLTWriter implements MessageBodyWriter<Resource>
 	    
 	    if (resource.getSPINResource() != null)
 	    {
-		if (resource.getSPINResource().isURIResource())
+		if (resource.getSPINResource().isURIResource()) // possible to extract in XSLT??
 		    builder.parameter("query-uri", UriBuilder.fromPath(resource.getSPINResource().getURI()).build());
 		//if (resource.getSPINResource().isAnon()) // anonId is not reusable as @rdf:nodeID
 		//    builder.parameter("query-bnode-id", resource.getSPINResource().getId().getLabelString());

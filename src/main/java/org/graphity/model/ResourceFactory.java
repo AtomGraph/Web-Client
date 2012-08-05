@@ -17,8 +17,9 @@
 package org.graphity.model;
 
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.rdf.model.Model;
 import org.graphity.model.impl.LinkedDataResourceImpl;
-import org.graphity.model.impl.SPARQLResourceImpl;
+import org.graphity.model.impl.QueriedResourceImpl;
 
 /**
  *
@@ -26,19 +27,29 @@ import org.graphity.model.impl.SPARQLResourceImpl;
  */
 public class ResourceFactory
 {
-    public static LinkedDataResource createLinkedDataResource(String uri)
+    public static Resource getResource(String uri)
     {
 	return new LinkedDataResourceImpl(uri);
     }
     
-    public static SPARQLResource createSPARQLResource(String endpointUri, Query query)
+    public static Resource getResource(String endpointUri, Query query)
     {
-	return new SPARQLResourceImpl(endpointUri, query);
+	return new QueriedResourceImpl(endpointUri, query);
     }
 
-    public static SPARQLResource createSPARQLResource(String endpointUri, String uri)
+    public static Resource getResource(String endpointUri, String uri)
     {
-	return new SPARQLResourceImpl(endpointUri, uri);
+	return new QueriedResourceImpl(endpointUri, uri);
+    }
+
+    public static Resource getResource(Model model, Query query)
+    {
+	return new QueriedResourceImpl(model, query);
+    }
+
+    public static Resource getResource(Model model, String uri)
+    {
+	return new QueriedResourceImpl(model, uri);
     }
 
 }

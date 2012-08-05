@@ -27,21 +27,15 @@ import org.graphity.model.LinkedDataResource;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
+@Consumes({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
+@Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
 public interface Resource extends LinkedDataResource
 {
-    @GET
-    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    Response getResponse();
+    @GET Response getResponse();
     
-    @POST
-    @Consumes({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    Response post(Model model);
+    @POST Response post(Model model);
 
-    @PUT
-    @Consumes({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    @Produces({MediaType.APPLICATION_RDF_XML + "; charset=UTF-8", MediaType.TEXT_TURTLE + "; charset=UTF-8"})
-    Response put(Model model);
+    @PUT Response put(Model model);
     
     @DELETE Response delete();
     

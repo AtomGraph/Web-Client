@@ -36,8 +36,9 @@ public class LinkedDataResourceImpl implements LinkedDataResource
     
     public LinkedDataResourceImpl(String uri)
     {
+	if (uri == null) throw new IllegalArgumentException("Linked Data URI must be not null");
 	this.uri = uri;
-	log.debug("URI: {}", getURI());
+	log.debug("URI: {}", uri);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class LinkedDataResourceImpl implements LinkedDataResource
     }
 
     @Override
-    public final String getURI()
+    public String getURI()
     {
 	return uri;
     }

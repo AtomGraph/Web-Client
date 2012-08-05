@@ -30,6 +30,11 @@ import org.graphity.util.ModelUtils;
 abstract public class ResourceBase implements Resource
 {
     private @Context UriInfo uriInfo = null;
+
+    public ResourceBase(@Context UriInfo uriInfo)
+    {
+	this.uriInfo = uriInfo;
+    }
     
     @Override
     public String getURI()
@@ -40,7 +45,7 @@ abstract public class ResourceBase implements Resource
     @Override
     public Response getResponse()
     {
-	return Response.ok(getModel()).tag(getEntityTag()).build();
+	return Response.ok(getModel()).tag(getEntityTag()).build(); // uses ModelProvider
     }
 
     @Override

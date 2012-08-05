@@ -22,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import org.graphity.browser.Resource;
+import org.graphity.model.ResourceFactory;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,9 +82,9 @@ public class SPARQLEndpoint extends Resource
 	if (model == null && query != null && (query.isConstructType() || query.isDescribeType()))
 	{
 	    if (endpointUri != null)
-		model = DataManager.get().loadModel(endpointUri, query);
+		model = ResourceFactory.getResource(endpointUri, query).getModel();
 	    else
-		model = DataManager.get().loadModel(getOntModel(), query);
+		model = ResourceFactory.getResource(getOntModel(), query).getModel();
 	}
 	    
 	return model;
