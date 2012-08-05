@@ -145,7 +145,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 			    </a>
 
 			    <div class="nav-collapse">
-				<form action="" method="get" class="navbar-form pull-left">
+				<form action="{$base-uri}" method="get" class="navbar-form pull-left">
 				    <div class="input-append">
 					<input type="text" name="uri" class="input-xxlarge">
 					    <xsl:if test="not(starts-with($uri, $base-uri))">

@@ -37,7 +37,7 @@ abstract public class ResourceBase implements Resource
     }
     
     @Override
-    public String getURI()
+    public final String getURI()
     {
 	return uriInfo.getAbsolutePath().toString();
     }

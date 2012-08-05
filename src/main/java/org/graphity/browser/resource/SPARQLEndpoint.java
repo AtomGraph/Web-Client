@@ -98,9 +98,9 @@ public class SPARQLEndpoint extends Resource
 	    log.debug("Accept param: {}, writing SPARQL results (XML or JSON)", getAcceptType());
 
 	    // uses ResultSetWriter
-	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
+	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
 		return Response.ok(getResultSet(), org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE).build();
-	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
+	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
 		return Response.ok(getResultSet(), org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE).build();
 	}
 	if (getAcceptType() != null && getResultModel() != null)
@@ -108,9 +108,9 @@ public class SPARQLEndpoint extends Resource
 	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
 
 	    // uses ModelProvider
-	    if (getAcceptType().equals(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
+	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
 		return Response.ok(getResultModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).build();
-	    if (getAcceptType().equals(org.graphity.MediaType.TEXT_TURTLE_TYPE))
+	    if (getAcceptType().isCompatible(org.graphity.MediaType.TEXT_TURTLE_TYPE))
 		return Response.ok(getResultModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).build();
 	}
 

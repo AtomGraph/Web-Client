@@ -67,6 +67,7 @@ public class Resource extends ResourceBase
 	super(uriInfo);
 	this.uri = uri;
 	this.endpointUri = endpointUri;
+	log.debug("URI: {} Endpoint URI: {}", uri, endpointUri);
 	
 	if (acceptType != null) this.acceptType = acceptType;
 	else
@@ -83,13 +84,13 @@ public class Resource extends ResourceBase
 	ontModel = OntDocumentManager.getInstance().
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);
 
-	com.hp.hpl.jena.rdf.model.Resource resource = ontModel.createResource(super.getURI());
-	log.debug("Resource: {} with URI: {}", resource, super.getURI());
+	com.hp.hpl.jena.rdf.model.Resource resource = ontModel.createResource(getURI());
+	log.debug("Resource: {} with URI: {}", resource, getURI());
 
-	if (resource.hasProperty(Graphity.query))
+	if (this.uri == null && resource.hasProperty(Graphity.query)) // only build Query if it's not default DESCRIBE
 	{
 	    spinRes = resource.getPropertyResourceValue(Graphity.query);
-	    log.trace("Explicit query resource {} for URI {}", spinRes, super.getURI());
+	    log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
 
 	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into CONSTRUCT { ?s ?p ?o }
 	    {
@@ -108,7 +109,7 @@ public class Resource extends ResourceBase
 	    }
 	    else
 		qb = QueryBuilder.fromResource(spinRes); // CONSTRUCT
-	    
+
 	    query = qb.build();
 	    log.debug("Query generated with QueryBuilder: {}", query);
 	}
@@ -117,14 +118,6 @@ public class Resource extends ResourceBase
 	    this.endpointUri = resource.getPropertyResourceValue(Graphity.service).
 		getPropertyResourceValue(ontModel.
 		    getProperty("http://www.w3.org/ns/sparql-service-description#endpoint")).getURI();
-    }
-
-    @Override
-    public String getURI()
-    {
-	if (uri != null) return uri;
-	
-	return super.getURI();
     }
 
     @Override
