@@ -67,11 +67,6 @@
             <artifactId>saxon</artifactId>
             <version>9.1.0.8</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ldp</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>
