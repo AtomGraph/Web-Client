@@ -67,6 +67,11 @@
             <artifactId>saxon</artifactId>
             <version>9.1.0.8</version>
         </dependency>
+        <dependency>
+            <groupId>org.graphity</groupId>
+            <artifactId>ldp</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -102,6 +107,19 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.1</version>
                 <executions>
+		    <execution>
+		    <id>resource-dependencies</id>
+		    <phase>generate-resources</phase>
+		    <goals>
+			<goal>unpack-dependencies</goal>
+		    </goals>
+		    <configuration>
+			<includeArtifactIds>browser</includeArtifactIds>
+			<includeGroupIds>org.graphity</includeGroupIds>
+			<includes>**\/*.xsl</includes>
+			<outputDirectory>${project.build.directory}/classes</outputDirectory>
+		    </configuration>
+		    </execution>
                     <execution>
                         <phase>validate</phase>
                         <goals>
