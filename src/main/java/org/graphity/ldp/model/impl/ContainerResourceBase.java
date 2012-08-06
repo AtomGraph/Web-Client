@@ -16,9 +16,6 @@
  */
 package org.graphity.ldp.model.impl;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.ldp.model.ContainerResource;
 
@@ -33,11 +30,8 @@ abstract public class ContainerResourceBase extends ResourceBase implements Cont
     private String orderBy = null;
     private Boolean desc = true;
     
-    public ContainerResourceBase(@Context UriInfo uriInfo,
-	@QueryParam("limit") @DefaultValue("20") Long limit,
-	@QueryParam("offset") @DefaultValue("0") Long offset,
-	@QueryParam("order-by") String orderBy,
-	@QueryParam("desc") @DefaultValue("true") Boolean desc)
+    public ContainerResourceBase(UriInfo uriInfo,
+	Long limit, Long offset, String orderBy, Boolean desc)
     {
 	super(uriInfo);
 	this.limit = limit;

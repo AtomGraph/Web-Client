@@ -16,7 +16,6 @@
  */
 package org.graphity.ldp.model.impl;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -29,9 +28,9 @@ import org.graphity.util.ModelUtils;
  */
 abstract public class ResourceBase implements Resource
 {
-    private @Context UriInfo uriInfo = null;
+    private UriInfo uriInfo = null;
 
-    public ResourceBase(@Context UriInfo uriInfo)
+    public ResourceBase(UriInfo uriInfo)
     {
 	this.uriInfo = uriInfo;
     }

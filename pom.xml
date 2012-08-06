@@ -70,22 +70,12 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-servlet-webserver</artifactId>
-            <version>1.9.0-RC1</version>
+            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>org.topbraid</groupId>
             <artifactId>spin</artifactId>
             <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.saxon</groupId>
-            <artifactId>saxon</artifactId>
-            <version>9.1.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.oauth</groupId>
@@ -95,7 +85,7 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>1.10</version>
+            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.oauth</groupId>
@@ -112,6 +102,21 @@
                     <groupId>com.hp.hpl.jena</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-grizzly2</artifactId>
+            <version>1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>9.1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
+            <version>1.13</version>
         </dependency>
     </dependencies>
 

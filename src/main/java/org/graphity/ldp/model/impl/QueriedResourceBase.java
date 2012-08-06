@@ -19,7 +19,6 @@ package org.graphity.ldp.model.impl;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.model.QueriedResource;
 import org.graphity.model.ResourceFactory;
@@ -38,7 +37,7 @@ abstract public class QueriedResourceBase extends ResourceBase implements Querie
     private Query query = null;
     private Model queryModel, model = null;
 
-    public QueriedResourceBase(@Context UriInfo uriInfo, String endpointUri, Query query)
+    public QueriedResourceBase(UriInfo uriInfo, String endpointUri, Query query)
     {
 	super(uriInfo);
 	if (endpointUri == null || query == null || !(query.isConstructType() || query.isDescribeType())) throw new IllegalArgumentException("Endpoint URI and Query must be not null; Query must be CONSTRUCT or DESCRIBE");
@@ -47,12 +46,12 @@ abstract public class QueriedResourceBase extends ResourceBase implements Querie
 	log.debug("Endpoint URI: {} Query: {}", endpointUri, query);
     }
 
-    public QueriedResourceBase(@Context UriInfo uriInfo, String endpointUri, String uri)
+    public QueriedResourceBase(UriInfo uriInfo, String endpointUri, String uri)
     {
 	this(uriInfo, endpointUri, QueryFactory.create("DESCRIBE <" + uri + ">"));
     }
 
-    public QueriedResourceBase(@Context UriInfo uriInfo, Model queryModel, Query query)
+    public QueriedResourceBase(UriInfo uriInfo, Model queryModel, Query query)
     {
 	super(uriInfo);
 	if (queryModel == null || query == null || !(query.isConstructType() || query.isDescribeType())) throw new IllegalArgumentException("Endpoint URI and query Model must be not null; Query must be CONSTRUCT or DESCRIBE");
@@ -61,7 +60,7 @@ abstract public class QueriedResourceBase extends ResourceBase implements Querie
 	log.debug("Model: {} Query: {}", queryModel, query);
     }
 
-    public QueriedResourceBase(@Context UriInfo uriInfo, Model queryModel, String uri)
+    public QueriedResourceBase(UriInfo uriInfo, Model queryModel, String uri)
     {
 	this(uriInfo, queryModel, QueryFactory.create("DESCRIBE <" + uri + ">"));
     }
