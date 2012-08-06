@@ -63,57 +63,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.9</version>
-        </dependency>
-	<!--
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-servlet</artifactId>
-            <version>1.10</version>
-        </dependency>
-	-->
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>arq</artifactId>
-            <version>2.8.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.topbraid</groupId>
-            <artifactId>spin</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.oauth</groupId>
-            <artifactId>oauth-signature</artifactId>
-            <version>1.1.1-ea</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.oauth</groupId>
-            <artifactId>oauth-client</artifactId>
-            <version>1.1.1-ea</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjena</groupId>
-            <artifactId>fuseki</artifactId>
-            <version>0.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>tdb</artifactId>
-                    <groupId>com.hp.hpl.jena</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>net.sourceforge.saxon</groupId>
             <artifactId>saxon</artifactId>
             <version>9.1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ldp</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
