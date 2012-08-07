@@ -51,7 +51,7 @@ public class Application extends org.graphity.ldp.Application
     @Override
     public Set<Class<?>> getClasses()
     {
-        classes.add(SPARQLEndpoint.class);
+        classes.add(SPARQLEndpoint.class); // possible to move to Graphity LDP?
 	
         classes.add(Resource.class); // handles the rest
 	
