@@ -24,8 +24,8 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.*;
 import org.graphity.ldp.model.impl.ResourceBase;
 import org.graphity.model.ResourceFactory;
 import org.graphity.util.QueryBuilder;
@@ -67,7 +67,7 @@ public class Resource extends ResourceBase
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") @DefaultValue("true") boolean desc)
     {
-	super(uriInfo);
+	super(uriInfo, req);
 	this.uri = uri;
 	this.endpointUri = endpointUri;
 	this.req = req;
