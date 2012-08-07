@@ -44,6 +44,7 @@ public class SPARQLEndpoint extends Resource
 
     public SPARQLEndpoint(@Context UriInfo uriInfo,
 	@Context HttpHeaders headers,
+	@Context Request req,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") MediaType acceptType,
 	@QueryParam("limit") @DefaultValue("10") long limit,
@@ -52,7 +53,7 @@ public class SPARQLEndpoint extends Resource
 	@QueryParam("desc") @DefaultValue("true") boolean desc,
 	@QueryParam("query") Query query)
     {
-	super(uriInfo, headers, null, null, acceptType, limit, offset, orderBy, desc);
+	super(uriInfo, headers, req, null, null, acceptType, limit, offset, orderBy, desc);
 	this.query = query;
 	if (query != null)
 	{

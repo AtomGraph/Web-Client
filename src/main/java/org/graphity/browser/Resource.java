@@ -25,6 +25,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.ldp.model.impl.ResourceBase;
 import org.graphity.model.ResourceFactory;
 import org.graphity.util.QueryBuilder;
@@ -51,11 +52,13 @@ public class Resource extends ResourceBase
     private QueryBuilder qb = null;
     private com.hp.hpl.jena.rdf.model.Resource spinRes = null;
     private MediaType acceptType = MediaType.APPLICATION_XHTML_XML_TYPE;
+    private Request req = null;
 
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
     public Resource(@Context UriInfo uriInfo,
 	@Context HttpHeaders headers,
+	@Context Request req,
 	@QueryParam("uri") String uri,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") MediaType acceptType,
@@ -67,6 +70,7 @@ public class Resource extends ResourceBase
 	super(uriInfo);
 	this.uri = uri;
 	this.endpointUri = endpointUri;
+	this.req = req;
 	log.debug("URI: {} Endpoint URI: {}", uri, endpointUri);
 	
 	if (acceptType != null) this.acceptType = acceptType;
@@ -221,6 +225,10 @@ public class Resource extends ResourceBase
 	    }
 	}
 
+	// check if resource was modified and return 304 Not Modified if not
+	ResponseBuilder rb = req.evaluatePreconditions(getEntityTag());
+	if (rb != null) return rb.build();
+	
 	return Response.ok(this).tag(getEntityTag()).build(); // uses ResourceXHTMLWriter
     }
 
