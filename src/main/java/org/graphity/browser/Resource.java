@@ -137,7 +137,7 @@ public class Resource extends ResourceBase
 	    catch (Exception ex)
 	    {
 		log.trace("Error while loading Model from URI: {}", uri, ex);
-		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+		throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	    }
 	
 	    if (model.isEmpty())

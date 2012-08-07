@@ -16,87 +16,38 @@
  */
 package org.graphity.browser;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
-import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.provider.xslt.ResourceXSLTWriter;
 import org.graphity.browser.resource.SPARQLEndpoint;
-import org.graphity.ldp.provider.ModelProvider;
-import org.graphity.ldp.provider.QueryParamProvider;
-import org.graphity.ldp.provider.RDFPostReader;
-import org.graphity.ldp.provider.ResultSetWriter;
-import org.graphity.util.locator.LocatorGRDDL;
-import org.graphity.util.locator.PrefixMapper;
-import org.graphity.util.locator.grddl.LocatorAtom;
 import org.graphity.util.manager.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class Application extends javax.ws.rs.core.Application
+public class Application extends org.graphity.ldp.Application
 {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
     
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
     @Context private ServletContext context = null;
-    
-    @PostConstruct
-    public void init() // initialize locally cached ontologies
+
+    @Override
+    public void init()
     {
-	log.debug("Application.init() ServletContext: {}", context);
-
-	LocationMapper mapper = new PrefixMapper("location-mapping.ttl");
-	LocationMapper.setGlobalLocationMapper(mapper);
-	log.debug("LocationMapper.get(): {}", LocationMapper.get());
-	log.debug("FileManager.get().getLocationMapper(): {}", FileManager.get().getLocationMapper());
-	FileManager.get().addLocatorFile(context.getRealPath("/WEB-INF/")); // necessary?
+	super.init();
 	
-	DataManager.get().setLocationMapper(mapper);
-	DataManager.get().setModelCaching(false);
-	log.debug("FileManager.get(): {} DataManager.get(): {}", FileManager.get(), DataManager.get());
-	log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
-	
-	OntDocumentManager.getInstance().setFileManager(DataManager.get());
-	log.debug("OntDocumentManager.getInstance(): {} OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance(), OntDocumentManager.getInstance().getFileManager());
-
-	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
-
-	try
-	{
-	    DataManager.get().addLocator(new LocatorAtom(getStylesheet("org/graphity/util/locator/grddl/atom-grddl.xsl")));
-	    DataManager.get().addLocator(new LocatorGRDDL(getStylesheet("org/graphity/util/locator/grddl/twitter-grddl.xsl")));
-	}
-	catch (TransformerConfigurationException ex)
-	{
-	    log.error("XSLT stylesheet error", ex);
-	}
-	catch (FileNotFoundException ex)
-	{
-	    log.error("XSLT stylesheet not found", ex);
-	}
-	catch (URISyntaxException ex)
-	{
-	    log.error("XSLT stylesheet URI error", ex);
-	}
+	DataManager.get().addLocatorFile(context.getRealPath("/WEB-INF/")); // to locate local ontology
     }
-    
+        
     @Override
     public Set<Class<?>> getClasses()
     {
@@ -111,10 +62,7 @@ public class Application extends javax.ws.rs.core.Application
     public Set<Object> getSingletons()
     {
 	// generic/global
-	singletons.add(new ModelProvider());
-	singletons.add(new ResultSetWriter());
-	singletons.add(new RDFPostReader());
-	singletons.add(new QueryParamProvider(Query.class));
+	singletons.addAll(super.getSingletons());
 
 	// browser-specific
 	try
@@ -127,16 +75,6 @@ public class Application extends javax.ws.rs.core.Application
 	}
 
 	return singletons;
-    }
-
-    public Source getStylesheet(String filename) throws FileNotFoundException, URISyntaxException
-    {
-	// using getResource() because getResourceAsStream() does not retain systemId
-	URL xsltUrl = this.getClass().getClassLoader().getResource(filename);
-	if (xsltUrl == null) throw new FileNotFoundException();
-	String xsltUri = xsltUrl.toURI().toString();
-	log.debug("XSLT stylesheet URI: {}", xsltUri);
-	return new StreamSource(xsltUri);
     }
 
 }
