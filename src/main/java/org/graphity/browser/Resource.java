@@ -96,20 +96,16 @@ public class Resource extends ResourceBase
 	    spinRes = resource.getPropertyResourceValue(Graphity.query);
 	    log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
 
-	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into CONSTRUCT { ?s ?p ?o }
+	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into DESCRIBE
 	    {
-		log.trace("Explicit query is SELECT, wrapping into CONSTRUCT");
+		log.trace("Explicit query is SELECT, wrapping into DESCRIBE");
 
 		QueryBuilder selectBuilder = QueryBuilder.fromResource(spinRes).
 		    limit(limit).
 		    offset(offset);
 		if (orderBy != null) selectBuilder.orderBy(orderBy, desc);
 
-		qb = QueryBuilder.fromConstructTemplate(ontModel.getResource(Graphity.SubjectVar.getURI()),
-			ontModel.getResource(Graphity.PredicateVar.getURI()), 
-			ontModel.getResource(Graphity.ObjectVar.getURI())).
-		    subQuery(selectBuilder).
-		    optional(ontModel.getResource(Graphity.SPOOptional.getURI()));
+		qb = QueryBuilder.fromDescribe().subQuery(selectBuilder);
 	    }
 	    else
 		qb = QueryBuilder.fromResource(spinRes); // CONSTRUCT
