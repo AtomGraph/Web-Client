@@ -40,7 +40,7 @@ _:dataset a void:Dataset ;
 	dbpedia:Resource_Description_Framework ,
 	dbpedia:SPARQL ,
 	dbpedia:Web_browser ;
-    dct:creator <http://semantic-web.dk#martynas> ;
+    dct:creator <http://semantic-web.dk/#martynas> ;
     g:query g:SelectServices ;
     doap:implements [ a doap:Project ;
 	dct:title "Graphity Browser" ;
@@ -67,7 +67,7 @@ _:dataset a void:Dataset ;
 	    doap:location <https://github.com/Graphity/graphity-browser.git> ;
 	    doap:browse <https://github.com/Graphity/graphity-browser> ] ;
 	doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
-	doap:maintainer <http://semantic-web.dk#martynas> ;
+	doap:maintainer <http://semantic-web.dk#/martynas> ;
 	doap:license dbpedia:GNU_General_Public_License ;
 	dbpedia-owl:programmingLanguage dbpedia:XSLT,
 	    <http://dbpedia.org/resource/Java_%28programming_language%29> ] ;
