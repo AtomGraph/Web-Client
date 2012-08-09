@@ -62,10 +62,10 @@ public class Resource extends ResourceBase
 	@QueryParam("uri") String uri,
 	@QueryParam("endpoint-uri") String endpointUri,
 	@QueryParam("accept") MediaType acceptType,
-	@QueryParam("limit") @DefaultValue("10") long limit,
-	@QueryParam("offset") @DefaultValue("0") long offset,
+	@QueryParam("limit") @DefaultValue("10") Long limit,
+	@QueryParam("offset") @DefaultValue("0") Long offset,
 	@QueryParam("order-by") String orderBy,
-	@QueryParam("desc") @DefaultValue("true") boolean desc)
+	@QueryParam("desc") @DefaultValue("true") Boolean desc)
     {
 	super(uriInfo, req);
 	this.uri = uri;

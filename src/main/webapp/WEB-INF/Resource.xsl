@@ -53,7 +53,7 @@ xmlns:sp="&sp;"
 xmlns:sd="&sd;"
 xmlns:list="&list;"
 exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc dct foaf sioc sp sd list">
-    
+
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/default.xsl"/>
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/foaf.xsl"/>
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/doap.xsl"/>
@@ -61,7 +61,8 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/sd.xsl"/>
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/dbpedia-owl.xsl"/>
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/facebook.xsl"/>
-    
+
+    <xsl:import href="classes/org/graphity/browser/provider/xslt/functions.xsl"/>
     <xsl:import href="classes/org/graphity/browser/provider/xslt/group-sort-triples.xsl"/>
 
     <xsl:include href="includes/sparql.xsl"/>
