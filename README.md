@@ -6,6 +6,11 @@ It can be used for exploration and browsing of remote datasources, publishing an
 
 Building a data-intensive Web application on Graphity Browser is as simple as overriding generic stylesheets with own layout and defining necessary queries.
 
+Screenshot
+----------
+
+![](http://cloud.github.com/downloads/Graphity/graphity-browser/Graphity%20-%20Tim%20Berners-Lee%20%5Bhttp%20%20%20dbpedia.org%20resource%20Tim_Berners-Lee%20-095011.png)
+
 Installation
 ============
 
