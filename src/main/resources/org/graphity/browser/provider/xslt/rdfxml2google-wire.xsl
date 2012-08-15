@@ -86,7 +86,6 @@ exclude-result-prefixes="xs">
 		</xsl:if>
 
 		</xsl:for-each-group>
-		<!-- <xsl:apply-templates select="*/*" mode="sparql2wire-cols"/> -->
 	],
 	"rows": [ <xsl:apply-templates mode="sparql2wire"/> ]
 }
@@ -121,11 +120,8 @@ exclude-result-prefixes="xs">
 		},
 		<xsl:variable name="subject" select="."/>
 		<xsl:for-each-group select="/rdf:RDF/*/*" group-by="concat(namespace-uri(.), local-name(.))">
-			<xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text"/>
-<!-- <xsl:copy-of select="current-group()"/> -->
-<!-- <xsl:value-of select="current-grouping-key()"/> -->
-<!-- <xsl:copy-of select="$this/*[concat(namespace-uri(.), local-name(.)) = current-grouping-key()][1]"/> -->
-
+		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text"/>
+		    
 		    <xsl:choose>
 			    <xsl:when test="$subject/*[concat(namespace-uri(.), local-name(.)) = current-grouping-key()]">
 				<xsl:apply-templates select="$subject/*[concat(namespace-uri(.), local-name(.)) = current-grouping-key()][1]" mode="sparql2wire"/>

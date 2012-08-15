@@ -132,10 +132,10 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
 	<xsl:choose>
 	    <!-- strip trailing fragment identifier (#) -->
 	    <xsl:when test="contains($resource-uri, '#')">
-		<xsl:value-of select="substring-before($resource-uri, '#')"/>
+		<xsl:sequence select="xs:anyURI(substring-before($resource-uri, '#'))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:value-of select="$resource-uri"/>
+		<xsl:sequence select="$resource-uri"/>
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:function>
@@ -270,5 +270,27 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
 	
 	<xsl:sequence select="document(concat($endpoint-uri, '?', $query-string))"/>
     </xsl:function>
+
+    <xsl:function name="g:query-string" as="xs:string?">
+	<xsl:param name="offset" as="xs:integer?"/>
+	<xsl:param name="limit" as="xs:integer?"/>
+	<xsl:param name="order-by" as="xs:string?"/>
+	<xsl:param name="desc" as="xs:boolean?"/>
+	<xsl:param name="lang" as="xs:string?"/>
+	<xsl:param name="mode" as="xs:string?"/>
 	
+	<xsl:variable name="query-string">
+	    <xsl:if test="$offset">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
+	    <xsl:if test="$limit">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
+	    <xsl:if test="$order-by">order-by=<xsl:value-of select="$order-by"/>&amp;</xsl:if>
+	    <xsl:if test="$desc">desc&amp;</xsl:if>
+	    <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if>
+	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+	</xsl:variable>
+	
+	<xsl:if test="string-length($query-string) &gt; 1">
+	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
+	</xsl:if>
+    </xsl:function>
+
 </xsl:stylesheet>
