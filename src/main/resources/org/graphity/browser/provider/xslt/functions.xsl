@@ -54,7 +54,9 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
     <xsl:key name="resources-by-subclass" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:subClassOf/@rdf:resource"/>
     <xsl:key name="resources-by-domain" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:domain/@rdf:resource"/>
     <xsl:key name="resources-by-range" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:range/@rdf:resource"/>
-
+    <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
+    <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
+    
     <xsl:function name="g:local-label" as="xs:string?">
 	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
 	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
@@ -215,26 +217,30 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
     </xsl:function>
 
     <xsl:function name="rdfs:subClassOf" as="xs:anyURI*">
-	<xsl:param name="type-uri" as="xs:anyURI+"/>
-	<!-- <xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message> -->
-	<xsl:for-each select="$type-uri">
-	    <xsl:for-each select="document(g:document-uri(.))">
-		<xsl:sequence select="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource"/>
-    <xsl:if test="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource">
-	<xsl:message>rdfs:subClassOf: <xsl:value-of select="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource"/></xsl:message>
-    </xsl:if>
-	    </xsl:for-each>
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:for-each select="document(g:document-uri($uri))">
+	    <xsl:sequence select="key('resources', $uri)/rdfs:subClassOf/@rdf:resource"/>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="g:superClassOf" as="xs:anyURI*">
-	<xsl:param name="type-uri" as="xs:anyURI+"/>
-	<!-- <xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message> -->
-	<xsl:for-each select="document(g:document-uri($type-uri))">
-	    <xsl:sequence select="key('resources-by-subclass', $type-uri)/@rdf:about"/>
-<xsl:if test="key('resources', $type-uri)/rdfs:subClassOf/@rdf:resource">
-    <xsl:message>g:superClassOf: <xsl:value-of select="key('resources-by-subclass', $type-uri)/@rdf:about"/></xsl:message>
-</xsl:if>
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:for-each select="document(g:document-uri($uri))">
+	    <xsl:sequence select="key('resources-by-subclass', $uri)/@rdf:about"/>
+	</xsl:for-each>
+    </xsl:function>
+
+    <xsl:function name="skos:broader" as="xs:anyURI*">
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:for-each select="document(g:document-uri($uri))">
+	    <xsl:sequence select="key('resources', $uri)/skos:broader/@rdf:resource | key('resources-by-narrower', $uri)/@rdf:about"/>
+	</xsl:for-each>
+    </xsl:function>
+
+    <xsl:function name="skos:narrower" as="xs:anyURI*">
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:for-each select="document(g:document-uri($uri))">
+	    <xsl:sequence select="key('resources', $uri)/skos:narrower/@rdf:resource | key('resources-by-broader', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
 
