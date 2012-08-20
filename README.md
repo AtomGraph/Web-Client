@@ -6,10 +6,29 @@ It can be used for exploration and browsing of remote datasources, publishing an
 
 Building a data-intensive Web application on Graphity Browser is as simple as overriding generic stylesheets with own layout and defining necessary queries.
 
+Features
+--------
+
+* user interface built from schema/ontology metadata (most popular ones are included)
+* embedded multimedia (currently images only)
+* user input via RDF/POST-encoded HTML forms
+* SPARQL endpoint with interactive results
+* switching interface language at any point
+* multiple rendering modes (currently item/list/table)
+* pagination in container (list/table) mode
+* serialization as XHTML, RDF/XML, and Turtle
+
 Screenshot
 ----------
 
 ![Tim Berners-Lee FOAF profile](http://cloud.github.com/downloads/Graphity/graphity-browser/Graphity%20-%20Tim%20Berners-Lee%20%5Bhttp%20%20%20dbpedia.org%20resource%20Tim_Berners-Lee%20-095011.png)
+
+Demonstration
+=============
+
+An instance of this browser runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
+
+_Note: the server is not production-grade._
 
 Installation
 ============

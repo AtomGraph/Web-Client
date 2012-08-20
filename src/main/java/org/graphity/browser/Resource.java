@@ -91,29 +91,36 @@ public class Resource extends ResourceBase
 	com.hp.hpl.jena.rdf.model.Resource resource = ontModel.createResource(getURI());
 	log.debug("Resource: {} with URI: {}", resource, getURI());
 
-	if (this.uri == null && resource.hasProperty(Graphity.query)) // only build Query if it's not default DESCRIBE
+	if (this.uri == null) // only build Query if it's not default DESCRIBE
 	{
-	    spinRes = resource.getPropertyResourceValue(Graphity.query);
-	    log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
-
-	    if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into DESCRIBE
+	    if (resource.hasProperty(Graphity.query))
 	    {
-		log.trace("Explicit query is SELECT, wrapping into DESCRIBE");
+		spinRes = resource.getPropertyResourceValue(Graphity.query);
+		log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
 
-		QueryBuilder selectBuilder = QueryBuilder.fromResource(spinRes).
-		    limit(limit).
-		    offset(offset);
-		if (orderBy != null) selectBuilder.orderBy(orderBy, desc);
+		if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into DESCRIBE
+		{
+		    log.trace("Explicit query is SELECT, wrapping into DESCRIBE");
 
-		qb = QueryBuilder.fromDescribe().subQuery(selectBuilder);
+		    QueryBuilder selectBuilder = QueryBuilder.fromResource(spinRes).
+			limit(limit).
+			offset(offset);
+		    if (orderBy != null) selectBuilder.orderBy(orderBy, desc);
+
+		    qb = QueryBuilder.fromDescribe().subQuery(selectBuilder); // DESCRIBE
+		}
+		else
+		    qb = QueryBuilder.fromResource(spinRes); // CONSTRUCT
 	    }
 	    else
-		qb = QueryBuilder.fromResource(spinRes); // CONSTRUCT
-
-	    query = qb.build();
-	    log.debug("Query generated with QueryBuilder: {}", query);
+		qb = QueryBuilder.fromDescribe(getURI()); // DESCRIBE local URI
 	}
+	else
+	    qb = QueryBuilder.fromDescribe(uri); // DESCRIBE remote URI
 	
+	query = qb.build();
+	log.debug("Query generated with QueryBuilder: {}", query);
+		
 	if (this.endpointUri == null && resource.hasProperty(Graphity.service))
 	    this.endpointUri = resource.getPropertyResourceValue(Graphity.service).
 		getPropertyResourceValue(ontModel.

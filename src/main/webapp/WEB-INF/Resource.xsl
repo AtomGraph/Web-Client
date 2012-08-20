@@ -78,13 +78,13 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:param name="http-headers" as="xs:string"/>
 
     <xsl:param name="uri" select="$absolute-path" as="xs:anyURI"/>
-    <xsl:param name="endpoint-uri" select="key('resources', $uri, $ont-model)/g:service/@rdf:resource" as="xs:anyURI?"/> <!-- select="xs:anyURI(concat($base-uri, 'sparql'))"  -->
-    <xsl:param name="mode" select="if (key('resources', $uri, $ont-model)/g:mode/@rdf:resource) then key('resources', $uri, $ont-model)/g:mode/@rdf:resource else xs:anyURI('&g;ListMode')" as="xs:anyURI"/>
+    <xsl:param name="endpoint-uri" select="$resource/g:service/@rdf:resource" as="xs:anyURI?"/> <!-- select="xs:anyURI(concat($base-uri, 'sparql'))"  -->
+    <xsl:param name="mode" select="if ($resource/g:mode/@rdf:resource) then $resource/g:mode/@rdf:resource else xs:anyURI('&g;ListMode')" as="xs:anyURI"/>
     <xsl:param name="action" select="false()"/>
     <xsl:param name="default-lang" select="'en'" as="xs:string"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
 
-    <xsl:param name="query-uri" as="xs:anyURI?"/>
+    <xsl:param name="query-uri" select="$resource/g:query/@rdf:resource" as="xs:anyURI?"/>
     <xsl:param name="query-model" select="document($query-uri)" as="document-node()?"/>
     <xsl:param name="query" select="$select-query/sp:text" as="xs:string?"/>
     <xsl:param name="offset" select="$select-query/sp:offset" as="xs:integer?"/>
@@ -94,6 +94,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:param name="order-by" select="key('resources', $orderBy/sp:expression/@rdf:resource, $query-model)/sp:varName" as="xs:string?"/>
     <xsl:param name="desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
 
+    <xsl:variable name="resource" select="key('resources', $uri, $ont-model)" as="element()?"/>
     <xsl:variable name="ont-model" select="document(resolve-uri('ontology/', $base-uri))" as="document-node()"/>
     <xsl:variable name="graphity-ont-model" select="document('&g;')" as="document-node()"/>
     <xsl:variable name="select-query" select="if ($query-uri) then key('resources', $query-uri, $query-model) else ()" as="element()?"/>
@@ -181,10 +182,10 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 				    </a>
 				    <ul class="dropdown-menu">
 					<li>
-					    <a href="{$absolute-path}?lang=en">English</a>
+					    <a href="{$absolute-path}{g:query-string($uri, $endpoint-uri, (), (), (), (), 'en', ())}">English</a>
 					</li>
 					<li>
-					    <a href="{$absolute-path}?lang=da">Danish</a>
+					    <a href="{$absolute-path}{g:query-string($uri, $endpoint-uri, (), (), (), (), 'da', ())}">Danish</a>
 					</li>
 				    </ul>
 				</div>
@@ -241,7 +242,53 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		</div>
 	    </div>
 
-	    <xsl:apply-templates mode="g:ListMode"/>
+	    <div>
+		<ul class="nav nav-tabs pull-right">
+		    <li>
+			<xsl:if test="$mode = '&g;ListMode'">
+			    <xsl:attribute name="class">active</xsl:attribute>
+			</xsl:if>
+			<a href="{$absolute-path}{g:query-string($offset, $limit, $order-by, $desc, $lang, '&g;ListMode')}">List</a>
+		    </li>
+		    <li>
+			<xsl:if test="$mode = '&g;TableMode'">
+			    <xsl:attribute name="class">active</xsl:attribute>
+			</xsl:if>
+			<a href="{$absolute-path}{g:query-string($offset, $limit, $order-by, $desc, $lang, '&g;TableMode')}">Table</a>
+		    </li>
+		</ul>
+	    </div>
+
+	    <xsl:call-template name="Pagination"/>
+
+	    <xsl:if test="$mode = '&g;ListMode'">
+		<xsl:apply-templates mode="g:ListMode"/>
+	    </xsl:if>
+	    
+	    <xsl:if test="$mode = '&g;TableMode'">
+		<xsl:variable name="predicate-uris" select="distinct-values(*/*/xs:anyURI(concat(namespace-uri(.), local-name(.))))" as="xs:anyURI*"/>
+	    
+		<table class="table table-bordered table-striped">
+		    <thead>
+			<th>Resource</th>
+			
+			<xsl:variable name="root" select="/"/>
+			<xsl:for-each select="$predicate-uris">
+			    <xsl:sort select="g:label(current(), $root, $lang)" data-type="string" lang="{$lang}"/>
+			    <th>
+				<xsl:value-of select="g:label(current(), $root, $lang)"/>
+			    </th>
+			</xsl:for-each>
+		    </thead>
+		    <tbody>
+			<xsl:apply-templates mode="g:TableMode">
+			    <xsl:with-param name="predicate-uris" select="$predicate-uris"/>
+			</xsl:apply-templates>
+		    </tbody>
+		</table>
+	    </xsl:if>
+	    
+	    <xsl:call-template name="Pagination"/>
 	</div>
 
 	<div class="span4">
@@ -518,7 +565,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	
 	<div class="well sidebar-nav">
 	    <h2 class="nav-header">
-		<a href="{$base-uri}?uri={encode-for-uri($this)}" title="{$this}">
+		<a href="{$base-uri}{g:query-string($this, $endpoint-uri, (), (), (), (), $lang, ())}" title="{$this}">
 		    <xsl:value-of select="g:label($this, /, $lang)"/>
 		</a>
 	    </h2>
@@ -543,9 +590,75 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     </xsl:template>
 	
     <xsl:template match="rdf:type/@rdf:resource">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}" title="{.}" class="btn">
+	<a href="{$base-uri}{g:query-string(., $endpoint-uri, (), (), (), (), $lang, ())}" title="{.}" class="btn">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
+    </xsl:template>
+
+    <xsl:template name="Pagination">
+	<xsl:if test="$select-query">
+	    <div class="pagination">
+		<ul>
+		    <li>
+			<xsl:choose>
+			    <xsl:when test="not($offset &gt;= $limit)">
+				<xsl:attribute name="class">disabled</xsl:attribute>
+				<a>Prev</a>
+			    </xsl:when>
+			    <xsl:otherwise>
+				<a href="{$absolute-path}{g:query-string($offset - $limit, $limit, $order-by, $desc, $lang, $mode)}" class="active">Prev</a>
+			    </xsl:otherwise>
+			</xsl:choose>
+		    </li>
+		    <li>
+			<xsl:choose>
+			    <xsl:when test="count(*) &lt; $limit">
+				<xsl:attribute name="class">disabled</xsl:attribute>
+				<a>Next</a>
+			    </xsl:when>
+			    <xsl:otherwise>
+				<a href="{$absolute-path}{g:query-string($offset + $limit, $limit, $order-by, $desc, $lang, $mode)}">Next</a>
+			    </xsl:otherwise>
+			</xsl:choose>
+		    </li>
+		</ul>
+	    </div>
+	</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="g:TableMode">
+	<xsl:param name="predicate-uris" select="distinct-values(../*/*/xs:anyURI(concat(namespace-uri(.), local-name(.))))" as="xs:anyURI*"/>
+	
+	<tr>
+	    <td>
+		<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+	    </td>
+
+	    <xsl:variable name="root" select="/"/>
+	    <xsl:variable name="subject" select="."/>
+	    <xsl:for-each select="$predicate-uris">
+		<xsl:sort select="g:label(current(), $root, $lang)" data-type="string" lang="{$lang}"/>
+		<xsl:variable name="predicate" select="$subject/*[concat(namespace-uri(.), local-name(.)) = current()]"/>
+		<xsl:choose>
+		    <xsl:when test="$predicate">
+			<xsl:apply-templates select="$predicate[1]" mode="g:TableMode"/>
+		    </xsl:when>
+		    <xsl:otherwise>
+			<td></td>
+		    </xsl:otherwise>
+		</xsl:choose>
+	    </xsl:for-each>
+	</tr>
+    </xsl:template>
+    
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:TableMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
+	
+	<xsl:if test="lang($lang) or not(../*[concat(namespace-uri(.), local-name(.)) = $this][lang($lang)])">
+	    <td>
+		<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	    </td>
+	</xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

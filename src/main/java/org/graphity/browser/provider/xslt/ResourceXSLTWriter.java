@@ -97,13 +97,8 @@ public class ResourceXSLTWriter implements MessageBodyWriter<Resource>
 		parameter("http-headers", httpHeaders.toString()).
 		result(new StreamResult(entityStream));
 	    
-	    if (resource.getSPINResource() != null)
+	    if (resource.getQueryBuilder() != null)
 	    {
-		if (resource.getSPINResource().isURIResource()) // possible to extract in XSLT??
-		    builder.parameter("query-uri", UriBuilder.fromPath(resource.getSPINResource().getURI()).build());
-		//if (resource.getSPINResource().isAnon()) // anonId is not reusable as @rdf:nodeID
-		//    builder.parameter("query-bnode-id", resource.getSPINResource().getId().getLabelString());
-		
 		ByteArrayOutputStream queryStream = new ByteArrayOutputStream();
 		//resource.getQueryBuilder().buildSPIN().getModel().write(queryStream); // don't need the whole ontology
 		ResourceUtils.reachableClosure(resource.getQueryBuilder().buildSPIN()).write(queryStream);

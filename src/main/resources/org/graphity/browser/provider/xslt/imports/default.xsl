@@ -55,13 +55,13 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
 
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}" title="{.}">
+	<a href="{$base-uri}{g:query-string(., $endpoint-uri, (), (), (), (), $lang, ())}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
 
     <xsl:template match="@rdf:about[starts-with(., $base-uri)] | @rdf:resource[starts-with(., $base-uri)] | sparql:uri[starts-with(., $base-uri)]">
-	<a href="{.}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}" title="{.}">
+	<a href="{.}{g:query-string((), (), (), (), (), (), $lang, ())}" title="{.}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
@@ -73,7 +73,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/* | *[@rdf:resource or @rdf:nodeID]">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<a href="{$base-uri}?uri={encode-for-uri($this)}{if ($endpoint-uri) then (concat('&amp;endpoint-uri=', encode-for-uri($endpoint-uri))) else ()}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}" title="{$this}">
+	<a href="{$base-uri}{g:query-string($this, $endpoint-uri, (), (), (), (), $lang, ())}" title="{$this}">
 	    <xsl:value-of select="g:label($this, /, $lang)"/>
 	</a>
     </xsl:template>
@@ -109,7 +109,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos lis
     </xsl:template>
 
     <xsl:template match="@rdf:about | @rdf:resource" mode="g:TypeMode">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}{if ($lang != $default-lang) then (concat('&amp;lang=', $lang)) else ()}">
+	<a href="{$base-uri}{g:query-string(., $endpoint-uri, (), (), (), (), $lang, ())}">
 	    <xsl:value-of select="g:label(., /, $lang)"/>
 	</a>
     </xsl:template>
