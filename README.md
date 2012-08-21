@@ -13,6 +13,7 @@ Features
 * embedded multimedia (currently images only)
 * user input via RDF/POST-encoded HTML forms
 * SPARQL endpoint with interactive results
+* HTTP caching
 * switching interface language at any point
 * multiple rendering modes (currently item/list/table)
 * pagination in container (list/table) mode
