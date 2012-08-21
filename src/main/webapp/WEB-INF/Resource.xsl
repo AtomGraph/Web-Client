@@ -248,13 +248,13 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 			<xsl:if test="$mode = '&g;ListMode'">
 			    <xsl:attribute name="class">active</xsl:attribute>
 			</xsl:if>
-			<a href="{$absolute-path}{g:query-string($offset, $limit, $order-by, $desc, $lang, '&g;ListMode')}">List</a>
+			<a href="{$absolute-path}{g:query-string($uri, $endpoint-uri, $offset, $limit, $order-by, $desc, $lang, '&g;ListMode')}">List</a>
 		    </li>
 		    <li>
 			<xsl:if test="$mode = '&g;TableMode'">
 			    <xsl:attribute name="class">active</xsl:attribute>
 			</xsl:if>
-			<a href="{$absolute-path}{g:query-string($offset, $limit, $order-by, $desc, $lang, '&g;TableMode')}">Table</a>
+			<a href="{$absolute-path}{g:query-string($uri, $endpoint-uri, $offset, $limit, $order-by, $desc, $lang, '&g;TableMode')}">Table</a>
 		    </li>
 		</ul>
 	    </div>
@@ -596,7 +596,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     </xsl:template>
 
     <xsl:template name="Pagination">
-	<xsl:if test="$select-query">
+	<xsl:if test="$select-query and not($uri)">
 	    <div class="pagination">
 		<ul>
 		    <li>
