@@ -274,7 +274,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 			
 			<xsl:variable name="root" select="/"/>
 			<xsl:for-each select="$predicate-uris">
-			    <xsl:sort select="g:label(current(), $root, $lang)" data-type="string" lang="{$lang}"/>
+			    <xsl:sort select="g:label(current(), $root, $lang)" data-type="text" lang="{$lang}"/>
 			    <th>
 				<xsl:value-of select="g:label(current(), $root, $lang)"/>
 			    </th>
