@@ -249,9 +249,9 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
 	<xsl:param name="document" as="document-node()"/>
 
 	<xsl:sequence select="key('resources', $list/rdf:first/@rdf:resource, $document) | key('resources', $list/rdf:first/@rdf:nodeID, $document)"/>
-	
-	<xsl:if test="not($list/rdf:rest/@rdf:resource = '&rdf;nil')">
-	    <xsl:sequence select="list:member(key('resources', $list/rdf:rest/@rdf:resource, $document), $document)"/>
+
+	<xsl:if test="$list/rdf:rest/@rdf:resource">
+  	    <xsl:sequence select="list:member(key('resources', $list/rdf:rest/@rdf:resource, $document), $document)"/>
 	</xsl:if>
 	<xsl:if test="$list/rdf:rest/@rdf:nodeID">
 	    <xsl:sequence select="list:member(key('resources', $list/rdf:rest/@rdf:nodeID, $document), $document)"/>
@@ -289,7 +289,7 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
 	<xsl:variable name="query-string">
 	    <xsl:if test="$offset">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
 	    <xsl:if test="$limit">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
-	    <xsl:if test="$order-by">order-by=<xsl:value-of select="$order-by"/>&amp;</xsl:if>
+	    <xsl:if test="$order-by">order-by=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
 	    <xsl:if test="$desc">desc&amp;</xsl:if>
 	    <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if>
 	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
