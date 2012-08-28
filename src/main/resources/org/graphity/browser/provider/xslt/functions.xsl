@@ -66,6 +66,28 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
 
 	<xsl:for-each select="$resource">
 	    <xsl:choose>
+		<xsl:when test="rdfs:label[not(@xml:lang)]">
+		    <xsl:sequence select="rdfs:label[not(@xml:lang)][1]"/>
+		</xsl:when>
+		<xsl:when test="foaf:nick[not(@xml:lang)]">
+		    <xsl:sequence select="foaf:nick[not(@xml:lang)][1]"/>
+		</xsl:when>
+		<xsl:when test="foaf:name[not(@xml:lang)]">
+		    <xsl:sequence select="foaf:name[not(@xml:lang)][1]"/>
+		</xsl:when>
+		<xsl:when test="dc:title[not(@xml:lang)]">
+		    <xsl:sequence select="dc:title[not(@xml:lang)][1]"/>
+		</xsl:when>
+		<xsl:when test="dct:title[not(@xml:lang)]">
+		    <xsl:sequence select="dct:title[not(@xml:lang)][1]"/>
+		</xsl:when>
+		<xsl:when test="skos:prefLabel[not(@xml:lang)]">
+		    <xsl:sequence select="skos:prefLabel[not(@xml:lang)][1]"/>
+		</xsl:when>
+		<xsl:when test="gr:name[not(@xml:lang)]">
+		    <xsl:sequence select="gr:name[not(@xml:lang)][1]"/>
+		</xsl:when>
+		
 		<xsl:when test="rdfs:label | @rdfs:label">
 		    <xsl:sequence select="(rdfs:label | @rdfs:label)[1]"/>
 		</xsl:when>
@@ -130,16 +152,22 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
     </xsl:function>
 
     <xsl:function name="g:document-uri" as="xs:anyURI">
-	<xsl:param name="resource-uri" as="xs:anyURI"/>
+	<xsl:param name="uri" as="xs:anyURI"/>
 	<xsl:choose>
 	    <!-- strip trailing fragment identifier (#) -->
-	    <xsl:when test="contains($resource-uri, '#')">
-		<xsl:sequence select="xs:anyURI(substring-before($resource-uri, '#'))"/>
+	    <xsl:when test="contains($uri, '#')">
+		<xsl:sequence select="xs:anyURI(substring-before($uri, '#'))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:sequence select="$resource-uri"/>
+		<xsl:sequence select="$uri"/>
 	    </xsl:otherwise>
 	</xsl:choose>
+    </xsl:function>
+
+    <xsl:function name="g:fragment-id" as="xs:string?">
+	<xsl:param name="uri" as="xs:anyURI"/>
+	
+	<xsl:sequence select="substring-after($uri, '#')"/>
     </xsl:function>
 
     <xsl:function name="g:label" as="xs:string?">
@@ -275,6 +303,12 @@ exclude-result-prefixes="xhtml xs g url rdf rdfs xsd sparql dc dct foaf skos gr 
 	-->
 	
 	<xsl:sequence select="document(concat($endpoint-uri, '?', $query-string))"/>
+    </xsl:function>
+
+    <xsl:function name="g:query-string" as="xs:string?">
+	<xsl:param name="lang" as="xs:string?"/>
+	
+	<xsl:sequence select="g:query-string((), (), (), (), $lang, ())"/>
     </xsl:function>
 
     <xsl:function name="g:query-string" as="xs:string?">
