@@ -62,8 +62,8 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/dbpedia-owl.xsl"/>
     <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/facebook.xsl"/>
 
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/functions.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/group-sort-triples.xsl"/>
+    <xsl:import href="classes/org/graphity/ldp/provider/xslt/functions.xsl"/>
+    <xsl:import href="classes/org/graphity/ldp/provider/xslt/group-sort-triples.xsl"/>
 
     <xsl:include href="includes/sparql.xsl"/>
     <xsl:include href="includes/frontpage.xsl"/>

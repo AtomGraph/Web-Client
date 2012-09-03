@@ -35,18 +35,6 @@
 	<netbeans.hint.license>gpl30</netbeans.hint.license>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
-
- <repositories>
-   <repository>
-     <id>jena-repo</id>
-     <url>http://openjena.org/repo</url>
-   </repository>
-   <repository>
-     <id>jena-repo-dev</id>
-     <url>http://openjena.org/repo-dev</url>
-   </repository>
-   
- </repositories>
  
 <scm>
     <url>https://github.com/Graphity/graphity-browser</url>
@@ -68,10 +56,17 @@
             <version>9.1.0.8</version>
         </dependency>
         <dependency>
-            <groupId>graphity</groupId>
+            <groupId>org.graphity</groupId>
             <artifactId>ldp</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -107,6 +102,18 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.1</version>
                 <executions>
+		    <execution>
+			<id>resource-dependencies</id>
+			<phase>generate-resources</phase>
+			<goals>
+			    <goal>unpack-dependencies</goal>
+			</goals>
+			<configuration>
+			    <includeGroupIds>org.graphity</includeGroupIds>
+			    <includes>**\/*.xsl,**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
+			    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+			</configuration>
+		    </execution>
                     <execution>
                         <phase>validate</phase>
                         <goals>
