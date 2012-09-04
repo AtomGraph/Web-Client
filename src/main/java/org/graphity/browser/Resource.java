@@ -82,8 +82,8 @@ public class Resource extends ResourceBase
 
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
-	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "ontology.ttl");
-	((PrefixMapper)LocationMapper.get()).addAltPrefixEntry(ontologyUri, "ontology.ttl");
+	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "org/graphity/browser/vocabulary/ontology.ttl");
+	((PrefixMapper)LocationMapper.get()).addAltPrefixEntry(ontologyUri, "org/graphity/browser/vocabulary/ontology.ttl");
 	log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
 	ontModel = OntDocumentManager.getInstance().
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);

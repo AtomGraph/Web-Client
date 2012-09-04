@@ -54,16 +54,16 @@ xmlns:sd="&sd;"
 xmlns:list="&list;"
 exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc dct foaf sioc sp sd list">
 
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/default.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/foaf.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/doap.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/void.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/sd.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/dbpedia-owl.xsl"/>
-    <xsl:import href="classes/org/graphity/browser/provider/xslt/imports/facebook.xsl"/>
+    <xsl:import href="imports/default.xsl"/>
+    <xsl:import href="imports/foaf.xsl"/>
+    <xsl:import href="imports/doap.xsl"/>
+    <xsl:import href="imports/void.xsl"/>
+    <xsl:import href="imports/sd.xsl"/>
+    <xsl:import href="imports/dbpedia-owl.xsl"/>
+    <xsl:import href="imports/facebook.xsl"/>
 
-    <xsl:import href="classes/org/graphity/ldp/provider/xslt/functions.xsl"/>
-    <xsl:import href="classes/org/graphity/ldp/provider/xslt/group-sort-triples.xsl"/>
+    <xsl:import href="../../../ldp/provider/xslt/functions.xsl"/>
+    <xsl:import href="../../../ldp/provider/xslt/group-sort-triples.xsl"/>
 
     <xsl:include href="includes/sparql.xsl"/>
     <xsl:include href="includes/frontpage.xsl"/>

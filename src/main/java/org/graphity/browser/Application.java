@@ -16,12 +16,11 @@
  */
 package org.graphity.browser;
 
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.stream.StreamSource;
 import org.graphity.browser.provider.xslt.ResourceXSLTWriter;
 import org.graphity.browser.resource.SPARQLEndpoint;
 import org.graphity.util.manager.DataManager;
@@ -38,15 +37,6 @@ public class Application extends org.graphity.ldp.Application
     
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
-    @Context private ServletContext context = null;
-
-    @Override
-    public void init()
-    {
-	super.init();
-	
-	DataManager.get().addLocatorFile(context.getRealPath("/WEB-INF/")); // to locate local ontology
-    }
         
     @Override
     public Set<Class<?>> getClasses()
@@ -67,14 +57,22 @@ public class Application extends org.graphity.ldp.Application
 	// browser-specific
 	try
 	{
-	    singletons.add(new ResourceXSLTWriter(new StreamSource(context.getRealPath("/WEB-INF/Resource.xsl")), DataManager.get()));
+	    singletons.add(new ResourceXSLTWriter(getStylesheet("org/graphity/browser/provider/xslt/Resource.xsl"), DataManager.get()));
 	}
 	catch (TransformerConfigurationException ex)
 	{
 	    log.error("XSLT stylesheet error", ex);
 	}
+	catch (FileNotFoundException ex)
+	{
+	    log.error("XSLT stylesheet not found", ex);
+	}
+	catch (URISyntaxException ex)
+	{
+	    log.error("XSLT stylesheet URI error", ex);
+	}
 
 	return singletons;
     }
-
+    
 }
