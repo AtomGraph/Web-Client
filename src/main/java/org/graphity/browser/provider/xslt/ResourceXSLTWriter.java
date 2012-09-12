@@ -82,7 +82,7 @@ public class ResourceXSLTWriter implements MessageBodyWriter<Resource>
     @Override
     public void writeTo(Resource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	log.trace("Writing Resource with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
+	if (log.isTraceEnabled()) log.trace("Writing Resource with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
 
 	try
 	{

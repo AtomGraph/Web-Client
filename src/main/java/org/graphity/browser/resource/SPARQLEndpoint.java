@@ -58,7 +58,7 @@ public class SPARQLEndpoint extends Resource
 	if (query != null)
 	{
 	    this.query.setLimit(MAX_LIMIT);
-	    log.debug("Submitted SPARQL query: {}", query);
+	    if (log.isDebugEnabled()) log.debug("Submitted SPARQL query: {}", query);
 	}
 	if (endpointUri != null && !endpointUri.isEmpty()) this.endpointUri = endpointUri;
     }
@@ -96,7 +96,7 @@ public class SPARQLEndpoint extends Resource
     {
 	if (getAcceptType() != null && getResultSet() != null)
 	{
-	    log.debug("Accept param: {}, writing SPARQL results (XML or JSON)", getAcceptType());
+	    if (log.isDebugEnabled()) log.debug("Accept param: {}, writing SPARQL results (XML or JSON)", getAcceptType());
 
 	    // uses ResultSetWriter
 	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
@@ -106,7 +106,7 @@ public class SPARQLEndpoint extends Resource
 	}
 	if (getAcceptType() != null && getResultModel() != null)
 	{
-	    log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
+	    if (log.isDebugEnabled()) log.debug("Accept param: {}, writing RDF/XML or Turtle", getAcceptType());
 
 	    // uses ModelProvider
 	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))

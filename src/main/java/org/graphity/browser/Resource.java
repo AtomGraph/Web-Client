@@ -71,36 +71,36 @@ public class Resource extends ResourceBase
 	this.uri = uri;
 	this.endpointUri = endpointUri;
 	this.req = req;
-	log.debug("URI: {} Endpoint URI: {}", uri, endpointUri);
+	if (log.isDebugEnabled()) log.debug("URI: {} Endpoint URI: {}", uri, endpointUri);
 	
 	if (acceptType != null) this.acceptType = acceptType;
 	else
 	    if (headers.getAcceptableMediaTypes().get(0).isCompatible(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE) ||
 		headers.getAcceptableMediaTypes().get(0).isCompatible(org.graphity.MediaType.TEXT_TURTLE_TYPE))
 		    this.acceptType = headers.getAcceptableMediaTypes().get(0);
-	log.debug("AcceptType: {} Acceptable MediaTypes: {}", this.acceptType, headers.getAcceptableMediaTypes());
+	if (log.isDebugEnabled()) log.debug("AcceptType: {} Acceptable MediaTypes: {}", this.acceptType, headers.getAcceptableMediaTypes());
 
 	// ontology URI is base URI-dependent
 	String ontologyUri = uriInfo.getBaseUri().toString();
-	log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "org/graphity/browser/vocabulary/ontology.ttl");
+	if (log.isDebugEnabled()) log.debug("Adding prefix mapping prefix: {} altName: {} ", ontologyUri, "org/graphity/browser/vocabulary/ontology.ttl");
 	((PrefixMapper)LocationMapper.get()).addAltPrefixEntry(ontologyUri, "org/graphity/browser/vocabulary/ontology.ttl");
-	log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
+	if (log.isDebugEnabled()) log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
 	ontModel = OntDocumentManager.getInstance().
 	    getOntology(uriInfo.getBaseUri().toString(), OntModelSpec.OWL_MEM_RDFS_INF);
 
 	com.hp.hpl.jena.rdf.model.Resource resource = ontModel.createResource(getURI());
-	log.debug("Resource: {} with URI: {}", resource, getURI());
+	if (log.isDebugEnabled()) log.debug("Resource: {} with URI: {}", resource, getURI());
 
 	if (this.uri == null) // only build Query if it's not default DESCRIBE
 	{
 	    if (resource.hasProperty(Graphity.query))
 	    {
 		spinRes = resource.getPropertyResourceValue(Graphity.query);
-		log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
+		if (log.isTraceEnabled()) log.trace("Explicit query resource {} for URI {}", spinRes, getURI());
 
 		if (SPINFactory.asQuery(spinRes) instanceof Select) // wrap SELECT into DESCRIBE
 		{
-		    log.trace("Explicit query is SELECT, wrapping into DESCRIBE");
+		    if (log.isTraceEnabled()) log.trace("Explicit query is SELECT, wrapping into DESCRIBE");
 
 		    QueryBuilder selectBuilder = QueryBuilder.fromResource(spinRes).
 			limit(limit).
@@ -119,7 +119,7 @@ public class Resource extends ResourceBase
 	    qb = QueryBuilder.fromDescribe(uri); // DESCRIBE remote URI
 	
 	query = qb.build();
-	log.debug("Query generated with QueryBuilder: {}", query);
+	if (log.isDebugEnabled()) log.debug("Query generated with QueryBuilder: {}", query);
 		
 	if (this.endpointUri == null && resource.hasProperty(Graphity.service))
 	    this.endpointUri = resource.getPropertyResourceValue(Graphity.service).
@@ -133,23 +133,23 @@ public class Resource extends ResourceBase
 	if (model == null)
 	    try
 	    {
-		log.debug("Loading Model from local Model or remote URI or endpoint");
+		if (log.isDebugEnabled()) log.debug("Loading Model from local Model or remote URI or endpoint");
 		model = getResource().getModel();
 		if (model.isEmpty() && uri != null && endpointUri != null) // fallback to Linked Data
 		{
-		    log.debug("Model not loaded from SPARQL endpoint {}, falling back to LD URI: {}", endpointUri, uri);
+		    if (log.isDebugEnabled()) log.debug("Model not loaded from SPARQL endpoint {}, falling back to LD URI: {}", endpointUri, uri);
 		    model = ResourceFactory.getResource(uri).getModel();
 		}
 	    }
 	    catch (Exception ex)
 	    {
-		log.trace("Error while loading Model from URI: {}", uri, ex);
+		if (log.isTraceEnabled()) log.trace("Error while loading Model from URI: {}", uri, ex);
 		throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	    }
 	
 	    if (model.isEmpty())
 	    {
-		log.trace("Loaded Model is empty");
+		if (log.isTraceEnabled()) log.trace("Loaded Model is empty");
 		throw new WebApplicationException(Response.Status.NOT_FOUND);
 	    }
 	
@@ -199,7 +199,7 @@ public class Resource extends ResourceBase
     @Override
     public Response post(Model rdfPost)
     {
-	log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
+	if (log.isDebugEnabled()) log.debug("POSTed Model: {} size: {}", rdfPost, rdfPost.size());
 
 	setModel(rdfPost);
 
@@ -216,13 +216,13 @@ public class Resource extends ResourceBase
 	    // uses ModelProvider
 	    if (getAcceptType().isCompatible(org.graphity.MediaType.APPLICATION_RDF_XML_TYPE))
 	    {
-		log.debug("Accept param: {}, writing RDF/XML", getAcceptType());
+		if (log.isDebugEnabled()) log.debug("Accept param: {}, writing RDF/XML", getAcceptType());
 		return Response.ok(getModel(), org.graphity.MediaType.APPLICATION_RDF_XML_TYPE).
 			tag(getEntityTag()).build();
 	    }
 	    if (getAcceptType().isCompatible(org.graphity.MediaType.TEXT_TURTLE_TYPE))
 	    {
-		log.debug("Accept param: {}, writing Turtle", getAcceptType());
+		if (log.isDebugEnabled()) log.debug("Accept param: {}, writing Turtle", getAcceptType());
 		return Response.ok(getModel(), org.graphity.MediaType.TEXT_TURTLE_TYPE).
 			tag(getEntityTag()).build();
 	    }

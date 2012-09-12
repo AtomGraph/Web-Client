@@ -106,14 +106,14 @@ public class SPARQLCacheAdapter extends DatasetAdapter
     public boolean containsModel(String filenameOrURI)
     {
 	filenameOrURI = stripFragment(filenameOrURI);
-	log.debug("Checking if endpoint {} contains graph {}", endpoint, filenameOrURI);
+	if (log.isDebugEnabled()) log.debug("Checking if endpoint {} contains graph {}", endpoint, filenameOrURI);
 	Query query = QueryFactory.create("ASK { GRAPH ?g { ?s <http://purl.org/net/provenance/ns#accessedResource> <" + filenameOrURI + "> } }");
 	//Query query = QueryFactory.create("ASK { <" + graphUri + "> ?p ?o }");
 	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getEndpoint(), query);
 	
 	if (user != null && password != null)
 	{
-	    log.debug("HTTP Basic authentication with username: {}", user);
+	    if (log.isDebugEnabled()) log.debug("HTTP Basic authentication with username: {}", user);
 	    request.setBasicAuthentication(user, password);
 	}
 	
@@ -144,7 +144,7 @@ public class SPARQLCacheAdapter extends DatasetAdapter
 	metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#methodName"), "GET"));
 	metaModel.add(metaModel.createLiteralStatement(metaModel.createResource(AnonId.create("request")), metaModel.createProperty("http://www.w3.org/2011/http#absoluteURI"), uri));
 
-	log.debug("No of stmts in the metamodel: {} for GRAPH: {}", metaModel.size(), graph.getURI());
+	if (log.isDebugEnabled()) log.debug("No of stmts in the metamodel: {} for GRAPH: {}", metaModel.size(), graph.getURI());
 	
 	return metaModel;
     }

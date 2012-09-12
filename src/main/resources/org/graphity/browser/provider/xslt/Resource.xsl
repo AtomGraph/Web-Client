@@ -275,7 +275,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		<table class="table table-bordered table-striped">
 		    <thead>
 			<th>
-			    <a href="{$absolute-path}{g:query-string($offset, $limit, 'model', $desc, $lang, $mode)}">Resource</a>
+			    <a href="{$absolute-path}{g:query-string($offset, $limit, 'model', $desc, $lang, $mode)}">
+				<xsl:value-of select="g:label(xs:anyURI('&rdf;Resource'), /, $lang)"/>
+			    </a>
 			</th>
 
 			<xsl:for-each select="$predicates">
