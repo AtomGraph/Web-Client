@@ -75,13 +75,11 @@ XHTML
 * [`resources/org/graphity/browser/provider/xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt)
     * [`imports`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt/imports): Ontology-specific stylesheets (e.g. overriding templates for certain properties), imported by the master stylesheet
         * [`default.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/imports/default.xsl): Default templates and functions for rendering RDF/XML subject/predicate/object nodes as XHTML elements. Design-independent.
-    * [`rdfxml2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/rdfxml2google-wire.xsl): Generic conversion from RDF/XML to Google [`DataTable`](https://developers.google.com/chart/interactive/docs/reference#DataTable)
-    * [`sparql2google-wire.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/sparql2google-wire.xsl): Generic conversion from SPARQL XML results to Google `DataTable`
-* [`webapp/WEB-INF/Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
+    * [`Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
 
 
-Usage in your project
----------------------
+Using resources in your project
+-------------------------------
 
 In order to include the above stylesheets into your own Maven project, you can add the following execution for `maven-dependency-plugin` to your `pom.xml`:
 
@@ -106,14 +104,12 @@ In order to include the above stylesheets into your own Maven project, you can a
       </executions>
     </plugin>
 
-This will copy all reusable `.xsl` files from Graphity's `resource` folder.
+This will copy all reusable `.xsl` files from browser's `resource` folder.
 
 Ontologies
 ==========
 
-* [`resources/org/graphity/browser/vocabulary`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/vocabulary): Contains cached local copies of popular ontologies
-    * [`graphity.ttl`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/vocabulary/graphity.ttl) : Ontology reused by all Graphity applications
-* [`webapp/WEB-INF/ontology.ttl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/webapp/WEB-INF/ontology.ttl): Application-specific ontology, imports general Graphity ontology. Contains metadata of JAX-RS Resources as well as SPIN query Resources used by them.
+* [`resources/org/graphity/browser/vocabulary/ontology.ttl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/vocabulary/ontology.ttl): Application-specific ontology/sitemap. Imports general Graphity ontology. Contains metadata of JAX-RS Resources as well as SPIN query Resources used by them.
 
 Tools
 =====
