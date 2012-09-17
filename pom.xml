@@ -56,9 +56,9 @@
             <version>9.1.0.8</version>
         </dependency>
         <dependency>
-            <groupId>org.graphity</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ldp</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
@@ -109,7 +109,7 @@
 			    <goal>unpack-dependencies</goal>
 			</goals>
 			<configuration>
-			    <includeGroupIds>org.graphity</includeGroupIds>
+			    <!-- <includeGroupIds>org.graphity</includeGroupIds> -->
 			    <includes>**\/*.xsl,**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
 			    <outputDirectory>${project.build.directory}/classes</outputDirectory>
 			</configuration>

@@ -60,7 +60,7 @@ LIMIT 100</xsl:param>
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" priority="1">
 	<xsl:choose>
 	    <xsl:when test="key('resources-by-endpoint', $endpoint-uri, $ont-model)">
-		<xsl:apply-templates select="key('resources-by-endpoint', $endpoint-uri, $ont-model)" mode="Header"/>
+		<xsl:apply-templates select="key('resources-by-endpoint', $endpoint-uri, $ont-model)" mode="g:HeaderMode"/>
 	    </xsl:when>
 	    <xsl:when test="$endpoint-uri">
 		<div class="well">
@@ -72,7 +72,7 @@ LIMIT 100</xsl:param>
 		</div>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:apply-templates select="." mode="Header"/>
+		<xsl:apply-templates select="." mode="g:HeaderMode"/>
 	    </xsl:otherwise>
 	</xsl:choose>
 	

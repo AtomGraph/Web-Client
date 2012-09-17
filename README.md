@@ -106,8 +106,8 @@ In order to include the above stylesheets into your own Maven project, you can a
 
 This will copy all reusable `.xsl` files from browser's `resource` folder.
 
-Ontologies
-==========
+Resources
+=========
 
 * [`resources/org/graphity/browser/vocabulary/ontology.ttl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/vocabulary/ontology.ttl): Application-specific ontology/sitemap. Imports general Graphity ontology. Contains metadata of JAX-RS Resources as well as SPIN query Resources used by them.
 

@@ -74,10 +74,9 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void sd">
 	    <xsl:if test="rdf:type/@rdf:resource">
 		<ul class="inline">
 		    <xsl:for-each select="rdf:type/@rdf:resource">
+			<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
 			<li>
-			    <xsl:apply-templates select=".">
-				<xsl:sort select="g:label(., /, $lang)" data-type="text" order="ascending"/>
-			    </xsl:apply-templates>
+			    <xsl:apply-templates select="."/>
 			</li>
 		    </xsl:for-each>
 		</ul>
@@ -94,5 +93,5 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void sd">
 	    </p>
 	</div>
     </xsl:template>
-	
+
 </xsl:stylesheet>

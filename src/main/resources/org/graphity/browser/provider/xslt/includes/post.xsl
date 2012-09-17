@@ -46,7 +46,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl dct foaf sioc dbpedia uuid"
     <!-- RDF/POST Encoding for RDF http://www.lsrn.org/semweb/rdfpost.html -->
     
     <xsl:template match="*[@rdf:about = resolve-uri('post', $base-uri)]" priority="1">
-	<xsl:apply-templates select="." mode="Header"/>
+	<xsl:apply-templates select="." mode="g:HeaderMode"/>
 	
 	<form action="" method="post" class="form-horizontal">
 	    <fieldset>
@@ -124,7 +124,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl dct foaf sioc dbpedia uuid"
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = resolve-uri('post', $base-uri)]" mode="SidebarNav" priority="1">
+    <xsl:template match="*[@rdf:about = resolve-uri('post', $base-uri)]" mode="g:SidebarNavMode" priority="1">
 	<div class="well sidebar-nav">
 	    <h2 class="nav-header">See also</h2>
 		
