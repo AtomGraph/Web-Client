@@ -36,7 +36,7 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:sd="&sd;"
-exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql sd">
+exclude-result-prefixes="#all">
 
     <xsl:param name="default-query" as="xs:string">PREFIX rdf: &lt;&rdf;&gt;
 PREFIX rdfs: &lt;&rdfs;&gt;

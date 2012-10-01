@@ -40,7 +40,7 @@ xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:void="&void;"
 xmlns:sd="&sd;"
-exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl void sd">
+exclude-result-prefixes="#all">
     
     <!-- overrides default rendering -->
     <xsl:template match="rdf:RDF[$uri = $base-uri]">

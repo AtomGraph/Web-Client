@@ -52,10 +52,17 @@ xmlns:sioc="&sioc;"
 xmlns:sp="&sp;"
 xmlns:sd="&sd;"
 xmlns:list="&list;"
-exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc dct foaf sioc sp sd list">
+exclude-result-prefixes="#all">
 
     <xsl:import href="../../../ldp/provider/xslt/Resource.xsl"/>
+    <xsl:import href="imports/default.xsl"/>
+    <xsl:import href="../../../ldp/provider/xslt/group-sort-triples.xsl"/>
 
+    <xsl:include href="imports/doap.xsl"/>
+    <xsl:include href="imports/foaf.xsl"/>
+    <xsl:include href="imports/sd.xsl"/>
+    <xsl:include href="imports/void.xsl"/>
+    <xsl:include href="../../../ldp/provider/xslt/imports/dbpedia-owl.xsl"/>
     <xsl:include href="includes/sparql.xsl"/>
     <xsl:include href="includes/frontpage.xsl"/>
     <xsl:include href="includes/post.xsl"/>
@@ -66,7 +73,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	<html>
 	    <head>
 		<title>
-		    <xsl:text>Linked Data browser</xsl:text>
+		    <xsl:text>Graphity Browser</xsl:text>
 		    <xsl:if test="$uri">
 			<xsl:text> - </xsl:text><xsl:value-of select="g:label($uri, /, $lang)"/>
 			<xsl:if test="not(starts-with($uri, $base-uri))">
@@ -101,7 +108,7 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 		<div class="navbar navbar-fixed-top">
 		    <div class="navbar-inner">
 			<div class="container-fluid">    
-			    <a class="brand" href="/">
+			    <a class="brand" href="{$base-uri}">
 				<xsl:value-of select="g:label($base-uri, /, $lang)"/>
 			    </a>
 
@@ -172,7 +179,10 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 
 		<div class="container-fluid">
 		    <div class="row-fluid">
-			<xsl:apply-templates/>
+			<xsl:variable name="grouped-rdf">
+			    <xsl:apply-templates mode="g:GroupTriples"/>
+			</xsl:variable>
+			<xsl:apply-templates select="$grouped-rdf/rdf:RDF"/>
 		    </div>
 		    
 		    <div class="footer">
@@ -183,31 +193,45 @@ exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl sparql geo dbpedia-owl dc d
 	</html>
     </xsl:template>
 
-    <xsl:template match="rdf:type/@rdf:resource" priority="1">
+    <xsl:template match="rdf:type/@rdf:resource">
 	<span title="{.}" class="btn">
-	    <xsl:next-match/>
+	    <xsl:apply-imports/>
 	</span>
     </xsl:template>
 
-    <!-- subject/object resource -->
-    <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
-	<a href="{$base-uri}{g:query-string(., $endpoint-uri, (), (), (), (), $lang, ())}" title="{.}">
-	    <xsl:value-of select="g:label(., /, $lang)"/>
-	</a>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about[starts-with(., $base-uri)] | @rdf:resource[starts-with(., $base-uri)] | sparql:uri[starts-with(., $base-uri)]">
-	<a href="{.}{g:query-string((), (), (), (), (), (), $lang, ())}" title="{.}">
-	    <xsl:value-of select="g:label(., /, $lang)"/>
-	</a>
-    </xsl:template>
-
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/* | *[@rdf:resource or @rdf:nodeID]">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
-	<a href="{$base-uri}{g:query-string($this, $endpoint-uri, (), (), (), (), $lang, ())}" title="{$this}">
-	    <xsl:value-of select="g:label($this, /, $lang)"/>
-	</a>
+
+    <xsl:template match="rdf:type | foaf:img | foaf:depiction | foaf:logo | owl:sameAs | rdfs:label | rdfs:comment | rdfs:seeAlso | dc:title | dct:title | dc:description | dct:description | dct:subject | dbpedia-owl:abstract | sioc:content" mode="g:PropertyListMode" priority="1"/>
+    
+    <!-- skip <dt> for properties that are not first in the sorted group -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[preceding-sibling::*[concat(namespace-uri(.), local-name(.)) = concat(namespace-uri(current()), local-name(current()))]]" mode="g:PropertyListMode">
+	<dd>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="g:PropertyListMode"/>
+	</dd>
     </xsl:template>
+    
+    <xsl:function name="g:query-string" as="xs:string?">
+	<xsl:param name="uri" as="xs:anyURI?"/>
+	<xsl:param name="endpoint-uri" as="xs:anyURI?"/>
+	<xsl:param name="offset" as="xs:integer?"/>
+	<xsl:param name="limit" as="xs:integer?"/>
+	<xsl:param name="order-by" as="xs:string?"/>
+	<xsl:param name="desc" as="xs:boolean?"/>
+	<xsl:param name="lang" as="xs:string?"/>
+	<xsl:param name="mode" as="xs:string?"/>
+	
+	<xsl:variable name="query-string">
+	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
+	    <xsl:if test="$endpoint-uri">endpoint-uri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
+	    <xsl:if test="$offset">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
+	    <xsl:if test="$limit">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
+	    <xsl:if test="$order-by">order-by=<xsl:value-of select="$order-by"/>&amp;</xsl:if>
+	    <xsl:if test="$desc">desc&amp;</xsl:if>
+	    <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if>
+	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+	</xsl:variable>
+	
+	<xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
+    </xsl:function>
 
 </xsl:stylesheet>

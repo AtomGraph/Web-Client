@@ -41,7 +41,7 @@ xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:dbpedia="&dbpedia;"
 xmlns:uuid="java:java.util.UUID"
-exclude-result-prefixes="xsl xhtml xs g rdf rdfs owl dct foaf sioc dbpedia uuid">
+exclude-result-prefixes="#all">
 
     <!-- RDF/POST Encoding for RDF http://www.lsrn.org/semweb/rdfpost.html -->
     

@@ -109,7 +109,7 @@
 			    <goal>unpack-dependencies</goal>
 			</goals>
 			<configuration>
-			    <!-- <includeGroupIds>org.graphity</includeGroupIds> -->
+			    <includeGroupIds>org.graphity</includeGroupIds>
 			    <includes>**\/*.xsl,**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
 			    <outputDirectory>${project.build.directory}/classes</outputDirectory>
 			</configuration>

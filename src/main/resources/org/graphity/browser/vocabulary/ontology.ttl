@@ -17,8 +17,8 @@
 
 : a owl:Ontology ;
     owl:imports <http://graphity.org/ontology/> ;
-    dct:title "Linked Data Browser ontology" ;
-    rdfs:label "Linked Data Browser ontology" ;
+    dct:title "Graphity Browser ontology" ;
+    rdfs:label "Graphity Browser ontology" ;
     dct:created "2012-02-11T03:17:00+01:00"^^xsd:dateTime ;
     dct:modified "2012-07-17T10:11:00+01:00"^^xsd:dateTime ;
     dct:license <http://opendatacommons.org/licenses/odbl/1.0/> ;
@@ -34,7 +34,7 @@ _:dataset a void:Dataset ;
 # RESOURCES
 
 <> a sioc:Site, sioc:Forum, lda:API, lda:ListEndpoint ;
-    dct:title "Linked Data Browser" ;
+    dct:title "Graphity Browser" ;
     dct:description "This application is a basic example of how a generic Linked Data and SPARQL endpoint browser could look like. You're welcome to use it as it is, or as a starting point for your own Linked Data web application. If you come up with something reusable, don't forget to contribute back!" ;
     dct:subject dbpedia:Linked_Data,
 	dbpedia:Resource_Description_Framework ,
@@ -57,9 +57,9 @@ _:dataset a void:Dataset ;
 	    dbpedia:Saxon_XSLT ;
 	doap:release [ a doap:Version ;
 	    dct:title "Graphity Browser 1.0" ;
-	    doap:revision "1.0.0" ;
-	    doap:file-release <https://github.com/Graphity/graphity-browser/zipball/v1.0.0> ,
-		<https://github.com/Graphity/graphity-core/graphity-browser/v1.0.0> ] ;
+	    doap:revision "1.0.3" ;
+	    doap:file-release <https://github.com/Graphity/graphity-browser/zipball/v1.0.3> ,
+		<https://github.com/Graphity/graphity-core/graphity-browser/v1.0.3> ] ;
 	doap:file-release <https://github.com/Graphity/graphity-browser/zipball/master> ,
 	    <https://github.com/Graphity/graphity-browser/tarball/master> ;
 	doap:repository [ a doap:GitRepository ;
@@ -67,7 +67,7 @@ _:dataset a void:Dataset ;
 	    doap:location <https://github.com/Graphity/graphity-browser.git> ;
 	    doap:browse <https://github.com/Graphity/graphity-browser> ] ;
 	doap:bug-database <https://github.com/Graphity/graphity-browser/issues> ;
-	doap:maintainer <http://semantic-web.dk#/martynas> ;
+	doap:maintainer <http://semantic-web.dk/#martynas> ;
 	doap:license dbpedia:GNU_General_Public_License ;
 	dbpedia-owl:programmingLanguage dbpedia:XSLT,
 	    <http://dbpedia.org/resource/Java_%28programming_language%29> ] ;

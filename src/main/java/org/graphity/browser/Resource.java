@@ -22,6 +22,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.util.LocationMapper;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -140,6 +141,11 @@ public class Resource extends ResourceBase
 		    if (log.isDebugEnabled()) log.debug("Model not loaded from SPARQL endpoint {}, falling back to LD URI: {}", endpointUri, uri);
 		    model = ResourceFactory.getResource(uri).getModel();
 		}
+	    }
+	    catch (NotFoundException ex)
+	    {
+		if (log.isTraceEnabled()) log.trace("Error while loading Model from URI: {}", uri, ex);
+		throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
 	    }
 	    catch (Exception ex)
 	    {
