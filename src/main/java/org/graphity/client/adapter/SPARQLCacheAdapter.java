@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.browser.adapter;
+package org.graphity.client.adapter;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -26,8 +26,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 import javax.ws.rs.core.UriBuilder;
-import org.graphity.adapter.DatasetGraphAccessorHTTP;
-import org.openjena.fuseki.http.DatasetAdapter;
+import org.apache.jena.fuseki.http.DatasetAdapter;
+import org.graphity.update.DatasetGraphAccessorHTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,32 +40,15 @@ public class SPARQLCacheAdapter extends DatasetAdapter
     private static final Logger log = LoggerFactory.getLogger(SPARQLCacheAdapter.class);
     
     private UriBuilder uriBuilder = null;
-    private String endpoint = null;
+    private String endpointURI = null;
     private String user = null;
     private char[] password = null;
-    private String apiKey = null;
     
-    public SPARQLCacheAdapter(UriBuilder uriBuilder, String endpoint)
+    public SPARQLCacheAdapter(UriBuilder uriBuilder, String endpointURI)
     {
-	super(new DatasetGraphAccessorHTTP(endpoint.replace("/sparql", "/service")));
-	this.endpoint = endpoint;
+	super(new DatasetGraphAccessorHTTP(endpointURI));
+	this.endpointURI = endpointURI;
 	this.uriBuilder = uriBuilder;
-    }
-    public SPARQLCacheAdapter(UriBuilder uriBuilder, String endpoint, String user, char[] password)
-    {
-	super(new DatasetGraphAccessorHTTP(endpoint.replace("/sparql", "/service"), user, password));
-	this.endpoint = endpoint;
-	this.uriBuilder = uriBuilder;
-	this.user = user;
-	this.password = password;
-    }
-
-    public SPARQLCacheAdapter(UriBuilder uriBuilder, String endpoint, String apiKey)
-    {
-	super(new DatasetGraphAccessorHTTP(endpoint.replace("/sparql", "/service"), apiKey));
-	this.endpoint = endpoint;
-	this.uriBuilder = uriBuilder;
-	this.apiKey = apiKey;
     }
 
     public UriBuilder getUriBuilder()
@@ -73,9 +56,9 @@ public class SPARQLCacheAdapter extends DatasetAdapter
 	return uriBuilder.clone();
     }
 
-    public String getEndpoint()
+    public String getEndpointURI()
     {
-	return endpoint;
+	return endpointURI;
     }
 
     public static String stripFragment(String filenameOrURI)
@@ -106,10 +89,10 @@ public class SPARQLCacheAdapter extends DatasetAdapter
     public boolean containsModel(String filenameOrURI)
     {
 	filenameOrURI = stripFragment(filenameOrURI);
-	if (log.isDebugEnabled()) log.debug("Checking if endpoint {} contains graph {}", endpoint, filenameOrURI);
+	if (log.isDebugEnabled()) log.debug("Checking if endpoint {} contains graph {}", endpointURI, filenameOrURI);
 	Query query = QueryFactory.create("ASK { GRAPH ?g { ?s <http://purl.org/net/provenance/ns#accessedResource> <" + filenameOrURI + "> } }");
 	//Query query = QueryFactory.create("ASK { <" + graphUri + "> ?p ?o }");
-	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getEndpoint(), query);
+	QueryEngineHTTP request = QueryExecutionFactory.createServiceRequest(getEndpointURI(), query);
 	
 	if (user != null && password != null)
 	{

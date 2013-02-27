@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY g "http://graphity.org/ontology/">
+    <!ENTITY g "http://graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+    <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -26,14 +26,12 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
-xmlns:foaf="&foaf;"
+xmlns:dbpedia-owl="&dbpedia-owl;"
 exclude-result-prefixes="#all">
 
-    <xsl:include href="../../../../ldp/provider/xslt/imports/foaf.xsl"/>
-
-    <xsl:template match="foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:page/@rdf:resource">
+    <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
 	<a href="{.}">
-	    <xsl:value-of select="."/>
+	    <img src="{.}" alt="{g:label(., /, $lang)}"/>
 	</a>
     </xsl:template>
 
