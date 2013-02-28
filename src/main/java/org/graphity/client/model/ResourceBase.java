@@ -51,7 +51,7 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
     {
 	super(getOntology(uriInfo, config),
 		uriInfo, request, httpHeaders, XHTML_VARIANTS,
-		(config.getProperty(org.graphity.platform.Application.PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(org.graphity.platform.Application.PROPERTY_CACHE_CONTROL).toString()),
+		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc);
     }
     

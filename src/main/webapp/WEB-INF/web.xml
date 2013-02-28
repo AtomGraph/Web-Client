@@ -17,23 +17,23 @@
             <param-value>/static/.*</param-value>
         </init-param>
         <init-param>
-            <param-name>org.graphity.ldp.ontology.path</param-name>
+            <param-name>org.graphity.platform.ontology.path</param-name>
             <param-value>ontology</param-value>
         </init-param>
         <init-param>
-            <param-name>org.graphity.ldp.ontology.location</param-name>
-            <param-value>org/graphity/client/vocabulary/graphity-client.ttl</param-value>
+            <param-name>org.graphity.platform.ontology.location</param-name>
+            <param-value>org/graphity/client/vocabulary/gc.ttl</param-value>
         </init-param>
         <!--
         <init-param>
-            <param-name>org.graphity.ldp.ontology.uri</param-name>
-            <param-value>http://ldp.graphity.org/ontology/</param-value>
+            <param-name>org.graphity.platform.ontology.uri</param-name>
+            <param-value>http://platform.graphity.org/ontology/</param-value>
         </init-param>
 	-->
         <!--
         <init-param>
-            <param-name>org.graphity.ldp.ontology.endpoint.uri</param-name>
-            <param-value>http://dydra.com/graphity/ldp/sparql</param-value>
+            <param-name>org.graphity.platform.ontology.endpoint.uri</param-name>
+            <param-value>http://dydra.com/graphity/platform/sparql</param-value>
         </init-param>
 	-->
         <init-param>
@@ -41,7 +41,7 @@
             <param-value>org/graphity/client/writer/Resource.xsl</param-value>
         </init-param>
         <init-param>
-            <param-name>org.graphity.ldp.model.cache-control</param-name>
+            <param-name>org.graphity.platform.model.cache-control</param-name>
             <param-value>no-cache</param-value>
         </init-param>
     </filter>

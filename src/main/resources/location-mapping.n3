@@ -2,10 +2,10 @@
 
 [] lm:mapping
    
-   [ lm:name "http://rdfs.org/sioc/ns#" ; lm:altName "org/graphity/vocabulary/sioc.owl" ] ,
-   [ lm:name "http://purl.org/linked-data/api/vocab#" ; lm:altName "org/graphity/ldp/vocabulary/lda.ttl" ],
-   [ lm:name "http://rdfs.org/ns/void#" ; lm:altName "org/graphity/vocabulary/void.owl" ] ,
-   [ lm:name "http://ldp.graphity.org/ontology#" ; lm:altName "org/graphity/ldp/vocabulary/graphity-ldp.ttl" ] ,
+   [ lm:name "http://rdfs.org/sioc/ns#" ; lm:altName "org/graphity/platform/vocabulary/sioc.owl" ] ,
+   [ lm:name "http://purl.org/linked-data/api/vocab#" ; lm:altName "org/graphity/platform/vocabulary/lda.ttl" ],
+   [ lm:name "http://rdfs.org/ns/void#" ; lm:altName "org/graphity/platform/vocabulary/void.owl" ] ,
+   [ lm:name "http://platform.graphity.org/ontology#" ; lm:altName "org/graphity/platform/vocabulary/gp.ttl" ] ,
    [ lm:name "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ; lm:altName "org/graphity/client/vocabulary/rdf.owl" ] ,
    [ lm:name "http://www.w3.org/2000/01/rdf-schema#" ; lm:altName "org/graphity/client/vocabulary/rdfs.owl" ] ,
    [ lm:name "http://www.w3.org/2002/07/owl#" ; lm:altName "org/graphity/client/vocabulary/owl2.owl" ] ,
@@ -22,10 +22,10 @@
    [ lm:name "http://usefulinc.com/ns/doap#" ; lm:altName "org/graphity/client/vocabulary/doap.owl" ],
    [ lm:name "http://purl.org/goodrelations/v1#" ; lm:altName "org/graphity/client/vocabulary/goodrelations.owl" ],
 
-   [ lm:prefix "http://rdfs.org/sioc/ns" ; lm:altName "org/graphity/vocabulary/sioc.owl" ] ,
-   [ lm:prefix "http://purl.org/linked-data/api/vocab" ; lm:altName "org/graphity/ldp/vocabulary/lda.ttl" ],
-   [ lm:prefix "http://rdfs.org/ns/void" ; lm:altName "org/graphity/vocabulary/void.owl" ] ,
-   [ lm:prefix "http://ldp.graphity.org/ontology" ; lm:altName "org/graphity/ldp/vocabulary/graphity-ldp.ttl" ] ,
+   [ lm:prefix "http://rdfs.org/sioc/ns" ; lm:altName "org/graphity/platform/vocabulary/sioc.owl" ] ,
+   [ lm:prefix "http://purl.org/linked-data/api/vocab" ; lm:altName "org/graphity/platform/vocabulary/lda.ttl" ],
+   [ lm:prefix "http://rdfs.org/ns/void" ; lm:altName "org/graphity/platform/vocabulary/void.owl" ] ,
+   [ lm:prefix "http://platform.graphity.org/ontology" ; lm:altName "org/graphity/platform/vocabulary/gp.ttl" ] ,
    [ lm:prefix "http://www.w3.org/1999/02/22-rdf-syntax-ns" ; lm:altName "org/graphity/client/vocabulary/rdf.owl" ] ,
    [ lm:prefix "http://www.w3.org/2000/01/rdf-schema" ; lm:altName "org/graphity/client/vocabulary/rdfs.owl" ] ,
    [ lm:prefix "http://www.w3.org/2002/07/owl" ; lm:altName "org/graphity/client/vocabulary/owl2.owl" ] ,

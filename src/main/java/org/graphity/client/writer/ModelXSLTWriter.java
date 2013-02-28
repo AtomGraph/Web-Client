@@ -106,11 +106,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 
 	    if (!httpHeaders.getAcceptableLanguages().isEmpty())
 		builder.parameter("lang", httpHeaders.getAcceptableLanguages().get(0).toLanguageTag());
-
-	    //if (uriInfo.getQueryParameters().getFirst("lang") != null)
-		//builder.parameter("lang", uriInfo.getQueryParameters().getFirst("lang"));
-	    //if (uriInfo.getQueryParameters().getFirst("mode") != null)
-		//builder.parameter("mode", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("mode")).build());
+	    if (uriInfo.getQueryParameters().getFirst("mode") != null)
+		builder.parameter("mode", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("mode")).build());
 	    if (uriInfo.getQueryParameters().getFirst("query") != null)
 		builder.parameter("query", uriInfo.getQueryParameters().getFirst("query"));
 

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY java "http://xml.apache.org/xalan/java/">
     <!ENTITY g "http://graphity.org/ontology#">
     <!ENTITY gldp "http://ldp.graphity.org/ontology#">
+    <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">
@@ -83,7 +84,7 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="lang" select="'en'" as="xs:string"/>
 
-    <xsl:param name="mode" select="$resource/g:mode/@rdf:resource" as="xs:anyURI?"/>
+    <xsl:param name="mode" as="xs:anyURI?"/>
     <xsl:param name="ont-model" as="document-node()"/> <!-- select="document($base-uri)"  -->
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
@@ -107,13 +108,29 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-host" match="*[@rdf:about]" use="sioc:has_host/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="ldp:pageOf/@rdf:resource"/>
- 
+
+    <rdf:Description rdf:about="">
+	<dct:creator rdf:resource="http://semantic-web.dk/#martynas"/>
+    </rdf:Description>
+
     <rdf:Description rdf:nodeID="previous">
 	<rdfs:label xml:lang="en">Previous</rdfs:label>
     </rdf:Description>
 
     <rdf:Description rdf:nodeID="next">
 	<rdfs:label xml:lang="en">Next</rdfs:label>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="&gc;TableMode">
+	<rdfs:label xml:lang="en-US">Table</rdfs:label>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="&gc;ListMode">
+	<rdfs:label xml:lang="en-US">List</rdfs:label>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="&gc;InputMode">
+	<rdfs:label xml:lang="en-US">Input</rdfs:label>
     </rdf:Description>
 
     <xsl:template match="/">
@@ -235,6 +252,9 @@ exclude-result-prefixes="#all">
 		    
 		    <xsl:apply-templates select="." mode="g:InputMode"/>
 		</xsl:when>
+		<xsl:when test="key('resources', $request-uri)/rdf:type/@rdf:resource = '&ldp;Page'">
+		    <xsl:apply-templates select="." mode="g:ListMode"/>
+		</xsl:when>
 		<xsl:otherwise>
 		    <xsl:apply-templates select="key('resources', $absolute-path)"/>
 		    <!-- apply all other URI resources -->
@@ -261,7 +281,7 @@ exclude-result-prefixes="#all">
 		</xsl:if>
 
 		<a href="{@rdf:about}{g:query-string($offset, $limit, $order-by, $desc, (), '&g;ListMode')}">
-		    <xsl:apply-templates select="key('resources', '&g;ListMode', document('&g;'))/@rdf:about" mode="g:LabelMode"/>
+		    <xsl:apply-templates select="key('resources', '&gc;ListMode', document(''))/@rdf:about" mode="g:LabelMode"/>
 		</a>
 	    </li>
 	    <li>
@@ -270,7 +290,7 @@ exclude-result-prefixes="#all">
 		</xsl:if>
 
 		<a href="{@rdf:about}{g:query-string($offset, $limit, $order-by, $desc, (), '&g;TableMode')}">
-		    <xsl:apply-templates select="key('resources', '&g;TableMode', document('&g;'))/@rdf:about" mode="g:LabelMode"/>
+		    <xsl:apply-templates select="key('resources', '&gc;TableMode', document(''))/@rdf:about" mode="g:LabelMode"/>
 		</a>
 	    </li>
 	    <li>
@@ -279,7 +299,7 @@ exclude-result-prefixes="#all">
 		</xsl:if>
 
 		<a href="{@rdf:about}{g:query-string($offset, $limit, $order-by, $desc, (), '&g;InputMode')}">
-		    <xsl:apply-templates select="key('resources', '&g;InputMode', document('&g;'))/@rdf:about" mode="g:LabelMode"/>
+		    <xsl:apply-templates select="key('resources', '&gc;InputMode', document(''))/@rdf:about" mode="g:LabelMode"/>
 		</a>
 	    </li>
 	</ul>
@@ -518,7 +538,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="g:ListMode">
 	<xsl:apply-templates select="key('resources', $absolute-path)" mode="gldp:HeaderMode"/>
-
 	<xsl:apply-templates select="key('resources', $absolute-path)" mode="gldp:ModeSelectMode"/>
 
 	<!-- page resource -->
