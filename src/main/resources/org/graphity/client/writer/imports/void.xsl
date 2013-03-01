@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY g "http://graphity.org/ontology/">
+    <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY void "http://rdfs.org/ns/void#">
 ]>
@@ -24,14 +24,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:g="&g;"
+xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:void="&void;"
 exclude-result-prefixes="#all">
     
     <xsl:template match="void:sparqlEndpoint/@rdf:resource">
 	<a href="{$base-uri}?endpoint-uri={encode-for-uri(.)}">
-	    <xsl:value-of select="g:label(., /, $lang)"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
 

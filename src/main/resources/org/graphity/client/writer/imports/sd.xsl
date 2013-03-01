@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY g "http://graphity.org/ontology/">
+    <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY sd "http://www.w3.org/ns/sparql-service-description#">
 ]>
@@ -24,20 +24,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:g="&g;"
+xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sd="&sd;"
 exclude-result-prefixes="#all">
     
     <xsl:template match="sd:endpoint/@rdf:resource">
 	<a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(.)}">
-	    <xsl:value-of select="g:label(., /, $lang)"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
 
-    <xsl:template match="sd:Service[sd:endpoint/@rdf:resource]/@rdf:about | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:about | sd:Service[sd:endpoint/@rdf:resource]/@rdf:nodeID | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:nodeID ">
+    <xsl:template match="sd:Service[sd:endpoint/@rdf:resource]/@rdf:about | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:about | sd:Service[sd:endpoint/@rdf:resource]/@rdf:nodeID | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:nodeID">
 	<a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(../sd:endpoint/@rdf:resource)}">
-	    <xsl:value-of select="g:label(., /, $lang)"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
 

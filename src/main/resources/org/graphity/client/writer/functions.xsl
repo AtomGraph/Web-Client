@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java "http://xml.apache.org/xalan/java/">
-    <!ENTITY g "http://graphity.org/ontology#">
+    <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
@@ -35,7 +35,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:url="&java;java.net.URLDecoder"
-xmlns:g="&g;"
+xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
@@ -56,7 +56,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
     
-    <xsl:function name="g:local-label" as="xs:string?">
+    <xsl:function name="gc:local-label" as="xs:string?">
 	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
 	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
@@ -115,7 +115,7 @@ exclude-result-prefixes="#all">
 	</xsl:for-each>
     </xsl:function>
 
-    <xsl:function name="g:local-label" as="xs:string?">
+    <xsl:function name="gc:local-label" as="xs:string?">
 	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
 	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
@@ -150,7 +150,7 @@ exclude-result-prefixes="#all">
 	</xsl:for-each>
     </xsl:function>
 
-    <xsl:function name="g:document-uri" as="xs:anyURI">
+    <xsl:function name="gc:document-uri" as="xs:anyURI">
 	<xsl:param name="uri" as="xs:anyURI"/>
 	<xsl:choose>
 	    <!-- strip trailing fragment identifier (#) -->
@@ -163,19 +163,19 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:function>
 
-    <xsl:function name="g:fragment-id" as="xs:string?">
+    <xsl:function name="gc:fragment-id" as="xs:string?">
 	<xsl:param name="uri" as="xs:anyURI"/>
 	
 	<xsl:sequence select="substring-after($uri, '#')"/>
     </xsl:function>
 
-    <xsl:function name="g:label" as="xs:string?">
+    <xsl:function name="gc:label" as="xs:string?">
 	<xsl:param name="resource-uri" as="xs:anyURI"/>
 	<xsl:param name="document" as="document-node()"/>
 	<xsl:param name="lang" as="xs:string"/>
-	<xsl:variable name="local-lang-label" select="g:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
-	<xsl:variable name="local-en-label" select="g:local-label($resource-uri, $document, 'en')" as="xs:string?"/>
-	<xsl:variable name="local-label" select="g:local-label($resource-uri, $document)" as="xs:string?"/>
+	<xsl:variable name="local-lang-label" select="gc:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
+	<xsl:variable name="local-en-label" select="gc:local-label($resource-uri, $document, 'en')" as="xs:string?"/>
+	<xsl:variable name="local-label" select="gc:local-label($resource-uri, $document)" as="xs:string?"/>
 
 	<xsl:choose>
 	    <xsl:when test="$local-lang-label"> <!-- try localized label first -->
@@ -188,9 +188,9 @@ exclude-result-prefixes="#all">
 		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), substring($local-label, 2))"/>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<xsl:variable name="imported-lang-label" select="g:local-label($resource-uri, document(g:document-uri($resource-uri)), $lang)" as="xs:string?"/>
-		<xsl:variable name="imported-en-label" select="g:local-label($resource-uri, document(g:document-uri($resource-uri)), 'en')" as="xs:string?"/>
-		<xsl:variable name="imported-label" select="g:local-label($resource-uri, document(g:document-uri($resource-uri)))" as="xs:string?"/>
+		<xsl:variable name="imported-lang-label" select="gc:local-label($resource-uri, document(gc:document-uri($resource-uri)), $lang)" as="xs:string?"/>
+		<xsl:variable name="imported-en-label" select="gc:local-label($resource-uri, document(gc:document-uri($resource-uri)), 'en')" as="xs:string?"/>
+		<xsl:variable name="imported-label" select="gc:local-label($resource-uri, document(gc:document-uri($resource-uri)))" as="xs:string?"/>
 		<xsl:choose>
 		    <xsl:when test="$imported-lang-label">
 			<xsl:sequence select="concat(upper-case(substring($imported-lang-label, 1, 1)), substring($imported-lang-label, 2))"/>
@@ -219,17 +219,17 @@ exclude-result-prefixes="#all">
 	<xsl:param name="property-uri" as="xs:anyURI+"/>
 	<!-- <xsl:message>$property-uri: <xsl:value-of select="$property-uri"/></xsl:message> -->
 	<xsl:for-each select="$property-uri">
-	    <xsl:for-each select="document(g:document-uri($property-uri))">
+	    <xsl:for-each select="document(gc:document-uri($property-uri))">
 		<xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
 	    </xsl:for-each>
 	</xsl:for-each>
     </xsl:function>
 
-    <xsl:function name="g:inDomainOf" as="xs:anyURI*">
+    <xsl:function name="gc:inDomainOf" as="xs:anyURI*">
 	<xsl:param name="type-uri" as="xs:anyURI+"/>
 	<!-- <xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message> -->
 	<xsl:for-each select="$type-uri">
-	    <xsl:for-each select="document(g:document-uri(.))">
+	    <xsl:for-each select="document(gc:document-uri(.))">
 		<xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
 	    </xsl:for-each>
 	</xsl:for-each>
@@ -239,7 +239,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="property-uri" as="xs:anyURI+"/>
 	<!-- <xsl:message>$property-uri: <xsl:value-of select="$property-uri"/></xsl:message> -->
 	<xsl:for-each select="$property-uri">
-	    <xsl:for-each select="document(g:document-uri($property-uri))">
+	    <xsl:for-each select="document(gc:document-uri($property-uri))">
 		<xsl:sequence select="key('resources', $property-uri)/rdfs:range/@rdf:resource"/>
 	    </xsl:for-each>
 	</xsl:for-each>
@@ -247,28 +247,28 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="rdfs:subClassOf" as="xs:anyURI*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(g:document-uri($uri))">
+	<xsl:for-each select="document(gc:document-uri($uri))">
 	    <xsl:sequence select="key('resources', $uri)/rdfs:subClassOf/@rdf:resource"/>
 	</xsl:for-each>
     </xsl:function>
 
-    <xsl:function name="g:superClassOf" as="xs:anyURI*">
+    <xsl:function name="gc:superClassOf" as="xs:anyURI*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(g:document-uri($uri))">
+	<xsl:for-each select="document(gc:document-uri($uri))">
 	    <xsl:sequence select="key('resources-by-subclass', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="skos:broader" as="xs:anyURI*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(g:document-uri($uri))">
+	<xsl:for-each select="document(gc:document-uri($uri))">
 	    <xsl:sequence select="key('resources', $uri)/skos:broader/@rdf:resource | key('resources-by-narrower', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="skos:narrower" as="xs:anyURI*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(g:document-uri($uri))">
+	<xsl:for-each select="document(gc:document-uri($uri))">
 	    <xsl:sequence select="key('resources', $uri)/skos:narrower/@rdf:resource | key('resources-by-broader', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
@@ -284,7 +284,7 @@ exclude-result-prefixes="#all">
 	</xsl:if>
     </xsl:function>
 	
-    <xsl:function name="g:query">
+    <xsl:function name="gc:query">
 	<xsl:param name="query" as="xs:string"/>
 	<xsl:param name="endpoint-uri" as="xs:anyURI"/>
 	<xsl:param name="accept" as="xs:string?"/>
@@ -294,20 +294,20 @@ exclude-result-prefixes="#all">
 	<xsl:sequence select="document(concat($endpoint-uri, '?', $query-string))"/>
     </xsl:function>
 
-    <xsl:function name="g:query-string" as="xs:string?">
+    <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="lang" as="xs:string?"/>
 	
-	<xsl:sequence select="g:query-string($lang, ())"/>
+	<xsl:sequence select="gc:query-string($lang, ())"/>
     </xsl:function>
 
-    <xsl:function name="g:query-string" as="xs:string?">
+    <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="lang" as="xs:string?"/>
 	<xsl:param name="mode" as="xs:string?"/>
 	
-	<xsl:sequence select="g:query-string((), (), (), (), $lang, $mode)"/>
+	<xsl:sequence select="gc:query-string((), (), (), (), $lang, $mode)"/>
     </xsl:function>
 
-    <xsl:function name="g:query-string" as="xs:string?">
+    <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="offset" as="xs:integer?"/>
 	<xsl:param name="limit" as="xs:integer?"/>
 	<xsl:param name="order-by" as="xs:string?"/>

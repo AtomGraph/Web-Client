@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java "http://xml.apache.org/xalan/java/">
-    <!ENTITY g "http://graphity.org/ontology#">
+    <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
@@ -34,7 +34,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:g="&g;"
+xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
@@ -51,13 +51,13 @@ exclude-result-prefixes="#all">
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
 	<a href="{.}" title="{.}">
-	    <xsl:apply-templates select="." mode="g:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
 
     <xsl:template match="@rdf:nodeID">
 	<span id="{.}" title="{.}">
-	    <xsl:apply-templates select="." mode="g:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</span>
     </xsl:template>
 
@@ -65,7 +65,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
 	<span title="{$this}">
-	    <xsl:apply-templates select="." mode="g:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</span>
     </xsl:template>
 	
@@ -108,7 +108,7 @@ exclude-result-prefixes="#all">
     <!-- LABEL MODE -->
     
     <!-- subject -->
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="g:LabelMode">
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:LabelMode">
 	<xsl:for-each select="..">
 	    <xsl:choose>
 		<xsl:when test="rdfs:label[lang($lang)]">
@@ -206,15 +206,15 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="g:LabelMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:LabelMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
 	<xsl:variable name="doc" select="document(namespace-uri())"/>
 	<xsl:choose>
 	    <xsl:when test="key('resources', $this, $doc)/@rdf:about">
-		<xsl:apply-templates select="key('resources', $this, $doc)/@rdf:about" mode="g:LabelMode"/>
+		<xsl:apply-templates select="key('resources', $this, $doc)/@rdf:about" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:when test="key('resources', $this)">
-		<xsl:apply-templates select="key('resources', $this)/@rdf:about" mode="g:LabelMode"/>
+		<xsl:apply-templates select="key('resources', $this)/@rdf:about" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
 		<xsl:value-of select="substring-after($this, '#')"/>
@@ -229,20 +229,20 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object -->
-    <xsl:template match="@rdf:resource" mode="g:LabelMode">
-	<xsl:variable name="doc" select="document(g:document-uri(.))"/>
+    <xsl:template match="@rdf:resource" mode="gc:LabelMode">
+	<xsl:variable name="doc" select="document(gc:document-uri(.))"/>
 	<xsl:choose>
 	    <xsl:when test="key('resources', ., $doc)/@rdf:about">
-		<xsl:apply-templates select="key('resources', ., $doc)/@rdf:about" mode="g:LabelMode"/>
+		<xsl:apply-templates select="key('resources', ., $doc)/@rdf:about" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:when test="key('resources', ., $doc)/@rdf:nodeID">
-		<xsl:apply-templates select="key('resources', ., $doc)/@rdf:nodeID" mode="g:LabelMode"/>
+		<xsl:apply-templates select="key('resources', ., $doc)/@rdf:nodeID" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:when test="key('resources', .)/@rdf:about">
-		<xsl:apply-templates select="key('resources', .)/@rdf:about" mode="g:LabelMode"/>
+		<xsl:apply-templates select="key('resources', .)/@rdf:about" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:when test="key('resources', .)/@rdf:nodeID">
-		<xsl:apply-templates select="key('resources', .)/@rdf:nodeID" mode="g:LabelMode"/>
+		<xsl:apply-templates select="key('resources', .)/@rdf:nodeID" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
 		<xsl:value-of select="substring-after(., '#')"/>
@@ -258,7 +258,7 @@ exclude-result-prefixes="#all">
 
     <!-- DESCRIPTION MODE -->
     
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="g:DescriptionMode">
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:DescriptionMode">
 	<xsl:for-each select="..">
 	    <xsl:if test="rdfs:comment[lang($lang) or not(@xml:lang)] or dc:description[lang($lang) or not(@xml:lang)] or dct:description[lang($lang) or not(@xml:lang)] or dbpedia-owl:abstract[lang($lang) or not(@xml:lang)] or sioc:content[lang($lang) or not(@xml:lang)]">
 		<p>

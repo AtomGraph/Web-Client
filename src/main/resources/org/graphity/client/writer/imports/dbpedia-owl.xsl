@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY g "http://graphity.org/ontology#">
+    <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
 ]>
@@ -24,14 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:g="&g;"
+xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
 	<a href="{.}">
-	    <img src="{.}" alt="{g:label(., /, $lang)}"/>
+	    <img src="{.}">
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	    </img>
 	</a>
     </xsl:template>
 
