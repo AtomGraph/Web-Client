@@ -41,6 +41,20 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
+    <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
+
+    <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:HeaderImageMode" priority="1">
+	<p>
+	    <xsl:apply-templates select="@rdf:resource"/>
+	</p>
+    </xsl:template>
+
+    <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:ListImageMode" priority="1">
+	<p>
+	    <xsl:apply-templates select="@rdf:resource"/>
+	</p>
+    </xsl:template>
+
     <!--
     <xsl:template match="foaf:Image/@rdf:about | *[rdf:type/@rdf:resource = '&foaf;Image']/@rdf:about">
 	<a href="{.}">

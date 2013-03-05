@@ -66,6 +66,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/default.xsl"/>
     <xsl:import href="group-sort-triples.xsl"/>
 
+    <xsl:include href="sparql.xsl"/>
     <xsl:include href="imports/foaf.xsl"/>
     <xsl:include href="imports/dbpedia-owl.xsl"/>
     <xsl:include href="functions.xsl"/>
@@ -404,13 +405,15 @@ exclude-result-prefixes="#all">
     <!-- HEADER IMAGE MODE -->
 
     <!-- ignore all other properties -->
-    <xsl:template match="*" mode="gc:HeaderImageMode"/>
-	
+    <!-- <xsl:template match="*" mode="gc:HeaderImageMode"/> -->
+
+    <!--
     <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:HeaderImageMode" priority="1">
 	<p>
 	    <xsl:apply-templates select="@rdf:resource"/>
 	</p>
     </xsl:template>
+    -->
 
     <!-- PROPERTY LIST MODE -->
 
@@ -423,32 +426,6 @@ exclude-result-prefixes="#all">
 		</xsl:apply-templates>
 	    </dl>
 	</div>
-    </xsl:template>
-
-    <!-- has to match the previous template pattern - can this be made smarter? -->
-    <xsl:template match="rdf:type | foaf:img | foaf:depiction | foaf:logo | owl:sameAs | rdfs:label | rdfs:comment | rdfs:seeAlso | dc:title | dct:title | dc:description | dct:description | dct:subject | dbpedia-owl:abstract | sioc:content" mode="gc:PropertyListMode" priority="1"/>
-
-    <!-- property -->    
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyListMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
-
-	<xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
-	    <dt>
-		<xsl:apply-templates select="."/>
-	    </dt>
-	</xsl:if>
-	<dd>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:PropertyListMode"/>
-	</dd>
-    </xsl:template>
-    
-    <xsl:template match="node() | @rdf:resource" mode="gc:PropertyListMode">
-	<xsl:apply-templates select="."/>
-    </xsl:template>
-
-    <!-- include blank nodes recursively but avoid infinite loop -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:PropertyListMode">
-	<xsl:apply-templates select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
     </xsl:template>
 
     <!-- SIDEBAR NAV MODE -->
@@ -570,13 +547,15 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- ignore all other properties -->
-    <xsl:template match="*" mode="gc:ListImageMode"/>
-	
+    <!-- <xsl:template match="*" mode="gc:ListImageMode"/> -->
+
+    <!--
     <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:ListImageMode" priority="1">
 	<p>
 	    <xsl:apply-templates select="@rdf:resource"/>
 	</p>
     </xsl:template>
+    -->
 
     <!-- TABLE HEADER MODE -->
 

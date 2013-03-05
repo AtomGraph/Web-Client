@@ -41,12 +41,29 @@ public class SPARQLEndpointBase extends org.graphity.platform.model.SPARQLEndpoi
 	@QueryParam("offset") @DefaultValue("0") Long offset,
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") Boolean desc,
-	//@QueryParam("query") Query query,
-	@QueryParam("uri") String uri)
+	@QueryParam("query") Query query
+	    )
     {
-	super(uriInfo, request, httpHeaders, config,
+	super(getOntology(uriInfo, config).createOntResource(uriInfo.getAbsolutePath().toString()),
+		uriInfo, request, httpHeaders, ResourceBase.XHTML_VARIANTS,
+		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc,
-		null);	
+		query);	
+    }
+
+    @Override
+    public Response getResponse()
+    {
+	MediaType mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
+
+	// don't create query resource if HTML is requested
+	if (getUserQuery() != null && (mediaType.isCompatible(org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE) ||
+	    mediaType.isCompatible(org.graphity.platform.MediaType.TEXT_TURTLE_TYPE) ||
+	    mediaType.isCompatible(org.graphity.platform.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
+	    mediaType.isCompatible(org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE)))
+	    return query(getUserQuery());
+
+	return getResponse(describe()); // if HTML is requested, return DESCRIBE ?this results instead of user query
     }
 
 }

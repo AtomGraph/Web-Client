@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
@@ -37,6 +38,7 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
+xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 xmlns:dc="&dc;"
@@ -298,6 +300,41 @@ exclude-result-prefixes="#all">
 		</p>
 	    </xsl:if>
 	</xsl:for-each>
+    </xsl:template>
+
+    <!-- IMAGE MODE -->
+
+    <xsl:template match="*" mode="gc:HeaderImageMode"/>
+    
+    <xsl:template match="*" mode="gc:ListImageMode"/>
+
+    <!-- PROPERTY LIST MODE -->
+    
+    <xsl:template match="rdf:type | owl:sameAs | rdfs:label | rdfs:comment | rdfs:seeAlso | dc:title | dct:title | dc:description | dct:description | dct:subject | dbpedia-owl:abstract | sioc:content" mode="gc:PropertyListMode" priority="1"/>
+
+    <!-- has to match the previous template pattern - can this be made smarter? -->
+
+    <!-- property -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyListMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+
+	<xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
+	    <dt>
+		<xsl:apply-templates select="."/>
+	    </dt>
+	</xsl:if>
+	<dd>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:PropertyListMode"/>
+	</dd>
+    </xsl:template>
+    
+    <xsl:template match="node() | @rdf:resource" mode="gc:PropertyListMode">
+	<xsl:apply-templates select="."/>
+    </xsl:template>
+
+    <!-- include blank nodes recursively but avoid infinite loop -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:PropertyListMode">
+	<xsl:apply-templates select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
     </xsl:template>
 
 </xsl:stylesheet>

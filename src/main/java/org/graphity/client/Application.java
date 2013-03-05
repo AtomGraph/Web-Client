@@ -146,7 +146,7 @@ public class Application extends org.graphity.platform.Application
     @Override
     public Set<Object> getSingletons()
     {
-	singletons.add(super.getSingletons());
+	singletons.addAll(super.getSingletons());
 	singletons.add(new RDFPostReader());
 
 	if (getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION) != null)
