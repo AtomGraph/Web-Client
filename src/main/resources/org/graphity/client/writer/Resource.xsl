@@ -226,7 +226,7 @@ exclude-result-prefixes="#all">
 		form.form-inline { margin: 0; }
 		ul.inline { margin-left: 0; }
 		.inline li { display: inline; }
-		.well-small { background-color: #FAFAFA ; }
+		.well-small { background-color: #FAFAFA; max-height: 60em; overflow-y: auto; }
 		textarea#query-string { font-family: monospace; }
 	    ]]>
 	</style>	

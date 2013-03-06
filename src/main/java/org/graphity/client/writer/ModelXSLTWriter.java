@@ -23,6 +23,7 @@ import com.sun.jersey.spi.resource.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -71,7 +72,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
      */
-    public ModelXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
+    public ModelXSLTWriter(Source stylesheet, URIResolver resolver)
     {
 	if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
 	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
@@ -90,29 +91,12 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    model.write(baos, WebContent.langRDFXML);
 
 	    // injecting Resource to get its OntModel. Is there a better way to do this?
-	    OntResource ontResource = (OntResource)uriInfo.getMatchedResources().get(0);
+	    OntResource ontResource = (OntResource)getUriInfo().getMatchedResources().get(0);
 	    if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
 
 	    // create XSLTBuilder per request output to avoid document() caching
-	    XSLTBuilder builder = XSLTBuilder.fromStylesheet(stylesheet).
-		resolver(resolver).
-		document(new ByteArrayInputStream(baos.toByteArray())).
-		parameter("base-uri", uriInfo.getBaseUri()).
-		parameter("absolute-path", uriInfo.getAbsolutePath()).
-		parameter("request-uri", uriInfo.getRequestUri()).
-		parameter("http-headers", headerMap.toString()).
-		parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource
-		result(new StreamResult(entityStream));
-
-	    if (!httpHeaders.getAcceptableLanguages().isEmpty())
-		builder.parameter("lang", httpHeaders.getAcceptableLanguages().get(0).toLanguageTag());
-	    if (uriInfo.getQueryParameters().getFirst("mode") != null)
-		builder.parameter("mode", UriBuilder.fromUri(uriInfo.getQueryParameters().getFirst("mode")).build());
-	    if (uriInfo.getQueryParameters().getFirst("query") != null)
-		builder.parameter("query", uriInfo.getQueryParameters().getFirst("query"));
-
-	    builder.transform();
-	    baos.close();
+	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
+		    headerMap, ontResource.getOntModel(), entityStream).transform();
 	}
 	catch (TransformerException ex)
 	{
@@ -131,6 +115,48 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
+    }
+
+    public URIResolver getURIResolver()
+    {
+	return resolver;
+    }
+
+    public Source getStylesheet()
+    {
+	return stylesheet;
+    }
+
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
+    }
+
+    public HttpHeaders getHttpHeaders()
+    {
+	return httpHeaders;
+    }
+
+    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OntModel ontModel, OutputStream os) throws TransformerConfigurationException
+    {
+	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
+	    resolver(getURIResolver()).
+	    document(is).
+	    parameter("base-uri", getUriInfo().getBaseUri()).
+	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
+	    parameter("request-uri", getUriInfo().getRequestUri()).
+	    parameter("http-headers", headerMap.toString()).
+	    parameter("ont-model", getSource(ontModel)). // $ont-model from the current Resource
+	    result(new StreamResult(os));
+
+	if (!getHttpHeaders().getAcceptableLanguages().isEmpty())
+	    builder.parameter("lang", getHttpHeaders().getAcceptableLanguages().get(0).toLanguageTag());
+	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
+	    builder.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
+	if (getUriInfo().getQueryParameters().getFirst("query") != null)
+	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
+	
+	return builder;
     }
 
 }

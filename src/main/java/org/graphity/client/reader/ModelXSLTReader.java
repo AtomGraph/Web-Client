@@ -64,19 +64,14 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
     
     public void read(Model model, Source doc, String base)
     {
-	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	if (log.isDebugEnabled()) log.debug("Reading RDF from Source; System ID: {}", doc.getSystemId());
 	
 	try
 	{
-	    XSLTBuilder.fromStylesheet(stylesheet).
-		resolver(resolver).
-		document(doc).
-		parameter("base-uri", URI.create(base)).
-		result(new StreamResult(bos)).
-		transform();
+	    getXSLTBuilder(doc, URI.create(base), baos).transform();
 	    
-	    model.read(new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray())), base);
+	    model.read(new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray())), base);
 	}
 	catch (TransformerConfigurationException ex)
 	{
@@ -151,4 +146,32 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
 	return model;
     }
 
+    public URIResolver getURIResolver()
+    {
+	return resolver;
+    }
+
+    public Source getStylesheet()
+    {
+	return stylesheet;
+    }
+
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
+    }
+
+    public HttpHeaders getHttpHeaders()
+    {
+	return httpHeaders;
+    }
+
+    public XSLTBuilder getXSLTBuilder(Source doc, URI base, OutputStream baos) throws TransformerConfigurationException
+    {
+	return XSLTBuilder.fromStylesheet(getStylesheet()).
+	    resolver(getURIResolver()).
+	    document(doc).
+	    parameter("base-uri", base).
+	    result(new StreamResult(baos));
+    }
 }

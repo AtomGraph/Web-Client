@@ -16,8 +16,7 @@
  */
 package org.graphity.client.model;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.util.List;
@@ -26,8 +25,6 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.graphity.platform.model.LinkedDataResource;
-import org.graphity.platform.model.LinkedDataResourceBase;
 import org.graphity.platform.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,16 +73,15 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicUri());
 
-	    OntModel ontModel = ModelFactory.createOntologyModel();
-	    ontModel.add(DataManager.get().loadModel(getTopicUri()));
+	    Model model = DataManager.get().loadModel(getTopicUri());
 	    
 	    // use original Cache-Control? 
 	    //LinkedDataResourceBase topic = new LinkedDataResourceBase(ontModel.createOntResource(getTopicUri()),
 	    //	    getUriInfo(), getRequest(), getHttpHeaders(), getVariants(), getCacheControl());
 	    
-	    addProperty(FOAF.primaryTopic, ontModel.createOntResource(getTopicUri()));
+	    addProperty(FOAF.primaryTopic, model.createResource(getTopicUri())); // does this have any effect?
 
-	    return getResponse(ontModel);
+	    return getResponse(model);
 	}	
 
 	return super.getResponse();

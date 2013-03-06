@@ -154,10 +154,6 @@ public class Application extends org.graphity.platform.Application
 	    {
 		singletons.add(new ModelXSLTWriter(getSource(getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION).toString()), DataManager.get())); // writes XHTML responses
 	    }
-	    catch (TransformerConfigurationException ex)
-	    {
-		if (log.isErrorEnabled()) log.error("XSLT stylesheet error", ex);
-	    }
 	    catch (FileNotFoundException ex)
 	    {
 		if (log.isErrorEnabled()) log.error("XSLT stylesheet not found", ex);
