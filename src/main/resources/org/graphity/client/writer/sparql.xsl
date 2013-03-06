@@ -80,7 +80,7 @@ LIMIT 100</xsl:param>
 
 	<xsl:if test="$query">
 	    <xsl:variable name="result-doc" select="document(concat($absolute-path, '?query=', encode-for-uri($query)))"/>
-	    
+
 	    <!-- result of CONSTRUCT or DESCRIBE -->
 	    <xsl:if test="$result-doc/rdf:RDF">
 		<div class="nav row-fluid">
@@ -90,8 +90,7 @@ LIMIT 100</xsl:param>
 		    </div>
 		</div>
 
-		<!-- exclude SPARQL endpoint from the result -->
-		<xsl:apply-templates select="$result-doc/rdf:RDF/*[not(@rdf:about = resolve-uri('sparql', $base-uri))]" mode="gc:ListMode"/>
+		<xsl:apply-templates select="$result-doc/rdf:RDF" mode="gc:ListMode"/>
 	    </xsl:if>
 	    <!-- result of SELECT or ASK -->
 	    <xsl:if test="$result-doc/sparql:sparql">
@@ -106,11 +105,13 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
+    <!--
     <xsl:template match="sparql:uri[not(starts-with(., $base-uri))]">
 	<a href="{$base-uri}?uri={encode-for-uri(.)}" title="{.}">
 	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
+    -->
 
     <xsl:template match="sparql:sparql">
 	<table class="table table-bordered table-striped">

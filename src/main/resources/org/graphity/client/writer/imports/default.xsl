@@ -231,7 +231,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object -->
-    <xsl:template match="@rdf:resource" mode="gc:LabelMode">
+    <xsl:template match="@rdf:resource | sparql:uri" mode="gc:LabelMode">
 	<xsl:variable name="doc" select="document(gc:document-uri(.))"/>
 	<xsl:choose>
 	    <xsl:when test="key('resources', ., $doc)/@rdf:about">
