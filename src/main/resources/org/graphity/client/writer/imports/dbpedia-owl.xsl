@@ -29,6 +29,8 @@ xmlns:rdf="&rdf;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="dbpedia-owl:abstract" mode="gc:PropertyListMode"/>
+
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
 	<a href="{.}">
 	    <img src="{.}">

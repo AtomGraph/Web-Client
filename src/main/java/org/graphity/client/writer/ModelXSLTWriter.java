@@ -133,13 +133,18 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
     }
-
     public Source getSource(OntModel ontModel)
+    {
+	return getSource(ontModel, false);
+    }
+    
+    public Source getSource(OntModel ontModel, boolean writeAll)
     {
 	if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	ontModel.write(stream);
+	if (writeAll) ontModel.writeAll(stream, null, WebContent.langRDFXML);
+	else ontModel.write(stream);
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
@@ -213,7 +218,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
 	    parameter("request-uri", getUriInfo().getRequestUri()).
 	    parameter("http-headers", headerMap.toString()).
-	    parameter("ont-model", getSource(ontModel)). // $ont-model from the current Resource
+	    parameter("ont-model", getSource(ontModel, true)). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
 	if (!getHttpHeaders().getAcceptableLanguages().isEmpty())

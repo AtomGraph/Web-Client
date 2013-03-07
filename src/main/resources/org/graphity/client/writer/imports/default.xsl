@@ -50,6 +50,10 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
+    <xsl:param name="lang" select="'en'" as="xs:string"/>
+
+    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+
     <xsl:template match="rdf:type/@rdf:resource" priority="1">
 	<span title="{.}" class="btn">
 	    <xsl:next-match/>
@@ -308,6 +312,26 @@ exclude-result-prefixes="#all">
 	</xsl:for-each>
     </xsl:template>
 
+    <!-- HEADER MODE -->
+    
+    <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
+	<h1 class="page-header">
+	    <xsl:apply-templates select="."/>
+	</h1>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode">
+	<h2>
+	    <xsl:apply-templates select="."/>
+	</h2>
+    </xsl:template>
+
+    <xsl:template match="rdf:type" mode="gc:HeaderMode">
+	<li>
+	    <xsl:apply-templates select="@rdf:resource | @rdf:nodeID"/>
+	</li>
+    </xsl:template>
+
     <!-- IMAGE MODE -->
 
     <xsl:template match="*" mode="gc:HeaderImageMode"/>
@@ -316,8 +340,6 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY LIST MODE -->
     
-    <xsl:template match="rdf:type | owl:sameAs | rdfs:label | rdfs:comment | rdfs:seeAlso | dc:title | dct:title | dc:description | dct:description | dct:subject | dbpedia-owl:abstract | sioc:content" mode="gc:PropertyListMode" priority="1"/>
-
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyListMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
@@ -339,6 +361,240 @@ exclude-result-prefixes="#all">
     <!-- include blank nodes recursively but avoid infinite loop -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:PropertyListMode">
 	<xsl:apply-templates select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+    </xsl:template>
+
+    <!-- TABLE HEADER MODE -->
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableHeaderMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+
+	<th>
+	    <a href="{$absolute-path}{gc:query-string($offset, $limit, $this, $desc, $mode)}" title="{$this}">
+		<xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    </a>
+	</th>
+    </xsl:template>
+
+    <!-- TABLE MODE -->
+    
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:TableMode">
+	<td>
+	    <xsl:apply-templates select="."/>
+	</td>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableMode"/>
+
+    <!-- apply properties that match lang() -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($lang)]" mode="gc:TableMode" priority="1">
+	<td>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	</td>
+    </xsl:template>
+    
+    <!-- apply the first one in the group if there's no lang() match -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="gc:TableMode" priority="1">
+	<td>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	</td>
+    </xsl:template>
+
+    <!-- SIDEBAR NAV MODE -->
+    
+    <xsl:template match="rdfs:seeAlso | owl:sameAs | dc:subject | dct:subject" mode="gc:SidebarNavMode" priority="1">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+	
+	<div class="well sidebar-nav">
+	    <h2 class="nav-header">
+		<a href="{$base-uri}" title="{$this}">
+		    <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))/@rdf:about" mode="gc:LabelMode"/>
+		</a>
+	    </h2>
+		
+	    <!-- TO-DO: fix for a single resource! -->
+	    <ul class="nav nav-pills nav-stacked">
+		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
+		    <xsl:sort select="gc:label(@rdf:resource, /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
+		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="gc:SidebarNavMode"/>
+		</xsl:for-each-group>
+	    </ul>
+	</div>
+    </xsl:template>
+
+    <!-- ignore all other properties -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:SidebarNavMode"/>
+
+    <xsl:template match="rdfs:seeAlso/@rdf:resource | owl:sameAs/@rdf:resource | dc:subject/@rdf:resource | dct:subject/@rdf:resource" mode="gc:SidebarNavMode">
+	<li>
+	    <xsl:apply-templates select="."/>
+	</li>
+    </xsl:template>
+
+    <!-- INPUT MODE -->
+    
+    <xsl:template name="gc:InputTemplate">
+	<xsl:param name="name" as="xs:string"/>
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="style" as="xs:string?"/>
+	<xsl:param name="value" as="xs:string?"/>
+
+	<xsl:choose>
+	    <!-- special case to give more input space for object literals -->
+	    <xsl:when test="$name = 'ol'">
+		<textarea name="{$name}">
+		    <xsl:if test="$id">
+			<xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+		    </xsl:if>
+		    <xsl:if test="$class">
+			<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+		    </xsl:if>
+		    <xsl:if test="$style">
+			<xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+		    </xsl:if>
+		    
+		    <xsl:value-of select="$value"/>
+		</textarea>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<input type="{$type}" name="{$name}">
+		    <xsl:if test="$id">
+			<xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+		    </xsl:if>
+		    <xsl:if test="$class">
+			<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+		    </xsl:if>
+		    <xsl:if test="$style">
+			<xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+		    </xsl:if>
+		    <xsl:if test="$value">
+			<xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+		    </xsl:if>
+		</input>
+	    </xsl:otherwise>
+	</xsl:choose>
+    </xsl:template>
+
+    <!-- subject resource -->
+    <xsl:template match="@rdf:about" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" select="'input-xxlarge'" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'su'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <!-- subject blank node -->
+    <xsl:template match="@rdf:nodeID" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'sb'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <!-- property -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" select="'input-xxlarge'" as="xs:string?"/>
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'pu'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="$this"/>
+	</xsl:call-template>
+    </xsl:template>
+    
+    <!-- object resource -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" select="'input-xxlarge'" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'ou'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <!-- object blank node -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'ob'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <!-- object literal -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/text()" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'ol'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <!-- datatype -->
+    <xsl:template match="@rdf:datatype" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" select="'input-xlarge'" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'lt'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <!-- language tag -->
+    <xsl:template match="@xml:lang" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'ll'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="value" select="."/>
+	</xsl:call-template>
     </xsl:template>
 
 </xsl:stylesheet>

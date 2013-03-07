@@ -141,7 +141,7 @@ public class Application extends org.graphity.platform.Application
 	singletons.addAll(super.getSingletons());
 	singletons.add(new RDFPostReader());
 
-	if (log.isWarnEnabled()) log.warn("Adding master XSLT @Provider");
+	if (log.isDebugEnabled()) log.debug("Adding master XSLT @Provider");
 	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses
 
 	return singletons;

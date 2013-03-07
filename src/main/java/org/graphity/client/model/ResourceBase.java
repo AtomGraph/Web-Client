@@ -25,9 +25,12 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.platform.model.LinkedDataResource;
+import org.graphity.platform.model.LinkedDataResourceBase;
 import org.graphity.platform.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  * Base class of generic read-write Graphity Client resources
@@ -65,6 +68,21 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	this.mediaType = mediaType;
 	this.topicUri = topicUri;
     }
+
+    @Override
+    public Model describe()
+    {
+	Model description = super.describe();
+
+	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
+	addRDFType(getMatchedOntClass());
+	
+	// set metadata properties after description query is executed
+	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, getQueryBuilder());
+	setPropertyValue(SPIN.query, getQueryBuilder());
+
+	return description;
+    }
     
     @Override
     public Response getResponse()
@@ -76,10 +94,10 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	    Model model = DataManager.get().loadModel(getTopicUri());
 	    
 	    // use original Cache-Control? 
-	    //LinkedDataResourceBase topic = new LinkedDataResourceBase(ontModel.createOntResource(getTopicUri()),
-	    //	    getUriInfo(), getRequest(), getHttpHeaders(), getVariants(), getCacheControl());
+	    LinkedDataResource topic = new LinkedDataResourceBase(model.createResource(getTopicUri()),
+	    	    getUriInfo(), getRequest(), getHttpHeaders(), getVariants(), getCacheControl());
 	    
-	    addProperty(FOAF.primaryTopic, model.createResource(getTopicUri())); // does this have any effect?
+	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 
 	    return getResponse(model);
 	}	

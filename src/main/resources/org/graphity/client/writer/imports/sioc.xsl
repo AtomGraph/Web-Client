@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY void "http://rdfs.org/ns/void#">
+    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -26,7 +26,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
-xmlns:void="&void;"
+xmlns:sioc="&sioc;"
 exclude-result-prefixes="#all">
+
+    <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
 
 </xsl:stylesheet>
