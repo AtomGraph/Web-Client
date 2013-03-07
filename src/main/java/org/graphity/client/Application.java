@@ -51,14 +51,6 @@ public class Application extends org.graphity.platform.Application
     private Set<Object> singletons = new HashSet<Object>();
 
     /**
-     * Configuration property for master XSLT stylesheet location (set in web.xml)
-     * 
-     * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
-     * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
-     */
-    public static final String PROPERTY_XSLT_LOCATION = "org.graphity.client.writer.xslt-location";
-
-    /**
      * Initializes (post construction) DataManager, its LocationMapper and Locators
      * 
      * @see org.graphity.util.manager.DataManager
@@ -149,25 +141,8 @@ public class Application extends org.graphity.platform.Application
 	singletons.addAll(super.getSingletons());
 	singletons.add(new RDFPostReader());
 
-	if (getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION) != null)
-	    try
-	    {
-		singletons.add(new ModelXSLTWriter(getSource(getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION).toString()), DataManager.get())); // writes XHTML responses
-	    }
-	    catch (FileNotFoundException ex)
-	    {
-		if (log.isErrorEnabled()) log.error("XSLT stylesheet not found", ex);
-	    }
-	    catch (URISyntaxException ex)
-	    {
-		if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
-	    }
-	    catch (MalformedURLException ex)
-	    {
-		if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
-	    }
-	else
-	    if (log.isWarnEnabled()) log.warn("Master XSLT stylesheet not configured in web.xml, no XHTML @Provider will be available");
+	if (log.isWarnEnabled()) log.warn("Adding master XSLT @Provider");
+	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses
 
 	return singletons;
     }
@@ -193,4 +168,5 @@ public class Application extends org.graphity.platform.Application
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
 	return new StreamSource(xsltUri);
     }
+
 }

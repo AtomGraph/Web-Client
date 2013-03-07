@@ -19,14 +19,14 @@ package org.graphity.client.writer;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.resource.Singleton;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -57,18 +57,26 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
+    /**
+     * Configuration property for master XSLT stylesheet location (set in web.xml)
+     * 
+     * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
+     * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
+     */
+    public static final String PROPERTY_XSLT_LOCATION = "org.graphity.client.writer.xslt-location";
+
     private Source stylesheet = null;
     private URIResolver resolver = null;
 	
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
+    @Context private ResourceConfig resourceConfig;
     
     /**
      * Constructs from stylesheet source and URI resolver
      * 
      * @param stylesheet the source of the XSLT transformation
      * @param resolver URI resolver to be used in the transformation
-     * @throws TransformerConfigurationException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
      */
@@ -77,6 +85,12 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
 	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
 	this.stylesheet = stylesheet;
+	this.resolver = resolver;
+    }
+
+    public ModelXSLTWriter(URIResolver resolver)
+    {
+	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
 	this.resolver = resolver;
     }
 
@@ -103,6 +117,21 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
+	catch (FileNotFoundException ex)
+	{
+	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found", ex);
+	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+	}
+	catch (URISyntaxException ex)
+	{
+	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
+	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+	}
+	catch (MalformedURLException ex)
+	{
+	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
+	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+	}
     }
 
     public Source getSource(OntModel ontModel)
@@ -115,6 +144,28 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
+    }
+
+    /**
+     * Provides XML source from filename
+     * 
+     * @param filename
+     * @return XML source
+     * @throws FileNotFoundException
+     * @throws URISyntaxException 
+     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
+     */
+    public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
+    {
+	// using getResource() because getResourceAsStream() does not retain systemId
+	//if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
+	//URL xsltUrl = getServletContext().getResource(filename);
+	if (log.isDebugEnabled()) log.debug("ClassLoader {} used to load Source from filename: {}", getClass().getClassLoader(), filename);
+	URL xsltUrl = getClass().getClassLoader().getResource(filename);
+	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
+	String xsltUri = xsltUrl.toURI().toString();
+	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
+	return new StreamSource(xsltUri);
     }
 
     public URIResolver getURIResolver()
@@ -137,9 +188,25 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	return httpHeaders;
     }
 
-    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OntModel ontModel, OutputStream os) throws TransformerConfigurationException
+    public ResourceConfig getResourceConfig()
     {
-	XSLTBuilder builder = XSLTBuilder.fromStylesheet(getStylesheet()).
+	return resourceConfig;
+    }
+
+    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OntModel ontModel, OutputStream os) throws TransformerConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
+    {
+	Source styleSource;
+	if (getStylesheet() == null)
+	{
+	    if (getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION) == null)
+		throw new IllegalStateException("XSLT stylesheet source not specified (either in constructor or in web.xml)");
+
+	    styleSource = getSource(getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION).toString());
+	}
+	else
+	    styleSource = getStylesheet();
+	
+	XSLTBuilder builder = XSLTBuilder.fromStylesheet(styleSource).
 	    resolver(getURIResolver()).
 	    document(is).
 	    parameter("base-uri", getUriInfo().getBaseUri()).
