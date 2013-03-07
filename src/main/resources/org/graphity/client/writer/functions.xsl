@@ -283,36 +283,13 @@ exclude-result-prefixes="#all">
 	    <xsl:sequence select="list:member(key('resources', $list/rdf:rest/@rdf:resource, $document), $document) | list:member(key('resources', $list/rdf:rest/@rdf:nodeID, $document), $document)"/>
 	</xsl:if>
     </xsl:function>
-	
-    <xsl:function name="gc:query">
-	<xsl:param name="query" as="xs:string"/>
-	<xsl:param name="endpoint-uri" as="xs:anyURI"/>
-	<xsl:param name="accept" as="xs:string?"/>
-
-	<xsl:variable name="query-string" select="concat('query=', encode-for-uri($query))" as="xs:string"/>
-	
-	<xsl:sequence select="document(concat($endpoint-uri, '?', $query-string))"/>
-    </xsl:function>
-
-    <xsl:function name="gc:query-string" as="xs:string?">
-	<xsl:param name="lang" as="xs:string?"/>
-	
-	<xsl:sequence select="gc:query-string($lang, ())"/>
-    </xsl:function>
-
-    <xsl:function name="gc:query-string" as="xs:string?">
-	<xsl:param name="lang" as="xs:string?"/>
-	<xsl:param name="mode" as="xs:string?"/>
-	
-	<xsl:sequence select="gc:query-string((), (), (), (), $lang, $mode)"/>
-    </xsl:function>
 
     <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="offset" as="xs:integer?"/>
 	<xsl:param name="limit" as="xs:integer?"/>
 	<xsl:param name="order-by" as="xs:string?"/>
 	<xsl:param name="desc" as="xs:boolean?"/>
-	<xsl:param name="lang" as="xs:string?"/>
+	<!-- <xsl:param name="lang" as="xs:string?"/> -->
 	<xsl:param name="mode" as="xs:string?"/>
 	
 	<xsl:variable name="query-string">
@@ -320,7 +297,7 @@ exclude-result-prefixes="#all">
 	    <xsl:text>offset=</xsl:text><xsl:value-of select="$offset"/><xsl:text>&amp;</xsl:text>
 	    <xsl:if test="$order-by">order-by=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
 	    <xsl:if test="$desc">desc&amp;</xsl:if>
-	    <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if>
+	    <!-- <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if> -->
 	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	</xsl:variable>
 	

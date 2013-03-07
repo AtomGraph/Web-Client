@@ -18,10 +18,7 @@ package org.graphity.client.writer;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.ws.rs.WebApplicationException;
@@ -82,7 +79,7 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     }
 
     @Override
-    public void writeTo(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+    public void writeTo(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException, WebApplicationException
     {
 	try
 	{
@@ -90,13 +87,8 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
 	    ResultSetFormatter.outputAsXML(baos, results);
 	    
 	    // create XSLTBuilder per request output to avoid document() caching
-	    XSLTBuilder.fromStylesheet(stylesheet).
-		resolver(resolver).
-		document(new ByteArrayInputStream(baos.toByteArray())).
-		result(new StreamResult(entityStream)).
-		transform();
-		    
-	    baos.close();
+	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
+		    headerMap, entityStream).transform();
 	}
 	catch (TransformerException ex)
 	{
@@ -105,4 +97,21 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
 	}
     }
 
+    public URIResolver getURIResolver()
+    {
+	return resolver;
+    }
+
+    public Source getStylesheet()
+    {
+	return stylesheet;
+    }
+
+    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
+    {
+	return XSLTBuilder.fromStylesheet(getStylesheet()).
+	    resolver(getURIResolver()).
+	    document(is).
+	    result(new StreamResult(os));
+    }
 }

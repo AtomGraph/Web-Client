@@ -50,6 +50,12 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="rdf:type/@rdf:resource" priority="1">
+	<span title="{.}" class="btn">
+	    <xsl:next-match/>
+	</span>
+    </xsl:template>
+
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
 	<a href="{.}" title="{.}">
@@ -311,8 +317,6 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
     
     <xsl:template match="rdf:type | owl:sameAs | rdfs:label | rdfs:comment | rdfs:seeAlso | dc:title | dct:title | dc:description | dct:description | dct:subject | dbpedia-owl:abstract | sioc:content" mode="gc:PropertyListMode" priority="1"/>
-
-    <!-- has to match the previous template pattern - can this be made smarter? -->
 
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyListMode">

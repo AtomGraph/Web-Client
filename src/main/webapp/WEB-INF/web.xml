@@ -39,7 +39,8 @@
 	-->
         <init-param>
             <param-name>org.graphity.client.writer.xslt-location</param-name>
-            <param-value>org/graphity/client/writer/Resource.xsl</param-value>
+            <param-value>org/graphity/client/writer/global.xsl</param-value>
+	    <!-- <param-value>org/graphity/client/writer/local.xsl</param-value> -->
         </init-param>
         <init-param>
             <param-name>org.graphity.platform.model.cache-control</param-name>

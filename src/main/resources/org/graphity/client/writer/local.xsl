@@ -191,13 +191,20 @@ exclude-result-prefixes="#all">
 		    </li>
 		</xsl:for-each>
 	    </ul>
-
-	    <!--
-	    <form class="navbar-search pull-left" action="search" method="get">
-		<input class="search-query span2" name="query" type="text" placeholder="Search"/>
-	    </form>
-	    -->
 	</div>
+	
+	<xsl:for-each select="key('resources', resolve-uri('sparql', $base-uri), $ont-model)/@rdf:about">
+	    <div class="nav-collapse pull-right">
+		<ul class="nav">
+		    <li>
+			<xsl:if test=". = $absolute-path">
+			    <xsl:attribute name="class">active</xsl:attribute>
+			</xsl:if>
+			<xsl:apply-templates select="."/>
+		    </li>
+		</ul>
+	    </div>
+	</xsl:for-each>
     </xsl:template>
 
     <xsl:template match="/" mode="gc:FooterMode">
@@ -226,7 +233,8 @@ exclude-result-prefixes="#all">
 		form.form-inline { margin: 0; }
 		ul.inline { margin-left: 0; }
 		.inline li { display: inline; }
-		.well-small { background-color: #FAFAFA; max-height: 60em; overflow-y: auto; }
+		.well-small { background-color: #FAFAFA; }
+		.well-small dl { max-height: 60em; overflow-y: auto; }
 		textarea#query-string { font-family: monospace; }
 	    ]]>
 	</style>	
@@ -278,7 +286,7 @@ exclude-result-prefixes="#all">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
-		<a href="{@rdf:about}{gc:query-string($offset, $limit, $order-by, $desc, (), '&gc;ListMode')}">
+		<a href="{@rdf:about}{gc:query-string($offset, $limit, $order-by, $desc, '&gc;ListMode')}">
 		    <xsl:apply-templates select="key('resources', '&gc;ListMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
 		</a>
 	    </li>
@@ -287,7 +295,7 @@ exclude-result-prefixes="#all">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
-		<a href="{@rdf:about}{gc:query-string($offset, $limit, $order-by, $desc, (), '&gc;TableMode')}">
+		<a href="{@rdf:about}{gc:query-string($offset, $limit, $order-by, $desc, '&gc;TableMode')}">
 		    <xsl:apply-templates select="key('resources', '&gc;TableMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
 		</a>
 	    </li>
@@ -296,7 +304,7 @@ exclude-result-prefixes="#all">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
-		<a href="{@rdf:about}{gc:query-string($offset, $limit, $order-by, $desc, (), '&gc;InputMode')}">
+		<a href="{@rdf:about}{gc:query-string($offset, $limit, $order-by, $desc, '&gc;InputMode')}">
 		    <xsl:apply-templates select="key('resources', '&gc;InputMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
 		</a>
 	    </li>
@@ -347,12 +355,6 @@ exclude-result-prefixes="#all">
 		<xsl:copy-of select="current-group()"/>
 	    </div>
 	</xsl:for-each-group>
-    </xsl:template>
-
-    <xsl:template match="rdf:type/@rdf:resource">
-	<span title="{.}" class="btn">
-	    <xsl:apply-imports/>
-	</span>
     </xsl:template>
 
     <!-- HEADER MODE -->
@@ -563,7 +565,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
 	<th>
-	    <a href="{$absolute-path}{gc:query-string($offset, $limit, $this, $desc, (), $mode)}" title="{$this}">
+	    <a href="{$absolute-path}{gc:query-string($offset, $limit, $this, $desc, $mode)}" title="{$this}">
 		<xsl:apply-templates select="." mode="gc:LabelMode"/>
 	    </a>
 	</th>
@@ -592,7 +594,7 @@ exclude-result-prefixes="#all">
 	    <thead>
 		<tr>
 		    <th>
-			<a href="{$absolute-path}{gc:query-string($offset, $limit, (), $desc, (), $mode)}">
+			<a href="{$absolute-path}{gc:query-string($offset, $limit, (), $desc, $mode)}">
 			    <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about" mode="gc:LabelMode"/>
 			</a>
 		    </th>

@@ -155,6 +155,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    builder.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
 	if (getUriInfo().getQueryParameters().getFirst("query") != null)
 	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
+	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
+	    builder.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
 	
 	return builder;
     }
