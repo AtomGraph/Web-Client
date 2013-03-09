@@ -97,11 +97,11 @@ exclude-result-prefixes="#all">
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="order-by" select="key('resources', $orderBy/sp:expression/@rdf:resource)/sp:varName" as="xs:string?"/>
     <xsl:param name="desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
-
+    <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="resource" select="key('resources', $request-uri, $ont-model)" as="element()?"/>
-    <xsl:variable name="ont-class" select="key('resources', $resource/rdf:type/@rdf:resource | $resource/rdf:type/@rdf:nodeID, $ont-model)"/> <!-- as="element()?" -->
+    <!-- <xsl:variable name="matched-ont-class" select="key('resources', $resource/rdf:type/@rdf:resource | $resource/rdf:type/@rdf:nodeID, $ont-model)"/> --> <!-- as="element()?" -->
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
@@ -157,8 +157,6 @@ exclude-result-prefixes="#all">
 		<xsl:apply-templates mode="gc:ScriptMode"/>
       	    </head>
 	    <body>
-!<xsl:value-of select="$resource/rdf:type/@rdf:resource"/>!
-<xsl:copy-of select="$ont-class"/>
 		<div class="navbar navbar-fixed-top">
 		    <div class="navbar-inner">
 			<div class="container-fluid">    

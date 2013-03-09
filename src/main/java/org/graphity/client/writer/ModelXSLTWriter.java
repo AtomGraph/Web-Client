@@ -37,6 +37,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.platform.model.DocumentResource;
 import org.graphity.platform.provider.ModelProvider;
 import org.graphity.util.XSLTBuilder;
 import org.openjena.riot.WebContent;
@@ -104,13 +105,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    model.write(baos, WebContent.langRDFXML);
 
-	    // injecting Resource to get its OntModel. Is there a better way to do this?
-	    OntResource ontResource = (OntResource)getUriInfo().getMatchedResources().get(0);
-	    if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
-
 	    // create XSLTBuilder per request output to avoid document() caching
 	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
-		    headerMap, ontResource.getOntModel(), entityStream).transform();
+		    headerMap, entityStream).transform();
 	}
 	catch (TransformerException ex)
 	{
@@ -198,7 +195,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	return resourceConfig;
     }
 
-    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OntModel ontModel, OutputStream os) throws TransformerConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
+    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
     {
 	Source styleSource;
 	if (getStylesheet() == null)
@@ -211,6 +208,12 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	else
 	    styleSource = getStylesheet();
 	
+	// injecting Resource to get its OntModel. Is there a better way to do this?
+	Object resource = getUriInfo().getMatchedResources().get(0);
+	OntResource ontResource = (OntResource)resource;
+	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
+	DocumentResource docResource = (DocumentResource)resource;
+
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(styleSource).
 	    resolver(getURIResolver()).
 	    document(is).
@@ -218,7 +221,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
 	    parameter("request-uri", getUriInfo().getRequestUri()).
 	    parameter("http-headers", headerMap.toString()).
-	    parameter("ont-model", getSource(ontModel, true)). // $ont-model from the current Resource (with imports)
+	    parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
 	if (!getHttpHeaders().getAcceptableLanguages().isEmpty())
@@ -229,7 +232,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    builder.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
-	
+	if (docResource.getEndpoint() != null)
+	    builder.parameter("endpoint-uri", UriBuilder.fromUri(docResource.getEndpoint().getURI()).build());
+
 	return builder;
     }
 

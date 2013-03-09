@@ -23,7 +23,7 @@
         </init-param>
         <init-param>
             <param-name>org.graphity.platform.ontology.location</param-name>
-            <param-value>org/graphity/client/vocabulary/gc.ttl</param-value>
+            <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
         </init-param>
         <!--
         <init-param>
