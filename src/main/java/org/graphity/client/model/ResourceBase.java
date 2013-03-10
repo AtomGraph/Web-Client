@@ -126,4 +126,22 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	return topicUri;
     }
 
+    @Override
+    public Response post(Model postedModel)
+    {
+	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
+	
+	Model deleteDiff = describe().difference(postedModel);
+	if (log.isDebugEnabled()) log.debug("DESCRIBE Model minus POSTed Model: {} size: {}", deleteDiff, deleteDiff.size());
+	Model insertDiff = postedModel.difference(describe());
+	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
+	
+	//InsertDataBuilder insertBuilder = InsertDataBuilder.fromData(model);
+	//if (log.isDebugEnabled()) log.debug("INSERT DATA generated from the POSTed Model: {}", insertBuilder);
+	
+	//getQueryBuilder()
+	
+	return getResponse(postedModel);
+    }
+
 }
