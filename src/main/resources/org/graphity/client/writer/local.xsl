@@ -599,7 +599,8 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-	    <xsl:apply-templates mode="gc:InputMode"/>
+	    <xsl:variable name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(@rdf:about = $request-uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
+	    <xsl:apply-templates select="$selected-resources" mode="gc:InputMode"/>
 	    
 	    <fieldset id="fieldset-new-stmt">
 		<legend>

@@ -136,6 +136,7 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	Model insertDiff = postedModel.difference(describe());
 	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
 	
+	//DeleteBuilder 
 	//InsertDataBuilder insertBuilder = InsertDataBuilder.fromData(model);
 	//if (log.isDebugEnabled()) log.debug("INSERT DATA generated from the POSTed Model: {}", insertBuilder);
 	
