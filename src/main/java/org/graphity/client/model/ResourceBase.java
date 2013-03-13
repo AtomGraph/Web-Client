@@ -17,7 +17,9 @@
 package org.graphity.client.model;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.platform.model.LinkedDataResource;
 import org.graphity.platform.model.LinkedDataResourceBase;
+import org.graphity.platform.update.ModifyBuilder;
 import org.graphity.platform.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,16 +134,17 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
     {
 	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
 	
-	Model deleteDiff = describe().difference(postedModel);
+	Model deleteDiff = describe(false).difference(postedModel);
 	if (log.isDebugEnabled()) log.debug("DESCRIBE Model minus POSTed Model: {} size: {}", deleteDiff, deleteDiff.size());
-	Model insertDiff = postedModel.difference(describe());
+	Model insertDiff = postedModel.difference(describe(false));
 	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
 	
-	//DeleteBuilder 
-	//InsertDataBuilder insertBuilder = InsertDataBuilder.fromData(model);
-	//if (log.isDebugEnabled()) log.debug("INSERT DATA generated from the POSTed Model: {}", insertBuilder);
-	
-	//getQueryBuilder()
+	UpdateRequest request = ModifyBuilder.fromModify(getQueryBuilder().getModel()).
+		deletePattern(deleteDiff).
+		insertPattern(insertDiff).
+		where(getQueryBuilder().getWhere()).
+		build();
+	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", request);
 	
 	return getResponse(postedModel);
     }
