@@ -47,9 +47,9 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 
     public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
 		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
-			org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE,
-			org.graphity.platform.MediaType.TEXT_TURTLE_TYPE).
-		languages(Locale.ENGLISH).
+		    //MediaType.TEXT_HTML_TYPE,
+		    org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE,
+		    org.graphity.platform.MediaType.TEXT_TURTLE_TYPE).
 		add().build();
 
     private final MediaType mediaType;
@@ -139,7 +139,7 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	Model insertDiff = postedModel.difference(describe(false));
 	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
 	
-	UpdateRequest request = ModifyBuilder.fromModify(getQueryBuilder().getModel()).
+	UpdateRequest request = ModifyBuilder.fromModify(getOntModel()).
 		deletePattern(deleteDiff).
 		insertPattern(insertDiff).
 		where(getQueryBuilder().getWhere()).

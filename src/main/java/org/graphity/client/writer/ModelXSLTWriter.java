@@ -27,14 +27,12 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.URIResolver;
+import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.platform.model.DocumentResource;
@@ -53,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_XHTML_XML})
+@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML})
 public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
@@ -224,8 +222,23 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
+	if (!getHttpHeaders().getAcceptableMediaTypes().isEmpty())
+	{
+	    MediaType mediaType;
+	    // prefer XHTML (if acceptable) -- otherwise use most acceptable type
+	    if (getHttpHeaders().getAcceptableMediaTypes().contains(MediaType.APPLICATION_XHTML_XML_TYPE))
+		mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
+	    else mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
+	    
+	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", mediaType);
+	    builder.outputProperty(OutputKeys.MEDIA_TYPE, mediaType.toString());
+	}
 	if (!getHttpHeaders().getAcceptableLanguages().isEmpty())
-	    builder.parameter("lang", getHttpHeaders().getAcceptableLanguages().get(0).toLanguageTag());
+	{
+	    Locale locale = getHttpHeaders().getAcceptableLanguages().get(0);
+	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
+	    builder.parameter("lang", locale.toLanguageTag());
+	}
 	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
 	    builder.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
 	if (getUriInfo().getQueryParameters().getFirst("query") != null)

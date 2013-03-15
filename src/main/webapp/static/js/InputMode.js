@@ -16,7 +16,7 @@
  */
 
 var SUBJECT_TYPES = new Array("su", "sb");
-var OBJECT_TYPES = new Array("ou", "ob", "olll", "ollt");
+var OBJECT_TYPES = new Array("ou", "ob", "ol");
 
 function generateUUID()
 {
@@ -72,13 +72,14 @@ function cloneUniqueProperty(controlGroupDiv, newId)
 
 function cloneUniqueObject(controlGroupDiv, newId)
 {
-    //controlGroupDiv.id = "control-group-" + newId;
+    controlGroupDiv.id = "control-group-" + newId;
+    controlGroupDiv.removeChild(controlGroupDiv.children[0]); // remove duplicate <label>
+	
+    var removeButton = controlGroupDiv.children[controlGroupDiv.children.length - 2];
+    removeButton.onclick = function() { removeObject(newId); };
 
     var controlsDiv = controlGroupDiv.children[controlGroupDiv.children.length - 1];
     controlsDiv.id = "controls-" + newId;
-
-    // "Remove object" button
-    //controlsDiv.children[0].onclick = function() { removeObject(newId); };
 
     // tab headings list
     var tabList = controlsDiv.children[0];
@@ -86,10 +87,8 @@ function cloneUniqueObject(controlGroupDiv, newId)
     tabList.children[0].onclick = function() { toggleObjectTabs("ou", newId); };
     tabList.children[1].id = "li-ob-" + newId;
     tabList.children[1].onclick = function() { toggleObjectTabs("ob", newId); };
-    tabList.children[2].id = "li-olll-" + newId;
-    tabList.children[2].onclick = function() { toggleObjectTabs("olll", newId); };
-    tabList.children[3].id = "li-ollt-" + newId;
-    tabList.children[3].onclick = function() { toggleObjectTabs("ollt", newId); };
+    tabList.children[2].id = "li-ol-" + newId;
+    tabList.children[2].onclick = function() { toggleObjectTabs("ol", newId); };
 
     // tab panes
     var ouDiv = controlsDiv.children[1];
@@ -98,12 +97,9 @@ function cloneUniqueObject(controlGroupDiv, newId)
     var obDiv = controlsDiv.children[2];
     obDiv.id = "div-ob-" + newId;
     obDiv.children[0].removeAttribute("value");
-    var olllDiv = controlsDiv.children[3];
-    olllDiv.id = "div-olll-" + newId;
-    olllDiv.children[0].removeAttribute("value");
-    var olltDiv = controlsDiv.children[4];
-    olltDiv.id = "div-ollt-" + newId;
-    olltDiv.children[0].removeAttribute("value");
+    var olDiv = controlsDiv.children[3];
+    olDiv.id = "div-ol-" + newId;
+    olDiv.children[0].value = ''; // textarea
 
     return controlGroupDiv;
 }

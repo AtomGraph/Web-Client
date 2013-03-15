@@ -895,8 +895,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="active-tab" as="xs:string">
 	    <xsl:choose>
 		<xsl:when test="$ob-value">ob</xsl:when>
-		<xsl:when test="$ol-value and not($lt-value)">olll</xsl:when>
-		<xsl:when test="$ol-value and $lt-value">ollt</xsl:when>
+		<xsl:when test="$ol-value">ol</xsl:when>
 		<xsl:otherwise>ou</xsl:otherwise>
 	    </xsl:choose>
 	</xsl:param>
@@ -916,19 +915,12 @@ exclude-result-prefixes="#all">
 
 		<a id="a-ob-{$stmt-id}">Blank node</a>
 	    </li>
-	    <li id="li-olll-{$stmt-id}" onclick="toggleObjectTabs('olll', '{$stmt-id}');">
-		<xsl:if test="$active-tab = 'olll'">
+	    <li id="li-ol-{$stmt-id}" onclick="toggleObjectTabs('ol', '{$stmt-id}');">
+		<xsl:if test="$active-tab = 'ol'">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
-		<a id="a-olll-{$stmt-id}">Plain literal</a>
-	    </li>
-	    <li id="li-ollt-{$stmt-id}" onclick="toggleObjectTabs('ollt', '{$stmt-id}');">
-		<xsl:if test="$active-tab = 'ollt'">
-		    <xsl:attribute name="class">active</xsl:attribute>
-		</xsl:if>
-
-		<a id="a-ollt-{$stmt-id}">Typed literal</a>
+		<a id="a-ol-{$stmt-id}">Literal</a>
 	    </li>
 	</ul>
 
@@ -950,53 +942,47 @@ exclude-result-prefixes="#all">
 		<xsl:attribute name="style">display: none;</xsl:attribute>
 	    </xsl:if>
 
-	    <xsl:call-template name="gc:InputTemplate">
-		<xsl:with-param name="name" select="'ob'"/>
-		<!-- <xsl:with-param name="id" select="$id"/> -->
-		<!-- <xsl:with-param name="class" select="$class"/> -->
-		<xsl:with-param name="value" select="$ob-value"/>
-	    </xsl:call-template>
-	    <span class="help-inline">ID</span>
+	    <xsl:variable name="bnode" select="key('resources', $ob-value)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/> <!-- [not(. is current())] -->	    
+	    <xsl:choose>
+		<xsl:when test="$bnode">
+		    <xsl:apply-templates select="$bnode/*" mode="gc:InputMode"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:call-template name="gc:InputTemplate">
+			<xsl:with-param name="name" select="'ob'"/>
+			<xsl:with-param name="value" select="$ob-value"/>
+		    </xsl:call-template>
+		    <span class="help-inline">ID</span>
+		</xsl:otherwise>
+	    </xsl:choose>
 	</div>
-	<div id="div-olll-{$stmt-id}">
-	    <xsl:if test="not($active-tab = 'olll')">
+	<div id="div-ol-{$stmt-id}">
+	    <xsl:if test="not($active-tab = 'ol')">
 		<xsl:attribute name="style">display: none;</xsl:attribute>
 	    </xsl:if>
 
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'ol'"/>
 		<!-- <xsl:with-param name="id" select="$id"/> -->
-		<xsl:with-param name="class" select="'span12'"/>
+		<xsl:with-param name="class" select="'input-block-level'"/>
 		<xsl:with-param name="value" select="$ol-value"/>
 	    </xsl:call-template>
-	    <br/>
-	    <xsl:call-template name="gc:InputTemplate">
-		<xsl:with-param name="name" select="'ll'"/>
-		<!-- <xsl:with-param name="id" select="$id"/> -->
-		<xsl:with-param name="class" select="'input-mini'"/>
-		<xsl:with-param name="value" select="$ll-value"/>
-	    </xsl:call-template>
-	    <span class="help-inline">Language tag</span>
-	</div>
-	<div id="div-ollt-{$stmt-id}">
-	    <xsl:if test="not($active-tab = 'ollt')">
-		<xsl:attribute name="style">display: none;</xsl:attribute>
-	    </xsl:if>
-
-	    <xsl:call-template name="gc:InputTemplate">
-		<xsl:with-param name="name" select="'ol'"/>
-		<!-- <xsl:with-param name="id" select="$id"/> -->
-		<xsl:with-param name="class" select="'span12'"/>
-		<xsl:with-param name="value" select="$ol-value"/>
-	    </xsl:call-template>
-	    <br/>
-	    <xsl:call-template name="gc:InputTemplate">
-		<xsl:with-param name="name" select="'lt'"/>
-		<!-- <xsl:with-param name="id" select="$id"/> -->
-		<xsl:with-param name="class" select="'input-xlarge'"/>
-		<xsl:with-param name="value" select="$lt-value"/>
-	    </xsl:call-template>
-	    <span class="help-inline">Datatype URI</span>
+	    <div class="controls-row">
+		<xsl:call-template name="gc:InputTemplate">
+		    <xsl:with-param name="name" select="'ll'"/>
+		    <!-- <xsl:with-param name="id" select="$id"/> -->
+		    <xsl:with-param name="class" select="'span2'"/>
+		    <xsl:with-param name="value" select="$ll-value"/>
+		</xsl:call-template>
+		<span class="help-inline span3">Language tag</span>
+		<xsl:call-template name="gc:InputTemplate">
+		    <xsl:with-param name="name" select="'lt'"/>
+		    <!-- <xsl:with-param name="id" select="$id"/> -->
+		    <xsl:with-param name="class" select="'span4'"/>
+		    <xsl:with-param name="value" select="$lt-value"/>
+		</xsl:call-template>
+		<span class="help-inline span3">Datatype URI</span>
+	    </div>
 	</div>	
     </xsl:template>
 
