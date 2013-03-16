@@ -60,55 +60,55 @@ ldp:pageOf a owl:ObjectProperty ;
     void:inDataset :Dataset .
 
 <resources> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Resources" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <instances> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Instances" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <ontologies> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Ontologies" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <classes> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Classes" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <properties> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Properties" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <datasets> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Datasets" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <services> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Services" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <queries> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Queries" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
 <containers> a ldp:Container, sioc:Container ;
-    sioc:has_host <..> ;
+    sioc:has_space <..> ;
     dct:title "Containers" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
