@@ -149,7 +149,6 @@ exclude-result-prefixes="#all">
 		
 		<xsl:for-each select="key('resources', $base-uri, $ont-model)">
 		    <meta name="author" content="{dct:creator/@rdf:resource}"/>
-		    <meta name="description" content="{dct:description}" xml:lang="{dct:description/@xml:lang}" lang="{dct:description/@xml:lang}"/>
 		</xsl:for-each>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		

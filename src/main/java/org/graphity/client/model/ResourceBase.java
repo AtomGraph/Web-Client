@@ -17,20 +17,19 @@
 package org.graphity.client.model;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFList;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.util.List;
-import java.util.Locale;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.graphity.platform.model.LinkedDataResource;
-import org.graphity.platform.model.LinkedDataResourceBase;
-import org.graphity.platform.update.ModifyBuilder;
-import org.graphity.platform.util.DataManager;
+import org.graphity.server.model.LinkedDataResource;
+import org.graphity.server.model.LinkedDataResourceBase;
+import org.graphity.processor.update.ModifyBuilder;
+import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -41,15 +40,15 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("{path: .*}")
-public class ResourceBase extends org.graphity.platform.model.ResourceBase
+public class ResourceBase extends org.graphity.processor.model.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
     public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
 		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
 		    //MediaType.TEXT_HTML_TYPE,
-		    org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE,
-		    org.graphity.platform.MediaType.TEXT_TURTLE_TYPE).
+		    org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE,
+		    org.graphity.server.MediaType.TEXT_TURTLE_TYPE).
 		add().build();
 
     private final MediaType mediaType;
@@ -64,7 +63,8 @@ public class ResourceBase extends org.graphity.platform.model.ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	super(getOntology(uriInfo, config),
-		uriInfo, request, httpHeaders, XHTML_VARIANTS,
+		(config.getProperty(PROPERTY_ENDPOINT_URI) == null) ? null : ResourceFactory.createResource(config.getProperty(PROPERTY_ENDPOINT_URI).toString()),
+		uriInfo, request, httpHeaders, config, XHTML_VARIANTS,
 		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc);
 	

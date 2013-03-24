@@ -65,20 +65,20 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
 	<xsl:if test="../../@rdf:about">
-	    <a href="{.}"> <!-- {$base-uri}{gc:query-string($lang)} -->
+	    <a href="{.}">
 		<img src="{.}">
-		    <xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:about"/></xsl:attribute>
+		    <xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:about" mode="gc:LabelMode"/></xsl:attribute>
 		</img>
 	    </a>
 	</xsl:if>
 	<xsl:if test="../../@rdf:nodeID">
 	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:nodeID"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
 	</xsl:if>	    
     </xsl:template>
 
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:EditMode">
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:InputMode">
 	<input type="text" name="ol" id="{generate-id(..)}" value="{.}"/><br/>
 	<input type="file" name="ol" id="{generate-id(..)}"/><br/>
 	<img src="{.}" alt=""/>

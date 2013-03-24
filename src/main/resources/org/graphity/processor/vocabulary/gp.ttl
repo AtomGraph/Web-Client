@@ -1,0 +1,198 @@
+@base <http://platform.graphity.org/ontology> .
+
+@prefix : <#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix sp: <http://spinrdf.org/sp#> .
+@prefix spin: <http://spinrdf.org/spin#> .
+@prefix spl: <http://spinrdf.org/spl#> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix lda: <http://purl.org/linked-data/api/vocab#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix dbpedia: <http://dbpedia.org/resource/> .
+
+: a owl:Ontology ;
+    # owl:imports spin: ;
+    owl:versionInfo "1.0.7" ;
+    dct:title "Graphity Platform ontology" ;
+    rdfs:label "Graphity Platform ontology" ;
+    dct:description "Graphity Linked Data platform ontology. Should be imported and reused by all extending applications" ;
+    dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
+    dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://platform.graphity.org/ontology#" ;
+    vann:preferredNamespacePrefix "gp";
+    foaf:homepage <http://platform.graphity.org/ontology> ;
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
+    dct:creator <http://semantic-web.dk/#martynas> ;
+    rdfs:seeAlso :Project .
+
+:Project a doap:Project ;
+    doap:name "Graphity Platform" ;
+    doap:created "2012-08-06"^^xsd:date ;
+    doap:repository [ a doap:GitRepository ;
+	dct:title "Graphity Platform source code repository" ;
+	doap:location <https://github.com/Graphity/graphity-ldp.git> ;
+	doap:browse <https://github.com/Graphity/graphity-ldp> ] ;
+    doap:bug-database <https://github.com/Graphity/graphity-ldp/issues> ;
+    doap:wiki <https://github.com/Graphity/graphity-ldp/wiki> ;
+    doap:maintainer <http://semantic-web.dk/#martynas> ;
+    doap:vendor <http://semantic-web.dk/#this> ;
+    doap:license dbpedia:GNU_General_Public_License ;
+    doap:platform "Java" ;
+    doap:programming-language dbpedia:XSLT,
+	<http://dbpedia.org/resource/Java_%28programming_language%29> ;
+    dct:subject dbpedia:Linked_Data ,
+	dbpedia:Resource_Description_Framework ,
+	dbpedia:SPARQL ,
+	dbpedia:Semantic_web ,
+	<http://dbpedia.org/resource/Category:Web_application_frameworks> ,
+	dbpedia:Open_source ;
+    dct:hasPart <http://dbpedia.org/resource/Jena_%28framework%29> ,
+	dbpedia:Saxon_XSLT ;
+    doap:release [ a doap:Version ;
+	dct:title "Graphity Platform 1.0.7" ;
+	doap:revision "1.0.7" ] .
+
+# QUERIES & TEMPLATES
+
+:DescribeResourcesTemplate a spin:Template ;
+    spin:body :DescribeResources ;
+    rdfs:isDefinedBy : .
+
+:DescribeResources    a       sp:Describe ;
+      sp:resultNodes (_:subjectVar) ;
+      sp:text """DESCRIBE ?subject WHERE {
+    {
+        SELECT ?subject
+        WHERE {
+            ?subject ?property ?object .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:subjectVar) ;
+                            sp:where ([ sp:object
+                                                [ sp:varName "object"^^xsd:string
+                                                ] ;
+                                        sp:predicate
+                                                [ sp:varName "property"^^xsd:string
+                                                ] ;
+                                        sp:subject _:subjectVar
+                                      ])
+                          ]
+                ]) .
+
+_:subjectVar  sp:varName "subject"^^xsd:string .
+
+# ====
+
+:DescribeInstancesTemplate a spin:Template ;
+    spin:body :DescribeInstances ;
+    spin:constraint [ a       spl:Argument ;
+		spl:predicate :type ;
+		spl:valueType rdfs:Resource
+	] ;
+    rdfs:isDefinedBy : .
+
+:DescribeInstances    a       sp:Describe, sp:Query ;
+      sp:resultNodes (_:instanceVar) ;
+      sp:text """DESCRIBE ?instance WHERE {
+    {
+        SELECT ?instance
+        WHERE {
+            ?instance a ?type .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:instanceVar) ;
+                            sp:where ([ sp:object
+                                                [ sp:varName "type"^^xsd:string
+                                                ] ;
+                                        sp:predicate rdf:type ;
+                                        sp:subject _:instanceVar
+                                      ])
+                          ]
+                ]) .
+
+_:instanceVar  sp:varName "instance"^^xsd:string .
+
+# ====
+
+:DescribePropertiesTemplate a spin:Template ;
+    spin:body :DescribeProperties ;
+    rdfs:isDefinedBy : .
+
+:DescribeProperties    a       sp:Describe, sp:Query ;
+      sp:resultNodes (_:propertyVar) ;
+      sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
+DESCRIBE ?property WHERE {
+    {
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT ?property
+        WHERE {
+            {
+                ?property a owl:ObjectProperty .
+            }
+            UNION
+            {
+                ?property a owl:DatatypeProperty .
+            } .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:propertyVar) ;
+                            sp:where ([ a       sp:Union ;
+                                        sp:elements (([ sp:object owl:ObjectProperty ;
+                                                      sp:predicate rdf:type ;
+                                                      sp:subject _:propertyVar
+                                                    ]) ([ sp:object owl:DatatypeProperty ;
+                                                      sp:predicate rdf:type ;
+                                                      sp:subject _:propertyVar
+                                                    ]))
+                                      ])
+                          ]
+                ]) .
+
+_:propertyVar  sp:varName "property"^^xsd:string .
+
+# ====
+
+:DescribeTemplate a spin:Template ;
+    spin:body :DefaultDescribe .
+
+:DefaultDescribe    a       sp:Describe, sp:Query ;
+      sp:resultNodes (spin:_this) ;
+      sp:text """DESCRIBE ?this"""^^xsd:string .
+
+spin:_this sp:varName "this"^^xsd:string .
+
+# ====
+
+:DescribeTopicTemplate a spin:Template ;
+    spin:body :DescribeTopic .
+
+:DescribeTopic    a       sp:Describe ;
+      sp:resultNodes (_:topicVar) ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DESCRIBE ?topic WHERE {
+    ?topic foaf:isPrimaryTopicOf ?this .
+}"""^^xsd:string ;
+      sp:where ([ sp:object spin:_this ;
+                  sp:predicate foaf:isPrimaryTopicOf ;
+                  sp:subject _:topicVar
+                ]) .
+
+_:topicVar  sp:varName "topic"^^xsd:string .

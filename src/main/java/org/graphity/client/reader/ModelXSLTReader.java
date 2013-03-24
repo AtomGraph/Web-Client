@@ -25,8 +25,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.platform.provider.ModelProvider;
-import org.graphity.util.XSLTBuilder;
+import org.graphity.server.provider.ModelProvider;
+import org.graphity.client.util.XSLTBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

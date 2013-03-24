@@ -17,11 +17,15 @@
 package org.graphity.client.model;
 
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.api.core.ResourceConfig;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.client.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/sparql")
-public class SPARQLEndpointBase extends org.graphity.platform.model.SPARQLEndpointBase
+public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpointBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
@@ -41,14 +45,15 @@ public class SPARQLEndpointBase extends org.graphity.platform.model.SPARQLEndpoi
 	@QueryParam("offset") @DefaultValue("0") Long offset,
 	@QueryParam("order-by") String orderBy,
 	@QueryParam("desc") Boolean desc,
-	@QueryParam("query") Query query
-	    )
+	@QueryParam("query") Query query)
     {
-	super(getOntology(uriInfo, config).createOntResource(uriInfo.getAbsolutePath().toString()),
+	super(ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()),
 		uriInfo, request, httpHeaders, ResourceBase.XHTML_VARIANTS,
 		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
-		limit, offset, orderBy, desc,
 		query);	
+	
+	if (log.isDebugEnabled()) log.debug("Adding service Context for SPARQL endpoint with URI: {}", uriInfo.getAbsolutePath().toString());
+	DataManager.get().addServiceContext(uriInfo.getAbsolutePath().toString());
     }
 
     @Override
@@ -57,11 +62,11 @@ public class SPARQLEndpointBase extends org.graphity.platform.model.SPARQLEndpoi
 	MediaType mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
 
 	// don't create query resource if HTML is requested
-	if (getUserQuery() != null && (mediaType.isCompatible(org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.platform.MediaType.TEXT_TURTLE_TYPE) ||
-	    mediaType.isCompatible(org.graphity.platform.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.platform.MediaType.APPLICATION_RDF_XML_TYPE)))
-	    return query(getUserQuery());
+	if (getQuery() != null && (mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
+	    mediaType.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
+	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
+	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE)))
+	    return query(getQuery());
 
 	return getResponse(describe()); // if HTML is requested, return DESCRIBE ?this results instead of user query
     }

@@ -1,0 +1,409 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix api: <http://purl.org/linked-data/api/vocab#> .
+@base <http://purl.org/linked-data/api/vocab#> .
+
+############################################################################
+# General description of the schema
+############################################################################
+
+<http://purl.org/linked-data/api/vocab#>
+	a owl:Ontology;
+	dcterms:title "Linked Data API Vocabulary"@en ;
+	rdfs:comment "Configuration vocabulary for the Linked Data API"@en ;
+	foaf:maker <http://www.ldodds.com#me> ;
+	foaf:maker <jeni> ;
+	foaf:maker <http://www.amberdown.net/rdf/foaf.rdf#der> ;
+	dcterms:created "2010-01-04"^^xsd:date ;
+	dcterms:modified "2010-02-19"^^xsd:date .
+
+<http://www.ldodds.com#me> a foaf:Person ;
+	foaf:name "Leigh Dodds" .
+
+<jeni> a foaf:Person ;
+	foaf:name "Jeni Tennison" .
+
+<http://www.amberdown.net/rdf/foaf.rdf#der> a foaf:Person ;
+	foaf:name "Dave Reynolds" .
+
+############################################################################
+# API
+############################################################################
+
+api:API a rdfs:Class ;
+	rdfs:label "API"@en ;
+	rdfs:isDefinedBy api: ;.
+
+api:sparqlEndpoint a rdf:Property ;
+	rdfs:label "SPARQL endpoint"@en ;
+	rdfs:comment "The endpoint used to serve up the results that are exposed by the API. This should not include the query parameters within the URI."@en ;
+	rdfs:domain api:API ;
+	rdfs:isDefinedBy api: ;
+	rdfs:range rdfs:Resource .
+
+api:base a rdf:Property ;
+	rdfs:label "Base URI"@en ;
+	rdfs:comment "The base URI of the API, which is distinct from the URI of the SPARQL endpoint that it queries or the base URI of the instances that it returns. This base URI is stripped from the request URI before any matching is done against the endpoints defined for the API."@en ;
+	rdfs:domain api:API ;
+	rdfs:range rdfs:Literal ;
+	rdfs:isDefinedBy api: ;.
+
+api:contentNegotiation a rdf:Property ;
+	rdfs:label "Content Negotiation"@en ;
+	rdfs:comment "The mechanism used within the URI to override normal content negotiation and deliver a particular results format." ;
+	rdfs:domain api:API ;
+	rdfs:range api:ContentNegotiationStrategy ;
+	rdfs:isDefinedBy api: ;.
+
+api:vocabulary a rdf:Property ;
+	rdfs:label "Vocabulary"@en ;
+	rdfs:comment "A vocabulary that should be used by the configuration to provide labels for properties. To be recognised for filtering, a property must be defined either within this vocabulary or in the configuration file itself."@en ;
+	rdfs:domain api:API ;
+	rdfs:range rdfs:Resource;
+	rdfs:isDefinedBy api: ; .
+
+api:maxPageSize a rdf:Property ;
+	rdfs:label "Maximum Page Size"@en ;
+	rdfs:comment "The maximum size of lists that will be returned by the API."@en ;
+	rdfs:domain api:API ;
+	rdfs:range xsd:integer ;
+	rdfs:isDefinedBy api: ; .
+
+api:defaultPageSize a rdf:Property ;
+	rdfs:label "Default Page Size"@en ;
+	rdfs:comment "The default size of lists that will be returned by the API or endpoint."@en ;
+	rdfs:range xsd:integer;
+	rdfs:isDefinedBy api: ; .
+
+api:ContentNegotiationStrategy a rdfs:Class ;
+	rdfs:label "Content negotiation type"@en ;
+	rdfs:isDefinedBy api: ;.
+
+api:suffixBased a api:ContentNegotiationStrategy ;
+	rdfs:label "Suffix-Based Content Negotiation"@en ;
+	rdfs:comment "This content negotiation strategy uses the suffix used on the last segment within the request URI to indicate the formatter that should be used to format the results of the request."@en;
+ rdfs:isDefinedBy api: ; .
+
+api:parameterBased a api:ContentNegotiationStrategy ;
+	rdfs:label "Parameter-Based Content Negotiation"@en ;
+	rdfs:comment "This content negotiation strategy uses the _format parameter within the URI to indicate the formatter that should be used to format the results of the request."@en ;
+ rdfs:isDefinedBy api: ; .
+	
+api:endpoint a rdf:Property ;
+	rdfs:label "Endpoint"@en ;
+	rdfs:comment "An endpoint specified by the API, against which requests can be made."@en ;
+	rdfs:domain api:API ;
+	rdfs:range api:Endpoint;
+	rdfs:isDefinedBy api: ; .
+
+############################################################################
+# Endpoint
+############################################################################
+
+api:Endpoint a rdfs:Class ;
+	rdfs:label "Endpoint"@en ;
+	rdfs:comment "An endpoint exposed by the API."@en ;
+	rdfs:isDefinedBy api: ;.
+
+api:ItemEndpoint a rdfs:Class ;
+	rdfs:label "Item Endpoint"@en ;
+	rdfs:comment "An endpoint that returns information about a single instance."@en ;
+	rdfs:subClassOf api:Endpoint;
+	rdfs:isDefinedBy api: ; .
+
+api:ListEndpoint a rdfs:Class ;
+	rdfs:label "List Endpoint"@en ;
+	rdfs:comment "An endpoint that returns information about a list of instances."@en ;
+	rdfs:subClassOf api:Endpoint ;
+	rdfs:isDefinedBy api: ; .
+
+api:uriTemplate a rdf:Property ;
+	rdfs:label "URI template"@en ;
+	rdfs:comment "A template that can be used to match against request URIs. This template can contain variable names within {}s; when the URI is matched then the substrings that appear in these locations are bound to the named variable."@en ;
+	rdfs:domain api:Endpoint ;
+	rdfs:range rdfs:Literal ;
+	rdfs:isDefinedBy api: ; .
+
+api:itemTemplate a rdf:Property ;
+	rdfs:label "Item template"@en ;
+	rdfs:comment "A template for the URI of the item that the item endpoint should return. Any instances of {varName} within the string are replaced by the value of the relevant variable."@en ;
+	rdfs:domain api:ItemEndpoint ;
+	rdfs:range rdfs:Literal ;
+	rdfs:isDefinedBy api: ; .
+
+api:selector a rdf:Property ;
+	rdfs:label "Selector"@en ;
+	rdfs:comment "The selector that should be used to generate the list of items."@en ;
+	rdfs:domain api:ListEndpoint ;
+	rdfs:range api:Selector ;
+	rdfs:isDefinedBy api: ; .
+
+api:viewer a rdf:Property ;
+	rdfs:label "Viewer"@en ;
+	rdfs:comment "A viewer that can be used with the endpoint."@en ;
+	rdfs:domain api:Endpoint ;
+	rdfs:range api:Viewer ;
+	rdfs:isDefinedBy api: ;.
+
+api:defaultViewer a rdf:Property ;
+	rdfs:label "Default Viewer"@en ;
+	rdfs:comment "The default viewer used if none is explicitly selected within the request URI."@en ;
+	rdfs:domain api:Endpoint ;
+	rdfs:range api:Viewer ;
+	rdfs:isDefinedBy api: ;.
+
+api:formatter a rdf:Property ;
+	rdfs:label "Formatter"@en ;
+	rdfs:comment "A formatter that can be used with the endpoint."@en ;
+	rdfs:domain api:Endpoint ;
+	rdfs:range api:Formatter;
+	rdfs:isDefinedBy api: ; .
+
+api:defaultFormatter a rdf:Property ;
+	rdfs:label "Default Formatter"@en ;
+	rdfs:comment "The default formatter used if none is explicitly selected within the request URI."@en ;
+	rdfs:domain api:Endpoint ;
+	rdfs:range api:Formatter;
+	rdfs:isDefinedBy api: ; .
+
+############################################################################
+# Selector
+############################################################################
+
+api:Selector a rdfs:Class ;
+	rdfs:label "Selector"@en ;
+	rdfs:comment "A specification of an ordered list of resources."@en ;
+	rdfs:isDefinedBy api: ;.
+
+api:parent a rdf:Property ;
+	rdfs:label "Parent"@en ;
+	rdfs:comment "The parent selector, from which filters and sort specifications may be inherited."@en ;
+	rdfs:domain api:Selector ;
+	rdfs:range api:Selector;
+	rdfs:isDefinedBy api: ; .
+
+api:select a rdf:Property ;
+	rdfs:label "Select"@en ;
+	rdfs:comment "A SPARQL WHERE and ORDER BY clause that can be used to select an ordered list of resources. It should include the binding of an ?item variable for the selected items."@en ;
+	rdfs:domain api:Selector ;
+	rdfs:range rdf:PlainLiteral ;
+	rdfs:isDefinedBy api: ; .
+
+api:where a rdf:Property ;
+	rdfs:label "Where"@en ;
+	rdfs:comment "A GroupGraphPattern suitable for embedding within a SPARQL WHERE clause. This is used for filtering the set of items that the selector selects."@en ;
+	rdfs:domain api:Selector ;
+	rdfs:range rdf:PlainLiteral ;
+	rdfs:isDefinedBy api: ; .
+
+api:orderBy a rdf:Property ;
+	rdfs:label "Order By"@en ;
+	rdfs:comment "A space separated sequence of OrderConditions suitable for using in a SPARQL ORDER BY clause. This is used to order the sequence of items that the selector selects."@en ;
+	rdfs:domain api:Selector ;
+	rdfs:range rdf:PlainLiteral ;
+	rdfs:isDefinedBy api: ; .
+
+api:filter a rdf:Property ;
+	rdfs:label "Filter"@en ;
+	rdfs:comment "A set of parameter bindings in the same format as is used within the query of a URI, used to provide a simple way of filtering the sequence of items that the selector selects."@en ;
+	rdfs:domain api:Selector ;
+	rdfs:range rdf:PlainLiteral ;
+	rdfs:isDefinedBy api: ; .
+
+api:sort a rdf:Property ;
+	rdfs:label "Sort"@en ;
+	rdfs:comment "A sequence of comma-separated sort specifications indicating the sorting of the items in the sequence that the selector selects. A leading hyphen indicates a reverse sort."@en ;
+	rdfs:domain api:Selector ;
+	rdfs:range rdf:PlainLiteral ;
+	rdfs:isDefinedBy api: ; .
+
+############################################################################
+# Viewer
+############################################################################
+
+api:Viewer a rdfs:Class ;
+	rdfs:label "Viewer"@en ;
+	rdfs:comment "A specification of a view of a particular item."@en;
+	rdfs:isDefinedBy api: ; .
+
+api:describeViewer a api:Viewer ;
+	rdfs:label "DESCRIBE Viewer"@en ;
+	rdfs:comment "A viewer that returns a graph created from a DESCRIBE query."@en ;
+	api:name "describe";
+	rdfs:isDefinedBy api: ; .
+
+api:labelledDescribeViewer a api:Viewer ;
+	rdfs:label "Labelled DESCRIBE Viewer"@en ;
+	rdfs:comment "A viewer that returns the graph created from a DESCRIBE query, supplemented by labels for linked resources."@en ;
+	api:name "labelledDescribe";
+	rdfs:isDefinedBy api: ; .
+
+api:basicViewer a api:Viewer ;
+	rdfs:label "Basic Viewer"@en ;
+	rdfs:comment "A viewer that returns the type and label of the item."@en ;
+	api:name "basic" ;
+	api:property rdfs:label, rdf:type;
+	rdfs:isDefinedBy api: ; .
+
+api:name a rdf:Property ;
+	rdfs:label "Name"@en ;
+	rdfs:comment "The name of the resource."@en ;
+	rdfs:range rdf:PlainLiteral;
+	rdfs:isDefinedBy api: ; .
+
+api:include a rdf:Property ;
+	rdfs:label "Include"@en ;
+	rdfs:comment "Other viewers that describe properties that should be incorporated into this view."@en ;
+	rdfs:domain api:Viewer ;
+	rdfs:range api:Viewer;
+	rdfs:isDefinedBy api: ; .
+
+api:template a rdf:Property ;
+	rdfs:label "Template"@en ;
+	rdfs:comment "SPARQL that can be used to construct a graph based on an item (identified in the SPARQL as ?item)."@en ;
+	rdfs:domain api:Viewer ;
+	rdfs:range rdf:PlainLiteral;
+	rdfs:isDefinedBy api: ; .
+
+api:property a rdf:Property ;
+	rdfs:label "Property"@en ;
+	rdfs:comment "A property chain (which may be a single property) that indicates information that should be included in the view."@en ;
+	rdfs:domain api:Viewer ;
+	rdfs:range rdfs:Resource;
+	rdfs:isDefinedBy api: ; .
+
+api:properties a rdf:Property ;
+	rdfs:label "Properties"@en ;
+	rdfs:comment "A comma-separated list of property paths that indicate the information that should be included in the view."@en ;
+	rdfs:domain api:Viewer ;
+	rdfs:range rdf:PlainLiteral;
+	rdfs:isDefinedBy api: ; .
+
+############################################################################
+# Formatter
+############################################################################
+
+api:Formatter a rdfs:Class ;
+	rdfs:label "Formatter"@en ;
+	rdfs:comment "A formatter that creates a representation from an RDF graph."@en;
+	rdfs:isDefinedBy api: ; .
+
+api:mimeType a rdf:Property ;
+	rdfs:label "Mime Type"@en ;
+	rdfs:comment "The mime type that the formatter returns and that it should be used with."@en ;
+	rdfs:domain api:Formatter ;
+	rdfs:range rdf:PlainLiteral ;
+	rdfs:isDefinedBy api: ; .
+
+api:RdfXmlFormatter a rdfs:Class ;
+	rdfs:label "RDF/XML Formatter"@en ;
+	rdfs:comment "A formatter that generates an RDF/XML representation of an RDF graph"@en ;
+	rdfs:subClassOf api:Formatter; 
+	rdfs:isDefinedBy api: ; .
+
+api:rdfXmlFormatter a api:RdfXmlFormatter ;
+	rdfs:label "Default RDF/XML Formatter"@en ;
+	rdfs:comment "A formatter that gives the default RDF/XML representation of an RDF graph"@en;
+	rdfs:isDefinedBy api: ; .
+
+api:TurtleFormatter a rdfs:Class ;
+	rdfs:label "Turtle Formatter"@en ;
+	rdfs:comment "A formatter that generates an Turtle representation of an RDF graph"@en ;
+	rdfs:subClassOf api:Formatter ;
+	rdfs:isDefinedBy api: ; .
+
+api:TurtleFormatter a api:TurtleFormatter ;
+	rdfs:label "Default Turtle Formatter"@en ;
+	rdfs:comment "A formatter that gives the default Turtle representation of an RDF graph"@en ;
+	rdfs:isDefinedBy api: ; .
+
+api:JsonFormatter a rdfs:Class ;
+	rdfs:label "JSON Formatter"@en ;
+	rdfs:comment "A formatter that generates a simple JSON representation of an RDF graph"@en ;
+	rdfs:subClassOf api:Formatter ;
+	rdfs:isDefinedBy api: ; .
+
+api:jsonFormatter a api:jsonFormatter ;
+	rdfs:label "Default JSON Formatter"@en ;
+	rdfs:comment "A formatter that gives the default simple JSON representation of an RDF graph"@en;
+	rdfs:isDefinedBy api: ; .
+
+api:XmlFormatter a rdfs:Class ;
+	rdfs:label "XML Formatter"@en ;
+	rdfs:comment "A formatter that generates a simple XML representation of an RDF graph"@en ;
+	rdfs:subClassOf api:Formatter ;
+	rdfs:isDefinedBy api: ; .
+
+api:xmlFormatter a api:xmlFormatter ;
+	rdfs:label "Default XML Formatter"@en ;
+	rdfs:comment "A formatter that gives the default simple XML representation of an RDF graph"@en ;
+	rdfs:isDefinedBy api: ; .
+
+api:CsvFormatter a rdfs:Class ;
+	rdfs:label "CSV Formatter"@en ;
+	rdfs:comment "A formatter that generates a simple CSV representation of an RDF graph"@en ;
+	rdfs:subClassOf api:Formatter ;
+	rdfs:isDefinedBy api: ;.
+
+api:csvFormatter a api:csvFormatter ;
+	rdfs:label "Default CSV Formatter"@en ;
+	rdfs:comment "A formatter that gives the default simple CSV representation of an RDF graph"@en ;
+	rdfs:isDefinedBy api: ;.
+
+api:XsltFormatter a rdfs:Class ;
+	rdfs:label "XSLT Formatter"@en ;
+	rdfs:comment "A formatter that uses an XSLT stylesheet to generates a representation of an RDF graph"@en ;
+	rdfs:subClassOf api:Formatter;
+	rdfs:isDefinedBy api: ; .
+
+api:stylesheet a rdf:Property ;
+	rdfs:label "Stylesheet"@en ;
+	rdfs:comment "The XSLT stylesheet that should be used by an XSLT formatter to generate a representation of the RDF graph"@en ;
+	rdfs:domain api:XsltFormatter ;
+	rdfs:range rdfs:Resource;
+	rdfs:isDefinedBy api: ; .
+
+
+
+############################################################################
+# Metadata
+############################################################################
+
+api:definition a rdf:Property ;
+	rdfs:label "Definition"@en ;
+	rdfs:comment "The API Endpoint "@en ;
+	rdfs:isDefinedBy api: ;
+	rdfs:domain api:List .
+
+api:items a rdf:Property ;
+	rdfs:label "Items"@en ;
+	rdfs:domain api:Page ;
+	rdfs:range rdf:List ;
+	rdfs:comment "The list of resources described by the page that are in the List the page is part of."@en ;
+	rdfs:isDefinedBy api: ;
+ .
+	
+api:List a rdfs:Class ;
+	rdfs:label "List"@en ;
+	rdfs:comment "a List represents the full set of resources that match the request against the Endpoint; a Page lists a subset of the List."@en ;
+	rdfs:isDefinedBy api: ;
+.
+
+api:Page a rdfs:Class;
+	rdfs:label "Page"@en ;
+	rdfs:comment "A page returned in response to a request to an Endpoint."@en;
+	rdfs:isDefinedBy api: ;
+.
+
+api:extendedMetadataVersion a rdf:Property ;
+  rdfs:label "Extended Metadata Version"@en ;
+  rdfs:comment "a document containing the same data, plus extra document-centric metadata."@en ;
+  rdfs:isDefinedBy api: ;
+  rdfs:range api:Page ;
+  rdfs:domain api:Page ;
+ .

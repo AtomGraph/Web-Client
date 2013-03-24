@@ -28,14 +28,14 @@ import java.util.Set;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.client.locator.LocatorGRDDL;
+import org.graphity.client.locator.PrefixMapper;
+import org.graphity.client.locator.grddl.LocatorAtom;
 import org.graphity.client.model.ResourceBase;
 import org.graphity.client.model.SPARQLEndpointBase;
 import org.graphity.client.reader.RDFPostReader;
+import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.ModelXSLTWriter;
-import org.graphity.platform.util.DataManager;
-import org.graphity.util.locator.LocatorGRDDL;
-import org.graphity.util.locator.PrefixMapper;
-import org.graphity.util.locator.grddl.LocatorAtom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class Application extends org.graphity.platform.Application
+public class Application extends org.graphity.server.Application
 {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -59,7 +59,6 @@ public class Application extends org.graphity.platform.Application
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/LocationMapper.html">LocationMapper</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html">Locator</a>
      */
-    //@PostConstruct
     @Override
     public void init()
     {
@@ -90,8 +89,8 @@ public class Application extends org.graphity.platform.Application
 
 	try
 	{
-	    DataManager.get().addLocator(new LocatorAtom(getSource("org/graphity/util/locator/grddl/atom-grddl.xsl")));
-	    DataManager.get().addLocator(new LocatorGRDDL(getSource("org/graphity/util/locator/grddl/twitter-grddl.xsl")));
+	    DataManager.get().addLocator(new LocatorAtom(getSource("org/graphity/client/locator/grddl/atom-grddl.xsl")));
+	    DataManager.get().addLocator(new LocatorGRDDL(getSource("org/graphity/client/locator/grddl/twitter-grddl.xsl")));
 	}
 	catch (TransformerConfigurationException ex)
 	{
@@ -115,7 +114,7 @@ public class Application extends org.graphity.platform.Application
      * Provides JAX-RS root resource classes.
      *
      * @return set of root resource classes
-     * @see org.graphity.platform.model
+     * @see org.graphity.server.model
      * @see <a
      * href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getClasses()">Application.getClasses()</a>
      */
@@ -132,7 +131,7 @@ public class Application extends org.graphity.platform.Application
      * Provides JAX-RS singleton objects (e.g. resources or Providers)
      * 
      * @return set of singleton objects
-     * @see org.graphity.platform.provider
+     * @see org.graphity.server.provider
      * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getSingletons()">Application.getSingletons()</a>
      */
     @Override

@@ -38,6 +38,10 @@
         </init-param>
 	-->
         <init-param>
+            <param-name>org.graphity.server.endpoint-uri</param-name>
+            <param-value>http://dydra.com/graphity/server/sparql</param-value>
+        </init-param>	
+        <init-param>
             <param-name>org.graphity.client.writer.xslt-location</param-name>
             <param-value>org/graphity/client/writer/global.xsl</param-value>
 	    <!-- <param-value>org/graphity/client/writer/local.xsl</param-value> -->

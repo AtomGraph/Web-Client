@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>platform</artifactId>
+            <artifactId>server</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
