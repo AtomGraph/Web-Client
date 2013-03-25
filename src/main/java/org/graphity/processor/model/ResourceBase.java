@@ -39,7 +39,6 @@ import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
-import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpointBase;
 import org.graphity.server.util.DataManager;
@@ -308,14 +307,14 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	if (addPageContainer && hasRDFType(LDP.Page))
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Page");
-	    description.add(super.describe());
+	    description.add(loadModel(getOntModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    OntResource container = getPropertyResourceValue(LDP.pageOf).as(OntResource.class);
-	    LinkedDataResource ldc = new ResourceBase(container, getEndpoint(),
+	    ResourceBase ldc = new ResourceBase(container, getEndpoint(),
 		    getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(), getVariants(), getCacheControl(),
 		    getLimit(), getOffset(), getOrderBy(), getDesc());
-	    description.add(ldc.describe());
+	    description.add(ldc.loadModel(ldc.getOntModel(), ldc.getQuery()));
 	}
 
 	return description;

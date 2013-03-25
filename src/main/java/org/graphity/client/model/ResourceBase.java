@@ -63,7 +63,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	super(getOntology(uriInfo, config),
-		(config.getProperty(PROPERTY_ENDPOINT_URI) == null) ? null : ResourceFactory.createResource(config.getProperty(PROPERTY_ENDPOINT_URI).toString()),
+		(config.getProperty(PROPERTY_ENDPOINT_URI) == null) ? ResourceFactory.createResource(uriInfo.getBaseUriBuilder().path(org.graphity.server.model.SPARQLEndpointBase.class).build().toString()) : ResourceFactory.createResource(config.getProperty(PROPERTY_ENDPOINT_URI).toString()),
 		uriInfo, request, httpHeaders, config, XHTML_VARIANTS,
 		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc);
