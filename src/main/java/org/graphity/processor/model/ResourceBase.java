@@ -71,6 +71,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     private final SPARQLEndpointBase endpoint;
     private final UriInfo uriInfo;
     private final Request request;
+    private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
 
     /**
@@ -116,10 +117,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	Object ontologyPath = config.getProperty(PROPERTY_ONTOLOGY_PATH);
 	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + PROPERTY_ONTOLOGY_PATH + "' needs to be set in ResourceConfig (web.xml)");
 	
-	String localUri = uriInfo.getBaseUriBuilder().
-			path(ontologyPath.toString()).
-			build().
-			toString();
+	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
 	if (config.getProperty(PROPERTY_ONTOLOGY_ENDPOINT) != null)
 	{
@@ -189,14 +187,14 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	return ontModel;
     }
 
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request,
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc)
     {
-	this(uriInfo, request, resourceConfig,
+	this(uriInfo, request, httpHeaders, resourceConfig,
 		getOntology(uriInfo, resourceConfig),
 		new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().path(SPARQLEndpointBase.class).build().toString()),
 		    uriInfo, request, resourceConfig),
@@ -204,12 +202,12 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 		limit, offset, orderBy, desc);
     }
     
-    protected ResourceBase(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpointBase endpoint,
 	    CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
-	this(uriInfo, request, resourceConfig,
+	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getRequestUri().toString()),
 		endpoint, cacheControl,
 		limit, offset, orderBy, desc);
@@ -217,7 +215,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity Server ResourceBase");
     }
 
-    protected ResourceBase(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
@@ -229,6 +227,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
 	this.request = request;
+	this.httpHeaders = httpHeaders;
 	this.resourceConfig = resourceConfig;
 	this.limit = limit;
 	this.offset = offset;
@@ -293,11 +292,10 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	    return Response.seeOther(uriBuilder.buildFromEncoded()).build();
 	}
 
-	return getResponseBuilder(describe()).
-		cacheControl(getCacheControl()).
-		build();
+	return super.getResponse();
     }
 
+    @Override
     public Model describe()
     {
 	return describe(true);
@@ -305,8 +303,8 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     
     public Model describe(boolean addContainerPage)
     {	
-	Model description = getEndpoint().loadModel(getQuery());
-	if (log.isDebugEnabled()) log.debug("Loaded Model description with {} triples", description.size());
+	Model description = super.describe();
+	if (log.isDebugEnabled()) log.debug("Generation Response from description Model with {} triples", description.size());
 
 	if (addContainerPage && hasRDFType(LDP.Page))
 	{
@@ -315,7 +313,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    OntResource container = getPropertyResourceValue(LDP.pageOf).as(OntResource.class);
-	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getResourceConfig(),
+	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(),
 		    container, getEndpoint(), getCacheControl(),
 		    getLimit(), getOffset(), getOrderBy(), getDesc());
 	    description.add(getEndpoint().loadModel(ldc.getOntModel(), ldc.getQuery()));
@@ -567,6 +565,11 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     public Request getRequest()
     {
 	return request;
+    }
+
+    public HttpHeaders getHttpHeaders()
+    {
+	return httpHeaders;
     }
 
     public ResourceConfig getResourceConfig()

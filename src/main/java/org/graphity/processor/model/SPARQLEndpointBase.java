@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.model;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -26,7 +27,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.graphity.client.model.ResourceBase;
 import org.graphity.client.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,40 +59,33 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	DataManager.get().addServiceContext(endpoint.getURI());
     }
 
-    /*
     @Override
-    public Response getResponse()
+    public Model loadModel(Resource endpoint, Query query)
     {
-	MediaType mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
-
-	// don't create query resource if HTML is requested
-	if (getUserQuery() != null && (mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE)))
+	if (endpoint.equals(this))
 	{
-	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF, returning SPARQL Response", mediaType);
-	    return query(getUserQuery());
+	    OntModel ontModel = ResourceBase.getOntology(getUriInfo(), getResourceConfig());
+	    return DataManager.get().loadModel(ontModel, query);
 	}
 	else
-	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mediaType);
-
-	return super.getResponse(); // if HTML is requested, return DESCRIBE ?this results instead of user query
+	{
+	    if (log.isDebugEnabled()) log.debug("Loading Model from SPARQL endpoint: {} using Query: {}", endpoint, query);
+	    return org.graphity.server.util.DataManager.get().loadModel(endpoint.getURI(), query);
+	}
     }
-    */
-    
+
     @Override
-    public Response query(Query query)
+    public ResultSetRewindable loadResultSetRewindable(Resource endpoint, Query query)
     {
-	if (getEndpoint().equals(this))
+	if (endpoint.equals(this))
 	{
-	    //if (log.isDebugEnabled()) log.debug("Generating Response from local Model with Query: {}", getUserQuery());
-	    return getResponseBuilder(query, ResourceBase.getOntology(getUriInfo(), getResourceConfig())).build();
+	    OntModel ontModel = ResourceBase.getOntology(getUriInfo(), getResourceConfig());
+	    return DataManager.get().loadResultSet(ontModel, query);
 	}
 	else
 	{
-	    //if (log.isDebugEnabled()) log.debug("Generating Response from SPARQL endpoint: {} with Query: {}", getEndpoint(), query);
-	    return super.query(query);
+	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from SPARQL endpoint: {} using Query: {}", endpoint.getURI(), query);
+	    return DataManager.get().loadResultSet(endpoint.getURI(), query);
 	}
     }
 

@@ -80,7 +80,7 @@ LIMIT 100</xsl:param>
 
 	<xsl:if test="$query">
 	    <xsl:variable name="result-doc" select="document(concat($absolute-path, '?query=', encode-for-uri($query)))"/>
-!!<xsl:copy-of select="$result-doc"/>!!
+
 	    <!-- result of CONSTRUCT or DESCRIBE -->
 	    <xsl:if test="$result-doc/rdf:RDF">
 		<div class="nav row-fluid">

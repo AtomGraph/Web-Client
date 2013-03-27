@@ -16,8 +16,9 @@
  */
 package org.graphity.client.model;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
@@ -26,9 +27,8 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.graphity.server.model.LinkedDataResource;
+import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.processor.update.ModifyBuilder;
-import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -39,9 +39,9 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("{path: .*}")
-public class ResourceBase extends org.graphity.processor.model.ResourceBase
+public class LocalResourceBase extends org.graphity.processor.model.ResourceBase
 {
-    private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalResourceBase.class);
 
     public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
 		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
@@ -50,23 +50,33 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		    org.graphity.server.MediaType.TEXT_TURTLE_TYPE).
 		add().build();
 
-    private final MediaType mediaType;
-    private final String topicUri;
-
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request,
+    public LocalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("uri") String topicUri,
-	    @QueryParam("accept") MediaType mediaType)
+	    @QueryParam("desc") Boolean desc)
     {
-	super(uriInfo, request, resourceConfig, resourceContext,
+	super(uriInfo, request, httpHeaders, resourceConfig, resourceContext,
+		limit, offset, orderBy, desc);	
+    }
+
+    protected LocalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+	    OntModel ontModel, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    Long limit, Long offset, String orderBy, Boolean desc)
+    {
+	super(uriInfo, request, httpHeaders, resourceConfig,
+		ontModel, endpoint, cacheControl,
 		limit, offset, orderBy, desc);
-	
-	this.mediaType = mediaType;
-	this.topicUri = topicUri;
+    }
+
+    protected LocalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
+	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    Long limit, Long offset, String orderBy, Boolean desc)
+    {
+	super(uriInfo, request, httpHeaders, resourceConfig,
+		ontResource, endpoint,
+		cacheControl, limit, offset, orderBy, desc);
     }
 
     @Override
@@ -83,27 +93,6 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
 	return description;
     }
-    
-    @Override
-    public Response getResponse()
-    {
-	if (getTopicUri() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicUri());
-
-	    Model model = DataManager.get().loadModel(getTopicUri());
-	    
-	    // use original Cache-Control? 
-	    LinkedDataResource topic = new LinkedDataResourceBase(model.createResource(getTopicUri()),
-		getCacheControl());
-	    
-	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
-
-	    return getResponseBuilder(model, XHTML_VARIANTS).build();
-	}	
-
-	return super.getResponse();
-    }
 
     @Override
     public Response.ResponseBuilder getResponseBuilder(Model model)
@@ -114,22 +103,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
     public List<Variant> getVariants()
     {
-	if (getMediaType() != null)
-	    return Variant.VariantListBuilder.newInstance().
-		    mediaTypes(getMediaType()).
-		    add().build();
-
 	return XHTML_VARIANTS;
-    }
-
-    public MediaType getMediaType()
-    {
-	return mediaType;
-    }
-
-    public String getTopicUri()
-    {
-	return topicUri;
     }
 
     @Override

@@ -16,9 +16,10 @@
  */
 package org.graphity.client.model;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.core.ResourceContext;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
@@ -26,13 +27,18 @@ import javax.ws.rs.core.UriInfo;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class SPARQLEndpointBase extends ResourceBase
+@Path("/sparql")
+public class SPARQLEndpointBase extends org.graphity.processor.model.SPARQLEndpointBase
 {
 
-    public SPARQLEndpointBase(UriInfo uriInfo, Request request, ResourceConfig resourceConfig, ResourceContext resourceContext, Long limit, Long offset, String orderBy, Boolean desc, String topicUri, MediaType mediaType)
+    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
     {
-	super(uriInfo, request, resourceConfig, resourceContext, limit, offset, orderBy, desc, topicUri, mediaType);
+	super(uriInfo, request, resourceConfig);
     }
 
+    public SPARQLEndpointBase(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    {
+	super(endpoint, uriInfo, request, resourceConfig);
+    }
     
 }
