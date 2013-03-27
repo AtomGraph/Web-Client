@@ -59,11 +59,20 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	DataManager.get().addServiceContext(endpoint.getURI());
     }
 
+    public Resource getOntModelEndpoint()
+    {
+	return ResourceFactory.createResource(getUriInfo().
+		getBaseUriBuilder().
+		path(SPARQLEndpointBase.class).
+		build().toString());
+    }
+    
     @Override
     public Model loadModel(Resource endpoint, Query query)
     {
-	if (endpoint.equals(this))
+	if (endpoint.equals(getOntModelEndpoint()))
 	{
+	    if (log.isDebugEnabled()) log.debug("Loading Model from OntModel using Query: {}", query);
 	    OntModel ontModel = ResourceBase.getOntology(getUriInfo(), getResourceConfig());
 	    return DataManager.get().loadModel(ontModel, query);
 	}
