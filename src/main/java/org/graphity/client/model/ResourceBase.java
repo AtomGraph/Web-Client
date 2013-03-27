@@ -17,17 +17,16 @@
 package org.graphity.client.model;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
+import com.sun.jersey.api.core.ResourceContext;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.server.model.LinkedDataResource;
-import org.graphity.server.model.LinkedDataResourceBase;
 import org.graphity.processor.update.ModifyBuilder;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
@@ -54,7 +53,8 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     private final MediaType mediaType;
     private final String topicUri;
 
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig config,
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request,
+	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -62,10 +62,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("uri") String topicUri,
 	    @QueryParam("accept") MediaType mediaType)
     {
-	super(getOntology(uriInfo, config),
-		(config.getProperty(PROPERTY_ENDPOINT_URI) == null) ? ResourceFactory.createResource(uriInfo.getBaseUriBuilder().path(org.graphity.server.model.SPARQLEndpointBase.class).build().toString()) : ResourceFactory.createResource(config.getProperty(PROPERTY_ENDPOINT_URI).toString()),
-		uriInfo, request, httpHeaders, config, XHTML_VARIANTS,
-		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
+	super(uriInfo, request, resourceConfig, resourceContext,
 		limit, offset, orderBy, desc);
 	
 	this.mediaType = mediaType;
@@ -98,17 +95,23 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    
 	    // use original Cache-Control? 
 	    LinkedDataResource topic = new LinkedDataResourceBase(model.createResource(getTopicUri()),
-	    	    getUriInfo(), getRequest(), getHttpHeaders(), getVariants(), getCacheControl());
+		getCacheControl());
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 
-	    return getResponse(model);
+	    return getResponseBuilder(model, XHTML_VARIANTS).build();
 	}	
 
 	return super.getResponse();
     }
-    
+
     @Override
+    public Response.ResponseBuilder getResponseBuilder(Model model)
+    {
+	return getEndpoint().getResponseBuilder(model, getVariants()).
+		cacheControl(getCacheControl());
+    }
+
     public List<Variant> getVariants()
     {
 	if (getMediaType() != null)
@@ -116,7 +119,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		    mediaTypes(getMediaType()).
 		    add().build();
 
-	return super.getVariants();
+	return XHTML_VARIANTS;
     }
 
     public MediaType getMediaType()
@@ -146,7 +149,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		build();
 	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", request);
 	
-	return getResponse(postedModel);
+	return getResponseBuilder(postedModel).build();
     }
 
 }

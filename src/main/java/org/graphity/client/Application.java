@@ -32,12 +32,13 @@ import org.graphity.client.locator.LocatorGRDDL;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.locator.grddl.LocatorAtom;
 import org.graphity.client.model.ResourceBase;
-import org.graphity.client.model.SPARQLEndpointBase;
+import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
  *
@@ -49,6 +50,18 @@ public class Application extends org.graphity.server.Application
 
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
+
+    public Application()
+    {
+	classes.add(ResourceBase.class); // handles all
+	classes.add(SPARQLEndpointBase.class); // handles /sparql queries
+
+	singletons.addAll(super.getSingletons());
+	singletons.add(new RDFPostReader());
+
+	if (log.isDebugEnabled()) log.debug("Adding master XSLT @Provider");
+	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses
+    }
 
     /**
      * Initializes (post construction) DataManager, its LocationMapper and Locators
@@ -65,9 +78,12 @@ public class Application extends org.graphity.server.Application
 	super.init();
 	
 	if (log.isDebugEnabled()) log.debug("Application.init() with ResourceConfig: {} and SerlvetContext: {}", getResourceConfig(), getServletContext());
+	if (log.isDebugEnabled()) log.debug("Root resource classes: {} Root resource singletons: {}", getResourceConfig().getRootResourceClasses(), getResourceConfig().getRootResourceSingletons());
+	if (log.isDebugEnabled()) log.debug("Explicit root resources: {} Classes: {}", getResourceConfig().getExplicitRootResources(), getResourceConfig().getClasses());
+	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 
 	// initialize locally cached ontology mapping
-	LocationMapper mapper = new PrefixMapper("location-mapping.n3");
+	LocationMapper mapper = new PrefixMapper("location-mapping.ttl");
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled())
 	{
@@ -121,9 +137,6 @@ public class Application extends org.graphity.server.Application
     @Override
     public Set<Class<?>> getClasses()
     {
-	classes.add(ResourceBase.class); // handles all
-	classes.add(SPARQLEndpointBase.class); // handles /sparql queries
-
 	return classes;
     }
 
@@ -137,12 +150,6 @@ public class Application extends org.graphity.server.Application
     @Override
     public Set<Object> getSingletons()
     {
-	singletons.addAll(super.getSingletons());
-	singletons.add(new RDFPostReader());
-
-	if (log.isDebugEnabled()) log.debug("Adding master XSLT @Provider");
-	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses
-
 	return singletons;
     }
 

@@ -14,20 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.processor.model;
+package org.graphity.client.model;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.graphity.server.model.LinkedDataResource;
+import com.sun.jersey.api.core.ResourceConfig;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface DocumentResource extends LinkedDataResource
+public class LinkedDataResourceBase extends org.graphity.server.model.LinkedDataResourceBase
 {
-    Resource getDataset(); // void:Dataset
-    
-    //Resource getService(); // sd:Service
-    
-    Resource getEndpoint(); // void:sparqlEndpoint
+
+    public LinkedDataResourceBase(@Context UriInfo uriInfo, @Context ResourceConfig resourceConfig)
+    {
+	super(uriInfo, resourceConfig);
+    }
+
+    protected LinkedDataResourceBase(Resource resource, CacheControl cacheControl)
+    {
+	super(resource, cacheControl);
+    }
+
 }

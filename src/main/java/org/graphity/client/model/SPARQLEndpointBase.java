@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Martynas Jusevičius <martynas@graphity.org>
+ * Copyright (C) 2013 Martynas Jusevičius <martynas@graphity.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,75 +16,23 @@
  */
 package org.graphity.client.model;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.*;
-import org.graphity.client.util.DataManager;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.jersey.api.core.ResourceContext;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.UriInfo;
 
 /**
- * SPARQL endpoint resource, implementing ?query= access method
+ *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Path("/sparql")
 public class SPARQLEndpointBase extends ResourceBase
 {
-    private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
-    private final Query userQuery;
-
-    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
-	@Context ResourceConfig config,
-	@QueryParam("limit") @DefaultValue("20") Long limit,
-	@QueryParam("offset") @DefaultValue("0") Long offset,
-	@QueryParam("order-by") String orderBy,
-	@QueryParam("desc") Boolean desc,
-	@QueryParam("accept") javax.ws.rs.core.MediaType mediaType,
-	@QueryParam("query") Query userQuery)
+    public SPARQLEndpointBase(UriInfo uriInfo, Request request, ResourceConfig resourceConfig, ResourceContext resourceContext, Long limit, Long offset, String orderBy, Boolean desc, String topicUri, MediaType mediaType)
     {
-	super(uriInfo, request, httpHeaders, config,
-		limit, offset, orderBy, desc,
-		null, mediaType);	
-
-	this.userQuery = userQuery;
-
-	if (log.isDebugEnabled()) log.debug("Adding service Context for SPARQL endpoint with URI: {}", uriInfo.getAbsolutePath().toString());
-	DataManager.get().addServiceContext(uriInfo.getAbsolutePath().toString());
+	super(uriInfo, request, resourceConfig, resourceContext, limit, offset, orderBy, desc, topicUri, mediaType);
     }
 
-    @Override
-    public Response getResponse()
-    {
-	MediaType mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
-
-	// don't create query resource if HTML is requested
-	if (getUserQuery() != null && (mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE)))
-	{
-	    SPARQLEndpoint sparql = new org.graphity.server.model.SPARQLEndpointBase(getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(), getQuery());
-	    return sparql.query(getUserQuery());
-	}
-
-	return super.getResponse(); // if HTML is requested, return DESCRIBE ?this results instead of user query
-    }
-
-    @Override
-    public Model describe()
-    {
-	return loadModel(getOntModel(), getQuery(getUriInfo().getAbsolutePath().toString()));
-    }
     
-    public Query getUserQuery()
-    {
-	return userQuery;
-    }
-
 }

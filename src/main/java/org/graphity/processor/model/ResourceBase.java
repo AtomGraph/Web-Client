@@ -23,10 +23,10 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.sun.jersey.api.core.ResourceConfig;
+import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.api.uri.UriTemplate;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TreeMap;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -40,7 +40,6 @@ import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.QueriedResourceBase;
-import org.graphity.server.model.SPARQLEndpointBase;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
 @Path("{path: .*}")
-public class ResourceBase extends QueriedResourceBase implements PageResource, OntResource, DocumentResource
+public class ResourceBase extends QueriedResourceBase implements PageResource, OntResource
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
@@ -68,7 +67,10 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     private final String orderBy;
     private final Boolean desc;
     private final OntClass matchedOntClass;
-    private final Resource dataset, endpoint; //, service;
+    private final Resource dataset;
+    private final SPARQLEndpointBase endpoint;
+    private final UriInfo uriInfo;
+    private final Request request;
     private final ResourceConfig resourceConfig;
 
     /**
@@ -187,52 +189,59 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	return ontModel;
     }
 
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
-	    @Context ResourceConfig config,
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request,
+	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc)
     {
-	this(getOntology(uriInfo, config),
-		(config.getProperty(PROPERTY_ENDPOINT_URI) == null) ? ResourceFactory.createResource(uriInfo.getBaseUriBuilder().path(SPARQLEndpointBase.class).build().toString()) : ResourceFactory.createResource(config.getProperty(PROPERTY_ENDPOINT_URI).toString()),
-		uriInfo, request, httpHeaders, config, VARIANTS,
-		(config.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(config.getProperty(PROPERTY_CACHE_CONTROL).toString()),
+	this(uriInfo, request, resourceConfig,
+		getOntology(uriInfo, resourceConfig),
+		new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().path(SPARQLEndpointBase.class).build().toString()),
+		    uriInfo, request, resourceConfig),
+		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc);
     }
     
-    protected ResourceBase(OntModel ontModel, Resource endpoint,
-	    UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig, List<Variant> variants, CacheControl cacheControl,
+    protected ResourceBase(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
+	    OntModel ontModel, SPARQLEndpointBase endpoint,
+	    CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
-	this(ontModel.createOntResource(uriInfo.getRequestUri().toString()), endpoint,
-		uriInfo, request, httpHeaders, resourceConfig, variants, cacheControl,
+	this(uriInfo, request, resourceConfig,
+		ontModel.createOntResource(uriInfo.getRequestUri().toString()),
+		endpoint, cacheControl,
 		limit, offset, orderBy, desc);
 	
-	if (log.isDebugEnabled()) log.debug("Constructing Graphity Platform ResourceBase");
+	if (log.isDebugEnabled()) log.debug("Constructing Graphity Server ResourceBase");
     }
 
-    protected ResourceBase(OntResource ontResource, Resource endpoint,
-	    UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig, List<Variant> variants, CacheControl cacheControl,
+    protected ResourceBase(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
+	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
-	super(ontResource, endpoint, uriInfo, request, httpHeaders, variants, cacheControl);
+	super(ontResource, endpoint, cacheControl);
+
+	if (request == null) throw new IllegalArgumentException("Request cannot be null");
+	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
 
 	this.ontResource = ontResource;
-	this.endpoint = endpoint;
+	this.uriInfo = uriInfo;
+	this.request = request;
 	this.resourceConfig = resourceConfig;
 	this.limit = limit;
 	this.offset = offset;
 	this.orderBy = orderBy;
 	this.desc = desc;
 	
-	matchedOntClass = matchOntClass(getRealURI());
+	matchedOntClass = matchOntClass(getRealURI(), uriInfo.getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
 	if (matchedOntClass.hasSuperClass(LDP.Page)) //if (hasRDFType(LDP.Page))
 	{
-	    OntResource container = getOntModel().createOntResource(getUriInfo().getAbsolutePath().toString());
+	    OntResource container = getOntModel().createOntResource(uriInfo.getAbsolutePath().toString());
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: {} ldp:pageOf {}", getResource(), container);
 	    addProperty(LDP.pageOf, container); // setPropertyValue(LDP.pageOf, container);
 
@@ -259,15 +268,11 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	}
 	
 	dataset = getDataset(matchedOntClass);
-	//if (dataset == null) throw new IllegalArgumentException("Resource OntClass must be a subclass of void:inDataset HasValueRestriction");
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {}", dataset);
-	
-	//endpoint = dataset.getPropertyResourceValue(VoID.sparqlEndpoint);
-	/*
-	if (endpoint != null) service = getService(endpoint);
-	else service = null;
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with SPARQL endpoint: {} and sd:Service: {}", endpoint, service);
-	*/
+	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
+	    this.endpoint = new SPARQLEndpointBase(dataset.getPropertyResourceValue(VoID.sparqlEndpoint),
+		    uriInfo, request, resourceConfig);
+	else this.endpoint = endpoint;	    
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, endpoint);
     }
 
     @Override
@@ -288,33 +293,32 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	    return Response.seeOther(uriBuilder.buildFromEncoded()).build();
 	}
 
-	//return super.getResponse();
-	return getResponse(describe());
+	return getResponseBuilder(describe()).
+		cacheControl(getCacheControl()).
+		build();
     }
 
-    @Override
     public Model describe()
     {
 	return describe(true);
     }
-
-    public Model describe(boolean addPageContainer)
-    {
-	Model description = ModelFactory.createDefaultModel().
-		add(loadModel(getEndpoint(), getQuery()));
+    
+    public Model describe(boolean addContainerPage)
+    {	
+	Model description = getEndpoint().loadModel(getQuery());
 	if (log.isDebugEnabled()) log.debug("Loaded Model description with {} triples", description.size());
 
-	if (addPageContainer && hasRDFType(LDP.Page))
+	if (addContainerPage && hasRDFType(LDP.Page))
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Page");
-	    description.add(loadModel(getOntModel(), super.getQuery()));
+	    description.add(getEndpoint().loadModel(getOntModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    OntResource container = getPropertyResourceValue(LDP.pageOf).as(OntResource.class);
-	    ResourceBase ldc = new ResourceBase(container, getEndpoint(),
-		    getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(), getVariants(), getCacheControl(),
+	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getResourceConfig(),
+		    container, getEndpoint(), getCacheControl(),
 		    getLimit(), getOffset(), getOrderBy(), getDesc());
-	    description.add(ldc.loadModel(ldc.getOntModel(), ldc.getQuery()));
+	    description.add(getEndpoint().loadModel(ldc.getOntModel(), ldc.getQuery()));
 	}
 
 	return description;
@@ -328,37 +332,6 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	return null;
     }
 
-    /*
-    public final Resource getService(Resource endpoint)
-    {
-	ResIterator it = getModel().listResourcesWithProperty(SD.endpoint, endpoint);
-	
-	if (it.hasNext()) return it.next();
-
-	return null;
-    }
-    */
-
-    @Override
-    public Model loadModel(Resource endpoint, Query query)
-    {
-	String internalEndpointURI = getUriInfo().getBaseUriBuilder().
-		path(SPARQLEndpointBase.class).
-		build().toString();
-	if (log.isDebugEnabled()) log.debug("Internal SPARQL endpoint URI: {}", internalEndpointURI);
-
-	if (endpoint.getURI().equals(internalEndpointURI))
-	{
-	    if (log.isDebugEnabled()) log.debug("OntResource with URI: {} uses local SPARQL endpoint, querying its OntModel", getURI());
-	    return DataManager.get().loadModel(getOntModel(), query);
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("OntResource with URI: {} uses remote SPARQL endpoint: {}", getURI(), endpoint.getURI());
-	    return DataManager.get().loadModel(endpoint.getURI(), query);
-	}
-    }
-    
     public QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
     {
 	QueryBuilder qb = QueryBuilder.fromQuery(query);
@@ -415,12 +388,11 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	return arqQuery;
     }
 
-    public final OntClass matchOntClass(URI uri)
+    public final OntClass matchOntClass(URI uri, URI base)
     {
 	StringBuilder path = new StringBuilder();
-	//path.append("/").append(getUriInfo().getPath(false));
 	// instead of path, include query string by relativizing request URI against base URI
-	path.append("/").append(getUriInfo().getBaseUri().relativize(uri));
+	path.append("/").append(base.relativize(uri));
 	return matchOntClass(path);
     }
     
@@ -551,34 +523,17 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	return matchedOntClass;
     }
 
-    @Override
     public Resource getDataset()
     {
 	return dataset;
     }
 
-    public ResourceConfig getResourceConfig()
-    {
-	return resourceConfig;
-    }
-
     @Override
-    public Resource getEndpoint()
+    public SPARQLEndpointBase getEndpoint()
     {
-	if (getDataset() != null && getDataset().hasProperty(VoID.sparqlEndpoint))
-	    return getDataset().getPropertyResourceValue(VoID.sparqlEndpoint);
-	
 	return endpoint;
     }
 
-    /*
-    @Override
-    public Resource getService()
-    {
-	return service;
-    }
-    */
-    
     @Override
     public Query getQuery()
     {
@@ -601,16 +556,30 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	
 	//getQueryBuilder()
 	
-	return getResponse(model);
+	return getResponseBuilder(model).build();
     }
 
+    public final UriInfo getUriInfo()
+    {
+	return uriInfo;
+    }
+
+    public Request getRequest()
+    {
+	return request;
+    }
+
+    public ResourceConfig getResourceConfig()
+    {
+	return resourceConfig;
+    }
+    
     @Override
     public final OntModel getOntModel()
     {
 	return getOntResource().getOntModel();
     }
     
-
     @Override
     public Profile getProfile()
     {

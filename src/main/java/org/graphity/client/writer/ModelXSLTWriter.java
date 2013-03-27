@@ -35,7 +35,6 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.processor.model.DocumentResource;
 import org.graphity.server.provider.ModelProvider;
 import org.graphity.client.util.XSLTBuilder;
 import org.openjena.riot.WebContent;
@@ -210,7 +209,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	Object resource = getUriInfo().getMatchedResources().get(0);
 	OntResource ontResource = (OntResource)resource;
 	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
-	DocumentResource docResource = (DocumentResource)resource;
+	//DocumentResource docResource = (DocumentResource)resource;
 
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(styleSource).
 	    resolver(getURIResolver()).
@@ -245,8 +244,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    builder.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
-	if (docResource.getEndpoint() != null)
-	    builder.parameter("endpoint-uri", UriBuilder.fromUri(docResource.getEndpoint().getURI()).build());
+	//if (docResource.getEndpoint() != null)
+	//    builder.parameter("endpoint-uri", UriBuilder.fromUri(docResource.getEndpoint().getURI()).build());
 
 	return builder;
     }
