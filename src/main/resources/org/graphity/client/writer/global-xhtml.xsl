@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
     <!ENTITY sp "http://spinrdf.org/sp#">
     <!ENTITY sd "http://www.w3.org/ns/sparql-service-description#">
+    <!ENTITY void "http://rdfs.org/ns/void#">
     <!ENTITY list "http://jena.hpl.hp.com/ARQ/list#">
 ]>
 <xsl:stylesheet version="2.0"
@@ -51,12 +52,17 @@ xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:sp="&sp;"
 xmlns:sd="&sd;"
+xmlns:void="&void;"
 xmlns:list="&list;"
 exclude-result-prefixes="#all">
 
-    <xsl:import href="local.xsl"/>
+    <xsl:import href="local-xhtml.xsl"/>
 
     <xsl:param name="uri" as="xs:anyURI?"/>
+
+    <xsl:variable name="datasets" select="document('../data/datasets.rdf')" as="document-node()"/>
+
+    <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
     <xsl:template match="/" mode="gc:HeaderMode">
 	<a class="brand" href="{$base-uri}">
@@ -78,7 +84,20 @@ exclude-result-prefixes="#all">
 	    </ul>
 	    -->
 	    <form action="{$base-uri}" method="get" class="navbar-form pull-left">
-		<div class="input-append">
+		<div class="input-prepend input-append">
+		    <span class="add-on">
+			<xsl:variable name="dataset" select="key('resources-by-endpoint', $endpoint-uri, $datasets)"/>
+			<a href="{$endpoint-uri}">
+			    <xsl:choose>
+				<xsl:when test="$dataset">
+				    <xsl:apply-templates select="$dataset"/>
+				</xsl:when>
+				<xsl:otherwise>
+				    <xsl:value-of select="$endpoint-uri"/>
+				</xsl:otherwise>
+			    </xsl:choose>
+			</a>
+		    </span>
 		    <input type="text" name="uri" class="input-xxlarge">
 			<xsl:if test="not(starts-with($uri, $base-uri))">
 			    <xsl:attribute name="value">

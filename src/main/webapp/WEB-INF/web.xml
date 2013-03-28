@@ -18,11 +18,11 @@
             <param-value>/static/.*</param-value>
         </init-param>
         <init-param>
-            <param-name>org.graphity.platform.ontology.path</param-name>
+            <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>
             <param-value>ontology</param-value>
         </init-param>
         <init-param>
-            <param-name>org.graphity.platform.ontology.location</param-name>
+            <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
             <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
         </init-param>
         <!--
@@ -37,19 +37,18 @@
             <param-value>http://dydra.com/graphity/platform/sparql</param-value>
         </init-param>
 	-->
-	<!--
+
         <init-param>
-            <param-name>org.graphity.server.endpoint-uri</param-name>
+            <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
             <param-value>http://dydra.com/graphity/server/sparql</param-value>
         </init-param>
-	-->
         <init-param>
-            <param-name>org.graphity.client.writer.xslt-location</param-name>
-            <param-value>org/graphity/client/writer/global.xsl</param-value>
-	    <!-- <param-value>org/graphity/client/writer/local.xsl</param-value> -->
+            <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
+            <param-value>org/graphity/client/writer/global-xhtml.xsl</param-value>
+	    <!-- <param-value>org/graphity/client/writer/local-xhtml.xsl</param-value> -->
         </init-param>
         <init-param>
-            <param-name>org.graphity.platform.model.cache-control</param-name>
+            <param-name>http://server.graphity.org/ontology#cacheControl</param-name>
             <param-value>no-cache</param-value>
         </init-param>
     </filter>

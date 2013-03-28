@@ -1,0 +1,87 @@
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+_:DBPedia a void:Dataset, sd:Service ;
+    dct:title "DBPedia" ;
+    dct:description "RDF data extracted from Wikipedia" ;
+    foaf:homepage <http://dbpedia.org/> ;
+    foaf:logo <http://wiki.dbpedia.org/images/dbpedia_logo.png> ;
+    void:sparqlEndpoint <http://dbpedia.org/sparql> ;
+    sd:endpoint <http://dbpedia.org/sparql> ;
+    void:exampleResource <http://dbpedia.org/resource/Berlin> ; 
+    void:exampleResource <http://dbpedia.org/resource/Physics> ;
+    void:exampleResource <http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
+    sd:supportedLanguage sd:SPARQL11Query ;
+    void:triples "550000000"^^xsd:integer .
+
+_:Enipedia a sd:Service ;
+    dct:title "Enipedia" ;
+    dct:description "Enipedia is an active exploration into the applications of wikis and the semantic web for energy and industry issues" ;
+    foaf:homepage <http://enipedia.tudelft.nl/wiki/Enipedia> ;
+    foaf:logo <http://enipedia.tudelft.nl/enipedia/images/b/bd/eni.png> ;
+    sd:endpoint <http://enipedia.tudelft.nl/sparql/> ;
+    void:triples "4317758"^^xsd:integer .
+
+_:OpenEI a void:Dataset, sd:Service ;
+    dct:title "OpenEI" ;
+    dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
+    void:sparqlEndpoint <http://en.openei.org/sparql> ;
+    sd:endpoint <http://en.openei.org/sparql> ;
+    void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
+    void:triples "17231136"^^xsd:integer .
+
+_:LinkedGeoData a void:Dataset, sd:Service ;
+    dct:title "LinkedGeoData" ;
+    dct:description "RDF data extracted from OpenStreetMap.org" ;
+    dct:creator <http://aksw.org> ;
+    foaf:homepage <http://linkedgeodata.org/> ;
+    foaf:depiction <http://linkedgeodata.org/files/lgdlogo.png> ;
+    void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
+    sd:endpoint <http://linkedgeodata.org/sparql> ;
+    void:exampleResource <http://linkedgeodata.org/triplify/node264695865> .
+
+_:OrdnanceSurvey a void:Dataset, sd:Service ;
+    dct:title "Ordnance Survey Linked Data" ;
+    dct:description "Ordnance Survey is Great Britain's national mapping agency, providing the most accurate and up-to-date geographic data, relied on by government, business and individuals" ;
+    dct:creator <http://data.ordnancesurvey.co.uk/id/ordnancesurvey> ;
+    foaf:homepage <http://www.ordnancesurvey.co.uk> ;
+    foaf:logo <http://www.ordnancesurvey.co.uk/oswebsite/images/ui/logo.png> ;
+    void:sparqlEndpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ;
+    sd:endpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ;
+    void:exampleResource <http://data.ordnancesurvey.co.uk/id/postcodeunit/SO164GU> ;
+    void:exampleResource <http://data.ordnancesurvey.co.uk/id/7000000000037256> .
+
+_:Eurostat a void:Dataset, sd:Service ;
+    dct:title "Eurostat" ;
+    dct:description "Detailed statistics on the EU and candidate countries, and various statistical publications for sale" ;
+    foaf:homepage <http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/> ;
+    foaf:logo <http://epp.eurostat.ec.europa.eu/portal/page/portal/PGP_ADM_IMAGES/PGE_IMAGES_TEMPLATES/logo.png> ;
+    void:sparqlEndpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ;
+    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ;
+    void:exampleResource <http://www4.wiwiss.fu-berlin.de/eurostat/resource/countries/Danmark> ;
+    void:triples "8850"^^xsd:integer .
+
+_:UKStatistics a void:Dataset, sd:Service ;
+    dct:title "UK Statistics" ;
+    dct:description "This site contains Linked Data relating to UK Statistics" ;
+    foaf:homepage <http://data.gov.uk/> ;
+    void:sparqlEndpoint <http://services.data.gov.uk/statistics/sparql> ;
+    sd:endpoint <http://services.data.gov.uk/statistics/sparql> ;
+    void:exampleResource <http://statistics.data.gov.uk/id/local-authority-district/00AK> ;
+    void:triples "343733"^^xsd:integer .
+
+<http://data.kasabi.com/dataset/airports> a void:Dataset ;
+    dct:title "Airports" ;
+    dct:description "The Airports dataset" ;
+    void:sparqlEndpoint <http://api.kasabi.com/dataset/airports/apis/sparql> .
+_:Airports a sd:Service ;
+    dct:title "Airports" ;
+    dct:description "The Airports SPARQL endpoint" ;
+    sd:endpoint <http://api.kasabi.com/dataset/airports/apis/sparql> .
+
+_:local a void:Dataset ;
+    dct:title "Local endpoint" ;
+    void:sparqlEndpoint <http://localhost:8080/sparql> .

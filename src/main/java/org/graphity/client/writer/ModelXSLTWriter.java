@@ -37,6 +37,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.server.provider.ModelProvider;
 import org.graphity.client.util.XSLTBuilder;
+import org.graphity.client.vocabulary.GC;
+import org.graphity.server.model.QueriedResource;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +56,6 @@ import org.slf4j.LoggerFactory;
 public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
-
-    /**
-     * Configuration property for master XSLT stylesheet location (set in web.xml)
-     * 
-     * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
-     * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
-     */
-    public static final String PROPERTY_XSLT_LOCATION = "org.graphity.client.writer.xslt-location";
 
     private Source stylesheet = null;
     private URIResolver resolver = null;
@@ -197,10 +191,10 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	Source styleSource;
 	if (getStylesheet() == null)
 	{
-	    if (getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION) == null)
+	    if (getResourceConfig().getProperty(GC.stylesheet.getURI()) == null)
 		throw new IllegalStateException("XSLT stylesheet source not specified (either in constructor or in web.xml)");
 
-	    styleSource = getSource(getResourceConfig().getProperty(PROPERTY_XSLT_LOCATION).toString());
+	    styleSource = getSource(getResourceConfig().getProperty(GC.stylesheet.getURI()).toString());
 	}
 	else
 	    styleSource = getStylesheet();
@@ -209,7 +203,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	Object resource = getUriInfo().getMatchedResources().get(0);
 	OntResource ontResource = (OntResource)resource;
 	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
-	//DocumentResource docResource = (DocumentResource)resource;
 
 	XSLTBuilder builder = XSLTBuilder.fromStylesheet(styleSource).
 	    resolver(getURIResolver()).
@@ -244,8 +237,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    builder.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
-	//if (docResource.getEndpoint() != null)
-	//    builder.parameter("endpoint-uri", UriBuilder.fromUri(docResource.getEndpoint().getURI()).build());
+	if (resource instanceof QueriedResource)
+	    builder.parameter("endpoint-uri", UriBuilder.fromUri(((QueriedResource)resource).getEndpoint().getURI()).build());
 
 	return builder;
     }

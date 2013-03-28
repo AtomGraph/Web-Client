@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.processor.vocabulary;
+package org.graphity.client.vocabulary;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -27,13 +27,13 @@ import com.hp.hpl.jena.rdf.model.Resource;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class SD
+public class GC
 {
     /** <p>The RDF model that holds the vocabulary terms</p> */
     private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
     
     /** <p>The namespace of the vocabulary as a string</p> */
-    public static final String NS = "http://www.w3.org/ns/sparql-service-description#";
+    public static final String NS = "http://client.graphity.org/ontology#";
     
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */
@@ -45,8 +45,10 @@ public class SD
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
         
-    public static final OntClass Service = m_model.createClass( NS + "Service" );
+    // public static final OntClass Service = m_model.createClass( NS + "Service" );
     
-    public static final ObjectProperty endpoint = m_model.createObjectProperty( NS + "endpoint" );
+    public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
+
+    //public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );
 
 }

@@ -36,8 +36,9 @@ import javax.ws.rs.core.*;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
+import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDP;
-import org.graphity.processor.vocabulary.VoID;
+import org.graphity.server.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.util.DataManager;
@@ -75,18 +76,6 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     private final ResourceConfig resourceConfig;
 
     /**
-     * Configuration property for ontology file location (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_LOCATION = "org.graphity.platform.ontology.location";
-    
-    /**
-     * Configuration property for ontology path relative to the base URI (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_PATH = "org.graphity.platform.ontology.path";
-
-    /**
      * Configuration property for absolute ontology URI (set in web.xml)
      * 
      */
@@ -114,8 +103,8 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     public static OntModel getOntology(UriInfo uriInfo, ResourceConfig config)
     {
 	if (log.isDebugEnabled()) log.debug("web.xml properties: {}", config.getProperties());
-	Object ontologyPath = config.getProperty(PROPERTY_ONTOLOGY_PATH);
-	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + PROPERTY_ONTOLOGY_PATH + "' needs to be set in ResourceConfig (web.xml)");
+	Object ontologyPath = config.getProperty(GP.ontologyPath.getURI());
+	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
@@ -151,7 +140,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	    }
 	    else
 	    {
-		Object ontologyLocation = config.getProperty(PROPERTY_ONTOLOGY_LOCATION);
+		Object ontologyLocation = config.getProperty(GP.ontologyLocation.getURI());
 		if (ontologyLocation == null) throw new IllegalStateException("Ontology for this Graphity LDP Application is not configured properly. Check ResourceConfig and/or web.xml");
 		if (log.isDebugEnabled()) log.debug("Mapping ontology to a local file: {}", ontologyLocation.toString());
 		OntDocumentManager.getInstance().addAltEntry(localUri, ontologyLocation.toString());

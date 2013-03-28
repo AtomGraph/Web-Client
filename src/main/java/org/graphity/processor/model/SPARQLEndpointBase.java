@@ -28,6 +28,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.client.util.DataManager;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,9 +114,9 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (queryParam.isSelectType())
 	{
 	    if (log.isDebugEnabled()) log.debug("SPARQL endpoint executing SELECT query: {}", queryParam);
-	    if (getResourceConfig().getProperty(org.graphity.server.model.SPARQLEndpointBase.PROPERTY_QUERY_RESULT_LIMIT) != null)
+	    if (getResourceConfig().getProperty(GS.resultLimit.getURI()) != null)
 		queryParam.setLimit(Long.parseLong(getResourceConfig().
-			getProperty(org.graphity.server.model.SPARQLEndpointBase.PROPERTY_QUERY_RESULT_LIMIT).toString()));
+			getProperty(GS.resultLimit.getURI()).toString()));
 
 	    return getResponseBuilder(loadResultSetRewindable(model, queryParam));
 	}
