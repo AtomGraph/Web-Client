@@ -31,7 +31,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.LocatorGRDDL;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.locator.grddl.LocatorAtom;
-import org.graphity.client.model.LocalResourceBase;
+import org.graphity.client.model.GlobalResourceBase;
 import org.graphity.client.model.SPARQLResourceBase;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.util.DataManager;
@@ -53,7 +53,7 @@ public class Application extends org.graphity.server.Application
 
     public Application()
     {
-	classes.add(LocalResourceBase.class); // handles all
+	classes.add(GlobalResourceBase.class); // handles all
 	classes.add(SPARQLResourceBase.class); // handles /sparql queries
 
 	singletons.addAll(super.getSingletons());

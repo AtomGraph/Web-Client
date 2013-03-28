@@ -22,6 +22,7 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.server.model.LinkedDataResource;
@@ -33,7 +34,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class GlobalResourceBase extends LocalResourceBase
+@Path("{path: .*}")
+public class GlobalResourceBase extends ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(GlobalResourceBase.class);
 

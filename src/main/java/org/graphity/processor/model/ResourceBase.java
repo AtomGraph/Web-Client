@@ -187,6 +187,14 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	return ontModel;
     }
 
+    public static SPARQLEndpointBase getEndpoint(UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    {
+	return new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
+		path(SPARQLEndpointBase.class).
+		build().toString()),
+	    uriInfo, request, resourceConfig);
+    }
+    
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
@@ -196,8 +204,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		getOntology(uriInfo, resourceConfig),
-		new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().path(SPARQLEndpointBase.class).build().toString()),
-		    uriInfo, request, resourceConfig),
+		getEndpoint(uriInfo, request, resourceConfig),
 		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc);
     }
@@ -554,7 +561,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	
 	//getQueryBuilder()
 	
-	return getResponseBuilder(model).build();
+	return getResponse(model);
     }
 
     public final UriInfo getUriInfo()

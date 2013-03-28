@@ -55,13 +55,21 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
 	
-	if (log.isDebugEnabled()) log.debug("Adding service Context for SPARQL endpoint with URI: {}", endpoint.getURI());
-	DataManager.get().addServiceContext(endpoint.getURI());
+	if (endpoint.equals(getOntModelEndpoint(uriInfo)) && !DataManager.get().hasServiceContext(endpoint))
+	{
+	    if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
+	    DataManager.get().addServiceContext(endpoint);
+	}
     }
 
     public Resource getOntModelEndpoint()
     {
-	return ResourceFactory.createResource(getUriInfo().
+	return getOntModelEndpoint(getUriInfo());
+    }
+    
+    public final Resource getOntModelEndpoint(UriInfo uriInfo)
+    {
+	return ResourceFactory.createResource(uriInfo.
 		getBaseUriBuilder().
 		path(SPARQLEndpointBase.class).
 		build().toString());
@@ -79,7 +87,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	else
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from SPARQL endpoint: {} using Query: {}", endpoint, query);
-	    return org.graphity.server.util.DataManager.get().loadModel(endpoint.getURI(), query);
+	    return DataManager.get().loadModel(endpoint.getURI(), query);
 	}
     }
 

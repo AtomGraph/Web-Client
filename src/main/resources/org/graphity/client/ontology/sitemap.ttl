@@ -263,10 +263,6 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:hasValue <queries>
 	] ,
 	[ a owl:Restriction ;
-		owl:onProperty void:inDataset ;
-		owl:hasValue :ExternalDataset
-	] ,
-	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/queries?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
 	] ;

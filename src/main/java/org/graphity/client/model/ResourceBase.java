@@ -39,9 +39,9 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("{path: .*}")
-public class LocalResourceBase extends org.graphity.processor.model.ResourceBase
+public class ResourceBase extends org.graphity.processor.model.ResourceBase
 {
-    private static final Logger log = LoggerFactory.getLogger(LocalResourceBase.class);
+    private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
     public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
 		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
@@ -50,33 +50,44 @@ public class LocalResourceBase extends org.graphity.processor.model.ResourceBase
 		    org.graphity.server.MediaType.TEXT_TURTLE_TYPE).
 		add().build();
 
-    public LocalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
+    private final List<Variant> variants;
+
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc)
     {
-	super(uriInfo, request, httpHeaders, resourceConfig, resourceContext,
-		limit, offset, orderBy, desc);	
+	this(uriInfo, request, httpHeaders, resourceConfig,
+		getOntology(uriInfo, resourceConfig),
+		getEndpoint(uriInfo, request, resourceConfig),
+		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
+		limit, offset, orderBy, desc,
+		XHTML_VARIANTS);	
     }
 
-    protected LocalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpointBase endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc)
+	    Long limit, Long offset, String orderBy, Boolean desc,
+	    List<Variant> variants)
     {
-	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel, endpoint, cacheControl,
-		limit, offset, orderBy, desc);
+	this(uriInfo, request, httpHeaders, resourceConfig,
+		ontModel.createOntResource(uriInfo.getRequestUri().toString()), endpoint, cacheControl,
+		limit, offset, orderBy, desc,
+		variants);
     }
 
-    protected LocalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc)
+	    Long limit, Long offset, String orderBy, Boolean desc,
+	    List<Variant> variants)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
 		cacheControl, limit, offset, orderBy, desc);
+	
+	this.variants = variants;
     }
 
     @Override
@@ -95,6 +106,12 @@ public class LocalResourceBase extends org.graphity.processor.model.ResourceBase
     }
 
     @Override
+    public Response getResponse(Model model)
+    {
+	return getResponseBuilder(model).build();
+    }
+
+    @Override
     public Response.ResponseBuilder getResponseBuilder(Model model)
     {
 	return getEndpoint().getResponseBuilder(model, getVariants()).
@@ -103,7 +120,7 @@ public class LocalResourceBase extends org.graphity.processor.model.ResourceBase
 
     public List<Variant> getVariants()
     {
-	return XHTML_VARIANTS;
+	return variants;
     }
 
     @Override
@@ -123,7 +140,7 @@ public class LocalResourceBase extends org.graphity.processor.model.ResourceBase
 		build();
 	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", request);
 	
-	return getResponseBuilder(postedModel).build();
+	return getResponse(postedModel);
     }
 
 }

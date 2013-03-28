@@ -21,6 +21,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/sparql")
-public class SPARQLResourceBase extends LocalResourceBase
+public class SPARQLResourceBase extends ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLResourceBase.class);
 
@@ -53,17 +54,18 @@ public class SPARQLResourceBase extends LocalResourceBase
 		    uriInfo, request, resourceConfig),
 		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
 		limit, offset, orderBy, desc,
-		userQuery);	
+		XHTML_VARIANTS, userQuery);	
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpointBase endpoint,
 	    CacheControl cacheControl, Long limit, Long offset, String orderBy, Boolean desc,
-	    Query userQuery)
+	    List<Variant> variants, Query userQuery)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint, cacheControl,
-		limit, offset, orderBy, desc);
+		limit, offset, orderBy, desc,
+		variants);
 	
 	this.userQuery = userQuery;
 	if (log.isDebugEnabled()) log.debug("Constructing SPARQLEndpointBase");
