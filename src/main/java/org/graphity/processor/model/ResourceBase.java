@@ -51,7 +51,7 @@ import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.vocabulary.SPIN;
 
 /**
- * Base class of generic read-write Graphity Platform resources
+ * Base class of generic read-write Graphity Processor resources
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see PageResource

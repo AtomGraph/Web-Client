@@ -83,7 +83,7 @@ public class Application extends org.graphity.server.Application
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 
 	// initialize locally cached ontology mapping
-	LocationMapper mapper = new PrefixMapper("location-mapping.ttl");
+	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3");
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled())
 	{
