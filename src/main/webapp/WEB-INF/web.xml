@@ -37,11 +37,12 @@
             <param-value>http://dydra.com/graphity/platform/sparql</param-value>
         </init-param>
 	-->
-
+	<!--
         <init-param>
             <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
             <param-value>http://dydra.com/graphity/server/sparql</param-value>
         </init-param>
+	-->
         <init-param>
             <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
             <param-value>org/graphity/client/writer/global-xhtml.xsl</param-value>

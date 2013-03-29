@@ -26,6 +26,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,9 @@ public class SPARQLResourceBase extends ResourceBase
 		getOntology(uriInfo, resourceConfig).createOntResource(uriInfo.getAbsolutePath().toString()),
 		new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()),
 		    uriInfo, request, resourceConfig),
-		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
+		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
+		    null :
+		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc,
 		XHTML_VARIANTS, userQuery);	
     }

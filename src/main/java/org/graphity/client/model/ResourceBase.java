@@ -29,6 +29,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.processor.update.ModifyBuilder;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -62,7 +63,9 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		getOntology(uriInfo, resourceConfig),
 		getEndpoint(uriInfo, request, resourceConfig),
-		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
+		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
+		    null :
+		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc,
 		XHTML_VARIANTS);	
     }

@@ -42,6 +42,7 @@ import org.graphity.server.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.util.DataManager;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQ2SPIN;
@@ -178,10 +179,15 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 
     public static SPARQLEndpointBase getEndpoint(UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-	return new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
+	Resource endpoint;
+	if (resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()) == null)
+	    endpoint = ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
 		path(SPARQLEndpointBase.class).
-		build().toString()),
-	    uriInfo, request, resourceConfig);
+		build().toString());
+	else
+	    endpoint = ResourceFactory.createResource(resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()).toString());
+			
+	return new SPARQLEndpointBase(endpoint, uriInfo, request, resourceConfig);
     }
     
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
@@ -194,7 +200,8 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		getOntology(uriInfo, resourceConfig),
 		getEndpoint(uriInfo, request, resourceConfig),
-		(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL) == null) ? null : CacheControl.valueOf(resourceConfig.getProperty(PROPERTY_CACHE_CONTROL).toString()),
+		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
+		    null : CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc);
     }
     

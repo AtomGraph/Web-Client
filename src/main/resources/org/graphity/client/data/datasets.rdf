@@ -92,7 +92,7 @@
     </sd:Service>
     
     <void:Dataset>
-	<dct:title>Local endpoint</dct:title>
-	<void:sparqlEndpoint rdf:resource="http://localhost:8080/sparql" />
+	<dct:title>Graphity on Dydra</dct:title>
+	<void:sparqlEndpoint rdf:resource="http://dydra.com/graphity/server/sparql" />
     </void:Dataset>
 </rdf:RDF>

@@ -92,6 +92,9 @@ exclude-result-prefixes="#all">
 				<xsl:when test="$dataset">
 				    <xsl:apply-templates select="$dataset"/>
 				</xsl:when>
+				<xsl:when test="$endpoint-uri = resolve-uri('sparql', $base-uri)">
+				    Local endpoint
+				</xsl:when>
 				<xsl:otherwise>
 				    <xsl:value-of select="$endpoint-uri"/>
 				</xsl:otherwise>
