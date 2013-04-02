@@ -126,24 +126,4 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	return variants;
     }
 
-    @Override
-    public Response post(Model postedModel)
-    {
-	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
-	
-	Model deleteDiff = describe(false).difference(postedModel);
-	if (log.isDebugEnabled()) log.debug("DESCRIBE Model minus POSTed Model: {} size: {}", deleteDiff, deleteDiff.size());
-	Model insertDiff = postedModel.difference(describe(false));
-	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
-	
-	UpdateRequest request = ModifyBuilder.fromModify(getOntModel()).
-		deletePattern(deleteDiff).
-		insertPattern(insertDiff).
-		where(getQueryBuilder().getWhere()).
-		build();
-	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", request);
-	
-	return getResponse(postedModel);
-    }
-
 }

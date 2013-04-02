@@ -75,7 +75,7 @@ public class SPARQLResourceBase extends ResourceBase
     }
 
     @Override
-    public Response getResponse()
+    public Response get()
     {
 	MediaType mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
 
@@ -86,12 +86,12 @@ public class SPARQLResourceBase extends ResourceBase
 	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE)))
 	{
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF, returning SPARQL Response", mediaType);
-	    return getEndpoint().query(getUserQuery());
+	    return getEndpoint().query(getUserQuery(), null, null);
 	}
 	else
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mediaType);
 
-	return super.getResponse(); // if HTML is requested, return DESCRIBE ?this results instead of user query
+	return super.get(); // if HTML is requested, return DESCRIBE ?this results instead of user query
     }
 
     public Query getUserQuery()

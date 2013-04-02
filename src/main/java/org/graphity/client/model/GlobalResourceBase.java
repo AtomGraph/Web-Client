@@ -80,7 +80,7 @@ public class GlobalResourceBase extends ResourceBase
     }
 
     @Override
-    public Response getResponse()
+    public Response get()
     {
 	if (getTopicUri() != null)
 	{
@@ -97,7 +97,7 @@ public class GlobalResourceBase extends ResourceBase
 	    return getResponseBuilder(model, XHTML_VARIANTS).build();
 	}	
 
-	return super.getResponse();
+	return super.get();
     }
 
 }

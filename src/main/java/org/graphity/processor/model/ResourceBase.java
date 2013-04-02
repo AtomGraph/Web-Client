@@ -19,9 +19,12 @@ package org.graphity.processor.model;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.api.uri.UriTemplate;
@@ -35,11 +38,12 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
-import org.graphity.processor.update.InsertDataBuilder;
+import org.graphity.processor.update.ModifyBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
+import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.util.DataManager;
 import org.graphity.server.vocabulary.GS;
@@ -60,7 +64,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
 @Path("{path: .*}")
-public class ResourceBase extends QueriedResourceBase implements PageResource, OntResource
+public class ResourceBase extends QueriedResourceBase implements LDPResource, PageResource, OntResource
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
@@ -148,7 +152,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	    }
 	}
 	OntModel ontModel = OntDocumentManager.getInstance().
-		getOntology(localUri, OntModelSpec.OWL_MEM_RDFS_INF);
+		getOntology(localUri, OntModelSpec.OWL_MEM);
 	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
 	return ontModel;
     }
@@ -243,9 +247,9 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	
 	if (matchedOntClass.hasSuperClass(LDP.Page)) //if (hasRDFType(LDP.Page))
 	{
-	    OntResource container = getOntModel().createOntResource(uriInfo.getAbsolutePath().toString());
+	    Resource container = getModel().createResource(uriInfo.getAbsolutePath().toString());
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: {} ldp:pageOf {}", getResource(), container);
-	    addProperty(LDP.pageOf, container); // setPropertyValue(LDP.pageOf, container);
+	    addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, container);
 
 	    if (log.isDebugEnabled())
 	    {
@@ -278,7 +282,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     }
 
     @Override
-    public Response getResponse()
+    public Response get()
     {
 	 // ldp:Container always redirects to first ldp:Page
 	if (hasRDFType(LDP.Container))
@@ -295,7 +299,50 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	    return Response.seeOther(uriBuilder.buildFromEncoded()).build();
 	}
 
-	return super.getResponse();
+	return super.get();
+    }
+
+    @Override
+    public Response post(Model postedModel)
+    {
+	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
+	Model description = describe(false);
+	
+	Model deleteDiff = description.difference(postedModel);
+	if (log.isDebugEnabled()) log.debug("DESCRIBE Model minus POSTed Model: {} size: {}", deleteDiff, deleteDiff.size());
+	Model insertDiff = postedModel.difference(description);
+	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
+
+	if (hasRDFType(LDP.Page))
+	{
+	    Query subSelect = getQueryBuilder().getSubSelectBuilder().build();
+	    subSelect.setOffset(0);
+	    if (log.isDebugEnabled()) log.debug("SELECT subquery from the WHERE pattern: {}", subSelect);
+	    ResultSetRewindable resultSet = DataManager.get().loadResultSet(description, subSelect);
+	    //while (resultSet.hasNext()) log.debug("SELECTed Resource: {}", resultSet.next());
+	    //ParameterizedSparqlString()
+	}
+
+	UpdateRequest updateRequest = ModifyBuilder.fromModify(getModel()).
+		deletePattern(deleteDiff).
+		insertPattern(insertDiff).
+		where(getQueryBuilder().getWhere()).
+		build();
+	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", updateRequest);
+	
+	return getResponse(postedModel);
+    }
+
+    @Override
+    public Response put(Model model)
+    {
+	throw new WebApplicationException(405);
+    }
+
+    @Override
+    public Response delete()
+    {
+	throw new WebApplicationException(405);
     }
 
     @Override
@@ -312,14 +359,14 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	if (addContainerPage && hasRDFType(LDP.Page))
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Page");
-	    description.add(getEndpoint().loadModel(getOntModel(), super.getQuery()));
+	    description.add(getEndpoint().loadModel(getModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    OntResource container = getPropertyResourceValue(LDP.pageOf).as(OntResource.class);
 	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(),
 		    container, getEndpoint(), getCacheControl(),
 		    getLimit(), getOffset(), getOrderBy(), getDesc());
-	    description.add(getEndpoint().loadModel(ldc.getOntModel(), ldc.getQuery()));
+	    description.add(getEndpoint().loadModel(ldc.getModel(), ldc.getQuery()));
 	}
 
 	return description;
@@ -341,7 +388,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	SelectBuilder selectBuilder = qb.getSubSelectBuilder().
 	    limit(getLimit()).offset(getOffset());
 	/*
-	if (orderBy != null)
+	if (getOrderBy() != null)
 	{
 	    Resource modelVar = getOntology().createResource().addLiteral(SP.varName, "model");
 	    Property orderProperty = ResourceFactory.createProperty(getOrderBy();
@@ -489,7 +536,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
 	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
 
-	return getOntModel().createResource(uriBuilder.build().toString());
+	return getModel().createResource(uriBuilder.build().toString());
     }
 
     @Override
@@ -501,7 +548,7 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
 	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
 	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
 
-	return getOntModel().createResource(uriBuilder.build().toString());
+	return getModel().createResource(uriBuilder.build().toString());
     }
 
     public final UriBuilder getUriBuilder()
@@ -545,19 +592,6 @@ public class ResourceBase extends QueriedResourceBase implements PageResource, O
     {
 	return QueryBuilder.fromQuery(getQuery(), getModel());
 	//return queryBuilder;
-    }
-
-    //@Override
-    public Response post(Model model)
-    {
-	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
-	
-	InsertDataBuilder insertBuilder = InsertDataBuilder.fromData(model);
-	if (log.isDebugEnabled()) log.debug("INSERT DATA generated from the POSTed Model: {}", insertBuilder);
-	
-	//getQueryBuilder()
-	
-	return getResponse(model);
     }
 
     public final UriInfo getUriInfo()
