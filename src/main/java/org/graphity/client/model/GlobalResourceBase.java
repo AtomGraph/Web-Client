@@ -16,17 +16,21 @@
  */
 package org.graphity.client.model;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.core.ResourceContext;
+import java.net.URI;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.util.DataManager;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,27 +44,53 @@ public class GlobalResourceBase extends ResourceBase
     private static final Logger log = LoggerFactory.getLogger(GlobalResourceBase.class);
 
     private final MediaType mediaType;
-    private final String topicUri;
+    private final URI topicURI;
 
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
-	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("uri") String topicUri,
+	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
     {
-	super(uriInfo, request, httpHeaders, resourceConfig, resourceContext,
-		limit, offset, orderBy, desc);
-	
-	this.mediaType = mediaType;
-	this.topicUri = topicUri;	
+	this(uriInfo, request, httpHeaders, resourceConfig,
+		getOntology(uriInfo, resourceConfig),
+		getEndpoint(uriInfo, request, resourceConfig),
+		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
+		    null :
+		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
+		limit, offset, orderBy, desc,
+		XHTML_VARIANTS,
+		topicURI, mediaType);	
     }
 
-    public String getTopicUri()
+    protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+	    OntModel ontModel, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    Long limit, Long offset, String orderBy, Boolean desc, List<Variant> variants,
+	    URI topicURI, MediaType mediaType)
     {
-	return topicUri;
+	this(uriInfo, request, httpHeaders, resourceConfig,
+		ontModel.createOntResource(uriInfo.getRequestUri().toString()), endpoint, cacheControl,
+		limit, offset, orderBy, desc, variants,
+		topicURI, mediaType);
+    }
+
+    protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    Long limit, Long offset, String orderBy, Boolean desc, List<Variant> variants,
+	    URI topicURI, MediaType mediaType)
+    {
+	super(uriInfo, request, httpHeaders, resourceConfig,
+		ontResource, endpoint, cacheControl, limit, offset, orderBy, desc, variants);
+	
+	this.mediaType = mediaType;
+	this.topicURI = topicURI;
+    }
+
+    public URI getTopicURI()
+    {
+	return topicURI;
     }
 
     @Override
@@ -82,14 +112,14 @@ public class GlobalResourceBase extends ResourceBase
     @Override
     public Response get()
     {
-	if (getTopicUri() != null)
+	if (getTopicURI() != null)
 	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicUri());
+	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicURI());
 
-	    Model model = DataManager.get().loadModel(getTopicUri());
+	    Model model = DataManager.get().loadModel(getTopicURI().toString());
 	    
 	    // use original Cache-Control? 
-	    LinkedDataResource topic = new LinkedDataResourceBase(model.createResource(getTopicUri()),
+	    LinkedDataResource topic = new LinkedDataResourceBase(model.createResource(getTopicURI().toString()),
 		getCacheControl());
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?

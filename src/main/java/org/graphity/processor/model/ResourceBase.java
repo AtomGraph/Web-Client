@@ -17,9 +17,7 @@
 package org.graphity.processor.model;
 
 import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.LocationMapper;
@@ -228,7 +226,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     {
 	super(ontResource, endpoint, cacheControl);
 
+	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (request == null) throw new IllegalArgumentException("Request cannot be null");
+	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
 
 	this.ontResource = ontResource;
@@ -423,9 +423,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public Query getQuery(TemplateCall call, URI thisUri)
     {
 	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
-	String queryString = call.getQueryString();
-	queryString = queryString.replace("?this", "<" + thisUri.toString() + ">"); // binds ?this to URI of current resource
-	Query arqQuery = QueryFactory.create(queryString);
+	
+	QuerySolutionMap qsm = new QuerySolutionMap();
+	qsm.add("this", this);
+	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
+	Query arqQuery = queryString.asQuery();
 	
 	if (hasRDFType(LDP.Page))
 	{

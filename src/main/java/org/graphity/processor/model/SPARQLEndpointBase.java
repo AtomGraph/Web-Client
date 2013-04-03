@@ -72,7 +72,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     {
 	return ResourceFactory.createResource(uriInfo.
 		getBaseUriBuilder().
-		path(SPARQLEndpointBase.class).
+		path(getClass()).
 		build().toString());
     }
     
@@ -95,7 +95,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public ResultSetRewindable loadResultSetRewindable(Resource endpoint, Query query)
     {
-	if (endpoint.equals(this))
+	if (endpoint.equals(getOntModelEndpoint()))
 	{
 	    OntModel ontModel = ResourceBase.getOntology(getUriInfo(), getResourceConfig());
 	    return DataManager.get().loadResultSet(ontModel, query);

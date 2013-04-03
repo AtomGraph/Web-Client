@@ -38,6 +38,7 @@ import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
@@ -79,8 +80,8 @@ public class Application extends org.graphity.server.Application
 	
 	if (log.isDebugEnabled()) log.debug("Application.init() with ResourceConfig: {} and SerlvetContext: {}", getResourceConfig(), getServletContext());
 	if (log.isDebugEnabled()) log.debug("Root resource classes: {} Root resource singletons: {}", getResourceConfig().getRootResourceClasses(), getResourceConfig().getRootResourceSingletons());
-	if (log.isDebugEnabled()) log.debug("Explicit root resources: {} Classes: {}", getResourceConfig().getExplicitRootResources(), getResourceConfig().getClasses());
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
+	//ARQFactory.get().setUseCaches(false);
 
 	// initialize locally cached ontology mapping
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3");

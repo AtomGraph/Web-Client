@@ -85,8 +85,9 @@ public class SPARQLResourceBase extends ResourceBase
 	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
 	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE)))
 	{
-	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF, returning SPARQL Response", mediaType);
-	    return getEndpoint().query(getUserQuery(), null, null);
+	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF or SPARQL Results, returning SPARQL Response", mediaType);	    
+	    // return getEndpoint().query(getUserQuery(), null, null); // do *not* query the local endpoint
+	    return getEndpoint(getUriInfo(), getRequest(), getResourceConfig()).query(getUserQuery(), null, null);
 	}
 	else
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mediaType);
