@@ -214,23 +214,20 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
-	if (!getHttpHeaders().getAcceptableMediaTypes().isEmpty())
+	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
+	if (contentType != null)
 	{
-	    MediaType mediaType;
-	    // prefer XHTML (if acceptable) -- otherwise use most acceptable type
-	    if (getHttpHeaders().getAcceptableMediaTypes().contains(MediaType.APPLICATION_XHTML_XML_TYPE))
-		mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
-	    else mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
-	    
-	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", mediaType);
-	    builder.outputProperty(OutputKeys.MEDIA_TYPE, mediaType.toString());
+	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
+	    builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
 	}
-	if (!getHttpHeaders().getAcceptableLanguages().isEmpty())
+	
+	Object contentLanguage = headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+	if (contentLanguage != null)
 	{
-	    Locale locale = getHttpHeaders().getAcceptableLanguages().get(0);
-	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
-	    builder.parameter("lang", locale.toLanguageTag());
+	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
+	    builder.parameter("lang", contentLanguage.toString());
 	}
+	
 	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
 	    builder.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
 	if (getUriInfo().getQueryParameters().getFirst("query") != null)

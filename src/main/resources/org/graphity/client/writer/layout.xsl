@@ -277,7 +277,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="sioc:Container | *[rdf:type/@rdf:resource = '&sioc;Container']" mode="gc:ModeSelectMode" priority="1">
 	<ul class="nav nav-tabs">
 	    <li>
-		<xsl:if test="$mode = '&gc;ListMode'">
+		<xsl:if test="not($mode) or $mode = '&gc;ListMode'">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
@@ -326,7 +326,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:variable name="type-containers" as="element()*">
 	    <xsl:for-each-group select="*" group-by="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else xs:anyURI('&rdfs;Resource')">
-		<xsl:sort select="gc:label(if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else xs:anyURI('&rdfs;Resource'), /, $lang)"/>
+		<xsl:sort select="gc:label(if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))[1] else xs:anyURI('&rdfs;Resource'), /, $lang)"/>
 
 		<div class="well well-small span6">
 		    <h3>
