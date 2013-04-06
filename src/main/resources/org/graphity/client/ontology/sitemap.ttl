@@ -151,7 +151,24 @@ ldp:pageOf a owl:ObjectProperty ;
     foaf:isPrimaryTopicOf <classes/ontology-doc-resource> ;
     rdfs:isDefinedBy : .
 
-:ResourcesPageListResource a owl:Class ;
+:IndexContainersPageResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <.>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
+	];
+    spin:constraint [ a gp:DescribeInstancesTemplate ;
+	    gp:type sioc:Container
+	] ;
+    rdfs:label "Containers page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/index-container-resource> ;
+    rdfs:isDefinedBy : .
+
+:ResourcesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -162,11 +179,26 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:hasValue "/resources?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
 	] ;
     spin:constraint [ a gp:DescribeResourcesTemplate ] ;
-    rdfs:label "Resources page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/resource-resource> ;
+    rdfs:label "Resources page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/resource-resource> ;
     rdfs:isDefinedBy : .
 
-:InstancesPageListResource a owl:Class ;
+:ResourcesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <resources>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/resources?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeResourcesTemplate ] ;
+    rdfs:label "Resources page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/resource-resource> ;
+    rdfs:isDefinedBy : .
+
+:InstancesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -177,11 +209,26 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:hasValue "/instances?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
 	] ;
     spin:constraint [ a gp:DescribeInstancesTemplate ] ;
-    rdfs:label "Instances page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/instance-resource> ;
+    rdfs:label "Instances page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/instance-resource> ;
     rdfs:isDefinedBy : .
 
-:OntologiesPageListResource a owl:Class ;
+:InstancesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <instances>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/instances?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeInstancesTemplate ] ;
+    rdfs:label "Instances page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/instance-resource> ;
+    rdfs:isDefinedBy : .
+
+:OntologiesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -194,11 +241,28 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type owl:Ontology
 	] ;
-    rdfs:label "Ontologies page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/ontology-resource> ;
+    rdfs:label "Ontologies page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/ontology-resource> ;
     rdfs:isDefinedBy : .
 
-:ClassesPageListResource a owl:Class ;
+:OntologiesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <ontologies>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/ontologies?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeInstancesTemplate ;
+	    gp:type owl:Ontology
+	] ;
+    rdfs:label "Ontologies page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/ontology-resource> ;
+    rdfs:isDefinedBy : .
+
+:ClassesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -211,11 +275,28 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type owl:Class
 	] ;
-    rdfs:label "Classes page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/class-resource> ;
+    rdfs:label "Classes page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/class-resource> ;
     rdfs:isDefinedBy : .
 
-:PropertiesPageListResource a owl:Class ;
+:ClassesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <classes>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/classes?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeInstancesTemplate ;
+	    gp:type owl:Class
+	] ;
+    rdfs:label "Classes page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/class-resource> ;
+    rdfs:isDefinedBy : .
+
+:PropertiesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -228,11 +309,28 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribePropertiesTemplate ;
 	    gp:type owl:Ontology
 	] ;
-    rdfs:label "Properties page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/property-resource> ;
+    rdfs:label "Properties page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/property-resource> ;
     rdfs:isDefinedBy : .
 
-:DatasetsPageListResource a owl:Class ;
+:PropertiesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <properties>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/properties?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribePropertiesTemplate ;
+	    gp:type owl:Ontology
+	] ;
+    rdfs:label "Properties page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/property-resource> ;
+    rdfs:isDefinedBy : .
+
+:DatasetsPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -245,11 +343,28 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type void:Dataset
 	] ;
-    rdfs:label "Datasets page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/dataset-resource> ;
+    rdfs:label "Datasets page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/dataset-resource> ;
     rdfs:isDefinedBy : .
 
-:ServicesPageListResource a owl:Class ;
+:DatasetsPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <datasets>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/datasets?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeInstancesTemplate ;
+	    gp:type void:Dataset
+	] ;
+    rdfs:label "Datasets page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/dataset-resource> ;
+    rdfs:isDefinedBy : .
+
+:ServicesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -262,11 +377,28 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type sd:Service
 	] ;
-    rdfs:label "Services page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/service-resource> ;
+    rdfs:label "Services page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/service-resource> ;
     rdfs:isDefinedBy : .
 
-:QueriesPageListResource a owl:Class ;
+:ServicesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <services>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/services?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeInstancesTemplate ;
+	    gp:type sd:Service
+	] ;
+    rdfs:label "Services page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/service-resource> ;
+    rdfs:isDefinedBy : .
+
+:QueriesPageResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -279,8 +411,25 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type sp:Query
 	] ;
-    rdfs:label "Queries page list resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/list-resources/query-resource> ;
+    rdfs:label "Queries page resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/query-resource> ;
+    rdfs:isDefinedBy : .
+
+:QueriesPageModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <queries>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/queries?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeInstancesTemplate ;
+	    gp:type sp:Query
+	] ;
+    rdfs:label "Queries page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/query-resource> ;
     rdfs:isDefinedBy : .
 
 :ContainersPageResource a owl:Class ;
@@ -300,24 +449,7 @@ ldp:pageOf a owl:ObjectProperty ;
     foaf:isPrimaryTopicOf <classes/page-resources/container-resource> ;
     rdfs:isDefinedBy : .
 
-:IndexContainersPageResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <.>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
-	];
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sioc:Container
-	] ;
-    rdfs:label "Containers page resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/index-container-resource> ;
-    rdfs:isDefinedBy : .
-
-:ContainersPageTableResource a owl:Class ;
+:ContainersPageModeResource a owl:Class ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty ldp:pageOf ;
@@ -325,292 +457,11 @@ ldp:pageOf a owl:ObjectProperty ;
 	] ,
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/containers?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
+		owl:hasValue "/containers?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode={mode: .+}"
 	];
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type sioc:Container
 	] ;
-    rdfs:label "Containers page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/container-resource> ;
-    rdfs:isDefinedBy : .
-
-:ContainersPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <containers>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/containers?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	];
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sioc:Container
-	] ;
-    rdfs:label "Containers page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/container-resource> ;
-    rdfs:isDefinedBy : .
-
-:ResourcesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <resources>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/resources?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeResourcesTemplate ] ;
-    rdfs:label "Resources page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/resource-resource> ;
-    rdfs:isDefinedBy : .
-
-:ResourcesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <resources>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/resources?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeResourcesTemplate ] ;
-    rdfs:label "Instances page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/resource-resource> ;
-    rdfs:isDefinedBy : .
-
-:InstancesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <instances>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/instances?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ] ;
-    rdfs:label "Instances page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/instance-resource> ;
-    rdfs:isDefinedBy : .
-
-:InstancesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <instances>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/instances?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ] ;
-    rdfs:label "Instances page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/instance-resource> ;
-    rdfs:isDefinedBy : .
-
-:OntologiesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <ontologies>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/ontologies?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type owl:Ontology
-	] ;
-    rdfs:label "Ontologies page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/ontology-resource> ;
-    rdfs:isDefinedBy : .
-
-:OntologiesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <ontologies>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/ontologies?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type owl:Ontology
-	] ;
-    rdfs:label "Ontologies page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/ontology-resource> ;
-    rdfs:isDefinedBy : .
-
-:ClassesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <classes>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/classes?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type owl:Class
-	] ;
-    rdfs:label "Classes page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/class-resource> ;
-    rdfs:isDefinedBy : .
-
-:ClassesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <classes>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/classes?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type owl:Class
-	] ;
-    rdfs:label "Classes page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/class-resource> ;
-    rdfs:isDefinedBy : .
-
-:PropertiesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <properties>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/properties?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribePropertiesTemplate ;
-	    gp:type owl:Ontology
-	] ;
-    rdfs:label "Properties page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/property-resource> ;
-    rdfs:isDefinedBy : .
-
-:PropertiesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <properties>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/properties?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribePropertiesTemplate ;
-	    gp:type owl:Ontology
-	] ;
-    rdfs:label "Properties page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/property-resource> ;
-    rdfs:isDefinedBy : .
-
-:DatasetsPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <datasets>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/datasets?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type void:Dataset
-	] ;
-    rdfs:label "Datasets page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/dataset-resource> ;
-    rdfs:isDefinedBy : .
-
-:DatasetsPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <datasets>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/datasets?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type void:Dataset
-	] ;
-    rdfs:label "Datasets page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/dataset-resource> ;
-    rdfs:isDefinedBy : .
-
-:ServicesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <services>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/services?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sd:Service
-	] ;
-    rdfs:label "Services page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/service-resource> ;
-    rdfs:isDefinedBy : .
-
-:ServicesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <services>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/services?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sd:Service
-	] ;
-    rdfs:label "Services page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/service-resource> ;
-    rdfs:isDefinedBy : .
-
-:QueriesPageTableResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <queries>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/queries?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23TableMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sp:Query
-	] ;
-    rdfs:label "Queries page table resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/table-resources/query-resource> ;
-    rdfs:isDefinedBy : .
-
-:QueriesPageInputResource a owl:Class ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty ldp:pageOf ;
-		owl:hasValue <queries>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/queries?limit={limit: [0-9]+}&offset={offset: [0-9]+}&mode=http%3A%2F%2Fclient.graphity.org%2Fontology%23InputMode"
-	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sp:Query
-	] ;
-    rdfs:label "Queries page input resource" ;
-    foaf:isPrimaryTopicOf <classes/page-resources/input-resources/query-resource> ;
+    rdfs:label "Containers page mode resource" ;
+    foaf:isPrimaryTopicOf <classes/page-resources/mode-resources/container-resource> ;
     rdfs:isDefinedBy : .

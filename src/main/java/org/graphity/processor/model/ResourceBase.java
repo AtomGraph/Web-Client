@@ -401,14 +401,14 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return qb;
     }
 
-    public Query getQuery(URI thisUri)
+    public Query getQuery(Resource resource)
     {
-	return getQuery(getMatchedOntClass(), thisUri);
+	return getQuery(getMatchedOntClass(), resource);
     }
 
-    public Query getQuery(OntClass ontClass, URI thisUri)
+    public Query getQuery(OntClass ontClass, Resource resource)
     {
-	return getQuery(getTemplateCall(ontClass), thisUri);
+	return getQuery(getTemplateCall(ontClass), resource);
     }
     
     public TemplateCall getTemplateCall(OntClass ontClass)
@@ -420,12 +420,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return SPINFactory.asTemplateCall(constraint);
     }
     
-    public Query getQuery(TemplateCall call, URI thisUri)
+    public Query getQuery(TemplateCall call, Resource resource)
     {
 	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
 	
 	QuerySolutionMap qsm = new QuerySolutionMap();
-	qsm.add("this", this);
+	qsm.add("this", resource);
 	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
 	Query arqQuery = queryString.asQuery();
 	
@@ -587,7 +587,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Query getQuery()
     {
-	return getQuery(getRealURI());
+	return getQuery(this);
     }
 
     public QueryBuilder getQueryBuilder()

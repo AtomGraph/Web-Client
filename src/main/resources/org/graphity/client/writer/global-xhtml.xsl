@@ -56,7 +56,19 @@ xmlns:void="&void;"
 xmlns:list="&list;"
 exclude-result-prefixes="#all">
 
-    <xsl:import href="local-xhtml.xsl"/>
+    <xsl:import href="imports/local.xsl"/>
+    <xsl:import href="imports/external.xsl"/>
+    <xsl:import href="imports/dbpedia-owl.xsl"/>
+    <xsl:import href="imports/dc.xsl"/>
+    <xsl:import href="imports/dct.xsl"/>
+    <xsl:import href="imports/doap.xsl"/>
+    <xsl:import href="imports/foaf.xsl"/>
+    <xsl:import href="imports/owl.xsl"/>
+    <xsl:import href="imports/rdf.xsl"/>
+    <xsl:import href="imports/rdfs.xsl"/>
+    <xsl:import href="imports/sd.xsl"/>
+    <xsl:import href="imports/sioc.xsl"/>
+    <xsl:import href="layout.xsl"/>
 
     <xsl:param name="uri" as="xs:anyURI?"/>
 
@@ -84,23 +96,26 @@ exclude-result-prefixes="#all">
 	    </ul>
 	    -->
 	    <form action="{$base-uri}" method="get" class="navbar-form pull-left">
-		<div class="input-prepend input-append">
-		    <span class="add-on">
-			<xsl:variable name="dataset" select="key('resources-by-endpoint', $endpoint-uri, $datasets)"/>
-			<a href="{$endpoint-uri}">
-			    <xsl:choose>
-				<xsl:when test="$dataset">
-				    <xsl:apply-templates select="$dataset"/>
-				</xsl:when>
-				<xsl:when test="$endpoint-uri = resolve-uri('sparql', $base-uri)">
-				    Local endpoint
-				</xsl:when>
-				<xsl:otherwise>
-				    <xsl:value-of select="$endpoint-uri"/>
-				</xsl:otherwise>
-			    </xsl:choose>
-			</a>
-		    </span>
+		<div class="input-append">
+		    <xsl:if test="not($uri)">
+			<xsl:attribute name="class">input-prepend input-append</xsl:attribute>
+			<span class="add-on">
+			    <xsl:variable name="dataset" select="key('resources-by-endpoint', $endpoint-uri, $datasets)"/>
+			    <a href="{$endpoint-uri}">
+				<xsl:choose>
+				    <xsl:when test="$dataset">
+					<xsl:apply-templates select="$dataset"/>
+				    </xsl:when>
+				    <xsl:when test="$endpoint-uri = resolve-uri('sparql', $base-uri)">
+					Local endpoint
+				    </xsl:when>
+				    <xsl:otherwise>
+					<xsl:value-of select="$endpoint-uri"/>
+				    </xsl:otherwise>
+				</xsl:choose>
+			    </a>
+			</span>
+		    </xsl:if>
 		    <input type="text" name="uri" class="input-xxlarge">
 			<xsl:if test="not(starts-with($uri, $base-uri))">
 			    <xsl:attribute name="value">
@@ -131,54 +146,5 @@ exclude-result-prefixes="#all">
 	    </div>
 	</xsl:for-each>
     </xsl:template>
-
-    <xsl:template match="rdf:type/@rdf:resource" priority="1">
-	<span title="{.}" class="btn">
-	    <xsl:next-match/>
-	</span>
-    </xsl:template>
-
-    <!-- subject/object resource -->
-    <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
-	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about[starts-with(., $base-uri)] | @rdf:resource[starts-with(., $base-uri)] | sparql:uri[starts-with(., $base-uri)]">
-	<xsl:apply-imports/>
-    </xsl:template>
-
-    <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
-	<a href="{$base-uri}{gc:query-string($this, (), (), (), (), ())}" title="{$this}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
-
-    <xsl:function name="gc:query-string" as="xs:string?">
-	<xsl:param name="uri" as="xs:anyURI?"/>
-	<!-- <xsl:param name="endpoint-uri" as="xs:anyURI?"/> -->
-	<xsl:param name="offset" as="xs:integer?"/>
-	<xsl:param name="limit" as="xs:integer?"/>
-	<xsl:param name="order-by" as="xs:string?"/>
-	<xsl:param name="desc" as="xs:boolean?"/>
-	<!-- <xsl:param name="lang" as="xs:string?"/> -->
-	<xsl:param name="mode" as="xs:string?"/>
-	
-	<xsl:variable name="query-string">
-	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
-	    <!-- <xsl:if test="$endpoint-uri">endpoint-uri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if> -->
-	    <xsl:if test="$offset">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
-	    <xsl:if test="$limit">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
-	    <xsl:if test="$order-by">order-by=<xsl:value-of select="$order-by"/>&amp;</xsl:if>
-	    <xsl:if test="$desc">desc&amp;</xsl:if>
-	    <!-- <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if> -->
-	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-	</xsl:variable>
-	
-	<xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-    </xsl:function>
 
 </xsl:stylesheet>

@@ -289,7 +289,6 @@ exclude-result-prefixes="#all">
 	<xsl:param name="limit" as="xs:integer?"/>
 	<xsl:param name="order-by" as="xs:string?"/>
 	<xsl:param name="desc" as="xs:boolean?"/>
-	<!-- <xsl:param name="lang" as="xs:string?"/> -->
 	<xsl:param name="mode" as="xs:string?"/>
 	
 	<xsl:variable name="query-string">
@@ -297,8 +296,19 @@ exclude-result-prefixes="#all">
 	    <xsl:text>offset=</xsl:text><xsl:value-of select="$offset"/><xsl:text>&amp;</xsl:text>
 	    <xsl:if test="$order-by">order-by=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
 	    <xsl:if test="$desc">desc&amp;</xsl:if>
-	    <!-- <xsl:if test="$lang">lang=<xsl:value-of select="$lang"/>&amp;</xsl:if> -->
 	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+	</xsl:variable>
+	
+	<xsl:if test="string-length($query-string) &gt; 1">
+	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
+	</xsl:if>
+    </xsl:function>
+
+    <xsl:function name="gc:query-string" as="xs:string?">
+	<xsl:param name="uri" as="xs:anyURI?"/>
+	
+	<xsl:variable name="query-string">
+	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
 	</xsl:variable>
 	
 	<xsl:if test="string-length($query-string) &gt; 1">
