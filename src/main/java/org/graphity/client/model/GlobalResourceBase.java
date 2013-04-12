@@ -124,7 +124,7 @@ public class GlobalResourceBase extends ResourceBase
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 
-	    return getResponseBuilder(model, XHTML_VARIANTS).build();
+	    return getResponseBuilder(model, getVariants()).build();
 	}	
 
 	return super.get();

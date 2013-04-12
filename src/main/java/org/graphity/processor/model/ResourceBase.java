@@ -77,6 +77,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
+    private final QueryBuilder queryBuilder;
 
     /**
      * Configuration property for absolute ontology URI (set in web.xml)
@@ -279,6 +280,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		    uriInfo, request, resourceConfig);
 	else this.endpoint = endpoint;	    
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, endpoint);
+	
+	queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
     }
 
     @Override
@@ -406,7 +410,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return getQuery(getMatchedOntClass(), resource);
     }
 
-    public Query getQuery(OntClass ontClass, Resource resource)
+    public final Query getQuery(OntClass ontClass, Resource resource)
     {
 	return getQuery(getTemplateCall(ontClass), resource);
     }
@@ -592,8 +596,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
     public QueryBuilder getQueryBuilder()
     {
-	return QueryBuilder.fromQuery(getQuery(), getModel());
-	//return queryBuilder;
+	return queryBuilder;
     }
 
     public final UriInfo getUriInfo()

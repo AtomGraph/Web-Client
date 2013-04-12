@@ -16,8 +16,8 @@
 
 : a owl:Ontology ;
     owl:imports gp:, lda: , void: ;
-    dct:title "Graphity Client sitemap" ;
-    rdfs:label "Graphity Client sitemap" ;
+    dct:title "Sitemap" ;
+    rdfs:label "Sitemap" ;
     dct:description "Default sitemap for SPARQL service" ;
     dct:created "2013-03-09T13:53:00+03:00"^^xsd:dateTime ;
     foaf:isPrimaryTopicOf <ontology> ;
@@ -45,9 +45,10 @@ ldp:pageOf a owl:ObjectProperty ;
 
 <.> a sioc:Site, ldp:Container, foaf:Document ;
     dct:title "Graphity Client" ;
+    dct:description "Generic Linked Data browser and end-user-oriented framework" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset ;
-    rdfs:seeAlso : .
+    rdfs:seeAlso : , <sparql> .
 
 <ontology> a foaf:Document ;
     foaf:primaryTopic : ;
@@ -146,7 +147,7 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/ontology"
 	] ;
-    spin:constraint [ a gp:DescribeTopicTemplate ] ;
+    spin:constraint [ a gp:DescribeResourcesTemplate ] ;
     rdfs:label "Ontology document resource" ;
     foaf:isPrimaryTopicOf <classes/ontology-doc-resource> ;
     rdfs:isDefinedBy : .

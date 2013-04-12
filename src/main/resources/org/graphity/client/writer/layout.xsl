@@ -80,7 +80,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="http-headers" as="xs:string"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
     <xsl:param name="mode" as="xs:anyURI?"/>
-    <xsl:param name="ont-model" as="document-node()"/> <!-- select="document($base-uri)"  -->
+    <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="order-by" select="key('resources', $orderBy/sp:expression/@rdf:resource)/sp:varName" as="xs:string?"/>
@@ -187,19 +187,21 @@ exclude-result-prefixes="#all">
 		</xsl:for-each>
 	    </ul>
 	</div>
-	
-	<xsl:for-each select="key('resources', resolve-uri('sparql', $base-uri), $ont-model)/@rdf:about">
+
+	<xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
 	    <div class="nav-collapse pull-right">
 		<ul class="nav">
-		    <li>
-			<xsl:if test=". = $absolute-path">
-			    <xsl:attribute name="class">active</xsl:attribute>
-			</xsl:if>
-			<xsl:apply-templates select="."/>
-		    </li>
+		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+			<li>
+			    <xsl:if test=". = $absolute-path">
+				<xsl:attribute name="class">active</xsl:attribute>
+			    </xsl:if>
+			    <xsl:apply-templates select="."/>
+			</li>
+		    </xsl:for-each>
 		</ul>
 	    </div>
-	</xsl:for-each>
+	</xsl:if>
     </xsl:template>
 
     <xsl:template match="/" mode="gc:FooterMode">
@@ -265,19 +267,18 @@ exclude-result-prefixes="#all">
 	</div>
 	
 	<div class="span4">
-	    <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-		<xsl:sort select="gc:label(xs:anyURI(concat(namespace-uri(), local-name())), /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
-		<xsl:apply-templates select="current-group()[1]" mode="gc:SidebarNavMode"/>
-	    </xsl:for-each-group>
+	    <xsl:apply-templates select="." mode="gc:SidebarNavMode"/>
 	</div>
     </xsl:template>
 
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
 	
     <xsl:template match="sioc:Container | *[rdf:type/@rdf:resource = '&sioc;Container']" mode="gc:ModeSelectMode" priority="1">
+	<xsl:param name="default-mode" select="xs:anyURI('&gc;ListMode')" as="xs:anyURI"/>
+	
 	<ul class="nav nav-tabs">
 	    <li>
-		<xsl:if test="not($mode) or $mode = '&gc;ListMode'">
+		<xsl:if test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
@@ -286,7 +287,7 @@ exclude-result-prefixes="#all">
 		</a>
 	    </li>
 	    <li>
-		<xsl:if test="$mode = '&gc;TableMode'">
+		<xsl:if test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
@@ -295,7 +296,7 @@ exclude-result-prefixes="#all">
 		</a>
 	    </li>
 	    <li>
-		<xsl:if test="$mode = '&gc;InputMode'">
+		<xsl:if test="(not($mode) and $default-mode = '&gc;InputMode') or $mode = '&gc;InputMode'">
 		    <xsl:attribute name="class">active</xsl:attribute>
 		</xsl:if>
 
@@ -306,20 +307,13 @@ exclude-result-prefixes="#all">
 	</ul>
     </xsl:template>
 
-    <!-- TO-DO: make reusable with match="@rdf:about" - same as in gc:HeaderMode -->
-    <xsl:template match="rdf:RDF" mode="gc:MediaTypeSelectMode">
-	<div class="btn-group pull-right">
-	    <!--
-	    <xsl:if test="@rdf:about != $absolute-path">
-		<a href="{@rdf:about}" class="btn">Source</a>
-	    </xsl:if>
-	    -->
-	    <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
-	    <a href="{$absolute-path}?accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-	    <a href="{$absolute-path}?accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-	</div>
+    <xsl:template match="rdf:RDF" mode="gc:SidebarNavMode">
+	<xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
+	    <xsl:sort select="gc:label(xs:anyURI(concat(namespace-uri(), local-name())), /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
+	    <xsl:apply-templates select="current-group()[1]" mode="gc:SidebarNavMode"/>
+	</xsl:for-each-group>	
     </xsl:template>
-    
+
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>

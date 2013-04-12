@@ -58,6 +58,22 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
+    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:HeaderMode">
+	<xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+
+	<h2>
+	    <xsl:apply-templates select="."/>
+	</h2>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:MediaTypeSelectMode">
+	<div class="btn-group pull-right">
+	    <a href="{.}" class="btn">Source</a>
+	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+	</div>
+    </xsl:template>
+
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about[not(starts-with(., $base-uri))] | @rdf:resource[not(starts-with(., $base-uri))] | sparql:uri[not(starts-with(., $base-uri))]">
 	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">

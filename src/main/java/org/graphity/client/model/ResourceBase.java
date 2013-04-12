@@ -98,6 +98,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	addRDFType(getMatchedOntClass());
 	
 	// set metadata properties after description query is executed
+	getQueryBuilder().build(); // sets sp:text value
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, getQueryBuilder());
 	setPropertyValue(SPIN.query, getQueryBuilder());
 

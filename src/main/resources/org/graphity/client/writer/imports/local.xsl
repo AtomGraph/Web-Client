@@ -23,11 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY ldp "http://www.w3.org/ns/ldp#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
     <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
+    <!ENTITY sp "http://spinrdf.org/sp#">
     <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
 ]>
 <xsl:stylesheet version="2.0"
@@ -41,11 +43,13 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:ldp="&ldp;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:skos="&skos;"
+xmlns:sp="&sp;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
@@ -60,8 +64,18 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
-    <!-- subject/object resource -->
-    <xsl:template match="@rdf:about | @rdf:resource | sparql:uri">
+    <!-- subject resource -->
+    <xsl:template match="@rdf:about">
+	<a href="{.}" title="{.}">
+	    <xsl:if test="substring-after(., concat($request-uri, '#'))">
+		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
+	    </xsl:if>	
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	</a>
+    </xsl:template>
+
+    <!-- object resource -->    
+    <xsl:template match="@rdf:resource | sparql:uri">
 	<a href="{.}" title="{.}">
 	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
@@ -314,7 +328,9 @@ exclude-result-prefixes="#all">
 
     <!-- HEADER MODE -->
     
-    <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[. = $absolute-path] | @rdf:about[. = $uri]" mode="gc:HeaderMode">
+	<xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+
 	<h1 class="page-header">
 	    <xsl:apply-templates select="."/>
 	</h1>
@@ -330,6 +346,21 @@ exclude-result-prefixes="#all">
 	<li>
 	    <xsl:apply-templates select="@rdf:resource | @rdf:nodeID"/>
 	</li>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
+	<div class="btn-group pull-right">
+	    <!--
+	    <xsl:if test="@rdf:about != $absolute-path">
+		<a href="{@rdf:about}" class="btn">Source</a>
+	    </xsl:if>
+	    -->
+	    <xsl:if test="$query-res/sp:text">
+		<a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
+	    </xsl:if>
+	    <a href="?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+	    <a href="?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+	</div>
     </xsl:template>
 
     <!-- IMAGE MODE -->
@@ -406,9 +437,7 @@ exclude-result-prefixes="#all">
 	
 	<div class="well sidebar-nav">
 	    <h2 class="nav-header">
-		<a href="{$base-uri}" title="{$this}">
-		    <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))/@rdf:about" mode="gc:LabelMode"/>
-		</a>
+		<xsl:apply-templates select="."/>
 	    </h2>
 		
 	    <!-- TO-DO: fix for a single resource! -->

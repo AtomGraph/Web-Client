@@ -133,18 +133,20 @@ exclude-result-prefixes="#all">
 	    </form>
 	</div>
 	
-	<xsl:for-each select="key('resources', resolve-uri('sparql', $base-uri), $ont-model)/@rdf:about">
+	<xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
 	    <div class="nav-collapse pull-right">
 		<ul class="nav">
-		    <li>
-			<xsl:if test=". = $absolute-path">
-			    <xsl:attribute name="class">active</xsl:attribute>
-			</xsl:if>
-			<xsl:apply-templates select="."/>
-		    </li>
+		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+			<li>
+			    <xsl:if test=". = $absolute-path">
+				<xsl:attribute name="class">active</xsl:attribute>
+			    </xsl:if>
+			    <xsl:apply-templates select="."/>
+			</li>
+		    </xsl:for-each>
 		</ul>
 	    </div>
-	</xsl:for-each>
+	</xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>
