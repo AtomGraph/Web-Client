@@ -25,7 +25,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.graphity.processor.model.SPARQLEndpointBase;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,14 +51,14 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     private final List<Variant> variants;
 
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
+	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		getOntology(uriInfo, resourceConfig),
-		getEndpoint(uriInfo, request, resourceConfig),
+		sitemap, endpoint,
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
@@ -67,7 +67,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     }
 
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc,
 	    List<Variant> variants)
     {
@@ -78,7 +78,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     }
 
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc,
 	    List<Variant> variants)
     {

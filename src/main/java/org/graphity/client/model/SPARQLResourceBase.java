@@ -16,9 +16,9 @@
  */
 package org.graphity.client.model;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.util.List;
@@ -26,6 +26,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,11 @@ public class SPARQLResourceBase extends ResourceBase
     private static final Logger log = LoggerFactory.getLogger(SPARQLResourceBase.class);
 
     private final Query userQuery;
+    @Context SPARQLEndpoint endpoint;
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
+	    @Context OntModel sitemap,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -50,10 +53,10 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("query") Query userQuery)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		getOntology(uriInfo, resourceConfig).createOntResource(uriInfo.getAbsolutePath().toString()),
-		new SPARQLEndpointBase(ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()),
+		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
+		new SPARQLEndpointBase(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
 		    uriInfo, request, resourceConfig),
-		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
+		resourceConfig.getProperty(GS.cacheControl.getURI()) == null ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc,
@@ -61,7 +64,7 @@ public class SPARQLResourceBase extends ResourceBase
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpointBase endpoint,
+	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    CacheControl cacheControl, Long limit, Long offset, String orderBy, Boolean desc,
 	    List<Variant> variants, Query userQuery)
     {
@@ -87,7 +90,7 @@ public class SPARQLResourceBase extends ResourceBase
 	{
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF or SPARQL Results, returning SPARQL Response", mediaType);	    
 	    // return getEndpoint().query(getUserQuery(), null, null); // do *not* query the local endpoint
-	    return getEndpoint(getUriInfo(), getRequest(), getResourceConfig()).query(getUserQuery(), null, null);
+	    return endpoint.query(getUserQuery(), null, null);
 	}
 	else
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mediaType);

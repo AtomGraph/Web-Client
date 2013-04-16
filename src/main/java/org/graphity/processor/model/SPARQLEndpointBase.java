@@ -16,7 +16,6 @@
  */
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -29,6 +28,7 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.client.util.DataManager;
 import org.graphity.server.vocabulary.GS;
+import org.graphity.server.vocabulary.VoID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,12 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
     public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
     {
-	this(ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()),
+	this(resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()) == null ?
+	    ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
+		path(SPARQLEndpointBase.class).
+		build().toString()) :
+		ResourceFactory.createResource(resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()).toString()),
+		//ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()),
 		uriInfo, request, resourceConfig);
     }
 
@@ -82,8 +87,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint.equals(getOntModelEndpoint()))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from OntModel using Query: {}", query);
-	    OntModel ontModel = ResourceBase.getOntology(getUriInfo(), getResourceConfig());
-	    return DataManager.get().loadModel(ontModel, query);
+	    return DataManager.get().loadModel(getModel(), query);
 	}
 	else
 	{
@@ -97,8 +101,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     {
 	if (endpoint.equals(getOntModelEndpoint()))
 	{
-	    OntModel ontModel = ResourceBase.getOntology(getUriInfo(), getResourceConfig());
-	    return DataManager.get().loadResultSet(ontModel, query);
+	    return DataManager.get().loadResultSet(getModel(), query);
 	}
 	else
 	{
@@ -118,29 +121,18 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 		queryParam.setLimit(Long.parseLong(getResourceConfig().
 			getProperty(GS.resultLimit.getURI()).toString()));
 
-	    return getResponseBuilder(loadResultSetRewindable(model, queryParam));
+	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model: {} using Query: {}", model, queryParam);
+	    return getResponseBuilder(DataManager.get().loadResultSet(model, queryParam));
 	}
 
 	if (queryParam.isConstructType() || queryParam.isDescribeType())
 	{
-	    if (log.isDebugEnabled()) log.debug("SPARQL endpoint executing CONSTRUCT/DESCRIBE query: {}", queryParam);
-	    return getResponseBuilder(loadModel(model, queryParam));
+	    if (log.isDebugEnabled()) log.debug("Loading Model from Model: {} using Query: {}", model, queryParam);
+	    return getResponseBuilder(DataManager.get().loadModel(model, queryParam));
 	}
 
 	if (log.isWarnEnabled()) log.warn("SPARQL endpoint received unknown type of query: {}", queryParam);
 	throw new WebApplicationException(Response.Status.BAD_REQUEST);
-    }
-
-    public ResultSetRewindable loadResultSetRewindable(Model model, Query query)
-    {
-	if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model: {} using Query: {}", model, query);
-	return DataManager.get().loadResultSet(model, query); // .getResultSetRewindable()
-    }
-
-    public Model loadModel(Model model, Query query)
-    {
-	if (log.isDebugEnabled()) log.debug("Loading Model from Model: {} using Query: {}", model, query);
-	return DataManager.get().loadModel(model, query);
     }
 
     public UriInfo getUriInfo()

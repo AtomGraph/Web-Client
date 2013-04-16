@@ -20,7 +20,6 @@ import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.update.UpdateRequest;
-import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -37,12 +36,12 @@ import javax.ws.rs.core.*;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.ModifyBuilder;
-import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
 import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
@@ -72,144 +71,30 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Boolean desc;
     private final OntClass matchedOntClass;
     private final Resource dataset;
-    private final SPARQLEndpointBase endpoint;
+    private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
-
-    /**
-     * Configuration property for absolute ontology URI (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_URI = "org.graphity.platform.ontology.uri";
-
-    /**
-     * Configuration property for ontology SPARQL endpoint (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_ENDPOINT = "org.graphity.platform.ontology.endpoint";
-
-    /**
-     * Configuration property for ontology named graph URI (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_GRAPH = "org.graphity.platform.ontology.graph";
-
-    /**
-     * Reads ontology from configured file and resolves against base URI of the request
-     * @param uriInfo JAX-RS URI info
-     * @param config configuration from web.xml
-     * @return ontology Model
-     * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
-     */
-    public static OntModel getOntology(UriInfo uriInfo, ResourceConfig config)
-    {
-	if (log.isDebugEnabled()) log.debug("web.xml properties: {}", config.getProperties());
-	Object ontologyPath = config.getProperty(GP.ontologyPath.getURI());
-	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
-	
-	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
-
-	if (config.getProperty(PROPERTY_ONTOLOGY_ENDPOINT) != null)
-	{
-	    Object ontologyEndpoint = config.getProperty(PROPERTY_ONTOLOGY_ENDPOINT);
-	    Object graphUri = config.getProperty(PROPERTY_ONTOLOGY_GRAPH);
-	    Query query;
-	    if (graphUri != null)
-	    {
-		if (log.isDebugEnabled()) log.debug("Reading ontology from named graph {} in SPARQL endpoint {}", graphUri.toString(), ontologyEndpoint);
-		query = QueryFactory.create("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH <" + graphUri.toString() +  "> { ?s ?p ?o } }");
-	    }
-	    else
-	    {
-		if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
-		query = QueryFactory.create("CONSTRUCT WHERE { ?s ?p ?o }");		
-	    }
-    
-	    OntDocumentManager.getInstance().addModel(localUri,
-		    DataManager.get().loadModel(ontologyEndpoint.toString(), query),
-		    true);	    
-	}
-	else
-	{
-	    if (config.getProperty(PROPERTY_ONTOLOGY_URI) != null)
-	    {
-		Object externalUri = config.getProperty(PROPERTY_ONTOLOGY_URI);
-		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", externalUri);
-		OntDocumentManager.getInstance().addModel(localUri,
-			DataManager.get().loadModel(externalUri.toString()),
-			true);
-	    }
-	    else
-	    {
-		Object ontologyLocation = config.getProperty(GP.ontologyLocation.getURI());
-		if (ontologyLocation == null) throw new IllegalStateException("Ontology for this Graphity LDP Application is not configured properly. Check ResourceConfig and/or web.xml");
-		if (log.isDebugEnabled()) log.debug("Mapping ontology to a local file: {}", ontologyLocation.toString());
-		OntDocumentManager.getInstance().addAltEntry(localUri, ontologyLocation.toString());
-	    }
-	}
-	OntModel ontModel = OntDocumentManager.getInstance().
-		getOntology(localUri, OntModelSpec.OWL_MEM);
-	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
-	return ontModel;
-    }
-    
-    public static OntModel getOntology(String ontologyUri, String ontologyLocation)
-    {
-	//if (!OntDocumentManager.getInstance().getFileManager().hasCachedModel(baseUri)) // not cached
-	{	    
-	    if (log.isDebugEnabled())
-	    {
-		log.debug("Ontology not cached, reading from file: {}", ontologyLocation);
-		log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
-		log.debug("Adding name/altName mapping: {} altName: {} ", ontologyUri, ontologyLocation);
-	    }
-	    OntDocumentManager.getInstance().addAltEntry(ontologyUri, ontologyLocation);
-
-	    LocationMapper mapper = OntDocumentManager.getInstance().getFileManager().getLocationMapper();
-	    if (log.isDebugEnabled()) log.debug("Adding prefix/altName mapping: {} altName: {} ", ontologyUri, ontologyLocation);
-	    mapper.addAltPrefix(ontologyUri, ontologyLocation);
-	}
-	//else
-	    //if (log.isDebugEnabled()) log.debug("Ontology already cached, returning cached instance");
-
-	OntModel ontModel = OntDocumentManager.getInstance().getOntology(ontologyUri, OntModelSpec.OWL_MEM_RDFS_INF);
-	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
-	return ontModel;
-    }
-
-    public static SPARQLEndpointBase getEndpoint(UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
-    {
-	Resource endpoint;
-	if (resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()) == null)
-	    endpoint = ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
-		path(SPARQLEndpointBase.class).
-		build().toString());
-	else
-	    endpoint = ResourceFactory.createResource(resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()).toString());
-			
-	return new SPARQLEndpointBase(endpoint, uriInfo, request, resourceConfig);
-    }
     
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
+	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		getOntology(uriInfo, resourceConfig),
-		getEndpoint(uriInfo, request, resourceConfig),
+		sitemap, endpoint, //getEndpoint(sitemap, uriInfo, request, resourceConfig),
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null : CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc);
     }
     
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpointBase endpoint,
+	    OntModel ontModel, SPARQLEndpoint endpoint,
 	    CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
@@ -222,7 +107,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpointBase endpoint, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
 	super(ontResource, endpoint, cacheControl);
@@ -249,7 +134,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (matchedOntClass.hasSuperClass(LDP.Page)) //if (hasRDFType(LDP.Page))
 	{
 	    Resource container = getModel().createResource(uriInfo.getAbsolutePath().toString());
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: {} ldp:pageOf {}", getResource(), container);
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: {} ldp:pageOf {}", this, container);
 	    addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, container);
 
 	    if (log.isDebugEnabled())
@@ -363,14 +248,14 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (addContainerPage && hasRDFType(LDP.Page))
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Page");
-	    description.add(getEndpoint().loadModel(getModel(), super.getQuery()));
+	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    OntResource container = getPropertyResourceValue(LDP.pageOf).as(OntResource.class);
 	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(),
 		    container, getEndpoint(), getCacheControl(),
 		    getLimit(), getOffset(), getOrderBy(), getDesc());
-	    description.add(getEndpoint().loadModel(ldc.getModel(), ldc.getQuery()));
+	    description.add(DataManager.get().loadModel(ldc.getModel(), ldc.getQuery()));
 	}
 
 	return description;
@@ -583,7 +468,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     @Override
-    public SPARQLEndpointBase getEndpoint()
+    public SPARQLEndpoint getEndpoint()
     {
 	return endpoint;
     }

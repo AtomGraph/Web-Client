@@ -17,6 +17,7 @@
 package org.graphity.client;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
@@ -36,9 +37,12 @@ import org.graphity.client.model.SPARQLResourceBase;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.ModelXSLTWriter;
+import org.graphity.processor.provider.OntologyProvider;
+import org.graphity.processor.provider.SPARQLEndpointProvider;
+import org.graphity.server.vocabulary.VoID;
+import org.openjena.riot.SysRIOT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
@@ -59,6 +63,8 @@ public class Application extends org.graphity.server.Application
 
 	singletons.addAll(super.getSingletons());
 	singletons.add(new RDFPostReader());
+	singletons.add(new OntologyProvider());
+	singletons.add(new SPARQLEndpointProvider());
 
 	if (log.isDebugEnabled()) log.debug("Adding master XSLT @Provider");
 	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses
@@ -76,12 +82,19 @@ public class Application extends org.graphity.server.Application
     @Override
     public void init()
     {
-	super.init();
-	
 	if (log.isDebugEnabled()) log.debug("Application.init() with ResourceConfig: {} and SerlvetContext: {}", getResourceConfig(), getServletContext());
-	if (log.isDebugEnabled()) log.debug("Root resource classes: {} Root resource singletons: {}", getResourceConfig().getRootResourceClasses(), getResourceConfig().getRootResourceSingletons());
+	if (log.isDebugEnabled()) log.debug("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
+	SysRIOT.wireIntoJena(); // enable RIOT parser
+	// WARNING! ontology caching can cause concurrency/consistency problems
+	OntDocumentManager.getInstance().setCacheModels(false);
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 	//ARQFactory.get().setUseCaches(false);
+
+	String endpointURI = (String)getResourceConfig().getProperty(VoID.sparqlEndpoint.getURI());
+	String authUser = (String)getResourceConfig().getProperty(Service.queryAuthUser.getSymbol());
+	String authPwd = (String)getResourceConfig().getProperty(Service.queryAuthPwd.getSymbol()); 
+	if (endpointURI != null && authUser != null && authPwd != null)
+	    configureServiceContext(endpointURI, authUser, authPwd);	
 
 	// initialize locally cached ontology mapping
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3");
