@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.model;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -42,11 +43,13 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
     private final UriInfo uriInfo;
+    //@Context OntModel sitemap;
 
-    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
+    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
+	    @Context OntModel sitemap)
     {
 	this(resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()) == null ?
-	    ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
+	    sitemap.createResource(uriInfo.getBaseUriBuilder().
 		path(SPARQLEndpointBase.class).
 		build().toString()) :
 		ResourceFactory.createResource(resourceConfig.getProperty(VoID.sparqlEndpoint.getURI()).toString()),

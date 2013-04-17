@@ -16,6 +16,7 @@
  */
 package org.graphity.client.model;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceConfig;
 import javax.ws.rs.Path;
@@ -31,9 +32,10 @@ import javax.ws.rs.core.UriInfo;
 public class SPARQLEndpointBase extends org.graphity.processor.model.SPARQLEndpointBase
 {
 
-    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
+    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
+	    @Context OntModel sitemap)
     {
-	super(uriInfo, request, resourceConfig);
+	super(uriInfo, request, resourceConfig, sitemap);
     }
 
     public SPARQLEndpointBase(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
