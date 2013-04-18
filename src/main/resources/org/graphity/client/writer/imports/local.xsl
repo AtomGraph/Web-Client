@@ -328,7 +328,7 @@ exclude-result-prefixes="#all">
 
     <!-- HEADER MODE -->
     
-    <xsl:template match="@rdf:about[. = $absolute-path] | @rdf:about[. = $uri]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
 	<xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 
 	<h1 class="page-header">

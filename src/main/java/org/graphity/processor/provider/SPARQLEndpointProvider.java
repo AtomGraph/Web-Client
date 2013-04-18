@@ -16,6 +16,8 @@
  */
 package org.graphity.processor.provider;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
@@ -26,6 +28,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.server.vocabulary.VoID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,18 +51,42 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	super(SPARQLEndpoint.class);
     }
 
+    public Request getRequest()
+    {
+	return request;
+    }
+
+    public ResourceConfig getResourceConfig()
+    {
+	return resourceConfig;
+    }
+
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
+    }
+
     @Override
     public Injectable<SPARQLEndpoint> getInjectable(ComponentContext cc, Context context)
     {
-	if (log.isDebugEnabled()) log.debug("OntologyProvider UriInfo: {} ResourceConfig.getProperties(): {}", uriInfo, resourceConfig.getProperties());
+	//if (log.isDebugEnabled()) log.debug("OntologyProvider UriInfo: {} ResourceConfig.getProperties(): {}", uriInfo, resourceConfig.getProperties());
 	
 	return new Injectable<SPARQLEndpoint>()
 	{
 	    @Override
 	    public SPARQLEndpoint getValue()
 	    {
-		return new SPARQLEndpointBase(uriInfo, request, resourceConfig,
-			OntologyProvider.getOntology(uriInfo, resourceConfig));
+		OntModel sitemap = OntologyProvider.getOntology(getUriInfo(), getResourceConfig());
+		
+		return new SPARQLEndpointBase(getResourceConfig().getProperty(VoID.sparqlEndpoint.getURI()) == null ?
+			sitemap.createResource(getUriInfo().getBaseUriBuilder().
+			    path(SPARQLEndpointBase.class).
+			    build().toString()) :
+			ResourceFactory.createResource(getResourceConfig().getProperty(VoID.sparqlEndpoint.getURI()).toString()),
+		    getUriInfo(), getRequest(), getResourceConfig());
+			
+		//return new SPARQLEndpointBase(getUriInfo()), getRequest(), getResourceConfig(),
+		//	OntologyProvider.getOntology(getUriInfo(), getResourceConfig()));
 	    }
 	};
     }

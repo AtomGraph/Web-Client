@@ -16,7 +16,6 @@
  */
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -25,11 +24,12 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.graphity.client.util.DataManager;
 import org.graphity.server.vocabulary.GS;
-import org.graphity.server.vocabulary.VoID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +45,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     private final UriInfo uriInfo;
     //@Context OntModel sitemap;
 
+    /*
     public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap)
     {
@@ -56,8 +57,9 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 		//ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()),
 		uriInfo, request, resourceConfig);
     }
+*/
 
-    protected SPARQLEndpointBase(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    public SPARQLEndpointBase(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
 	super(endpoint, request, resourceConfig);
 

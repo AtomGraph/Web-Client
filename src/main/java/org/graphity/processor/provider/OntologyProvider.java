@@ -67,11 +67,21 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
 	super(OntModel.class);
     }
+
+    public ResourceConfig getResourceConfig()
+    {
+	return resourceConfig;
+    }
+
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
+    }
     
     @Override
     public Injectable<OntModel> getInjectable(ComponentContext cc, Context context)
     {
-	if (log.isDebugEnabled()) log.debug("OntologyProvider UriInfo: {} ResourceConfig: {}", uriInfo, resourceConfig);
+	//if (log.isDebugEnabled()) log.debug("OntologyProvider UriInfo: {} ResourceConfig.getProperties(): {}", uriInfo, resourceConfig.getProperties());
 	
 	return new Injectable<OntModel>()
 	{
