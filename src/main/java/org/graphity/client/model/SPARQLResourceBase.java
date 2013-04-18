@@ -26,7 +26,6 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
