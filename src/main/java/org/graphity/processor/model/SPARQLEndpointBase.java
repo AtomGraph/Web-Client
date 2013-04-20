@@ -90,7 +90,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     {
 	if (endpoint.equals(getOntModelEndpoint()))
 	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from OntModel using Query: {}", query);
+	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
 	}
 	else
@@ -105,6 +105,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     {
 	if (endpoint.equals(getOntModelEndpoint()))
 	{
+	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
 	}
 	else

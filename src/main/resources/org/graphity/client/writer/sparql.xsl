@@ -105,14 +105,6 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
-    <!--
-    <xsl:template match="sparql:uri[not(starts-with(., $base-uri))]">
-	<a href="{$base-uri}?uri={encode-for-uri(.)}" title="{.}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
-    -->
-
     <xsl:template match="sparql:sparql">
 	<table class="table table-bordered table-striped">
 	    <xsl:apply-templates/>
