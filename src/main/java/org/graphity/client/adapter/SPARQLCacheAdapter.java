@@ -32,7 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Adapter to store RDF models in a triplestore with provenance metadata
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 public class SPARQLCacheAdapter extends DatasetAdapter

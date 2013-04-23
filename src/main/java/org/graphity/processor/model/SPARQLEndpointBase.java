@@ -37,8 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SPARQL endpoint resource, implementing ?query= access method
+ * SPARQL endpoint base class. Implements SPARQL Protocol for RDF.
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
+ * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
  */
 @Path("/sparql")
 public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpointBase

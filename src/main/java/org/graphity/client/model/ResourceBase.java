@@ -32,15 +32,20 @@ import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
 
 /**
- * Base class of generic read-write Graphity Client resources
+ * Base class of generic read-write Graphity Client resources.
+ * Supports pagination on containers (implemented using SPARQL query solution modifiers).
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
+ * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("{path: .*}")
 public class ResourceBase extends org.graphity.processor.model.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
+    /**
+     * Media types that can be used for representation of RDF model, including XHTML
+     */
     public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
 		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
 		    //MediaType.TEXT_HTML_TYPE,
@@ -50,6 +55,24 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
     private final List<Variant> variants;
 
+    /**
+     * JAX-RS-compatible resource constructor with injected initialization objects.
+     * The URI of the resource being created is the current request URI (note: this is different from Server).
+     * The sitemap ontology model and the SPARQL endpoint resource are injected via JAX-RS providers.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param sitemap sitemap ontology
+     * @param endpoint SPARQL endpoint of this resource
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     * @see org.graphity.processor.provider.OntologyProvider
+     * @see org.graphity.processor.provider.SPARQLEndpointProvider
+     */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
@@ -66,6 +89,22 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		XHTML_VARIANTS);	
     }
 
+    /**
+     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param ontModel sitemap ontology
+     * @param endpoint SPARQL endpoint of this resource
+     * @param cacheControl cache control config
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     * @param variants representation variants
+     */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc,
@@ -77,6 +116,22 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		variants);
     }
 
+    /**
+     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param ontResource this resource as OWL resource
+     * @param endpoint SPARQL endpoint of this resource
+     * @param cacheControl cache control config
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     * @param variants representation variants
+     */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc,

@@ -52,13 +52,15 @@ import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.vocabulary.SPIN;
 
 /**
- * Base class of generic read-write Graphity Processor resources
+ * Base class of generic read-write Graphity Processor resources.
+ * Configured declaratively using sitemap ontology to provide Linked Data layer over a SPARQL endpoint.
+ * Supports pagination on containers (implemented using SPARQL query solution modifiers).
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see PageResource
  * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/OntResource.html">OntResource</a>
  * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
- * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
+ * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("{path: .*}")
 public class ResourceBase extends QueriedResourceBase implements LDPResource, PageResource, OntResource
@@ -78,6 +80,25 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
     
+    /**
+     * JAX-RS-compatible resource constructor with injected initialization objects.
+     * The URI of the resource being created is the current request URI (note: this is different from Server).
+     * The sitemap ontology model and the SPARQL endpoint resource are injected via JAX-RS providers.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param resourceContext resource context
+     * @param sitemap sitemap ontology
+     * @param endpoint SPARQL endpoint of this resource
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     * @see org.graphity.processor.provider.OntologyProvider
+     * @see org.graphity.processor.provider.SPARQLEndpointProvider
+     */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
@@ -93,6 +114,21 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		limit, offset, orderBy, desc);
     }
     
+    /**
+     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param ontModel sitemap ontology
+     * @param endpoint SPARQL endpoint of this resource
+     * @param cacheControl cache control config
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
 	    CacheControl cacheControl,
@@ -106,6 +142,30 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity Server ResourceBase");
     }
 
+    /**
+     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * If the request URI does not match any URI template in the sitemap ontology, 404 Not Found is returned.
+     * 
+     * If the matching ontology class is a subclass of LDP Page, this resource becomes a page resource and
+     * HATEOS metadata is added (relations to the container and previous/next page resources).
+     * 
+     * If the matching ontology class has a value restriction on <code>void:inDataset</code> property, and
+     * that dataset in turn has a SPARQL endpoint defined using <code>void:sparqlEndpoint</code>, that
+     * endpoint resource overrides the default value supplied as constructor argument.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param ontResource this resource as OWL resource
+     * @param endpoint SPARQL endpoint of this resource
+     * @param cacheControl cache control config
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
+     */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc)
@@ -134,7 +194,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (matchedOntClass.hasSuperClass(LDP.Page)) //if (hasRDFType(LDP.Page))
 	{
 	    Resource container = getModel().createResource(uriInfo.getAbsolutePath().toString());
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: {} ldp:pageOf {}", this, container);
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", container);
 	    addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, container);
 
 	    if (log.isDebugEnabled())
@@ -170,6 +230,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
     }
 
+    /**
+     * Handles GET request and returns response with RDF description of this resource.
+     * In case this resource is a container, a redirect to its first page is returned.
+     * 
+     * @return response with RDF description, or a redirect in case of container
+     */
     @Override
     public Response get()
     {
@@ -191,15 +257,21 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return super.get();
     }
 
+    /**
+     * Handles POST method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
+     * 
+     * @param model the RDF payload
+     * @return response
+     */
     @Override
-    public Response post(Model postedModel)
+    public Response post(Model model)
     {
 	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
 	Model description = describe(false);
 	
-	Model deleteDiff = description.difference(postedModel);
+	Model deleteDiff = description.difference(model);
 	if (log.isDebugEnabled()) log.debug("DESCRIBE Model minus POSTed Model: {} size: {}", deleteDiff, deleteDiff.size());
-	Model insertDiff = postedModel.difference(description);
+	Model insertDiff = model.difference(description);
 	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
 
 	if (hasRDFType(LDP.Page))
@@ -219,27 +291,53 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		build();
 	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", updateRequest);
 	
-	return getResponse(postedModel);
+	return getResponse(model);
     }
 
+    /**
+     * Handles PUT method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
+     * 
+     * @param model RDF payload
+     * @return response
+     */
     @Override
     public Response put(Model model)
     {
 	throw new WebApplicationException(405);
     }
 
+    /**
+     * Handles DELETE method, deletes the RDF representation of this resource frrom the SPARQL endpoint, and
+     * returns response.
+     * 
+     * @return response
+     */
     @Override
     public Response delete()
     {
 	throw new WebApplicationException(405);
     }
 
+    /**
+     * Returns RDF description of this resource.
+     * 
+     * @return RDF description
+     * @see getQuery()
+     */
     @Override
     public Model describe()
     {
 	return describe(true);
     }
     
+    /**
+     * Returns RDF description of this resource.
+     * In case the resource is a page resource and the boolean parameter is true, HATEOS metadata relating it
+     * to previous/next pages and its container is added.
+     * 
+     * @param addContainerPage if true, container/page metadata will be added
+     * @return RDF description
+     */
     public Model describe(boolean addContainerPage)
     {	
 	Model description = super.describe();
@@ -261,6 +359,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return description;
     }
 
+    /**
+     * Returns dataset resource, specified in an ontology class restriction.
+     * 
+     * @param ontClass the ontology class with the restriction
+     * @return dataset resource or null, if no dataset restriction was found
+     */
     public final Resource getDataset(OntClass ontClass)
     {
 	RDFNode hasValue = getRestrictionHasValue(ontClass, VoID.inDataset);
@@ -269,6 +373,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return null;
     }
 
+    /**
+     * Given a SPIN query resource, returns a query builder.
+     * This method is used to build queries for page resources. It sets LIMIT and OFFSET modifiers on the
+     * SELECT sub-queries.
+     * 
+     * @param query SPIN query resource
+     * @return query builder based on the given query
+     * @see org.graphity.processor.query.QueryBuilder
+     * @see org.graphity.processor.query.SelectBuilder
+     */
     public QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
     {
 	QueryBuilder qb = QueryBuilder.fromQuery(query);
@@ -290,16 +404,41 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return qb;
     }
 
+    /**
+     * Given an RDF resource, returns a SPARQL query that can be used to retrieve its description.
+     * The query is built using a SPIN template call attached to the ontology class that this resource matches.
+     * 
+     * @param resource the resource to be described
+     * @return query object
+     */
     public Query getQuery(Resource resource)
     {
 	return getQuery(getMatchedOntClass(), resource);
     }
 
+    /**
+     * Given an RDF resource and an ontology class that it belongs to, returns a SPARQL query that can be used
+     * to retrieve its description.
+     * The ontology class must have a SPIN template call attached (using <code>spin:constraint</code>).
+     * 
+     * @param ontClass ontology class of the resource
+     * @param resource resource to be described
+     * @return query object
+     * @see org.topbraid.spin.model.TemplateCall
+     */
     public final Query getQuery(OntClass ontClass, Resource resource)
     {
 	return getQuery(getTemplateCall(ontClass), resource);
     }
     
+    /**
+     * Given an ontology class, returns the SPIN template call attached to it.
+     * The class must have a <code>spin:constraint</code> property with the template call resource as object.
+     * 
+     * @param ontClass ontology class
+     * @return SPIN template call resource
+     * @see org.topbraid.spin.model.TemplateCall
+     */
     public TemplateCall getTemplateCall(OntClass ontClass)
     {
 	if (!ontClass.hasProperty(SPIN.constraint))
@@ -309,6 +448,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return SPINFactory.asTemplateCall(constraint);
     }
     
+    /**
+     * Given a SPIN template call and an RDF resource, returns a SPARQL query that can be used to retrieve
+     * resource's description.
+     * Following the convention of SPIN API, variable name <code>?this</code> has a special meaning and
+     * is assigned to the value of the resource (which is usually this resource).
+     * If this resource is a page resource, the SELECT sub-query modifiers (<code>LIMIT</code> and
+     * <code>OFFSET</code>) will be set to implement pagination.
+     * 
+     * @param call SPIN template call resource
+     * @param resource RDF resource
+     * @return query object
+     */
     public Query getQuery(TemplateCall call, Resource resource)
     {
 	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
@@ -320,13 +471,20 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	
 	if (hasRDFType(LDP.Page))
 	{
-	    if (log.isDebugEnabled()) log.debug("OntResource is an ldp:Page, making QueryBuilder from Query: {}", arqQuery);
+	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder from Query: {}", arqQuery);
 	    return getQueryBuilder(ARQ2SPIN.parseQuery(arqQuery.toString(), getModel())).build();
 	}
 		
 	return arqQuery;
     }
 
+    /**
+     * Given an absolute URI and a base URI, returns ontology class with a matching URI template, if any.
+     * 
+     * @param uri absolute URI being matched
+     * @param base base URI
+     * @return matching ontology class or null, if none
+     */
     public final OntClass matchOntClass(URI uri, URI base)
     {
 	StringBuilder path = new StringBuilder();
@@ -334,7 +492,21 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	path.append("/").append(base.relativize(uri));
 	return matchOntClass(path);
     }
-    
+
+    /**
+     * Given a relative URI, returns ontology class with a matching URI template, if any.
+     * URIs are matched against the URI templates specified in ontology class restrictions in the sitemap
+     * ontology. This method uses Jersey implementation of the JAX-RS URI matching algorithm.
+     * The URI template restrictions use <code>lda:uriTemplate</code> property (from Linked Data API) with
+     * template string as the object literal. Note: the property might change in future processor versions.
+     * 
+     * @param path absolute path (relative URI)
+     * @return matching ontology class or null, if none
+     * @see <a href="https://jsr311.java.net/nonav/releases/1.1/spec/spec3.html#x3-340003.7">3.7 Matching Requests to Resource Methods (JAX-RS 1.1)</a>
+     * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
+     * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
+     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
+     */
     public final OntClass matchOntClass(CharSequence path)
     {
 	Property utProp = getOntModel().createProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
@@ -377,30 +549,78 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return null;
     }
 
+    /**
+     * Returns value of "limit" query string parameter, which indicates the number of resources per page.
+     * This value is set as <code>LIMIT</code> query modifier when this resource is a page (therefore
+     * pagination is used).
+     * 
+     * @return limit value
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modResultLimit">15.5 LIMIT</a>
+     */
     @Override
     public final Long getLimit()
     {
 	return limit;
     }
 
+    /**
+     * Returns value of "offset" query string parameter, which indicates the number of resources the page
+     * has skipped from the start of the container.
+     * This value is set as <code>OFFSET</code> query modifier when this resource is a page (therefore
+     * pagination is used).
+     * 
+     * @return offset value
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modOffset">15.4 OFFSET</a>
+     */
     @Override
     public final Long getOffset()
     {
 	return offset;
     }
 
+    /**
+     * Returns value of "order-by" query string parameter, which indicates the name of the variable after
+     * which the container (and the page) is sorted.
+     * This value is set as <code>ORDER BY</code> query modifier when this resource is a page (therefore
+     * pagination is used).
+     * Note that ordering might be undefined, in which case the same page might not contain identical resources
+     * during different requests.
+     * 
+     * @return name of ordering variable or null, if not specified
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
+     */
     @Override
     public final String getOrderBy()
     {
 	return orderBy;
     }
 
+    /**
+     * Returns value of "desc" query string parameter, which indicates the direction of resource ordering
+     * in the container (and the page).
+     * If this method returns true, <code>DESC</code> order modifier is set if this resource is a page
+     * (therefore pagination is used).
+     * 
+     * @return true if the order is descending, false otherwise
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
+     */
     @Override
     public final Boolean getDesc()
     {
 	return desc;
     }
 
+    /**
+     * Given an ontology class and ontology property, returns value of <code>owl:hasValue</code> restriction,
+     * if one is present.
+     * The ontology class must be a subclass of the restriction, and the property must be used as
+     * <code>owl:onProperty</code>.
+     * 
+     * @param ontClass ontology class
+     * @param property ontology property
+     * @return RDF node or null, if not present
+     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
+     */
     public RDFNode getRestrictionHasValue(OntClass ontClass, OntProperty property)
     {
 	ExtendedIterator<OntClass> it = ontClass.listSuperClasses(true);
@@ -418,6 +638,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return null;
     }
 
+    /**
+     * Returns the previous page resource.
+     * This method is used to build HATEOS metadata when this resource is a page.
+     * 
+     * @return page RDF resource
+     */
     @Override
     public final Resource getPrevious()
     {
@@ -430,6 +656,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return getModel().createResource(uriBuilder.build().toString());
     }
 
+    /**
+     * Returns the next page resource.
+     * This method is used to build HATEOS metadata when this resource is a page.
+     * 
+     * @return page RDF resource
+     */
     @Override
     public final Resource getNext()
     {
@@ -442,63 +674,129 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return getModel().createResource(uriBuilder.build().toString());
     }
 
+    /**
+     * Returns URI builder, initialized with the URI of this resource.
+     * 
+     * @return URI builder
+     */
     public final UriBuilder getUriBuilder()
     {
 	return UriBuilder.fromUri(getURI());
     }
     
+    /**
+     * Returns URI of this resource. Uses Java's URI class instead of string as the {@link getURI()} does.
+     * 
+     * @return URI object
+     */
     public final URI getRealURI()
     {
 	return getUriBuilder().build();
     }
 
+    /**
+     * Returns this resource as ontology resource.
+     * 
+     * @return ontology resource
+     */
     public OntResource getOntResource()
     {
 	return ontResource;
     }
 
+    /**
+     * Returns ontology class that this resource matches.
+     * If the request URI did not match any ontology class, <code>404 Not Found</code> was returned.
+     * 
+     * @return ontology class
+     */
     public OntClass getMatchedOntClass()
     {
 	return matchedOntClass;
     }
 
+    /**
+     * Returns the VoID dataset of this resource, if specified.
+     * The dataset can be specified as a <code>void:inDataset</code> value restriction on an ontology class in
+     * the sitemap ontology.
+     * 
+     * @return dataset resource or null, if not specified
+     */
     public Resource getDataset()
     {
 	return dataset;
     }
 
+    /**
+     * Returns the active SPARQL endpoint of this resource.
+     * The default endpoint is supplied as constructor argument. However, it is overridden if the matching
+     * ontology class has a <code>void:inDataset</code> value restriction and that dataset has a SPARQL
+     * endpoint resource defined.
+     * 
+     * @return endpoint resource
+     */
     @Override
     public SPARQLEndpoint getEndpoint()
     {
 	return endpoint;
     }
 
+    /**
+     * Returns query used to retrieve RDF description of this resource
+     * 
+     * @return query object
+     */
     @Override
     public Query getQuery()
     {
 	return getQuery(this);
     }
 
+    /**
+     * Returns query builder, which is used to build SPARQL query to retrieve RDF description of this resource.
+     * 
+     * @return query builder
+     */
     public QueryBuilder getQueryBuilder()
     {
 	return queryBuilder;
     }
 
+    /**
+     * Returns URI information of current request.
+     * 
+     * @return URI information
+     */
     public final UriInfo getUriInfo()
     {
 	return uriInfo;
     }
 
+    /**
+     * Returns current request.
+     * 
+     * @return request object
+     */
     public Request getRequest()
     {
 	return request;
     }
 
+    /**
+     * Returns HTTP headers of the current request.
+     * 
+     * @return header object
+     */
     public HttpHeaders getHttpHeaders()
     {
 	return httpHeaders;
     }
 
+    /**
+     * Returns configuration for this web application (including parameters specified in web.xml).
+     * 
+     * @return webapp configuration
+     */
     public ResourceConfig getResourceConfig()
     {
 	return resourceConfig;

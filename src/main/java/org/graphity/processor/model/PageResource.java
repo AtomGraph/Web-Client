@@ -19,33 +19,66 @@ package org.graphity.processor.model;
 import org.graphity.server.model.LinkedDataResource;
 
 /**
- * Interface of page resources (with LIMIT, OFFSET, ORDER BY, DESC parameters)
+ * Interface of page resources. A page is a unit pagination, and only applies to container resources.
+ * SPARQL-based solution modifiers are used to implement pagination.
  * 
- * @see <a href="http://www.w3.org/TR/rdf-sparql-query/#solutionModifiers">SPARQL Solution Sequences and Modifiers</a>
+ * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  * @see <a href="http://www.w3.org/TR/2012/WD-ldp-20121025/#ldpc-paging">Linked Data Platform 1.0: Paging</a>
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 public interface PageResource extends LinkedDataResource
 {
+    /**
+     * Returns the value of <code>LIMIT</code> query modifier.
+     * It indicates the number of resources per page.
+     * 
+     * @return resources per page
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modResultLimit">15.5 LIMIT</a>
+     */
     Long getLimit();
     
+    /**
+     * Returns the value of <code>OFFSET</code> query modifier.
+     * It indicates the number of resources skipped before the current page.
+     * 
+     * @return number of resources skipped
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modOffset">15.4 OFFSET</a>
+     */
     Long getOffset();
     
+    /**
+     * Returns the name of the variable used by the <code>ORDER BY</code> ordering comparator.
+     * It indicates the ordering of resources in a container and on a page.
+     * 
+     * <em>While SPARQL allows a sequence of multiple variables used as comparators, the processor currently
+     * supports only one value.</em>
+     * 
+     * @return variable name or null, if not specified
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
+     */
     String getOrderBy();
     
+    /**
+     * Indicates whether the direction of the ordering is <code>DESC</code>.
+     * If this method returns true, <code>DESC</code> order modifier is set on the variable indicated by
+     * {@link getOrderBy()}. Otherwise, no order modifier is set (which equals to <code>ASC</code>).
+     * 
+     * @return true if the order is descending, false otherwise
+     * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
+     */
     Boolean getDesc();
 
     /**
-     * Get the resource of the previous page
+     * Get the RDF resource of the previous page. Can be used for HATEOS link relations.
      * 
-     * @return Jena resource with previous page URI
+     * @return previous page resource
      */
     com.hp.hpl.jena.rdf.model.Resource getPrevious();
 
     /**
-     * Get the resource of the next page
+     * Get the RDF resource of the next page. Can be used for HATEOS link relations.
      * 
-     * @return Jena resource with next page URI
+     * @return next page resource
      */
     com.hp.hpl.jena.rdf.model.Resource getNext();
 

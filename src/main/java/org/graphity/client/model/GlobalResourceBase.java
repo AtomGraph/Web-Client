@@ -35,8 +35,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Resource that can publish Linked Data and (X)HTML as well as load RDF from remote sources.
+ * The remote datasources can either be native-RDF Linked Data, or formats supported by Locators
+ * (for example, Atom XML transformed to RDF/XML using GRDDL XSLT stylesheet). The ability to load remote
+ * RDF data is crucial for generic Linked Data browser functionality.
+ * Supports pagination on containers (implemented using SPARQL query solution modifiers).
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
+ * @see LinkedDataResourceBase
+ * @see org.graphity.client.locator.LocatorLinkedData
+ * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("{path: .*}")
 public class GlobalResourceBase extends ResourceBase
@@ -46,6 +54,26 @@ public class GlobalResourceBase extends ResourceBase
     private final MediaType mediaType;
     private final URI topicURI;
 
+    /**
+     * JAX-RS compatible resource constructor with injected initialization objects.
+     * The URI of the resource being created is the current request URI (note: this is different from Server).
+     * The sitemap ontology model and the SPARQL endpoint resource are injected via JAX-RS providers.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceConfig webapp configuration
+     * @param sitemap sitemap ontology
+     * @param endpoint active SPARQL endpoint (used to execute queries)
+     * @param limit pagination LIMIT ("limit" query string param)
+     * @param offset pagination OFFSET ("offset" query string param)
+     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
+     * @param desc pagination DESC value ("desc" query string param)
+     * @param topicURI remote URI to be loaded ("uri" query string param)
+     * @param mediaType media type of the representation ("accept" query string param)
+     * @see org.graphity.processor.provider.OntologyProvider
+     * @see org.graphity.processor.provider.SPARQLEndpointProvider
+     */
     public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
@@ -65,6 +93,24 @@ public class GlobalResourceBase extends ResourceBase
 		topicURI, mediaType);	
     }
 
+    /**
+     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * 
+     * @param uriInfo URI information of the request
+     * @param request current request
+     * @param httpHeaders HTTP headers of current request
+     * @param resourceConfig webapp configuration
+     * @param ontModel sitemap ontology
+     * @param endpoint SPARQL endpoint of this resource
+     * @param cacheControl cache control config
+     * @param limit pagination LIMIT
+     * @param offset pagination OFFSET
+     * @param orderBy pagination ORDER BY variable name
+     * @param desc pagination DESC value
+     * @param variants representation variants
+     * @param topicURI remote URI to be loaded
+     * @param mediaType media type of the representation
+     */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, List<Variant> variants,
@@ -76,6 +122,24 @@ public class GlobalResourceBase extends ResourceBase
 		topicURI, mediaType);
     }
 
+    /**
+     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * 
+     * @param uriInfo URI information of the request
+     * @param request current request
+     * @param httpHeaders HTTP headers of current request
+     * @param resourceConfig webapp configuration
+     * @param ontResource this resource as RDF resource
+     * @param endpoint SPARQL endpoint of this resource
+     * @param cacheControl cache control config
+     * @param limit pagination LIMIT
+     * @param offset pagination OFFSET
+     * @param orderBy pagination ORDER BY variable name
+     * @param desc pagination DESC value
+     * @param variants representation variants
+     * @param topicURI remote URI to be loaded
+     * @param mediaType media type of the representation
+     */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, List<Variant> variants,
@@ -88,11 +152,32 @@ public class GlobalResourceBase extends ResourceBase
 	this.topicURI = topicURI;
     }
 
+    /**
+     * Returns URI or remotely loaded resource ("uri" query string parameter)
+     * 
+     * @return remote URI
+     */
     public URI getTopicURI()
     {
 	return topicURI;
     }
 
+    /**
+     * Returns media type requested by the client ("accept" query string parameter).
+     * This mechanism overrides the normally used content negotiation.
+     * 
+     * @return 
+     */
+    public MediaType getMediaType()
+    {
+	return mediaType;
+    }
+
+    /**
+     * Returns a list of supported RDF representation variants.
+     * 
+     * @return variant list
+     */
     @Override
     public List<Variant> getVariants()
     {
@@ -104,11 +189,15 @@ public class GlobalResourceBase extends ResourceBase
 	return super.getVariants();
     }
 
-    public MediaType getMediaType()
-    {
-	return mediaType;
-    }
-
+    /**
+     * Handles GET request and returns response with RDF description of this or remotely loaded resource.
+     * If "uri" query string parameter is present, resource is loaded from the specified remote URI and
+     * its RDF representation is returned. Otherwise, local resource with request URI is used.
+     * If "accept" query string parameter is present, the specified media type is used to serialize RDF
+     * representation. Otherwise, normal content negotiation is used.
+     * 
+     * @return 
+     */
     @Override
     public Response get()
     {

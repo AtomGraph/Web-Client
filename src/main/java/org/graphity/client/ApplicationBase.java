@@ -46,17 +46,25 @@ import org.slf4j.LoggerFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
- *
+ * Graphity Client JAX-RS application base class.
+ * Can be extended or used as it is (needs to be registered in web.xml).
+ * Needs to register JAX-RS root resource classes and providers.
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
+ * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
+ * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class Application extends org.graphity.server.Application
+public class ApplicationBase extends org.graphity.server.ApplicationBase
 {
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     private Set<Object> singletons = new HashSet<Object>();
 
-    public Application()
+    /**
+     * Initializes root resource classes and provider singletons
+     */
+    public ApplicationBase()
     {
 	classes.add(GlobalResourceBase.class); // handles all
 	classes.add(SPARQLResourceBase.class); // handles /sparql queries
@@ -71,13 +79,14 @@ public class Application extends org.graphity.server.Application
     }
 
     /**
-     * Initializes (post construction) DataManager, its LocationMapper and Locators
+     * Initializes (post construction) DataManager, its LocationMapper and Locators, and Context
      * 
      * @see org.graphity.util.manager.DataManager
      * @see org.graphity.util.locator
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/FileManager.html">FileManager</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/LocationMapper.html">LocationMapper</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html">Locator</a>
+     * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
      */
     @Override
     public void init()
