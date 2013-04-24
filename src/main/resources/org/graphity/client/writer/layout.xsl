@@ -192,6 +192,7 @@ exclude-result-prefixes="#all">
 	    <div class="nav-collapse pull-right">
 		<ul class="nav">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+			<xsl:sort select="gc:label(., /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
 			<li>
 			    <xsl:if test=". = $absolute-path">
 				<xsl:attribute name="class">active</xsl:attribute>
