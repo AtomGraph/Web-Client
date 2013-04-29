@@ -34,6 +34,8 @@ import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.locator.grddl.LocatorAtom;
 import org.graphity.client.model.GlobalResourceBase;
 import org.graphity.client.model.SPARQLResourceBase;
+import org.graphity.client.provider.DoesNotExistExceptionMapper;
+import org.graphity.client.provider.NotFoundExceptionMapper;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.ModelXSLTWriter;
@@ -73,6 +75,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new RDFPostReader());
 	singletons.add(new OntologyProvider());
 	singletons.add(new SPARQLEndpointProvider());
+	singletons.add(new DoesNotExistExceptionMapper());
+	singletons.add(new NotFoundExceptionMapper());
 
 	if (log.isDebugEnabled()) log.debug("Adding master XSLT @Provider");
 	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses

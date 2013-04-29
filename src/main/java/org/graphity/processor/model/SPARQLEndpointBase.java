@@ -90,7 +90,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Model loadModel(Resource endpoint, Query query)
     {
-	if (endpoint.equals(getOntModelEndpoint()))
+	if (endpoint.getURI().equals(getOntModelEndpoint().getURI()))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
@@ -105,7 +105,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public ResultSetRewindable loadResultSetRewindable(Resource endpoint, Query query)
     {
-	if (endpoint.equals(getOntModelEndpoint()))
+	if (endpoint.getURI().equals(getOntModelEndpoint().getURI()))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
