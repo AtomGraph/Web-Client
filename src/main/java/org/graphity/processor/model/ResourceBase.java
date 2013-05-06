@@ -78,6 +78,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
+    private final Query query;
     private final QueryBuilder queryBuilder;
     
     /**
@@ -205,8 +206,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	    if (getOffset() >= getLimit())
 	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPrevious().getURI());
-		addProperty(XHV.prev, getPrevious());
+		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
+		addProperty(XHV.prev, getModel().createResource(getPreviousUriBuilder().build().toString()));
 	    }
 
 	    // no way to know if there's a next page without counting results (either total or in current page)
@@ -214,20 +215,30 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
 	    //if (subjectCount >= getLimit())
 	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNext().getURI());
-		addProperty(XHV.next, getNext());
+		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
+		addProperty(XHV.next, getModel().createResource(getNextUriBuilder().build().toString()));
 	    }
+	    
+	    Query baseQuery = getQuery(matchedOntClass, container);
+	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder with pagination from Query: {}", baseQuery);
+	    query = getQueryBuilder(ARQ2SPIN.parseQuery(baseQuery.toString(), getModel())).build();
 	}
-	
+	else
+	{
+	    if (log.isDebugEnabled()) log.debug("Resource is not an ldp:Page, returning Query without pagination");
+	    query = getQuery(matchedOntClass,
+		    ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()));
+	}
+
+	queryBuilder = QueryBuilder.fromQuery(query, getModel());
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Query: {} and QueryBuilder: {}", query, queryBuilder);
+
 	dataset = getDataset(matchedOntClass);
 	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
 	    this.endpoint = new SPARQLEndpointBase(dataset.getPropertyResourceValue(VoID.sparqlEndpoint),
 		    uriInfo, request, resourceConfig);
 	else this.endpoint = endpoint;	    
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, endpoint);
-	
-	queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, endpoint);	
     }
 
     /**
@@ -280,7 +291,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    subSelect.setOffset(0);
 	    if (log.isDebugEnabled()) log.debug("SELECT subquery from the WHERE pattern: {}", subSelect);
 	    ResultSetRewindable resultSet = DataManager.get().loadResultSet(description, subSelect);
-	    //while (resultSet.hasNext()) log.debug("SELECTed Resource: {}", resultSet.next());
+	    while (resultSet.hasNext()) log.debug("Query solution: {} number: {}", resultSet.next(), resultSet.getRowNumber());
 	    //ParameterizedSparqlString()
 	}
 
@@ -383,7 +394,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @see org.graphity.processor.query.QueryBuilder
      * @see org.graphity.processor.query.SelectBuilder
      */
-    public QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
+    public final QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
     {
 	QueryBuilder qb = QueryBuilder.fromQuery(query);
 	if (qb.getSubSelectBuilder() == null) throw new IllegalArgumentException("The SPIN query for ldp:Page class does not have a SELECT subquery");
@@ -467,15 +478,17 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
 	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
-	Query arqQuery = queryString.asQuery();
+	return queryString.asQuery();
 	
+	/*
 	if (hasRDFType(LDP.Page))
 	{
 	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder from Query: {}", arqQuery);
 	    return getQueryBuilder(ARQ2SPIN.parseQuery(arqQuery.toString(), getModel())).build();
 	}
-		
-	return arqQuery;
+	*/
+	
+	//return arqQuery;
     }
 
     /**
@@ -512,41 +525,48 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	Property utProp = getOntModel().createProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
 	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();
 	TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<UriTemplate,OntClass>(UriTemplate.COMPARATOR);
-		
-	while (it.hasNext())
+
+	try
 	{
-	    Restriction restriction = it.next();	    
-	    if (restriction.canAs(HasValueRestriction.class)) // throw new IllegalArgumentException("Resource matching this URI template is not a HasValueRestriction");
+	    while (it.hasNext())
 	    {
-		HasValueRestriction hvr = restriction.asHasValueRestriction();
-		if (hvr.getOnProperty().equals(utProp))
+		Restriction restriction = it.next();	    
+		if (restriction.canAs(HasValueRestriction.class)) // throw new IllegalArgumentException("Resource matching this URI template is not a HasValueRestriction");
 		{
-		    UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
-		    HashMap<String, String> map = new HashMap<String, String>();
-
-		    if (uriTemplate.match(path, map))
+		    HasValueRestriction hvr = restriction.asHasValueRestriction();
+		    if (hvr.getOnProperty().equals(utProp))
 		    {
-			if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
+			UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
+			HashMap<String, String> map = new HashMap<String, String>();
 
-			OntClass ontClass = hvr.listSubClasses(true).next(); //hvr.getSubClass();	    
-			if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
-			//return ontClass;
-			matchedClasses.put(uriTemplate, ontClass);
+			if (uriTemplate.match(path, map))
+			{
+			    if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
+
+			    OntClass ontClass = hvr.listSubClasses(true).next(); //hvr.getSubClass();	    
+			    if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
+			    //return ontClass;
+			    matchedClasses.put(uriTemplate, ontClass);
+			}
+			else
+			    if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
 		    }
-		    else
-			if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
 		}
 	    }
-	}
+	    
+	    if (!matchedClasses.isEmpty())
+	    {
+		if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
+		return matchedClasses.firstEntry().getValue(); //matchedClasses.lastEntry().getValue();
+	    }
 
-	if (!matchedClasses.isEmpty())
-	{
-	    if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
-	    return matchedClasses.firstEntry().getValue(); //matchedClasses.lastEntry().getValue();
+	    if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);
+	    return null;
 	}
-	
-	if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);
-	return null;
+	finally
+	{
+	    it.close();
+	}	
     }
 
     /**
@@ -624,20 +644,42 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public RDFNode getRestrictionHasValue(OntClass ontClass, OntProperty property)
     {
 	ExtendedIterator<OntClass> it = ontClass.listSuperClasses(true);
-	while (it.hasNext())
-	{
-	    OntClass superClass = it.next();
-	    if (superClass.canAs(HasValueRestriction.class))
-	    {
-		HasValueRestriction restriction = superClass.asRestriction().asHasValueRestriction();
-		if (restriction.getOnProperty().equals(property))
-		    return restriction.getHasValue();
-	    }
-	}
 	
-	return null;
+	try
+	{
+	    while (it.hasNext())
+	    {
+		OntClass superClass = it.next();
+		if (superClass.canAs(HasValueRestriction.class))
+		{
+		    HasValueRestriction restriction = superClass.asRestriction().asHasValueRestriction();
+		    if (restriction.getOnProperty().equals(property))
+			return restriction.getHasValue();
+		}
+	    }
+	    
+	    return null;
+	}
+	finally
+	{
+	    it.close();
+	}
     }
 
+    /**
+     * Returns URI builder instantiated with pagination parameters for the previous page.
+     * 
+     * @return URI builder
+     */
+    public final UriBuilder getPreviousUriBuilder()
+    {
+	return getUriInfo().getAbsolutePathBuilder().
+	    queryParam("limit", getLimit()).
+	    queryParam("offset", getOffset() - getLimit());
+	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
+    }
+    
     /**
      * Returns the previous page resource.
      * This method is used to build HATEOS metadata when this resource is a page.
@@ -645,17 +687,25 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @return page RDF resource
      */
     @Override
-    public final Resource getPrevious()
+    public Resource getPrevious()
     {
-	UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
-	    queryParam("limit", getLimit()).
-	    queryParam("offset", getOffset() - getLimit());
-	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
-
-	return getModel().createResource(uriBuilder.build().toString());
+	return getPropertyResourceValue(XHV.prev);
     }
 
+    /**
+     * Returns URI builder instantiated with pagination parameters for the next page.
+     * 
+     * @return URI builder
+     */
+    public final UriBuilder getNextUriBuilder()
+    {
+	return getUriInfo().getAbsolutePathBuilder().
+	    queryParam("limit", getLimit()).
+	    queryParam("offset", getOffset() + getLimit());
+	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
+    }
+    
     /**
      * Returns the next page resource.
      * This method is used to build HATEOS metadata when this resource is a page.
@@ -663,15 +713,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @return page RDF resource
      */
     @Override
-    public final Resource getNext()
+    public Resource getNext()
     {
-	UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
-	    queryParam("limit", getLimit()).
-	    queryParam("offset", getOffset() + getLimit());
-	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
-
-	return getModel().createResource(uriBuilder.build().toString());
+	return getPropertyResourceValue(XHV.next);
     }
 
     /**
@@ -749,7 +793,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Query getQuery()
     {
-	return getQuery(this);
+	//return getQuery(this);
+	//return getQuery(ResourceFactory.createResource(getUriInfo().getAbsolutePath().toString()));
+	return query;
     }
 
     /**

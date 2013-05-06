@@ -53,6 +53,7 @@ ldp:pageOf a owl:ObjectProperty ;
 <ontology> a foaf:Document ;
     foaf:primaryTopic : ;
     rdfs:isDefinedBy : ;
+    foaf:maker _:someone ;
     void:inDataset :Dataset .
 
 <dataset> a foaf:Document ;
@@ -130,6 +131,17 @@ ldp:pageOf a owl:ObjectProperty ;
     spin:constraint [ a gp:DescribeTemplate ] ;
     rdfs:label "Resource" ;
     foaf:isPrimaryTopicOf <classes/resource> ;
+    rdfs:isDefinedBy : .
+
+:ModeResource a owl:Class ;
+    rdfs:subClassOf foaf:Document, lda:ItemEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/{path: .*}?mode={mode: .+}"
+	] ;
+    spin:constraint [ a gp:DescribeTemplate ] ;
+    rdfs:label "Resource" ;
+    foaf:isPrimaryTopicOf <classes/mode-resource> ;
     rdfs:isDefinedBy : .
 
 :SPARQLResultResource a owl:Class ;

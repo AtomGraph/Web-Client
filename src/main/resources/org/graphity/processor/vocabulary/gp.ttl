@@ -171,7 +171,8 @@ _:propertyVar  sp:varName "property"^^xsd:string .
 # ====
 
 :DescribeTemplate a spin:Template ;
-    spin:body :DefaultDescribe .
+    spin:body :DefaultDescribe ;
+    rdfs:isDefinedBy : .
 
 :DefaultDescribe    a       sp:Describe, sp:Query ;
       sp:resultNodes (spin:_this) ;

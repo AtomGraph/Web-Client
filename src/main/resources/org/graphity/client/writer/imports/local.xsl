@@ -135,151 +135,163 @@ exclude-result-prefixes="#all">
     
     <!-- subject -->
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:LabelMode">
-	<xsl:for-each select="..">
-	    <xsl:choose>
-		<xsl:when test="rdfs:label[lang($lang)]">
-		    <xsl:value-of select="rdfs:label[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick[lang($lang)]">
-		    <xsl:value-of select="foaf:nick[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:name[lang($lang)]">
-		    <xsl:value-of select="foaf:name[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title[lang($lang)]">
-		    <xsl:value-of select="dc:title[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title[lang($lang)]">
-		    <xsl:value-of select="dct:title[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel[lang($lang)]">
-		    <xsl:value-of select="skos:prefLabel[lang($lang)][1]"/>
-		</xsl:when>
+	<xsl:variable name="label">
+	    <xsl:for-each select="..">
+		<xsl:choose>
+		    <xsl:when test="rdfs:label[lang($lang)]">
+			<xsl:value-of select="rdfs:label[lang($lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:nick[lang($lang)]">
+			<xsl:value-of select="foaf:nick[lang($lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:name[lang($lang)]">
+			<xsl:value-of select="foaf:name[lang($lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="dc:title[lang($lang)]">
+			<xsl:value-of select="dc:title[lang($lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="dct:title[lang($lang)]">
+			<xsl:value-of select="dct:title[lang($lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="skos:prefLabel[lang($lang)]">
+			<xsl:value-of select="skos:prefLabel[lang($lang)][1]"/>
+		    </xsl:when>
 
-		<xsl:when test="rdfs:label[not(@xml:lang)]">
-		    <xsl:value-of select="rdfs:label[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick[not(@xml:lang)]">
-		    <xsl:value-of select="foaf:nick[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:name[not(@xml:lang)]">
-		    <xsl:value-of select="foaf:name[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title[not(@xml:lang)]">
-		    <xsl:value-of select="dc:title[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title[not(@xml:lang)]">
-		    <xsl:value-of select="dct:title[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel[not(@xml:lang)]">
-		    <xsl:value-of select="skos:prefLabel[not(@xml:lang)][1]"/>
-		</xsl:when>
+		    <xsl:when test="rdfs:label[not(@xml:lang)]">
+			<xsl:value-of select="rdfs:label[not(@xml:lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:nick[not(@xml:lang)]">
+			<xsl:value-of select="foaf:nick[not(@xml:lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:name[not(@xml:lang)]">
+			<xsl:value-of select="foaf:name[not(@xml:lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="dc:title[not(@xml:lang)]">
+			<xsl:value-of select="dc:title[not(@xml:lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="dct:title[not(@xml:lang)]">
+			<xsl:value-of select="dct:title[not(@xml:lang)][1]"/>
+		    </xsl:when>
+		    <xsl:when test="skos:prefLabel[not(@xml:lang)]">
+			<xsl:value-of select="skos:prefLabel[not(@xml:lang)][1]"/>
+		    </xsl:when>
 
-		<xsl:when test="rdfs:label[lang('en')]">
-		    <xsl:value-of select="rdfs:label[lang('en')][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick[lang('en')]">
-		    <xsl:value-of select="foaf:nick[lang('en')][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:name[lang('en')]">
-		    <xsl:value-of select="foaf:name[lang('en')][1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title[lang('en')]">
-		    <xsl:value-of select="dc:title[lang('en')][1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title[lang('en')]">
-		    <xsl:value-of select="dct:title[lang('en')][1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel[lang('en')]">
-		    <xsl:value-of select="skos:prefLabel[lang('en')][1]"/>
-		</xsl:when>
+		    <xsl:when test="rdfs:label[lang('en')]">
+			<xsl:value-of select="rdfs:label[lang('en')][1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:nick[lang('en')]">
+			<xsl:value-of select="foaf:nick[lang('en')][1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:name[lang('en')]">
+			<xsl:value-of select="foaf:name[lang('en')][1]"/>
+		    </xsl:when>
+		    <xsl:when test="dc:title[lang('en')]">
+			<xsl:value-of select="dc:title[lang('en')][1]"/>
+		    </xsl:when>
+		    <xsl:when test="dct:title[lang('en')]">
+			<xsl:value-of select="dct:title[lang('en')][1]"/>
+		    </xsl:when>
+		    <xsl:when test="skos:prefLabel[lang('en')]">
+			<xsl:value-of select="skos:prefLabel[lang('en')][1]"/>
+		    </xsl:when>
 
-		<xsl:when test="rdfs:label | @rdfs:label">
-		    <xsl:value-of select="(rdfs:label | @rdfs:label)[1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick | @foaf:nick">
-		    <xsl:value-of select="(foaf:nick | @foaf:nick)[1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:firstName and foaf:lastName">
-		    <xsl:value-of select="concat(foaf:firstName[1], ' ', foaf:lastName[1])"/>
-		</xsl:when>
-		<xsl:when test="foaf:givenName and foaf:familyName">
-		    <xsl:value-of select="concat(foaf:givenName[1], ' ', foaf:familyName[1])"/>
-		</xsl:when>
-		<xsl:when test="foaf:name | @foaf:name">
-		    <xsl:value-of select="(foaf:name | @foaf:name)[1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title | @dc:title">
-		    <xsl:value-of select="(dc:title | @dc:title)[1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title | @dct:title">
-		    <xsl:value-of select="(dct:title | @dct:title)[1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel | @skos:prefLabel">
-		    <xsl:value-of select="(skos:prefLabel | @skos:prefLabel)[1]"/>
-		</xsl:when>
-		<xsl:when test="contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))">
-		    <xsl:value-of select="substring-after(@rdf:about, '#')"/>
-		</xsl:when>
-		<xsl:when test="string-length(tokenize(@rdf:about, '/')[last()]) &gt; 0">
-		    <xsl:value-of select="translate(url:decode(tokenize(@rdf:about, '/')[last()], 'UTF-8'), '_', ' ')"/>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:value-of select="@rdf:about | @rdf:nodeID"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</xsl:for-each>
+		    <xsl:when test="rdfs:label | @rdfs:label">
+			<xsl:value-of select="(rdfs:label | @rdfs:label)[1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:nick | @foaf:nick">
+			<xsl:value-of select="(foaf:nick | @foaf:nick)[1]"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:firstName and foaf:lastName">
+			<xsl:value-of select="concat(foaf:firstName[1], ' ', foaf:lastName[1])"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:givenName and foaf:familyName">
+			<xsl:value-of select="concat(foaf:givenName[1], ' ', foaf:familyName[1])"/>
+		    </xsl:when>
+		    <xsl:when test="foaf:name | @foaf:name">
+			<xsl:value-of select="(foaf:name | @foaf:name)[1]"/>
+		    </xsl:when>
+		    <xsl:when test="dc:title | @dc:title">
+			<xsl:value-of select="(dc:title | @dc:title)[1]"/>
+		    </xsl:when>
+		    <xsl:when test="dct:title | @dct:title">
+			<xsl:value-of select="(dct:title | @dct:title)[1]"/>
+		    </xsl:when>
+		    <xsl:when test="skos:prefLabel | @skos:prefLabel">
+			<xsl:value-of select="(skos:prefLabel | @skos:prefLabel)[1]"/>
+		    </xsl:when>
+		    <xsl:when test="contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))">
+			<xsl:value-of select="substring-after(@rdf:about, '#')"/>
+		    </xsl:when>
+		    <xsl:when test="string-length(tokenize(@rdf:about, '/')[last()]) &gt; 0">
+			<xsl:value-of select="translate(url:decode(tokenize(@rdf:about, '/')[last()], 'UTF-8'), '_', ' ')"/>
+		    </xsl:when>
+		    <xsl:otherwise>
+			<xsl:value-of select="@rdf:about | @rdf:nodeID"/>
+		    </xsl:otherwise>
+		</xsl:choose>
+	    </xsl:for-each>
+	</xsl:variable>
+	
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:LabelMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(.), local-name(.)))" as="xs:anyURI"/>
 	<xsl:variable name="doc" select="document(namespace-uri())"/>
-	<xsl:choose>
-	    <xsl:when test="key('resources', $this, $doc)/@rdf:about">
-		<xsl:apply-templates select="key('resources', $this, $doc)/@rdf:about" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:when test="key('resources', $this)">
-		<xsl:apply-templates select="key('resources', $this)/@rdf:about" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
-		<xsl:value-of select="substring-after($this, '#')"/>
-	    </xsl:when>
-	    <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
-		<xsl:value-of select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:value-of select="."/>
-	    </xsl:otherwise>
-	</xsl:choose>
+	<xsl:variable name="label">
+	    <xsl:choose>
+		<xsl:when test="key('resources', $this, $doc)/@rdf:about">
+		    <xsl:apply-templates select="key('resources', $this, $doc)/@rdf:about" mode="gc:LabelMode"/>
+		</xsl:when>
+		<xsl:when test="key('resources', $this)">
+		    <xsl:apply-templates select="key('resources', $this)/@rdf:about" mode="gc:LabelMode"/>
+		</xsl:when>
+		<xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
+		    <xsl:value-of select="substring-after($this, '#')"/>
+		</xsl:when>
+		<xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
+		    <xsl:value-of select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:value-of select="."/>
+		</xsl:otherwise>
+	    </xsl:choose>
+	</xsl:variable>
+	
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
     <!-- object -->
     <xsl:template match="@rdf:resource | sparql:uri" mode="gc:LabelMode">
 	<xsl:variable name="doc" select="document(gc:document-uri(.))"/>
-	<xsl:choose>
-	    <xsl:when test="key('resources', ., $doc)/@rdf:about">
-		<xsl:apply-templates select="key('resources', ., $doc)/@rdf:about" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:when test="key('resources', ., $doc)/@rdf:nodeID">
-		<xsl:apply-templates select="key('resources', ., $doc)/@rdf:nodeID" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:when test="key('resources', .)/@rdf:about">
-		<xsl:apply-templates select="key('resources', .)/@rdf:about" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:when test="key('resources', .)/@rdf:nodeID">
-		<xsl:apply-templates select="key('resources', .)/@rdf:nodeID" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
-		<xsl:value-of select="substring-after(., '#')"/>
-	    </xsl:when>
-	    <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
-		<xsl:value-of select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:value-of select="."/>
-	    </xsl:otherwise>
-	</xsl:choose>
+	<xsl:variable name="label">
+	    <xsl:choose>
+		<xsl:when test="key('resources', ., $doc)/@rdf:about">
+		    <xsl:apply-templates select="key('resources', ., $doc)/@rdf:about" mode="gc:LabelMode"/>
+		</xsl:when>
+		<xsl:when test="key('resources', ., $doc)/@rdf:nodeID">
+		    <xsl:apply-templates select="key('resources', ., $doc)/@rdf:nodeID" mode="gc:LabelMode"/>
+		</xsl:when>
+		<xsl:when test="key('resources', .)/@rdf:about">
+		    <xsl:apply-templates select="key('resources', .)/@rdf:about" mode="gc:LabelMode"/>
+		</xsl:when>
+		<xsl:when test="key('resources', .)/@rdf:nodeID">
+		    <xsl:apply-templates select="key('resources', .)/@rdf:nodeID" mode="gc:LabelMode"/>
+		</xsl:when>
+		<xsl:when test="contains(., '#') and not(ends-with(., '#'))">
+		    <xsl:value-of select="substring-after(., '#')"/>
+		</xsl:when>
+		<xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
+		    <xsl:value-of select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:value-of select="."/>
+		</xsl:otherwise>
+	    </xsl:choose>
+	</xsl:variable>
+	
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
     <!-- DESCRIPTION MODE -->
@@ -468,10 +480,11 @@ exclude-result-prefixes="#all">
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="style" as="xs:string?"/>
 	<xsl:param name="value" as="xs:string?"/>
+	<xsl:param name="rows" as="xs:integer?"/>
 
 	<xsl:choose>
 	    <!-- special case to give more input space for object literals -->
-	    <xsl:when test="$name = 'ol'">
+	    <xsl:when test="(not($type) and string-length($value) &gt; 100) or $rows">
 		<textarea name="{$name}">
 		    <xsl:if test="$id">
 			<xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
@@ -481,6 +494,9 @@ exclude-result-prefixes="#all">
 		    </xsl:if>
 		    <xsl:if test="$style">
 			<xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+		    </xsl:if>
+		    <xsl:if test="$rows">
+			<xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
 		    </xsl:if>
 		    
 		    <xsl:value-of select="$value"/>

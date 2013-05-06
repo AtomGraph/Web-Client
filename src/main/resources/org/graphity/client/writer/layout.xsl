@@ -584,8 +584,15 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-	    <xsl:variable name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(@rdf:about = $request-uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
-	    <xsl:apply-templates select="$selected-resources" mode="gc:InputMode"/>
+	    <xsl:choose>
+		<xsl:when test="key('resources', $request-uri)/rdf:type/@rdf:resource = '&ldp;Page'">
+		    <xsl:variable name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(@rdf:about = $request-uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
+		    <xsl:apply-templates select="$selected-resources" mode="gc:InputMode"/>		    
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:apply-templates mode="gc:InputMode"/>
+		</xsl:otherwise>
+	    </xsl:choose>
 	    
 	    <fieldset id="fieldset-new-stmt">
 		<legend>
