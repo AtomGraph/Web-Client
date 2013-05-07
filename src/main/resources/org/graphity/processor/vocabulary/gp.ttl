@@ -171,10 +171,10 @@ _:propertyVar  sp:varName "property"^^xsd:string .
 # ====
 
 :DescribeTemplate a spin:Template ;
-    spin:body :DefaultDescribe ;
+    spin:body :Describe ;
     rdfs:isDefinedBy : .
 
-:DefaultDescribe    a       sp:Describe, sp:Query ;
+:Describe    a       sp:Describe, sp:Query ;
       sp:resultNodes (spin:_this) ;
       sp:text """DESCRIBE ?this"""^^xsd:string .
 
@@ -197,3 +197,29 @@ DESCRIBE ?topic WHERE {
                 ]) .
 
 _:topicVar  sp:varName "topic"^^xsd:string .
+
+# ====
+
+:ConstructTemplate a spin:Template ;
+    spin:body :Construct ;
+    rdfs:isDefinedBy : .
+
+:Construct    a       sp:Construct ;
+      sp:templates ([ sp:object _:objectVar ;
+                  sp:predicate _:propertyVar ;
+                  sp:subject spin:_this
+                ]) ;
+      sp:text """CONSTRUCT {
+    ?this ?property ?object .
+}
+WHERE {
+    ?this ?property ?object .
+}"""^^xsd:string ;
+      sp:where ([ sp:object _:objectVar ;
+                  sp:predicate _:propertyVar ;
+                  sp:subject spin:_this
+                ]) .
+
+spin:_this  sp:varName "this"^^xsd:string .
+_:objectVar  sp:varName "object"^^xsd:string .
+_:propertyVar  sp:varName "property"^^xsd:string .

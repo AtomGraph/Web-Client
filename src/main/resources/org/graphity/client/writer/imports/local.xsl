@@ -412,9 +412,9 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
 	<th>
-	    <a href="{$absolute-path}{gc:query-string($offset, $limit, $this, $desc, $mode)}" title="{$this}">
+	    <span title="{$this}">
 		<xsl:apply-templates select="." mode="gc:LabelMode"/>
-	    </a>
+	    </span>
 	</th>
     </xsl:template>
 

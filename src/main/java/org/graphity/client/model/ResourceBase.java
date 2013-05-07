@@ -78,7 +78,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc)
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,

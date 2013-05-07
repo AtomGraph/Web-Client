@@ -78,7 +78,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
-    private final Query query;
+    //private final Query query;
     private final QueryBuilder queryBuilder;
     
     /**
@@ -106,7 +106,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc)
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint, //getEndpoint(sitemap, uriInfo, request, resourceConfig),
@@ -177,6 +177,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (request == null) throw new IllegalArgumentException("Request cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
+	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
@@ -221,17 +222,15 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    
 	    Query baseQuery = getQuery(matchedOntClass, container);
 	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder with pagination from Query: {}", baseQuery);
-	    query = getQueryBuilder(ARQ2SPIN.parseQuery(baseQuery.toString(), getModel())).build();
+	    queryBuilder = getQueryBuilder(ARQ2SPIN.parseQuery(baseQuery.toString(), getModel()));
 	}
 	else
 	{
 	    if (log.isDebugEnabled()) log.debug("Resource is not an ldp:Page, returning Query without pagination");
-	    query = getQuery(matchedOntClass,
-		    ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()));
+	    queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass,
+		    ResourceFactory.createResource(uriInfo.getAbsolutePath().toString())), getModel());
 	}
-
-	queryBuilder = QueryBuilder.fromQuery(query, getModel());
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Query: {} and QueryBuilder: {}", query, queryBuilder);
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
 	dataset = getDataset(matchedOntClass);
 	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
@@ -400,17 +399,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (qb.getSubSelectBuilder() == null) throw new IllegalArgumentException("The SPIN query for ldp:Page class does not have a SELECT subquery");
 	
 	SelectBuilder selectBuilder = qb.getSubSelectBuilder().
-	    limit(getLimit()).offset(getOffset());
-	/*
-	if (getOrderBy() != null)
-	{
-	    Resource modelVar = getOntology().createResource().addLiteral(SP.varName, "model");
-	    Property orderProperty = ResourceFactory.createProperty(getOrderBy();
-	    Resource orderVar = getOntology().createResource().addLiteral(SP.varName, orderProperty.getLocalName());
+	    replaceLimit(getLimit()).replaceOffset(getOffset());
 
-	    selectBuilder.orderBy(orderVar, getDesc()).optional(modelVar, orderProperty, orderVar);
-	}
-	*/
+	if (getOrderBy() != null) selectBuilder.orderBy(getOrderBy(), getDesc());
 
 	return qb;
     }
@@ -479,16 +470,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	qsm.add("this", resource);
 	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
 	return queryString.asQuery();
-	
-	/*
-	if (hasRDFType(LDP.Page))
-	{
-	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder from Query: {}", arqQuery);
-	    return getQueryBuilder(ARQ2SPIN.parseQuery(arqQuery.toString(), getModel())).build();
-	}
-	*/
-	
-	//return arqQuery;
     }
 
     /**
@@ -522,16 +503,17 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final OntClass matchOntClass(CharSequence path)
     {
-	Property utProp = getOntModel().createProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
 	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();
-	TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<UriTemplate,OntClass>(UriTemplate.COMPARATOR);
 
 	try
 	{
+	    Property utProp = getOntModel().createProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
+	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<UriTemplate,OntClass>(UriTemplate.COMPARATOR);
+
 	    while (it.hasNext())
 	    {
 		Restriction restriction = it.next();	    
-		if (restriction.canAs(HasValueRestriction.class)) // throw new IllegalArgumentException("Resource matching this URI template is not a HasValueRestriction");
+		if (restriction.canAs(HasValueRestriction.class))
 		{
 		    HasValueRestriction hvr = restriction.asHasValueRestriction();
 		    if (hvr.getOnProperty().equals(utProp))
@@ -545,7 +527,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 			    OntClass ontClass = hvr.listSubClasses(true).next(); //hvr.getSubClass();	    
 			    if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
-			    //return ontClass;
 			    matchedClasses.put(uriTemplate, ontClass);
 			}
 			else
@@ -793,9 +774,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Query getQuery()
     {
-	//return getQuery(this);
-	//return getQuery(ResourceFactory.createResource(getUriInfo().getAbsolutePath().toString()));
-	return query;
+	return getQueryBuilder().build();
     }
 
     /**

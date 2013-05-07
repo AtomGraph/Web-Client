@@ -139,7 +139,8 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/{path: .*}?mode={mode: .+}"
 	] ;
-    spin:constraint [ a gp:DescribeTemplate ] ;
+    # spin:constraint [ a gp:DescribeTemplate ] ;
+    spin:constraint [ a gp:ConstructTemplate ] ;
     rdfs:label "Resource" ;
     foaf:isPrimaryTopicOf <classes/mode-resource> ;
     rdfs:isDefinedBy : .
@@ -283,7 +284,7 @@ ldp:pageOf a owl:ObjectProperty ;
 	] ,
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/classes?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
+		owl:hasValue "/classes?limit={limit: [0-9]+}&offset={offset: [0-9]+}{order-by: (&order-by=[^&]+)?}"
 	] ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type owl:Class

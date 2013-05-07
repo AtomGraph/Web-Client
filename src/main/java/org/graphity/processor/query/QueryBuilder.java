@@ -369,8 +369,16 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     protected Resource getVarByName(String name)
     {
 	ResIterator it = getModel().listResourcesWithProperty(SP.varName, name);
-	if (it.hasNext()) return it.nextResource();
-	else return null;
+	
+	try
+	{
+	    if (it.hasNext()) return it.nextResource();
+	    return null;
+	}
+	finally
+	{
+	    it.close();
+	}
     }
 
     public Query build()

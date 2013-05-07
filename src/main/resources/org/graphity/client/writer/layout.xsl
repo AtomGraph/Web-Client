@@ -93,7 +93,7 @@ exclude-result-prefixes="#all">
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
-    <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID), /) else ()"/>
+    <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
     <!-- <xsl:variable name="location-mapping" select="document('../../../../../location-mapping.ttl')" as="document-node()?"/> -->
 
     <!-- <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/> -->
@@ -526,9 +526,7 @@ exclude-result-prefixes="#all">
 	    <thead>
 		<tr>
 		    <th>
-			<a href="{$absolute-path}{gc:query-string($offset, $limit, (), $desc, $mode)}">
-			    <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about" mode="gc:LabelMode"/>
-			</a>
+			<xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about" mode="gc:LabelMode"/>
 		    </th>
 
 		    <xsl:apply-templates select="$predicates" mode="gc:TableHeaderMode"/>

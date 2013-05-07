@@ -79,7 +79,7 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
 	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
     {

@@ -18,6 +18,7 @@ package org.graphity.processor.query;
 
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -106,7 +107,7 @@ public class SelectBuilder extends QueryBuilder implements Select
 	return select;
     }
 
-    public SelectBuilder limit(Long limit)
+    public SelectBuilder replaceLimit(Long limit)
     {
 	if (limit == null) throw new IllegalArgumentException("LIMIT cannot be null");
 
@@ -118,7 +119,7 @@ public class SelectBuilder extends QueryBuilder implements Select
 	return this;
     }
 
-    public SelectBuilder offset(Long offset)
+    public SelectBuilder replaceOffset(Long offset)
     {
 	if (offset == null) throw new IllegalArgumentException("OFFSET cannot be null");
 	
@@ -137,24 +138,16 @@ public class SelectBuilder extends QueryBuilder implements Select
 
     public SelectBuilder orderBy(String varName, Boolean desc)
     {
-	if (varName != null)
-	    return orderBy(SPINFactory.createVariable(getModel(), varName), desc);
-	else    
-	    return orderBy((Variable)null, desc);
+	if (varName == null) throw new IllegalArgumentException("ORDER BY variable name cannot be null");
+	
+	return orderBy(SPINFactory.createVariable(getModel(), varName), desc);
     }
-
-    public SelectBuilder orderBy(Resource var)
+    
+    public SelectBuilder orderBy(Variable var, Boolean desc)
     {
 	if (var == null) throw new IllegalArgumentException("ORDER BY resource cannot be null");
 
-	return orderBy(SPINFactory.asVariable(var), false);
-    }
-
-    public SelectBuilder orderBy(Resource var, Boolean desc)
-    {
-	if (var == null) throw new IllegalArgumentException("ORDER BY resource cannot be null");
-
-	return orderBy(SPINFactory.asVariable(var), desc);
+	return orderBy((Resource)var, desc);
     }
 
     public SelectBuilder orderBy(Variable var)
@@ -162,25 +155,52 @@ public class SelectBuilder extends QueryBuilder implements Select
 	return orderBy(var, false);
     }
     
-    public SelectBuilder orderBy(Variable var, Boolean desc)
+    public SelectBuilder orderBy(Resource expression, Boolean desc)
     {
-	if (var == null) throw new IllegalArgumentException("ORDER BY variable cannot be null");
 	if (desc == null) throw new IllegalArgumentException("DESC cannot be null");
 	
-	if (log.isTraceEnabled()) log.trace("Setting ORDER BY variable: {}", var);
-	removeAll(SP.orderBy);
-
-	Resource bnode = getModel().createResource().addProperty(SP.expression, var);
-	addProperty(SP.orderBy, getModel().createList(new RDFNode[]{bnode}));
-
 	if (desc)
-	    bnode.addProperty(RDF.type, SP.Desc);
+	    return orderBy(expression, SP.Desc);
 	else
-	    bnode.addProperty(RDF.type, SP.Asc);
+	    return orderBy(expression);
+    }
+
+    public SelectBuilder orderBy(Resource expression, Resource type)
+    {
+	if (expression == null) throw new IllegalArgumentException("ORDER BY expression cannot be null");
+	if (type == null) throw new IllegalArgumentException("ORDER BY type cannot be null");
+	if (!type.equals(SP.Asc) && !type.equals(SP.Desc)) throw new IllegalArgumentException("ORDER BY type must be sp:Asc or sp:Desc");
+
+	Resource condition = getModel().createResource().addProperty(SP.expression, expression).
+		addProperty(RDF.type, type);
+	
+	return orderBy(condition);
+    }
+
+    public SelectBuilder orderBy(Resource condition)
+    {
+	if (condition == null) throw new IllegalArgumentException("ORDER BY condition cannot be null");
+	if (log.isTraceEnabled()) log.trace("Setting ORDER BY condition: {}", condition);
+	
+	if (hasProperty(SP.orderBy))
+	    getPropertyResourceValue(SP.orderBy).as(RDFList.class).add(condition);
+	else
+	    addProperty(SP.orderBy, getModel().createList(new RDFNode[]{condition}));
 	
 	return this;
     }
-
+    
+    public SelectBuilder replaceOrderBy(RDFList conditions)
+    {
+	if (conditions == null) throw new IllegalArgumentException("ORDER BY conditions cannot be null");
+	
+	if (log.isTraceEnabled()) log.trace("Setting ORDER BY conditions: {}", conditions);
+	removeAll(SP.orderBy).
+	    addProperty(SP.orderBy, conditions);
+	
+	return this;
+    }
+    
     @Override
     public List<Resource> getResultVariables()
     {
