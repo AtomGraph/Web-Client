@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.model;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.graphity.server.model.LinkedDataResource;
 
 /**
@@ -73,13 +74,20 @@ public interface PageResource extends LinkedDataResource
      * 
      * @return previous page resource
      */
-    com.hp.hpl.jena.rdf.model.Resource getPrevious();
+    Resource getPrevious();
 
     /**
      * Get the RDF resource of the next page. Can be used for HATEOS link relations.
      * 
      * @return next page resource
      */
-    com.hp.hpl.jena.rdf.model.Resource getNext();
+    Resource getNext();
+
+    /**
+     * Get the RDF resource of the container of this page. Can be used for HATEOS link relations.
+     * 
+     * @return container resource
+     */
+    Resource getContainer();
 
 }

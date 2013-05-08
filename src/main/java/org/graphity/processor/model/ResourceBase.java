@@ -140,7 +140,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		endpoint, cacheControl,
 		limit, offset, orderBy, desc);
 	
-	if (log.isDebugEnabled()) log.debug("Constructing Graphity Server ResourceBase");
+	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
     }
 
     /**
@@ -359,9 +359,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
-	    OntResource container = getPropertyResourceValue(LDP.pageOf).as(OntResource.class);
 	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(),
-		    container, getEndpoint(), getCacheControl(),
+		    getContainer().as(OntResource.class), getEndpoint(), getCacheControl(),
 		    getLimit(), getOffset(), getOrderBy(), getDesc());
 	    description.add(DataManager.get().loadModel(ldc.getModel(), ldc.getQuery()));
 	}
@@ -443,6 +442,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public TemplateCall getTemplateCall(OntClass ontClass)
     {
+	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (!ontClass.hasProperty(SPIN.constraint))
 	    throw new IllegalArgumentException("Resource OntClass must have a SPIN constraint Template");	    
 
@@ -465,6 +465,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public Query getQuery(TemplateCall call, Resource resource)
     {
 	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
+	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 	
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
@@ -481,6 +482,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final OntClass matchOntClass(URI uri, URI base)
     {
+	if (uri == null) throw new IllegalArgumentException("URI being matched cannot be null");
+	if (base == null) throw new IllegalArgumentException("Base URI cannot be null");
+	if (!uri.isAbsolute()) throw new IllegalArgumentException("URI being matched \"" + uri + "\" is not absolute");
+	if (base.relativize(uri).equals(uri)) throw new IllegalArgumentException("URI being matched \"" + uri + "\" is not relative to the base URI \"" + base + "\"");
+	    
 	StringBuilder path = new StringBuilder();
 	// instead of path, include query string by relativizing request URI against base URI
 	path.append("/").append(base.relativize(uri));
@@ -503,6 +509,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final OntClass matchOntClass(CharSequence path)
     {
+	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
 	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();
 
 	try
@@ -624,6 +631,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public RDFNode getRestrictionHasValue(OntClass ontClass, OntProperty property)
     {
+	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+	if (property == null) throw new IllegalArgumentException("OntProperty cannot be null");
+	
 	ExtendedIterator<OntClass> it = ontClass.listSuperClasses(true);
 	
 	try
@@ -647,6 +657,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	}
     }
 
+    /**
+     * Returns container resource of this page resource (<code>ldp:pageOf</code> value).
+     * If this resource is not a page, null is returned.
+     * 
+     * @return container resource or null
+     */
+    @Override
+    public Resource getContainer()
+    {
+	return getPropertyResourceValue(LDP.pageOf);
+    }
+    
     /**
      * Returns URI builder instantiated with pagination parameters for the previous page.
      * 

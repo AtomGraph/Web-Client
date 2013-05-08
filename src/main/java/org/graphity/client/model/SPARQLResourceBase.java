@@ -26,6 +26,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class SPARQLResourceBase extends ResourceBase
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
-		new SPARQLEndpointBase(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
+		SPARQLEndpointFactory.createEndpoint(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
 		    uriInfo, request, resourceConfig),
 		resourceConfig.getProperty(GS.cacheControl.getURI()) == null ?
 		    null :
@@ -64,8 +65,8 @@ public class SPARQLResourceBase extends ResourceBase
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint,
-	    CacheControl cacheControl, Long limit, Long offset, String orderBy, Boolean desc,
+	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    Long limit, Long offset, String orderBy, Boolean desc,
 	    List<Variant> variants, Query userQuery)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
