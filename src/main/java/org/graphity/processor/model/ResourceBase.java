@@ -676,11 +676,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final UriBuilder getPreviousUriBuilder()
     {
-	return getUriInfo().getAbsolutePathBuilder().
+	UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
 	    queryParam("limit", getLimit()).
 	    queryParam("offset", getOffset() - getLimit());
-	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
+	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
+	
+	return uriBuilder;
     }
     
     /**
@@ -702,11 +704,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final UriBuilder getNextUriBuilder()
     {
-	return getUriInfo().getAbsolutePathBuilder().
+	UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
 	    queryParam("limit", getLimit()).
 	    queryParam("offset", getOffset() + getLimit());
-	//if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	//if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
+	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
+	
+	return uriBuilder;
     }
     
     /**

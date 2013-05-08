@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.server.model.LinkedDataResource;
+import org.graphity.server.model.LinkedDataResourceFactory;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
 import org.graphity.server.vocabulary.GS;
@@ -208,7 +209,7 @@ public class GlobalResourceBase extends ResourceBase
 	    Model model = DataManager.get().loadModel(getTopicURI().toString());
 	    
 	    // use original Cache-Control? 
-	    LinkedDataResource topic = new LinkedDataResourceBase(model.createResource(getTopicURI().toString()),
+	    LinkedDataResource topic = LinkedDataResourceFactory.createResource(model.createResource(getTopicURI().toString()),
 		getCacheControl());
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?

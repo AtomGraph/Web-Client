@@ -37,7 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SPARQL endpoint base class. Implements SPARQL Protocol for RDF.
+ * Base class of SPARQL endpoints proxies.
+ * Given a remote endpoint, it functions as a proxy and forwards SPARQL HTTP protocol requests to a remote SPARQL endpoint.
+ * Otherwise, the endpoint serves the sitemap ontology of the application.
+ * 
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
@@ -49,6 +52,17 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
     private final UriInfo uriInfo;
 
+    /**
+     * JAX-RS-compatible resource constructor with injected initialization objects.
+     * Uses <code>void:sparqlEndpoint</code> parameter value from web.xml as endpoint URI, if present.
+     * Otherwise, uses <code>@Path</code> annotation value for this class (usually <code>/sparql</code> to
+     * build local endpoint URI.
+     * 
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param resourceConfig webapp configuration
+     * @param sitemap ontology of this webapp
+     */
     public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap)
     {
@@ -60,6 +74,15 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 		uriInfo, request, resourceConfig);
     }
 
+    /**
+     * Protected constructor with explicit endpoint resource.
+     * Not suitable for JAX-RS but can be used when subclassing.
+     * 
+     * @param endpoint RDF resource of this endpoint (must be URI resource, not a blank node)
+     * @param uriInfo URI information of the current request
+     * @param request current request
+     * @param resourceConfig webapp configuration
+     */
     protected SPARQLEndpointBase(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
 	super(endpoint, request, resourceConfig);
@@ -74,11 +97,22 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	}
     }
 
+    /**
+     * Builds URI resource of the local SPARQL endpoint (which is serving the sitemap ontology).
+     * 
+     * @return endpoint resource
+     */
     public Resource getOntModelEndpoint()
     {
 	return getOntModelEndpoint(getUriInfo());
     }
-    
+
+    /**
+     * Builds local SPARQL endpoint resource from URI information of a request.
+     * 
+     * @param uriInfo URI information of the current request
+     * @return resource
+     */
     public final Resource getOntModelEndpoint(UriInfo uriInfo)
     {
 	return ResourceFactory.createResource(uriInfo.
@@ -87,9 +121,19 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 		build().toString());
     }
     
+    /**
+     * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
+     * 
+     * @param endpoint endpoint resource
+     * @param query query object
+     * @return loaded model
+     */
     @Override
     public Model loadModel(Resource endpoint, Query query)
     {
+	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
+	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
+
 	if (endpoint.getURI().equals(getOntModelEndpoint().getURI()))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
@@ -102,9 +146,19 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	}
     }
 
+    /**
+     * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
+     * 
+     * @param endpoint endpoint resource
+     * @param query query object
+     * @return loaded model
+     */
     @Override
     public ResultSetRewindable loadResultSetRewindable(Resource endpoint, Query query)
     {
+	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
+	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
+
 	if (endpoint.getURI().equals(getOntModelEndpoint().getURI()))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
@@ -117,31 +171,45 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	}
     }
 
-    public ResponseBuilder getResponseBuilder(Query queryParam, Model model)
+    /**
+     * Creates a response builder from SPARQL query and RDF model.
+     * Contains the main SPARQL endpoint JAX-RS implementation logic.
+     * Uses <code>gs:resultLimit</code> parameter value from web.xml as <code>LIMIT</code> value on <code>SELECT</code> queries, if present.
+     * 
+     * @param query query object
+     * @param model RDF model
+     * @return response builder
+     */
+    public ResponseBuilder getResponseBuilder(Query query, Model model)
     {
-	if (queryParam == null) throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	if (query == null) throw new WebApplicationException(Response.Status.BAD_REQUEST);
 
-	if (queryParam.isSelectType())
+	if (query.isSelectType())
 	{
-	    if (log.isDebugEnabled()) log.debug("SPARQL endpoint executing SELECT query: {}", queryParam);
+	    if (log.isDebugEnabled()) log.debug("SPARQL endpoint executing SELECT query: {}", query);
 	    if (getResourceConfig().getProperty(GS.resultLimit.getURI()) != null)
-		queryParam.setLimit(Long.parseLong(getResourceConfig().
+		query.setLimit(Long.parseLong(getResourceConfig().
 			getProperty(GS.resultLimit.getURI()).toString()));
 
-	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model: {} using Query: {}", model, queryParam);
-	    return getResponseBuilder(DataManager.get().loadResultSet(model, queryParam));
+	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model: {} using Query: {}", model, query);
+	    return getResponseBuilder(DataManager.get().loadResultSet(model, query));
 	}
 
-	if (queryParam.isConstructType() || queryParam.isDescribeType())
+	if (query.isConstructType() || query.isDescribeType())
 	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from Model: {} using Query: {}", model, queryParam);
-	    return getResponseBuilder(DataManager.get().loadModel(model, queryParam));
+	    if (log.isDebugEnabled()) log.debug("Loading Model from Model: {} using Query: {}", model, query);
+	    return getResponseBuilder(DataManager.get().loadModel(model, query));
 	}
 
-	if (log.isWarnEnabled()) log.warn("SPARQL endpoint received unknown type of query: {}", queryParam);
+	if (log.isWarnEnabled()) log.warn("SPARQL endpoint received unknown type of query: {}", query);
 	throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
 
+    /**
+     * Returns URI information of the current request.
+     * 
+     * @return URI information
+     */
     public UriInfo getUriInfo()
     {
 	return uriInfo;
