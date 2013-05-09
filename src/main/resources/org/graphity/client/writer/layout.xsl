@@ -83,7 +83,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
-    <xsl:param name="order-by" select="key('resources', $orderBy/sp:expression/@rdf:resource)/sp:varName" as="xs:string?"/>
+    <xsl:param name="order-by" select="key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
     <xsl:param name="desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
     <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>

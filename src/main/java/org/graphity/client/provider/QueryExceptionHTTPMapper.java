@@ -16,25 +16,24 @@
  */
 package org.graphity.client.provider;
 
-import com.hp.hpl.jena.shared.DoesNotExistException;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 
 /**
- * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.
+ * Maps (tunnels) Jena's remote query execution exception.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Provider
-public class DoesNotExistExceptionMapper implements ExceptionMapper<DoesNotExistException>
+public class QueryExceptionHTTPMapper implements ExceptionMapper<QueryExceptionHTTP>
 {
 
     @Override
-    public Response toResponse(DoesNotExistException ae)
+    public Response toResponse(QueryExceptionHTTP qe)
     {
 	return Response.
-		status(Response.Status.NOT_FOUND).
+		status(qe.getResponseCode()).
+		//entity(qe.getResponseMessage()). // setting entity disables default Tomcat error page
 		build();
     }
 
