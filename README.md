@@ -6,8 +6,29 @@ It can be used for exploration and browsing of remote datasources, publishing an
 
 Building a data-intensive Web application on Graphity Browser is as simple as overriding generic stylesheets with own layout and defining necessary queries.
 
-Features
---------
+Linked Data
+===========
+
+Linked Data is a data integration technology based on the RDF data model. It is the first solution that can solve
+the information silo problems on a global scale and enable distributed generic Web applications.
+
+Read more about Linked Data: [Reinventing Web applications](https://github.com/Graphity/graphity-browser/wiki/Reinventing-Web-applications).
+
+What it does
+============
+
+Graphity LDP is a fully extensible generic Linked Data platform for building Web applications.
+It can be used for publishing and analysis of open data, as well as import and integration of private user data.
+
+The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin mechanisms for importing file formats and APIs as RDF.
+
+* interfaces and base classes for rapid building of Linked Data webapps
+* high- and low-level access to remote Linked Data resources and SPARQL endpoints
+* providers for input and output of RDF data, either raw or via XSLT transformations
+* behind-the-scenes access of non-Linked Data resources via GRDDL
+* mapping and resolution of URIs to known schemas/ontologies
+* HTTP caching & authentication
+* easy XSLT transformation and SPARQL query building
 
 * user interface built from schema/ontology metadata (most popular ones are included)
 * embedded multimedia (currently images only)
@@ -19,13 +40,28 @@ Features
 * pagination in container (list/table) mode
 * serialization as XHTML, RDF/XML, and Turtle
 
-Screenshot
-----------
+How it works
+============
 
-![Tim Berners-Lee FOAF profile](http://cloud.github.com/downloads/Graphity/graphity-browser/Graphity%20-%20Tim%20Berners-Lee%20%5Bhttp%20%20%20dbpedia.org%20resource%20Tim_Berners-Lee%20-095011.png)
+Graphity Client can be used a standalone browser for exploring Linked Data sources and SPARQL triplestores.
+However, its strength lies in its _extreme_ extensibility. 3rd party Linked Data webapps can be rapidly built
+by including, extending, or overriding the relevant classes and XSLT stylesheets from the Client.
+
+Templates
+POWDER
+URI address templates map to SPARQL query templates.
+
+URI
+
+`/{container}` redirects to `/{container}?limit={limit: [0-9]+}&offset={offset: [0-9]+}`
+
+Rules
+Self-serving if no SPARQL endpoint is provided
 
 Demonstration
 =============
+
+![Tim Berners-Lee FOAF profile](http://cloud.github.com/downloads/Graphity/graphity-browser/Graphity%20-%20Tim%20Berners-Lee%20%5Bhttp%20%20%20dbpedia.org%20resource%20Tim_Berners-Lee%20-095011.png)
 
 An instance of this browser runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
 
@@ -34,18 +70,31 @@ _Note: the server is not production-grade._
 Installation
 ============
 
-Graphity Browser is a [Maven Web application](http://maven.apache.org/guides/mini/guide-webapp.html).
-
-You have the following options to install Graphity Browser:
-* checkout the source code from the Git repository and build it as a Maven webapp
-* [download](https://github.com/Graphity/graphity-browser/downloads) the project as a standalone `.war` webapp and deploy it in a servlet container (such as Tomcat)
-* [download](https://github.com/Graphity/graphity-browser/downloads) the project as a `.jar` library and include it in your Java project (Maven repository is not available yet)
-
-Java code
-=========
-
-Browser LDP application
+Running standalone Client
 --------------------------
+
+To run Graphity Client:
+* checkout the source code from this Git repository
+* build it as a [Maven Web application](http://maven.apache.org/guides/mini/guide-webapp.html)
+* run the webapp in an IDE or deploy the `.war` on a servlet container such as Tomcat
+* open the webapp in a browser (on an address such as `http://localhost:8080/`; depends on host and/or context path)
+
+Using Client in your [Maven Web application](http://maven.apache.org/guides/mini/guide-webapp.html)
+-------------------------------------
+
+To add Graphity Client dependency:
+* checkout the source code from this Git repository
+* build it as a Maven Java application
+* add Graphity Client as a Maven dependency in your project using an IDE, or in the 'pom.xml' file
+
+    <dependency>
+	<groupId>org.graphity</groupId>
+	<artifactId>client</artifactId>
+	<version>1.0.7-SNAPSHOT</version>
+    </dependency>
+
+Extending Client
+----------------
 
 This generic Linked Data browser is an example of a webapp that can be built on Graphity LDP.
 3rd party Linked Data webapps can be rapidly built by including, extending, or overriding the relevant classes and XSLT stylesheets from this package.
@@ -61,7 +110,7 @@ This generic Linked Data browser is an example of a webapp that can be built on 
 Used libraries
 --------------
 
-* [Graphity LDP](https://github.com/Graphity/graphity-ldp)
+* [Graphity Server](https://github.com/Graphity/graphity-ldp)
 * [Saxonica Saxon](http://saxon.sourceforge.net)
 
 Maven dependencies are discovered automatically from `pom.xml`.
