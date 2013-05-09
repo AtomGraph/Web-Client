@@ -47,7 +47,7 @@ Graphity Client can be used a standalone browser for exploring Linked Data sourc
 However, its strength lies in its _extreme_ extensibility. 3rd party Linked Data webapps can be rapidly built
 by including, extending, or overriding the relevant classes and XSLT stylesheets from the Client.
 
-Templates
+Templates huh
 POWDER
 URI address templates map to SPARQL query templates.
 
