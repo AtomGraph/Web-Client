@@ -22,7 +22,7 @@ RDF data model is graph-shaped and has multiple syntaxes: both XML-based (RDF/XM
 [SPARQL 1.1](http://www.w3.org/TR/sparql11-query/) is the latest specification of the RDF query language,
 supported by most RDF databases, called triplestores.
 
-Read more about how Linked Data solves data integration: [Reinventing Web applications](wiki/Reinventing-Web-applications).
+Read more about how Linked Data solves data integration: [Reinventing Web applications](/wiki/Reinventing-Web-applications).
 
 What Graphity does
 ==================
