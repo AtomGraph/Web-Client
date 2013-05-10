@@ -45,6 +45,7 @@ What Graphity can be quickly extended to do:
 * store RDF data directly from HTML forms into the triplestore
 * search by dynamically adding filters to the query
 * faceted browsing by dynamically binding variable values in the query
+* SPARQL result visualizations using different JavaScript APIs
 * ordering tables by property columns. Columns need to be mapped to query variables.
 
 What Graphity provides for developers:
@@ -62,12 +63,10 @@ How it works
 ============
 
 The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin
-mechanisms for importing file formats and APIs as RDF. Webapps can be rapidly built by including, extending, or
-overriding the relevant classes and XSLT stylesheets from the Client.
-
-Building a data-oriented Web application on
-Graphity is as simple as overriding XSLT templates to change the layout, entering URI templates to change the
-sitemap and attach SPARQL queries to retrieve the right data.
+mechanisms for importing file formats and APIs as RDF. Building a data-oriented Web application on Graphity is
+as simple as overriding XSLT templates to change the layout, entering URI templates to change the sitemap and
+attach SPARQL queries to retrieve the right data. Relevant Client classes and templates can be included and
+extended.
 
 URIs in RDF need to be relative to the base URI of the Web application.
 RDF hash as `Entity-Tag` header value
