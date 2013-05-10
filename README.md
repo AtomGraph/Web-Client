@@ -48,6 +48,15 @@ What Graphity can be quickly extended to do:
 * SPARQL result visualizations using different JavaScript APIs
 * ordering tables by property columns. Columns need to be mapped to query variables.
 
+How it works
+============
+
+The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin
+mechanisms for importing file formats and APIs as RDF. Building a data-oriented Web application on Graphity is
+as simple as overriding XSLT templates to change the layout, entering URI templates to change the sitemap and
+attach SPARQL queries to retrieve the right data. Relevant Client classes and templates can be included and
+extended.
+
 What Graphity provides for developers:
 * open-source code base built on established frameworks such as Jena, Jersey, and Saxon
 * support of established vocabularies such as FOAF and SIOC
@@ -57,15 +66,6 @@ What Graphity provides for developers:
 * input/output providers for RDF data (raw, via RDF/POST and/or XSLT transformations)
 * behind-the-scenes access of non-Linked Data resources
 * HTTP authentication support
-
-How it works
-============
-
-The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin
-mechanisms for importing file formats and APIs as RDF. Building a data-oriented Web application on Graphity is
-as simple as overriding XSLT templates to change the layout, entering URI templates to change the sitemap and
-attach SPARQL queries to retrieve the right data. Relevant Client classes and templates can be included and
-extended.
 
 RDF hash as `Entity-Tag` header value
 
@@ -90,6 +90,7 @@ Redirect to first page of container
 HATEOS support. Pagination is implemented using hypermedia links.
 
 
+Creating a new resource class?
 Javadoc
 Grapity Client is licensed as GPL, Graphity Server as Apache.
 
@@ -123,9 +124,9 @@ To add Graphity Client dependency:
 * add Graphity Client as a Maven dependency in your project using an IDE, or in the 'pom.xml' file
 
     <dependency>
-	<groupId>org.graphity</groupId>
-	<artifactId>client</artifactId>
-	<version>1.0.7-SNAPSHOT</version>
+        <groupId>org.graphity</groupId>
+        <artifactId>client</artifactId>
+        <version>1.0.7-SNAPSHOT</version>
     </dependency>
 
 Used libraries
