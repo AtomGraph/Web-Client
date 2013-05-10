@@ -53,7 +53,6 @@ What Graphity provides for developers:
 * support of established vocabularies such as FOAF and SIOC
 * fine-grained XLST templates for different Bootstrap layout components
 * builder classes for XSLT transformation and SPARQL queries
-* HATEOS support. Pagination is implemented using hypermedia links.
 * high- and low-level access to remote Linked Data resources and SPARQL endpoints
 * input/output providers for RDF data (raw, via RDF/POST and/or XSLT transformations)
 * behind-the-scenes access of non-Linked Data resources
@@ -68,7 +67,6 @@ as simple as overriding XSLT templates to change the layout, entering URI templa
 attach SPARQL queries to retrieve the right data. Relevant Client classes and templates can be included and
 extended.
 
-URIs in RDF need to be relative to the base URI of the Web application.
 RDF hash as `Entity-Tag` header value
 
 Templates - open-source, incremental, reusable
@@ -84,13 +82,13 @@ Saxon
 
 URI address templates map to SPARQL query templates.
 
-URI
-
-`/{container}` redirects to `/{container}?limit={limit: [0-9]+}&offset={offset: [0-9]+}`
-
 Rules
+URIs in RDF need to be relative to the base URI of the Web application.
 Self-serving if no SPARQL endpoint is provided
 Redirect to first page of container
+`/{container}` redirects to `/{container}?limit={limit: [0-9]+}&offset={offset: [0-9]+}`
+HATEOS support. Pagination is implemented using hypermedia links.
+
 
 Javadoc
 Grapity Client is licensed as GPL, Graphity Server as Apache.
