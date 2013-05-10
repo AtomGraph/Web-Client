@@ -1,54 +1,88 @@
 Description
 ===========
 
-Graphity Browser is a fully extensible generic Linked Data browser, built as a sample application on [Graphity Linked Data Platform](https://github.com/Graphity/graphity-ldp).
-It can be used for exploration and browsing of remote datasources, publishing and analysis of open data, as well as import and integration of private user data.
+Consider this setup: you have a triplestore with RDF data, and you want to publish it as read-write Linked Data
+on your hostname. You also want to be able to intuitively browse through it, and build user-friendly Web
+applications on it.
 
-Building a data-intensive Web application on Graphity Browser is as simple as overriding generic stylesheets with own layout and defining necessary queries.
+Graphity is a Linked Data platform that allows you to do all that and more. Its native support and direct use of
+standard RDF, SPARQL and XSLT technologies enable extremely extensible and flexible design and lead the way
+towards declarative Web development.
+The sitemap structure is defined in an ontology using URI templates, the content of the page (its resource
+description) is defined using query templates, while the user interface is the result of a transformation on the
+content data.
 
-Linked Data
-===========
+What is Linked Data
+===================
 
 Linked Data is a data integration technology based on the RDF data model. It is the first solution that can solve
 the information silo problems on a global scale and enable distributed generic Web applications.
 
-Read more about Linked Data: [Reinventing Web applications](https://github.com/Graphity/graphity-browser/wiki/Reinventing-Web-applications).
+RDF data model is graph-shaped and has multiple syntaxes: both XML-based (RDF/XML) and plain-text (Turtle).
+[SPARQL 1.1](http://www.w3.org/TR/sparql11-query/) is the latest specification of the RDF query language,
+supported by most RDF databases, called triplestores.
 
-What it does
-============
+Read more about how Linked Data solves data integration: [Reinventing Web applications](wiki/Reinventing-Web-applications).
 
-Graphity LDP is a fully extensible generic Linked Data platform for building Web applications.
-It can be used for publishing and analysis of open data, as well as import and integration of private user data.
+What Graphity does
+==================
 
-The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin mechanisms for importing file formats and APIs as RDF.
+Graphity is a fully extensible generic Linked Data client and platform. It can be used for exploration and
+browsing of remote datasources, publishing and analysis of open data, as well as import and integration of
+private user data. Building a data-intensive Web application on Graphity is as simple as overriding generic
+stylesheets with own layout and defining URI-query template mappings.
 
-* interfaces and base classes for rapid building of Linked Data webapps
-* high- and low-level access to remote Linked Data resources and SPARQL endpoints
-* providers for input and output of RDF data, either raw or via XSLT transformations
-* behind-the-scenes access of non-Linked Data resources via GRDDL
-* mapping and resolution of URIs to known schemas/ontologies
-* HTTP caching & authentication
-* easy XSLT transformation and SPARQL query building
-
-* user interface built from schema/ontology metadata (most popular ones are included)
-* embedded multimedia (currently images only)
-* user input via RDF/POST-encoded HTML forms
-* SPARQL endpoint with interactive results
-* HTTP caching
-* switching interface language at any point
+What Graphity provides for users as out-of-the-box generic features:
+* default Linked Data user interface built with Twitter Bootstrap
 * multiple rendering modes (currently item/list/table)
-* pagination in container (list/table) mode
-* serialization as XHTML, RDF/XML, and Turtle
+* control of the published data by defining templates
+* pagination on container resources
+* SPARQL endpoint with interactive results
+* loading RDF data from remote Linked Data sources
+* HTTP caching
+
+What Graphity can be quickly extended to do:
+* store RDF data directly from HTML forms into the triplestore
+* search by dynamically adding filters to the query
+* faceted browsing by dynamically binding variable values in the query
+* ordering tables by property columns. Columns need to be mapped to query variables.
+
+What Graphity provides for developers:
+* open-source code base built on established frameworks such as Jena, Jersey, and Saxon
+* support of established vocabularies such as FOAF and SIOC
+* fine-grained XLST templates for different Bootstrap layout components
+* builder classes for XSLT transformation and SPARQL queries
+* HATEOS support. Pagination is implemented using hypermedia links.
+* high- and low-level access to remote Linked Data resources and SPARQL endpoints
+* input/output providers for RDF data (raw, via RDF/POST and/or XSLT transformations)
+* behind-the-scenes access of non-Linked Data resources
+* HTTP authentication support
 
 How it works
 ============
 
-Graphity Client can be used a standalone browser for exploring Linked Data sources and SPARQL triplestores.
-However, its strength lies in its _extreme_ extensibility. 3rd party Linked Data webapps can be rapidly built
-by including, extending, or overriding the relevant classes and XSLT stylesheets from the Client.
+The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin
+mechanisms for importing file formats and APIs as RDF. Webapps can be rapidly built by including, extending, or
+overriding the relevant classes and XSLT stylesheets from the Client.
 
-Templates huh
+Building a data-oriented Web application on
+Graphity is as simple as overriding XSLT templates to change the layout, entering URI templates to change the
+sitemap and attach SPARQL queries to retrieve the right data.
+
+URIs in RDF need to be relative to the base URI of the Web application.
+RDF hash as `Entity-Tag` header value
+
+Templates - open-source, incremental, reusable
 POWDER
+Bootstrap
+Jena
+SPIN
+URI templates and attaching SPIN SPARQL templates to them
+
+GRDDL
+XSLT combines RDF content with metadata from schemas and ontologies.
+Saxon
+
 URI address templates map to SPARQL query templates.
 
 URI
@@ -57,6 +91,10 @@ URI
 
 Rules
 Self-serving if no SPARQL endpoint is provided
+Redirect to first page of container
+
+Javadoc
+Grapity Client is licensed as GPL, Graphity Server as Apache.
 
 Demonstration
 =============
@@ -93,20 +131,6 @@ To add Graphity Client dependency:
 	<version>1.0.7-SNAPSHOT</version>
     </dependency>
 
-Extending Client
-----------------
-
-This generic Linked Data browser is an example of a webapp that can be built on Graphity LDP.
-3rd party Linked Data webapps can be rapidly built by including, extending, or overriding the relevant classes and XSLT stylesheets from this package.
-
-* [`org.graphity.browser`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser): Classes shared by all Graphity Browser applications
-    * [`org.graphity.browser.Application`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Application.java): Subclass to get an entry point to the webapp. [JAX-RS](http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) Resources, [`Provider`s](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/ext/Providers.html), and configuration is initialized here
-    * [`org.graphity.browser.Resource`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/Resource.java): Base class for all Browser Resources and apps built on it.
-    * [`org.graphity.browser.provider`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider): Browser-specific `Provider` subclasses
-        * [`org.graphity.browser.provider.xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/provider/xslt): Browser-specific subclasses for writing [`Response`](http://jackson.codehaus.org/javadoc/jax-rs/1.0/javax/ws/rs/core/Response.html). XSLT stylesheets located [`here`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt) and its subfolders. They translate request parameters into XSLT parameters.
-    * [`org.graphity.browser.resource`](https://github.com/Graphity/graphity-browser/tree/master/src/main/java/org/graphity/browser/resource): Custom JAX-RS Resources
-        * [`org.graphity.browser.resource.SPARQLEndpoint`](https://github.com/Graphity/graphity-browser/blob/master/src/main/java/org/graphity/browser/resource/SPARQLEndpoint.java): SPARQL endpoint
-
 Used libraries
 --------------
 
@@ -114,51 +138,6 @@ Used libraries
 * [Saxonica Saxon](http://saxon.sourceforge.net)
 
 Maven dependencies are discovered automatically from `pom.xml`.
-
-XSLT stylesheets
-================
-
-XHTML
------
-
-* [`resources/org/graphity/browser/provider/xslt`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt)
-    * [`imports`](https://github.com/Graphity/graphity-browser/tree/master/src/main/resources/org/graphity/browser/provider/xslt/imports): Ontology-specific stylesheets (e.g. overriding templates for certain properties), imported by the master stylesheet
-        * [`default.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/imports/default.xsl): Default templates and functions for rendering RDF/XML subject/predicate/object nodes as XHTML elements. Design-independent.
-    * [`Resource.xsl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/provider/xslt/Resource.xsl): master stylesheet (includes design) for rendering RDF/XML with both single and multiple resources (lists) into XHTML
-
-
-Using resources in your project
--------------------------------
-
-In order to include the above stylesheets into your own Maven project, you can add the following execution for `maven-dependency-plugin` to your `pom.xml`:
-
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-dependency-plugin</artifactId>
-      <version>2.1</version>
-      <executions>
-        <execution>
-          <id>resource-dependencies</id>
-          <phase>generate-resources</phase>
-          <goals>
-            <goal>unpack-dependencies</goal>
-          </goals>
-          <configuration>
-            <includeArtifactIds>browser</includeArtifactIds>
-            <includeGroupIds>org.graphity</includeGroupIds>
-            <includes>**\/*.xsl</includes>
-            <outputDirectory>${project.build.directory}/classes</outputDirectory>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin>
-
-This will copy all reusable `.xsl` files from browser's `resource` folder.
-
-Resources
-=========
-
-* [`resources/org/graphity/browser/vocabulary/ontology.ttl`](https://github.com/Graphity/graphity-browser/blob/master/src/main/resources/org/graphity/browser/vocabulary/ontology.ttl): Application-specific ontology/sitemap. Imports general Graphity ontology. Contains metadata of JAX-RS Resources as well as SPIN query Resources used by them.
 
 Tools
 =====
