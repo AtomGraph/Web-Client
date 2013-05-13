@@ -6,11 +6,12 @@ on your hostname. You also want to be able to intuitively browse through it, and
 applications on it.
 
 Graphity is a Linked Data platform that allows you to do all that and more. Its native support and direct use of
-standard RDF, SPARQL and XSLT technologies enable extremely extensible and flexible design and lead the way
-towards declarative Web development.
-The sitemap structure is defined in an ontology using URI templates, the content of the page (its resource
-description) is defined using query templates, while the user interface is the result of a transformation on the
-content data.
+standard RDF, SPARQL and XSLT technologies enable extremely extensible and flexible design. You can forget all
+about broken hyperlinks and concentrate on building great apps on quality data.
+
+Graphity leads the way towards declarative Web development. The sitemap structure is defined in an ontology using
+URI templates, the content of the page (its resource description) is defined using query templates, while the
+user interface is the result of a transformation on the content data.
 
 What is Linked Data
 ===================
@@ -18,9 +19,9 @@ What is Linked Data
 Linked Data is a data integration technology based on the RDF data model. It is the first solution that can solve
 the information silo problems on a global scale and enable distributed generic Web applications.
 
-RDF data model is graph-shaped and has multiple syntaxes: both XML-based (RDF/XML) and plain-text (Turtle).
-[SPARQL 1.1](http://www.w3.org/TR/sparql11-query/) is the latest specification of the RDF query language,
-supported by most RDF databases, called triplestores.
+RDF is a graph-shaped data model that identifies resources (nodes) with URIs. It has multiple syntaxes: both
+XML-based (RDF/XML) and plain-text (Turtle). [SPARQL 1.1](http://www.w3.org/TR/sparql11-query/) is the latest
+specification of the RDF query language, supported by most RDF databases, called triplestores.
 
 Read more about how Linked Data solves data integration: [Reinventing Web applications](../../wiki/Reinventing-Web-applications).
 
@@ -33,16 +34,17 @@ private user data. Building a data-intensive Web application on Graphity is as s
 stylesheets with own layout and defining URI-query template mappings.
 
 What Graphity provides for users as out-of-the-box generic features:
-* default Linked Data user interface built with Twitter Bootstrap
+* multilingual, responsive Linked Data user interface built with Twitter Bootstrap
 * multiple rendering modes (currently item/list/table)
 * control of the published data by defining templates
 * pagination on container resources
 * SPARQL endpoint with interactive results
 * loading RDF data from remote Linked Data sources
-* HTTP caching
+* HTTP content negotiation and caching
 
 What Graphity can be quickly extended to do:
 * store RDF data directly from HTML forms into the triplestore
+* control RDF input quality with SPARQL-based constraints
 * search by dynamically adding filters to the query
 * faceted browsing by dynamically binding variable values in the query
 * SPARQL result visualizations using different JavaScript APIs
@@ -50,6 +52,8 @@ What Graphity can be quickly extended to do:
 
 How it works
 ============
+
+Linked Data processor. Architecture independent of programming platform.
 
 The platform supports standard RDF access methods such as Linked Data and SPARQL endpoints, and includes plugin
 mechanisms for importing file formats and APIs as RDF. Building a data-oriented Web application on Graphity is
@@ -69,7 +73,7 @@ What Graphity provides for developers:
 
 RDF hash as `Entity-Tag` header value
 
-Templates - open-source, incremental, reusable
+Templates - open-source, incremental, reusable, collaborative! community
 POWDER
 Bootstrap
 Jena

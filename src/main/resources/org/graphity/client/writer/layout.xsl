@@ -130,44 +130,52 @@ exclude-result-prefixes="#all">
     <xsl:template match="/">
 	<html>
 	    <head>
-		<title>
-		    <xsl:apply-templates mode="gc:TitleMode"/>
-		</title>
-		<base href="{$base-uri}" />
-		
-		<xsl:for-each select="key('resources', $base-uri, $ont-model)">
-		    <meta name="author" content="{dct:creator/@rdf:resource}"/>
-		</xsl:for-each>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		
-		<xsl:apply-templates mode="gc:StyleMode"/>
-		<xsl:apply-templates mode="gc:ScriptMode"/>
+		<xsl:apply-templates select="." mode="gc:HeadMode"/>
       	    </head>
 	    <body>
-		<div class="navbar navbar-fixed-top">
-		    <div class="navbar-inner">
-			<div class="container-fluid">    
-			    <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-			</div>
-		    </div>
-		</div>
-
-		<div class="container-fluid">
-		    <div class="row-fluid">
-			<xsl:variable name="grouped-rdf" as="document-node()">
-			    <xsl:apply-templates select="." mode="gc:GroupTriples"/>
-			</xsl:variable>
-			<xsl:apply-templates select="$grouped-rdf/rdf:RDF"/>
-		    </div>		    
-		    
-		    <div class="footer">
-			<xsl:apply-templates select="." mode="gc:FooterMode"/>
-		    </div>
-		</div>
+		<xsl:apply-templates select="." mode="gc:BodyMode"/>
 	    </body>
 	</html>
     </xsl:template>
 
+    <xsl:template match="/" mode="gc:HeadMode">
+	<title>
+	    <xsl:apply-templates mode="gc:TitleMode"/>
+	</title>
+	<base href="{$base-uri}" />
+
+	<xsl:for-each select="key('resources', $base-uri, $ont-model)">
+	    <meta name="author" content="{dct:creator/@rdf:resource}"/>
+	</xsl:for-each>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+	<xsl:apply-templates mode="gc:StyleMode"/>
+	<xsl:apply-templates mode="gc:ScriptMode"/>
+    </xsl:template>
+    
+    <xsl:template match="/" mode="gc:BodyMode">
+	<div class="navbar navbar-fixed-top">
+	    <div class="navbar-inner">
+		<div class="container-fluid">    
+		    <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+		</div>
+	    </div>
+	</div>
+
+	<div class="container-fluid">
+	    <div class="row-fluid">
+		<xsl:variable name="grouped-rdf" as="document-node()">
+		    <xsl:apply-templates select="." mode="gc:GroupTriples"/>
+		</xsl:variable>
+		<xsl:apply-templates select="$grouped-rdf/rdf:RDF"/>
+	    </div>		    
+
+	    <div class="footer">
+		<xsl:apply-templates select="." mode="gc:FooterMode"/>
+	    </div>
+	</div>
+    </xsl:template>
+    
     <xsl:template match="/" mode="gc:HeaderMode">
 	<a class="brand" href="{$base-uri}">
 	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:LabelMode"/>

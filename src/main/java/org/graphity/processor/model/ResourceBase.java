@@ -514,7 +514,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	try
 	{
-	    Property utProp = getOntModel().createProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
+	    Property utProp = getOntModel().createDatatypeProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
 	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<UriTemplate,OntClass>(UriTemplate.COMPARATOR);
 
 	    while (it.hasNext())

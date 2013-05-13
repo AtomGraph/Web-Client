@@ -15,7 +15,7 @@
 @prefix dct: <http://purl.org/dc/terms/> .
 
 : a owl:Ontology ;
-    owl:imports gp:, lda: , void: ;
+    owl:imports gp:, lda: , void:, foaf: ;
     dct:title "Sitemap" ;
     rdfs:label "Sitemap" ;
     dct:description "Default sitemap for SPARQL service" ;

@@ -50,7 +50,7 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
 	    @QueryParam("query") Query userQuery)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
