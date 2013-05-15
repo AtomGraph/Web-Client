@@ -23,6 +23,16 @@
     foaf:isPrimaryTopicOf <ontology> ;
     rdfs:seeAlso <sparql> .
 
+:Service a sd:Service ;
+    dct:title "Graphity Client endpoint" ;
+    sd:endpoint <sparql> ;
+    sd:supportedLanguage sd:SPARQL11Query ;
+    sd:defaultDataset [ a sd:Dataset ;
+	sd:defaultGraph [ a sd:Graph ;
+		void:triples "499"^^xsd:integer
+	    ]
+	] .
+
 :Dataset a void:Dataset ;
     dct:title "Graphity Client dataset" ;
     foaf:homepage <dataset> ;

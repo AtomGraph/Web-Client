@@ -41,7 +41,7 @@
     doap:bug-database <https://github.com/Graphity/graphity-ldp/issues> ;
     doap:wiki <https://github.com/Graphity/graphity-ldp/wiki> ;
     doap:maintainer <http://semantic-web.dk/#martynas> ;
-    doap:vendor <http://semantic-web.dk/#this> ;
+    doap:vendor <http://graphityhq.com/#company> ;
     doap:license dbpedia:GNU_General_Public_License ;
     doap:platform "Java" ;
     doap:programming-language dbpedia:XSLT,
