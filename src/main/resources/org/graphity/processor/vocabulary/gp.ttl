@@ -13,8 +13,6 @@
 @prefix lda: <http://purl.org/linked-data/api/vocab#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix doap: <http://usefulinc.com/ns/doap#> .
-@prefix dbpedia: <http://dbpedia.org/resource/> .
 
 : a owl:Ontology ;
     # owl:imports spin: ;
@@ -30,33 +28,6 @@
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
     dct:creator <http://semantic-web.dk/#martynas> ;
     rdfs:seeAlso :Project .
-
-:Project a doap:Project ;
-    doap:name "Graphity Client" ;
-    doap:created "2012-08-06"^^xsd:date ;
-    doap:repository [ a doap:GitRepository ;
-	dct:title "Graphity Client source code repository" ;
-	doap:location <https://github.com/Graphity/graphity-ldp.git> ;
-	doap:browse <https://github.com/Graphity/graphity-ldp> ] ;
-    doap:bug-database <https://github.com/Graphity/graphity-ldp/issues> ;
-    doap:wiki <https://github.com/Graphity/graphity-ldp/wiki> ;
-    doap:maintainer <http://semantic-web.dk/#martynas> ;
-    doap:vendor <http://graphityhq.com/#company> ;
-    doap:license dbpedia:GNU_General_Public_License ;
-    doap:platform "Java" ;
-    doap:programming-language dbpedia:XSLT,
-	<http://dbpedia.org/resource/Java_%28programming_language%29> ;
-    dct:subject dbpedia:Linked_Data ,
-	dbpedia:Resource_Description_Framework ,
-	dbpedia:SPARQL ,
-	dbpedia:Semantic_web ,
-	<http://dbpedia.org/resource/Category:Web_application_frameworks> ,
-	dbpedia:Open_source ;
-    dct:hasPart <http://dbpedia.org/resource/Jena_%28framework%29> ,
-	dbpedia:Saxon_XSLT ;
-    doap:release [ a doap:Version ;
-	dct:title "Graphity Client 1.0.7" ;
-	doap:revision "1.0.7" ] .
 
 # QUERIES & TEMPLATES
 
@@ -189,6 +160,24 @@ spin:_this sp:varName "this"^^xsd:string .
       sp:resultNodes (_:topicVar) ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?topic WHERE {
+    ?topic foaf:isPrimaryTopicOf ?this .
+}"""^^xsd:string ;
+      sp:where ([ sp:object spin:_this ;
+                  sp:predicate foaf:isPrimaryTopicOf ;
+                  sp:subject _:topicVar
+                ]) .
+
+_:topicVar  sp:varName "topic"^^xsd:string .
+
+# ====
+
+:DescribeWithTopicTemplate a spin:Template ;
+    spin:body :DescribeWithTopic .
+
+:DescribeWithTopic    a       sp:Describe ;
+      sp:resultNodes (spin:_this _:topicVar) ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DESCRIBE ?this ?topic WHERE {
     ?topic foaf:isPrimaryTopicOf ?this .
 }"""^^xsd:string ;
       sp:where ([ sp:object spin:_this ;

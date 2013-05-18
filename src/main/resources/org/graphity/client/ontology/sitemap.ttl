@@ -29,7 +29,7 @@
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:defaultDataset [ a sd:Dataset ;
 	sd:defaultGraph [ a sd:Graph ;
-		void:triples "499"^^xsd:integer
+		void:triples "495"^^xsd:integer
 	    ]
 	] .
 
@@ -38,11 +38,6 @@
     foaf:homepage <dataset> ;
     rdfs:isDefinedBy : ;
     void:sparqlEndpoint <sparql> .
-
-:ExternalDataset a void:Dataset ;
-    foaf:homepage <.> ;
-    void:sparqlEndpoint <http://dydra.com/graphity/ltlod/sparql> ;
-    rdfs:isDefinedBy : .
 
 # PROPERTIES
 
