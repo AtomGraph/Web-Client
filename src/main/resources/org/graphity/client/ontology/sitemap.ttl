@@ -29,7 +29,7 @@
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:defaultDataset [ a sd:Dataset ;
 	sd:defaultGraph [ a sd:Graph ;
-		void:triples "495"^^xsd:integer
+		void:triples "494"^^xsd:integer
 	    ]
 	] .
 
@@ -50,18 +50,19 @@ ldp:pageOf a owl:ObjectProperty ;
 
 <.> a sioc:Site, ldp:Container, foaf:Document ;
     dct:title "Graphity Client" ;
-    dct:description "Generic Linked Data browser and end-user-oriented framework" ;
+    dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset ;
     rdfs:seeAlso : , <sparql> .
 
 <ontology> a foaf:Document ;
+    dct:title "Ontology document" ;
     foaf:primaryTopic : ;
     rdfs:isDefinedBy : ;
-    foaf:maker _:someone ;
     void:inDataset :Dataset .
 
 <dataset> a foaf:Document ;
+    dct:title "Dataset document" ;
     foaf:primaryTopic :Dataset ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .

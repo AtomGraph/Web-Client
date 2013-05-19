@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -26,21 +26,24 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
-xmlns:sioc="&sioc;"
+xmlns:skos="&skos;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
+    <xsl:template match="skos:prefLabel" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="@rdf:about[../sioc:content[lang($lang)]] | @rdf:nodeID[../sioc:content[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
-	<p>
-	    <xsl:value-of select="substring(../sioc:content[lang($lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="@rdf:about[../skos:prefLabel[lang($lang)]] | @rdf:nodeID[../skos:prefLabel[lang($lang)]]" mode="gc:LabelMode" priority="3">
+	<xsl:variable name="label" select="../skos:prefLabel[lang($lang)][1]"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../sioc:content[not(@xml:lang)]] | @rdf:nodeID[../sioc:content[not(@xml:lang)]]" mode="gc:DescriptionMode">
-	<p>
-	    <xsl:value-of select="substring(../sioc:content[not(@xml:lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="@rdf:about[../skos:prefLabel[not(@xml:lang)]] | @rdf:nodeID[../skos:prefLabel[not(@xml:lang)]]" mode="gc:LabelMode" priority="2">
+	<xsl:variable name="label" select="../skos:prefLabel[not(@xml:lang)][1]"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../skos:prefLabel] | @rdf:about[../@skos:prefLabel] | @rdf:nodeID[../skos:prefLabel] | @rdf:nodeID[../@skos:prefLabel]" mode="gc:LabelMode">
+	<xsl:variable name="label" select="(../skos:prefLabel | ../@skos:prefLabel)[1]"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
 </xsl:stylesheet>

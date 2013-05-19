@@ -77,24 +77,17 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
     <xsl:template match="/" mode="gc:HeaderMode">
+	<button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	</button>
+
 	<a class="brand" href="{$base-uri}">
 	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:LabelMode"/>
 	</a>
 
-	<div class="nav-collapse">
-	    <!--
-	    <ul class="nav">
-		<xsl:for-each select="key('resources-by-host', $base-uri, $ont-model)/@rdf:about[not(. = $base-uri)]">
-		    <xsl:sort select="gc:label(., /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
-		    <li>
-			<xsl:if test=". = $absolute-path">
-			    <xsl:attribute name="class">active</xsl:attribute>
-			</xsl:if>
-			<xsl:apply-templates select="."/>
-		    </li>
-		</xsl:for-each>
-	    </ul>
-	    -->
+	<div id="collapsing-navbar" class="nav-collapse collapse">
 	    <form action="{$base-uri}" method="get" class="navbar-form pull-left">
 		<div class="input-append">
 		    <xsl:if test="not($uri)">
@@ -131,11 +124,9 @@ exclude-result-prefixes="#all">
 		    -->
 		</div>
 	    </form>
-	</div>
-	
-	<xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
-	    <div class="nav-collapse pull-right">
-		<ul class="nav">
+
+	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+		<ul class="nav pull-right">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
 			<li>
 			    <xsl:if test=". = $absolute-path">
@@ -145,8 +136,8 @@ exclude-result-prefixes="#all">
 			</li>
 		    </xsl:for-each>
 		</ul>
-	    </div>
-	</xsl:if>
+	    </xsl:if>
+	</div>
     </xsl:template>
 
 </xsl:stylesheet>

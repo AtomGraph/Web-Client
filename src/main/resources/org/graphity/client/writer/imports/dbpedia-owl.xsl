@@ -39,4 +39,16 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
+    <xsl:template match="@rdf:about[../dbpedia-owl:abstract[lang($lang)]] | @rdf:nodeID[../dbpedia-owl:abstract[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
+	<p>
+	    <xsl:value-of select="substring(../dbpedia-owl:abstract[lang($lang)][1], 1, 300)"/>
+	</p>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../dbpedia-owl:abstract[not(@xml:lang)]] | @rdf:nodeID[../dbpedia-owl:abstract[not(@xml:lang)]]" mode="gc:DescriptionMode">
+	<p>
+	    <xsl:value-of select="substring(../dbpedia-owl:abstract[not(@xml:lang)][1], 1, 300)"/>
+	</p>
+    </xsl:template>
+
 </xsl:stylesheet>

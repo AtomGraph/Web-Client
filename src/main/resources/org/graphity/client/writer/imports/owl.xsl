@@ -17,16 +17,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc "http://client.graphity.org/ontology#">
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">    
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:rdf="&rdf;"
 xmlns:owl="&owl;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="owl:sameAs" mode="gc:PropertyListMode"/>
+
+    <xsl:template match="owl:sameAs" mode="gc:SidebarNavMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+	
+	<div class="well sidebar-nav">
+	    <h2 class="nav-header">
+		<xsl:apply-templates select="."/>
+	    </h2>
+		
+	    <!-- TO-DO: fix for a single resource! -->
+	    <ul class="nav nav-pills nav-stacked">
+		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
+		    <xsl:sort select="gc:label(@rdf:resource, /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
+		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="gc:SidebarNavMode"/>
+		</xsl:for-each-group>
+	    </ul>
+	</div>
+    </xsl:template>
+
+    <xsl:template match="owl:sameAs/@rdf:resource" mode="gc:SidebarNavMode">
+	<li>
+	    <xsl:apply-templates select="."/>
+	</li>
+    </xsl:template>
 
 </xsl:stylesheet>

@@ -177,11 +177,17 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="/" mode="gc:HeaderMode">
+	<button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	</button>
+
 	<a class="brand" href="{$base-uri}">
 	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:LabelMode"/>
 	</a>
 
-	<div class="nav-collapse">
+	<div id="collapsing-navbar" class="nav-collapse collapse">
 	    <ul class="nav">
 		<!-- make menu links for all resources in the ontology, except base URI -->
 		<xsl:for-each select="key('resources-by-space', $base-uri, $ont-model)/@rdf:about[not(. = $base-uri)]">
@@ -194,11 +200,9 @@ exclude-result-prefixes="#all">
 		    </li>
 		</xsl:for-each>
 	    </ul>
-	</div>
 
-	<xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
-	    <div class="nav-collapse pull-right">
-		<ul class="nav">
+	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+		<ul class="nav pull-right">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
 			<xsl:sort select="gc:label(., /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
 			<li>
@@ -209,8 +213,8 @@ exclude-result-prefixes="#all">
 			</li>
 		    </xsl:for-each>
 		</ul>
-	    </div>
-	</xsl:if>
+	    </xsl:if>
+	</div>
     </xsl:template>
 
     <xsl:template match="/" mode="gc:FooterMode">
@@ -247,6 +251,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
+	<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+	<script type="text/javascript" src="static/js/bootstrap.js"></script>
 	<script type="text/javascript" src="static/js/InputMode.js"></script>
     </xsl:template>
 
@@ -328,22 +334,30 @@ exclude-result-prefixes="#all">
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
 	<xsl:variable name="type-containers" as="element()*">
-	    <xsl:for-each-group select="*" group-by="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else xs:anyURI('&rdfs;Resource')">
+	    <xsl:for-each-group select="*" group-by="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about">
 		<xsl:sort select="gc:label(if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))[1] else xs:anyURI('&rdfs;Resource'), /, $lang)"/>
 
-		<div class="well well-small span6">
-		    <h3>
-			<span title="{@rdf:about}" class="btn">
-			    <xsl:apply-templates select="key('resources', current-grouping-key(), document(gc:document-uri(current-grouping-key())))/@rdf:about"/>
-			</span>
-		    </h3>
-		    <dl>
-			<xsl:apply-templates select="current-group()" mode="gc:PropertyListMode">
-			    <!-- <xsl:sort select="gc:label(xs:anyURI(concat(namespace-uri(), local-name())), $root, $lang)" data-type="text" order="ascending" lang="{$lang}"/> -->
-			    <!-- <xsl:sort select="if (@rdf:resource) then (gc:label(@rdf:resource, $root, $lang)) else text()" data-type="text" order="ascending" lang="{$lang}"/> -->
-			</xsl:apply-templates>
-		    </dl>
-		</div>
+		<xsl:variable name="property-items" as="element()*">
+		    <xsl:apply-templates select="current-group()" mode="gc:PropertyListMode">
+			<!-- <xsl:sort select="gc:label(xs:anyURI(concat(namespace-uri(), local-name())), $root, $lang)" data-type="text" order="ascending" lang="{$lang}"/> -->
+			<!-- <xsl:sort select="if (@rdf:resource) then (gc:label(@rdf:resource, $root, $lang)) else text()" data-type="text" order="ascending" lang="{$lang}"/> -->
+		    </xsl:apply-templates>
+		</xsl:variable>
+		
+		<xsl:if test="$property-items">
+		    <div class="well well-small span6">
+			<h3>
+			    <span class="btn">
+				<xsl:variable name="type" select="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about"/>
+				<xsl:apply-templates select="$type"/>
+				<!-- <xsl:apply-templates select="key('resources', current-grouping-key(), document(gc:document-uri(current-grouping-key())))/@rdf:about"/> -->
+			    </span>
+			</h3>
+			<dl>
+			    <xsl:copy-of select="$property-items"/>
+			</dl>
+		    </div>
+		</xsl:if>
 	    </xsl:for-each-group>
 	</xsl:variable>
 

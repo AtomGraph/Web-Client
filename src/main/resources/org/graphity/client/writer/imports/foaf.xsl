@@ -75,7 +75,43 @@ exclude-result-prefixes="#all">
 	    <img src="{.}">
 		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
-	</xsl:if>	    
+	</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:nick[lang($lang)]] | @rdf:nodeID[../foaf:nick[lang($lang)]]" mode="gc:LabelMode" priority="7">
+	<xsl:value-of select="../foaf:nick[lang($lang)][1]"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:name[lang($lang)]] | @rdf:nodeID[../foaf:name[lang($lang)]]" mode="gc:LabelMode" priority="6">
+	<xsl:value-of select="../foaf:name[lang($lang)][1]"/>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:about[../foaf:nick[not(@xml:lang)]] | @rdf:nodeID[../foaf:nick[not(@xml:lang)]]" mode="gc:LabelMode" priority="5">
+	<xsl:value-of select="../foaf:nick[not(@xml:lang)][1]"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:name[not(@xml:lang)]] | @rdf:nodeID[../foaf:name[not(@xml:lang)]]" mode="gc:LabelMode" priority="4">
+	<xsl:value-of select="../foaf:name[not(@xml:lang)][1]"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:nick] | @rdf:about[../@foaf:nick] | @rdf:nodeID[../foaf:nick] | @rdf:nodeID[../@foaf:nick]" mode="gc:LabelMode" priority="3">
+	<xsl:variable name="label" select="(../foaf:nick | ../@foaf:nick)[1]"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:firstName and ../foaf:lastName] | @rdf:nodeID[../foaf:firstName and ../foaf:lastName]" mode="gc:LabelMode" priority="2">
+	<xsl:variable name="label" select="concat(../foaf:firstName[1], ' ', ../foaf:lastName[1])"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:givenName and ../foaf:familyName] | @rdf:nodeID[../foaf:givenName and ../foaf:familyName]" mode="gc:LabelMode" priority="1">
+	<xsl:variable name="label" select="concat(../foaf:givenName[1], ' ', ../foaf:familyName[1])"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:name] | @rdf:about[../@foaf:name] | @rdf:nodeID[../foaf:name] | @rdf:nodeID[../@foaf:name]" mode="gc:LabelMode">
+	<xsl:variable name="label" select="(../foaf:name | ../@foaf:name)[1]"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:InputMode">
