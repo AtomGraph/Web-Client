@@ -94,7 +94,7 @@ exclude-result-prefixes="#all">
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
-    <!-- <xsl:variable name="location-mapping" select="document('../../../../../location-mapping.ttl')" as="document-node()?"/> -->
+    <!-- <xsl:variable name="prefix-mapping" select="document('../../../../../prefix-mapping.n3')" as="document-node()?"/> -->
 
     <!-- <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/> -->
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
@@ -259,6 +259,11 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF">
 	<div class="span8">
 	    <xsl:choose>
+		<xsl:when test="$uri">
+		    <xsl:apply-templates select="key('resources', $uri)"/>
+		    <!-- apply all other URI resources -->
+		    <xsl:apply-templates select="*[not(@rdf:about = $uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
+		</xsl:when>
 		<xsl:when test="$mode = '&gc;ListMode'">
 		    <xsl:apply-templates select="." mode="gc:ListMode"/>
 		</xsl:when>
