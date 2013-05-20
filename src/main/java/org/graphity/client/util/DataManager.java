@@ -60,6 +60,9 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     static
     {
         LANGS.put(WebContent.contentTypeRDFXML, WebContent.langRDFXML);
+	LANGS.put(WebContent.contentTypeTurtle, WebContent.langTurtle);
+	LANGS.put(WebContent.contentTypeTurtleAlt1, WebContent.langTurtle);
+	LANGS.put(WebContent.contentTypeTurtleAlt2, WebContent.langTurtle);
         LANGS.put(WebContent.contentTypeNTriples, WebContent.langNTriple); // text/plain
         LANGS.put(WebContent.contentTypeNTriplesAlt, WebContent.langNTriple);
 	LANGS.put(WebContent.contentTypeN3, WebContent.langN3);

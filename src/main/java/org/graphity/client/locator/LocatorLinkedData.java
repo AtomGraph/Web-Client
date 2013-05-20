@@ -58,6 +58,10 @@ public class LocatorLinkedData implements Locator
 	
 	typeMap.put(WebContent.contentTypeRDFXML, null);
 
+	typeMap.put(WebContent.contentTypeTurtle, 0.9);
+	typeMap.put(WebContent.contentTypeTurtleAlt1, 0.9);
+	typeMap.put(WebContent.contentTypeTurtleAlt2, 0.9);
+	
 	//typeMap.put(WebContent.contentTypeNTriples, 0.9);
 	typeMap.put(WebContent.contentTypeNTriplesAlt, 0.9);
 
@@ -90,7 +94,7 @@ public class LocatorLinkedData implements Locator
             return null;
         }
         */
-	if (log.isTraceEnabled()) log.trace("Request Accept header: {}", getAcceptHeader());
+	if (log.isDebugEnabled()) log.debug("Request Accept header: {}", getAcceptHeader());
 
         try
         {
