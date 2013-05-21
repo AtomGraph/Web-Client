@@ -24,19 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY ldp "http://www.w3.org/ns/ldp#">
-    <!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#">
-    <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
-    <!ENTITY dc "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct "http://purl.org/dc/terms/">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
-    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
     <!ENTITY sp "http://spinrdf.org/sp#">
     <!ENTITY spin "http://spinrdf.org/spin#">
-    <!ENTITY sd "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY list "http://jena.hpl.hp.com/ARQ/list#">
     <!ENTITY xhv "http://www.w3.org/1999/xhtml/vocab#">
-    <!ENTITY void "http://rdfs.org/ns/void#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -49,19 +42,12 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:ldp="&ldp;"
-xmlns:geo="&geo;"
-xmlns:dbpedia-owl="&dbpedia-owl;"
-xmlns:dc="&dc;"
 xmlns:dct="&dct;"
-xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
-xmlns:skos="&skos;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
-xmlns:sd="&sd;"
 xmlns:list="&list;"
 xmlns:xhv="&xhv;"
-xmlns:void="&void;"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
@@ -83,7 +69,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
-    <xsl:param name="order-by" select="key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
+    <xsl:param name="order-by" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
     <xsl:param name="desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
     <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
@@ -403,19 +389,6 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <!-- HEADER IMAGE MODE -->
-
-    <!-- ignore all other properties -->
-    <!-- <xsl:template match="*" mode="gc:HeaderImageMode"/> -->
-
-    <!--
-    <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:HeaderImageMode" priority="1">
-	<p>
-	    <xsl:apply-templates select="@rdf:resource"/>
-	</p>
-    </xsl:template>
-    -->
-
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode" priority="1">
@@ -518,17 +491,6 @@ exclude-result-prefixes="#all">
 	    </xsl:if>
 	</div>
     </xsl:template>
-
-    <!-- ignore all other properties -->
-    <!-- <xsl:template match="*" mode="gc:ListImageMode"/> -->
-
-    <!--
-    <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:ListImageMode" priority="1">
-	<p>
-	    <xsl:apply-templates select="@rdf:resource"/>
-	</p>
-    </xsl:template>
-    -->
 
     <!-- TABLE MODE -->
 
