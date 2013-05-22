@@ -384,8 +384,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
     /**
      * Given a SPIN query resource, returns a query builder.
-     * This method is used to build queries for page resources. It sets LIMIT and OFFSET modifiers on the
-     * SELECT sub-queries.
+     * This method is used to build queries for page resources. It sets LIMIT and OFFSET modifiers as well as
+     * ORDER BY / DESC clauses on SELECT sub-queries. Currently only one ORDER BY condition is supported.
      * 
      * @param query SPIN query resource
      * @return query builder based on the given query
@@ -400,7 +400,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	SelectBuilder selectBuilder = qb.getSubSelectBuilder().
 	    replaceLimit(getLimit()).replaceOffset(getOffset());
 
-	if (getOrderBy() != null) selectBuilder.orderBy(getOrderBy(), getDesc());
+	if (getOrderBy() != null)
+	    try
+	    {
+		selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
+		    orderBy(getOrderBy(), getDesc());
+	    }
+	    catch (IllegalArgumentException ex)
+	    {
+		if (log.isWarnEnabled()) log.warn("Tried to use ORDER BY variable ?{} which is not present in the WHERE pattern", getOrderBy());
+	    }
 
 	return qb;
     }

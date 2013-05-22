@@ -58,7 +58,7 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode" priority="1">
 	<xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 
 	<h1 class="page-header">

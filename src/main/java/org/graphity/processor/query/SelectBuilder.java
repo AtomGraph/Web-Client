@@ -109,24 +109,28 @@ public class SelectBuilder extends QueryBuilder implements Select
 
     public SelectBuilder replaceLimit(Long limit)
     {
-	if (limit == null) throw new IllegalArgumentException("LIMIT cannot be null");
-
-	if (log.isTraceEnabled()) log.trace("Setting LIMIT param: {}", limit);
+	if (log.isTraceEnabled()) log.trace("Removing LIMIT modifier");
+	removeAll(SP.limit);
 	
-	removeAll(SP.limit).
+	if (limit != null)
+	{
+	    if (log.isTraceEnabled()) log.trace("Setting LIMIT modifier: {}", limit);
 	    addLiteral(SP.limit, limit);
+	}
 	
 	return this;
     }
 
     public SelectBuilder replaceOffset(Long offset)
     {
-	if (offset == null) throw new IllegalArgumentException("OFFSET cannot be null");
-	
-	if (log.isTraceEnabled()) log.trace("Setting OFFSET param: {}", offset);
-	
-	removeAll(SP.offset)
-	    .addLiteral(SP.offset, offset);
+	if (log.isTraceEnabled()) log.trace("Removing OFFSET modifier");
+	removeAll(SP.offset);
+		
+	if (offset != null)
+	{
+	    if (log.isTraceEnabled()) log.trace("Setting OFFSET modifier: {}", offset);
+	    addLiteral(SP.offset, offset);
+	}
 	
 	return this;
     }
@@ -180,6 +184,13 @@ public class SelectBuilder extends QueryBuilder implements Select
     public SelectBuilder orderBy(Resource condition)
     {
 	if (condition == null) throw new IllegalArgumentException("ORDER BY condition cannot be null");
+	Variable var = SPINFactory.asVariable(condition);
+	if (var != null && !isWhereVariable(var)) throw new IllegalArgumentException("Cannot ORDER BY variable that is not specified in the WHERE pattern");
+	if (condition.hasProperty(SP.expression))
+	{
+	    Variable exprVar = SPINFactory.asVariable(condition.getPropertyResourceValue(SP.expression));
+	    if (exprVar != null && !isWhereVariable(exprVar)) throw new IllegalArgumentException("Cannot ORDER BY variable that is not specified in the WHERE pattern");
+	}
 	if (log.isTraceEnabled()) log.trace("Setting ORDER BY condition: {}", condition);
 	
 	if (hasProperty(SP.orderBy))
@@ -192,11 +203,14 @@ public class SelectBuilder extends QueryBuilder implements Select
     
     public SelectBuilder replaceOrderBy(RDFList conditions)
     {
-	if (conditions == null) throw new IllegalArgumentException("ORDER BY conditions cannot be null");
+	if (log.isTraceEnabled()) log.trace("Removing all ORDER BY conditions");
+	removeAll(SP.orderBy);
 	
-	if (log.isTraceEnabled()) log.trace("Setting ORDER BY conditions: {}", conditions);
-	removeAll(SP.orderBy).
+	if (conditions != null)
+	{
+	    if (log.isTraceEnabled()) log.trace("Setting ORDER BY conditions: {}", conditions);
 	    addProperty(SP.orderBy, conditions);
+	}
 	
 	return this;
     }

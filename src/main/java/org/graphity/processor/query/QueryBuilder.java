@@ -393,6 +393,13 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	return arqQuery;
     }
 
+    protected boolean isWhereVariable(Variable var)
+    {
+	return ResourceUtils.reachableClosure(getWhere()).
+	    listSubjectsWithProperty(SP.varName, var.getName()).
+	    hasNext();
+    }
+    
     @Override
     public List<String> getFrom()
     {
