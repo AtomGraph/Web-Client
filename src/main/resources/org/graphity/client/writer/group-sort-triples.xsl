@@ -55,7 +55,7 @@ exclude-result-prefixes="xsl rdf gc">
 	    <xsl:copy-of select="@*"/>
 	    <xsl:for-each select="key('resources', @rdf:about)">
 		<xsl:apply-templates mode="gc:GroupTriples">
-		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+		    <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:resource" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:datatype" data-type="text" order="ascending"/>
@@ -72,7 +72,7 @@ exclude-result-prefixes="xsl rdf gc">
 	    <xsl:copy-of select="@*"/>
 	    <xsl:for-each select="key('resources', @rdf:nodeID)">
 		<xsl:apply-templates mode="gc:GroupTriples">
-		    <xsl:sort select="concat(namespace-uri(.), local-name(.))" data-type="text" order="ascending"/>
+		    <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:resource" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:nodeID" data-type="text" order="ascending"/>
 		    <xsl:sort select="@rdf:datatype" data-type="text" order="ascending"/>
