@@ -59,13 +59,16 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
 	</rdf:RDF>
     </xsl:template>
 
-    <xsl:template match="status">
-	<sioc:Post rdf:about="http://api.twitter.com/1/statuses/show/{id}.xml">
-	    <rdf:type rdf:resource="http://rdfs.org/sioc/types#MicroblogPost"/>
-	    <sioc:link rdf:resource="http://twitter.com/{user/screen_name}/status/{id}"/>
+    <xsl:template match="user/status">
+	<sioc:creator_of>
+	    <sioc:Post rdf:nodeID="{generate-id()}">
+		<!-- rdf:about="http://api.twitter.com/1/statuses/show/{id}.xml" -->
+		<rdf:type rdf:resource="http://rdfs.org/sioc/types#MicroblogPost"/>
+		<sioc:link rdf:resource="http://twitter.com/{../screen_name}/status/{id}"/>
 
-	    <xsl:apply-templates/>
-	</sioc:Post>
+		<xsl:apply-templates/>
+	    </sioc:Post>
+	</sioc:creator_of>
     </xsl:template>
 
     <xsl:template match="entities | user_mentions | urls | url[expanded_url] | hashtags">
@@ -122,6 +125,16 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
     </xsl:template>
 
     <xsl:template match="name">
+	<sioc:account_of>
+	    <foaf:Agent rdf:nodeID="agent">
+		<foaf:name>
+		    <xsl:value-of select="."/>
+		</foaf:name>
+	    </foaf:Agent>
+	</sioc:account_of>
+    </xsl:template>
+
+    <xsl:template match="screen_name">
 	<sioc:name>
 	    <xsl:value-of select="."/>
 	</sioc:name>
@@ -138,7 +151,11 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
     </xsl:template>
 
     <xsl:template match="user/url">
-	<foaf:homepage rdf:resource="{.}"/>
+	<sioc:account_of>
+	    <foaf:Agent rdf:nodeID="agent">
+		<foaf:homepage rdf:resource="{.}"/>
+	    </foaf:Agent>
+	</sioc:account_of>
     </xsl:template>
 
     <xsl:template match="hashtag">

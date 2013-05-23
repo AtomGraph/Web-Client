@@ -31,6 +31,19 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
 
+    <xsl:template match="@rdf:about[../sioc:name[lang($lang)]] | @rdf:nodeID[../sioc:name[lang($lang)]]" mode="gc:LabelMode" priority="3">
+	<xsl:value-of select="../sioc:name[lang($lang)][1]"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../sioc:name[not(@xml:lang)]] | @rdf:nodeID[../sioc:name[not(@xml:lang)]]" mode="gc:LabelMode" priority="2">
+	<xsl:value-of select="../sioc:name[not(@xml:lang)][1]"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../sioc:name] | @rdf:about[../@sioc:name] | @rdf:nodeID[../sioc:name] | @rdf:nodeID[../@sioc:name]" mode="gc:LabelMode">
+	<xsl:variable name="label" select="(../sioc:name | ../@sioc:name)[1]"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
     <xsl:template match="@rdf:about[../sioc:content[lang($lang)]] | @rdf:nodeID[../sioc:content[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
 	<p>
 	    <xsl:value-of select="substring(../sioc:content[lang($lang)][1], 1, 300)"/>
@@ -41,6 +54,14 @@ exclude-result-prefixes="#all">
 	<p>
 	    <xsl:value-of select="substring(../sioc:content[not(@xml:lang)][1], 1, 300)"/>
 	</p>
+    </xsl:template>
+
+    <xsl:template match="sioc:avatar/@rdf:resource">
+	<a href="{.}">
+	    <img src="{.}">
+		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
+	    </img>
+	</a>
     </xsl:template>
 
 </xsl:stylesheet>

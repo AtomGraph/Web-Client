@@ -16,6 +16,7 @@
  */
 package org.graphity.client.locator.grddl;
 
+import com.sun.jersey.api.uri.UriTemplate;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.transform.Source;
@@ -33,9 +34,14 @@ public class LocatorAtom extends LocatorGRDDL
 {
     private static final Logger log = LoggerFactory.getLogger(LocatorAtom.class);
 
-    public LocatorAtom(Source stylesheet) throws TransformerConfigurationException
+    public LocatorAtom(String uriTemplate, Source stylesheet) throws TransformerConfigurationException
     {
-	super(stylesheet);
+	super(uriTemplate, stylesheet);
+    }
+
+    public LocatorAtom(UriTemplate uriTemplate, Source stylesheet) throws TransformerConfigurationException
+    {
+	super(uriTemplate, stylesheet);
     }
 
     @Override

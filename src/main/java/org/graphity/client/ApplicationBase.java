@@ -134,8 +134,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 
 	try
 	{
-	    DataManager.get().addLocator(new LocatorAtom(getSource("org/graphity/client/locator/grddl/atom-grddl.xsl")));
-	    DataManager.get().addLocator(new LocatorGRDDL(getSource("org/graphity/client/locator/grddl/twitter-grddl.xsl")));
+	    DataManager.get().addLocator(new LocatorGRDDL("https://api.twitter.com/1/{path: .+}", getSource("org/graphity/client/locator/grddl/twitter-grddl.xsl")));
 	}
 	catch (TransformerConfigurationException ex)
 	{

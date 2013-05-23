@@ -64,19 +64,20 @@ exclude-result-prefixes="#all">
     -->
     
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
-	<xsl:if test="../../@rdf:about">
-	    <a href="{.}">
-		<img src="{.}">
-		    <xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:about" mode="gc:LabelMode"/></xsl:attribute>
-		</img>
-	    </a>
-	</xsl:if>
-	<xsl:if test="../../@rdf:nodeID">
+	<a href="{.}">
 	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
-	</xsl:if>
+	</a>
     </xsl:template>
+
+    <!--
+    <xsl:template match="foaf:img/@rdf:resource[../../@rdf:nodeID] | foaf:depiction/@rdf:resource[../../@rdf:nodeID] | foaf:thumbnail/@rdf:resource[../../@rdf:nodeID] | foaf:logo/@rdf:resource[../../@rdf:nodeID]">
+	<img src="{.}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
+	</img>
+    </xsl:template>
+    -->
 
     <xsl:template match="@rdf:about[../foaf:nick[lang($lang)]] | @rdf:nodeID[../foaf:nick[lang($lang)]]" mode="gc:LabelMode" priority="7">
 	<xsl:value-of select="../foaf:nick[lang($lang)][1]"/>

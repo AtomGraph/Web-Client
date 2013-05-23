@@ -17,6 +17,7 @@
 package org.graphity.client.locator;
 
 import com.hp.hpl.jena.util.TypedStream;
+import com.sun.jersey.api.uri.UriTemplate;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,10 +46,17 @@ public class LocatorGRDDL extends LocatorLinkedData
     private static final Logger log = LoggerFactory.getLogger(LocatorGRDDL.class);
     
     private Source stylesheet = null;
+    private UriTemplate uriTemplate = null;
     private XSLTBuilder builder = null;
-    
-    public LocatorGRDDL(Source stylesheet) throws TransformerConfigurationException
+
+    public LocatorGRDDL(String uriTemplate, Source stylesheet) throws TransformerConfigurationException
     {
+	this(new UriTemplate(uriTemplate), stylesheet);
+    }
+    
+    public LocatorGRDDL(UriTemplate uriTemplate, Source stylesheet) throws TransformerConfigurationException
+    {
+	this.uriTemplate = uriTemplate;
 	this.stylesheet = stylesheet;
 	builder = XSLTBuilder.fromStylesheet(stylesheet);
     }
@@ -57,9 +65,19 @@ public class LocatorGRDDL extends LocatorLinkedData
     public TypedStream open(String filenameOrURI)
     {
 	if (log.isDebugEnabled()) log.debug("Opening URI {} via GRDDL: {}", filenameOrURI, stylesheet.getSystemId());
-
+	
+	if (!getUriTemplate().match(filenameOrURI, new HashMap<String, String>()))
+	{
+	    if (log.isDebugEnabled()) log.debug("URI {} does not match UriTemplate {} of this GRDDL locator", filenameOrURI, getUriTemplate());
+	    return null;	    
+	}
+	
 	TypedStream ts = super.open(filenameOrURI);
-	if (ts == null) return null; // don't transform if there's no stream
+	if (ts == null)
+	{
+	    if (log.isDebugEnabled()) log.debug("Could not open HTTP stream from URI: {}", filenameOrURI);
+	    return null;
+	}
 
 	try
 	{
@@ -101,10 +119,15 @@ public class LocatorGRDDL extends LocatorLinkedData
     {
 	return "LocatorGRDDL(" + stylesheet.getSystemId() + ")";
     }
-    
+
+    public UriTemplate getUriTemplate()
+    {
+	return uriTemplate;
+    }
+
     protected XSLTBuilder getXSLTBuilder()
     {
 	return builder;
     }
-    
+
 }
