@@ -279,37 +279,39 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
 
-    <xsl:template match="rdf:RDF[sioc:Container | *[rdf:type/@rdf:resource = '&sioc;Container']]" mode="gc:ModeSelectMode">
+    <xsl:template match="rdf:RDF[key('resources', $absolute-path)[self::sioc:Container or rdf:type/@rdf:resource = '&sioc;Container']]" mode="gc:ModeSelectMode">
 	<ul class="nav nav-tabs">
-	    <xsl:apply-templates select="sioc:Container | *[rdf:type/@rdf:resource = '&sioc;Container']" mode="gc:ModeSelectMode"/>
+	    <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:ModeSelectMode"/>
 	</ul>
     </xsl:template>
 
     <xsl:template match="sioc:Container | *[rdf:type/@rdf:resource = '&sioc;Container']" mode="gc:ModeSelectMode" priority="1">
 	<xsl:param name="default-mode" select="xs:anyURI('&gc;ListMode')" as="xs:anyURI"/>
+	<xsl:param name="modes" select="(xs:anyURI('&gc;ListMode'), xs:anyURI('&gc;TableMode'), xs:anyURI('&gc;InputMode'))" as="xs:anyURI*"/>
 
-	<xsl:apply-templates select="key('resources', '&gc;ListMode', document(''))/@rdf:about" mode="gc:ModeSelectMode">
-	    <xsl:with-param name="default-mode" select="$default-mode"/>
-	</xsl:apply-templates>
-	<xsl:apply-templates select="key('resources', '&gc;TableMode', document(''))/@rdf:about" mode="gc:ModeSelectMode">
-	    <xsl:with-param name="default-mode" select="$default-mode"/>
-	</xsl:apply-templates>
-	<xsl:apply-templates select="key('resources', '&gc;InputMode', document(''))/@rdf:about" mode="gc:ModeSelectMode">
-	    <xsl:with-param name="default-mode" select="$default-mode"/>
-	</xsl:apply-templates>
+	<xsl:apply-templates select="key('resources', $modes, document(''))" mode="gc:ModeSelectMode">
+	    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+	</xsl:apply-templates>	
     </xsl:template>
 
-    <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
-	<xsl:param name="default-mode" as="xs:anyURI"/>
+    <xsl:template match="*[*][@rdf:about]" mode="gc:ModeSelectMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+
 	<li>
-	    <xsl:if test="(not($mode) and $default-mode = .) or $mode = .">
+	    <xsl:if test="(not($mode) and $default-mode = @rdf:about) or $mode = @rdf:about">
 		<xsl:attribute name="class">active</xsl:attribute>
 	    </xsl:if>
 
-	    <a href="{$absolute-path}{gc:query-string($offset, $limit, $order-by, $desc, .)}">
-		<xsl:apply-templates select="." mode="gc:LabelMode"/>
-	    </a>
+	    <xsl:apply-templates select="@rdf:about" mode="gc:ModeSelectMode"/>
 	</li>	
+    </xsl:template>
+
+    <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+
+	<a href="{$absolute-path}{gc:query-string($offset, $limit, $order-by, $desc, .)}">
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	</a>
     </xsl:template>
     
     <xsl:template match="rdf:RDF" mode="gc:SidebarNavMode">
@@ -370,8 +372,8 @@ exclude-result-prefixes="#all">
 		</div>
 	    </xsl:if>
 	    -->
-	    
-	    <xsl:apply-templates mode="gc:HeaderImageMode"/>
+
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:ParaImageMode"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode"/>
 
@@ -471,7 +473,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListMode">
 	<div class="well">
-	    <xsl:apply-templates mode="gc:ListImageMode"/>
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:ImageMode"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode"/>
 	    

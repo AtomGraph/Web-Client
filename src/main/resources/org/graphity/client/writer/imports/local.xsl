@@ -228,9 +228,9 @@ exclude-result-prefixes="#all">
 
     <!-- IMAGE MODE -->
 
-    <xsl:template match="*" mode="gc:HeaderImageMode"/>
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:ImageMode"/>
     
-    <xsl:template match="*" mode="gc:ListImageMode"/>
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:ParaImageMode"/>
 
     <!-- PROPERTY LIST MODE -->
     

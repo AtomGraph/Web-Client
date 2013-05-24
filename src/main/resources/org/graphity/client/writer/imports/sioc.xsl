@@ -56,6 +56,18 @@ exclude-result-prefixes="#all">
 	</p>
     </xsl:template>
 
+    <xsl:template match="sioc:avatar" mode="gc:PropertyListMode" priority="1"/>
+    
+    <xsl:template match="@rdf:about[../sioc:avatar/@rdf:resource]" mode="gc:ImageMode">
+	<xsl:apply-templates select="../sioc:avatar/@rdf:resource"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../sioc:avatar/@rdf:resource]" mode="gc:ParaImageMode">
+	<p>
+	    <xsl:apply-templates select="." mode="gc:ImageMode"/>
+	</p>
+    </xsl:template>
+
     <xsl:template match="sioc:avatar/@rdf:resource">
 	<a href="{.}">
 	    <img src="{.}">

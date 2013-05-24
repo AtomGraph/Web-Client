@@ -43,15 +43,25 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
 
-    <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:HeaderImageMode" priority="1">
-	<p>
-	    <xsl:apply-templates select="@rdf:resource"/>
-	</p>
+    <xsl:template match="@rdf:about[../foaf:img/@rdf:resource] | @rdf:nodeID[../foaf:img/@rdf:resource]" mode="gc:ImageMode" priority="3">
+	<xsl:apply-templates select="../foaf:img/@rdf:resource"/>
     </xsl:template>
 
-    <xsl:template match="foaf:img | foaf:depiction | foaf:thumbnail | foaf:logo" mode="gc:ListImageMode" priority="1">
+    <xsl:template match="@rdf:about[../foaf:depiction/@rdf:resource] | @rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
+	<xsl:apply-templates select="../foaf:depiction/@rdf:resource"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:thumbnail/@rdf:resource] | @rdf:nodeID[../foaf:thumbnail/@rdf:resource]" mode="gc:ImageMode" priority="1">
+	<xsl:apply-templates select="../foaf:thumbnail/@rdf:resource"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ImageMode">
+	<xsl:apply-templates select="../foaf:logo/@rdf:resource"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:img/@rdf:resource] | @rdf:nodeID[../foaf:img/@rdf:resource] | @rdf:about[../foaf:depiction/@rdf:resource] | @rdf:nodeID[../foaf:depiction/@rdf:resource] | @rdf:about[../foaf:thumbnail/@rdf:resource] | @rdf:nodeID[../foaf:thumbnail/@rdf:resource] | @rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ParaImageMode">
 	<p>
-	    <xsl:apply-templates select="@rdf:resource"/>
+	    <xsl:apply-templates select="." mode="gc:ImageMode"/>
 	</p>
     </xsl:template>
 
