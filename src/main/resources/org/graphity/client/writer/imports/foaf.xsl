@@ -44,19 +44,27 @@ exclude-result-prefixes="#all">
     <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
 
     <xsl:template match="@rdf:about[../foaf:img/@rdf:resource] | @rdf:nodeID[../foaf:img/@rdf:resource]" mode="gc:ImageMode" priority="3">
-	<xsl:apply-templates select="../foaf:img/@rdf:resource"/>
+	<a href="{.}">
+	    <img src="{../foaf:img/@rdf:resource}">
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	    </img>
+	</a>
     </xsl:template>
 
     <xsl:template match="@rdf:about[../foaf:depiction/@rdf:resource] | @rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
-	<xsl:apply-templates select="../foaf:depiction/@rdf:resource"/>
+	<a href="{.}">
+	    <img src="{../foaf:depiction/@rdf:resource}">
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	    </img>
+	</a>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../foaf:thumbnail/@rdf:resource] | @rdf:nodeID[../foaf:thumbnail/@rdf:resource]" mode="gc:ImageMode" priority="1">
-	<xsl:apply-templates select="../foaf:thumbnail/@rdf:resource"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ImageMode">
-	<xsl:apply-templates select="../foaf:logo/@rdf:resource"/>
+    <xsl:template match="@rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ImageMode"  priority="1">
+	<a href="{.}">
+	    <img src="{../foaf:logo/@rdf:resource}">
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	    </img>
+	</a>
     </xsl:template>
 
     <xsl:template match="@rdf:about[../foaf:img/@rdf:resource] | @rdf:nodeID[../foaf:img/@rdf:resource] | @rdf:about[../foaf:depiction/@rdf:resource] | @rdf:nodeID[../foaf:depiction/@rdf:resource] | @rdf:about[../foaf:thumbnail/@rdf:resource] | @rdf:nodeID[../foaf:thumbnail/@rdf:resource] | @rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ParaImageMode">
