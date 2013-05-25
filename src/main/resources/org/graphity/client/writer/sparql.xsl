@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY java "http://xml.apache.org/xalan/java/">
     <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
@@ -60,51 +59,59 @@ LIMIT 100</xsl:param>
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
 	<form action="" method="get" id="query-form">
-	    <fieldset>
-		<textarea id="query-string" name="query" class="span12" rows="15">
-		    <xsl:choose>
-			<xsl:when test="$query">
-			    <xsl:value-of select="$query"/>
-			</xsl:when>
-			<xsl:otherwise>
-			    <xsl:value-of select="$default-query"/>
-			</xsl:otherwise>
-		    </xsl:choose>
-		</textarea>
-		<div class="form-actions">
-		    <button type="submit" class="btn btn-primary">Query</button>
-		    <span class="help-inline">For all queries, the maximum number of results is set to 100.</span>
-		</div>
-	    </fieldset>
+	    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 	</form>
 
 	<xsl:if test="$query">
-	    <xsl:variable name="result-doc" select="document(concat($absolute-path, '?query=', encode-for-uri($query)))"/>
-
-	    <!-- result of CONSTRUCT or DESCRIBE -->
-	    <xsl:if test="$result-doc/rdf:RDF">
-		<div class="nav row-fluid">
-		    <div class="btn-group pull-right">
-			<a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-			<a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-		    </div>
-		</div>
-
-		<xsl:apply-templates select="$result-doc/rdf:RDF" mode="gc:ListMode"/>
-	    </xsl:if>
-	    <!-- result of SELECT or ASK -->
-	    <xsl:if test="$result-doc/sparql:sparql">
-		<div class="nav row-fluid">
-		    <div class="btn-group pull-right">
-			<a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+xml')}" class="btn">XML</a>
-			<a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+json')}" class="btn">JSON</a>
-		    </div>
-		</div>
-		<xsl:apply-templates select="$result-doc/sparql:sparql"/>
-	    </xsl:if>
+	    <xsl:apply-templates select="." mode="gc:QueryResultMode"/>
 	</xsl:if>
     </xsl:template>
 
+    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
+	<fieldset>
+	    <textarea id="query-string" name="query" class="span12" rows="15">
+		<xsl:choose>
+		    <xsl:when test="$query">
+			<xsl:value-of select="$query"/>
+		    </xsl:when>
+		    <xsl:otherwise>
+			<xsl:value-of select="$default-query"/>
+		    </xsl:otherwise>
+		</xsl:choose>
+	    </textarea>
+	    <div class="form-actions">
+		<button type="submit" class="btn btn-primary">Query</button>
+		<span class="help-inline">For all queries, the maximum number of results is set to 100.</span>
+	    </div>
+	</fieldset>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryResultMode">
+	<xsl:variable name="result-doc" select="document(concat($absolute-path, '?query=', encode-for-uri($query)))"/>
+
+	<!-- result of CONSTRUCT or DESCRIBE -->
+	<xsl:if test="$result-doc/rdf:RDF">
+	    <div class="nav row-fluid">
+		<div class="btn-group pull-right">
+		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+		</div>
+	    </div>
+
+	    <xsl:apply-templates select="$result-doc/rdf:RDF" mode="gc:ListMode"/>
+	</xsl:if>
+	<!-- result of SELECT or ASK -->
+	<xsl:if test="$result-doc/sparql:sparql">
+	    <div class="nav row-fluid">
+		<div class="btn-group pull-right">
+		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+xml')}" class="btn">XML</a>
+		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+json')}" class="btn">JSON</a>
+		</div>
+	    </div>
+	    <xsl:apply-templates select="$result-doc/sparql:sparql"/>
+	</xsl:if>
+    </xsl:template>
+    
     <xsl:template match="sparql:sparql">
 	<table class="table table-bordered table-striped">
 	    <xsl:apply-templates/>

@@ -170,7 +170,7 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:hasValue "/?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
 	];
     spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type sioc:Container
+	    gp:type void:Dataset
 	] ;
     rdfs:label "Containers page resource" ;
     foaf:isPrimaryTopicOf <classes/page-resources/index-container-resource> ;
@@ -324,3 +324,99 @@ ldp:pageOf a owl:ObjectProperty ;
     rdfs:label "Containers page resource" ;
     foaf:isPrimaryTopicOf <classes/page-resources/container-resource> ;
     rdfs:isDefinedBy : .
+
+# DATASETS & SERVICES
+
+_:DBPedia a void:Dataset ;
+    dct:title "DBPedia" ;
+    dct:description "RDF data extracted from Wikipedia" ;
+    foaf:homepage <http://dbpedia.org> ;
+    foaf:logo <http://wiki.dbpedia.org/images/dbpedia_logo.png> ;
+    void:sparqlEndpoint <http://dbpedia.org/sparql> ;
+    void:exampleResource <http://dbpedia.org/resource/Berlin>,
+	<http://dbpedia.org/resource/Physics>,
+	<http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
+    void:uriSpace "http://dbpedia.org/resource/" ;
+    void:triples "550000000"^^xsd:integer .
+[ a sd:Service ;
+    sd:endpoint <http://dbpedia.org/sparql> ;
+    sd:supportedLanguage sd:SPARQL11Query ] .
+
+_:Enipedia a void:Dataset ;
+    dct:title "Enipedia" ;
+    dct:description "Enipedia is an active exploration into the applications of wikis and the semantic web for energy and industry issues" ;
+    foaf:homepage <http://enipedia.tudelft.nl/wiki/Enipedia> ;
+    foaf:logo <http://enipedia.tudelft.nl/enipedia/images/b/bd/eni.png> ;
+    void:sparqlEndpoint <http://enipedia.tudelft.nl/sparql/> ;
+    void:triples "4317758"^^xsd:integer .
+[ a sd:Service ;
+    sd:endpoint <http://enipedia.tudelft.nl/sparql/> ] .
+
+_:OpenEI a void:Dataset ;
+    dct:title "OpenEI" ;
+    dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
+    foaf:homepage <http://openei.org> ;
+    void:sparqlEndpoint <http://en.openei.org/sparql> ;
+    void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
+    void:uriSpace "http://en.openei.org/lod/resource/" ;
+    void:triples "17231136"^^xsd:integer .
+[ a sd:Service ;
+    sd:endpoint <http://en.openei.org/sparql> ] .
+
+_:LinkedGeoData a void:Dataset ;
+    dct:title "LinkedGeoData" ;
+    dct:description "RDF data extracted from OpenStreetMap.org" ;
+    foaf:homepage <http://linkedgeodata.org> ;
+    foaf:depiction <http://linkedgeodata.org/files/lgdlogo.png> ;
+    void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
+    void:exampleResource <http://linkedgeodata.org/triplify/node264695865> ;
+    void:uriSpace "http://linkedgeodata.org/triplify/" .
+[ a sd:Service ;
+    sd:endpoint <http://linkedgeodata.org/sparql> ] .
+
+_:OrdnanceSurvey a void:Dataset ;
+    dct:title "Ordnance Survey" ;
+    dct:description "Ordnance Survey is Great Britain's national mapping agency, providing the most accurate and up-to-date geographic data, relied on by government, business and individuals" ;
+    foaf:homepage <http://www.ordnancesurvey.co.uk> ;
+    foaf:logo <http://www.ordnancesurvey.co.uk/oswebsite/images/ui/logo.png> ;
+    void:sparqlEndpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ;
+    void:exampleResource <http://data.ordnancesurvey.co.uk/id/postcodeunit/SO164GU>,
+	<http://data.ordnancesurvey.co.uk/id/7000000000037256> ;
+    void:uriSpace "http://data.ordnancesurvey.co.uk/id/" .
+[ a sd:Service ;
+    sd:endpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ] .
+
+_:Eurostat a void:Dataset ;
+    dct:title "Eurostat" ;
+    dct:description "Detailed statistics on the EU and candidate countries, and various statistical publications for sale" ;
+    foaf:homepage <http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/> ;
+    foaf:logo <http://epp.eurostat.ec.europa.eu/portal/page/portal/PGP_ADM_IMAGES/PGE_IMAGES_TEMPLATES/logo.png> ;
+    void:sparqlEndpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ;
+    void:exampleResource <http://www4.wiwiss.fu-berlin.de/eurostat/resource/countries/Danmark> ;
+    void:uriSpace "http://www4.wiwiss.fu-berlin.de/eurostat/resource/" ;
+    void:triples "8850"^^xsd:integer .
+[ a sd:Service ;
+    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ] .
+
+_:UKStatistics a void:Dataset ;
+    dct:title "UK Statistics" ;
+    dct:description "This site contains Linked Data relating to UK Statistics" ;
+    foaf:homepage <http://data.gov.uk> ;
+    void:sparqlEndpoint <http://services.data.gov.uk/statistics/sparql> ;
+    void:exampleResource <http://statistics.data.gov.uk/id/local-authority-district/00AK> ;
+    void:uriSpace "http://statistics.data.gov.uk/id/" ;
+    void:triples "343733"^^xsd:integer .
+[ a sd:Service ;
+    sd:endpoint <http://services.data.gov.uk/statistics/sparql> ] .
+
+_:Nature a void:Dataset ;
+    dct:title "Nature" ;
+    dct:description "The NPG Linked Data Platform provides access to datasets from NPG published as linked data and made available through SPARQL services" ;
+    foaf:homepage <http://data.nature.com> ;
+    foaf:depiction <http://data.nature.com/view/cerberus/images/header.jpg> ;
+    void:sparqlEndpoint <http://data.nature.com/sparql> ;
+    void:exampleResource <http://data.nature.com/ns/articles/10.1038/111697a0> ;
+    void:uriSpace "http://data.nature.com/" ;
+    void:triples "327539066"^^xsd:integer .
+[ a sd:Service ;
+    sd:endpoint <http://data.nature.com/sparql> ] .

@@ -23,11 +23,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
 exclude-result-prefixes="#all">
+
+    <xsl:template match="foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource">
+	<a href="{.}">
+	    <xsl:choose>
+		<xsl:when test="starts-with(., 'http://')">
+		    <xsl:value-of select="substring-after(., 'http://')"/>
+		</xsl:when>
+		<xsl:when test="starts-with(., 'https://')">
+		    <xsl:value-of select="substring-after(., 'https://')"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:value-of select="."/>
+		</xsl:otherwise>
+	    </xsl:choose>
+	</a>
+    </xsl:template>
 
     <xsl:template match="foaf:mbox/@rdf:resource">
 	<a href="{.}">
@@ -43,7 +58,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
 
-    <xsl:template match="@rdf:about[../foaf:img/@rdf:resource] | @rdf:nodeID[../foaf:img/@rdf:resource]" mode="gc:ImageMode" priority="3">
+    <xsl:template match="@rdf:about[../foaf:img/@rdf:resource]" mode="gc:ImageMode" priority="3">
 	<a href="{.}">
 	    <img src="{../foaf:img/@rdf:resource}">
 		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
@@ -51,7 +66,13 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../foaf:depiction/@rdf:resource] | @rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
+    <xsl:template match="@rdf:nodeID[../foaf:img/@rdf:resource]" mode="gc:ImageMode" priority="3">
+	<img src="{../foaf:img/@rdf:resource}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	</img>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
 	<a href="{.}">
 	    <img src="{../foaf:depiction/@rdf:resource}">
 		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
@@ -59,12 +80,30 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ImageMode"  priority="1">
+    <xsl:template match="@rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
+	<img src="{../foaf:depiction/@rdf:resource}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	</img>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
+	<img src="{../foaf:depiction/@rdf:resource}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	</img>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[../foaf:logo/@rdf:resource]" mode="gc:ImageMode"  priority="1">
 	<a href="{.}">
 	    <img src="{../foaf:logo/@rdf:resource}">
 		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
 	</a>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ImageMode"  priority="1">
+	<img src="{../foaf:logo/@rdf:resource}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	</img>
     </xsl:template>
 
     <xsl:template match="@rdf:about[../foaf:img/@rdf:resource] | @rdf:nodeID[../foaf:img/@rdf:resource] | @rdf:about[../foaf:depiction/@rdf:resource] | @rdf:nodeID[../foaf:depiction/@rdf:resource] | @rdf:about[../foaf:thumbnail/@rdf:resource] | @rdf:nodeID[../foaf:thumbnail/@rdf:resource] | @rdf:about[../foaf:logo/@rdf:resource] | @rdf:nodeID[../foaf:logo/@rdf:resource]" mode="gc:ParaImageMode">

@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
@@ -75,11 +74,11 @@ exclude-result-prefixes="#all">
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="resource" select="key('resources', $request-uri, $ont-model)" as="element()?"/>
-    <!-- <xsl:variable name="matched-ont-class" select="key('resources', $resource/rdf:type/@rdf:resource | $resource/rdf:type/@rdf:nodeID, $ont-model)"/> --> <!-- as="element()?" -->
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
+    <xsl:variable name="config" select="document('../../../../../web.xml')" as="document-node()"/>
     <!-- <xsl:variable name="prefix-mapping" select="document('../../../../../prefix-mapping.n3')" as="document-node()?"/> -->
 
     <!-- <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/> -->
@@ -289,7 +288,13 @@ exclude-result-prefixes="#all">
 	<xsl:param name="default-mode" select="xs:anyURI('&gc;ListMode')" as="xs:anyURI"/>
 	<xsl:param name="modes" select="(xs:anyURI('&gc;ListMode'), xs:anyURI('&gc;TableMode'), xs:anyURI('&gc;InputMode'))" as="xs:anyURI*"/>
 
-	<xsl:apply-templates select="key('resources', $modes, document(''))" mode="gc:ModeSelectMode">
+	<xsl:apply-templates select="key('resources', '&gc;ListMode', document(''))" mode="gc:ModeSelectMode">
+	    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+	</xsl:apply-templates>	
+	<xsl:apply-templates select="key('resources', '&gc;TableMode', document(''))" mode="gc:ModeSelectMode">
+	    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+	</xsl:apply-templates>	
+	<xsl:apply-templates select="key('resources', '&gc;InputMode', document(''))" mode="gc:ModeSelectMode">
 	    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
 	</xsl:apply-templates>	
     </xsl:template>

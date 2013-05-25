@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
@@ -57,13 +56,19 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="sioc:avatar" mode="gc:PropertyListMode" priority="1"/>
-    
+
     <xsl:template match="@rdf:about[../sioc:avatar/@rdf:resource]" mode="gc:ImageMode">
 	<a href="{.}">
 	    <img src="{../sioc:avatar/@rdf:resource}">
 		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
 	</a>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID[../sioc:avatar/@rdf:resource]" mode="gc:ImageMode">
+	<img src="{../sioc:avatar/@rdf:resource}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+	</img>
     </xsl:template>
 
     <xsl:template match="@rdf:about[../sioc:avatar/@rdf:resource]" mode="gc:ParaImageMode">

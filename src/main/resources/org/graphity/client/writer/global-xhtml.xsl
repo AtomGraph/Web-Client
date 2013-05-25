@@ -54,6 +54,7 @@ xmlns:sp="&sp;"
 xmlns:sd="&sd;"
 xmlns:void="&void;"
 xmlns:list="&list;"
+xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 exclude-result-prefixes="#all">
 
     <xsl:import href="imports/local.xsl"/>
@@ -74,9 +75,8 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="uri" as="xs:anyURI?"/>
 
-    <xsl:variable name="datasets" select="document('../data/datasets.rdf')" as="document-node()"/>
-
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
+    <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
     <xsl:template match="/" mode="gc:HeaderMode">
 	<button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
@@ -92,25 +92,32 @@ exclude-result-prefixes="#all">
 	<div id="collapsing-navbar" class="nav-collapse collapse">
 	    <form action="{$base-uri}" method="get" class="navbar-form pull-left">
 		<div class="input-append">
-		    <xsl:if test="not($uri)">
+		    <!-- <xsl:if test="not($uri)"> -->
 			<xsl:attribute name="class">input-prepend input-append</xsl:attribute>
 			<span class="add-on">
-			    <xsl:variable name="dataset" select="key('resources-by-endpoint', $endpoint-uri, $datasets)"/>
-			    <a href="{$endpoint-uri}">
-				<xsl:choose>
-				    <xsl:when test="$dataset">
-					<xsl:apply-templates select="$dataset"/>
-				    </xsl:when>
-				    <xsl:when test="$endpoint-uri = resolve-uri('sparql', $base-uri)">
-					Local endpoint
-				    </xsl:when>
-				    <xsl:otherwise>
-					<xsl:value-of select="$endpoint-uri"/>
-				    </xsl:otherwise>
-				</xsl:choose>
-			    </a>
+			    <xsl:choose>
+				<xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
+				    <xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
+					<xsl:choose>
+					    <xsl:when test="foaf:homepage/@rdf:resource">
+						<a href="{foaf:homepage/@rdf:resource}">
+						    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+						</a>
+					    </xsl:when>
+					    <xsl:otherwise>
+						<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+					    </xsl:otherwise>
+					</xsl:choose>
+				    </xsl:for-each>
+				</xsl:when>
+				<xsl:when test="key('resources', $absolute-path)/void:inDataset/@rdf:resource">
+				    <xsl:for-each select="key('resources', key('resources', $absolute-path)/void:inDataset/@rdf:resource, $ont-model)">
+					<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+				    </xsl:for-each>
+				</xsl:when>
+			    </xsl:choose>
 			</span>
-		    </xsl:if>
+		    <!-- </xsl:if> -->
 		    <input type="text" name="uri" class="input-xxlarge">
 			<xsl:if test="not(starts-with($uri, $base-uri))">
 			    <xsl:attribute name="value">
@@ -140,6 +147,29 @@ exclude-result-prefixes="#all">
 		</ul>
 	    </xsl:if>
 	</div>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
+	<p class="form-inline">
+	    <label for="service-select">SPARQL service</label>
+	    <xsl:text> </xsl:text>
+	    <select id="service-select" name="endpoint-uri">
+		<xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)">
+		    <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID, /, $lang)" order="ascending"/>
+
+		    <option value="{void:sparqlEndpoint/@rdf:resource}">
+			<xsl:if test="$endpoint-uri = void:sparqlEndpoint/@rdf:resource">
+			    <xsl:attribute name="selected">selected</xsl:attribute>
+			</xsl:if>
+
+			<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+		    </option>
+		</xsl:for-each>
+	    </select>
+	    <!-- <button type="submit" class="btn">Select</button> -->
+	</p>
+	
+	<xsl:apply-imports/>
     </xsl:template>
 
 </xsl:stylesheet>
