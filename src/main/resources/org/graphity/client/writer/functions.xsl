@@ -306,9 +306,11 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="uri" as="xs:anyURI?"/>
-	
+	<xsl:param name="mode" as="xs:string?"/>
+
 	<xsl:variable name="query-string">
 	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
+	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	</xsl:variable>
 	
 	<xsl:if test="string-length($query-string) &gt; 1">

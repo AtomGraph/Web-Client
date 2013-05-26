@@ -78,6 +78,19 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
     <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
+    <xsl:template match="rdf:RDF" mode="gc:TitleMode">
+	<xsl:choose>
+	    <xsl:when test="$uri">
+		<xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:LabelMode"/>
+		<xsl:text> - </xsl:text>
+		<xsl:apply-templates select="key('resources', $uri)" mode="gc:TitleMode"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:apply-imports/>
+	    </xsl:otherwise>
+	</xsl:choose>
+    </xsl:template>
+
     <xsl:template match="/" mode="gc:HeaderMode">
 	<button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
 	    <span class="icon-bar"></span>
@@ -86,38 +99,40 @@ exclude-result-prefixes="#all">
 	</button>
 
 	<a class="brand" href="{$base-uri}">
-	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:LabelMode"/>
+	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:ImageMode"/>
 	</a>
 
 	<div id="collapsing-navbar" class="nav-collapse collapse">
 	    <form action="{$base-uri}" method="get" class="navbar-form pull-left">
 		<div class="input-append">
-		    <!-- <xsl:if test="not($uri)"> -->
-			<xsl:attribute name="class">input-prepend input-append</xsl:attribute>
-			<span class="add-on">
-			    <xsl:choose>
-				<xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
-				    <xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
-					<xsl:choose>
-					    <xsl:when test="foaf:homepage/@rdf:resource">
-						<a href="{foaf:homepage/@rdf:resource}">
-						    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
-						</a>
-					    </xsl:when>
-					    <xsl:otherwise>
-						<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
-					    </xsl:otherwise>
-					</xsl:choose>
-				    </xsl:for-each>
-				</xsl:when>
-				<xsl:when test="key('resources', $absolute-path)/void:inDataset/@rdf:resource">
-				    <xsl:for-each select="key('resources', key('resources', $absolute-path)/void:inDataset/@rdf:resource, $ont-model)">
-					<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
-				    </xsl:for-each>
-				</xsl:when>
-			    </xsl:choose>
-			</span>
-		    <!-- </xsl:if> -->
+		    <xsl:choose>
+			<xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
+			    <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
+			    <span class="add-on">
+				<xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
+				    <xsl:choose>
+					<xsl:when test="foaf:homepage/@rdf:resource">
+					    <a href="{foaf:homepage/@rdf:resource}">
+						<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+					    </a>
+					</xsl:when>
+					<xsl:otherwise>
+					    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+					</xsl:otherwise>
+				    </xsl:choose>
+				</xsl:for-each>
+			    </span>
+			</xsl:when>
+			<xsl:when test="key('resources', $absolute-path)/void:inDataset/@rdf:resource">
+			    <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
+			    <span class="add-on">
+				<xsl:for-each select="key('resources', key('resources', $absolute-path)/void:inDataset/@rdf:resource, $ont-model)">
+				    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+				</xsl:for-each>
+			    </span>
+			</xsl:when>
+		    </xsl:choose>
+
 		    <input type="text" name="uri" class="input-xxlarge">
 			<xsl:if test="not(starts-with($uri, $base-uri))">
 			    <xsl:attribute name="value">
@@ -126,17 +141,13 @@ exclude-result-prefixes="#all">
 			</xsl:if>
 		    </input>
 		    <button type="submit" class="btn btn-primary">Go</button>
-		    <!--
-		    <xsl:if test="$endpoint-uri">
-			<input type="hidden" name="endpoint-uri" value="{$endpoint-uri}"/>
-		    </xsl:if>
-		    -->
 		</div>
 	    </form>
 
-	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
 		<ul class="nav pull-right">
-		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:seeAlso/@rdf:resource">
+		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
+			<xsl:sort select="gc:label(., /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
 			<li>
 			    <xsl:if test=". = $absolute-path">
 				<xsl:attribute name="class">active</xsl:attribute>
@@ -149,12 +160,59 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF">
+	<xsl:choose>
+	    <xsl:when test="$uri">
+		<xsl:apply-templates select="key('resources', $uri)"/>
+
+		<xsl:variable name="secondary-resources" select="*[not(@rdf:about = $uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
+		<xsl:if test="$secondary-resources">
+		    <xsl:apply-templates select="." mode="gc:ModeSelectMode">
+			<xsl:with-param name="default-mode" select="xs:anyURI('&gc;PropertyListMode')" tunnel="yes"/>
+		    </xsl:apply-templates>
+
+		    <!-- apply all other URI resources -->
+		    <xsl:apply-templates select="$secondary-resources">
+			<xsl:with-param name="default-mode" select="xs:anyURI('&gc;PropertyListMode')" tunnel="yes"/>
+		    </xsl:apply-templates>
+		</xsl:if>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:apply-imports/>
+	    </xsl:otherwise>
+	</xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+
+	<xsl:choose>
+	    <xsl:when test="$uri">
+		<xsl:choose>
+		    <xsl:when test=". = $default-mode">
+			<a href="{$absolute-path}{gc:query-string($uri, ())}">
+			    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+			</a>		
+		    </xsl:when>
+		    <xsl:otherwise>
+			<a href="{$absolute-path}{gc:query-string($uri, .)}">
+			    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+			</a>		
+		    </xsl:otherwise>
+		</xsl:choose>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:apply-imports/>
+	    </xsl:otherwise>
+	</xsl:choose>
+    </xsl:template>
+
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
 	<p class="form-inline">
 	    <label for="service-select">SPARQL service</label>
 	    <xsl:text> </xsl:text>
 	    <select id="service-select" name="endpoint-uri">
-		<xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)">
+		<xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)[void:sparqlEndpoint/@rdf:resource]">
 		    <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID, /, $lang)" order="ascending"/>
 
 		    <option value="{void:sparqlEndpoint/@rdf:resource}">
@@ -166,7 +224,6 @@ exclude-result-prefixes="#all">
 		    </option>
 		</xsl:for-each>
 	    </select>
-	    <!-- <button type="submit" class="btn">Select</button> -->
 	</p>
 	
 	<xsl:apply-imports/>

@@ -51,9 +51,11 @@ ldp:pageOf a owl:ObjectProperty ;
 <.> a sioc:Site, ldp:Container, foaf:Document ;
     dct:title "Graphity Client" ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
+    foaf:logo <static/img/graphity-logo.svg> ;
+    foaf:maker <http://graphityhq.com/#company> ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset ;
-    rdfs:seeAlso : , <sparql> .
+    rdfs:seeAlso : , <sparql>, <http://graphityhq.com/>, <http://semantic-web.dk/> .
 
 <ontology> a foaf:Document ;
     dct:title "Ontology document" ;
@@ -132,7 +134,7 @@ ldp:pageOf a owl:ObjectProperty ;
     rdfs:subClassOf foaf:Document, lda:ItemEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/{path: .*}{mode: (&mode=[^&]+)?}"
+		owl:hasValue "/{path: .*}{mode: (\\?mode=[^&]+)?}"
 	] ;
     spin:constraint [ a gp:DescribeTemplate ] ;
     rdfs:label "Resource" ;
@@ -152,7 +154,7 @@ ldp:pageOf a owl:ObjectProperty ;
     rdfs:subClassOf foaf:Document ,
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/ontology"
+		owl:hasValue "/ontology{mode: (\\?mode=[^&]+)?}"
 	] ;
     spin:constraint [ a gp:DescribeResourcesTemplate ] ;
     rdfs:label "Ontology document resource" ;
@@ -167,7 +169,7 @@ ldp:pageOf a owl:ObjectProperty ;
 	] ,
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/?limit={limit: [0-9]+}&offset={offset: [0-9]+}"
+		owl:hasValue "/?limit={limit: [0-9]+}&offset={offset: [0-9]+}{mode: (&mode=[^&]+)?}"
 	];
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type void:Dataset
@@ -355,7 +357,7 @@ _:Enipedia a void:Dataset ;
 _:OpenEI a void:Dataset ;
     dct:title "OpenEI" ;
     dct:description "Open Energy Information (OpenEI) is a knowledge sharing online community dedicated to connecting people with the latest information and data on energy resources from around the world." ;
-    foaf:homepage <http://openei.org> ;
+    foaf:homepage <http://en.openei.org/lod/> ;
     void:sparqlEndpoint <http://en.openei.org/sparql> ;
     void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
     void:uriSpace "http://en.openei.org/lod/resource/" ;
@@ -420,3 +422,16 @@ _:Nature a void:Dataset ;
     void:triples "327539066"^^xsd:integer .
 [ a sd:Service ;
     sd:endpoint <http://data.nature.com/sparql> ] .
+
+_:BBC a void:Dataset ;
+    dct:title "BBC" ;
+    foaf:logo <http://upload.wikimedia.org/wikipedia/commons/e/eb/BBC.svg> ;
+    void:exampleResource <http://www.bbc.co.uk/programmes/b006t6c5> .
+
+_:Twitter a void:Dataset ;
+    dct:title "Twitter" ;
+    foaf:homepage <http://twitter.com> ;
+    foaf:logo <https://abs.twimg.com/a/1369413260/images/resources/twitter-bird-callout.png> ;
+    void:exampleResource <https://api.twitter.com/1/users/show.xml?screen_name=pumba_lt> ,
+	<https://api.twitter.com/1/users/show.xml?screen_name=graphityhq> ;
+    void:uriSpace "https://api.twitter.com/1/" .

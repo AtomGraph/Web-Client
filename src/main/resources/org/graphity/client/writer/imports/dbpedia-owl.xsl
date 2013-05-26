@@ -28,6 +28,22 @@ xmlns:rdf="&rdf;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="dbpedia-owl:wikiPageExternalLink/@rdf:resource">
+	<a href="{.}">
+	    <xsl:choose>
+		<xsl:when test="starts-with(., 'http://')">
+		    <xsl:value-of select="substring-after(., 'http://')"/>
+		</xsl:when>
+		<xsl:when test="starts-with(., 'https://')">
+		    <xsl:value-of select="substring-after(., 'https://')"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:value-of select="."/>
+		</xsl:otherwise>
+	    </xsl:choose>
+	</a>
+    </xsl:template>
+
     <xsl:template match="dbpedia-owl:abstract" mode="gc:PropertyListMode"/>
 
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">

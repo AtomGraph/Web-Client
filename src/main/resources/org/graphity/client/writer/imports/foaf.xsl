@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
@@ -78,12 +79,6 @@ exclude-result-prefixes="#all">
 		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
 	</a>
-    </xsl:template>
-
-    <xsl:template match="@rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
-	<img src="{../foaf:depiction/@rdf:resource}">
-	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
-	</img>
     </xsl:template>
 
     <xsl:template match="@rdf:nodeID[../foaf:depiction/@rdf:resource]" mode="gc:ImageMode" priority="2">
