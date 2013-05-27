@@ -25,8 +25,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import org.graphity.processor.model.SPARQLEndpointBase;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	    {
 		OntModel sitemap = OntologyProvider.getOntology(getUriInfo(), getResourceConfig());
 		
-		return new SPARQLEndpointBase(getUriInfo(), getRequest(), getResourceConfig(),
+		return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
 			sitemap);
 	    }
 	};

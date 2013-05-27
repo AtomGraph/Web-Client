@@ -28,16 +28,12 @@ xmlns:rdf="&rdf;"
 xmlns:sd="&sd;"
 exclude-result-prefixes="#all">
     
+    <!--
     <xsl:template match="sd:endpoint/@rdf:resource">
 	<a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(.)}">
 	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
-
-    <xsl:template match="sd:Service[sd:endpoint/@rdf:resource]/@rdf:about | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:about | sd:Service[sd:endpoint/@rdf:resource]/@rdf:nodeID | *[rdf:type/@rdf:resource = '&sd;Service'][sd:endpoint/@rdf:resource]/@rdf:nodeID">
-	<a href="{$base-uri}sparql?endpoint-uri={encode-for-uri(../sd:endpoint/@rdf:resource)}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
+    -->
 
 </xsl:stylesheet>

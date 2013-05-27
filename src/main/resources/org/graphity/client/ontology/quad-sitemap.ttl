@@ -14,6 +14,8 @@
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 
+@prefix spl: <http://spinrdf.org/spl#> .
+
 : a owl:Ontology ;
     owl:imports gp:, lda: , void:, foaf: ;
     dct:title "Sitemap" ;
@@ -162,7 +164,9 @@ ldp:pageOf a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/ontology{mode: (\\?mode=[^&]+)?}"
 	] ;
-    spin:constraint [ a gp:ConstructResourcesTemplate ] ;
+    spin:constraint [ a gp:ConstructGraphResourcesTemplate ;
+	    gp:graph <ontology>
+	] ;
     rdfs:label "Ontology document resource" ;
     foaf:isPrimaryTopicOf <classes/ontology-doc-resource> ;
     rdfs:isDefinedBy : .
@@ -176,9 +180,9 @@ ldp:pageOf a owl:ObjectProperty ;
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/?limit={limit: [0-9]+}&offset={offset: [0-9]+}{mode: (&mode=[^&]+)?}"
-	];
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
-	    gp:type void:Dataset
+	] ;
+    spin:constraint [ a gp:DescribeGraphInstancesTemplate ;
+	    gp:type void:Dataset ;
 	] ;
     rdfs:label "Containers page resource" ;
     foaf:isPrimaryTopicOf <classes/page-resources/index-container-resource> ;
