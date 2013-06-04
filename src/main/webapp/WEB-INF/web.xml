@@ -24,6 +24,7 @@
         <init-param>
             <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
             <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
+	    <!-- <param-value>org/graphity/client/ontology/quad-sitemap.ttl</param-value> -->
         </init-param>
         <!--
         <init-param>
@@ -40,7 +41,7 @@
 	<!--
         <init-param>
             <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
-            <param-value>http://dydra.com/graphity/server/sparql</param-value>
+            <param-value>http://dydra.com/graphity/client/sparql</param-value>
         </init-param>
 	-->
         <init-param>
@@ -51,6 +52,10 @@
         <init-param>
             <param-name>http://server.graphity.org/ontology#cacheControl</param-name>
             <param-value>no-cache</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://server.graphity.org/ontology#resultLimit</param-name>
+            <param-value>100</param-value>
         </init-param>
     </filter>
     <filter-mapping>

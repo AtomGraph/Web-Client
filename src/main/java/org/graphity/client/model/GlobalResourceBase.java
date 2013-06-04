@@ -152,6 +152,7 @@ public class GlobalResourceBase extends ResourceBase
 	
 	this.mediaType = mediaType;
 	this.topicURI = topicURI;
+	if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
     }
 
     /**

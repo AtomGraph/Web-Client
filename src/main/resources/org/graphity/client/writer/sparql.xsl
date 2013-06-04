@@ -17,12 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc "http://client.graphity.org/ontology#">
+    <!ENTITY gs "http://server.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY sd "http://www.w3.org/ns/sparql-service-description#">
+    <!ENTITY void "http://rdfs.org/ns/void#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -35,6 +37,8 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:sd="&sd;"
+xmlns:void="&void;"
+xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 exclude-result-prefixes="#all">
 
     <xsl:param name="default-query" as="xs:string">PREFIX rdf: &lt;&rdf;&gt;
@@ -53,6 +57,12 @@ WHERE
     }
 }
 LIMIT 100</xsl:param>
+
+    <xsl:template match="void:sparqlEndpoint/@rdf:resource[. = resolve-uri('sparql', $base-uri)]">
+	<a href="{resolve-uri('sparql', $base-uri)}">
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	</a>
+    </xsl:template>
 
     <!-- *[@rdf:about = resolve-uri(concat('sparql?=', encode-for-uri($query)), $base-uri)] -->
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" priority="1">
@@ -81,33 +91,40 @@ LIMIT 100</xsl:param>
 	    </textarea>
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Query</button>
-		<span class="help-inline">For all queries, the maximum number of results is set to 100.</span>
+		<span class="help-inline">For all queries, the maximum number of results is set to <xsl:value-of select="key('init-param-by-name', '&gs;resultLimit', $config)/javaee:param-value"/>.</span>
 	    </div>
 	</fieldset>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryResultMode">
-	<xsl:variable name="result-doc" select="document(concat($absolute-path, '?query=', encode-for-uri($query)))"/>
+	<xsl:variable name="result-doc" select="document(concat($absolute-path, gc:query-string($endpoint-uri, $query, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
 	    <div class="nav row-fluid">
 		<div class="btn-group pull-right">
-		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+		    <a href="{$endpoint-uri}?query={encode-for-uri($query)}" class="btn">Source</a>
+		    <!--
+		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'application/rdf+xml')}" class="btn">RDF/XML</a>
+		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'text/turtle')}" class="btn">Turtle</a>
+		    -->
 		</div>
 	    </div>
 
-	    <xsl:apply-templates select="$result-doc/rdf:RDF" mode="gc:ListMode"/>
+	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:PropertyListMode"/>
 	</xsl:if>
 	<!-- result of SELECT or ASK -->
 	<xsl:if test="$result-doc/sparql:sparql">
 	    <div class="nav row-fluid">
 		<div class="btn-group pull-right">
-		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+xml')}" class="btn">XML</a>
-		    <a href="{@rdf:about}?query={encode-for-uri($query)}&amp;accept={encode-for-uri('application/sparql-results+json')}" class="btn">JSON</a>
+		    <a href="{$endpoint-uri}?query={encode-for-uri($query)}" class="btn">Source</a>
+		    <!--
+		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'application/sparql-results+xml')}" class="btn">XML</a>
+		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'application/sparql-results+json')}" class="btn">JSON</a>
+		    -->
 		</div>
 	    </div>
+
 	    <xsl:apply-templates select="$result-doc/sparql:sparql"/>
 	</xsl:if>
     </xsl:template>

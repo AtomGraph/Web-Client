@@ -50,6 +50,7 @@ xmlns:void="&void;"
 xmlns:list="&list;"
 xmlns:xhv="&xhv;"
 xmlns:url="&java;java.net.URLDecoder"
+xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 exclude-result-prefixes="#all">
 
     <xsl:import href="group-sort-triples.xsl"/>
@@ -89,6 +90,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="ldp:pageOf/@rdf:resource"/>
+    <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
     <rdf:Description rdf:about="">
 	<dct:creator rdf:resource="http://semantic-web.dk/#martynas"/>

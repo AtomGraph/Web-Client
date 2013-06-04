@@ -365,9 +365,9 @@ _:DBPedia a void:Dataset ;
 	<http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
     void:uriSpace "http://dbpedia.org/resource/" ;
     void:triples "550000000"^^xsd:integer .
-[ a sd:Service ;
+[] a sd:Service ;
     sd:endpoint <http://dbpedia.org/sparql> ;
-    sd:supportedLanguage sd:SPARQL11Query ] .
+    sd:supportedLanguage sd:SPARQL11Query .
 
 _:Enipedia a void:Dataset ;
     dct:title "Enipedia" ;
@@ -376,8 +376,8 @@ _:Enipedia a void:Dataset ;
     foaf:logo <http://enipedia.tudelft.nl/enipedia/images/b/bd/eni.png> ;
     void:sparqlEndpoint <http://enipedia.tudelft.nl/sparql/> ;
     void:triples "4317758"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://enipedia.tudelft.nl/sparql/> ] .
+[] a sd:Service ;
+    sd:endpoint <http://enipedia.tudelft.nl/sparql/> .
 
 _:OpenEI a void:Dataset ;
     dct:title "OpenEI" ;
@@ -387,8 +387,8 @@ _:OpenEI a void:Dataset ;
     void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
     void:uriSpace "http://en.openei.org/lod/resource/" ;
     void:triples "17231136"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://en.openei.org/sparql> ] .
+[] a sd:Service ;
+    sd:endpoint <http://en.openei.org/sparql> .
 
 _:LinkedGeoData a void:Dataset ;
     dct:title "LinkedGeoData" ;
@@ -398,8 +398,8 @@ _:LinkedGeoData a void:Dataset ;
     void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
     void:exampleResource <http://linkedgeodata.org/triplify/node264695865> ;
     void:uriSpace "http://linkedgeodata.org/triplify/" .
-[ a sd:Service ;
-    sd:endpoint <http://linkedgeodata.org/sparql> ] .
+[] a sd:Service ;
+    sd:endpoint <http://linkedgeodata.org/sparql> .
 
 _:OrdnanceSurvey a void:Dataset ;
     dct:title "Ordnance Survey" ;
@@ -410,8 +410,8 @@ _:OrdnanceSurvey a void:Dataset ;
     void:exampleResource <http://data.ordnancesurvey.co.uk/id/postcodeunit/SO164GU>,
 	<http://data.ordnancesurvey.co.uk/id/7000000000037256> ;
     void:uriSpace "http://data.ordnancesurvey.co.uk/id/" .
-[ a sd:Service ;
-    sd:endpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> ] .
+[] a sd:Service ;
+    sd:endpoint <http://api.talis.com/stores/ordnance-survey/services/sparql> .
 
 _:Eurostat a void:Dataset ;
     dct:title "Eurostat" ;
@@ -422,8 +422,8 @@ _:Eurostat a void:Dataset ;
     void:exampleResource <http://www4.wiwiss.fu-berlin.de/eurostat/resource/countries/Danmark> ;
     void:uriSpace "http://www4.wiwiss.fu-berlin.de/eurostat/resource/" ;
     void:triples "8850"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ] .
+[] a sd:Service ;
+    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> .
 
 _:UKStatistics a void:Dataset ;
     dct:title "UK Statistics" ;
@@ -433,8 +433,8 @@ _:UKStatistics a void:Dataset ;
     void:exampleResource <http://statistics.data.gov.uk/id/local-authority-district/00AK> ;
     void:uriSpace "http://statistics.data.gov.uk/id/" ;
     void:triples "343733"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://services.data.gov.uk/statistics/sparql> ] .
+[] a sd:Service ;
+    sd:endpoint <http://services.data.gov.uk/statistics/sparql> .
 
 _:Nature a void:Dataset ;
     dct:title "Nature" ;
@@ -445,8 +445,8 @@ _:Nature a void:Dataset ;
     void:exampleResource <http://data.nature.com/ns/articles/10.1038/111697a0> ;
     void:uriSpace "http://data.nature.com/" ;
     void:triples "327539066"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://data.nature.com/sparql> ] .
+[] a sd:Service ;
+    sd:endpoint <http://data.nature.com/sparql> .
 
 _:BBC a void:Dataset ;
     dct:title "BBC" ;

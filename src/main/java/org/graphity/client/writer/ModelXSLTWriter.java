@@ -36,7 +36,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.server.model.QueriedResource;
 import org.graphity.server.provider.ModelProvider;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
@@ -233,8 +232,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    builder.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
-	if (resource instanceof QueriedResource)
-	    builder.parameter("endpoint-uri", UriBuilder.fromUri(((QueriedResource)resource).getEndpoint().getURI()).build());
+	if (getUriInfo().getQueryParameters().getFirst("endpoint-uri") != null)
+	    builder.parameter("endpoint-uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("endpoint-uri")).build());
 
 	return builder;
     }

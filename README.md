@@ -1,23 +1,44 @@
-Description
-===========
+Graphity is a Java framework for building read-write Linked Data applications. If you have a triplestore with RDF
+data that you want to publish and/or build an end-user application on it, or would like to explore Linked Open
+Data, Graphity provides the components you need.
 
-Consider this setup: you have a triplestore with RDF data, and you want to publish it as read-write Linked Data
-on your hostname. You also want to be able to intuitively browse through it, and build user-friendly Web
-applications on it.
+What Graphity provides for users as out-of-the-box generic features:
+* declarative control of published data using URI and SPARQL templates
+* multilingual, responsive user interface built with Twitter Bootstrap
+* multiple rendering modes (currently item/list/table)
+* pagination on container resources
+* SPARQL endpoint with interactive results
+* loading RDF data from remote Linked Data sources
+* HTTP content negotiation and caching
 
-Graphity is a Linked Data platform that allows you to do all that and more. Its native support and direct use of
-standard RDF, SPARQL and XSLT technologies enable extremely extensible and flexible design. You can forget all
-about broken hyperlinks and concentrate on building great apps on quality data.
+What Graphity can be quickly extended to do:
+* render custom layouts/designs by overriding XSLT templates
+* store RDF data directly from HTML forms into the triplestore
+* control RDF input quality with SPARQL-based constraints
+* search by dynamically adding filters to the query
+* faceted browsing by dynamically binding variable values in the query
+* SPARQL result visualizations using different JavaScript APIs
+* ordering pages by property columns
 
-Graphity leads the way towards declarative Web development. The sitemap structure is defined in an ontology using
-URI templates, the content of the page (its resource description) is defined using query templates, while the
-user interface is the result of a transformation on the content data.
+Graphity's direct use of semantic technologies results in extemely extensible and flexible design and leads the
+way towards declarative Web development. You can forget all about broken hyperlinks and concentrate on building
+great apps on quality data.
+
+Getting started
+===============
+
+* what is Linked Data
+* how Graphity works
+* getting started with Graphity
+* exposing SPARQL endpoint as Linked Data
+* building a Web application
 
 What is Linked Data
 ===================
 
 Linked Data is a data integration technology based on the RDF data model. It is the first solution that can solve
-the information silo problems on a global scale and enable distributed generic Web applications.
+the information silo problems on a global scale and enable distributed generic Web applications. Linked Open Data
+(LOD) is Linked Data published under an open license.
 
 RDF is a graph-shaped data model that identifies resources (nodes) with URIs. It has multiple syntaxes: both
 XML-based (RDF/XML) and plain-text (Turtle). [SPARQL 1.1](http://www.w3.org/TR/sparql11-query/) is the latest
@@ -25,33 +46,8 @@ specification of the RDF query language, supported by most RDF databases, called
 
 Read more about how Linked Data solves data integration: [Reinventing Web applications](../../wiki/Reinventing-Web-applications).
 
-What Graphity does
+How Graphity works
 ==================
-
-Graphity is a fully extensible generic Linked Data client and platform. It can be used for exploration and
-browsing of remote datasources, publishing and analysis of open data, as well as import and integration of
-private user data. Building a data-intensive Web application on Graphity is as simple as overriding generic
-stylesheets with own layout and defining URI-query template mappings.
-
-What Graphity provides for users as out-of-the-box generic features:
-* multilingual, responsive Linked Data user interface built with Twitter Bootstrap
-* multiple rendering modes (currently item/list/table)
-* control of the published data by defining templates
-* pagination on container resources
-* SPARQL endpoint with interactive results
-* loading RDF data from remote Linked Data sources
-* HTTP content negotiation and caching
-
-What Graphity can be quickly extended to do:
-* store RDF data directly from HTML forms into the triplestore
-* control RDF input quality with SPARQL-based constraints
-* search by dynamically adding filters to the query
-* faceted browsing by dynamically binding variable values in the query
-* SPARQL result visualizations using different JavaScript APIs
-* ordering tables by property columns. Columns need to be mapped to query variables.
-
-How it works
-============
 
 Linked Data processor. Architecture independent of programming platform.
 

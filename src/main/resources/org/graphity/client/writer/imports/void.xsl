@@ -28,4 +28,10 @@ xmlns:rdf="&rdf;"
 xmlns:void="&void;"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="void:sparqlEndpoint/@rdf:resource">
+	<a href="{resolve-uri('sparql', $base-uri)}?endpoint-uri={encode-for-uri(.)}">
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	</a>
+    </xsl:template>
+
 </xsl:stylesheet>

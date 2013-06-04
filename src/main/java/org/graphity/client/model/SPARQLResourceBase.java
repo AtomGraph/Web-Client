@@ -21,6 +21,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
+import java.net.URI;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -42,6 +43,8 @@ public class SPARQLResourceBase extends ResourceBase
     private static final Logger log = LoggerFactory.getLogger(SPARQLResourceBase.class);
 
     private final Query userQuery;
+    private final URI endpointURI;
+    private final MediaType mediaType; // not used
     @Context SPARQLEndpoint endpoint;
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
@@ -51,7 +54,9 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
-	    @QueryParam("query") Query userQuery)
+	    @QueryParam("query") Query userQuery,
+	    @QueryParam("endpoint-uri") URI endpointURI,
+	    @QueryParam("accept") MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
@@ -61,13 +66,13 @@ public class SPARQLResourceBase extends ResourceBase
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc,
-		XHTML_VARIANTS, userQuery);	
+		XHTML_VARIANTS, userQuery, endpointURI, mediaType);
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc,
-	    List<Variant> variants, Query userQuery)
+	    List<Variant> variants, Query userQuery, URI endpointURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint, cacheControl,
@@ -75,26 +80,38 @@ public class SPARQLResourceBase extends ResourceBase
 		variants);
 	
 	this.userQuery = userQuery;
-	if (log.isDebugEnabled()) log.debug("Constructing SPARQLResourceBase");
+	this.endpointURI = endpointURI;
+	this.mediaType = mediaType;
+	if (log.isDebugEnabled()) log.debug("Constructing SPARQLResourceBase with endpoint URI: {} and MediaType: {}", userQuery, mediaType);
     }
 
     @Override
     public Response get()
     {
-	MediaType mediaType = getHttpHeaders().getAcceptableMediaTypes().get(0);
+	MediaType mostAcceptable = getHttpHeaders().getAcceptableMediaTypes().get(0);
 
 	// don't create query resource if HTML is requested
-	if (getUserQuery() != null && (mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) ||
-	    mediaType.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE)))
+	if (getUserQuery() != null && (mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
+	    mostAcceptable.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
+	    mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE)))
 	{
-	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF or SPARQL Results, returning SPARQL Response", mediaType);	    
-	    // return getEndpoint().query(getUserQuery(), null, null); // do *not* query the local endpoint
-	    return endpoint.query(getUserQuery(), null, null);
+	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF or SPARQL Results, returning SPARQL Response", mostAcceptable);
+	    
+	    if (getEndpointURI() != null)
+	    {
+		if (log.isDebugEnabled()) log.debug("Querying user-provided endpoint {} with Query: {}", getEndpointURI(), getUserQuery());
+		return SPARQLEndpointFactory.createEndpoint(getEndpointURI().toString(),
+			getRequest(), getResourceConfig()).
+		    query(getUserQuery(), null, null);
+	    }
+	    else
+	    {
+		if (log.isDebugEnabled()) log.debug("Querying configured endpoint {} with Query: {}", endpoint, getUserQuery());
+		return endpoint.query(getUserQuery(), null, null);
+	    }
 	}
 	else
-	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mediaType);
+	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mostAcceptable);
 
 	return super.get(); // if HTML is requested, return DESCRIBE ?this results instead of user query
     }
@@ -102,6 +119,16 @@ public class SPARQLResourceBase extends ResourceBase
     public Query getUserQuery()
     {
 	return userQuery;
+    }
+
+    public URI getEndpointURI()
+    {
+	return endpointURI;
+    }
+
+    public MediaType getMediaType()
+    {
+	return mediaType;
     }
 
 }
