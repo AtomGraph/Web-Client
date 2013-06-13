@@ -129,6 +129,46 @@ To add Graphity Client dependency:
         <version>1.0.7-SNAPSHOT</version>
     </dependency>
 
+* add main/webapp/WEB-INF/web.xml with this config:
+
+    <filter>
+        <filter-name>index</filter-name>
+        <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>org.graphity.client.ApplicationBase</param-value>
+        </init-param>
+    </filter>
+
+* extract Twitter Bootstrap distribution into main/webapp/static/ folder
+* pom.xml execution
+* prefix-mapping.n3
+
+Hello World application
+
+Extending Graphity
+------------------
+
+In Java
+
+* extend Resource from org.graphity.client.model.ResourceBase
+* override the JAX-RS-compatible constructor and remember to add annotations its arguments
+* override @Path
+* register your Resource class in your Application constructor and/or getClasses() method
+
+* extend Application from org.graphity.client.ApplicationBase
+* configure JAX-RS application class in web.xml as javax.ws.rs.Application init-param value
+
+In sitemap:
+* owl:import Graphity Client or Graphity Processor ontologies
+* configure sitemap ontology location in web.xml as gp:ontologyLocation init-param value
+
+In XSLT:
+* xsl:import org/graphity/client/writer/local-xhtml.xsl to use default local webapp layout
+* xsl:import org/graphity/client/writer/global-xhtml.xsl to use default layout with LD browser capabilities
+* make copies of local-xhtml.xsl and/or layout.xsl and remove/change the templates for custom layout
+* configure stylesheet location in web.xml as gc:stylesheet init-param value
+
 Used libraries
 --------------
 
