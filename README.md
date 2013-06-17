@@ -129,7 +129,7 @@ To add Graphity Client dependency:
         <version>1.0.7-SNAPSHOT</version>
     </dependency>
 
-* add main/webapp/WEB-INF/web.xml with this config:
+* add main/webapp/WEB-INF/web.xml with this JAX-RS config:
 
     <filter>
         <filter-name>index</filter-name>
@@ -140,7 +140,7 @@ To add Graphity Client dependency:
         </init-param>
     </filter>
 
-* extract Twitter Bootstrap distribution into main/webapp/static/ folder
+* extract Twitter Bootstrap distribution into `/src/main/webapp/static/` folder
 * pom.xml execution
 * prefix-mapping.n3
 
@@ -161,13 +161,31 @@ In Java
 
 In sitemap:
 * owl:import Graphity Client or Graphity Processor ontologies
-* configure sitemap ontology location in web.xml as gp:ontologyLocation init-param value
+* configure sitemap ontology location in web.xml
 
 In XSLT:
 * xsl:import org/graphity/client/writer/local-xhtml.xsl to use default local webapp layout
 * xsl:import org/graphity/client/writer/global-xhtml.xsl to use default layout with LD browser capabilities
 * make copies of local-xhtml.xsl and/or layout.xsl and remove/change the templates for custom layout
-* configure stylesheet location in web.xml as gc:stylesheet init-param value
+* configure stylesheet location in web.xml
+
+Configuration
+-------------
+
+Graphity is configured in web.xml (usually located at /src/main/webapp/WEB-INF) using `<init-param>`, for example:
+
+    <init-param>
+        <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
+        <param-value>http://dydra.com/graphity/client/sparql</param-value>
+    </init-param>
+
+Here, `void:sparqlEndpoint` value is set to `http://dydra.com/graphity/client/sparql` to indicate the SPARQL endpoint Graphity is operating on.
+
+Currently supported configuration parameters:
+
+* `http://processor.graphity.org/ontology#ontologyPath`
+* `gc:stylesheet`
+* 
 
 Used libraries
 --------------

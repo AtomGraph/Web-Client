@@ -144,6 +144,7 @@ ldp:pageOf a owl:ObjectProperty ;
 	] ;
     spin:constraint [ a gp:DescribeTemplate ] ;
     rdfs:label "Resource" ;
+    rdfs:comment "Catch-all resource class (template), with layout modes enabled (optional mode query param)" ;
     foaf:isPrimaryTopicOf <classes/resource> ;
     rdfs:isDefinedBy : .
 

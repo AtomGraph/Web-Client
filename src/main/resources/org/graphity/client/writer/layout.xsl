@@ -284,7 +284,7 @@ exclude-result-prefixes="#all">
 	    <xsl:when test="(not($mode) and $default-mode = '&gc;InputMode') or $mode = '&gc;InputMode'">
 		<!-- <xsl:apply-templates select="." mode="gc:StmtInputMode"/> -->
 
-		<xsl:apply-templates select="." mode="gc:InputMode">
+		<xsl:apply-templates select="." mode="gc:FormInputMode">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
 		</xsl:apply-templates>
 	    </xsl:when>
@@ -615,7 +615,7 @@ exclude-result-prefixes="#all">
 
     <!-- INPUT MODE -->
     
-    <xsl:template match="rdf:RDF" mode="gc:InputMode">
+    <xsl:template match="rdf:RDF" mode="gc:FormInputMode">
 	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
 
 	<xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:HeaderMode"/>
@@ -635,10 +635,10 @@ exclude-result-prefixes="#all">
 	    <xsl:choose>
 		<xsl:when test="key('resources', $request-uri)/rdf:type/@rdf:resource = '&ldp;Page'">
 		    <xsl:variable name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(@rdf:about = $request-uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
-		    <xsl:apply-templates select="$selected-resources" mode="gc:InputMode"/>		    
+		    <xsl:apply-templates select="$selected-resources" mode="gc:FormInputMode"/>		    
 		</xsl:when>
 		<xsl:otherwise>
-		    <xsl:apply-templates mode="gc:InputMode"/>
+		    <xsl:apply-templates mode="gc:FormInputMode"/>
 		</xsl:otherwise>
 	    </xsl:choose>
 	    
@@ -676,7 +676,7 @@ exclude-result-prefixes="#all">
 	<xsl:apply-templates select="key('resources', $request-uri)" mode="gc:PaginationMode"/>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:InputMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:FormInputMode">
 	<fieldset id="fieldset-{generate-id()}">
 	    <legend>
 		<button type="button" class="btn pull-right" title="Remove this resource" onclick="document.getElementById('fieldset-{generate-id()}').style.display = 'none';">&#x2715;</button>
@@ -688,7 +688,7 @@ exclude-result-prefixes="#all">
 	    </xsl:apply-templates>
 
 	    <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
-		<xsl:apply-templates select="current-group()" mode="gc:InputMode"/>
+		<xsl:apply-templates select="current-group()" mode="gc:FormInputMode"/>
 	    </xsl:for-each-group>
 
 	    <!--
@@ -728,7 +728,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InputMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:FormInputMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 	<xsl:variable name="property" select="key('resources', $this, document(namespace-uri()))"/>
 
@@ -993,7 +993,7 @@ exclude-result-prefixes="#all">
 	    <xsl:variable name="bnode" select="key('resources', $ob-value)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/> <!-- [not(. is current())] -->	    
 	    <xsl:choose>
 		<xsl:when test="$bnode">
-		    <xsl:apply-templates select="$bnode/*" mode="gc:InputMode"/>
+		    <xsl:apply-templates select="$bnode/*" mode="gc:FormInputMode"/>
 		</xsl:when>
 		<xsl:otherwise>
 		    <xsl:call-template name="gc:InputTemplate">

@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY owl "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY sp "http://spinrdf.org/sp#">
     <!ENTITY dc "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
@@ -40,6 +41,7 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:sp="&sp;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
@@ -72,15 +74,25 @@ exclude-result-prefixes="#all">
 	    <xsl:apply-templates select="."/>
 	</h2>
     </xsl:template>
-    
-    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:MediaTypeSelectMode">
+
+    <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
+	<div class="btn-group pull-right">
+	    <xsl:if test="$query-res/sp:text">
+		<a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
+	    </xsl:if>
+	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+	</div>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:MediaTypeSelectMode" priority="1">
 	<div class="btn-group pull-right">
 	    <a href="{.}" class="btn">Source</a>
 	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
 	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
 	</div>
     </xsl:template>
-
+	    
     <!-- subject/object resource -->
     <xsl:template match="@rdf:about[not(starts-with(., $base-uri))] | @rdf:resource[not(starts-with(., $base-uri))] | sparql:uri[not(starts-with(., $base-uri))]">
 	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">

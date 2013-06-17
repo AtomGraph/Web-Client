@@ -212,16 +212,9 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
 	<div class="btn-group pull-right">
-	    <!--
-	    <xsl:if test="@rdf:about != $absolute-path">
-		<a href="{@rdf:about}" class="btn">Source</a>
-	    </xsl:if>
-	    -->
 	    <xsl:if test="$query-res/sp:text">
 		<a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
 	    </xsl:if>
-	    <a href="?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-	    <a href="?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
 	</div>
     </xsl:template>
 
