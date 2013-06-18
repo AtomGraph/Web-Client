@@ -27,6 +27,7 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.util.DataManager;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, OntModel>
+public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, OntModel> implements ContextResolver<OntModel>
 {
     private static final Logger log = LoggerFactory.getLogger(OntologyProvider.class);
 
@@ -92,6 +93,12 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    }
 
 	};
+    }
+
+    @Override
+    public OntModel getContext(Class<?> type)
+    {
+	return getOntology(uriInfo, resourceConfig);
     }
 
     /**

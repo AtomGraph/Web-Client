@@ -24,7 +24,9 @@ import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.slf4j.Logger;
@@ -35,11 +37,11 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Context, SPARQLEndpoint>
+public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Context, SPARQLEndpoint> implements ContextResolver<SPARQLEndpoint>
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointProvider.class);
 
-    //@Context Providers providers;
+    @Context Providers providers;
     @Context ResourceConfig resourceConfig;
     @Context UriInfo uriInfo;
     @Context Request request;
@@ -67,19 +69,27 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     @Override
     public Injectable<SPARQLEndpoint> getInjectable(ComponentContext cc, Context context)
     {
-	//if (log.isDebugEnabled()) log.debug("OntologyProvider UriInfo: {} ResourceConfig.getProperties(): {}", uriInfo, resourceConfig.getProperties());
-	
 	return new Injectable<SPARQLEndpoint>()
 	{
 	    @Override
 	    public SPARQLEndpoint getValue()
 	    {
-		OntModel sitemap = OntologyProvider.getOntology(getUriInfo(), getResourceConfig());
+		ContextResolver<OntModel> cr = providers.getContextResolver(OntModel.class, null);
+		OntModel sitemap = cr.getContext(OntModel.class);
 		
 		return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
 			sitemap);
 	    }
 	};
     }
-    
+
+    @Override
+    public SPARQLEndpoint getContext(Class<?> type)
+    {
+	OntModel sitemap = OntologyProvider.getOntology(getUriInfo(), getResourceConfig());
+
+	return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
+		sitemap);
+    }
+
 }
