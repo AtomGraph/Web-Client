@@ -166,48 +166,48 @@ Currently supported configuration parameters:
   </thead>
   <tbody>
     <tr>
-      <td>`http://rdfs.org/ns/void#sparqlEndpoint`</td>
+      <td><pre><code>http://rdfs.org/ns/void#sparqlEndpoint</code></pre></td>
       <td></td>
       <td>(Remote) SPARQL endpoint Graphity is operating on. This endpoint is also accessible via local endpoint proxy,
 e.g. `http://localhost:8080/sparql`. By default, none is specified, in which case Graphity is serving its own sitemap ontology on the local endpoint</td>
     </tr>
     <tr>
-      <td>`http://jena.hpl.hp.com/Service#queryAuthUser`</td>
+      <td><pre><code>http://jena.hpl.hp.com/Service#queryAuthUser</code></pre></td>
       <td></td>
       <td>Username for authentication against the SPARQL endpoint (so far only HTTP Basic authentication is supported)</td>
     </tr>
     <tr>
-      <td>`http://jena.hpl.hp.com/Service#queryAuthPwd`</td>
+      <td><pre><code>http://jena.hpl.hp.com/Service#queryAuthPwd</code></pre></td>
       <td></td>
       <td>Password for authentication against the SPARQL endpoint (so far only HTTP Basic authentication is supported)</td>
     </tr>
     <tr>
-      <td>`http://server.graphity.org/ontology#cacheControl`</td>
+      <td><pre><code>http://server.graphity.org/ontology#cacheControl</code></pre></td>
       <td>no-cache</td>
       <td>`Cache-Control` response header value. Currently this is webapp-scoped (all responses share the same value).</td>
     </tr>
     <tr>
-      <td>`http://server.graphity.org/ontology#resultLimit`</td>
+      <td><pre><code>http://server.graphity.org/ontology#resultLimit</code></pre></td>
       <td>100</td>
       <td>`LIMIT` value Graphity sets on `SELECT` queries executed against the local SPARQL endpoint, in order to limit the number of results</td>
     </tr>
     <tr>
-      <td>`http://processor.graphity.org/ontology#ontologyPath`</td>
+      <td><pre><code>http://processor.graphity.org/ontology#ontologyPath</code></pre></td>
       <td>`ontology`</td>
       <td>Path (relative to webapp base URI) on which ontology graph will be accessible. It resolves to e.g. `http://localhost:8080/ontology`.</td>
     </tr>
     <tr>
-      <td>`http://processor.graphity.org/ontology#ontologyLocation`</td>
+      <td><pre><code>http://processor.graphity.org/ontology#ontologyLocation</code></pre></td>
       <td>`org/graphity/client/ontology/sitemap.ttl`</td>
       <td>Location of the sitemap ontology RDF file</td>
     </tr>
     <tr>
-      <td>`http://client.graphity.org/ontology#stylesheet`</td>
+      <td><pre><code>http://client.graphity.org/ontology#stylesheet</code></pre></td>
       <td>`org/graphity/client/writer/global-xhtml.xsl`</td>
       <td>Location of the master XSLT stylesheet that transforms RDF/XML to XHTML user interface</td>
     </tr>
     <tr>
-      <td>[`com.sun.jersey.config.property.WebPageContentRegex`](https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html#PROPERTY_WEB_PAGE_CONTENT_REGEX)</td>
+      <td><pre><code><a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html#PROPERTY_WEB_PAGE_CONTENT_REGEX">com.sun.jersey.config.property.WebPageContentRegex</a></code></pre></td>
       <td>`/static/.*`</td>
       <td>RegExp templates of relative paths on which static content (such as CSS and JavaScript files) will be served</td>
     </tr>
