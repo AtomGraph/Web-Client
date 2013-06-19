@@ -66,22 +66,22 @@ To add Graphity Client dependency:
 
 * add Graphity Client as a Maven dependency in your project using an IDE, or in the 'pom.xml' file
 
-    <dependency>
-        <groupId>org.graphity</groupId>
-        <artifactId>client</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
-    </dependency>
+        <dependency>
+            <groupId>org.graphity</groupId>
+            <artifactId>client</artifactId>
+            <version>1.0.7-SNAPSHOT</version>
+        </dependency>
 
 * add `main/webapp/WEB-INF/web.xml` with this JAX-RS config:
 
-    <filter>
-        <filter-name>index</filter-name>
-        <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
-        <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.graphity.client.ApplicationBase</param-value>
-        </init-param>
-    </filter>
+        <filter>
+            <filter-name>index</filter-name>
+            <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
+            <init-param>
+                <param-name>javax.ws.rs.Application</param-name>
+                <param-value>org.graphity.client.ApplicationBase</param-value>
+            </init-param>
+        </filter>
 
 * extract Twitter Bootstrap distribution into `/src/main/webapp/static/` folder
 * pom.xml execution
@@ -117,10 +117,10 @@ Configuration
 
 Graphity is configured in web.xml (usually located at `/src/main/webapp/WEB-INF`) using `<init-param>`, for example:
 
-    <init-param>
-        <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
-        <param-value>http://dydra.com/graphity/client/sparql</param-value>
-    </init-param>
+        <init-param>
+            <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
+            <param-value>http://dydra.com/graphity/client/sparql</param-value>
+        </init-param>
 
 Here, `void:sparqlEndpoint` value is set to `http://dydra.com/graphity/client/sparql` to indicate the SPARQL endpoint Graphity is operating on.
 
