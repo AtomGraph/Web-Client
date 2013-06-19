@@ -62,7 +62,7 @@ To add Graphity Client dependency:
 * checkout the source code of [Graphity Server](https://github.com/Graphity/graphity-ldp/) dependency (it is not available on Maven yet)
 * build it as a Maven Java application. Change POM to build a `.jar`:
 
-  <packaging>jar</packaging>
+        <packaging>jar</packaging>
 
 * add Graphity Client as a Maven dependency in your project using an IDE, or in the 'pom.xml' file
 
@@ -83,32 +83,64 @@ To add Graphity Client dependency:
             </init-param>
         </filter>
 
-* extract Twitter Bootstrap distribution into `/src/main/webapp/static/` folder
 * pom.xml execution
-* prefix-mapping.n3
-
-Hello World application
+* extract Twitter Bootstrap distribution into `/src/main/webapp/static/` folder
 
 Extending Graphity
 ------------------
+
+For a sample `Hello World` kind of application using Graphity, check out [sample webapp](../../../client-sample-app).
 
 In Java
 
 * extend Resource from [org.graphity.client.model.ResourceBase](../../blob/master/src/main/java/org/graphity/client/model/ResourceBase.java)
 * override the JAX-RS-compatible constructor and remember to add annotations its arguments
-* override `@Path`
-* register your Resource class in your Application constructor and/or `getClasses()` method
+
+        public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
+            @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
+            @QueryParam("limit") @DefaultValue("20") Long limit,
+            @QueryParam("offset") @DefaultValue("0") Long offset,
+            @QueryParam("order-by") String orderBy,
+            @QueryParam("desc") @DefaultValue("false") Boolean desc)
+        {
+            super(uriInfo, request, httpHeaders,
+                resourceConfig, sitemap, endpoint,
+                limit, offset, orderBy, desc);
+
+            // custom logic
+        }
+
+* override `@Path` class annotation
 
 * extend Application from [org.graphity.client.ApplicationBase](../../blob/master/src/main/java/org/graphity/client/ApplicationBase.java)
-* configure JAX-RS application class in web.xml as `javax.ws.rs.Application` `<init-param>` value
+* configure JAX-RS application class in web.xml
+
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.semanticreports.Application</param-value>
+        </init-param>
+
+* register your Resource class in your Application constructor and/or `getClasses()` method
+
 
 In sitemap:
-* `owl:import` Graphity Client or Graphity Processor ontologies
+* `owl:import` [Graphity Client ontology](../../blob/master/src/main/resources/org/graphity/client/ontology/sitemap.ttl) or [Graphity Processor ontology](../../blob/master/src/main/resources/org/graphity/processor/vocabulary/gp.ttl)
+
+        <xsl:import href="../../../org/graphity/client/writer/functions.xsl"/>
+        <xsl:import href="../../../org/graphity/client/writer/group-sort-triples.xsl"/>
+        <xsl:import href="../../../org/graphity/client/writer/local-xhtml.xsl"/>
+
+* create `/src/main/resources/prefix-mapping.n3` to configure mappings to locally cached copies of vocabularies, if any
 * configure sitemap ontology location in web.xml
 
+        <init-param>
+            <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
+            <param-value>com/sample/ontology/sitemap.ttl</param-value>
+        </init-param>
+
 In XSLT:
-* `xsl:import` org/graphity/client/writer/local-xhtml.xsl to use default local webapp layout
-* `xsl:import` org/graphity/client/writer/global-xhtml.xsl to use default layout with LD browser capabilities
+* `xsl:import` [org/graphity/client/writer/local-xhtml.xsl])() to use default local webapp layout
+* `xsl:import` [org/graphity/client/writer/global-xhtml.xsl]() to use default layout with LD browser capabilities
 * make copies of local-xhtml.xsl and/or layout.xsl and remove/change the templates for custom layout
 * configure stylesheet location in web.xml
 
@@ -122,13 +154,65 @@ Graphity is configured in web.xml (usually located at `/src/main/webapp/WEB-INF`
             <param-value>http://dydra.com/graphity/client/sparql</param-value>
         </init-param>
 
-Here, `void:sparqlEndpoint` value is set to `http://dydra.com/graphity/client/sparql` to indicate the SPARQL endpoint Graphity is operating on.
-
 Currently supported configuration parameters:
 
-* `http://processor.graphity.org/ontology#ontologyPath`
-* `gc:stylesheet`
-* 
+<table>
+  <thead>
+    <tr>
+      <td>Property</td>
+      <td>Default value</td>
+      <td>Description</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>`http://rdfs.org/ns/void#sparqlEndpoint`</td>
+      <td></td>
+      <td>(Remote) SPARQL endpoint Graphity is operating on. This endpoint is also accessible via local endpoint proxy,
+e.g. `http://localhost:8080/sparql`. By default, none is specified, in which case Graphity is serving its own sitemap ontology on the local endpoint</td>
+    </tr>
+    <tr>
+      <td>`http://jena.hpl.hp.com/Service#queryAuthUser`</td>
+      <td></td>
+      <td>Username for authentication against the SPARQL endpoint (so far only HTTP Basic authentication is supported)</td>
+    </tr>
+    <tr>
+      <td>`http://jena.hpl.hp.com/Service#queryAuthPwd`</td>
+      <td></td>
+      <td>Password for authentication against the SPARQL endpoint (so far only HTTP Basic authentication is supported)</td>
+    </tr>
+    <tr>
+      <td>`http://server.graphity.org/ontology#cacheControl`</td>
+      <td>no-cache</td>
+      <td>`Cache-Control` response header value. Currently this is webapp-scoped (all responses share the same value).</td>
+    </tr>
+    <tr>
+      <td>`http://server.graphity.org/ontology#resultLimit`</td>
+      <td>100</td>
+      <td>`LIMIT` value Graphity sets on `SELECT` queries executed against the local SPARQL endpoint, in order to limit the number of results</td>
+    </tr>
+    <tr>
+      <td>`http://processor.graphity.org/ontology#ontologyPath`</td>
+      <td>`ontology`</td>
+      <td>Path (relative to webapp base URI) on which ontology graph will be accessible. It resolves to e.g. `http://localhost:8080/ontology`.</td>
+    </tr>
+    <tr>
+      <td>`http://processor.graphity.org/ontology#ontologyLocation`</td>
+      <td>`org/graphity/client/ontology/sitemap.ttl`</td>
+      <td>Location of the sitemap ontology RDF file</td>
+    </tr>
+    <tr>
+      <td>`http://client.graphity.org/ontology#stylesheet`</td>
+      <td>`org/graphity/client/writer/global-xhtml.xsl`</td>
+      <td>Location of the master XSLT stylesheet that transforms RDF/XML to XHTML user interface</td>
+    </tr>
+    <tr>
+      <td>[`com.sun.jersey.config.property.WebPageContentRegex`](https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html#PROPERTY_WEB_PAGE_CONTENT_REGEX)</td>
+      <td>`/static/.*`</td>
+      <td>RegExp templates of relative paths on which static content (such as CSS and JavaScript files) will be served</td>
+    </tr>
+  </tbody>
+</table>
 
 Used libraries
 --------------
