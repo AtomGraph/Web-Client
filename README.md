@@ -27,7 +27,7 @@ great apps on quality data.
 Getting started
 ===============
 
-* [what is Linked Data](../../wiki/Reinventing-Web-applications)
+* [what is Linked Data](../../wiki/What-is-Linked-Data)
 * [how Graphity works](../../wiki/How-Graphity-works)
 * getting started with Graphity
 * exposing SPARQL endpoint as Linked Data
@@ -60,7 +60,10 @@ Using Client in your [Maven Web application](http://maven.apache.org/guides/mini
 To add Graphity Client dependency:
 * checkout the source code from this Git repository
 * checkout the source code of [Graphity Server](https://github.com/Graphity/graphity-ldp/) dependency (it is not available on Maven yet)
-* build it as a Maven Java application
+* build it as a Maven Java application. Change POM to build a `.jar`:
+
+  <packaging>jar</packaging>
+
 * add Graphity Client as a Maven dependency in your project using an IDE, or in the 'pom.xml' file
 
     <dependency>
