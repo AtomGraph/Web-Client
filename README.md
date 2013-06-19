@@ -37,24 +37,6 @@ Getting started
 Demonstration
 =============
 
-An instance of this browser runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
+An instance of Graphity Client runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
 
 _Note: the server is not production-grade._
-
-Used libraries
---------------
-
-* [Graphity Server](https://github.com/Graphity/graphity-ldp)
-* [Saxonica Saxon](http://saxon.sourceforge.net)
-
-Maven dependencies are discovered automatically from `pom.xml`.
-
-Tools
-=====
-
-Validators
-----------
-
-* [RDF/XML and Turtle validator](http://www.rdfabout.com/demo/validator/)
-* [SPARQL query validator](http://sparql.org/query-validator.html)
-* [SPIN query converter] (http://spinservices.org/spinrdfconverter.html)
