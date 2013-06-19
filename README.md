@@ -183,32 +183,32 @@ e.g. `http://localhost:8080/sparql`. By default, none is specified, in which cas
     </tr>
     <tr>
       <td><pre><code>http://server.graphity.org/ontology#cacheControl</code></pre></td>
-      <td>no-cache</td>
+      <td><code>no-cache</code></td>
       <td>`Cache-Control` response header value. Currently this is webapp-scoped (all responses share the same value).</td>
     </tr>
     <tr>
       <td><pre><code>http://server.graphity.org/ontology#resultLimit</code></pre></td>
-      <td>100</td>
+      <td><code>100</code></td>
       <td>`LIMIT` value Graphity sets on `SELECT` queries executed against the local SPARQL endpoint, in order to limit the number of results</td>
     </tr>
     <tr>
       <td><pre><code>http://processor.graphity.org/ontology#ontologyPath</code></pre></td>
-      <td>`ontology`</td>
+      <td><code>ontology</code></td>
       <td>Path (relative to webapp base URI) on which ontology graph will be accessible. It resolves to e.g. `http://localhost:8080/ontology`.</td>
     </tr>
     <tr>
       <td><pre><code>http://processor.graphity.org/ontology#ontologyLocation</code></pre></td>
-      <td>`org/graphity/client/ontology/sitemap.ttl`</td>
+      <td><code>org/graphity/client/ontology/sitemap.ttl</code></td>
       <td>Location of the sitemap ontology RDF file</td>
     </tr>
     <tr>
       <td><pre><code>http://client.graphity.org/ontology#stylesheet</code></pre></td>
-      <td>`org/graphity/client/writer/global-xhtml.xsl`</td>
+      <td><code>org/graphity/client/writer/global-xhtml.xsl</code></td>
       <td>Location of the master XSLT stylesheet that transforms RDF/XML to XHTML user interface</td>
     </tr>
     <tr>
       <td><pre><code><a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html#PROPERTY_WEB_PAGE_CONTENT_REGEX">com.sun.jersey.config.property.WebPageContentRegex</a></code></pre></td>
-      <td>`/static/.*`</td>
+      <td><code>/static/.*</code></td>
       <td>RegExp templates of relative paths on which static content (such as CSS and JavaScript files) will be served</td>
     </tr>
   </tbody>
