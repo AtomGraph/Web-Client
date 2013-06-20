@@ -43,7 +43,9 @@ An instance of Graphity Client runs for demonstration purposes on [semanticrepor
 
 _Note: the server is not production-grade._
 
-Commercial support
-==================
+Support
+=======
+
+Please [report issues](../../issues) if you've encountered a bug or have a feature request.
 
 Commercial Graphity consulting, development, and support are available from [GraphityHQ](http://graphityhq.com).
