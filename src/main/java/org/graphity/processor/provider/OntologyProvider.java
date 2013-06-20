@@ -89,7 +89,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    @Override
 	    public OntModel getValue()
 	    {
-		return getOntology(uriInfo, resourceConfig);
+		return getOntology(getUriInfo(), getResourceConfig());
 	    }
 
 	};
@@ -98,7 +98,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     @Override
     public OntModel getContext(Class<?> type)
     {
-	return getOntology(uriInfo, resourceConfig);
+	return getOntology(getUriInfo(), getResourceConfig());
     }
 
     /**

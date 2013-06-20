@@ -66,6 +66,11 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	return uriInfo;
     }
 
+    public Providers getProviders()
+    {
+	return providers;
+    }
+
     @Override
     public Injectable<SPARQLEndpoint> getInjectable(ComponentContext cc, Context context)
     {
@@ -74,7 +79,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	    @Override
 	    public SPARQLEndpoint getValue()
 	    {
-		ContextResolver<OntModel> cr = providers.getContextResolver(OntModel.class, null);
+		ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
 		OntModel sitemap = cr.getContext(OntModel.class);
 		
 		return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
@@ -86,7 +91,10 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     @Override
     public SPARQLEndpoint getContext(Class<?> type)
     {
-	OntModel sitemap = OntologyProvider.getOntology(getUriInfo(), getResourceConfig());
+	//OntModel sitemap = OntologyProvider.getOntology(getUriInfo(), getResourceConfig());
+	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
+	OntModel sitemap = cr.getContext(OntModel.class);
+
 
 	return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
 		sitemap);
