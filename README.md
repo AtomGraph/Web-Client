@@ -40,3 +40,8 @@ Demonstration
 An instance of Graphity Client runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
 
 _Note: the server is not production-grade._
+
+Commercial support
+==================
+
+Commercial Graphity consulting, development, and support are available from [GraphityHQ](http://graphityhq.com).
