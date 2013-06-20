@@ -34,6 +34,8 @@ Getting started
 * [configuring Graphity](../../wiki/Cofiguration)
 * JavaDoc
 
+For full documentation, see the [wiki index](../../wiki).
+
 Demonstration
 =============
 
