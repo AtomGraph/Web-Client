@@ -85,4 +85,10 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
+    <xsl:template match="sioc:email/@rdf:resource">
+	<a href="{.}">
+	    <xsl:value-of select="substring-after(., 'mailto:')"/>
+	</a>
+    </xsl:template>
+
 </xsl:stylesheet>
