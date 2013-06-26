@@ -217,7 +217,6 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="rdfs:domain" as="attribute()*">
 	<xsl:param name="property-uri" as="xs:anyURI+"/>
-	<!-- <xsl:message>$property-uri: <xsl:value-of select="$property-uri"/></xsl:message> -->
 	<xsl:for-each select="$property-uri">
 	    <xsl:for-each select="document(gc:document-uri($property-uri))">
 		<xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
@@ -227,7 +226,6 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="gc:inDomainOf" as="attribute()*">
 	<xsl:param name="type-uri" as="xs:anyURI+"/>
-	<!-- <xsl:message>$type-uri <xsl:value-of select="$type-uri"/></xsl:message> -->
 	<xsl:for-each select="$type-uri">
 	    <xsl:for-each select="document(gc:document-uri(.))">
 		<xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
@@ -237,7 +235,6 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="rdfs:range" as="attribute()*">
 	<xsl:param name="property-uri" as="xs:anyURI+"/>
-	<!-- <xsl:message>$property-uri: <xsl:value-of select="$property-uri"/></xsl:message> -->
 	<xsl:for-each select="$property-uri">
 	    <xsl:for-each select="document(gc:document-uri($property-uri))">
 		<xsl:sequence select="key('resources', $property-uri)/rdfs:range/@rdf:resource"/>
@@ -247,28 +244,52 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="rdfs:subClassOf" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(gc:document-uri($uri))">
+	<xsl:sequence select="rdfs:subClassOf($uri, document(gc:document-uri($uri)))"/>
+    </xsl:function>
+
+    <xsl:function name="rdfs:subClassOf" as="attribute()*">
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:param name="document" as="document-node()"/>
+	<xsl:for-each select="$document">
 	    <xsl:sequence select="key('resources', $uri)/rdfs:subClassOf/@rdf:resource"/>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="gc:superClassOf" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(gc:document-uri($uri))">
+	<xsl:sequence select="gc:superClassOf($uri, document(gc:document-uri($uri)))"/>
+    </xsl:function>
+
+    <xsl:function name="gc:superClassOf" as="attribute()*">
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:param name="document" as="document-node()"/>
+	<xsl:for-each select="$document">
 	    <xsl:sequence select="key('resources-by-subclass', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="skos:broader" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(gc:document-uri($uri))">
+	<xsl:sequence select="skos:broader($uri, document(gc:document-uri($uri)))"/>
+    </xsl:function>
+
+    <xsl:function name="skos:broader" as="attribute()*">
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:param name="document" as="document-node()"/>
+	<xsl:for-each select="$document">
 	    <xsl:sequence select="key('resources', $uri)/skos:broader/@rdf:resource | key('resources-by-narrower', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
 
     <xsl:function name="skos:narrower" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:for-each select="document(gc:document-uri($uri))">
+	<xsl:sequence select="skos:narrower($uri, document(gc:document-uri($uri)))"/>
+    </xsl:function>
+
+    <xsl:function name="skos:narrower" as="attribute()*">
+	<xsl:param name="uri" as="xs:anyURI+"/>
+	<xsl:param name="document" as="document-node()"/>
+	<xsl:for-each select="$document">
 	    <xsl:sequence select="key('resources', $uri)/skos:narrower/@rdf:resource | key('resources-by-broader', $uri)/@rdf:about"/>
 	</xsl:for-each>
     </xsl:function>
