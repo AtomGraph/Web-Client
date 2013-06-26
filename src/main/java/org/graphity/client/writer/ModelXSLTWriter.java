@@ -119,21 +119,29 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
     }
-    public Source getSource(OntModel ontModel)
+    public Source getSource(Model model)
     {
-	return getSource(ontModel, false);
+	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
+	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
+	
+	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	model.write(stream, null, WebContent.langRDFXML);
+
+	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
     }
     
     public Source getSource(OntModel ontModel, boolean writeAll)
     {
+	if (!writeAll) return getSource(ontModel);
+	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");	
+	
 	if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	if (writeAll) ontModel.writeAll(stream, null, WebContent.langRDFXML);
-	else ontModel.write(stream);
+	ontModel.writeAll(stream, null, WebContent.langRDFXML);
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
     }
 
@@ -148,6 +156,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
      */
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
+	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
 	// using getResource() because getResourceAsStream() does not retain systemId
 	//if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
 	//URL xsltUrl = getServletContext().getResource(filename);
