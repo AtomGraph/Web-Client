@@ -98,7 +98,11 @@ exclude-result-prefixes="#all">
 	</button>
 
 	<a class="brand" href="{$base-uri}">
-	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:ImageMode"/>
+	    <xsl:for-each select="key('resources', $base-uri, $ont-model)/@rdf:about">
+		<img src="{../foaf:logo/@rdf:resource}">
+		    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+		</img>
+	    </xsl:for-each>
 	</a>
 
 	<div id="collapsing-navbar" class="nav-collapse collapse">

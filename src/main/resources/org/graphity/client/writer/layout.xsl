@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY ldp "http://www.w3.org/ns/ldp#">
     <!ENTITY dct "http://purl.org/dc/terms/">
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
     <!ENTITY sp "http://spinrdf.org/sp#">
     <!ENTITY spin "http://spinrdf.org/spin#">
@@ -43,6 +44,7 @@ xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:ldp="&ldp;"
 xmlns:dct="&dct;"
+xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
@@ -194,7 +196,11 @@ exclude-result-prefixes="#all">
 	</button>
 
 	<a class="brand" href="{$base-uri}">
-	    <xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:ImageMode"/>
+	    <xsl:for-each select="key('resources', $base-uri, $ont-model)/@rdf:about">
+		<img src="{../foaf:logo/@rdf:resource}">
+		    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+		</img>
+	    </xsl:for-each>
 	</a>
 
 	<div id="collapsing-navbar" class="nav-collapse collapse">
