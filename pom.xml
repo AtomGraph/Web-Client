@@ -32,7 +32,6 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<netbeans.hint.license>gpl30</netbeans.hint.license>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
  
 <scm>
@@ -148,6 +147,25 @@
             </plugin>
         </plugins>
     </build>
-    <packaging>war</packaging>
+    <packaging>${packaging.type}</packaging>
     <artifactId>client</artifactId>
+    
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>dependency</id>
+            <properties>
+                <packaging.type>jar</packaging.type>
+            </properties>
+	</profile>
+    </profiles>
+	  
 </project>
