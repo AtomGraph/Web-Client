@@ -395,7 +395,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
     {
 	QueryBuilder qb = QueryBuilder.fromQuery(query);
-	if (qb.getSubSelectBuilder() == null) throw new IllegalArgumentException("The SPIN query for ldp:Page class does not have a SELECT subquery");
+	if (qb.getSubSelectBuilder() == null) throw new IllegalStateException("The SPIN query for ldp:Page class does not have a SELECT subquery");
 	
 	SelectBuilder selectBuilder = qb.getSubSelectBuilder().
 	    replaceLimit(getLimit()).replaceOffset(getOffset());
@@ -406,7 +406,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
 		    orderBy(getOrderBy(), getDesc());
 	    }
-	    catch (IllegalArgumentException ex)
+	    catch (IllegalStateException ex)
 	    {
 		if (log.isWarnEnabled()) log.warn("Tried to use ORDER BY variable ?{} which is not present in the WHERE pattern", getOrderBy());
 	    }

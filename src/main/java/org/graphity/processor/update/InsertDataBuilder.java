@@ -21,6 +21,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
+import java.net.URI;
+import org.topbraid.spin.model.NamedGraph;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.update.InsertData;
 import org.topbraid.spin.model.update.Update;
@@ -70,7 +72,17 @@ public class InsertDataBuilder extends UpdateBuilder implements InsertData
     {
 	return newInstance().data(model);
     }
-    
+
+    public static InsertDataBuilder fromData(NamedGraph graph, Model model)
+    {
+	return newInstance().data(graph, model);
+    }
+
+    public static InsertDataBuilder fromData(URI graphUri, Model model)
+    {
+	return newInstance().data(graphUri, model);
+    }
+
     public InsertDataBuilder data(RDFList dataList)
     {
 	if (dataList == null) throw new IllegalArgumentException("INSERT DATA data List cannot be null");
@@ -89,6 +101,38 @@ public class InsertDataBuilder extends UpdateBuilder implements InsertData
     protected InsertData getUpdate()
     {
 	return insertData;
+    }
+
+    public InsertDataBuilder data(NamedGraph graph, RDFList dataList)
+    {
+	if (graph == null) throw new IllegalArgumentException("INSERT DATA graph resource cannot be null");
+	if (dataList == null) throw new IllegalArgumentException("INSERT DATA data List resource cannot be null");
+	
+	return data(getModel().createList().
+		with(graph.addProperty(SP.elements, dataList)));
+    }
+
+    public InsertDataBuilder data(NamedGraph graph, Model model)
+    {
+	return data(graph, createDataList(model));
+    }
+
+    public InsertDataBuilder data(URI graphUri, RDFList dataList)
+    {
+	if (graphUri == null) throw new IllegalArgumentException("INSERT DATA graph resource cannot be null");
+	if (dataList == null) throw new IllegalArgumentException("INSERT DATA data List cannot be null");
+
+	NamedGraph graph = getModel().createResource().
+	    addProperty(RDF.type, SP.NamedGraph).
+	    addProperty(SP.graphNameNode, getModel().createResource(graphUri.toString())).
+	    as(NamedGraph.class);
+	
+	return data(graph, dataList);
+    }
+
+    public InsertDataBuilder data(URI graphUri, Model model)
+    {
+	return data(graphUri, createDataList(model));
     }
 
 }

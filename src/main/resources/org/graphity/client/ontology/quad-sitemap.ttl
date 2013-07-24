@@ -48,6 +48,11 @@ ldp:pageOf a owl:ObjectProperty ;
     rdfs:range ldp:Container ;
     rdfs:isDefinedBy ldp: .
 
+void:inDataset a owl:ObjectProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range void:Dataset ;
+    rdfs:isDefinedBy void: .
+
 # RESOURCES
 
 <.> a sioc:Site, ldp:Container, foaf:Document ;

@@ -15,7 +15,7 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-            <param-value>/static/.*</param-value>
+            <param-value>(/static/.*)|(/robots\.txt)</param-value>
         </init-param>
         <init-param>
             <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>

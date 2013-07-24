@@ -16,7 +16,6 @@
  */
 package org.graphity.processor.provider;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
@@ -27,33 +26,25 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.processor.model.SPARQLEndpointFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.graphity.server.model.GraphStore;
+import org.graphity.server.model.GraphStoreFactory;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Context, SPARQLEndpoint> implements ContextResolver<SPARQLEndpoint>
+public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context, GraphStore> implements ContextResolver<GraphStore>
 {
-    private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointProvider.class);
 
     @Context Providers providers;
     @Context ResourceConfig resourceConfig;
     @Context UriInfo uriInfo;
     @Context Request request;
-    
-    public SPARQLEndpointProvider()
-    {
-	super(SPARQLEndpoint.class);
-    }
 
-    public Request getRequest()
+    public GraphStoreProvider()
     {
-	return request;
+	super(GraphStore.class);
     }
 
     public ResourceConfig getResourceConfig()
@@ -71,31 +62,36 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	return providers;
     }
 
-    public OntModel getOntModel()
+    public Request getRequest()
     {
-	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
-	return cr.getContext(OntModel.class);
+	return request;
     }
-    
+
     @Override
-    public Injectable<SPARQLEndpoint> getInjectable(ComponentContext cc, Context context)
+    public Injectable<GraphStore> getInjectable(ComponentContext cc, Context a)
     {
-	return new Injectable<SPARQLEndpoint>()
+	//if (log.isDebugEnabled()) log.debug("GraphStoreProvider UriInfo: {} ResourceConfig.getProperties(): {}", uriInfo, resourceConfig.getProperties());
+	
+	return new Injectable<GraphStore>()
 	{
 	    @Override
-	    public SPARQLEndpoint getValue()
+	    public GraphStore getValue()
 	    {
-		return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
-			getOntModel());
+		return getGraphStore();
 	    }
+
 	};
     }
 
     @Override
-    public SPARQLEndpoint getContext(Class<?> type)
+    public GraphStore getContext(Class<?> type)
     {
-	return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
-		getOntModel());
+	return getGraphStore();
+    }
+
+    public GraphStore getGraphStore()
+    {
+	return GraphStoreFactory.createGraphStore(getRequest(), getResourceConfig());
     }
 
 }

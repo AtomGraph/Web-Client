@@ -108,7 +108,6 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 DESCRIBE ?property WHERE {
     {
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
         SELECT ?property
         WHERE {
             {

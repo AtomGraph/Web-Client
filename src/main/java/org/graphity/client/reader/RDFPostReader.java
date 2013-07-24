@@ -53,7 +53,7 @@ public class RDFPostReader implements MessageBodyReader<Model>
 {
     private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class) ;
     
-    @Context private HttpContext hrc;
+    @Context private HttpContext httpContext;
     private List<String> keys = null; //new ArrayList<String>();
     private List<String> values = null; // new ArrayList<String>();
 
@@ -98,8 +98,8 @@ public class RDFPostReader implements MessageBodyReader<Model>
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-	// hrc.getRequest().getFormParameters() returns same info, but ordering is lost	
-	return parse(hrc.getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name());
+	// getHttpContext().getRequest().getFormParameters() returns same info, but ordering is lost	
+	return parse(getHttpContext().getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name());
     }
 
     public Model parse(String request, String encoding)
@@ -225,4 +225,10 @@ public class RDFPostReader implements MessageBodyReader<Model>
 
 	return model;
     }
+
+    public HttpContext getHttpContext()
+    {
+	return httpContext;
+    }
+    
 }

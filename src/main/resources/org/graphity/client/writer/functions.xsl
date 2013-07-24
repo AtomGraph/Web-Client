@@ -310,7 +310,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="limit" as="xs:integer?"/>
 	<xsl:param name="order-by" as="xs:string?"/>
 	<xsl:param name="desc" as="xs:boolean?"/>
-	<xsl:param name="mode" as="xs:string?"/>
+	<xsl:param name="mode" as="xs:anyURI?"/>
 	
 	<xsl:variable name="query-string">
 	    <xsl:text>limit=</xsl:text><xsl:value-of select="$limit"/><xsl:text>&amp;</xsl:text>
@@ -327,7 +327,7 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="uri" as="xs:anyURI?"/>
-	<xsl:param name="mode" as="xs:string?"/>
+	<xsl:param name="mode" as="xs:anyURI?"/>
 
 	<xsl:variable name="query-string">
 	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
