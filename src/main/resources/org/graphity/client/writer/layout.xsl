@@ -996,7 +996,7 @@ exclude-result-prefixes="#all">
 		<xsl:attribute name="style">display: none;</xsl:attribute>
 	    </xsl:if>
 
-	    <xsl:variable name="bnode" select="key('resources', $ob-value)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/> <!-- [not(. is current())] -->	    
+	    <xsl:variable name="bnode" select="key('resources', $ob-value)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/> <!-- [not(. is current())] -->
 	    <xsl:choose>
 		<xsl:when test="$bnode">
 		    <xsl:apply-templates select="$bnode/*" mode="gc:FormInputMode"/>

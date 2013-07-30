@@ -28,23 +28,25 @@
     sd:endpoint <sparql> ;
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:defaultDataset [ a sd:Dataset ;
-	sd:defaultGraph [ a sd:Graph ;
-		void:triples "494"^^xsd:integer
-	    ]
+	    sd:defaultGraph :Dataset
 	] .
 
-:Dataset a void:Dataset ;
+:Dataset a sd:Graph, void:Dataset ;
     dct:title "Graphity Client dataset" ;
     foaf:homepage <dataset> ;
     rdfs:isDefinedBy : ;
+    void:triples "494"^^xsd:integer ;
     void:sparqlEndpoint <sparql> .
 
-# PROPERTIES
+# EXTERNAL
 
 ldp:pageOf a owl:ObjectProperty ;
     rdfs:domain ldp:Page ;
     rdfs:range ldp:Container ;
     rdfs:isDefinedBy ldp: .
+
+lda:ItemEndpoint a owl:Class .
+lda:ListEndpoint a owl:Class.
 
 void:inDataset a owl:ObjectProperty ;
     rdfs:domain foaf:Document ;

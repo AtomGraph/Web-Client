@@ -111,7 +111,7 @@ LIMIT 100</xsl:param>
 		</div>
 	    </div>
 
-	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:PropertyListMode"/>
+	    <xsl:apply-templates select="$result-doc/rdf:RDF/*"/>
 	</xsl:if>
 	<!-- result of SELECT or ASK -->
 	<xsl:if test="$result-doc/sparql:sparql">
