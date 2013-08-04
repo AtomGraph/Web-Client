@@ -106,7 +106,7 @@ exclude-result-prefixes="#all">
 	</a>
 
 	<div id="collapsing-navbar" class="nav-collapse collapse">
-	    <form action="{$base-uri}" method="get" class="navbar-form pull-left">
+	    <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
 		<div class="input-append">
 		    <xsl:choose>
 			<xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">

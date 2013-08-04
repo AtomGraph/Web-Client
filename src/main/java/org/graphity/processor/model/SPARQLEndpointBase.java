@@ -22,16 +22,13 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.util.DataManager;
-import org.graphity.server.vocabulary.GS;
 import org.graphity.server.vocabulary.VoID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,7 +139,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	else
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from SPARQL endpoint: {} using Query: {}", endpoint, query);
-	    return DataManager.get().loadModel(endpoint.getURI(), query);
+	    return super.loadModel(endpoint, query);
 	}
     }
 
@@ -167,44 +164,27 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	else
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from SPARQL endpoint: {} using Query: {}", endpoint.getURI(), query);
-	    return DataManager.get().loadResultSet(endpoint.getURI(), query);
+	    return super.loadResultSetRewindable(endpoint, query);
 	}
     }
 
-    /**
-     * Creates a response builder from SPARQL query and RDF model.
-     * Contains the main SPARQL endpoint JAX-RS implementation logic.
-     * Uses <code>gs:resultLimit</code> parameter value from web.xml as <code>LIMIT</code> value on <code>SELECT</code> queries, if present.
-     * 
-     * @param query query object
-     * @param model RDF model
-     * @return response builder
-     */
-    public ResponseBuilder getResponseBuilder(Query query, Model model)
+    @Override
+    public void executeUpdateRequest(Resource endpoint, UpdateRequest updateRequest)
     {
-	if (query == null) throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
+	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (query.isSelectType())
+	if (endpoint.getURI().equals(getOntModelEndpoint().getURI()))
 	{
-	    if (log.isDebugEnabled()) log.debug("SPARQL endpoint executing SELECT query: {}", query);
-	    if (getResourceConfig().getProperty(GS.resultLimit.getURI()) != null)
-		query.setLimit(Long.parseLong(getResourceConfig().
-			getProperty(GS.resultLimit.getURI()).toString()));
-
-	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model: {} using Query: {}", model, query);
-	    return getResponseBuilder(DataManager.get().loadResultSet(model, query));
+	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}
-
-	if (query.isConstructType() || query.isDescribeType())
+	else
 	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from Model: {} using Query: {}", model, query);
-	    return getResponseBuilder(DataManager.get().loadModel(model, query));
+	    if (log.isDebugEnabled()) log.debug("Updating SPARQL endpoint: {} using UpdateRequest: {}", endpoint.getURI(), updateRequest);
+	    super.executeUpdateRequest(endpoint, updateRequest);
 	}
-
-	if (log.isWarnEnabled()) log.warn("SPARQL endpoint received unknown type of query: {}", query);
-	throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
-
+    
     /**
      * Returns URI information of the current request.
      * 

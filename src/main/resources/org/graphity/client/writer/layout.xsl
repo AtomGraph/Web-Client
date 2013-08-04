@@ -631,7 +631,7 @@ exclude-result-prefixes="#all">
 	<!-- page resource -->
 	<xsl:apply-templates select="key('resources', $request-uri)" mode="gc:PaginationMode"/>
 
-	<form class="form-horizontal" method="post" action="">
+	<form class="form-horizontal" method="post" action="" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
@@ -778,7 +778,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-	<form class="form-horizontal" method="post" action="">
+	<form class="form-horizontal" method="post" action="" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encodingc: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>

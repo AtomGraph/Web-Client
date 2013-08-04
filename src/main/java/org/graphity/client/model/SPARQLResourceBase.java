@@ -19,11 +19,14 @@ package org.graphity.client.model;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
@@ -44,7 +47,7 @@ public class SPARQLResourceBase extends ResourceBase
 
     private final Query userQuery;
     private final URI endpointURI;
-    private final MediaType mediaType; // not used
+    private final MediaType mediaType;
     @Context SPARQLEndpoint endpoint;
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
@@ -116,6 +119,25 @@ public class SPARQLResourceBase extends ResourceBase
 	return super.get(); // if HTML is requested, return DESCRIBE ?this results instead of user query
     }
 
+    @POST
+    @Consumes(org.graphity.server.MediaType.APPLICATION_SPARQL_UPDATE)
+    public Response updateDirectly(UpdateRequest update, @QueryParam("using-graph-uri") URI defaultGraphUri,
+	@QueryParam("using-named-graph-uri") URI graphUri)
+    {
+	if (getEndpointURI() != null)
+	{
+	    if (log.isDebugEnabled()) log.debug("Querying user-provided endpoint {} with Query: {}", getEndpointURI(), getUserQuery());
+	    return SPARQLEndpointFactory.createEndpoint(getEndpointURI().toString(),
+		    getRequest(), getResourceConfig()).
+		updateDirectly(update, null, null);
+	}
+	else
+	{
+	    if (log.isDebugEnabled()) log.debug("Querying configured endpoint {} with Query: {}", endpoint, getUserQuery());
+	    return endpoint.updateDirectly(update, null, null);
+	}
+    }
+    
     public Query getUserQuery()
     {
 	return userQuery;

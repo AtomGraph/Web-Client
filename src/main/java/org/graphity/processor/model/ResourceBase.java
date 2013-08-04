@@ -36,6 +36,7 @@ import javax.ws.rs.core.*;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.ModifyBuilder;
+import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
@@ -523,7 +524,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	try
 	{
-	    Property utProp = getOntModel().createDatatypeProperty("http://purl.org/linked-data/api/vocab#uriTemplate");
 	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<UriTemplate,OntClass>(UriTemplate.COMPARATOR);
 
 	    while (it.hasNext())
@@ -532,7 +532,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		if (restriction.canAs(HasValueRestriction.class))
 		{
 		    HasValueRestriction hvr = restriction.asHasValueRestriction();
-		    if (hvr.getOnProperty().equals(utProp))
+		    if (hvr.getOnProperty().equals(LDA.uriTemplate))
 		    {
 			UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
 			HashMap<String, String> map = new HashMap<String, String>();
@@ -638,7 +638,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @return RDF node or null, if not present
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
      */
-    public RDFNode getRestrictionHasValue(OntClass ontClass, OntProperty property)
+    public RDFNode getRestrictionHasValue(OntClass ontClass, Property property)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (property == null) throw new IllegalArgumentException("OntProperty cannot be null");
