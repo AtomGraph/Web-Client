@@ -495,7 +495,7 @@ exclude-result-prefixes="#all">
 		<li class="previous">
 		    <xsl:choose>
 			<xsl:when test="xhv:prev">
-			    <a href="{ldp:pageOf/@rdf:resource}{gc:query-string($offset - $limit, $limit, $order-by, $desc, $mode)}" class="active">
+			    <a href="{xhv:prev/@rdf:resource}" class="active">
 				&#8592; <xsl:apply-templates select="key('resources', 'previous', document(''))/@rdf:nodeID" mode="gc:LabelMode"/>
 			    </a>
 			</xsl:when>
@@ -511,7 +511,7 @@ exclude-result-prefixes="#all">
 		    <xsl:choose>
 			<xsl:when test="xhv:next">
 			    <!-- possible to add arrows by overriding -->
-			    <a href="{ldp:pageOf/@rdf:resource}{gc:query-string($offset + $limit, $limit, $order-by, $desc, $mode)}">
+			    <a href="{xhv:next/@rdf:resource}">
 				<xsl:apply-templates select="key('resources', 'next', document(''))/@rdf:nodeID" mode="gc:LabelMode"/> &#8594;
 			    </a>
 			</xsl:when>

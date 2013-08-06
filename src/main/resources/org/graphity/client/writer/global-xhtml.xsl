@@ -106,7 +106,7 @@ exclude-result-prefixes="#all">
 	</a>
 
 	<div id="collapsing-navbar" class="nav-collapse collapse">
-	    <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
+	    <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8" onsubmit="if ($(this).find('input[name=uri]').val().indexOf('http://') == -1) {{ $(this).attr('action', 'search'); $(this).find('input[name=uri]').attr('name', 'query'); return true; }}">
 		<div class="input-append">
 		    <xsl:choose>
 			<xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
@@ -140,6 +140,11 @@ exclude-result-prefixes="#all">
 			<xsl:if test="not(starts-with($uri, $base-uri))">
 			    <xsl:attribute name="value">
 				<xsl:value-of select="$uri"/>
+			    </xsl:attribute>
+			</xsl:if>
+			<xsl:if test="$query">
+			    <xsl:attribute name="value">
+				<xsl:value-of select="$query"/>
 			    </xsl:attribute>
 			</xsl:if>
 		    </input>

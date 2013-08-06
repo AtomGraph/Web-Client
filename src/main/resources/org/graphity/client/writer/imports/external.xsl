@@ -60,7 +60,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode" priority="1">
-	<xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+	<div class="btn-group pull-right">
+	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+	</div>
 
 	<h1 class="page-header">
 	    <xsl:apply-templates select="."/>
@@ -68,7 +70,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:HeaderMode">
-	<xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+	<div class="btn-group pull-right">
+	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+	</div>
 
 	<h2>
 	    <xsl:apply-templates select="."/>
@@ -76,21 +80,11 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
-	<div class="btn-group pull-right">
-	    <xsl:if test="$query-res/sp:text">
-		<a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
-	    </xsl:if>
-	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-	</div>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:MediaTypeSelectMode" priority="1">
-	<div class="btn-group pull-right">
+	<xsl:if test="not(starts-with(., $base-uri))">
 	    <a href="{.}" class="btn">Source</a>
-	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-	    <a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-	</div>
+	</xsl:if>
+	<a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+	<a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
 	    
     <!-- subject/object resource -->

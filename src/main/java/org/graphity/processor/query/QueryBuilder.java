@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
+import org.topbraid.spin.internal.ContainsVarChecker;
 import org.topbraid.spin.model.*;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.system.SPINModuleRegistry;
@@ -393,11 +394,26 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	return arqQuery;
     }
 
+    /*
     protected boolean isWhereVariable(Variable var)
     {
-	return ResourceUtils.reachableClosure(getWhere()).
-	    listSubjectsWithProperty(SP.varName, var.getName()).
-	    hasNext();
+	return new ContainsVarChecker(var).checkDepth(this) != null;
+    }
+    */
+    
+    protected boolean isWhereVariable(Variable var)
+    {
+	ResIterator it = ResourceUtils.reachableClosure(getWhere()).
+	    listSubjectsWithProperty(SP.varName, var.getName());
+	
+	try
+	{
+	    return it.hasNext();
+	}
+	finally
+	{
+	    it.close();
+	}
     }
     
     @Override

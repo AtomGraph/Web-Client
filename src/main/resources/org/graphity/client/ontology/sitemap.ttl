@@ -1,18 +1,20 @@
-@prefix : <#> .
-@prefix gp: <http://processor.graphity.org/ontology#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix ldp: <http://www.w3.org/ns/ldp#> .
-@prefix void: <http://rdfs.org/ns/void#> .
-@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
-@prefix lda: <http://purl.org/linked-data/api/vocab#> .
-@prefix spin: <http://spinrdf.org/spin#> .
-@prefix sp: <http://spinrdf.org/sp#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix sioc: <http://rdfs.org/sioc/ns#> .
-@prefix dct: <http://purl.org/dc/terms/> .
+@prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix skos:	<http://www.w3.org/2004/02/skos/core#> .
+@prefix ldp:	<http://www.w3.org/ns/ldp#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix lda:	<http://purl.org/linked-data/api/vocab#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix void:	<http://rdfs.org/ns/void#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+@prefix gp:	<http://processor.graphity.org/ontology#> .
 
 : a owl:Ontology ;
     owl:imports gp:, lda: , void:, foaf: ;
@@ -20,6 +22,7 @@
     rdfs:label "Sitemap" ;
     dct:description "Default sitemap for SPARQL service" ;
     dct:created "2013-03-09T13:53:00+03:00"^^xsd:dateTime ;
+    dct:modified "2013-08-06T23:39:00+03:00"^^xsd:dateTime ;
     foaf:isPrimaryTopicOf <ontology> ;
     rdfs:seeAlso <sparql> .
 
@@ -62,7 +65,7 @@ void:inDataset a owl:ObjectProperty ;
     foaf:maker <http://graphityhq.com/#company> ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset ;
-    rdfs:seeAlso : , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+    rdfs:seeAlso : , <sparql>, <search>, <http://graphityhq.com>, <http://semantic-web.dk> .
 
 <ontology> a foaf:Document ;
     dct:title "Ontology document" ;
@@ -133,6 +136,11 @@ void:inDataset a owl:ObjectProperty ;
 <graphs> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Graphs" ;
+    rdfs:isDefinedBy : ;
+    void:inDataset :Dataset .
+
+<search> a foaf:Document, ldp:Container, lda:ListEndpoint ;
+    dct:title "Search" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
@@ -355,6 +363,129 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:label "Graphs page resource" ;
     foaf:isPrimaryTopicOf <classes/page-resources/graph-resource> ;
     rdfs:isDefinedBy : .
+
+:SearchFrontPageResource a owl:Class ;
+        rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <search>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/search?query={query: .+}"
+	] ;
+    spin:constraint [ a :DescribeLabelFilterTemplate ] ;
+    rdfs:isDefinedBy : ;
+    void:inDataset :Dataset .
+
+:SearchPageResource a owl:Class ;
+        rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty ldp:pageOf ;
+		owl:hasValue <search>
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/search?limit={limit: [0-9]+}&offset={offset: [0-9]+}&order-by={order-by: [^&]+}{desc: (&desc=true)?}&query={query: .+}"
+	] ;
+    spin:constraint [ a :DescribeLabelFilterTemplate ] ;
+    rdfs:isDefinedBy : ;
+    void:inDataset :Dataset .
+
+# QUERIES & TEMPLATES
+
+:DescribeLabelFilterTemplate a spin:Template ;
+    spin:body :DescribeLabelFilter ;
+    rdfs:isDefinedBy : .
+
+:DescribeLabelFilter    a       sp:Describe ;
+      sp:resultNodes (_:resourceVar) ;
+      sp:text """PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+DESCRIBE ?resource WHERE {
+    {
+        SELECT ?resource
+        WHERE {
+            {
+                ?resource rdfs:label ?label .
+            }
+            UNION
+            {
+                ?resource dc:title ?label .
+            }
+            UNION
+            {
+                ?resource dct:title ?label .
+            }
+            UNION
+            {
+                ?resource foaf:name ?label .
+            }
+            UNION
+            {
+                ?resource foaf:givenName ?label .
+            }
+            UNION
+            {
+                ?resource foaf:familyName ?label .
+            }
+            UNION
+            {
+                ?resource sioc:name ?label .
+            }
+            UNION
+            {
+                ?resource skos:prefLabel ?label .
+            } .
+            FILTER isURI(?resource) .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:resourceVar) ;
+                            sp:where ([ a       sp:Union ;
+                                        sp:elements (([ sp:object _:labelVar ;
+                                                      sp:predicate rdfs:label ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate dc:title ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate dct:title ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate foaf:name ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate foaf:givenName ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate foaf:familyName ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate sioc:name ;
+                                                      sp:subject _:resourceVar
+                                                    ]) ([ sp:object _:labelVar ;
+                                                      sp:predicate skos:prefLabel ;
+                                                      sp:subject _:resourceVar
+                                                    ]))
+                                      ] [ a       sp:Filter ;
+                                        sp:expression
+                                                [ a       sp:isURI ;
+                                                  sp:arg1 _:resourceVar
+                                                ]
+                                      ])
+                          ]
+                ]) .
+
+_:labelVar  sp:varName "label"^^xsd:string .
+_:resourceVar  sp:varName "resource"^^xsd:string .
 
 # DATASETS & SERVICES
 

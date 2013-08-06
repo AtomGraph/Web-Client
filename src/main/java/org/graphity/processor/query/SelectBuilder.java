@@ -185,7 +185,11 @@ public class SelectBuilder extends QueryBuilder implements Select
     {
 	if (condition == null) throw new IllegalArgumentException("ORDER BY condition cannot be null");
 	Variable var = SPINFactory.asVariable(condition);
-	if (var != null && !isWhereVariable(var)) throw new IllegalArgumentException("Cannot ORDER BY variable that is not specified in the WHERE pattern");
+	if (var != null && !isWhereVariable(var))
+	{
+	    if (log.isErrorEnabled()) log.error("Variable var: {} not in the WHERE pattern", var);
+	    throw new IllegalArgumentException("Cannot ORDER BY variable '" + var + "' that is not specified in the WHERE pattern");
+	}
 	if (condition.hasProperty(SP.expression))
 	{
 	    Variable exprVar = SPINFactory.asVariable(condition.getPropertyResourceValue(SP.expression));
