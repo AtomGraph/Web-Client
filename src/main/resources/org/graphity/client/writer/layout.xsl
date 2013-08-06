@@ -126,6 +126,12 @@ exclude-result-prefixes="#all">
 	<rdfs:label xml:lang="en-US">List</rdfs:label>
     </rdf:Description>
 
+    <rdf:Description rdf:about="&gc;ThumbnailMode">
+	<rdf:type rdf:resource="&gc;Mode"/>
+	<rdf:type rdf:resource="&gc;PageMode"/>
+	<rdfs:label xml:lang="en-US">Gallery</rdfs:label>
+    </rdf:Description>
+
     <rdf:Description rdf:about="&gc;InputMode">
 	<rdf:type rdf:resource="&gc;Mode"/>
 	<rdf:type rdf:resource="&gc;ItemMode"/>
@@ -263,6 +269,8 @@ exclude-result-prefixes="#all">
 		.well-small { background-color: #FAFAFA; }
 		.well-small dl { max-height: 60em; overflow-y: auto; }
 		textarea#query-string { font-family: monospace; }
+		.thumbnail img { display: block; margin: auto; }
+		.thumbnail { min-height: 15em; }
 	    ]]>
 	</style>	
     </xsl:template>
@@ -284,6 +292,11 @@ exclude-result-prefixes="#all">
 	    </xsl:when>
 	    <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
 		<xsl:apply-templates select="." mode="gc:TableMode">
+		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+		</xsl:apply-templates>
+	    </xsl:when>
+	    <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
+		<xsl:apply-templates select="." mode="gc:ThumbnailMode">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
 		</xsl:apply-templates>
 	    </xsl:when>
@@ -617,6 +630,58 @@ exclude-result-prefixes="#all">
 		</xsl:choose>
 	    </xsl:for-each>
 	</tr>
+    </xsl:template>
+
+    <!-- THUMBNAIL MODE -->
+    
+    <xsl:template match="rdf:RDF" mode="gc:ThumbnailMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
+
+	<xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:HeaderMode"/>
+
+	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+
+	<!-- page resource -->
+	<xsl:apply-templates select="key('resources', $request-uri)" mode="gc:PaginationMode"/>
+
+	<ul class="thumbnails">
+	    <xsl:variable name="thumbnail-items" as="element()*">	    
+		<!-- all resources that are not recursive blank nodes, except page -->
+		<xsl:apply-templates select="*[not(@rdf:about = $absolute-path)][not(@rdf:about = $request-uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="gc:ThumbnailMode">
+		    <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
+		</xsl:apply-templates>
+	    </xsl:variable>
+
+	    <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
+		<div class="row-fluid">
+		    <ul class="thumbnails">
+			<xsl:copy-of select="current-group()"/>
+		    </ul>
+		</div>
+	    </xsl:for-each-group>	    
+	</ul>
+
+	<!-- page resource -->
+	<xsl:apply-templates select="key('resources', $request-uri)" mode="gc:PaginationMode"/>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ThumbnailMode">
+	<xsl:param name="thumbnails-per-row" as="xs:integer"/>
+	
+	<li class="span{12 div $thumbnails-per-row}">
+	    <div class="thumbnail">
+		<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:ImageMode"/>
+		
+		<div class="caption">
+		    <h3>
+			<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+		    </h3>
+
+		    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:DescriptionMode"/>
+		</div>
+	    </div>
+	</li>
     </xsl:template>
 
     <!-- INPUT MODE -->

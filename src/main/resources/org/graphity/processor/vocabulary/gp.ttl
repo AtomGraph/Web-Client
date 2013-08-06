@@ -106,10 +106,15 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
 :DescribeProperties    a       sp:Describe, sp:Query ;
       sp:resultNodes (_:propertyVar) ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 DESCRIBE ?property WHERE {
     {
         SELECT ?property
         WHERE {
+            {
+                ?property a rdf:Property .
+            }
+            UNION
             {
                 ?property a owl:ObjectProperty .
             }
@@ -125,7 +130,10 @@ DESCRIBE ?property WHERE {
                           [ a       sp:Select ;
                             sp:resultVariables (_:propertyVar) ;
                             sp:where ([ a       sp:Union ;
-                                        sp:elements (([ sp:object owl:ObjectProperty ;
+                                        sp:elements (([ sp:object rdf:Property ;
+                                                      sp:predicate rdf:type ;
+                                                      sp:subject _:propertyVar
+                                                    ]) ([ sp:object owl:ObjectProperty ;
                                                       sp:predicate rdf:type ;
                                                       sp:subject _:propertyVar
                                                     ]) ([ sp:object owl:DatatypeProperty ;

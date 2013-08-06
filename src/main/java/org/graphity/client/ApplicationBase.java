@@ -110,7 +110,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	String authUser = (String)getResourceConfig().getProperty(Service.queryAuthUser.getSymbol());
 	String authPwd = (String)getResourceConfig().getProperty(Service.queryAuthPwd.getSymbol()); 
 	if (endpointURI != null && authUser != null && authPwd != null)
-	    configureServiceContext(endpointURI, authUser, authPwd);	
+	    configureServiceContext(endpointURI, authUser, authPwd);
 
 	// initialize locally cached ontology mapping
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3");
