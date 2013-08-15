@@ -155,7 +155,7 @@ exclude-result-prefixes="#all">
 	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
 		<ul class="nav pull-right">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
-			<xsl:sort select="gc:label(., /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
+			<xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
 			<li>
 			    <xsl:if test=". = $absolute-path">
 				<xsl:attribute name="class">active</xsl:attribute>
@@ -221,7 +221,7 @@ exclude-result-prefixes="#all">
 	    <xsl:text> </xsl:text>
 	    <select id="endpoint-select" name="endpoint-uri" class="span6">
 		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', $ont-model)[void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
-		    <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID, /, $lang)" order="ascending"/>
+		    <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID)" order="ascending"/>
 		</xsl:apply-templates>
 	    </select>
 	</p>

@@ -106,14 +106,6 @@ exclude-result-prefixes="#all">
 	    <xsl:apply-templates select="." mode="gc:ImageMode"/>
 	</p>
     </xsl:template>
-
-    <!--
-    <xsl:template match="foaf:Image/@rdf:about | *[rdf:type/@rdf:resource = '&foaf;Image']/@rdf:about">
-	<a href="{.}">
-	    <img src="{.}" alt="{gc:label(., /, $lang)}"/>
-	</a>
-    </xsl:template>
-    -->
     
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
 	<a href="{.}">

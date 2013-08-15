@@ -55,100 +55,6 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-range" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:range/@rdf:resource"/>
     <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
-    
-    <xsl:function name="gc:local-label" as="xs:string?">
-	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
-	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
-	<xsl:param name="resource-uri" as="xs:anyURI"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
-
-	<xsl:for-each select="$resource">
-	    <xsl:choose>
-		<xsl:when test="rdfs:label[not(@xml:lang)]">
-		    <xsl:sequence select="rdfs:label[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick[not(@xml:lang)]">
-		    <xsl:sequence select="foaf:nick[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:name[not(@xml:lang)]">
-		    <xsl:sequence select="foaf:name[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title[not(@xml:lang)]">
-		    <xsl:sequence select="dc:title[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title[not(@xml:lang)]">
-		    <xsl:sequence select="dct:title[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel[not(@xml:lang)]">
-		    <xsl:sequence select="skos:prefLabel[not(@xml:lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="gr:name[not(@xml:lang)]">
-		    <xsl:sequence select="gr:name[not(@xml:lang)][1]"/>
-		</xsl:when>
-		
-		<xsl:when test="rdfs:label | @rdfs:label">
-		    <xsl:sequence select="(rdfs:label | @rdfs:label)[1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick | @foaf:nick">
-		    <xsl:sequence select="(foaf:nick | @foaf:nick)[1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:firstName and foaf:lastName">
-		    <xsl:sequence select="concat(foaf:firstName[1], ' ', foaf:lastName[1])"/>
-		</xsl:when>
-		<xsl:when test="foaf:name | @foaf:name">
-		    <xsl:sequence select="(foaf:name | @foaf:name)[1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title | @dc:title">
-		    <xsl:sequence select="(dc:title | @dc:title)[1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title | @dct:title">
-		    <xsl:sequence select="(dct:title | @dct:title)[1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel | @skos:prefLabel">
-		    <xsl:sequence select="(skos:prefLabel | @skos:prefLabel)[1]"/>
-		</xsl:when>
-		<xsl:when test="gr:name | @gr:name">
-		    <xsl:sequence select="(gr:name | @gr:name)[1]"/>
-		</xsl:when>
-	    </xsl:choose>
-	</xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="gc:local-label" as="xs:string?">
-	<!-- http://www4.wiwiss.fu-berlin.de/lodcloud/state/#terms -->
-	<!-- http://iswc2011.semanticweb.org/fileadmin/iswc/Papers/Research_Paper/09/70310161.pdf -->
-	<xsl:param name="resource-uri" as="xs:anyURI"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:param name="lang" as="xs:string"/>
-	<xsl:variable name="resource" select="key('resources', $resource-uri, $document)"/>
-
-	<xsl:for-each select="$resource">
-	    <xsl:choose>
-		<xsl:when test="rdfs:label[lang($lang)]">
-		    <xsl:sequence select="rdfs:label[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:nick[lang($lang)]">
-		    <xsl:sequence select="foaf:nick[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="foaf:name[lang($lang)]">
-		    <xsl:sequence select="foaf:name[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dc:title[lang($lang)]">
-		    <xsl:sequence select="dc:title[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="dct:title[lang($lang)]">
-		    <xsl:sequence select="dct:title[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="skos:prefLabel[lang($lang)]">
-		    <xsl:sequence select="skos:prefLabel[lang($lang)][1]"/>
-		</xsl:when>
-		<xsl:when test="gr:name[lang($lang)]">
-		    <xsl:sequence select="gr:name[lang($lang)][1]"/>
-		</xsl:when>
-	    </xsl:choose>
-	</xsl:for-each>
-    </xsl:function>
 
     <xsl:function name="gc:document-uri" as="xs:anyURI">
 	<xsl:param name="uri" as="xs:anyURI"/>
@@ -170,49 +76,9 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="gc:label" as="xs:string?">
-	<xsl:param name="resource-uri" as="xs:anyURI"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:param name="lang" as="xs:string"/>
-	<xsl:variable name="local-lang-label" select="gc:local-label($resource-uri, $document, $lang)" as="xs:string?"/>
-	<xsl:variable name="local-en-label" select="gc:local-label($resource-uri, $document, 'en')" as="xs:string?"/>
-	<xsl:variable name="local-label" select="gc:local-label($resource-uri, $document)" as="xs:string?"/>
-
-	<xsl:choose>
-	    <xsl:when test="$local-lang-label"> <!-- try localized label first -->
-		<xsl:sequence select="concat(upper-case(substring($local-lang-label, 1, 1)), substring($local-lang-label, 2))"/>
-	    </xsl:when>
-	    <xsl:when test="$local-en-label"> <!-- try english label second -->
-		<xsl:sequence select="concat(upper-case(substring($local-en-label, 1, 1)), substring($local-en-label, 2))"/>
-	    </xsl:when>
-	    <xsl:when test="$local-label"> <!-- fallback to any label as the last resort -->
-		<xsl:sequence select="concat(upper-case(substring($local-label, 1, 1)), substring($local-label, 2))"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:variable name="imported-lang-label" select="gc:local-label($resource-uri, document(gc:document-uri($resource-uri)), $lang)" as="xs:string?"/>
-		<xsl:variable name="imported-en-label" select="gc:local-label($resource-uri, document(gc:document-uri($resource-uri)), 'en')" as="xs:string?"/>
-		<xsl:variable name="imported-label" select="gc:local-label($resource-uri, document(gc:document-uri($resource-uri)))" as="xs:string?"/>
-		<xsl:choose>
-		    <xsl:when test="$imported-lang-label">
-			<xsl:sequence select="concat(upper-case(substring($imported-lang-label, 1, 1)), substring($imported-lang-label, 2))"/>
-		    </xsl:when>
-		    <xsl:when test="$imported-en-label">
-			<xsl:sequence select="concat(upper-case(substring($imported-en-label, 1, 1)), substring($imported-en-label, 2))"/>
-		    </xsl:when>
-		    <xsl:when test="$imported-label">
-			<xsl:sequence select="concat(upper-case(substring($imported-label, 1, 1)), substring($imported-label, 2))"/>
-		    </xsl:when>
-		    <xsl:when test="substring-after($resource-uri, '#')">
-			<xsl:sequence select="substring-after($resource-uri, '#')"/>
-		    </xsl:when>
-		    <xsl:when test="string-length(tokenize($resource-uri, '/')[last()]) &gt; 0">
-			<xsl:sequence select="translate(url:decode(tokenize($resource-uri, '/')[last()], 'UTF-8'), '_', ' ')"/>
-		    </xsl:when>
-		    <xsl:otherwise>
-			<xsl:sequence select="$resource-uri"/>
-		    </xsl:otherwise>
-		</xsl:choose>
-	    </xsl:otherwise>
-	</xsl:choose>
+	<xsl:param name="resource" as="node()"/>
+	
+	<xsl:apply-templates select="$resource" mode="gc:LabelMode"/>
     </xsl:function>
 
     <xsl:function name="rdfs:domain" as="attribute()*">

@@ -11,8 +11,8 @@
 @prefix lda:	<http://purl.org/linked-data/api/vocab#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
-@prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix void:	<http://rdfs.org/ns/void#> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 @prefix gp:	<http://processor.graphity.org/ontology#> .
 
@@ -139,7 +139,8 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
-<search> a foaf:Document, ldp:Container, lda:ListEndpoint ;
+<search> a ldp:Container, lda:ListEndpoint, foaf:Document ;
+    sioc:has_space <.> ;
     dct:title "Search" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
@@ -374,7 +375,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/search?query={query: .+}"
 	] ;
-    spin:constraint [ a :DescribeLabelFilterTemplate ] ;
+    spin:constraint [ a gp:DescribeLabelledResourcesTemplate ] ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
@@ -388,104 +389,9 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/search?limit={limit: [0-9]+}&offset={offset: [0-9]+}&order-by={order-by: [^&]+}{desc: (&desc=true)?}&query={query: .+}"
 	] ;
-    spin:constraint [ a :DescribeLabelFilterTemplate ] ;
+    spin:constraint [ a gp:DescribeLabelledResourcesTemplate ] ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
-
-# QUERIES & TEMPLATES
-
-:DescribeLabelFilterTemplate a spin:Template ;
-    spin:body :DescribeLabelFilter ;
-    rdfs:isDefinedBy : .
-
-:DescribeLabelFilter    a       sp:Describe ;
-      sp:resultNodes (_:resourceVar) ;
-      sp:text """PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-DESCRIBE ?resource WHERE {
-    {
-        SELECT ?resource
-        WHERE {
-            {
-                ?resource rdfs:label ?label .
-            }
-            UNION
-            {
-                ?resource dc:title ?label .
-            }
-            UNION
-            {
-                ?resource dct:title ?label .
-            }
-            UNION
-            {
-                ?resource foaf:name ?label .
-            }
-            UNION
-            {
-                ?resource foaf:givenName ?label .
-            }
-            UNION
-            {
-                ?resource foaf:familyName ?label .
-            }
-            UNION
-            {
-                ?resource sioc:name ?label .
-            }
-            UNION
-            {
-                ?resource skos:prefLabel ?label .
-            } .
-            FILTER isURI(?resource) .
-        }
-    } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:resourceVar) ;
-                            sp:where ([ a       sp:Union ;
-                                        sp:elements (([ sp:object _:labelVar ;
-                                                      sp:predicate rdfs:label ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate dc:title ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate dct:title ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate foaf:name ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate foaf:givenName ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate foaf:familyName ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate sioc:name ;
-                                                      sp:subject _:resourceVar
-                                                    ]) ([ sp:object _:labelVar ;
-                                                      sp:predicate skos:prefLabel ;
-                                                      sp:subject _:resourceVar
-                                                    ]))
-                                      ] [ a       sp:Filter ;
-                                        sp:expression
-                                                [ a       sp:isURI ;
-                                                  sp:arg1 _:resourceVar
-                                                ]
-                                      ])
-                          ]
-                ]) .
-
-_:labelVar  sp:varName "label"^^xsd:string .
-_:resourceVar  sp:varName "resource"^^xsd:string .
 
 # DATASETS & SERVICES
 

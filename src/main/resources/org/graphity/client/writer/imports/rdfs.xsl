@@ -68,7 +68,7 @@ exclude-result-prefixes="#all">
 
 	    <ul class="nav nav-pills nav-stacked">
 		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
-		    <xsl:sort select="gc:label(@rdf:resource, /, $lang)" data-type="text" order="ascending" lang="{$lang}"/>
+		    <xsl:sort select="gc:label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
 		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="gc:SidebarNavMode"/>
 		</xsl:for-each-group>
 	    </ul>

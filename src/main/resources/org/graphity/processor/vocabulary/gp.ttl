@@ -1,18 +1,21 @@
 @base <http://processor.graphity.org/ontology> .
 
-@prefix : <#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix sp: <http://spinrdf.org/sp#> .
-@prefix spin: <http://spinrdf.org/spin#> .
-@prefix spl: <http://spinrdf.org/spl#> .
-@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
-@prefix lda: <http://purl.org/linked-data/api/vocab#> .
-@prefix vann: <http://purl.org/vocab/vann/> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix skos:	<http://www.w3.org/2004/02/skos/core#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix spl:	<http://spinrdf.org/spl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix lda:	<http://purl.org/linked-data/api/vocab#> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 : a owl:Ontology ;
     # owl:imports spin: ;
@@ -368,3 +371,62 @@ _:objectVar  sp:varName "object"^^xsd:string .
                 ]) .
 
 _:instanceVar  sp:varName "instance"^^xsd:string .
+
+# ====
+
+:DescribeLabelledResourcesTemplate a spin:Template ;
+    spin:body :DescribeLabelledResources ;
+    rdfs:isDefinedBy : .
+
+:DescribeLabelledResources    a       sp:Describe ;
+      sp:resultNodes (_:resourceVar) ;
+      sp:text """DESCRIBE ?resource WHERE {
+    {
+        SELECT ?resource
+        WHERE {
+            ?resource ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:resourceVar) ;
+                            sp:where ([ a       sp:TriplePath ;
+                                        sp:object
+                                                [ sp:varName "label"^^xsd:string
+                                                ] ;
+                                        sp:path [ a       sp:AltPath ;
+                                                  sp:path1
+                                                          [ a       sp:AltPath ;
+                                                            sp:path1
+                                                                    [ a       sp:AltPath ;
+                                                                      sp:path1
+                                                                              [ a       sp:AltPath ;
+                                                                                sp:path1
+                                                                                        [ a       sp:AltPath ;
+                                                                                          sp:path1
+                                                                                                  [ a       sp:AltPath ;
+                                                                                                    sp:path1
+                                                                                                            [ a       sp:AltPath ;
+                                                                                                              sp:path1 rdfs:label ;
+                                                                                                              sp:path2 dc:title
+                                                                                                            ] ;
+                                                                                                    sp:path2 dct:title
+                                                                                                  ] ;
+                                                                                          sp:path2 foaf:name
+                                                                                        ] ;
+                                                                                sp:path2 foaf:givenName
+                                                                              ] ;
+                                                                      sp:path2 foaf:familyName
+                                                                    ] ;
+                                                            sp:path2 sioc:name
+                                                          ] ;
+                                                  sp:path2 skos:prefLabel
+                                                ] ;
+                                        sp:subject _:resourceVar
+                                      ])
+                          ]
+                ]) .
+
+_:resourceVar  sp:varName "resource"^^xsd:string .

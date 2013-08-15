@@ -82,7 +82,18 @@ exclude-result-prefixes="#all">
 	
     <!-- object blank node (avoid infinite loop) -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
-	<xsl:apply-templates select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+	
+	<xsl:choose>
+	    <xsl:when test="$bnode">
+		<xsl:apply-templates select="$bnode"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<span id="{.}" title="{.}">
+		    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+		</span>
+	    </xsl:otherwise>
+	</xsl:choose>
     </xsl:template>
 
     <!-- object literal -->
@@ -249,7 +260,16 @@ exclude-result-prefixes="#all">
 
     <!-- include blank nodes recursively but avoid infinite loop -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:PropertyListMode">
-	<xsl:apply-templates select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+
+	<xsl:choose>
+	    <xsl:when test="$bnode">
+		<xsl:apply-templates select="$bnode"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+		<xsl:apply-templates select="."/>
+	    </xsl:otherwise>
+	</xsl:choose>
     </xsl:template>
 
     <!-- TABLE HEADER MODE -->
