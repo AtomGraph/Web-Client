@@ -111,7 +111,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    List<Variant> variants)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getRequestUri().toString()), endpoint, cacheControl,
+		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, cacheControl,
 		limit, offset, orderBy, desc,
 		variants);
     }

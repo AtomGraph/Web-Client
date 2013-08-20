@@ -49,7 +49,7 @@ public class SearchResource extends ResourceBase
 	//if (searchString == null)
 	//    throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	
-	if (hasRDFType(LDP.Page))
+	if (hasRDFType(LDP.Container))
 	{
 	    getQueryBuilder().getSubSelectBuilder().
 		filter(RDFS.label.getLocalName(), Pattern.compile(searchString));

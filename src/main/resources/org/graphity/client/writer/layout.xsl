@@ -78,7 +78,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
-    <xsl:variable name="resource" select="key('resources', $request-uri, $ont-model)" as="element()?"/>
+    <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>

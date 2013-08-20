@@ -119,7 +119,8 @@ public class GlobalResourceBase extends ResourceBase
 	    URI topicURI, MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getRequestUri().toString()), endpoint, cacheControl,
+		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
+		endpoint, cacheControl,
 		limit, offset, orderBy, desc, variants,
 		topicURI, mediaType);
     }

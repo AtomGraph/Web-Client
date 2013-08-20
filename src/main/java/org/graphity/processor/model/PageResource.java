@@ -83,11 +83,4 @@ public interface PageResource extends LinkedDataResource
      */
     Resource getNext();
 
-    /**
-     * Get the RDF resource of the container of this page. Can be used for HATEOS link relations.
-     * 
-     * @return container resource
-     */
-    Resource getContainer();
-
 }
