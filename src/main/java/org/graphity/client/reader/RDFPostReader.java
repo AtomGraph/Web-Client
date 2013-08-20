@@ -54,8 +54,7 @@ public class RDFPostReader implements MessageBodyReader<Model>
     private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class) ;
     
     @Context private HttpContext httpContext;
-    private List<String> keys = null; //new ArrayList<String>();
-    private List<String> values = null; // new ArrayList<String>();
+    private List<String> keys = null, values = null;
 
     protected void initKeysValues(String body, String charsetName)
     {
@@ -105,46 +104,51 @@ public class RDFPostReader implements MessageBodyReader<Model>
     public Model parse(String request, String encoding)
     {
 	initKeysValues(request, encoding);
+	return parse(getKeys(), getValues());
+    }
+    
+    public Model parse(List<String> k, List<String> v)
+    {
 	Model model = ModelFactory.createDefaultModel();
 
 	Resource subject = null;
 	Property property = null;
 	RDFNode object = null;
 
-	for (int i = 0; i < keys.size(); i++)
+	for (int i = 0; i < k.size(); i++)
 	{
-	    switch (keys.get(i))
+	    switch (k.get(i))
 	    {
 		case "v":
-		    model.setNsPrefix("", values.get(i)); // default namespace
+		    model.setNsPrefix("", v.get(i)); // default namespace
 		    break;
 		case "n":
-		    if (i + 1 < keys.size() && keys.get(i + 1).equals("v")) // if followed by "v" (if not out of bounds)
+		    if (i + 1 < k.size() && k.get(i + 1).equals("v")) // if followed by "v" (if not out of bounds)
 		    {
-			model.setNsPrefix(values.get(i), values.get(i + 1)); // namespace with prefix
+			model.setNsPrefix(v.get(i), v.get(i + 1)); // namespace with prefix
 			i++; // skip the following "v"
 		    }
 		    break;
 		    
 		case "sb":
-		    subject = model.createResource(new AnonId(values.get(i))); // blank node
+		    subject = model.createResource(new AnonId(v.get(i))); // blank node
 		    property = null;
 		    object = null;
 		    break;
 		case "su":
-		    subject = model.createResource(values.get(i)); // full URI
+		    subject = model.createResource(v.get(i)); // full URI
 		    property = null;
 		    object = null;
 		    break;
 		case "sv":
-		    subject = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
+		    subject = model.createResource(model.getNsPrefixURI("") + v.get(i)); // default namespace
 		    property = null;
 		    object = null;
 		    break;
 		case "sn":
-		    if (i + 1 < keys.size() && keys.get(i + 1).equals("sv")) // if followed by "sv" (if not out of bounds)
+		    if (i + 1 < k.size() && k.get(i + 1).equals("sv")) // if followed by "sv" (if not out of bounds)
 		    {
-			subject = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+			subject = model.createResource(model.getNsPrefixURI(v.get(i)) + v.get(i + 1)); // ns prefix + local name
 			property = null;
 			object = null;
 			i++; // skip the following "sv"
@@ -152,68 +156,68 @@ public class RDFPostReader implements MessageBodyReader<Model>
 		    break;
 
 		case "pu":
-		    property = model.createProperty(values.get(i));
+		    property = model.createProperty(v.get(i));
 		    object = null;
 		    break;
 		case "pv":
-		    property = model.createProperty(model.getNsPrefixURI(""), values.get(i));
+		    property = model.createProperty(model.getNsPrefixURI(""), v.get(i));
 		    object = null;
 		    break;
 		case "pn":
-		    if (i + 1 < keys.size() && keys.get(i + 1).equals("pv")) // followed by "pv" (if not out of bounds)
+		    if (i + 1 < k.size() && k.get(i + 1).equals("pv")) // followed by "pv" (if not out of bounds)
 		    {
-			property = model.createProperty(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+			property = model.createProperty(model.getNsPrefixURI(v.get(i)) + v.get(i + 1)); // ns prefix + local name
 			object = null;
 			i++; // skip the following "pv"
 		    }
 		    break;
 
 		case "ob":
-		    object = model.createResource(new AnonId(values.get(i))); // blank node
+		    object = model.createResource(new AnonId(v.get(i))); // blank node
 		    break;
 		case "ou":
-		    object = model.createResource(values.get(i)); // full URI
+		    object = model.createResource(v.get(i)); // full URI
 		    break;
 		case "ov":
-		    object = model.createResource(model.getNsPrefixURI("") + values.get(i)); // default namespace
+		    object = model.createResource(model.getNsPrefixURI("") + v.get(i)); // default namespace
 		    break;
 		case "on":
-		    if (i + 1 < keys.size() && keys.get(i + 1).equals("ov")) // followed by "ov" (if not out of bounds)
+		    if (i + 1 < k.size() && k.get(i + 1).equals("ov")) // followed by "ov" (if not out of bounds)
 		    {
-			object = model.createResource(model.getNsPrefixURI(values.get(i)) + values.get(i + 1)); // ns prefix + local name
+			object = model.createResource(model.getNsPrefixURI(v.get(i)) + v.get(i + 1)); // ns prefix + local name
 			i++; // skip the following "ov"
 		    }
 		    break;
 		case "ol":
-		    if (i + 1 < keys.size()) // check if not out of bounds
-			switch (keys.get(i + 1))
+		    if (i + 1 < k.size()) // check if not out of bounds
+			switch (k.get(i + 1))
 			{
 			    case "lt":
-				object = model.createTypedLiteral(values.get(i), new BaseDatatype(values.get(i + 1))); // typed literal (value+datatype)
+				object = model.createTypedLiteral(v.get(i), new BaseDatatype(v.get(i + 1))); // typed literal (value+datatype)
 				i++; // skip the following "lt"
 				break;
 			    case "ll":
-				object = model.createLiteral(values.get(i), values.get(i + 1)); // literal with language (value+lang)
+				object = model.createLiteral(v.get(i), v.get(i + 1)); // literal with language (value+lang)
 				i++; // skip the following "ll"
 				break;
 			    default:
-				object = model.createLiteral(values.get(i)); // plain literal (if not followed by lang or datatype)
+				object = model.createLiteral(v.get(i)); // plain literal (if not followed by lang or datatype)
 				break;
 			}
 		    else
-			object = model.createLiteral(values.get(i)); // plain literal
+			object = model.createLiteral(v.get(i)); // plain literal
 		    break;
 		case "lt":
-		    if (i + 1 < keys.size() && keys.get(i + 1).equals("ol")) // followed by "ol" (if not out of bounds)
+		    if (i + 1 < k.size() && k.get(i + 1).equals("ol")) // followed by "ol" (if not out of bounds)
 		    {
-			object = model.createTypedLiteral(values.get(i + 1), new BaseDatatype(values.get(i))); // typed literal (datatype+value)
+			object = model.createTypedLiteral(v.get(i + 1), new BaseDatatype(v.get(i))); // typed literal (datatype+value)
 			i++; // skip the following "ol"
 		    }
 		    break;
 		case "ll":
-		    if (i + 1 < keys.size() && keys.get(i + 1).equals("ol")) // followed by "ol" (if not out of bounds)
+		    if (i + 1 < k.size() && k.get(i + 1).equals("ol")) // followed by "ol" (if not out of bounds)
 		    {
-			model.createLiteral(values.get(i + 1), values.get(i)); // literal with language (lang+value)
+			model.createLiteral(v.get(i + 1), v.get(i)); // literal with language (lang+value)
 			i++; // skip the following "ol"
 		    }
 		    break;
@@ -229,6 +233,16 @@ public class RDFPostReader implements MessageBodyReader<Model>
     public HttpContext getHttpContext()
     {
 	return httpContext;
+    }
+
+    public List<String> getKeys()
+    {
+	return keys;
+    }
+
+    public List<String> getValues()
+    {
+	return values;
     }
     
 }

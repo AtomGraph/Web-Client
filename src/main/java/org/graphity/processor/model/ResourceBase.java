@@ -79,7 +79,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
-    //private final Query query;
     private final QueryBuilder queryBuilder;
     
     /**
