@@ -16,7 +16,6 @@
  */
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.rdf.model.Resource;
 import org.graphity.server.model.LinkedDataResource;
 
 /**
@@ -68,19 +67,5 @@ public interface PageResource extends LinkedDataResource
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
      */
     Boolean getDesc();
-
-    /**
-     * Get the RDF resource of the previous page. Can be used for HATEOS link relations.
-     * 
-     * @return previous page resource
-     */
-    Resource getPrevious();
-
-    /**
-     * Get the RDF resource of the next page. Can be used for HATEOS link relations.
-     * 
-     * @return next page resource
-     */
-    Resource getNext();
 
 }

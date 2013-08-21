@@ -20,6 +20,8 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
+import com.sun.jersey.api.uri.UriComponent;
+import java.net.URI;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -54,6 +56,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		add().build();
 
     private final List<Variant> variants;
+    private final URI mode;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -70,6 +73,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param offset pagination OFFSET ("offset" query string param)
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
      * @param desc pagination DESC value ("desc" query string param)
+     * @param mode "mode" query string param
      * @see org.graphity.processor.provider.OntologyProvider
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
@@ -78,14 +82,15 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc)
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("mode") URI mode)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		XHTML_VARIANTS);	
     }
 
@@ -103,16 +108,17 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param offset pagination OFFSET ("offset" query string param)
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
      * @param desc pagination DESC value ("desc" query string param)
+     * @param mode "mode" query string param
      * @param variants representation variants
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
 	    List<Variant> variants)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, cacheControl,
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		variants);
     }
 
@@ -130,11 +136,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param offset pagination OFFSET ("offset" query string param)
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
      * @param desc pagination DESC value ("desc" query string param)
+     * @param mode "mode" query string param
      * @param variants representation variants
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
 	    List<Variant> variants)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
@@ -142,6 +149,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		cacheControl, limit, offset, orderBy, desc);
 	
 	this.variants = variants;
+	this.mode = mode;
     }
 
     @Override
@@ -178,4 +186,33 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	return variants;
     }
 
+    public URI getMode()
+    {
+	return mode;
+    }
+
+    @Override
+    public UriBuilder getPageUriBuilder()
+    {
+	if (getMode() != null) return super.getPageUriBuilder().queryParam("mode", getMode());
+	
+	return super.getPageUriBuilder();
+    }
+
+    @Override
+    public UriBuilder getPreviousUriBuilder()
+    {
+	if (getMode() != null) return super.getPreviousUriBuilder().queryParam("mode", getMode());
+	
+	return super.getPreviousUriBuilder();
+    }
+
+    @Override
+    public UriBuilder getNextUriBuilder()
+    {
+	if (getMode() != null) return super.getNextUriBuilder().queryParam("mode", getMode());
+	
+	return super.getNextUriBuilder();
+    }
+    
 }

@@ -325,7 +325,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
+	    Resource page = description.createResource(getPageUriBuilder().buildFromEncoded().toString()).
 	    //Resource page = description.createResource(getUriInfo().getRequestUri().toString()).
 		addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, this);
 
@@ -645,7 +645,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	}
     }
 
-    public final UriBuilder getPageUriBuilder()
+    /**
+     * Returns URI builder instantiated with pagination parameters for the current page.
+     * 
+     * @return URI builder
+     */
+    public UriBuilder getPageUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
 	    queryParam("limit", getLimit()).
@@ -661,7 +666,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * 
      * @return URI builder
      */
-    public final UriBuilder getPreviousUriBuilder()
+    public UriBuilder getPreviousUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
 	    queryParam("limit", getLimit()).
@@ -671,25 +676,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	
 	return uriBuilder;
     }
-    
-    /**
-     * Returns the previous page resource.
-     * This method is used to build HATEOS metadata when this resource is a page.
-     * 
-     * @return page RDF resource
-     */
-    @Override
-    public Resource getPrevious()
-    {
-	return getPropertyResourceValue(XHV.prev);
-    }
 
     /**
      * Returns URI builder instantiated with pagination parameters for the next page.
      * 
      * @return URI builder
      */
-    public final UriBuilder getNextUriBuilder()
+    public UriBuilder getNextUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
 	    queryParam("limit", getLimit()).
@@ -698,18 +691,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
 	
 	return uriBuilder;
-    }
-    
-    /**
-     * Returns the next page resource.
-     * This method is used to build HATEOS metadata when this resource is a page.
-     * 
-     * @return page RDF resource
-     */
-    @Override
-    public Resource getNext()
-    {
-	return getPropertyResourceValue(XHV.next);
     }
 
     /**

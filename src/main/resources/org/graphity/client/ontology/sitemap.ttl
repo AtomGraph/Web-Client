@@ -320,6 +320,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:hasValue "/search"
 	] ;
     spin:constraint [ a gp:DescribeLabelledResourcesTemplate ] ;
+    rdfs:label "Search container" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 

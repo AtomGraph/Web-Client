@@ -21,6 +21,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
+import java.net.URI;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -50,7 +51,8 @@ public class GraphStoreResourceBase extends ResourceBase
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc)
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("mode") URI mode)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
@@ -59,18 +61,18 @@ public class GraphStoreResourceBase extends ResourceBase
 		resourceConfig.getProperty(GS.cacheControl.getURI()) == null ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		XHTML_VARIANTS);
     }
 
     protected GraphStoreResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
 	    List<Variant> variants)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint, cacheControl,
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		variants);
     }
     
