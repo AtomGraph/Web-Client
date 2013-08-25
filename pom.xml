@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.graphity</groupId>
-    <version>1.0.7</version>
+    <version>1.0.8-SNAPSHOT</version>
 
     <name>Graphity Client</name>
     <description>Graphity Linked Data client</description>
