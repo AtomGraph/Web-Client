@@ -16,8 +16,8 @@
  */
 package org.graphity.client.vocabulary;
 
-import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -45,7 +45,9 @@ public class GC
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
         
-    // public static final OntClass Service = m_model.createClass( NS + "Service" );
+    public static final OntClass CreateMode = m_model.createClass( NS + "CreateMode" );
+    
+    public static final OntClass EditMode = m_model.createClass( NS + "EditMode" );
     
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
 

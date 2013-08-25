@@ -325,7 +325,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-	    Resource page = description.createResource(getPageUriBuilder().buildFromEncoded().toString()).
+	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
 	    //Resource page = description.createResource(getUriInfo().getRequestUri().toString()).
 		addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, this);
 
