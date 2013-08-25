@@ -71,6 +71,7 @@ public class GlobalResourceBase extends ResourceBase
      * @param offset pagination OFFSET ("offset" query string param)
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
      * @param desc pagination DESC value ("desc" query string param)
+     * @param mode "mode" query string param
      * @param topicURI remote URI to be loaded ("uri" query string param)
      * @param mediaType media type of the representation ("accept" query string param)
      * @see org.graphity.processor.provider.OntologyProvider
@@ -82,6 +83,7 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("mode") URI mode,
 	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
     {
@@ -90,7 +92,7 @@ public class GlobalResourceBase extends ResourceBase
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		XHTML_VARIANTS,
 		topicURI, mediaType);	
     }
@@ -109,18 +111,20 @@ public class GlobalResourceBase extends ResourceBase
      * @param offset pagination OFFSET
      * @param orderBy pagination ORDER BY variable name
      * @param desc pagination DESC value
+     * @param mode "mode" query string param
      * @param variants representation variants
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, List<Variant> variants,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI mode, List<Variant> variants,
 	    URI topicURI, MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getRequestUri().toString()), endpoint, cacheControl,
-		limit, offset, orderBy, desc, variants,
+		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
+		endpoint, cacheControl,
+		limit, offset, orderBy, desc, mode, variants,
 		topicURI, mediaType);
     }
 
@@ -138,17 +142,18 @@ public class GlobalResourceBase extends ResourceBase
      * @param offset pagination OFFSET
      * @param orderBy pagination ORDER BY variable name
      * @param desc pagination DESC value
+     * @param mode "mode" query string param
      * @param variants representation variants
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, List<Variant> variants,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI mode, List<Variant> variants,
 	    URI topicURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint, cacheControl, limit, offset, orderBy, desc, variants);
+		ontResource, endpoint, cacheControl, limit, offset, orderBy, desc, mode, variants);
 	
 	this.mediaType = mediaType;
 	this.topicURI = topicURI;

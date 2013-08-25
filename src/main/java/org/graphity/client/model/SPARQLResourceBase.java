@@ -57,6 +57,7 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("mode") URI mode,
 	    @QueryParam("query") Query userQuery,
 	    @QueryParam("endpoint-uri") URI endpointURI,
 	    @QueryParam("accept") MediaType mediaType)
@@ -68,18 +69,18 @@ public class SPARQLResourceBase extends ResourceBase
 		resourceConfig.getProperty(GS.cacheControl.getURI()) == null ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		XHTML_VARIANTS, userQuery, endpointURI, mediaType);
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
 	    List<Variant> variants, Query userQuery, URI endpointURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint, cacheControl,
-		limit, offset, orderBy, desc,
+		limit, offset, orderBy, desc, mode,
 		variants);
 	
 	this.userQuery = userQuery;

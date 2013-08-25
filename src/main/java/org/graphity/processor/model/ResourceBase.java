@@ -136,7 +136,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    Long limit, Long offset, String orderBy, Boolean desc)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getRequestUri().toString()),
+		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
 		endpoint, cacheControl,
 		limit, offset, orderBy, desc);
 	
@@ -193,42 +193,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
-	if (matchedOntClass.hasSuperClass(LDP.Page)) //if (hasRDFType(LDP.Page))
+	if (matchedOntClass.hasSuperClass(LDP.Container))
 	{
-	    Resource container = getModel().createResource(uriInfo.getAbsolutePath().toString());
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", container);
-	    addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, container);
-
-	    if (log.isDebugEnabled())
-	    {
-		log.debug("OFFSET: {} LIMIT: {}", getOffset(), getLimit());
-		log.debug("ORDER BY: {} DESC: {}", getOrderBy(), getDesc());
-	    }
-
-	    if (getOffset() >= getLimit())
-	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
-		addProperty(XHV.prev, getModel().createResource(getPreviousUriBuilder().build().toString()));
-	    }
-
-	    // no way to know if there's a next page without counting results (either total or in current page)
-	    //int subjectCount = describe().listSubjects().toList().size();
-	    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
-	    //if (subjectCount >= getLimit())
-	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
-		addProperty(XHV.next, getModel().createResource(getNextUriBuilder().build().toString()));
-	    }
-	    
-	    Query baseQuery = getQuery(matchedOntClass, container);
+	    Query baseQuery = getQuery(matchedOntClass, ontResource);
 	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder with pagination from Query: {}", baseQuery);
 	    queryBuilder = getQueryBuilder(ARQ2SPIN.parseQuery(baseQuery.toString(), getModel()));
 	}
 	else
 	{
 	    if (log.isDebugEnabled()) log.debug("Resource is not an ldp:Page, returning Query without pagination");
-	    queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass,
-		    ResourceFactory.createResource(uriInfo.getAbsolutePath().toString())), getModel());
+	    queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
 	}
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
@@ -250,23 +224,15 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public Response get()
     {
 	 // ldp:Container always redirects to first ldp:Page
-	if (hasRDFType(LDP.Container))
+	if (hasRDFType(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
 	{
-	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");
-	    //if (log.isDebugEnabled()) log.debug("Encoded order-by URI: {}", UriComponent.encode(getOrderBy(), UriComponent.Type.QUERY));
-
-	    UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
-		queryParam("limit", getLimit()).
-		queryParam("offset", getOffset());
-	    //if (getOrderBy() != null) uriBuilder.queryParam("order-by", UriComponent.encode(getOrderBy(), UriComponent.Type.QUERY));
-	    //if (getDesc() != null) uriBuilder.queryParam("desc", getDesc());
-	    
-	    return Response.seeOther(uriBuilder.buildFromEncoded()).build();
+	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
+	    return Response.seeOther(getPageUriBuilder().build()).build();
 	}
 
 	return super.get();
     }
-
+    
     /**
      * Handles POST method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
      * 
@@ -284,7 +250,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	Model insertDiff = model.difference(description);
 	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
 
-	if (hasRDFType(LDP.Page))
+	if (hasRDFType(LDP.Container))
 	{
 	    Query subSelect = getQueryBuilder().getSubSelectBuilder().build();
 	    subSelect.setOffset(0);
@@ -351,18 +317,32 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public Model describe(boolean addContainerPage)
     {	
 	Model description = super.describe();
-	if (log.isDebugEnabled()) log.debug("Generation Response from description Model with {} triples", description.size());
+	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
-	if (addContainerPage && hasRDFType(LDP.Page))
+	if (addContainerPage && hasRDFType(LDP.Container))
 	{
-	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Page");
+	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
 	    
-	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
-	    ResourceBase ldc = new ResourceBase(getUriInfo(), getRequest(), getHttpHeaders(), getResourceConfig(),
-		    getContainer().as(OntResource.class), getEndpoint(), getCacheControl(),
-		    getLimit(), getOffset(), getOrderBy(), getDesc());
-	    description.add(DataManager.get().loadModel(ldc.getModel(), ldc.getQuery()));
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
+	    //Resource page = description.createResource(getUriInfo().getRequestUri().toString()).
+		addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, this);
+
+	    if (getOffset() >= getLimit())
+	    {
+		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
+		page.addProperty(XHV.prev, description.createResource(getPreviousUriBuilder().build().toString()));
+	    }
+
+	    // no way to know if there's a next page without counting results (either total or in current page)
+	    //int subjectCount = describe().listSubjects().toList().size();
+	    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
+	    //if (subjectCount >= getLimit())
+	    {
+		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
+		page.addProperty(XHV.next, description.createResource(getNextUriBuilder().build().toString()));
+	    }
 	}
 
 	return description;
@@ -666,25 +646,29 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns container resource of this page resource (<code>ldp:pageOf</code> value).
-     * If this resource is not a page, null is returned.
+     * Returns URI builder instantiated with pagination parameters for the current page.
      * 
-     * @return container resource or null
+     * @return URI builder
      */
-    @Override
-    public Resource getContainer()
+    public UriBuilder getPageUriBuilder()
     {
-	return getPropertyResourceValue(LDP.pageOf);
-    }
+	UriBuilder uriBuilder = getUriBuilder().
+	    queryParam("limit", getLimit()).
+	    queryParam("offset", getOffset());
+	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
     
+	return uriBuilder;
+    }
+
     /**
      * Returns URI builder instantiated with pagination parameters for the previous page.
      * 
      * @return URI builder
      */
-    public final UriBuilder getPreviousUriBuilder()
+    public UriBuilder getPreviousUriBuilder()
     {
-	UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
+	UriBuilder uriBuilder = getUriBuilder().
 	    queryParam("limit", getLimit()).
 	    queryParam("offset", getOffset() - getLimit());
 	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
@@ -692,45 +676,21 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	
 	return uriBuilder;
     }
-    
-    /**
-     * Returns the previous page resource.
-     * This method is used to build HATEOS metadata when this resource is a page.
-     * 
-     * @return page RDF resource
-     */
-    @Override
-    public Resource getPrevious()
-    {
-	return getPropertyResourceValue(XHV.prev);
-    }
 
     /**
      * Returns URI builder instantiated with pagination parameters for the next page.
      * 
      * @return URI builder
      */
-    public final UriBuilder getNextUriBuilder()
+    public UriBuilder getNextUriBuilder()
     {
-	UriBuilder uriBuilder = getUriInfo().getAbsolutePathBuilder().
+	UriBuilder uriBuilder = getUriBuilder().
 	    queryParam("limit", getLimit()).
 	    queryParam("offset", getOffset() + getLimit());
 	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
 	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
 	
 	return uriBuilder;
-    }
-    
-    /**
-     * Returns the next page resource.
-     * This method is used to build HATEOS metadata when this resource is a page.
-     * 
-     * @return page RDF resource
-     */
-    @Override
-    public Resource getNext()
-    {
-	return getPropertyResourceValue(XHV.next);
     }
 
     /**
