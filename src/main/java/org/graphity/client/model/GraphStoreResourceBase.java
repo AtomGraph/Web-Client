@@ -52,6 +52,7 @@ public class GraphStoreResourceBase extends ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
@@ -61,18 +62,18 @@ public class GraphStoreResourceBase extends ResourceBase
 		resourceConfig.getProperty(GS.cacheControl.getURI()) == null ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc, mode,
+		limit, offset, orderBy, desc, graphURI, mode,
 		XHTML_VARIANTS);
     }
 
     protected GraphStoreResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    List<Variant> variants)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint, cacheControl,
-		limit, offset, orderBy, desc, mode,
+		limit, offset, orderBy, desc, graphURI, mode,
 		variants);
     }
     

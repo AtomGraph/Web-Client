@@ -83,6 +83,7 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode,
 	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
@@ -92,7 +93,7 @@ public class GlobalResourceBase extends ResourceBase
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc, mode,
+		limit, offset, orderBy, desc, graphURI, mode,
 		XHTML_VARIANTS,
 		topicURI, mediaType);	
     }
@@ -118,13 +119,13 @@ public class GlobalResourceBase extends ResourceBase
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI mode, List<Variant> variants,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode, List<Variant> variants,
 	    URI topicURI, MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
 		endpoint, cacheControl,
-		limit, offset, orderBy, desc, mode, variants,
+		limit, offset, orderBy, desc, graphURI, mode, variants,
 		topicURI, mediaType);
     }
 
@@ -149,11 +150,11 @@ public class GlobalResourceBase extends ResourceBase
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI mode, List<Variant> variants,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode, List<Variant> variants,
 	    URI topicURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint, cacheControl, limit, offset, orderBy, desc, mode, variants);
+		ontResource, endpoint, cacheControl, limit, offset, orderBy, desc, graphURI, mode, variants);
 	
 	this.mediaType = mediaType;
 	this.topicURI = topicURI;

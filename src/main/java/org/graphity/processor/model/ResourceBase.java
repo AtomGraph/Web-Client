@@ -19,6 +19,8 @@ package org.graphity.processor.model;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -27,6 +29,7 @@ import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.api.uri.UriTemplate;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.TreeMap;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -35,7 +38,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
-import org.graphity.processor.update.ModifyBuilder;
+import org.graphity.processor.update.InsertDataBuilder;
+import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.vocabulary.VoID;
@@ -43,13 +47,16 @@ import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.server.model.SPARQLUpdateEndpoint;
 import org.graphity.server.util.DataManager;
 import org.graphity.server.vocabulary.GS;
+import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.TemplateCall;
+import org.topbraid.spin.model.update.Update;
 import org.topbraid.spin.vocabulary.SPIN;
 
 /**
@@ -80,6 +87,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final HttpHeaders httpHeaders;
     private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
+    private final URI graphURI;
     
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -106,13 +114,14 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc)
+	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("graph") URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint, //getEndpoint(sitemap, uriInfo, request, resourceConfig),
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null : CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc);
+		limit, offset, orderBy, desc, graphURI);
     }
     
     /**
@@ -133,12 +142,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
 	    CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc)
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
 		endpoint, cacheControl,
-		limit, offset, orderBy, desc);
+		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
     }
@@ -169,7 +178,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc)
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	super(ontResource, endpoint, cacheControl);
 
@@ -188,7 +197,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	this.offset = offset;
 	this.orderBy = orderBy;
 	this.desc = desc;
-	
+	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
+	else this.graphURI = null;
+
 	matchedOntClass = matchOntClass(getRealURI(), uriInfo.getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
@@ -196,12 +207,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (matchedOntClass.hasSuperClass(LDP.Container))
 	{
 	    Query baseQuery = getQuery(matchedOntClass, ontResource);
-	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Page, making QueryBuilder with pagination from Query: {}", baseQuery);
+	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Container, making QueryBuilder with pagination from Query: {}", baseQuery);
 	    queryBuilder = getQueryBuilder(ARQ2SPIN.parseQuery(baseQuery.toString(), getModel()));
 	}
 	else
 	{
-	    if (log.isDebugEnabled()) log.debug("Resource is not an ldp:Page, returning Query without pagination");
+	    if (log.isDebugEnabled()) log.debug("Resource is not an ldp:Container, returning Query without pagination");
 	    queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
 	}
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
@@ -242,34 +253,41 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response post(Model model)
     {
-	if (log.isDebugEnabled()) log.debug("Returning @POST Response of the POSTed Model");
-	Model description = describe(false);
-	
-	Model deleteDiff = description.difference(model);
-	if (log.isDebugEnabled()) log.debug("DESCRIBE Model minus POSTed Model: {} size: {}", deleteDiff, deleteDiff.size());
-	Model insertDiff = model.difference(description);
-	if (log.isDebugEnabled()) log.debug("POSTed Model minus from DESCRIBE Model: {} size: {}", insertDiff, insertDiff.size());
-
-	if (hasRDFType(LDP.Container))
-	{
-	    Query subSelect = getQueryBuilder().getSubSelectBuilder().build();
-	    subSelect.setOffset(0);
-	    if (log.isDebugEnabled()) log.debug("SELECT subquery from the WHERE pattern: {}", subSelect);
-	    ResultSetRewindable resultSet = DataManager.get().loadResultSet(description, subSelect);
-	    while (resultSet.hasNext()) log.debug("Query solution: {} number: {}", resultSet.next(), resultSet.getRowNumber());
-	    //ParameterizedSparqlString()
-	}
-
-	UpdateRequest updateRequest = ModifyBuilder.fromModify(getModel()).
-		deletePattern(deleteDiff).
-		insertPattern(insertDiff).
-		where(getQueryBuilder().getWhere()).
-		build();
-	if (log.isDebugEnabled()) log.debug("DELETE/INSERT generated from the POSTed Model: {}", updateRequest);
-	
-	return getResponse(model);
+	return post(model, getEndpoint());
     }
 
+    public Response post(Model model, SPARQLUpdateEndpoint endpoint)
+    {
+	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
+	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLUpdateEndpoint: {}", getGraphURI(), endpoint);	
+	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
+
+	UpdateRequest insertDataRequest; 
+	if (getGraphURI() != null) insertDataRequest = InsertDataBuilder.fromData(getGraphURI(), model).build();
+	else insertDataRequest = InsertDataBuilder.fromData(model).build();
+	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
+
+	endpoint.update(insertDataRequest, null, null);
+	
+	Resource created = null;
+	ResIterator resIt = model.listSubjectsWithProperty(RDF.type, FOAF.Document);
+	if (resIt.hasNext()) created = resIt.next();
+	if (created != null)
+	{
+	    URI createdURI = UriBuilder.fromUri(created.getURI()).build();
+	    if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
+	    // http://stackoverflow.com/questions/3383725/post-redirect-get-prg-vs-meaningful-2xx-response-codes
+	    // http://www.blackpepper.co.uk/posts/201-created-or-post-redirect-get/
+	    //return Response.created(createdURI).entity(model).build();
+	    return Response.seeOther(createdURI).build();
+	}
+	else
+	{
+	    if (log.isDebugEnabled()) log.debug("Returning GET Response");
+	    return get();
+	}
+    }
+        
     /**
      * Handles PUT method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
      * 
@@ -279,7 +297,46 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response put(Model model)
     {
-	throw new WebApplicationException(405);
+	return put(model, getEndpoint());
+    }
+    
+    public Response put(Model model, SPARQLUpdateEndpoint endpoint)
+    {
+	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
+	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLUpdateEndpoint: {}", getGraphURI(), endpoint);
+	if (log.isDebugEnabled()) log.debug("PUT Model: {}", model);
+
+	Model description = describe();	
+	UpdateRequest updateRequest = UpdateFactory.create();
+	
+	if (!description.isEmpty()) // remove existing representation
+	{
+	    EntityTag entityTag = new EntityTag(Long.toHexString(ModelUtils.hashModel(model)));
+	    Response.ResponseBuilder rb = getRequest().evaluatePreconditions(entityTag);
+	    if (rb != null)
+	    {
+		if (log.isDebugEnabled()) log.debug("PUT preconditions were not met for resource: {} with entity tag: {}", this, entityTag);
+		return rb.build();
+	    }
+	    
+	    UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
+	    if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
+	    Iterator<com.hp.hpl.jena.update.Update> it = deleteRequest.getOperations().iterator();
+	    while (it.hasNext()) updateRequest.add(it.next());
+	}
+	
+	UpdateRequest insertDataRequest; 
+	if (getGraphURI() != null) insertDataRequest = InsertDataBuilder.fromData(getGraphURI(), model).build();
+	else insertDataRequest = InsertDataBuilder.fromData(model).build();
+	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
+	Iterator<com.hp.hpl.jena.update.Update> it = insertDataRequest.getOperations().iterator();
+	while (it.hasNext()) updateRequest.add(it.next());
+	
+	if (log.isDebugEnabled()) log.debug("Combined DELETE/INSERT DATA request: {}", updateRequest);
+	endpoint.update(updateRequest, null, null);
+	
+	if (description.isEmpty()) return Response.created(getRealURI()).build();
+	else return getResponse(model);
     }
 
     /**
@@ -291,7 +348,17 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response delete()
     {
-	throw new WebApplicationException(405);
+	return delete(getEndpoint());
+    }
+    
+    public Response delete(SPARQLUpdateEndpoint endpoint)
+    {
+	if (log.isDebugEnabled()) log.debug("DELETEing resource: {} matched OntClass: {}", this, getMatchedOntClass());
+	UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
+	if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
+	endpoint.update(deleteRequest, null, null);
+	
+	return Response.noContent().build();
     }
 
     /**
@@ -375,7 +442,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
     {
 	QueryBuilder qb = QueryBuilder.fromQuery(query);
-	if (qb.getSubSelectBuilder() == null) throw new IllegalStateException("The SPIN query for ldp:Page class does not have a SELECT subquery");
+	if (qb.getSubSelectBuilder() == null) throw new IllegalStateException("The SPIN query for ldp:Container class does not have a SELECT subquery");
 	
 	SelectBuilder selectBuilder = qb.getSubSelectBuilder().
 	    replaceLimit(getLimit()).replaceOffset(getOffset());
@@ -418,7 +485,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final Query getQuery(OntClass ontClass, Resource resource)
     {
-	return getQuery(getTemplateCall(ontClass), resource);
+	return getQuery(getQueryCall(ontClass), resource);
     }
     
     /**
@@ -429,7 +496,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @return SPIN template call resource
      * @see org.topbraid.spin.model.TemplateCall
      */
-    public TemplateCall getTemplateCall(OntClass ontClass)
+    public TemplateCall getQueryCall(OntClass ontClass)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (!ontClass.hasProperty(SPIN.constraint))
@@ -460,6 +527,40 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	qsm.add("this", resource);
 	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
 	return queryString.asQuery();
+    }
+
+    public final UpdateBuilder getUpdateBuilder(Update update)
+    {
+	UpdateBuilder ub = UpdateBuilder.fromUpdate(update);
+	
+	return ub;
+    }
+    
+    public final UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
+    {
+	return getUpdateRequest(getUpdateCall(ontClass), resource);
+    }
+
+    public TemplateCall getUpdateCall(OntClass ontClass)
+    {
+	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+	if (!ontClass.hasProperty(ResourceFactory.createProperty(SPIN.NS, "update")))
+	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update Template");	    
+
+	RDFNode update = getModel().getResource(ontClass.getURI()).
+		getProperty(ResourceFactory.createProperty(SPIN.NS, "update")).getObject();
+	return SPINFactory.asTemplateCall(update);
+    }
+    
+    public UpdateRequest getUpdateRequest(TemplateCall call, Resource resource)
+    {
+	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
+	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+	
+	QuerySolutionMap qsm = new QuerySolutionMap();
+	qsm.add("this", resource);
+	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
+	return queryString.asUpdate();
     }
 
     /**
@@ -604,6 +705,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final Boolean getDesc()
     {
 	return desc;
+    }
+
+    public URI getGraphURI()
+    {
+	return graphURI;
     }
 
     /**

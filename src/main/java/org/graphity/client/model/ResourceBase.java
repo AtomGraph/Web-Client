@@ -20,7 +20,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.uri.UriComponent;
 import java.net.URI;
 import java.util.List;
 import javax.ws.rs.DefaultValue;
@@ -83,6 +82,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
@@ -90,7 +90,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
 		    null :
 		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
-		limit, offset, orderBy, desc, mode,
+		limit, offset, orderBy, desc, graphURI, mode,
 		XHTML_VARIANTS);	
     }
 
@@ -113,12 +113,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    List<Variant> variants)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, cacheControl,
-		limit, offset, orderBy, desc, mode,
+		limit, offset, orderBy, desc, graphURI, mode,
 		variants);
     }
 
@@ -141,12 +141,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI mode,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    List<Variant> variants)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
-		cacheControl, limit, offset, orderBy, desc);
+		cacheControl, limit, offset, orderBy, desc, graphURI);
 	
 	this.variants = variants;
 	this.mode = mode;

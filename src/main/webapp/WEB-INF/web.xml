@@ -26,18 +26,6 @@
             <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
 	    <!-- <param-value>org/graphity/client/ontology/quad-sitemap.ttl</param-value> -->
         </init-param>
-        <!--
-        <init-param>
-            <param-name>org.graphity.platform.ontology.uri</param-name>
-            <param-value>http://platform.graphity.org/ontology/</param-value>
-        </init-param>
-	-->
-        <!--
-        <init-param>
-            <param-name>org.graphity.platform.ontology.endpoint.uri</param-name>
-            <param-value>http://dydra.com/graphity/platform/sparql</param-value>
-        </init-param>
-	-->
 	<!--
         <init-param>
             <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
@@ -57,6 +45,10 @@
             <param-name>http://server.graphity.org/ontology#resultLimit</param-name>
             <param-value>100</param-value>
         </init-param>
+        <init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+	    <param-value>com.sun.jersey.api.container.filter.PostReplaceFilter</param-value>
+	</init-param>	
     </filter>
     <filter-mapping>
         <filter-name>index</filter-name>

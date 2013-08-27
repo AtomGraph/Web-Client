@@ -42,11 +42,12 @@ public class SearchResource extends ResourceBase
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") @DefaultValue("label") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
-		limit, offset, orderBy, desc, mode);
+		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	//if (searchString == null)
 	//    throw new WebApplicationException(Response.Status.BAD_REQUEST);
