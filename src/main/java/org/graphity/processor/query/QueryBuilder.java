@@ -31,9 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
-import org.topbraid.spin.internal.ContainsVarChecker;
 import org.topbraid.spin.model.*;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.model.visitor.AbstractElementVisitor;
+import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.model.visitor.ElementWalker;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
@@ -48,7 +50,21 @@ import org.topbraid.spin.vocabulary.SP;
 public class QueryBuilder implements org.topbraid.spin.model.Query
 {
     private static final Logger log = LoggerFactory.getLogger(QueryBuilder.class);
-    private org.topbraid.spin.model.Query query = null;
+    private final org.topbraid.spin.model.Query query;
+    private Select subSelect = null;
+
+    private ElementVisitor elementVisitor = new AbstractElementVisitor()
+    {
+
+	@Override
+	public void visit(SubQuery subQuery)
+	{
+		org.topbraid.spin.model.Query sub = subQuery.getQuery();
+		// only SELECTs can be subqueries??
+		if (sub.canAs(Select.class)) setSubSelect(sub.as(Select.class));
+	}
+
+    };
 
     /**
      * Constructs builder from SPIN query
@@ -156,19 +172,20 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	
 	return this;
     }
-
+	
     public SelectBuilder getSubSelectBuilder()
     {
-	Iterator<Element> it = getWhereElements().iterator();
-	while (it.hasNext())
+	setSubSelect(null); // clear any previously found sub-SELECTs
+	
+	if (getWhere() != null)
 	{
-	    Element elem = it.next();
-	    if (elem.canAs(org.topbraid.spin.model.SubQuery.class))
+	    ElementWalker walker = new ElementWalker(getElementVisitor(), null);
+	    walker.visit(getWhere());
+	    
+	    if (getSubSelect() != null)
 	    {
-		org.topbraid.spin.model.Query sub = elem.as(org.topbraid.spin.model.SubQuery.class).getQuery();
-		// only SELECTs can be subqueries??
-		if (sub.canAs(Select.class))
-		    return SelectBuilder.fromSelect(sub.as(Select.class));
+		if (log.isTraceEnabled()) log.trace("Found sub-SELECT: {}", getSubSelect());
+		return SelectBuilder.fromSelect(getSubSelect());
 	    }
 	}
 	
@@ -415,7 +432,22 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	    it.close();
 	}
     }
-    
+
+    protected Select getSubSelect()
+    {
+	return subSelect;
+    }
+
+    protected void setSubSelect(Select subSelect)
+    {
+	this.subSelect = subSelect;
+    }
+
+    public ElementVisitor getElementVisitor()
+    {
+	return elementVisitor;
+    }
+
     @Override
     public List<String> getFrom()
     {

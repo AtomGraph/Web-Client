@@ -442,10 +442,10 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
     {
 	QueryBuilder qb = QueryBuilder.fromQuery(query);
-	if (qb.getSubSelectBuilder() == null) throw new IllegalStateException("The SPIN query for ldp:Container class does not have a SELECT subquery");
+	SelectBuilder selectBuilder = qb.getSubSelectBuilder();
+	if (selectBuilder == null) throw new IllegalStateException("The SPIN query for ldp:Container class does not have a SELECT subquery");
 	
-	SelectBuilder selectBuilder = qb.getSubSelectBuilder().
-	    replaceLimit(getLimit()).replaceOffset(getOffset());
+	selectBuilder.replaceLimit(getLimit()).replaceOffset(getOffset());
 
 	if (getOrderBy() != null)
 	    try
