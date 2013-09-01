@@ -273,6 +273,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
 
+	Resource created = getURIResource(model, FOAF.Document);
+	if (created == null)
+	{
+	    if (log.isDebugEnabled()) log.debug("POSTed Model does not contain statements with URI as subject and type '{}'", FOAF.Document.getURI());
+	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	}
+
 	UpdateRequest insertDataRequest; 
 	if (graphURI != null) insertDataRequest = InsertDataBuilder.fromData(graphURI, model).build();
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
@@ -280,26 +287,28 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	endpoint.update(insertDataRequest, null, null);
 	
-	ResIterator resIt = model.listSubjectsWithProperty(RDF.type, FOAF.Document);
+	URI createdURI = UriBuilder.fromUri(created.getURI()).build();
+	if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
+	// http://stackoverflow.com/questions/3383725/post-redirect-get-prg-vs-meaningful-2xx-response-codes
+	// http://www.blackpepper.co.uk/posts/201-created-or-post-redirect-get/
+	//return Response.created(createdURI).entity(model).build();
+	return Response.seeOther(createdURI).build();
+    }
+
+    public Resource getURIResource(Model model, Resource type)
+    {
+	ResIterator resIt = model.listSubjectsWithProperty(RDF.type, type);
+
 	while (resIt.hasNext())
 	{
 	    Resource created = resIt.next();
 
-	    if (created.isURIResource())
-	    {
-		URI createdURI = UriBuilder.fromUri(created.getURI()).build();
-		if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
-		// http://stackoverflow.com/questions/3383725/post-redirect-get-prg-vs-meaningful-2xx-response-codes
-		// http://www.blackpepper.co.uk/posts/201-created-or-post-redirect-get/
-		//return Response.created(createdURI).entity(model).build();
-		return Response.seeOther(createdURI).build();
-	    }
+	    if (created.isURIResource()) return created;
 	}
-
-	if (log.isDebugEnabled()) log.debug("Returning GET Response");
-	return get();
+	
+	return null;
     }
-        
+    
     /**
      * Handles PUT method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
      * 
