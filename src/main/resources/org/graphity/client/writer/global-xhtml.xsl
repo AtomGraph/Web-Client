@@ -106,7 +106,8 @@ exclude-result-prefixes="#all">
 	</a>
 
 	<div id="collapsing-navbar" class="nav-collapse collapse">
-	    <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8" onsubmit="if ($(this).find('input[name=uri]').val().indexOf('http://') == -1) {{ $(this).attr('action', 'search'); $(this).find('input[name=uri]').attr('name', 'query'); return true; }}">
+	    <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8"
+		  onsubmit="if ($(this).find('input[name=uri]').val().indexOf('http://') == -1) {{ $(this).attr('action', 'search'); $(this).find('input[name=uri]').attr('name', 'query'); return true; }}">
 		<div class="input-append">
 		    <xsl:choose>
 			<xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">

@@ -299,11 +299,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     {
 	ResIterator resIt = model.listSubjectsWithProperty(RDF.type, type);
 
-	while (resIt.hasNext())
+	try
 	{
-	    Resource created = resIt.next();
+	    while (resIt.hasNext())
+	    {
+		Resource created = resIt.next();
 
-	    if (created.isURIResource()) return created;
+		if (created.isURIResource()) return created;
+	    }
+	}
+	finally
+	{
+	    resIt.close();
 	}
 	
 	return null;
