@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.URIResolver;
 import org.graphity.client.locator.LocatorGRDDL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,14 +35,14 @@ public class LocatorAtom extends LocatorGRDDL
 {
     private static final Logger log = LoggerFactory.getLogger(LocatorAtom.class);
 
-    public LocatorAtom(String uriTemplate, Source stylesheet) throws TransformerConfigurationException
+    public LocatorAtom(String uriTemplate, Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	super(uriTemplate, stylesheet);
+	super(uriTemplate, stylesheet, resolver);
     }
 
-    public LocatorAtom(UriTemplate uriTemplate, Source stylesheet) throws TransformerConfigurationException
+    public LocatorAtom(UriTemplate uriTemplate, Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	super(uriTemplate, stylesheet);
+	super(uriTemplate, stylesheet, resolver);
     }
 
     @Override

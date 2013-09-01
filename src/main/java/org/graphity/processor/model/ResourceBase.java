@@ -256,36 +256,48 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return post(model, getEndpoint());
     }
 
+    public Response post(Model model, URI graphURI)
+    {
+	return post(model, graphURI);
+    }
+
     public Response post(Model model, SPARQLUpdateEndpoint endpoint)
     {
+	return post(model, getGraphURI(), endpoint);
+    }
+    
+    public Response post(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
+    {
+	if (model == null) throw new IllegalArgumentException("Model cannot be null");
 	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLUpdateEndpoint: {}", getGraphURI(), endpoint);	
+	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
 
 	UpdateRequest insertDataRequest; 
-	if (getGraphURI() != null) insertDataRequest = InsertDataBuilder.fromData(getGraphURI(), model).build();
+	if (graphURI != null) insertDataRequest = InsertDataBuilder.fromData(graphURI, model).build();
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
 	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 
 	endpoint.update(insertDataRequest, null, null);
 	
-	Resource created = null;
 	ResIterator resIt = model.listSubjectsWithProperty(RDF.type, FOAF.Document);
-	if (resIt.hasNext()) created = resIt.next();
-	if (created != null)
+	while (resIt.hasNext())
 	{
-	    URI createdURI = UriBuilder.fromUri(created.getURI()).build();
-	    if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
-	    // http://stackoverflow.com/questions/3383725/post-redirect-get-prg-vs-meaningful-2xx-response-codes
-	    // http://www.blackpepper.co.uk/posts/201-created-or-post-redirect-get/
-	    //return Response.created(createdURI).entity(model).build();
-	    return Response.seeOther(createdURI).build();
+	    Resource created = resIt.next();
+
+	    if (created.isURIResource())
+	    {
+		URI createdURI = UriBuilder.fromUri(created.getURI()).build();
+		if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
+		// http://stackoverflow.com/questions/3383725/post-redirect-get-prg-vs-meaningful-2xx-response-codes
+		// http://www.blackpepper.co.uk/posts/201-created-or-post-redirect-get/
+		//return Response.created(createdURI).entity(model).build();
+		return Response.seeOther(createdURI).build();
+	    }
 	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Returning GET Response");
-	    return get();
-	}
+
+	if (log.isDebugEnabled()) log.debug("Returning GET Response");
+	return get();
     }
         
     /**
@@ -299,13 +311,30 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     {
 	return put(model, getEndpoint());
     }
-    
+
+    public Response put(Model model, URI graphURI)
+    {
+	return post(model, graphURI);
+    }
+
     public Response put(Model model, SPARQLUpdateEndpoint endpoint)
     {
+	return put(model, getGraphURI(), endpoint);
+    }
+    
+    public Response put(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
+    {
+	if (model == null) throw new IllegalArgumentException("Model cannot be null");
 	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLUpdateEndpoint: {}", getGraphURI(), endpoint);
+	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("PUT Model: {}", model);
 
+	if (!model.containsResource(this))
+	{
+	    if (log.isDebugEnabled()) log.debug("PUT Model does not contain statements with request URI {} as subject: {}", this.getURI());
+	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
+	}
+	
 	Model description = describe();	
 	UpdateRequest updateRequest = UpdateFactory.create();
 	
@@ -326,7 +355,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	}
 	
 	UpdateRequest insertDataRequest; 
-	if (getGraphURI() != null) insertDataRequest = InsertDataBuilder.fromData(getGraphURI(), model).build();
+	if (graphURI != null) insertDataRequest = InsertDataBuilder.fromData(graphURI, model).build();
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
 	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 	Iterator<com.hp.hpl.jena.update.Update> it = insertDataRequest.getOperations().iterator();

@@ -19,7 +19,7 @@
 
 : a owl:Ontology ;
     # owl:imports spin: ;
-    owl:versionInfo "1.0.7" ;
+    owl:versionInfo "1.0.8" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
     dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
@@ -31,6 +31,19 @@
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
     dct:creator <http://semantic-web.dk/#martynas> ;
     rdfs:seeAlso :Project .
+
+# RESOURCES
+
+:Resource a owl:Class, :Template ;
+    rdfs:subClassOf foaf:Document, lda:ItemEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/{path: .+}"
+	] ;
+    spin:constraint [ a :DescribeTemplate ] ;
+    spin:update [ a :DeleteTemplate ] ;
+    rdfs:label "Resource" ;
+    rdfs:isDefinedBy : .
 
 # QUERIES & TEMPLATES
 
@@ -430,3 +443,57 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
                 ]) .
 
 _:resourceVar  sp:varName "resource"^^xsd:string .
+
+# ====
+
+:DeleteTemplate a spin:Template ;
+    spin:body :Delete ;
+    rdfs:isDefinedBy : .
+
+:Delete    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    ?this ?p ?o .
+}"""^^xsd:string ;
+      sp:where ([ sp:object
+                          [ sp:varName "o"^^xsd:string
+                          ] ;
+                  sp:predicate
+                          [ sp:varName "p"^^xsd:string
+                          ] ;
+                  sp:subject
+                          [ sp:varName "this"^^xsd:string
+                          ]
+                ]) .
+
+# ====
+
+:DeleteWithTopicTemplate a spin:Template ;
+    spin:body :DeleteWithTopic ;
+    rdfs:isDefinedBy : .
+
+:DeleteWithTopic    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    ?this ?p ?o .
+    ?primaryTopic foaf:isPrimaryTopicOf ?this .
+    ?primaryTopic ?x ?y .
+}"""^^xsd:string ;
+      sp:where ([ sp:object
+                          [ sp:varName "o"^^xsd:string
+                          ] ;
+                  sp:predicate
+                          [ sp:varName "p"^^xsd:string
+                          ] ;
+                  sp:subject spin:_this
+                ] [ sp:object spin:_this ;
+                  sp:predicate foaf:isPrimaryTopicOf ;
+                  sp:subject _:primaryTopicVar
+                ] [ sp:object
+                          [ sp:varName "y"^^xsd:string
+                          ] ;
+                  sp:predicate
+                          [ sp:varName "x"^^xsd:string
+                          ] ;
+                  sp:subject _:primaryTopicVar
+                ]) .
+
+_:primaryTopicVar  sp:varName "primaryTopic"^^xsd:string .

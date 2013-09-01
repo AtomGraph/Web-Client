@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.XSLTBuilder;
@@ -48,17 +49,23 @@ public class LocatorGRDDL extends LocatorLinkedData
     private Source stylesheet = null;
     private UriTemplate uriTemplate = null;
     private XSLTBuilder builder = null;
+    private URIResolver resolver = null;
 
-    public LocatorGRDDL(String uriTemplate, Source stylesheet) throws TransformerConfigurationException
+    public LocatorGRDDL(String uriTemplate, Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	this(new UriTemplate(uriTemplate), stylesheet);
+	this(new UriTemplate(uriTemplate), stylesheet, resolver);
     }
     
-    public LocatorGRDDL(UriTemplate uriTemplate, Source stylesheet) throws TransformerConfigurationException
+    public LocatorGRDDL(UriTemplate uriTemplate, Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
+	if (uriTemplate == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
+	if (stylesheet == null) throw new IllegalArgumentException("URIResolver cannot be null");
+	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
+	
 	this.uriTemplate = uriTemplate;
 	this.stylesheet = stylesheet;
 	builder = XSLTBuilder.fromStylesheet(stylesheet);
+	this.resolver = resolver;
     }
 
     @Override
@@ -84,9 +91,10 @@ public class LocatorGRDDL extends LocatorLinkedData
 	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 	    getXSLTBuilder().document(new StreamSource(ts.getInput())).
-	    result(new StreamResult(bos)).
-	    parameter("uri", new URI(filenameOrURI)).
-	    transform();
+		resolver(getURIResolver()).
+		result(new StreamResult(bos)).
+		parameter("uri", new URI(filenameOrURI)).
+		transform();
 	    
 	    if (log.isTraceEnabled()) log.trace("GRDDL RDF/XML output: {}", bos.toString());
 
@@ -128,6 +136,11 @@ public class LocatorGRDDL extends LocatorLinkedData
     protected XSLTBuilder getXSLTBuilder()
     {
 	return builder;
+    }
+
+    public URIResolver getURIResolver()
+    {
+	return resolver;
     }
 
 }
