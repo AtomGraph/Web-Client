@@ -168,6 +168,31 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	}
     }
 
+    /**
+     * Asks for boolean result by querying either local or remote SPARQL endpoint (depends on its URI).
+     * 
+     * @param endpoint endpoint resource
+     * @param query query object
+     * @return boolean result
+     */
+    @Override
+    public boolean ask(Resource endpoint, Query query)
+    {
+	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
+	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
+
+	if (endpoint.getURI().equals(getOntModelEndpoint().getURI()))
+	{
+	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
+	    return DataManager.get().ask(getModel(), query);
+	}
+	else
+	{
+	    if (log.isDebugEnabled()) log.debug("Loading Model from SPARQL endpoint: {} using Query: {}", endpoint, query);
+	    return super.ask(endpoint, query);
+	}
+    }
+
     @Override
     public void executeUpdateRequest(Resource endpoint, UpdateRequest updateRequest)
     {
