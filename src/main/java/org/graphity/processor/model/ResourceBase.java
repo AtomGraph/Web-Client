@@ -258,7 +258,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
     public Response post(Model model, URI graphURI)
     {
-	return post(model, graphURI);
+	return post(model, graphURI, getEndpoint());
     }
 
     public Response post(Model model, SPARQLUpdateEndpoint endpoint)
@@ -330,7 +330,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
     public Response put(Model model, URI graphURI)
     {
-	return post(model, graphURI);
+	return put(model, graphURI, getEndpoint());
     }
 
     public Response put(Model model, SPARQLUpdateEndpoint endpoint)
