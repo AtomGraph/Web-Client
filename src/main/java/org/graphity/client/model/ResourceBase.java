@@ -50,8 +50,9 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
 		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
 		    //MediaType.TEXT_HTML_TYPE,
-		    org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE,
-		    org.graphity.server.MediaType.TEXT_TURTLE_TYPE).
+		    org.graphity.client.MediaType.APPLICATION_RDF_XML_TYPE,
+		    org.graphity.client.MediaType.TEXT_TURTLE_TYPE,
+		    org.graphity.client.MediaType.APPLICATION_LD_JSON_TYPE).
 		add().build();
 
     private final List<Variant> variants;

@@ -39,6 +39,7 @@ import org.graphity.client.provider.NotFoundExceptionMapper;
 import org.graphity.client.provider.QueryExceptionHTTPMapper;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.writer.xslt.JSONLDWriter;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
@@ -138,6 +139,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	try
 	{
 	    DataManager.get().addLocator(new LocatorGRDDL("https://api.twitter.com/1/{path: .+}", getSource("org/graphity/client/locator/grddl/twitter-grddl.xsl"), DataManager.get()));
+	    singletons.add(new JSONLDWriter(getSource("org/graphity/client/writer/rdfxml2json-ld.xsl"),
+		DataManager.get())); // writes JSON-LD responses
 	}
 	catch (TransformerConfigurationException ex)
 	{
