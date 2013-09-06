@@ -101,14 +101,18 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	return getOntModel();
     }
 
+    public OntModel getOntModel()
+    {
+	return getOntModel(getResourceConfig());
+    }
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
      * @return ontology Model
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel()
+    public OntModel getOntModel(ResourceConfig resourceConfig)
     {
-	if (log.isDebugEnabled()) log.debug("web.xml properties: {}", getResourceConfig().getProperties());
+	if (log.isDebugEnabled()) log.debug("web.xml properties: {}", resourceConfig.getProperties());
 	Object ontologyPath = getResourceConfig().getProperty(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	

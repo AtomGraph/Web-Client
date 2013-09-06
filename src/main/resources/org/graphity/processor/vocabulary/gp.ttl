@@ -34,16 +34,16 @@
 
 # RESOURCES
 
-:Resource a owl:Class, :Template ;
-    rdfs:subClassOf foaf:Document, lda:ItemEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/{path: .+}"
-	] ;
-    spin:constraint [ a :DescribeTemplate ] ;
-    spin:update [ a :DeleteTemplate ] ;
-    rdfs:label "Resource" ;
-    rdfs:isDefinedBy : .
+#:Resource a owl:Class, :Template ;
+#    rdfs:subClassOf foaf:Document, lda:ItemEndpoint ,
+#	[ a owl:Restriction ;
+#		owl:onProperty lda:uriTemplate ;
+#		owl:hasValue "/{path: .+}"
+#	] ;
+#    spin:constraint [ a :DescribeTemplate ] ;
+#    spin:update [ a :DeleteTemplate ] ;
+#    rdfs:label "Resource" ;
+#    rdfs:isDefinedBy : .
 
 # QUERIES & TEMPLATES
 
