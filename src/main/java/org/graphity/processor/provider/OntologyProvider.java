@@ -103,25 +103,25 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public OntModel getOntModel()
     {
-	return getOntModel(getResourceConfig());
+	return getOntModel(getUriInfo(), getResourceConfig());
     }
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
      * @return ontology Model
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel(ResourceConfig resourceConfig)
+    public OntModel getOntModel(UriInfo uriInfo, ResourceConfig resourceConfig)
     {
 	if (log.isDebugEnabled()) log.debug("web.xml properties: {}", resourceConfig.getProperties());
-	Object ontologyPath = getResourceConfig().getProperty(GP.ontologyPath.getURI());
+	Object ontologyPath = resourceConfig.getProperty(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	
-	String localUri = getUriInfo().getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
+	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
-	if (getResourceConfig().getProperty(PROPERTY_ONTOLOGY_ENDPOINT) != null)
+	if (resourceConfig.getProperty(PROPERTY_ONTOLOGY_ENDPOINT) != null)
 	{
-	    Object ontologyEndpoint = getResourceConfig().getProperty(PROPERTY_ONTOLOGY_ENDPOINT);
-	    Object graphUri = getResourceConfig().getProperty(PROPERTY_ONTOLOGY_GRAPH);
+	    Object ontologyEndpoint = resourceConfig.getProperty(PROPERTY_ONTOLOGY_ENDPOINT);
+	    Object graphUri = resourceConfig.getProperty(PROPERTY_ONTOLOGY_GRAPH);
 	    Query query;
 	    if (graphUri != null)
 	    {
@@ -140,9 +140,9 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	}
 	else
 	{
-	    if (getResourceConfig().getProperty(PROPERTY_ONTOLOGY_URI) != null)
+	    if (resourceConfig.getProperty(PROPERTY_ONTOLOGY_URI) != null)
 	    {
-		Object externalUri = getResourceConfig().getProperty(PROPERTY_ONTOLOGY_URI);
+		Object externalUri = resourceConfig.getProperty(PROPERTY_ONTOLOGY_URI);
 		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", externalUri);
 		OntDocumentManager.getInstance().addModel(localUri,
 			DataManager.get().loadModel(externalUri.toString()),
@@ -150,7 +150,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    }
 	    else
 	    {
-		Object ontologyLocation = getResourceConfig().getProperty(GP.ontologyLocation.getURI());
+		Object ontologyLocation = resourceConfig.getProperty(GP.ontologyLocation.getURI());
 		if (ontologyLocation == null) throw new IllegalStateException("Ontology for this Graphity LDP Application is not configured properly. Check ResourceConfig and/or web.xml");
 		if (log.isDebugEnabled()) log.debug("Mapping ontology to a local file: {}", ontologyLocation.toString());
 		OntDocumentManager.getInstance().addAltEntry(localUri, ontologyLocation.toString());
