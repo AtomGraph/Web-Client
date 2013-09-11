@@ -160,7 +160,7 @@ public class XSLTBuilder
     public XSLTBuilder parameter(String name, Object value)
     {
 	if (log.isTraceEnabled()) log.trace("Setting transformer parameter {} with value {}", name, value);
-	transformer.setParameter(name, value);
+	getTransformer().setParameter(name, value);
 	//handler.getTransformer().setParameter(name, value);
 	return this;
     }
@@ -168,7 +168,7 @@ public class XSLTBuilder
     public XSLTBuilder resolver(URIResolver resolver)
     {
 	if (log.isTraceEnabled()) log.trace("Setting URIResolver: {}", resolver);
-	transformer.setURIResolver(resolver);
+	getTransformer().setURIResolver(resolver);
 	//handler.getTransformer().setURIResolver(resolver);
 	return this;
     }
@@ -176,7 +176,7 @@ public class XSLTBuilder
     public XSLTBuilder outputProperty(String name, String value)
     {
 	if (log.isTraceEnabled()) log.trace("Setting transformer OutputProperty {} with value {}", name, value);
-	transformer.setOutputProperty(name, value);
+	getTransformer().setOutputProperty(name, value);
 	//handler.getTransformer().setOutputProperty(name, value);
 	return this;
     }
@@ -185,13 +185,13 @@ public class XSLTBuilder
     {
 	if (log.isTraceEnabled())
 	{
-	    log.trace("TransformerHandler: {}", handler);
-	    log.trace("Transformer: {}", transformer);
-	    log.trace("Transformer: {}", handler.getTransformer());
-	    log.trace("Document: {}", doc);
-	    log.trace("Result: {}", result);
+	    log.trace("TransformerHandler: {}", getHandler());
+	    log.trace("Transformer: {}", getTransformer());
+	    log.trace("Transformer: {}", getHandler().getTransformer());
+	    log.trace("Document: {}", getDocument());
+	    log.trace("Result: {}", getResult());
 	}
-	transformer.transform(doc, result);
+	getTransformer().transform(getDocument(), getResult());
 	//handler.getTransformer().transform(doc, result);
     }
 
@@ -199,8 +199,13 @@ public class XSLTBuilder
     {
 	this.result = result;
 	//handler = factory.newTransformerHandler(stylesheet); // TransformerHandler not reusable in Saxon
-	handler.setResult(result);
+	getHandler().setResult(result);
 	return this;
+    }
+
+    public Source getDocument()
+    {
+        return doc;
     }
 
     public Transformer getTransformer()
@@ -211,6 +216,11 @@ public class XSLTBuilder
     public TransformerHandler getHandler()
     {
 	return handler;
+    }
+
+    public Result getResult()
+    {
+        return result;
     }
     
     // http://xml.apache.org/xalan-j/usagepatterns.html#outasin

@@ -60,6 +60,14 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
 
+    /**
+     * Constructs from stylesheet source and URI resolver
+     * 
+     * @param stylesheet the source of the XSLT transformation
+     * @param resolver URI resolver to be used in the transformation
+     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
+     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
+     */
     public ModelXSLTReader(Source stylesheet, URIResolver resolver)
     {
 	if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
@@ -74,17 +82,15 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
 	throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    public void read(Model model, Source doc, String base)
+    public void read(Model model, InputStream in, URI base)
     {
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	if (log.isDebugEnabled()) log.debug("Reading RDF from Source; System ID: {}", doc.getSystemId());
-	
-	try
-	{
-	    getXSLTBuilder(doc, URI.create(base), baos).transform();
-	    
-	    model.read(new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray())), base);
-	}
+        Source doc = new StreamSource(in);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        try
+        {
+            getXSLTBuilder(doc, base, baos).transform();
+        }
 	catch (TransformerConfigurationException ex)
 	{
 	    if (log.isErrorEnabled()) log.error("Error in GRDDL XSLT transformer config", ex);
@@ -92,13 +98,15 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
 	catch (TransformerException ex)
 	{
 	    if (log.isErrorEnabled()) log.error("Error in GRDDL XSLT transformation", ex);
-	}	
+	}
+        
+        model.read(new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray())), base.toString());
     }
     
     @Override
     public void read(Model model, InputStream in, String base)
     {
-	read(model, new StreamSource(in), base);
+	read(model, in, URI.create(base));
     }
 
     @Override
@@ -153,7 +161,7 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
 	if (log.isTraceEnabled()) log.trace("Reading model with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
 	
 	Model model = ModelFactory.createDefaultModel();
-	read(model, entityStream, uriInfo.getAbsolutePath().toString()); // extract base URI from UriInfo?
+	read(model, entityStream, getUriInfo().getAbsolutePath()); // extract base URI from UriInfo?
 
 	return model;
     }

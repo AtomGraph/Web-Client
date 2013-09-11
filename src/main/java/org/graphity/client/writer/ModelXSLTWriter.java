@@ -119,6 +119,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
     }
+    
     public Source getSource(Model model)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
