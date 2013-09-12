@@ -32,6 +32,12 @@
             <param-value>http://dydra.com/graphity/client/sparql</param-value>
         </init-param>
 	-->
+        <!--
+        <init-param>
+            <param-name>http://server.graphity.org/ontology#sparqlGraphStore</param-name>
+            <param-value>http://de2.dydra.com/graphity/client/service</param-value>
+        </init-param>
+        -->
         <init-param>
             <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
             <param-value>org/graphity/client/writer/global-xhtml.xsl</param-value>

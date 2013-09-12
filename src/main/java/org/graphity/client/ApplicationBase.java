@@ -44,6 +44,7 @@ import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
+import org.graphity.server.vocabulary.GS;
 import org.graphity.server.vocabulary.VoID;
 import org.openjena.riot.SysRIOT;
 import org.slf4j.Logger;
@@ -109,12 +110,23 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 	//ARQFactory.get().setUseCaches(false);
 
-	String endpointURI = (String)getResourceConfig().getProperty(VoID.sparqlEndpoint.getURI());
-	String authUser = (String)getResourceConfig().getProperty(Service.queryAuthUser.getSymbol());
-	String authPwd = (String)getResourceConfig().getProperty(Service.queryAuthPwd.getSymbol()); 
-	if (endpointURI != null && authUser != null && authPwd != null)
-	    configureServiceContext(endpointURI, authUser, authPwd);
+        {
+            String endpointURI = (String)getResourceConfig().getProperty(VoID.sparqlEndpoint.getURI());
+            String authUser = (String)getResourceConfig().getProperty(Service.queryAuthUser.getSymbol());
+            String authPwd = (String)getResourceConfig().getProperty(Service.queryAuthPwd.getSymbol()); 
+            if (endpointURI != null && authUser != null && authPwd != null)
+                configureServiceContext(endpointURI, authUser, authPwd);
+        }
 
+	if (getResourceConfig().getProperty(GS.sparqlGraphStore.getURI()) != null)
+	{
+	    String graphStoreURI = (String)getResourceConfig().getProperty(GS.sparqlGraphStore.getURI());
+	    // reuses SPARQL query endpoint authentication properties -- not ideal
+	    String authUser = (String)getResourceConfig().getProperty(Service.queryAuthUser.getSymbol());
+	    String authPwd = (String)getResourceConfig().getProperty(Service.queryAuthPwd.getSymbol());
+	    if (authUser != null && authPwd != null) configureServiceContext(graphStoreURI, authUser, authPwd);
+	}
+        
 	// initialize locally cached ontology mapping
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3");
 	LocationMapper.setGlobalLocationMapper(mapper);
