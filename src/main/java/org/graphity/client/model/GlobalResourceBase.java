@@ -32,7 +32,6 @@ import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.model.LinkedDataResourceBase;
 import org.graphity.server.model.LinkedDataResourceFactory;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,9 +89,6 @@ public class GlobalResourceBase extends ResourceBase
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
-		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
-		    null :
-		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc, graphURI, mode,
 		XHTML_VARIANTS,
 		topicURI, mediaType);	
@@ -107,7 +103,6 @@ public class GlobalResourceBase extends ResourceBase
      * @param resourceConfig webapp configuration
      * @param ontModel sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
-     * @param cacheControl cache control config
      * @param limit pagination LIMIT
      * @param offset pagination OFFSET
      * @param orderBy pagination ORDER BY variable name
@@ -118,13 +113,13 @@ public class GlobalResourceBase extends ResourceBase
      * @param mediaType media type of the representation
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    OntModel ontModel, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode, List<Variant> variants,
 	    URI topicURI, MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
-		endpoint, cacheControl,
+		endpoint,
 		limit, offset, orderBy, desc, graphURI, mode, variants,
 		topicURI, mediaType);
     }
@@ -138,7 +133,6 @@ public class GlobalResourceBase extends ResourceBase
      * @param resourceConfig webapp configuration
      * @param ontResource this resource as RDF resource
      * @param endpoint SPARQL endpoint of this resource
-     * @param cacheControl cache control config
      * @param limit pagination LIMIT
      * @param offset pagination OFFSET
      * @param orderBy pagination ORDER BY variable name
@@ -149,12 +143,12 @@ public class GlobalResourceBase extends ResourceBase
      * @param mediaType media type of the representation
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode, List<Variant> variants,
 	    URI topicURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint, cacheControl, limit, offset, orderBy, desc, graphURI, mode, variants);
+		ontResource, endpoint, limit, offset, orderBy, desc, graphURI, mode, variants);
 	
 	this.mediaType = mediaType;
 	this.topicURI = topicURI;
@@ -215,10 +209,8 @@ public class GlobalResourceBase extends ResourceBase
 	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicURI());
 
 	    Model model = DataManager.get().loadModel(getTopicURI().toString());
-	    
-	    // use original Cache-Control? 
 	    LinkedDataResource topic = LinkedDataResourceFactory.createResource(model.createResource(getTopicURI().toString()),
-		getCacheControl());
+		getResourceConfig());
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 

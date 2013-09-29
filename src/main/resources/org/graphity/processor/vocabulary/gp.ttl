@@ -16,6 +16,7 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+@prefix http:   <http://www.w3.org/2011/http#> .
 
 : a owl:Ontology ;
     # owl:imports spin: ;
@@ -32,18 +33,12 @@
     dct:creator <http://semantic-web.dk/#martynas> ;
     rdfs:seeAlso :Project .
 
-# RESOURCES
+# PROPERTIES
 
-#:Resource a owl:Class, :Template ;
-#    rdfs:subClassOf foaf:Document, lda:ItemEndpoint ,
-#	[ a owl:Restriction ;
-#		owl:onProperty lda:uriTemplate ;
-#		owl:hasValue "/{path: .+}"
-#	] ;
-#    spin:constraint [ a :DescribeTemplate ] ;
-#    spin:update [ a :DeleteTemplate ] ;
-#    rdfs:label "Resource" ;
-#    rdfs:isDefinedBy : .
+:cacheControl a owl:DatatypeProperty ;
+    rdfs:subPropertyOf http:fieldValue ;
+    rdfs:label "Cache control header value" ;
+    rdfs:isDefinedBy : .
 
 # QUERIES & TEMPLATES
 

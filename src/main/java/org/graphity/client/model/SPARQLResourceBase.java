@@ -32,7 +32,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,20 +66,17 @@ public class SPARQLResourceBase extends ResourceBase
 		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
 		SPARQLEndpointFactory.createEndpoint(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
 		    uriInfo, request, resourceConfig),
-		resourceConfig.getProperty(GS.cacheControl.getURI()) == null ?
-		    null :
-		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc, graphURI, mode,
 		XHTML_VARIANTS, userQuery, endpointURI, mediaType);
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    List<Variant> variants, Query userQuery, URI endpointURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint, cacheControl,
+		ontResource, endpoint,
 		limit, offset, orderBy, desc, graphURI, mode,
 		variants);
 	

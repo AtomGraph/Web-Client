@@ -49,5 +49,7 @@ public class GP
     public static final DatatypeProperty ontologyPath = m_model.createDatatypeProperty( NS + "ontologyPath" );
 
     public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );
+
+    public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
 }

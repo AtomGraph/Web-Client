@@ -180,7 +180,7 @@ void:inDataset a owl:ObjectProperty ;
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/"
-	];
+	] ;
     spin:constraint [ a gp:DescribeInstancesTemplate ;
 	    gp:type void:Dataset
 	] ;

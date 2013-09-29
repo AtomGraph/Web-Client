@@ -40,6 +40,7 @@ import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.update.UpdateBuilder;
+import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.vocabulary.VoID;
@@ -49,7 +50,6 @@ import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.model.SPARQLUpdateEndpoint;
 import org.graphity.server.util.DataManager;
-import org.graphity.server.vocabulary.GS;
 import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +88,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
     private final URI graphURI;
+    private final CacheControl cacheControl;
     
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -118,9 +119,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    @QueryParam("graph") URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap, endpoint, //getEndpoint(sitemap, uriInfo, request, resourceConfig),
-		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
-		    null : CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
+		sitemap, endpoint,
 		limit, offset, orderBy, desc, graphURI);
     }
     
@@ -141,12 +140,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
-	    CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
-		endpoint, cacheControl,
+		endpoint,
 		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -177,10 +175,10 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	super(ontResource, endpoint, cacheControl);
+	super(ontResource, endpoint, resourceConfig);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (request == null) throw new IllegalArgumentException("Request cannot be null");
@@ -222,7 +220,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    this.endpoint = new SPARQLEndpointBase(dataset.getPropertyResourceValue(VoID.sparqlEndpoint),
 		    uriInfo, request, resourceConfig);
 	else this.endpoint = endpoint;	    
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, endpoint);	
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, this.endpoint);	
+
+        cacheControl = getCacheControl(matchedOntClass);
     }
 
     /**
@@ -470,6 +470,24 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     {
 	RDFNode hasValue = getRestrictionHasValue(ontClass, VoID.inDataset);
 	if (hasValue != null && hasValue.isResource()) return hasValue.asResource();
+
+	return null;
+    }
+
+    /**
+     * Returns `Cache-Control` HTTP header value, specified in an ontology class restriction.
+     * 
+     * @param ontClass the ontology class with the restriction
+     * @return CacheControl instance or null, if no dataset restriction was found
+     */
+    public final CacheControl getCacheControl(OntClass ontClass)
+    {
+	RDFNode hasValue = getRestrictionHasValue(ontClass, GP.cacheControl);
+	if (hasValue != null && hasValue.isLiteral())
+        {
+            String controlString = hasValue.asLiteral().getString();
+            return CacheControl.valueOf(controlString); // will fail on bad config
+        }
 
 	return null;
     }
@@ -898,6 +916,19 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
+     * Returns the cache control of this resource, if specified.
+     * The control value can be specified as a <code>gp:cacheControl</code> value restriction on an ontology class in
+     * the sitemap ontology.
+     * 
+     * @return cache control object or null, if not specified
+     */
+    @Override
+    public CacheControl getCacheControl()
+    {
+	return cacheControl;
+    }
+
+    /**
      * Returns the active SPARQL endpoint of this resource.
      * The default endpoint is supplied as constructor argument. However, it is overridden if the matching
      * ontology class has a <code>void:inDataset</code> value restriction and that dataset has a SPARQL
@@ -960,16 +991,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public HttpHeaders getHttpHeaders()
     {
 	return httpHeaders;
-    }
-
-    /**
-     * Returns configuration for this web application (including parameters specified in web.xml).
-     * 
-     * @return webapp configuration
-     */
-    public ResourceConfig getResourceConfig()
-    {
-	return resourceConfig;
     }
     
     @Override

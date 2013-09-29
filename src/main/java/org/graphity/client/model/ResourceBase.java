@@ -27,7 +27,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -88,9 +87,6 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
-		(resourceConfig.getProperty(GS.cacheControl.getURI()) == null) ?
-		    null :
-		    CacheControl.valueOf(resourceConfig.getProperty(GS.cacheControl.getURI()).toString()),
 		limit, offset, orderBy, desc, graphURI, mode,
 		XHTML_VARIANTS);	
     }
@@ -104,7 +100,6 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param resourceConfig webapp configuration
      * @param ontModel sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
-     * @param cacheControl cache control config
      * @param limit pagination LIMIT ("limit" query string param)
      * @param offset pagination OFFSET ("offset" query string param)
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
@@ -113,12 +108,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param variants representation variants
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    OntModel ontModel, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    List<Variant> variants)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, cacheControl,
+		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
 		limit, offset, orderBy, desc, graphURI, mode,
 		variants);
     }
@@ -132,7 +127,6 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param resourceConfig webapp configuration
      * @param ontResource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
-     * @param cacheControl cache control config
      * @param limit pagination LIMIT ("limit" query string param)
      * @param offset pagination OFFSET ("offset" query string param)
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
@@ -141,13 +135,13 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param variants representation variants
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    List<Variant> variants)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
-		cacheControl, limit, offset, orderBy, desc, graphURI);
+		limit, offset, orderBy, desc, graphURI);
 	
 	this.variants = variants;
 	this.mode = mode;

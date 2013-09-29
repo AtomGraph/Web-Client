@@ -44,7 +44,7 @@ Demonstration
 An instance of Graphity Client runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
 See the DBPedia Linked Data description of Sir [Tim Berners-Lee](http://semanticreports.com/?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FTim_Berners-Lee).
 
-_Note: the server is not production-grade._
+_Note: the server is not production-grade and DBPedia is often unstable._
 
 Support
 =======
