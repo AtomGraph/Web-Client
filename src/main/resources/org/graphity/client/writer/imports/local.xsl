@@ -487,11 +487,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- EDIT MODE -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
-	<xsl:call-template name="rdf:Property"/>
-    </xsl:template>
 
-    <xsl:template name="rdf:Property">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
 	<xsl:param name="pu" select="concat(namespace-uri(), local-name())" as="xs:string"/>
 	<xsl:param name="constraint-violations" as="element()*"/>
 	<xsl:variable name="ranges" select="rdfs:range(xs:anyURI($pu))"/>

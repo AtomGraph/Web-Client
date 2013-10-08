@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class RDFPostReader implements MessageBodyReader<Model>
 {
-    private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class) ;
+    private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class);
     
     @Context private HttpContext httpContext;
     private List<String> keys = null, values = null;

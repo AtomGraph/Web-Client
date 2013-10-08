@@ -112,7 +112,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public OntModel getOntModel(UriInfo uriInfo, ResourceConfig resourceConfig)
     {
-	if (log.isDebugEnabled()) log.debug("web.xml properties: {}", resourceConfig.getProperties());
+	//if (log.isDebugEnabled()) log.debug("web.xml properties: {}", resourceConfig.getProperties());
 	Object ontologyPath = resourceConfig.getProperty(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	

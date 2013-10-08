@@ -553,7 +553,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     
     /**
      * Given an ontology class, returns the SPIN template call attached to it.
-     * The class must have a <code>spin:constraint</code> property with the template call resource as object.
+     * The class must have a <code>spin:query</code> property with the template call resource as object.
      * 
      * @param ontClass ontology class
      * @return SPIN template call resource
@@ -562,10 +562,10 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public TemplateCall getQueryCall(OntClass ontClass)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (!ontClass.hasProperty(SPIN.constraint))
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN constraint Template");	    
+	if (!ontClass.hasProperty(SPIN.query))
+	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query Template");	    
 
-	RDFNode constraint = getModel().getResource(ontClass.getURI()).getProperty(SPIN.constraint).getObject();
+	RDFNode constraint = getModel().getResource(ontClass.getURI()).getProperty(SPIN.query).getObject();
 	return SPINFactory.asTemplateCall(constraint);
     }
     

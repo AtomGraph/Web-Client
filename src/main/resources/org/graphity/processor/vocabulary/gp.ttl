@@ -19,7 +19,7 @@
 @prefix http:   <http://www.w3.org/2011/http#> .
 
 : a owl:Ontology ;
-    # owl:imports spin: ;
+    owl:imports sp:, spin:, spl: ;
     owl:versionInfo "1.0.8" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
@@ -47,8 +47,8 @@
     rdfs:isDefinedBy : .
 
 :DescribeResources    a       sp:Describe, sp:Query ;
-      sp:resultNodes (_:subjectVar) ;
-      sp:text """DESCRIBE ?subject WHERE {
+      sp:resultNodes (spin:_this _:subjectVar) ;
+      sp:text """DESCRIBE ?this ?subject WHERE {
     {
         SELECT ?subject
         WHERE {
@@ -84,8 +84,8 @@ _:subjectVar  sp:varName "subject"^^xsd:string .
     rdfs:isDefinedBy : .
 
 :DescribeInstances    a       sp:Describe, sp:Query ;
-      sp:resultNodes (_:instanceVar) ;
-      sp:text """DESCRIBE ?instance WHERE {
+      sp:resultNodes (spin:_this _:instanceVar) ;
+      sp:text """DESCRIBE ?this ?instance WHERE {
     {
         SELECT ?instance
         WHERE {
@@ -115,10 +115,10 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
     rdfs:isDefinedBy : .
 
 :DescribeProperties    a       sp:Describe, sp:Query ;
-      sp:resultNodes (_:propertyVar) ;
+      sp:resultNodes (spin:_this _:propertyVar) ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-DESCRIBE ?property WHERE {
+DESCRIBE ?this ?property WHERE {
     {
         SELECT ?property
         WHERE {

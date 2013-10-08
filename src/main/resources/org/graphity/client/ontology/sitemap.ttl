@@ -158,7 +158,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/{path: .+}"
 	] ;
-    spin:constraint [ a gp:DescribeTemplate ] ;
+    spin:query [ a gp:DescribeTemplate ] ;
     rdfs:label "Resource" ;
     rdfs:comment "Catch-all resource class (template)" ;
     rdfs:isDefinedBy : ;
@@ -170,7 +170,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/ontology"
 	] ;
-    spin:constraint [ a gp:ConstructResourcesTemplate ] ;
+    spin:query [ a gp:ConstructResourcesTemplate ] ;
     rdfs:label "Ontology document resource" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
@@ -181,7 +181,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type void:Dataset
 	] ;
     rdfs:label "Index container" ;
@@ -194,7 +194,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/resources"
 	] ;
-    spin:constraint [ a gp:DescribeResourcesTemplate ] ;
+    spin:query [ a gp:DescribeResourcesTemplate ] ;
     rdfs:label "Resource container" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
@@ -206,7 +206,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/instances"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ] ;
+    spin:query [ a gp:DescribeInstancesTemplate ] ;
     rdfs:label "Instance container" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
@@ -217,7 +217,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/ontologies"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type owl:Ontology
 	] ;
     rdfs:label "Ontology container" ;
@@ -230,7 +230,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/classes"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type owl:Class
 	] ;
     rdfs:label "Class container" ;
@@ -243,7 +243,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/properties"
 	] ;
-    spin:constraint [ a gp:DescribePropertiesTemplate ;
+    spin:query [ a gp:DescribePropertiesTemplate ;
 	    gp:type owl:Ontology
 	] ;
     rdfs:label "Property container" ;
@@ -256,7 +256,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/datasets"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type void:Dataset
 	] ;
     rdfs:label "Dataset container" ;
@@ -269,7 +269,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/services"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type sd:Service
 	] ;
     rdfs:label "Service container" ;
@@ -282,7 +282,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/queries"
 	] ;
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type sp:Query
 	] ;
     rdfs:label "Query container" ;
@@ -295,7 +295,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/containers"
 	];
-    spin:constraint [ a gp:DescribeInstancesTemplate ;
+    spin:query [ a gp:DescribeInstancesTemplate ;
 	    gp:type sioc:Container
 	] ;
     rdfs:label "Container container" ;
@@ -308,7 +308,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/graphs"
 	];
-    spin:constraint [ a gp:DescribeNamedGraphsTemplate ] ;
+    spin:query [ a gp:DescribeNamedGraphsTemplate ] ;
     rdfs:label "Graph container" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
@@ -319,7 +319,7 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/search"
 	] ;
-    spin:constraint [ a gp:DescribeLabelledResourcesTemplate ] ;
+    spin:query [ a gp:DescribeLabelledResourcesTemplate ] ;
     rdfs:label "Search container" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
