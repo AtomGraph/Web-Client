@@ -44,10 +44,6 @@
 	    <!-- <param-value>org/graphity/client/writer/local-xhtml.xsl</param-value> -->
         </init-param>
         <init-param>
-            <param-name>http://server.graphity.org/ontology#cacheControl</param-name>
-            <param-value>no-cache</param-value>
-        </init-param>
-        <init-param>
             <param-name>http://server.graphity.org/ontology#resultLimit</param-name>
             <param-value>100</param-value>
         </init-param>
