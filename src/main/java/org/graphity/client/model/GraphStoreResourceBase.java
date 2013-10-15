@@ -22,7 +22,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
-import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -58,19 +57,16 @@ public class GraphStoreResourceBase extends ResourceBase
 		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
 		SPARQLEndpointFactory.createEndpoint(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
 		    uriInfo, request, resourceConfig),
-		limit, offset, orderBy, desc, graphURI, mode,
-		XHTML_VARIANTS);
+		limit, offset, orderBy, desc, graphURI, mode);
     }
 
     protected GraphStoreResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
-	    List<Variant> variants)
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
-		limit, offset, orderBy, desc, graphURI, mode,
-		variants);
+		limit, offset, orderBy, desc, graphURI, mode);
     }
     
     @Override

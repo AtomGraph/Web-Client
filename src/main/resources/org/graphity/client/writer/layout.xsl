@@ -281,74 +281,80 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
 	<script type="text/javascript" src="static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="static/js/bootstrap.js"></script>
-	<script type="text/javascript" src="static/js/UriBuilder.js"></script>
-	<script type="text/javascript" src="static/js/saxon-ce/Saxonce.nocache.js"></script>
-	<script type="text/javascript" src="static/js/UUID.js"></script>
-	<script type="text/javascript">
-	    <![CDATA[
-		var baseUri = "]]><xsl:value-of select="$base-uri"/><![CDATA[";
-		var stylesheetUri = UriBuilder.fromUri(baseUri).
-			path("static/xsl/typeahead.xsl").
-			build();
+        <xsl:if test="$mode = ('&gc;CreateMode', '&gc;EditMode')">
+            <script type="text/javascript" src="static/js/UriBuilder.js"></script>
+            <script type="text/javascript" src="static/js/saxon-ce/Saxonce.nocache.js"></script>
+            <script type="text/javascript" src="static/js/UUID.js"></script>
+            <script type="text/javascript">
+                <![CDATA[
+                    var baseUri = "]]><xsl:value-of select="$base-uri"/><![CDATA[";
+                    var stylesheetUri = UriBuilder.fromUri(baseUri).
+                            path("static/xsl/InputMode.xsl").
+                            build();
 
-		var onSaxonLoad = function() { Saxon.run( { stylesheet: stylesheetUri,
-		    parameters: { "base-uri-string": baseUri, "absolute-path-string": "]]><xsl:value-of select="$absolute-path"/><![CDATA[" },
-		    initialTemplate: "main", logLevel: "FINE"
-		}); }
-	    ]]>
-	</script>
-	<script type="text/javascript">
-	    <![CDATA[
-		var resourcesXML = null;
-		var propertiesXML = null;
+                    var onSaxonLoad = function() { Saxon.run( { stylesheet: stylesheetUri,
+                        parameters: { "base-uri-string": baseUri,
+                            "absolute-path-string": "]]><xsl:value-of select="$absolute-path"/><![CDATA[",
+                            "mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[" },
+                        initialTemplate: "main", logLevel: "FINE"
+                    }); }
+                ]]>
+            </script>
+            <script type="text/javascript">
+                <![CDATA[
+                    var resourcesXML = null;
+                    var propertiesXML = null;
 
-		function loadXML(uri)
-		{
-		    var jqXHR = $.ajax({url: uri, async: false,
-			headers: { 'Accept': 'application/rdf+xml' }
-		      });
-		    return jqXHR.responseXML;		    
-		}
+                    function loadXML(uri)
+                    {
+                        var jqXHR = $.ajax({url: uri, async: false,
+                            headers: { 'Accept': 'application/rdf+xml' }
+                          });
+                        return jqXHR.responseXML;		    
+                    }
 
-		function loadResourcesXML(event, query)
-		{
-		    var searchUri = UriBuilder.fromUri(baseUri).
-			segment('search').
-			queryParam('query', query).
-			build();
+                    function loadResourcesXML(event, query)
+                    {
+                        var searchUri = UriBuilder.fromUri(baseUri).
+                            segment('resources').
+                            segment('labelled').
+                            queryParam('query', query).
+                            build();
 
-		    $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } }).
-		    done(function(data, textStatus, jqXHR)
-		    {
-			resourcesXML = jqXHR.responseXML;
-			onresourceTypeaheadCallback(event);
-		    } ).
-		    fail(function(jqXHR, textStatus, errorThrown)
-		    {
-			alert(errorThrown);
-		    });
-		}
+                        $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } }).
+                        done(function(data, textStatus, jqXHR)
+                        {
+                            resourcesXML = jqXHR.responseXML;
+                            onresourceTypeaheadCallback(event);
+                        } ).
+                        fail(function(jqXHR, textStatus, errorThrown)
+                        {
+                            alert(errorThrown);
+                        });
+                    }
 
-		function loadPropertiesXML(event, query)
-		{
-		    var searchUri = UriBuilder.fromUri(baseUri).
-			segment('properties').
-			queryParam('query', query).
-			build();
+                    function loadPropertiesXML(event, query)
+                    {
+                        var searchUri = UriBuilder.fromUri(baseUri).
+                            segment('properties').
+                            segment('labelled').
+                            queryParam('query', query).
+                            build();
 
-		    $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } }).
-		    done(function(data, textStatus, jqXHR)
-		    {
-			propertiesXML = jqXHR.responseXML;
-			onpropertyTypeaheadCallback(event);
-		    } ).
-		    fail(function(jqXHR, textStatus, errorThrown)
-		    {
-			alert(errorThrown);
-		    });
-		}
-	    ]]>
-	</script>
+                        $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } , cache: false }).
+                        done(function(data, textStatus, jqXHR)
+                        {
+                            propertiesXML = jqXHR.responseXML;
+                            onpropertyTypeaheadCallback(event);
+                        } ).
+                        fail(function(jqXHR, textStatus, errorThrown)
+                        {
+                            alert(errorThrown);
+                        });
+                    }
+                ]]>
+            </script>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
@@ -509,14 +515,6 @@ exclude-result-prefixes="#all">
 	
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode" priority="1">
 	<div class="well">
-	    <!--
-	    <xsl:if test="self::ldp:Container or rdf:type/@rdf:resource = '&ldp;Container'">
-		<div class="btn-group pull-right">
-		    <a href="" class="btn">Create new</a>
-		</div>
-	    </xsl:if>
-	    -->
-
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:ParaImageMode"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode"/>
@@ -774,7 +772,7 @@ exclude-result-prefixes="#all">
 	    <fieldset id="fieldset-{generate-id()}">
 		<legend>Add item</legend>
 
-		<xsl:call-template name="gc:SubjectTemplate">
+		<xsl:call-template name="gc:InputTemplate">
 		    <xsl:with-param name="type" select="'hidden'"/>
 		    <xsl:with-param name="name" select="'sb'"/>
 		    <xsl:with-param name="value" select="concat('bnode', uuid:randomUUID())"/>
@@ -820,8 +818,10 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-	    <xsl:apply-templates select="key('resources-by-topic-of', $absolute-path)" mode="gc:EditMode"/>
-	    <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:EditMode"/>
+            <xsl:variable name="selected-resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]"/>
+	    <xsl:apply-templates select="$selected-resources" mode="gc:EditMode">
+                <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID)"/>
+            </xsl:apply-templates>
 
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
@@ -834,16 +834,18 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
 	<fieldset id="fieldset-{generate-id()}">
-	    <legend>
-		<!-- <button type="button" class="btn pull-right" title="Remove this resource" onclick="document.getElementById('fieldset-{generate-id()}').style.display = 'none';">&#x2715;</button> -->
-		<xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
-	    </legend>
-		
+            <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
+                <legend>
+                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+                </legend>
+            </xsl:if>
+            
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InputMode">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:apply-templates>
 
 	    <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
+                <xsl:sort select="gc:label(current-group()[1])"/>
 		<xsl:apply-templates select="current-group()" mode="gc:EditMode"/>
 	    </xsl:for-each-group>
 	</fieldset>

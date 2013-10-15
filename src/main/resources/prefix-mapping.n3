@@ -21,6 +21,7 @@
    [ lm:name "http://graph.facebook.com/schema/user#" ;		    lm:altName "org/graphity/client/vocabulary/gfb-user.owl" ] ,
    [ lm:name "http://spinrdf.org/sp#" ;                             lm:altName "etc/sp.rdf" ] ,
    [ lm:name "http://spinrdf.org/spin#" ;                           lm:altName "etc/spin.rdf" ] ,
+   [ lm:name "http://spinrdf.org/spl#" ;                            lm:altName "etc/spl.spin.rdf" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;			    lm:altName "org/graphity/client/vocabulary/doap.owl" ] ,
 
    [ lm:prefix "http://processor.graphity.org/ontology" ;	    lm:altName "org/graphity/processor/vocabulary/gp.ttl" ] ,
@@ -42,5 +43,6 @@
    [ lm:prefix "http://graph.facebook.com/schema/user" ;	    lm:altName "org/graphity/client/vocabulary/gfb-user.owl" ] ,
    [ lm:prefix "http://spinrdf.org/sp" ;                            lm:altName "etc/sp.rdf" ] ,
    [ lm:prefix "http://spinrdf.org/spin" ;                          lm:altName "etc/spin.rdf" ] ,
+   [ lm:prefix "http://spinrdf.org/spl" ;                           lm:altName "etc/spl.spin.rdf" ] ,
    [ lm:prefix "http://usefulinc.com/ns/doap" ;			    lm:altName "org/graphity/client/vocabulary/doap.owl" ]
 .

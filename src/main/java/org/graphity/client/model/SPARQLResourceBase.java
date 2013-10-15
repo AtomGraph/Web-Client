@@ -23,7 +23,6 @@ import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
-import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
@@ -67,18 +66,17 @@ public class SPARQLResourceBase extends ResourceBase
 		SPARQLEndpointFactory.createEndpoint(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
 		    uriInfo, request, resourceConfig),
 		limit, offset, orderBy, desc, graphURI, mode,
-		XHTML_VARIANTS, userQuery, endpointURI, mediaType);
+		userQuery, endpointURI, mediaType);
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
-	    List<Variant> variants, Query userQuery, URI endpointURI, MediaType mediaType)
+	    Query userQuery, URI endpointURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
-		limit, offset, orderBy, desc, graphURI, mode,
-		variants);
+		limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.userQuery = userQuery;
 	this.endpointURI = endpointURI;

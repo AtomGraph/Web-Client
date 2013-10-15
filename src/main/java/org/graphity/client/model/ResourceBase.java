@@ -26,6 +26,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,6 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		    org.graphity.client.MediaType.APPLICATION_LD_JSON_TYPE).
 		add().build();
 
-    private final List<Variant> variants;
     private final URI mode;
 
     /**
@@ -86,36 +86,8 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("mode") URI mode)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap, endpoint,
-		limit, offset, orderBy, desc, graphURI, mode,
-		XHTML_VARIANTS);	
-    }
-
-    /**
-     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
-     * 
-     * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param resourceConfig webapp configuration
-     * @param ontModel sitemap ontology
-     * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
-     * @param mode "mode" query string param
-     * @param variants representation variants
-     */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
-	    List<Variant> variants)
-    {
-	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-		limit, offset, orderBy, desc, graphURI, mode,
-		variants);
+		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
+		limit, offset, orderBy, desc, graphURI, mode);	
     }
 
     /**
@@ -132,18 +104,14 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
      * @param desc pagination DESC value ("desc" query string param)
      * @param mode "mode" query string param
-     * @param variants representation variants
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
-	    List<Variant> variants)
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
 		limit, offset, orderBy, desc, graphURI);
-	
-	this.variants = variants;
 	this.mode = mode;
     }
 
@@ -178,7 +146,17 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
     public List<Variant> getVariants()
     {
-	return variants;
+        // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
+        // https://saxonica.plan.io/issues/1447
+	if (getMode() != null && getMode().toString().equals(GC.EditMode.getURI()))
+	{
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
+	    return Variant.VariantListBuilder.newInstance().
+		    mediaTypes(MediaType.TEXT_HTML_TYPE).
+		    add().build();
+	}
+
+	return XHTML_VARIANTS;
     }
 
     public URI getMode()

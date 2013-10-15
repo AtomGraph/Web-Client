@@ -88,40 +88,10 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap, endpoint,
+                sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
+                endpoint,
 		limit, offset, orderBy, desc, graphURI, mode,
-		XHTML_VARIANTS,
 		topicURI, mediaType);	
-    }
-
-    /**
-     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
-     * 
-     * @param uriInfo URI information of the request
-     * @param request current request
-     * @param httpHeaders HTTP headers of current request
-     * @param resourceConfig webapp configuration
-     * @param ontModel sitemap ontology
-     * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination LIMIT
-     * @param offset pagination OFFSET
-     * @param orderBy pagination ORDER BY variable name
-     * @param desc pagination DESC value
-     * @param mode "mode" query string param
-     * @param variants representation variants
-     * @param topicURI remote URI to be loaded
-     * @param mediaType media type of the representation
-     */
-    protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode, List<Variant> variants,
-	    URI topicURI, MediaType mediaType)
-    {
-	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
-		endpoint,
-		limit, offset, orderBy, desc, graphURI, mode, variants,
-		topicURI, mediaType);
     }
 
     /**
@@ -138,17 +108,16 @@ public class GlobalResourceBase extends ResourceBase
      * @param orderBy pagination ORDER BY variable name
      * @param desc pagination DESC value
      * @param mode "mode" query string param
-     * @param variants representation variants
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode, List<Variant> variants,
+	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    URI topicURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint, limit, offset, orderBy, desc, graphURI, mode, variants);
+		ontResource, endpoint, limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.mediaType = mediaType;
 	this.topicURI = topicURI;

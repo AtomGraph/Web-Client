@@ -159,10 +159,12 @@ exclude-result-prefixes="#all">
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:InputMode">
+    <!--
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:EditMode">
 	<input type="text" name="ol" id="{generate-id(..)}" value="{.}"/><br/>
 	<input type="file" name="ol" id="{generate-id(..)}"/><br/>
 	<img src="{.}" alt=""/>
-    </xsl:template>
+    </xsl:template
+    -->
 
 </xsl:stylesheet>
