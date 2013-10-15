@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.graphity.client.model;
+package org.graphity.client.resource;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -19,6 +19,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import org.graphity.client.model.ResourceBase;
+import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
@@ -28,37 +30,37 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Path("/search")
-public class SearchResource extends ResourceBase
+@Path("/{path}/labelled")
+public class LabelledContainer extends ResourceBase
 {
-    private static final Logger log = LoggerFactory.getLogger(SearchResource.class);
+    private static final Logger log = LoggerFactory.getLogger(LabelledContainer.class);
 
     private final String searchString;
     
-    public SearchResource(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig, @Context SecurityContext securityContext, @Context HttpContext httpContext,
+    public LabelledContainer(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig, @Context SecurityContext securityContext, @Context HttpContext httpContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-	    @QueryParam("query") String searchString,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") @DefaultValue("label") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
 	    @QueryParam("graph") URI graphURI,
-	    @QueryParam("mode") URI mode)
+	    @QueryParam("mode") URI mode,
+            @QueryParam("query") String searchString)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
-	//if (searchString == null)
-	//    throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	
-	if (hasRDFType(LDP.Container) && searchString != null)
+	if (hasRDFType(LDP.Container))
 	{
-	    getQueryBuilder().getSubSelectBuilder().
-		filter(RDFS.label.getLocalName(), Pattern.compile(searchString));
-	    if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", searchString, getQueryBuilder());
-	}
-	
+            SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
+	    if (searchString != null && selectBuilder != null)
+	    {
+		selectBuilder.filter(RDFS.label.getLocalName(), Pattern.compile(searchString));
+		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", searchString, getQueryBuilder());
+	    }
+        }	
     }
 
     public String getSearchString()

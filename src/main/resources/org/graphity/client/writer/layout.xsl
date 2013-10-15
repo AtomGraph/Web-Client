@@ -271,9 +271,9 @@ exclude-result-prefixes="#all">
 		.thumbnail img { display: block; margin: auto; }
 		.thumbnail { min-height: 15em; }
 		
-		.xxx input { display: block; max-width: 160px; }
-		.xxx select { display: block; max-width: 160px; }
-		.xxx { float: left; width: 160px; }
+                ul.typeahead { max-height: 20em; overflow: auto; }
+                label.typeahead input { display: block; max-width: 160px; }
+		label.typeahead { float: left; width: 160px; }
 	    ]]>
 	</style>	
     </xsl:template>
@@ -848,6 +848,10 @@ exclude-result-prefixes="#all">
                 <xsl:sort select="gc:label(current-group()[1])"/>
 		<xsl:apply-templates select="current-group()" mode="gc:EditMode"/>
 	    </xsl:for-each-group>
+            
+            <div class="control-group">
+                <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
+            </div>
 	</fieldset>
     </xsl:template>
 

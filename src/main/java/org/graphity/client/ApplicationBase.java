@@ -33,7 +33,7 @@ import org.graphity.client.locator.LocatorGRDDL;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
 import org.graphity.client.model.SPARQLResourceBase;
-import org.graphity.client.model.SearchResource;
+import org.graphity.client.resource.LabelledContainer;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
 import org.graphity.client.provider.NotFoundExceptionMapper;
 import org.graphity.client.provider.QueryExceptionHTTPMapper;
@@ -74,7 +74,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     {
 	classes.add(GlobalResourceBase.class); // handles all
 	classes.add(SPARQLResourceBase.class); // handles /sparql queries
-	classes.add(SearchResource.class); // handles /search
+	classes.add(LabelledContainer.class); // handles /search
 
 	singletons.addAll(super.getSingletons());
 	singletons.add(new RDFPostReader());

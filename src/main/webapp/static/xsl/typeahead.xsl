@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
+    <!ENTITY typeahead "http://platform.graphity.org/ontologies/typeahead#">
     <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
@@ -34,6 +35,7 @@ xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 xmlns:prop="http://saxonica.com/ns/html-property"
 xmlns:style="http://saxonica.com/ns/html-style-property"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:typeahead="&typeahead;"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -51,17 +53,8 @@ version="2.0"
 xpath-default-namespace="http://www.w3.org/1999/xhtml"
 >
 
-    <xsl:template name="load-typeahead-xml">
-	<xsl:param name="element" as="element()"/>
-        <xsl:param name="query" as="xs:string"/>
-        <xsl:param name="js-function" as="xs:string"/>
-	<xsl:variable name="event" select="ixsl:event()"/>
-        <!-- if the value hasn't changed during the delay -->
-        <xsl:if test="$query = $element/@prop:value">
-            <xsl:value-of select="ixsl:call(ixsl:window(), $js-function, $event, $query)"/>
-        </xsl:if>
-    </xsl:template>
-
+    <!-- MATCH TEMPLATES -->
+    
     <xsl:template match="input[tokenize(@class, ' ') = 'typeahead']" mode="ixsl:onkeyup">
         <xsl:param name="menu" select="following-sibling::ul" as="element()"/>
         <xsl:param name="delay" select="0" as="xs:integer"/>
@@ -70,7 +63,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
 	<xsl:choose>
 	    <xsl:when test="@prop:value">
                 <ixsl:schedule-action wait="$delay">
-                    <xsl:call-template name="load-typeahead-xml">
+                    <xsl:call-template name="typeahead:load-xml">
                         <xsl:with-param name="element" select="."/>
                         <xsl:with-param name="query" select="@prop:value"/>
                         <xsl:with-param name="js-function" select="$js-function"/>
@@ -78,7 +71,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 </ixsl:schedule-action>
 	    </xsl:when>
 	    <xsl:otherwise>
-                <xsl:call-template name="hide">
+                <xsl:call-template name="typeahead:hide">
                     <xsl:with-param name="menu" select="$menu"/>
                 </xsl:call-template>
 	    </xsl:otherwise>
@@ -88,76 +81,9 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     <xsl:template match="input[tokenize(@class, ' ') = 'typeahead']" mode="ixsl:onblur">
         <xsl:param name="menu" as="element()"/>
         
-        <xsl:call-template name="hide">
+        <xsl:call-template name="typeahead:hide">
             <xsl:with-param name="menu" select="$menu"/>
         </xsl:call-template>
-    </xsl:template>
-    
-    <xsl:template name="process">
-        <xsl:param name="menu" as="element()"/>
-        <xsl:param name="items" as="element()*"/>
-        <xsl:param name="element" as="element()"/>
-        <xsl:param name="name" as="xs:string"/>
-
-        <xsl:choose>
-            <xsl:when test="$items">
-                <xsl:call-template name="render">
-                    <xsl:with-param name="menu" select="$menu"/>
-                    <xsl:with-param name="items" select="$items"/>
-                    <xsl:with-param name="element" select="$element"/>
-                    <xsl:with-param name="name" select="$name"/>
-                </xsl:call-template>
-                
-                <xsl:call-template name="show">
-                    <xsl:with-param name="element" select="$element"/>
-                    <xsl:with-param name="menu" select="$menu"/>
-                </xsl:call-template>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="hide">
-                    <xsl:with-param name="menu" select="$menu"/>
-                </xsl:call-template>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
-    <xsl:template name="render">
-        <xsl:param name="menu" as="element()"/>
-        <xsl:param name="items" as="element()*"/>
-        <xsl:param name="element" as="element()"/>
-        <xsl:param name="name" as="xs:string"/>
-        
-        <xsl:result-document href="#{$menu/@id}" method="ixsl:replace-content">
-            <xsl:apply-templates select="$items" mode="gc:TypeaheadMode">
-                <xsl:with-param name="query" select="$element/@prop:value"/>
-                <xsl:with-param name="name" select="$name"/>
-                <xsl:sort select="rdfs:label[1]"/>
-                <xsl:sort select="dct:title[1]"/>
-                <xsl:sort select="foaf:name[1]"/>
-                <xsl:sort select="foaf:nick[1]"/>
-                <xsl:sort select="sioc:name[1]"/>
-                <xsl:sort select="@rdf:about"/>
-            </xsl:apply-templates>
-        </xsl:result-document>
-    </xsl:template>
-    
-    <xsl:template name="show">
-        <xsl:param name="element" as="element()"/>
-        <xsl:param name="menu" as="element()"/>
-        
-        <xsl:for-each select="$menu">
-            <ixsl:set-attribute name="style:display" select="'block'"/>
-            <ixsl:set-attribute name="style:top" select="concat($element/@prop:offsetTop + $element/@prop:offsetHeight, 'px')"/>
-            <ixsl:set-attribute name="style:left" select="concat($element/@prop:offsetLeft, 'px')"/>
-        </xsl:for-each>
-    </xsl:template>
-
-    <xsl:template name="hide">
-        <xsl:param name="menu" as="element()"/>
-
-        <xsl:for-each select="$menu">
-            <ixsl:set-attribute name="style:display" select="'none'"/>
-        </xsl:for-each>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:TypeaheadMode">
@@ -263,5 +189,85 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     </xsl:template>
 
     -->
+    
+    <!-- NAMED TEMPLATES -->
+
+    <xsl:template name="typeahead:load-xml">
+	<xsl:param name="element" as="element()"/>
+        <xsl:param name="query" as="xs:string"/>
+        <xsl:param name="js-function" as="xs:string"/>
+	<xsl:variable name="event" select="ixsl:event()"/>
+        <!-- if the value hasn't changed during the delay -->
+        <xsl:if test="$query = $element/@prop:value">
+            <xsl:value-of select="ixsl:call(ixsl:window(), $js-function, $event, $query)"/>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template name="typeahead:process">
+        <xsl:param name="menu" as="element()"/>
+        <xsl:param name="items" as="element()*"/>
+        <xsl:param name="element" as="element()"/>
+        <xsl:param name="name" as="xs:string"/>
+
+        <xsl:choose>
+            <xsl:when test="$items">
+                <xsl:call-template name="typeahead:render">
+                    <xsl:with-param name="menu" select="$menu"/>
+                    <xsl:with-param name="items" select="$items"/>
+                    <xsl:with-param name="element" select="$element"/>
+                    <xsl:with-param name="name" select="$name"/>
+                </xsl:call-template>
+                
+                <xsl:call-template name="typeahead:show">
+                    <xsl:with-param name="element" select="$element"/>
+                    <xsl:with-param name="menu" select="$menu"/>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="typeahead:hide">
+                    <xsl:with-param name="menu" select="$menu"/>
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="typeahead:render">
+        <xsl:param name="menu" as="element()"/>
+        <xsl:param name="items" as="element()*"/>
+        <xsl:param name="element" as="element()"/>
+        <xsl:param name="name" as="xs:string"/>
+        
+        <xsl:result-document href="#{$menu/@id}" method="ixsl:replace-content">
+            <xsl:apply-templates select="$items" mode="gc:TypeaheadMode">
+                <xsl:with-param name="query" select="$element/@prop:value"/>
+                <xsl:with-param name="name" select="$name"/>
+                <xsl:sort select="rdfs:label[1]"/>
+                <xsl:sort select="dct:title[1]"/>
+                <xsl:sort select="foaf:name[1]"/>
+                <xsl:sort select="foaf:nick[1]"/>
+                <xsl:sort select="sioc:name[1]"/>
+                <xsl:sort select="@rdf:about"/>
+            </xsl:apply-templates>
+        </xsl:result-document>
+    </xsl:template>
+    
+    <xsl:template name="typeahead:show">
+        <xsl:param name="element" as="element()"/>
+        <xsl:param name="menu" as="element()"/>
+        
+        <xsl:for-each select="$menu">
+            <ixsl:set-attribute name="style:display" select="'block'"/>
+            <ixsl:set-attribute name="style:top" select="concat($element/@prop:offsetTop + $element/@prop:offsetHeight, 'px')"/>
+            <ixsl:set-attribute name="style:left" select="concat($element/@prop:offsetLeft, 'px')"/>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="typeahead:hide">
+        <xsl:param name="menu" as="element()"/>
+
+        <xsl:for-each select="$menu">
+            <ixsl:set-attribute name="style:display" select="'none'"/>
+        </xsl:for-each>
+    </xsl:template>
     
 </xsl:stylesheet>

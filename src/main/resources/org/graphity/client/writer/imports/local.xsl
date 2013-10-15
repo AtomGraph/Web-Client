@@ -319,57 +319,33 @@ exclude-result-prefixes="#all">
     
     <xsl:template name="gc:InputTemplate">
 	<xsl:param name="name" as="xs:string"/>
-	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="type" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="style" as="xs:string?"/>
 	<xsl:param name="value" as="xs:string?"/>
-	<xsl:param name="rows" as="xs:integer?"/>
 
-	<xsl:choose>
-	    <!-- special case to give more input space for object literals -->
-	    <xsl:when test="(not($type) and string-length($value) &gt; 100) or $rows">
-		<textarea name="{$name}">
-		    <xsl:if test="$id">
-			<xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-		    </xsl:if>
-		    <xsl:if test="$class">
-			<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-		    </xsl:if>
-		    <xsl:if test="$style">
-			<xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
-		    </xsl:if>
-		    <xsl:if test="$rows">
-			<xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
-		    </xsl:if>
-		    
-		    <xsl:value-of select="$value"/>
-		</textarea>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<input type="{$type}" name="{$name}">
-		    <xsl:if test="$id">
-			<xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-		    </xsl:if>
-		    <xsl:if test="$class">
-			<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-		    </xsl:if>
-		    <xsl:if test="$style">
-			<xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
-		    </xsl:if>
-		    <xsl:if test="$value">
-			<xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
-		    </xsl:if>
-		</input>
-	    </xsl:otherwise>
-	</xsl:choose>
+        <input type="{$type}" name="{$name}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$style">
+                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$value">
+                <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+            </xsl:if>
+        </input>
     </xsl:template>
 
     <!-- subject resource -->
     <xsl:template match="@rdf:about" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" select="'input-xxlarge'" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'su'"/>
@@ -399,7 +375,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" select="'input-xxlarge'" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
 	<xsl:call-template name="gc:InputTemplate">
@@ -415,7 +391,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" select="'input-xxlarge'" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ou'"/>
@@ -460,7 +436,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" select="'input-xlarge'" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'lt'"/>
@@ -475,7 +451,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@xml:lang" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ll'"/>
@@ -517,8 +493,53 @@ exclude-result-prefixes="#all">
         </div>        
     </xsl:template>
 
-    <xsl:template match="node() | @rdf:resource | @xml:lang | @rdf:datatype" mode="gc:EditMode">
+    <xsl:template match="text()" mode="gc:EditMode">
 	<xsl:apply-templates select="." mode="gc:InputMode"/>
+        <span class="help-inline">Literal</span>
+    </xsl:template>
+
+    <xsl:template match="text()[string-length(.) &gt; 50]" mode="gc:EditMode">
+	<xsl:param name="name" select="'ol'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="style" as="xs:string?"/>
+	<xsl:param name="value" select="." as="xs:string?"/>
+        <xsl:param name="rows" as="xs:integer?"/>
+        
+        <textarea name="{$name}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$style">
+                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$rows">
+                <xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
+            </xsl:if>
+
+            <xsl:value-of select="$value"/>
+        </textarea>
+        <span class="help-inline">Literal</span>
+    </xsl:template>
+
+    <xsl:template match="@rdf:resource" mode="gc:EditMode">
+	<xsl:apply-templates select="." mode="gc:InputMode"/>
+        <span class="help-inline">Resource</span>
+    </xsl:template>
+
+    <xsl:template match="@xml:lang" mode="gc:EditMode">
+	<xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="class" select="'input-mini'"/>
+        </xsl:apply-templates>
+        <span class="help-inline">Language</span>
+    </xsl:template>
+
+    <xsl:template match="@rdf:datatype" mode="gc:EditMode">
+	<xsl:apply-templates select="." mode="gc:InputMode"/>
+        <span class="help-inline">Datatype</span>
     </xsl:template>
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:EditMode">

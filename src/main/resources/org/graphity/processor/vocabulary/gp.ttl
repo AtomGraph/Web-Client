@@ -382,17 +382,18 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
 
 # ====
 
-:DescribeLabelledResourcesTemplate a spin:Template ;
-    spin:body :DescribeLabelledResources ;
+:DescribeLabelResourcesTemplate a spin:Template ;
+    spin:body :DescribeLabelResources ;
     rdfs:isDefinedBy : .
 
-:DescribeLabelledResources    a       sp:Describe ;
+:DescribeLabelResources    a       sp:Describe ;
       sp:resultNodes (_:resourceVar) ;
       sp:text """DESCRIBE ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
             ?resource ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+            FILTER isURI(?resource) .
         }
     } .
 }"""^^xsd:string ;
@@ -433,11 +434,99 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
                                                   sp:path2 skos:prefLabel
                                                 ] ;
                                         sp:subject _:resourceVar
+                                      ] [ a       sp:Filter ;
+                                        sp:expression
+                                                [ a       sp:isURI ;
+                                                  sp:arg1 _:resourceVar
+                                                ]
                                       ])
                           ]
                 ]) .
 
 _:resourceVar  sp:varName "resource"^^xsd:string .
+
+# ===
+
+:DescribeLabelPropertiesTemplate a spin:Template ;
+    spin:body :DescribeLabelProperties ;
+    rdfs:isDefinedBy : .
+
+:DescribeLabelProperties    a       sp:Describe ;
+      sp:resultNodes (_:propertyVar) ;
+      sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+DESCRIBE ?property WHERE {
+    {
+        SELECT ?property
+        WHERE {
+            {
+                ?property a rdf:Property .
+            }
+            UNION
+            {
+                ?property a owl:ObjectProperty .
+            }
+            UNION
+            {
+                ?property a owl:DatatypeProperty .
+            } .
+            ?property ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:propertyVar) ;
+                            sp:where ([ a       sp:Union ;
+                                        sp:elements (([ sp:object rdf:Property ;
+                                                      sp:predicate rdf:type ;
+                                                      sp:subject _:propertyVar
+                                                    ]) ([ sp:object owl:ObjectProperty ;
+                                                      sp:predicate rdf:type ;
+                                                      sp:subject _:propertyVar
+                                                    ]) ([ sp:object owl:DatatypeProperty ;
+                                                      sp:predicate rdf:type ;
+                                                      sp:subject _:propertyVar
+                                                    ]))
+                                      ] [ a       sp:TriplePath ;
+                                        sp:object
+                                                [ sp:varName "label"^^xsd:string
+                                                ] ;
+                                        sp:path [ a       sp:AltPath ;
+                                                  sp:path1
+                                                          [ a       sp:AltPath ;
+                                                            sp:path1
+                                                                    [ a       sp:AltPath ;
+                                                                      sp:path1
+                                                                              [ a       sp:AltPath ;
+                                                                                sp:path1
+                                                                                        [ a       sp:AltPath ;
+                                                                                          sp:path1
+                                                                                                  [ a       sp:AltPath ;
+                                                                                                    sp:path1
+                                                                                                            [ a       sp:AltPath ;
+                                                                                                              sp:path1 rdfs:label ;
+                                                                                                              sp:path2 dc:title
+                                                                                                            ] ;
+                                                                                                    sp:path2 dct:title
+                                                                                                  ] ;
+                                                                                          sp:path2 foaf:name
+                                                                                        ] ;
+                                                                                sp:path2 foaf:givenName
+                                                                              ] ;
+                                                                      sp:path2 foaf:familyName
+                                                                    ] ;
+                                                            sp:path2 sioc:name
+                                                          ] ;
+                                                  sp:path2 skos:prefLabel
+                                                ] ;
+                                        sp:subject _:propertyVar
+                                      ])
+                          ]
+                ]) .
+                
+_:propertyVar  sp:varName "property"^^xsd:string .
 
 # ====
 

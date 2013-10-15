@@ -65,7 +65,7 @@ void:inDataset a owl:ObjectProperty ;
     foaf:maker <http://graphityhq.com/#company> ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset ;
-    rdfs:seeAlso : , <sparql>, <search>, <http://graphityhq.com>, <http://semantic-web.dk> .
+    rdfs:seeAlso : , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 
 <ontology> a foaf:Document ;
     dct:title "Ontology document" ;
@@ -139,9 +139,15 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
-<search> a ldp:Container, lda:ListEndpoint, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Search" ;
+<resources/labelled> a ldp:Container, foaf:Document ;
+    sioc:has_space <resources> ;
+    dct:title "Labelled resources" ;
+    rdfs:isDefinedBy : ;
+    void:inDataset :Dataset .
+
+<properties/labelled> a ldp:Container, foaf:Document ;
+    sioc:has_space <properties> ;
+    dct:title "Labelled properties" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
@@ -319,8 +325,34 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/search"
 	] ;
-    spin:query [ a gp:DescribeLabelledResourcesTemplate ] ;
+    spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
     rdfs:label "Search container" ;
+    rdfs:isDefinedBy : ;
+    void:inDataset :Dataset .
+
+:LabelledResourceContainer a owl:Class ;
+        rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/resources/labelled"
+	] ;
+    spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
+    rdfs:label "Labelled resource container" ;
+    rdfs:isDefinedBy : ;
+    void:inDataset :Dataset .
+
+:LabelledPropertyContainer a owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
+	[ a owl:Restriction ;
+		owl:onProperty void:inDataset ;
+		owl:hasValue :Dataset
+	] ,
+	[ a owl:Restriction ;
+		owl:onProperty lda:uriTemplate ;
+		owl:hasValue "/properties/labelled"
+	] ;
+    spin:query [ a gp:DescribeLabelPropertiesTemplate ] ;
+    rdfs:label "Labelled properties container" ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 

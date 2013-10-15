@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
+    <!ENTITY typeahead "http://platform.graphity.org/ontologies/typeahead#">
     <!ENTITY gpl "http://platform.graphity.org/ontology#">
     <!ENTITY gc "http://client.graphity.org/ontology#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
@@ -37,6 +38,7 @@ xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 xmlns:prop="http://saxonica.com/ns/html-property"
 xmlns:style="http://saxonica.com/ns/html-style-property"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:typeahead="&typeahead;"
 xmlns:gc="&gc;"
 xmlns:gpl="&gpl;"
 xmlns:rdf="&rdf;"
@@ -254,7 +256,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 <ixsl:set-attribute name="class" select="string-join(tokenize(@class, ' ')[not(. = 'resource-typeahead')][not(. = 'typeahead')], ' ')"/>
                 <ixsl:set-attribute name="name" select="'ou'"/>
             </xsl:for-each>
-            <xsl:call-template name="hide">
+            <xsl:call-template name="typeahead:hide">
                 <xsl:with-param name="menu" select="$menu"/>
             </xsl:call-template>
         </xsl:if>
@@ -275,22 +277,15 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     <xsl:template match="button[tokenize(@class, ' ') = 'add-statement']" mode="ixsl:onclick">
 	<xsl:message>Add statement</xsl:message>
 	<xsl:result-document href="?select=.." method="ixsl:replace-content">
-	    <xsl:call-template name="rdf:Property"/>
+            <label class="typeahead">
+                <xsl:variable name="uuid" select="ixsl:call(ixsl:window(), 'generateUUID')"/>
+                <input type="text" class="property-typeahead typeahead" /> <!-- onblur="$('#ul-{$uuid}').hide();" -->
+                <ul class="property-typeahead typeahead dropdown-menu " id="ul-{$uuid}" style="display: none;"></ul>
+            </label>
 	</xsl:result-document>
 	<xsl:result-document href="?select=../.." method="ixsl:append-content">
 	    <xsl:copy-of select=".."/>
 	</xsl:result-document>
-    </xsl:template>
-
-    <xsl:template name="rdf:Property">
-	<xsl:message>CONTEXT NODE NAME: <xsl:value-of select="local-name()"/> CLASS: <xsl:value-of select="@class"/></xsl:message>
-	<xsl:message>CONTEXT NODE: <xsl:copy-of select="."/></xsl:message>
-
-	<label class="typeahead">
-            <xsl:variable name="uuid" select="ixsl:call(ixsl:window(), 'generateUUID')"/>
-	    <input type="text" class="property-typeahead typeahead" /> <!-- onblur="$('#ul-{$uuid}').hide();" -->
-            <ul class="property-typeahead typeahead dropdown-menu " id="ul-{$uuid}" style="display: none;"></ul>
-        </label>
     </xsl:template>
 
     <xsl:template match="button[tokenize(@class, ' ') = 'remove-statement']" mode="ixsl:onclick">
@@ -317,41 +312,6 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         </xsl:for-each>
     </xsl:template>
 
-    <!--
-    <xsl:template match="div[tokenize(@class, ' ') = 'controls']/ul[tokenize(@class, ' ') = 'nav-tabs']/li" mode="ixsl:onclick">
-	<xsl:variable name="tab-pane-div" select="../../following-sibling::div[tokenize(@class, ' ') = tokenize(current()/@class, ' ')]"/>
-
-	<xsl:for-each select="../li">
-	    <ixsl:set-attribute name="class" select="string-join(tokenize(@class, ' ')[not(. = 'active')], ' ')"/>
-	</xsl:for-each>
-	<ixsl:set-attribute name="class" select="concat(@class, ' ', 'active')"/>
-
-	<xsl:for-each select="../../following-sibling::div">
-	    <ixsl:set-attribute name="style:display" select="'none'"/>
-	</xsl:for-each>
-	<xsl:for-each select="$tab-pane-div">
-	    <ixsl:set-attribute name="style:display" select="'block'"/>
-	</xsl:for-each>
-	
-	<xsl:if test="tokenize(@class, ' ') = 'ob'">
-	    <xsl:message>BLANK NODE!</xsl:message>
-	    <xsl:if test="not(../../following-sibling::div[tokenize(@class, ' ') = 'ob']/*)">
-		<xsl:result-document href="?select=../../following-sibling::*[tokenize(@class, ' ') = 'ob']" method="ixsl:replace-content">
-		    <div class="control-group">			
-			<xsl:for-each select="../..">
-			    <xsl:call-template name="rdf:Property"/>
-			</xsl:for-each>
-		    </div>
-
-		    <div class="control-group">
-			<button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
-		    </div>
-		</xsl:result-document>
-	    </xsl:if>
-	</xsl:if>
-    </xsl:template>
-    -->
-    
     <!--
     <xsl:template match="form" mode="ixsl:onsubmit">
 	<xsl:value-of select="ixsl:call(ixsl:window(), 'alert', 'HELLO!')"/>
@@ -387,7 +347,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:variable name="typeahead-xml" select="ixsl:get(ixsl:window(), 'resourcesXML')"/>
         <xsl:variable name="selected-resources" select="$typeahead-xml/rdf:RDF/*[@rdf:about][not(rdf:type/@rdf:resource = ('&ldp;Container', '&ldp;Page'))]"/>
 
-        <xsl:call-template name="process">
+        <xsl:call-template name="typeahead:process">
             <xsl:with-param name="menu" select="$menu"/>
             <xsl:with-param name="items" select="$selected-resources"/>
             <xsl:with-param name="element" select="$target"/>
@@ -405,7 +365,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:variable name="typeahead-xml" select="ixsl:get(ixsl:window(), 'propertiesXML')"/>
         <xsl:variable name="selected-resources" select="$typeahead-xml/rdf:RDF/*[not(rdf:type/@rdf:resource = ('&ldp;Container', '&ldp;Page'))]"/>
         
-        <xsl:call-template name="process">
+        <xsl:call-template name="typeahead:process">
             <xsl:with-param name="menu" select="$target/following-sibling::ul"/>
             <xsl:with-param name="items" select="$selected-resources"/>
             <xsl:with-param name="element" select="$target"/>
