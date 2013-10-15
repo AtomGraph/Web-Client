@@ -500,7 +500,9 @@ exclude-result-prefixes="#all">
             <label class="control-label" for="{generate-id()}" title="{$this}">
                 <xsl:apply-templates select="key('resources', $this, document(gc:document-uri(xs:anyURI($this))))/@rdf:about" mode="gc:LabelMode"/>
             </label>
-            <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
+            </div>
 
             <div class="controls">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:EditMode">
