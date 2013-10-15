@@ -464,6 +464,13 @@ exclude-result-prefixes="#all">
 
     <!-- EDIT MODE -->
 
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:EditMode">
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="id" select="generate-id()"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
 	<xsl:param name="constraint-violations" as="element()*"/>
 	<!-- <xsl:variable name="ranges" select="rdfs:range(xs:anyURI(concat(namespace-uri(), local-name())))"/> -->
@@ -494,7 +501,15 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="text()" mode="gc:EditMode">
-	<xsl:apply-templates select="." mode="gc:InputMode"/>
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:apply-templates>
         <span class="help-inline">Literal</span>
     </xsl:template>
 
@@ -526,24 +541,49 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:resource" mode="gc:EditMode">
-	<xsl:apply-templates select="." mode="gc:InputMode"/>
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:apply-templates>
         <span class="help-inline">Resource</span>
     </xsl:template>
 
     <xsl:template match="@xml:lang" mode="gc:EditMode">
-	<xsl:apply-templates select="." mode="gc:InputMode">
-            <xsl:with-param name="class" select="'input-mini'"/>
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
         <span class="help-inline">Language</span>
     </xsl:template>
 
     <xsl:template match="@rdf:datatype" mode="gc:EditMode">
-	<xsl:apply-templates select="." mode="gc:InputMode"/>
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:apply-templates>
         <span class="help-inline">Datatype</span>
     </xsl:template>
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:EditMode">
-	<xsl:param name="id"/>
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
         <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
 
 	<xsl:choose>
@@ -552,7 +592,9 @@ exclude-result-prefixes="#all">
 	    </xsl:when>
 	    <xsl:otherwise>
 		<xsl:apply-templates select="." mode="gc:InputMode">
+                    <xsl:with-param name="type" select="$type"/>
                     <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
                 </xsl:apply-templates>
 	    </xsl:otherwise>
 	</xsl:choose>

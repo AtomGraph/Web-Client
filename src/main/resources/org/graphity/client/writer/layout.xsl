@@ -833,6 +833,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
+	<xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
+
 	<fieldset id="fieldset-{generate-id()}">
             <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
                 <legend>
@@ -840,14 +842,17 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
             
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InputMode">
-		<xsl:with-param name="type" select="'hidden'"/>
-	    </xsl:apply-templates>
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:EditMode"/>
+            <xsl:apply-templates mode="gc:EditMode">
+                <xsl:sort select="gc:label(.)"/>
+            </xsl:apply-templates>
 
+            <!--
 	    <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
                 <xsl:sort select="gc:label(current-group()[1])"/>
 		<xsl:apply-templates select="current-group()" mode="gc:EditMode"/>
 	    </xsl:for-each-group>
+            -->
             
             <div class="control-group">
                 <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
