@@ -477,6 +477,9 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())" as="xs:string"/>
  
         <div class="control-group">
+	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
+		<xsl:attribute name="class">control-group warning</xsl:attribute>
+	    </xsl:if>
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
@@ -510,7 +513,9 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
-        <span class="help-inline">Literal</span>
+        <xsl:if test="not($type = 'hidden')">
+            <span class="help-inline">Literal</span>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="text()[string-length(.) &gt; 50]" mode="gc:EditMode">
@@ -550,7 +555,9 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
-        <span class="help-inline">Resource</span>
+        <xsl:if test="not($type = 'hidden')">
+            <span class="help-inline">Resource</span>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="@xml:lang" mode="gc:EditMode">
@@ -563,7 +570,9 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
-        <span class="help-inline">Language</span>
+        <xsl:if test="not($type = 'hidden')">
+            <span class="help-inline">Language</span>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="@rdf:datatype" mode="gc:EditMode">
@@ -576,7 +585,9 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
-        <span class="help-inline">Datatype</span>
+        <xsl:if test="not($type = 'hidden')">
+            <span class="help-inline">Datatype</span>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:EditMode">

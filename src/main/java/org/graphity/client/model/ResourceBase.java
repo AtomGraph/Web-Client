@@ -152,7 +152,10 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
 	    return Variant.VariantListBuilder.newInstance().
-		    mediaTypes(MediaType.TEXT_HTML_TYPE).
+		    mediaTypes(MediaType.TEXT_HTML_TYPE,
+                        org.graphity.client.MediaType.APPLICATION_RDF_XML_TYPE,
+                        org.graphity.client.MediaType.TEXT_TURTLE_TYPE,
+                        org.graphity.client.MediaType.APPLICATION_LD_JSON_TYPE).
 		    add().build();
 	}
 

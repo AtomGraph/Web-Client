@@ -125,7 +125,7 @@ exclude-result-prefixes="#all">
 
     <rdf:Description rdf:about="&gc;ListMode">
 	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;ItemMode"/>
+	<!-- <rdf:type rdf:resource="&gc;ItemMode"/> -->
 	<rdf:type rdf:resource="&gc;PageMode"/>
 	<rdfs:label xml:lang="en-US">List</rdfs:label>
     </rdf:Description>
@@ -521,6 +521,12 @@ exclude-result-prefixes="#all">
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:DescriptionMode"/>
 
+            <xsl:if test="@rdf:about and not($mode = '&gc;EditMode')">
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">Edit</a>
+                </div>
+            </xsl:if>
+
 	    <!-- xsl:apply-templates? -->
 	    <xsl:if test="rdf:type">
 		<ul class="inline">
@@ -830,6 +836,33 @@ exclude-result-prefixes="#all">
 	
 	<!-- page resource -->
 	<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
+        <xsl:param name="input" as="element()?"/>
+        <xsl:param name="legend" as="xs:string?"/>
+        
+	<fieldset id="fieldset-{generate-id()}">
+            <xsl:if test="$legend">
+                <legend>
+                    <xsl:value-of select="$legend"/>
+                </legend>                
+            </xsl:if>
+            
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:EditMode"/>
+
+            <xsl:for-each select="*">
+                <xsl:sort select="gc:label(.)"/>
+                <xsl:choose>
+                    <xsl:when test="$input/*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))]">
+                        <xsl:apply-templates select="$input/*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))]" mode="gc:EditMode"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="." mode="gc:EditMode"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+        </fieldset>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
