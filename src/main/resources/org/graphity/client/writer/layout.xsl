@@ -521,7 +521,7 @@ exclude-result-prefixes="#all">
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:DescriptionMode"/>
 
-            <xsl:if test="@rdf:about and not($mode = '&gc;EditMode')">
+            <xsl:if test="starts-with(@rdf:about, $base-uri) and not($mode = '&gc;EditMode')">
                 <div class="pull-right">
                     <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">Edit</a>
                 </div>
