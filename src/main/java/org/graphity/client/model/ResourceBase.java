@@ -27,7 +27,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -117,7 +119,13 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
     @Override
     public Model describe()
-    {
+    {	
+        if (getMode() != null && hasRDFType(LDP.Container))
+	{
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
+	    return DataManager.get().loadModel(getModel(), getQuery(getURI()));
+	}
+
 	Model description = super.describe();
 
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
@@ -148,7 +156,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     {
         // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
         // https://saxonica.plan.io/issues/1447
-	if (getMode() != null && getMode().toString().equals(GC.EditMode.getURI()))
+	if (getMode() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
 	    return Variant.VariantListBuilder.newInstance().

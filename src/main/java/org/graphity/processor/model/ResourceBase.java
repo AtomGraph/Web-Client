@@ -414,32 +414,19 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     @Override
     public Model describe()
-    {
-	return describe(true);
-    }
-    
-    /**
-     * Returns RDF description of this resource.
-     * In case the resource is a page resource and the boolean parameter is true, HATEOS metadata relating it
-     * to previous/next pages and its container is added.
-     * 
-     * @param addContainerPage if true, container/page metadata will be added
-     * @return RDF description
-     */
-    public Model describe(boolean addContainerPage)
     {	
 	Model description = super.describe();
 	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
-	if (addContainerPage && hasRDFType(LDP.Container))
+	if (hasRDFType(LDP.Container))
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
 	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
 	    
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
 	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
-	    //Resource page = description.createResource(getUriInfo().getRequestUri().toString()).
-		addProperty(RDF.type, LDP.Page).addProperty(LDP.pageOf, this);
+		addProperty(RDF.type, LDP.Page).
+                addProperty(LDP.pageOf, this);
 
 	    if (getOffset() >= getLimit())
 	    {

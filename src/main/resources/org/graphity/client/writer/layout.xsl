@@ -142,6 +142,11 @@ exclude-result-prefixes="#all">
 	<rdfs:label xml:lang="en-US">Edit</rdfs:label>
     </rdf:Description>
 
+    <rdf:Description rdf:about="&gc;CreateMode">
+	<rdf:type rdf:resource="&gc;Mode"/>
+	<rdfs:label xml:lang="en-US">Create</rdfs:label>
+    </rdf:Description>
+
     <xsl:template match="/">
 	<html>
 	    <head>
@@ -523,7 +528,16 @@ exclude-result-prefixes="#all">
 
             <xsl:if test="starts-with(@rdf:about, $base-uri) and not($mode = '&gc;EditMode')">
                 <div class="pull-right">
-                    <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">Edit</a>
+                    <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
+                        <xsl:apply-templates select="key('resources', '&gc;EditMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
+                    </a>
+                </div>
+            </xsl:if>
+            <xsl:if test="rdf:type/@rdf:resource = '&ldp;Container' and not($mode = '&gc;CreateMode')">
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
+                        <xsl:apply-templates select="key('resources', '&gc;CreateMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
+                    </a>
                 </div>
             </xsl:if>
 
