@@ -852,33 +852,6 @@ exclude-result-prefixes="#all">
 	<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
-        <xsl:param name="input" as="element()?"/>
-        <xsl:param name="legend" as="xs:string?"/>
-        
-	<fieldset id="fieldset-{generate-id()}">
-            <xsl:if test="$legend">
-                <legend>
-                    <xsl:value-of select="$legend"/>
-                </legend>                
-            </xsl:if>
-            
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:EditMode"/>
-
-            <xsl:for-each select="*">
-                <xsl:sort select="gc:label(.)"/>
-                <xsl:choose>
-                    <xsl:when test="$input/*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))]">
-                        <xsl:apply-templates select="$input/*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))]" mode="gc:EditMode"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:apply-templates select="." mode="gc:EditMode"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:for-each>
-        </fieldset>
-    </xsl:template>
-
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
 	<xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
 
@@ -905,6 +878,42 @@ exclude-result-prefixes="#all">
                 <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
             </div>
 	</fieldset>
+    </xsl:template>
+
+    <!-- CREATE MODE -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
+        <xsl:param name="input" as="element()?"/>
+        <xsl:param name="legend" as="xs:string?"/>
+        
+	<fieldset id="fieldset-{generate-id()}">
+            <xsl:if test="$legend">
+                <legend>
+                    <xsl:value-of select="$legend"/>
+                </legend>                
+            </xsl:if>
+
+            <xsl:choose>
+                <xsl:when test="$input/@rdf:about | $input/@rdf:nodeID">
+                    <xsl:apply-templates select="$input/@rdf:about | $input/@rdf:nodeID" mode="gc:EditMode"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:EditMode"/>
+                </xsl:otherwise>
+            </xsl:choose>
+
+            <xsl:for-each select="*">
+                <xsl:sort select="gc:label(.)"/>
+                <xsl:choose>
+                    <xsl:when test="$input/*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))]">
+                        <xsl:apply-templates select="$input/*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))]" mode="gc:EditMode"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="." mode="gc:EditMode"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+        </fieldset>
     </xsl:template>
 
 </xsl:stylesheet>

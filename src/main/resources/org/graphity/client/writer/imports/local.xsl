@@ -607,6 +607,9 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="id" select="$id"/>
                     <xsl:with-param name="class" select="$class"/>
                 </xsl:apply-templates>
+                <xsl:if test="not($type = 'hidden')">
+                    <span class="help-inline">Blank node</span>
+                </xsl:if>
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
