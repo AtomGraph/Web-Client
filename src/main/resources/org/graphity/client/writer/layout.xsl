@@ -74,7 +74,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
-    <xsl:param name="order-by" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
+    <xsl:param name="order-by" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $ont-model)/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
     <xsl:param name="desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
     <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
@@ -84,8 +84,8 @@ exclude-result-prefixes="#all">
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
+    <xsl:variable name="ontology-uri" select="xs:anyURI(key('resources-by-type', '&owl;Ontology', $ont-model)/@rdf:about)" as="xs:anyURI"/>
     <xsl:variable name="config" select="document('../../../../../web.xml')" as="document-node()"/>
-    <!-- <xsl:variable name="prefix-mapping" select="document('../../../../../prefix-mapping.n3')" as="document-node()?"/> -->
 
     <!-- <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/> -->
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>

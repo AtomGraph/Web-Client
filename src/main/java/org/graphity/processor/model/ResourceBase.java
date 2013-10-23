@@ -347,7 +347,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	if (!model.containsResource(this))
 	{
-	    if (log.isDebugEnabled()) log.debug("PUT Model does not contain statements with request URI {} as subject: {}", this.getURI());
+	    if (log.isDebugEnabled()) log.debug("PUT Model does not contain statements with request URI '{}' as subject", getURI());
 	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	}
 	

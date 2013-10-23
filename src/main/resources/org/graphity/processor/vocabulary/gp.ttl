@@ -551,6 +551,34 @@ _:propertyVar  sp:varName "property"^^xsd:string .
 
 # ====
 
+:DeleteFromGraphTemplate a spin:Template ;
+    spin:body :DeleteFromGraph ;
+    rdfs:isDefinedBy : .
+
+:DeleteFromGraph    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    GRAPH ?g {
+        ?this ?p ?o .
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:NamedGraph ;
+                  sp:elements ([ sp:object
+                                      [ sp:varName "o"^^xsd:string
+                                      ] ;
+                              sp:predicate
+                                      [ sp:varName "p"^^xsd:string
+                                      ] ;
+                              sp:subject
+                                      [ sp:varName "this"^^xsd:string
+                                      ]
+                            ]) ;
+                  sp:graphNameNode
+                          [ sp:varName "g"^^xsd:string
+                          ]
+                ]) .
+
+# ====
+
 :DeleteWithTopicTemplate a spin:Template ;
     spin:body :DeleteWithTopic ;
     rdfs:isDefinedBy : .
@@ -578,6 +606,46 @@ _:propertyVar  sp:varName "property"^^xsd:string .
                           [ sp:varName "x"^^xsd:string
                           ] ;
                   sp:subject _:primaryTopicVar
+                ]) .
+
+_:primaryTopicVar  sp:varName "primaryTopic"^^xsd:string .
+
+# ====
+
+:DeleteFromGraphWithTopicTemplate a spin:Template ;
+    spin:body :DeleteFromGraphWithTopic ;
+    rdfs:isDefinedBy : .
+
+:DeleteFromGraphWithTopic    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    GRAPH ?g {
+        ?this ?p ?o .
+        ?primaryTopic foaf:isPrimaryTopicOf ?this .
+        ?primaryTopic ?x ?y .
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:NamedGraph ;
+                  sp:elements ([ sp:object
+                                      [ sp:varName "o"^^xsd:string
+                                      ] ;
+                              sp:predicate
+                                      [ sp:varName "p"^^xsd:string
+                                      ] ;
+                              sp:subject spin:_this
+                            ] [ sp:object spin:_this ;
+                              sp:predicate foaf:isPrimaryTopicOf ;
+                              sp:subject _:primaryTopicVar
+                            ] [ sp:object
+                                      [ sp:varName "y"^^xsd:string
+                                      ] ;
+                              sp:predicate
+                                      [ sp:varName "x"^^xsd:string
+                                      ] ;
+                              sp:subject _:primaryTopicVar
+                            ]) ;
+                  sp:graphNameNode
+                          [ sp:varName "g"^^xsd:string
+                          ]
                 ]) .
 
 _:primaryTopicVar  sp:varName "primaryTopic"^^xsd:string .
