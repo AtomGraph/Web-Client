@@ -27,9 +27,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.client.locator.LocatorGRDDL;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
 import org.graphity.client.model.SPARQLResourceBase;
@@ -64,8 +62,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
-    private Set<Class<?>> classes = new HashSet<Class<?>>();
-    private Set<Object> singletons = new HashSet<Object>();
+    private final Set<Class<?>> classes = new HashSet<Class<?>>();
+    private final Set<Object> singletons = new HashSet<Object>();
 
     /**
      * Initializes root resource classes and provider singletons
@@ -150,13 +148,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 
 	try
 	{
-	    DataManager.get().addLocator(new LocatorGRDDL("https://api.twitter.com/1/{path: .+}", getSource("org/graphity/client/locator/grddl/twitter-grddl.xsl"), DataManager.get()));
 	    singletons.add(new JSONLDWriter(getSource("org/graphity/client/writer/rdfxml2json-ld.xsl"),
 		DataManager.get())); // writes JSON-LD responses
-	}
-	catch (TransformerConfigurationException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet error", ex);
 	}
 	catch (FileNotFoundException ex)
 	{
@@ -206,6 +199,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      * @return XML source
      * @throws FileNotFoundException
      * @throws URISyntaxException 
+     * @throws java.net.MalformedURLException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      */
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
