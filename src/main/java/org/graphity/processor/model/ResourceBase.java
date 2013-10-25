@@ -102,10 +102,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceContext resource context
      * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
+     * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see org.graphity.processor.provider.OntologyProvider
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
@@ -132,11 +133,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceConfig webapp configuration
      * @param ontModel sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
-     * @param cacheControl cache control config
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
+     * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
@@ -167,11 +168,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceConfig webapp configuration
      * @param ontResource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
-     * @param cacheControl cache control config
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
+     * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
@@ -245,7 +246,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
     
     /**
-     * Handles POST method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
+     * Handles POST method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
      * 
      * @param model the RDF payload
      * @return response
@@ -256,16 +257,38 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return post(model, getEndpoint());
     }
 
+    /**
+     * Handles POST method, stores the submitted RDF model in the specified named graph on the default SPARQL endpoint, and returns response.
+     * 
+     * @param model the RDF payload
+     * @param graphURI target graph name
+     * @return response
+     */
     public Response post(Model model, URI graphURI)
     {
 	return post(model, graphURI, getEndpoint());
     }
 
+    /**
+     * Handles POST method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
+     * 
+     * @param model the RDF payload
+     * @param endpoint target SPARQL endpoint
+     * @return response
+     */
     public Response post(Model model, SPARQLUpdateEndpoint endpoint)
     {
 	return post(model, getGraphURI(), endpoint);
     }
     
+    /**
+     * Handles POST method, stores the submitted RDF model in the specified named graph of the specified SPARQL endpoint, and returns response.
+     * 
+     * @param model the RDF payload
+     * @param graphURI target graph name
+     * @param endpoint target SPARQL endpoint
+     * @return response
+     */
     public Response post(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
@@ -317,7 +340,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
     
     /**
-     * Handles PUT method, stores the submitted RDF model in the SPARQL endpoint, and returns response.
+     * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
      * 
      * @param model RDF payload
      * @return response
@@ -328,16 +351,38 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return put(model, getEndpoint());
     }
 
+    /**
+     * Handles PUT method, stores the submitted RDF model in the specified named graph of default SPARQL endpoint, and returns response.
+     * 
+     * @param model RDF payload
+     * @param graphURI target graph name
+     * @return response
+     */
     public Response put(Model model, URI graphURI)
     {
 	return put(model, graphURI, getEndpoint());
     }
 
+    /**
+     * Handles PUT method, stores the submitted RDF model in the default graph of the specified SPARQL endpoint, and returns response.
+     * 
+     * @param model RDF payload
+     * @param endpoint target SPARQL endpoint
+     * @return response
+     */
     public Response put(Model model, SPARQLUpdateEndpoint endpoint)
     {
 	return put(model, getGraphURI(), endpoint);
     }
     
+    /**
+     * Handles PUT method, stores the submitted RDF model in the specified named graph of the specified SPARQL endpoint, and returns response.
+     * 
+     * @param model RDF payload
+     * @param graphURI target graph name
+     * @param endpoint target SPARQL endpoint
+     * @return response
+     */
     public Response put(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
@@ -385,7 +430,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Handles DELETE method, deletes the RDF representation of this resource frrom the SPARQL endpoint, and
+     * Handles DELETE method, deletes the RDF representation of this resource from the default SPARQL endpoint, and
      * returns response.
      * 
      * @return response
@@ -396,6 +441,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return delete(getEndpoint());
     }
     
+    /**
+     * Handles DELETE method, deletes the RDF representation of this resource from the specified SPARQL endpoint, and
+     * returns response.
+     * 
+     * @param endpoint target SPARQL endpoint
+     * @return response
+     */    
     public Response delete(SPARQLUpdateEndpoint endpoint)
     {
 	if (log.isDebugEnabled()) log.debug("DELETEing resource: {} matched OntClass: {}", this, getMatchedOntClass());
