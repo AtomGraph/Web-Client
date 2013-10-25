@@ -319,17 +319,17 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     </xsl:template>
     -->
 
-    <xsl:template match="button[@type = 'submit'][tokenize(@class, ' ') = 'create-mode']" mode="ixsl:onclick">
+    <xsl:template match="button[@type = 'submit']" mode="ixsl:onclick">
 	<xsl:variable name="graph" select="ancestor::form//select[@name = 'graph']/@prop:value"/>
 	<xsl:message>graph: <xsl:value-of select="$graph"/>!</xsl:message>
 	<!-- <xsl:value-of select="ixsl:call(ixsl:window(), 'alert', ancestor::form//select[@name = 'graph']/@value)"/> -->
 	<xsl:for-each select="ancestor::form">
 	    <xsl:choose>
 		<xsl:when test="$graph = 'Default'">
-		    <ixsl:set-attribute name="action" select="concat($absolute-path, '?mode=', encode-for-uri('&gc;CreateMode'), '&amp;default=true')"/>
+		    <ixsl:set-attribute name="action" select="concat($absolute-path, '?mode=', encode-for-uri($mode), '&amp;default=true')"/>
 		</xsl:when>
 		<xsl:otherwise>
-		    <ixsl:set-attribute name="action" select="concat($absolute-path, '?mode=', encode-for-uri('&gc;CreateMode'), '&amp;graph=', encode-for-uri($graph))"/>
+		    <ixsl:set-attribute name="action" select="concat($absolute-path, '?mode=', encode-for-uri($mode), '&amp;graph=', encode-for-uri($graph))"/>
 		</xsl:otherwise>
 	    </xsl:choose>
 	</xsl:for-each>

@@ -32,7 +32,7 @@ Getting started
 * [installing Graphity](../../wiki/Installation)
 * [extending Graphity](../../wiki/Extending-Graphity)
 * [configuring Graphity](../../wiki/Cofiguration)
-* JavaDoc
+* [JavaDoc](http://graphity.github.io/graphity-browser/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
 
