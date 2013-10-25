@@ -1,0 +1,17 @@
+org.graphity.client
+org.graphity.client.adapter
+org.graphity.client.locator
+org.graphity.client.locator.grddl
+org.graphity.client.model
+org.graphity.client.provider
+org.graphity.client.reader
+org.graphity.client.resource
+org.graphity.client.util
+org.graphity.client.vocabulary
+org.graphity.client.writer
+org.graphity.client.writer.xslt
+org.graphity.processor.model
+org.graphity.processor.provider
+org.graphity.processor.query
+org.graphity.processor.update
+org.graphity.processor.vocabulary
