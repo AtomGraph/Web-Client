@@ -66,13 +66,14 @@ public class GlobalResourceBase extends ResourceBase
      * @param resourceConfig webapp configuration
      * @param sitemap sitemap ontology
      * @param endpoint active SPARQL endpoint (used to execute queries)
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
-     * @param mode "mode" query string param
-     * @param topicURI remote URI to be loaded ("uri" query string param)
-     * @param mediaType media type of the representation ("accept" query string param)
+     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
+     * @param mode <samp>mode</samp> query string param
+     * @param topicURI remote URI to be loaded (<samp>uri</samp> query string param)
+     * @param mediaType media type of the representation (<samp>accept</samp> query string param)
      * @see org.graphity.processor.provider.OntologyProvider
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
@@ -103,11 +104,12 @@ public class GlobalResourceBase extends ResourceBase
      * @param resourceConfig webapp configuration
      * @param ontResource this resource as RDF resource
      * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination LIMIT
-     * @param offset pagination OFFSET
-     * @param orderBy pagination ORDER BY variable name
-     * @param desc pagination DESC value
-     * @param mode "mode" query string param
+     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
+     * @param mode <samp>mode</samp> query string param
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */

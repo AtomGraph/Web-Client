@@ -102,7 +102,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceContext resource context
      * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
+     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)

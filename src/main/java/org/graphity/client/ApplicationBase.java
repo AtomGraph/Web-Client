@@ -148,7 +148,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 
 	try
 	{
-	    singletons.add(new JSONLDWriter(getSource("org/graphity/client/writer/rdfxml2json-ld.xsl"),
+	    singletons.add(new JSONLDWriter(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl"),
 		DataManager.get())); // writes JSON-LD responses
 	}
 	catch (FileNotFoundException ex)
@@ -204,11 +204,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      */
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
-	// using getResource() because getResourceAsStream() does not retain systemId
-	//if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
-	//URL xsltUrl = getServletContext().getResource(filename);
-	if (log.isDebugEnabled()) log.debug("ClassLoader {} used to load Source from filename: {}", getClass().getClassLoader(), filename);
-	URL xsltUrl = getClass().getClassLoader().getResource(filename);
+	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
+	URL xsltUrl = getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);

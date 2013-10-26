@@ -85,7 +85,7 @@ exclude-result-prefixes="#all">
     <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
     <xsl:variable name="ontology-uri" select="xs:anyURI(key('resources-by-type', '&owl;Ontology', $ont-model)/@rdf:about)" as="xs:anyURI"/>
-    <xsl:variable name="config" select="document('../../../../../web.xml')" as="document-node()"/>
+    <xsl:variable name="config" select="document('../../../../../WEB-INF/web.xml')" as="document-node()"/>
 
     <!-- <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/> -->
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
@@ -294,7 +294,7 @@ exclude-result-prefixes="#all">
                 <![CDATA[
                     var baseUri = "]]><xsl:value-of select="$base-uri"/><![CDATA[";
                     var stylesheetUri = UriBuilder.fromUri(baseUri).
-                            path("static/xsl/InputMode.xsl").
+                            path("static/org/graphity/client/xsl/InputMode.xsl").
                             build();
 
                     var onSaxonLoad = function() { Saxon.run( { stylesheet: stylesheetUri,

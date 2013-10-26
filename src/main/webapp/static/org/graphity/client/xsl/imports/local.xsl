@@ -473,6 +473,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
 	<xsl:param name="constraint-violations" as="element()*"/>
+        <xsl:param name="required" select="true()" as="xs:boolean"/>
 	<!-- <xsl:variable name="ranges" select="rdfs:range(xs:anyURI(concat(namespace-uri(), local-name())))"/> -->
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())" as="xs:string"/>
  

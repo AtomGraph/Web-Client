@@ -40,8 +40,8 @@
         -->
         <init-param>
             <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
-            <param-value>org/graphity/client/writer/global-xhtml.xsl</param-value>
-	    <!-- <param-value>org/graphity/client/writer/local-xhtml.xsl</param-value> -->
+            <param-value>/static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
+	    <!-- <param-value>/static/org/graphity/client/xsl/local-xhtml.xsl</param-value> -->
         </init-param>
         <init-param>
             <param-name>http://server.graphity.org/ontology#resultLimit</param-name>

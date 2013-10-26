@@ -107,6 +107,8 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     }
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
+     * @param uriInfo URI information of the current request
+     * @param resourceConfig webapp configuration
      * @return ontology Model
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */

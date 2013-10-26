@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -61,6 +62,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
     @Context private ResourceConfig resourceConfig;
+    @Context private ServletContext servletContext;
     
     /**
      * Constructs from stylesheet source and URI resolver
@@ -153,16 +155,14 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
      * @return XML source
      * @throws FileNotFoundException
      * @throws URISyntaxException 
+     * @throws java.net.MalformedURLException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      */
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
 	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
-	// using getResource() because getResourceAsStream() does not retain systemId
-	//if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
-	//URL xsltUrl = getServletContext().getResource(filename);
-	if (log.isDebugEnabled()) log.debug("ClassLoader {} used to load Source from filename: {}", getClass().getClassLoader(), filename);
-	URL xsltUrl = getClass().getClassLoader().getResource(filename);
+	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
+        URL xsltUrl = getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
@@ -192,6 +192,11 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     public ResourceConfig getResourceConfig()
     {
 	return resourceConfig;
+    }
+
+    public ServletContext getServletContext()
+    {
+        return servletContext;
     }
 
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException

@@ -26,6 +26,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
@@ -69,11 +70,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param resourceConfig webapp configuration
      * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
-     * @param mode "mode" query string param
+     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
+     * @param mode <samp>mode</samp> query string param
      * @see org.graphity.processor.provider.OntologyProvider
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
@@ -100,11 +102,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param resourceConfig webapp configuration
      * @param ontResource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination LIMIT ("limit" query string param)
-     * @param offset pagination OFFSET ("offset" query string param)
-     * @param orderBy pagination ORDER BY variable name ("order-by" query string param)
-     * @param desc pagination DESC value ("desc" query string param)
-     * @param mode "mode" query string param
+     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
+     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
+     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
+     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
+     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
+     * @param mode <samp>mode</samp> query string param
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
@@ -119,7 +122,8 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     @Override
     public Model describe()
     {	
-        if (getMode() != null && hasRDFType(LDP.Container))
+        if (getMode() != null && hasRDFType(LDP.Container) &&
+            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
 	    return DataManager.get().loadModel(getModel(), getQuery(getURI()));
