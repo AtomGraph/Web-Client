@@ -77,14 +77,14 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 <option>Default</option>
                 <xsl:if test="$graphs">
                     <optgroup label="Named graphs">
-                        <xsl:apply-templates select="$graphs" mode="gpl:OptionMode"/>
+                        <xsl:apply-templates select="$graphs" mode="gc:OptionMode"/>
                     </optgroup>
                 </xsl:if>
             </xsl:result-document>
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gpl:OptionMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
         <option value="{@rdf:about | @rdf:nodeID}">
             <xsl:apply-templates select="." mode="gc:LabelMode"/>
         </option>

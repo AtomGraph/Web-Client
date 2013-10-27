@@ -139,7 +139,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about[string-length(tokenize(., '/')[last()]) &gt; 0]" mode="gc:LabelMode" priority="2">
-	<xsl:variable name="label" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+	<xsl:variable name="label" use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+	<xsl:variable name="label" use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
@@ -162,7 +163,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[string-length(tokenize(concat(namespace-uri(), local-name()), '/')[last()]) &gt; 0]" mode="gc:LabelMode" priority="1">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())" as="xs:string"/>
-	<xsl:value-of select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>	
+        <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+        <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
     </xsl:template>
 	
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:LabelMode">
@@ -191,7 +193,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:resource[string-length(tokenize(., '/')[last()]) &gt; 0] | sparql:uri[string-length(tokenize(., '/')[last()]) &gt; 0]" mode="gc:LabelMode" priority="1">
-	<xsl:value-of select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+        <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+        <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
     </xsl:template>
 
     <xsl:template match="@rdf:resource | sparql:uri" mode="gc:LabelMode">

@@ -284,12 +284,13 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
-	<script type="text/javascript" src="static/js/jquery.min.js"></script>
-	<script type="text/javascript" src="static/js/bootstrap.js"></script>
+	<script type="text/javascript" src="static/org/graphity/client/js/jquery.min.js"></script>
+	<script type="text/javascript" src="static/org/graphity/client/js/bootstrap.js"></script>
         <xsl:if test="$mode = ('&gc;CreateMode', '&gc;EditMode')">
-            <script type="text/javascript" src="static/js/UriBuilder.js"></script>
-            <script type="text/javascript" src="static/js/saxon-ce/Saxonce.nocache.js"></script>
-            <script type="text/javascript" src="static/js/UUID.js"></script>
+            <script type="text/javascript" src="static/org/graphity/client/js/UriBuilder.js"></script>
+            <script type="text/javascript" src="static/org/graphity/client/js/saxon-ce/Saxonce.nocache.js"></script>
+            <script type="text/javascript" src="static/org/graphity/client/js/UUID.js"></script>
+            <script type="text/javascript" src="static/org/graphity/client/js/InputMode.js"></script>
             <script type="text/javascript">
                 <![CDATA[
                     var baseUri = "]]><xsl:value-of select="$base-uri"/><![CDATA[";
@@ -303,60 +304,6 @@ exclude-result-prefixes="#all">
                             "mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[" },
                         initialTemplate: "main", logLevel: "FINE"
                     }); }
-                ]]>
-            </script>
-            <script type="text/javascript">
-                <![CDATA[
-                    var resourcesXML = null;
-                    var propertiesXML = null;
-
-                    function loadXML(uri)
-                    {
-                        var jqXHR = $.ajax({url: uri, async: false,
-                            headers: { 'Accept': 'application/rdf+xml' }
-                          });
-                        return jqXHR.responseXML;		    
-                    }
-
-                    function loadResourcesXML(event, query)
-                    {
-                        var searchUri = UriBuilder.fromUri(baseUri).
-                            segment('resources').
-                            segment('labelled').
-                            queryParam('query', query).
-                            build();
-
-                        $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } }).
-                        done(function(data, textStatus, jqXHR)
-                        {
-                            resourcesXML = jqXHR.responseXML;
-                            onresourceTypeaheadCallback(event);
-                        } ).
-                        fail(function(jqXHR, textStatus, errorThrown)
-                        {
-                            alert(errorThrown);
-                        });
-                    }
-
-                    function loadPropertiesXML(event, query)
-                    {
-                        var searchUri = UriBuilder.fromUri(baseUri).
-                            segment('properties').
-                            segment('labelled').
-                            queryParam('query', query).
-                            build();
-
-                        $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } , cache: false }).
-                        done(function(data, textStatus, jqXHR)
-                        {
-                            propertiesXML = jqXHR.responseXML;
-                            onpropertyTypeaheadCallback(event);
-                        } ).
-                        fail(function(jqXHR, textStatus, errorThrown)
-                        {
-                            alert(errorThrown);
-                        });
-                    }
                 ]]>
             </script>
         </xsl:if>
@@ -792,10 +739,11 @@ exclude-result-prefixes="#all">
 	    <fieldset id="fieldset-{generate-id()}">
 		<legend>Add item</legend>
 
+                <!-- can this be made improved? -->
 		<xsl:call-template name="gc:InputTemplate">
 		    <xsl:with-param name="type" select="'hidden'"/>
 		    <xsl:with-param name="name" select="'sb'"/>
-		    <xsl:with-param name="value" select="concat('bnode', uuid:randomUUID())"/>
+		    <xsl:with-param name="value" select="'bnode'"/>
 		</xsl:call-template>
 
 		<div class="control-group">
