@@ -70,6 +70,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="request-uri" as="xs:anyURI"/>
     <xsl:param name="http-headers" as="xs:string"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
+    <xsl:param name="graph" as="xs:anyURI?"/>
     <xsl:param name="mode" as="xs:anyURI?"/>
     <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
@@ -87,7 +88,7 @@ exclude-result-prefixes="#all">
     <xsl:variable name="ontology-uri" select="xs:anyURI(key('resources-by-type', '&owl;Ontology', $ont-model)/@rdf:about)" as="xs:anyURI"/>
     <xsl:variable name="config" select="document('../../../../../WEB-INF/web.xml')" as="document-node()"/>
 
-    <!-- <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/> -->
+    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
     <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
@@ -776,9 +777,6 @@ exclude-result-prefixes="#all">
 
 	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-	<!-- page resource -->
-	<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
-
 	<form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT" accept-charset="UTF-8"> <!-- enctype="multipart/form-data" -->
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
@@ -795,9 +793,6 @@ exclude-result-prefixes="#all">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>
 	</form>
-	
-	<!-- page resource -->
-	<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">

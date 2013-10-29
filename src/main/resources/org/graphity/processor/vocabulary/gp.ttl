@@ -172,7 +172,8 @@ spin:_this sp:varName "this"^^xsd:string .
 # ====
 
 :DescribeTopicTemplate a spin:Template ;
-    spin:body :DescribeTopic .
+    spin:body :DescribeTopic ;
+    rdfs:isDefinedBy : .
 
 :DescribeTopic    a       sp:Describe, sp:Query ;
       sp:resultNodes (_:topicVar) ;
@@ -190,7 +191,8 @@ _:topicVar  sp:varName "topic"^^xsd:string .
 # ====
 
 :DescribeWithTopicTemplate a spin:Template ;
-    spin:body :DescribeWithTopic .
+    spin:body :DescribeWithTopic ;
+    rdfs:isDefinedBy : .
 
 :DescribeWithTopic    a       sp:Describe, sp:Query ;
       sp:resultNodes (spin:_this _:topicVar) ;
@@ -201,6 +203,36 @@ DESCRIBE ?this ?topic WHERE {
       sp:where ([ sp:object spin:_this ;
                   sp:predicate foaf:isPrimaryTopicOf ;
                   sp:subject _:topicVar
+                ]) .
+
+_:topicVar  sp:varName "topic"^^xsd:string .
+
+# ====
+
+:DescribeFromGraphWithTopicTemplate a spin:Template ;
+    spin:body :DescribeFromGraphWithTopic ;
+    spin:constraint [ a       spl:Argument ;
+		spl:predicate :graph ;
+		spl:valueType rdfs:Resource
+	] ;
+    rdfs:isDefinedBy : .
+
+:DescribeFromGraphWithTopic    a       sp:Describe ;
+      sp:resultNodes (spin:_this _:topicVar) ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DESCRIBE ?this ?topic WHERE {
+    GRAPH ?graph {
+        ?topic foaf:isPrimaryTopicOf ?this .
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:NamedGraph ;
+                  sp:elements ([ sp:object spin:_this ;
+                              sp:predicate foaf:isPrimaryTopicOf ;
+                              sp:subject _:topicVar
+                            ]) ;
+                  sp:graphNameNode
+                          [ sp:varName "graph"^^xsd:string
+                          ]
                 ]) .
 
 _:topicVar  sp:varName "topic"^^xsd:string .

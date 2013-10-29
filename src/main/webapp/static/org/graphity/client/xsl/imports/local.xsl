@@ -42,8 +42,6 @@ xmlns:uuid="java:java.util.UUID"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="lang" select="'en'" as="xs:string"/>
-
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 
     <xsl:template match="rdf:type/@rdf:resource" priority="1">
@@ -488,7 +486,7 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
             <label class="control-label" for="{generate-id()}" title="{$this}">
-                <xsl:apply-templates select="key('resources', $this, document(gc:document-uri(xs:anyURI($this))))/@rdf:about" mode="gc:LabelMode"/>
+                <xsl:apply-templates select="." mode="gc:LabelMode"/>
             </label>
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
