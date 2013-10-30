@@ -98,7 +98,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 <xsl:value-of select="../rdfs:label"/>
             </xsl:when>
             <xsl:when test="../dct:title">
-                <xsl:value-of select="dct:title"/>
+                <xsl:value-of select="../dct:title"/>
             </xsl:when>
             <xsl:when test="../foaf:name">
                 <xsl:value-of select="../foaf:name"/>
