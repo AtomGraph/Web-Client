@@ -319,16 +319,16 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset .
 
-:SearchContainer a owl:Class ;
-        rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/search"
-	] ;
-    spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
-    rdfs:label "Search container" ;
-    rdfs:isDefinedBy : ;
-    void:inDataset :Dataset .
+#:SearchContainer a owl:Class ;
+#        rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ,
+#	[ a owl:Restriction ;
+#		owl:onProperty lda:uriTemplate ;
+#		owl:hasValue "/search"
+#	] ;
+#    spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
+#    rdfs:label "Search container" ;
+#    rdfs:isDefinedBy : ;
+#    void:inDataset :Dataset .
 
 :LabelledResourceContainer a owl:Class ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ,

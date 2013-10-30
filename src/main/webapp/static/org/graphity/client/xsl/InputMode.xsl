@@ -115,7 +115,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 <xsl:value-of select="../sioc:name"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="@rdf:about"/>
+                <xsl:value-of select="."/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
