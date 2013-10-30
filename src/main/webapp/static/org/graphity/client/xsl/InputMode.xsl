@@ -64,6 +64,8 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     <xsl:param name="absolute-path" select="xs:anyURI($absolute-path-string)" as="xs:anyURI"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
     <xsl:param name="graph-store-uri" select="resolve-uri('graphs', $base-uri)" as="xs:anyURI"/>
+    <xsl:param name="graph-string" as="xs:string"/>
+    <xsl:param name="graph" select="xs:anyURI($graph-string)" as="xs:anyURI?"/>
     <xsl:param name="mode-string" as="xs:string"/>
     <xsl:param name="mode" select="xs:anyURI($mode-string)" as="xs:anyURI?"/>
 
@@ -86,31 +88,31 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
         <option value="{@rdf:about | @rdf:nodeID}">
-            <xsl:apply-templates select="." mode="gc:LabelMode"/>
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
         </option>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:LabelMode">
+    <xsl:template match="@rdf:*" mode="gc:LabelMode">
         <xsl:choose>
-            <xsl:when test="rdfs:label">
-                <xsl:value-of select="rdfs:label"/>
+            <xsl:when test="../rdfs:label">
+                <xsl:value-of select="../rdfs:label"/>
             </xsl:when>
-            <xsl:when test="dct:title">
+            <xsl:when test="../dct:title">
                 <xsl:value-of select="dct:title"/>
             </xsl:when>
-            <xsl:when test="foaf:name">
-                <xsl:value-of select="foaf:name"/>
+            <xsl:when test="../foaf:name">
+                <xsl:value-of select="../foaf:name"/>
             </xsl:when>
-            <xsl:when test="foaf:givenName and foaf:familyName">
-                <xsl:value-of select="foaf:givenName"/>
+            <xsl:when test="../foaf:givenName and ../foaf:familyName">
+                <xsl:value-of select="../foaf:givenName"/>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="foaf:familyName"/>
+                <xsl:value-of select="../foaf:familyName"/>
             </xsl:when>
-            <xsl:when test="foaf:nick">
-                <xsl:value-of select="foaf:nick"/>
+            <xsl:when test="../foaf:nick">
+                <xsl:value-of select="../foaf:nick"/>
             </xsl:when>
-            <xsl:when test="sioc:name">
-                <xsl:value-of select="sioc:name"/>
+            <xsl:when test="../sioc:name">
+                <xsl:value-of select="../sioc:name"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="@rdf:about"/>
@@ -168,7 +170,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:result-document href="?select=../../.." method="ixsl:replace-content">
             <xsl:for-each select="$property">
                 <label class="control-label"> <!-- for="?" -->
-                    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
                 </label>
                 <input type="hidden" name="pu" value="{@rdf:about}"/>
 
@@ -229,7 +231,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:result-document href="?select=../.." method="ixsl:replace-content">
             <xsl:for-each select="$resource">
                 <a href="{@rdf:about}" class="btn span4">
-                    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
                     <input type="hidden" name="ou" value="{@rdf:about}"/>
                 </a>
                 <span class="help-inline span2">Resource</span>
@@ -320,16 +322,24 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     -->
 
     <xsl:template match="button[@type = 'submit']" mode="ixsl:onclick">
-	<xsl:variable name="graph" select="ancestor::form//select[@name = 'graph']/@prop:value"/>
-	<xsl:message>graph: <xsl:value-of select="$graph"/>!</xsl:message>
-	<!-- <xsl:value-of select="ixsl:call(ixsl:window(), 'alert', ancestor::form//select[@name = 'graph']/@value)"/> -->
 	<xsl:for-each select="ancestor::form">
-	    <xsl:choose>
-		<xsl:when test="$graph = 'Default'">
-		    <ixsl:set-attribute name="action" select="concat($absolute-path, '?mode=', encode-for-uri($mode), '&amp;default=true')"/>
+            <xsl:variable name="graph" select=".//select[@name = 'graph']/@prop:value"/>
+            <xsl:message>graph: <xsl:value-of select="$graph"/></xsl:message>
+            <!-- <xsl:value-of select="ixsl:call(ixsl:window(), 'alert', ancestor::form//select[@name = 'graph']/@value)"/> -->
+            <xsl:message>form @action: <xsl:value-of select="@action"/></xsl:message>
+            <xsl:variable name="separator">
+                <xsl:choose>
+                    <xsl:when test="not(contains(@action, '?'))">?</xsl:when>
+                    <xsl:otherwise>&amp;</xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:message>separator: <xsl:value-of select="$separator"/></xsl:message>
+            <xsl:choose>
+		<xsl:when test="not($graph)">
+		    <ixsl:set-attribute name="action" select="concat(@action, $separator, 'mode=', encode-for-uri($mode), '&amp;default=true')"/>
 		</xsl:when>
 		<xsl:otherwise>
-		    <ixsl:set-attribute name="action" select="concat($absolute-path, '?mode=', encode-for-uri($mode), '&amp;graph=', encode-for-uri($graph))"/>
+		    <ixsl:set-attribute name="action" select="concat(@action, $separator, 'mode=', encode-for-uri($mode), '&amp;graph=', encode-for-uri($graph))"/>
 		</xsl:otherwise>
 	    </xsl:choose>
 	</xsl:for-each>
