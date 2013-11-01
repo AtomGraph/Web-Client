@@ -789,6 +789,16 @@ exclude-result-prefixes="#all">
                 <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID)"/>
             </xsl:apply-templates>
 
+	    <fieldset>
+		<legend>Target graph</legend>
+		<div class="control-group">
+		    <label class="control-label" for="select-graph">Graph</label>
+		    <div class="controls">
+			<select name="graph" id="select-graph"/>
+		    </div>
+		</div>
+	    </fieldset>
+
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>

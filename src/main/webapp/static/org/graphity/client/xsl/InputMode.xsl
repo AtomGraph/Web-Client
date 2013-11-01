@@ -73,16 +73,17 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
 	<xsl:variable name="graphs-rdf" select="ixsl:call(ixsl:window(), 'loadXML', concat(resolve-uri('graphs', $base-uri), '?limit=100&amp;offset=0'))"/>
 	<xsl:variable name="graphs" select="$graphs-rdf/rdf:RDF/*[self::sd:NamedGraph or rdf:type/@rdf:resource = '&sd;NamedGraph']"/>
 	<xsl:message>$mode: <xsl:copy-of select="$mode"/></xsl:message>
-        <xsl:if test="$mode = '&gc;CreateMode'">
-            <!-- <xsl:message> Graphs: <xsl:copy-of select="$graphs"/></xsl:message> -->
-            <xsl:result-document href="#select-graph" method="ixsl:replace-content">
-                <option>Default</option>
-                <xsl:if test="$graphs">
-                    <optgroup label="Named graphs">
-                        <xsl:apply-templates select="$graphs" mode="gc:OptionMode"/>
-                    </optgroup>
-                </xsl:if>
-            </xsl:result-document>
+        <xsl:if test="$mode = ('&gc;CreateMode', '&gc;EditMode')">
+            <xsl:if test="ixsl:page()/id('select-graph')">
+                <xsl:result-document href="#select-graph" method="ixsl:replace-content">
+                    <option>Default</option>
+                    <xsl:if test="$graphs">
+                        <optgroup label="Named graphs">
+                            <xsl:apply-templates select="$graphs" mode="gc:OptionMode"/>
+                        </optgroup>
+                    </xsl:if>
+                </xsl:result-document>
+            </xsl:if>
         </xsl:if>
     </xsl:template>
 
