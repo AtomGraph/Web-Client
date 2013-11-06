@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY dct "http://purl.org/dc/terms/">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
     <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
 ]>
 <xsl:stylesheet
 xmlns="http://www.w3.org/1999/xhtml"
@@ -50,6 +51,7 @@ xmlns:sd="&sd;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
+xmlns:skos="&skos;"
 exclude-result-prefixes="xs prop"
 extension-element-prefixes="ixsl"
 version="2.0"
@@ -70,6 +72,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     <xsl:param name="mode" select="xs:anyURI($mode-string)" as="xs:anyURI?"/>
 
     <xsl:template name="main">
+        <!--
 	<xsl:variable name="graphs-rdf" select="ixsl:call(ixsl:window(), 'loadXML', concat(resolve-uri('graphs', $base-uri), '?limit=100&amp;offset=0'))"/>
 	<xsl:variable name="graphs" select="$graphs-rdf/rdf:RDF/*[self::sd:NamedGraph or rdf:type/@rdf:resource = '&sd;NamedGraph']"/>
 	<xsl:message>$mode: <xsl:copy-of select="$mode"/></xsl:message>
@@ -85,6 +88,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 </xsl:result-document>
             </xsl:if>
         </xsl:if>
+        -->
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
@@ -114,6 +118,9 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
             </xsl:when>
             <xsl:when test="../sioc:name">
                 <xsl:value-of select="../sioc:name"/>
+            </xsl:when>
+            <xsl:when test="../skos:prefLabel">
+                <xsl:value-of select="../skos:prefLabel"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="."/>

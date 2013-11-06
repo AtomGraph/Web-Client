@@ -476,14 +476,14 @@ exclude-result-prefixes="#all">
 
             <xsl:if test="starts-with(@rdf:about, $base-uri) and not($mode = '&gc;EditMode')">
                 <div class="pull-right">
-                    <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
+                    <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
                         <xsl:apply-templates select="key('resources', '&gc;EditMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
                     </a>
                 </div>
             </xsl:if>
             <xsl:if test="rdf:type/@rdf:resource = '&ldp;Container' and not($mode = '&gc;CreateMode')">
                 <div class="pull-right">
-                    <a class="btn btn-primary" href="{@rdf:about}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
+                    <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
                         <xsl:apply-templates select="key('resources', '&gc;CreateMode', document(''))/@rdf:about" mode="gc:LabelMode"/>
                     </a>
                 </div>
@@ -752,6 +752,7 @@ exclude-result-prefixes="#all">
 		</div>
 	    </fieldset>
 	    
+            <!--
 	    <fieldset>
 		<legend>Target graph</legend>
 		<div class="control-group">
@@ -761,9 +762,10 @@ exclude-result-prefixes="#all">
 		    </div>
 		</div>
 	    </fieldset>
+            -->
 
 	    <div class="form-actions">
-		<button type="submit" class="btn btn-primary create-mode">Post</button>
+		<button type="submit" class="btn btn-primary create-mode">Save</button>
 	    </div>
 	</form>
     </xsl:template>
@@ -789,6 +791,7 @@ exclude-result-prefixes="#all">
                 <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID)"/>
             </xsl:apply-templates>
 
+            <!--
 	    <fieldset>
 		<legend>Target graph</legend>
 		<div class="control-group">
@@ -798,7 +801,8 @@ exclude-result-prefixes="#all">
 		    </div>
 		</div>
 	    </fieldset>
-
+            -->
+            
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>

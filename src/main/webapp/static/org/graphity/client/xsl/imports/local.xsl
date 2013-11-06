@@ -207,9 +207,6 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
 	<div class="btn-group pull-right">
-	    <xsl:if test="$query-res/sp:text">
-		<a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
-	    </xsl:if>
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 	</div>
 

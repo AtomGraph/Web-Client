@@ -479,6 +479,78 @@ _:resourceVar  sp:varName "resource"^^xsd:string .
 
 # ===
 
+:DescribeGraphLabelResourcesTemplate a spin:Template ;
+    spin:body :DescribeGraphLabelResources ;
+    rdfs:isDefinedBy : .
+
+:DescribeGraphLabelResources    a       sp:Describe ;
+      sp:resultNodes (_:resourceVar) ;
+      sp:text """DESCRIBE ?resource WHERE {
+    {
+        SELECT ?resource
+        WHERE {
+            GRAPH ?graph {
+                ?resource ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+                FILTER isURI(?resource) .
+            } .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:resultVariables (_:resourceVar) ;
+                            sp:where ([ a       sp:NamedGraph ;
+                                        sp:elements ([ a       sp:TriplePath ;
+                                                    sp:object
+                                                            [ sp:varName "label"^^xsd:string
+                                                            ] ;
+                                                    sp:path [ a       sp:AltPath ;
+                                                              sp:path1
+                                                                      [ a       sp:AltPath ;
+                                                                        sp:path1
+                                                                                [ a       sp:AltPath ;
+                                                                                  sp:path1
+                                                                                          [ a       sp:AltPath ;
+                                                                                            sp:path1
+                                                                                                    [ a       sp:AltPath ;
+                                                                                                      sp:path1
+                                                                                                              [ a       sp:AltPath ;
+                                                                                                                sp:path1
+                                                                                                                        [ a       sp:AltPath ;
+                                                                                                                          sp:path1 rdfs:label ;
+                                                                                                                          sp:path2 dc:title
+                                                                                                                        ] ;
+                                                                                                                sp:path2 dct:title
+                                                                                                              ] ;
+                                                                                                      sp:path2 foaf:name
+                                                                                                    ] ;
+                                                                                            sp:path2 foaf:givenName
+                                                                                          ] ;
+                                                                                  sp:path2 foaf:familyName
+                                                                                ] ;
+                                                                        sp:path2 sioc:name
+                                                                      ] ;
+                                                              sp:path2 skos:prefLabel
+                                                            ] ;
+                                                    sp:subject _:resourceVar
+                                                  ] [ a       sp:Filter ;
+                                                    sp:expression
+                                                            [ a       sp:isURI ;
+                                                              sp:arg1 _:resourceVar
+                                                            ]
+                                                  ]) ;
+                                        sp:graphNameNode
+                                                [ sp:varName "graph"^^xsd:string
+                                                ]
+                                      ])
+                          ]
+                ]) .
+
+_:resourceVar  sp:varName "resource"^^xsd:string .
+
+# ===
+
 :DescribeLabelPropertiesTemplate a spin:Template ;
     spin:body :DescribeLabelProperties ;
     rdfs:isDefinedBy : .

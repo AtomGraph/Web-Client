@@ -706,7 +706,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	try
 	{
-	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<UriTemplate,OntClass>(UriTemplate.COMPARATOR);
+	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<>(UriTemplate.COMPARATOR);
 
 	    while (it.hasNext())
 	    {
