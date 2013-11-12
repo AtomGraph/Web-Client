@@ -329,11 +329,11 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     </xsl:template>
     -->
 
+    <!--
     <xsl:template match="button[@type = 'submit']" mode="ixsl:onclick">
 	<xsl:for-each select="ancestor::form">
             <xsl:variable name="graph" select=".//select[@name = 'graph']/@prop:value"/>
             <xsl:message>graph: <xsl:value-of select="$graph"/></xsl:message>
-            <!-- <xsl:value-of select="ixsl:call(ixsl:window(), 'alert', ancestor::form//select[@name = 'graph']/@value)"/> -->
             <xsl:message>form @action: <xsl:value-of select="@action"/></xsl:message>
             <xsl:variable name="separator">
                 <xsl:choose>
@@ -352,6 +352,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
 	    </xsl:choose>
 	</xsl:for-each>
     </xsl:template>
+    -->
 
     <!-- CALLBACKS -->
     
