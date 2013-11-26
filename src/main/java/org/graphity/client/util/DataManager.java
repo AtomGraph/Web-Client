@@ -35,6 +35,7 @@ import java.net.URLDecoder;
 import java.util.*;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -56,7 +57,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     private static DataManager s_instance = null;
 
    // important: needs to match LocatorLinkedData.QUALIFIED_TYPES
-   public static final Map<String, String> LANGS = new HashMap<String, String>() ;
+   public static final Map<String, String> LANGS = new HashMap<>() ;
     static
     {
         LANGS.put(WebContent.contentTypeRDFXML, WebContent.langRDFXML);
@@ -74,7 +75,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	LANGS.put(WebContent.contentTypeNQuadsAlt, WebContent.langNQuads);
     }
     
-    public static final List<String> IGNORED_EXT = new ArrayList<String>();
+    public static final List<String> IGNORED_EXT = new ArrayList<>();
     static
     {
 	IGNORED_EXT.add("html"); IGNORED_EXT.add("htm"); // GRDDL or <link> inspection could be used to analyzed HTML
@@ -312,7 +313,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 			if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
 			return getSource(loadModel(uri));
 		    }
-		    catch (Exception ex)
+		    catch (IllegalArgumentException | UriBuilderException ex)
 		    {
 			if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
 			return getDefaultSource(); // return empty Model

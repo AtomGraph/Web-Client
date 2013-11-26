@@ -134,7 +134,7 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
                 throw e;
             errorHandler.error(e) ;
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
             if ( errorHandler == null ) throw new JenaException(ex) ;
             errorHandler.error(ex) ;

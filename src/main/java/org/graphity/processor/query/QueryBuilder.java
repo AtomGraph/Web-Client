@@ -53,7 +53,7 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     private final org.topbraid.spin.model.Query query;
     private Select subSelect = null;
 
-    private ElementVisitor elementVisitor = new AbstractElementVisitor()
+    private final ElementVisitor elementVisitor = new AbstractElementVisitor()
     {
 
 	@Override

@@ -717,7 +717,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		    if (hvr.getOnProperty().equals(LDA.uriTemplate))
 		    {
 			UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
-			HashMap<String, String> map = new HashMap<String, String>();
+			HashMap<String, String> map = new HashMap<>();
 
 			if (uriTemplate.match(path, map))
 			{
@@ -736,7 +736,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    if (!matchedClasses.isEmpty())
 	    {
 		if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
-		return matchedClasses.firstEntry().getValue(); //matchedClasses.lastEntry().getValue();
+		return matchedClasses.firstEntry().getValue();
 	    }
 
 	    if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);

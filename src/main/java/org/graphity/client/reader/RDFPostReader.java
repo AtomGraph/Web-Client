@@ -58,8 +58,8 @@ public class RDFPostReader implements MessageBodyReader<Model>
 
     protected void initKeysValues(String body, String charsetName)
     {
-	keys = new ArrayList<String>();
-	values = new ArrayList<String>();
+	keys = new ArrayList<>();
+	values = new ArrayList<>();
 
 	String[] params = body.split("&");
 

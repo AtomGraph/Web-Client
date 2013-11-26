@@ -40,7 +40,7 @@ public class PrefixMapper extends LocationMapper
 {
     private static final Logger log = LoggerFactory.getLogger(PrefixMapper.class) ;
     
-    private Map<String, String> altPrefixLocations = new HashMap<String, String>() ;
+    private final Map<String, String> altPrefixLocations = new HashMap<>() ;
 
     public PrefixMapper()
     {

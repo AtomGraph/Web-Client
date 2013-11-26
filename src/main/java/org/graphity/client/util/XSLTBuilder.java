@@ -39,7 +39,7 @@ public class XSLTBuilder
     private static final Logger log = LoggerFactory.getLogger(XSLTBuilder.class) ;
 
     private Source doc = null;
-    private SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
+    private final SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
     private TransformerHandler handler = null;
     private Transformer transformer = null;
     private Result result = null; 

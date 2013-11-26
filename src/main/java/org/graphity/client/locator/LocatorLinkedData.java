@@ -50,11 +50,12 @@ import org.slf4j.LoggerFactory;
 public class LocatorLinkedData implements Locator
 {
     private static Logger log = LoggerFactory.getLogger(LocatorLinkedData.class);
+    
     static final String[] schemeNames = { "http:" , "https:" } ;
     public static final Map<String, Double> QUALIFIED_TYPES;
     static
     {
-	Map<String, Double> typeMap = new HashMap<String, Double>();
+	Map<String, Double> typeMap = new HashMap<>();
 	
 	typeMap.put(WebContent.contentTypeRDFXML, null);
 

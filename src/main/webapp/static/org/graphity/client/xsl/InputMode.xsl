@@ -251,7 +251,6 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 <button type="button" class="btn btn-small remove-statement" title="Remove this statement">&#x2715;</button>
             </xsl:result-document>
         </xsl:for-each>
-
     </xsl:template>
 
     <xsl:template match="button[tokenize(@class, ' ') = 'btn-toggle']" mode="ixsl:onclick">

@@ -49,7 +49,7 @@ public class SelectBuilder extends QueryBuilder implements Select
     /**
      * Constructs builder from SPIN query
      * 
-     * @param query SPIN SELECT resource
+     * @param select SPIN SELECT resource
      */
     protected SelectBuilder(Select select)
     {

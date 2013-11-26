@@ -476,7 +476,8 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())" as="xs:string"/>
  
         <div class="control-group">
-	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
+	    <xsl:if test="$constraint-violations[spin:violationPath/@rdf:resource = $this and
+                    (spin:violationRoot/@rdf:resource = current()/../@rdf:about or spin:violationRoot/@rdf:nodeID = current()/../@rdf:nodeID)]">
 		<xsl:attribute name="class">control-group warning</xsl:attribute>
 	    </xsl:if>
             <xsl:apply-templates select="." mode="gc:InputMode">

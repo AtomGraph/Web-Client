@@ -62,8 +62,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
-    private final Set<Class<?>> classes = new HashSet<Class<?>>();
-    private final Set<Object> singletons = new HashSet<Object>();
+    private final Set<Class<?>> classes = new HashSet<>();
+    private final Set<Object> singletons = new HashSet<>();
 
     /**
      * Initializes root resource classes and provider singletons

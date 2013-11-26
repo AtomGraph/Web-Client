@@ -117,7 +117,7 @@ public class LocatorGRDDL extends LocatorLinkedData
     @Override
     public  Map<String, Double> getQualifiedTypes()
     {
-	Map<String, Double> xmlType = new HashMap<String, Double>();
+	Map<String, Double> xmlType = new HashMap<>();
 	xmlType.put(WebContent.contentTypeXML, null);
 	return xmlType;
     }

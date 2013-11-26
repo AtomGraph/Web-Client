@@ -155,7 +155,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:template match="/">
-	<html>
+	<html xml:lang="{$lang}">
 	    <head>
 		<xsl:apply-templates select="." mode="gc:HeadMode"/>
       	    </head>
