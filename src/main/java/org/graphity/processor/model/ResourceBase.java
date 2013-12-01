@@ -43,7 +43,7 @@ import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
-import org.graphity.server.vocabulary.VoID;
+import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;

@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
@@ -35,15 +36,17 @@ import org.graphity.client.resource.LabelledContainer;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
 import org.graphity.client.provider.NotFoundExceptionMapper;
 import org.graphity.client.provider.QueryExceptionHTTPMapper;
+import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.writer.xslt.JSONLDWriter;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.server.vocabulary.GS;
-import org.graphity.server.vocabulary.VoID;
+import org.graphity.processor.vocabulary.VoID;
 import org.openjena.riot.SysRIOT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,8 +86,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new NotFoundExceptionMapper());
 	singletons.add(new QueryExceptionHTTPMapper());
 
-	if (log.isDebugEnabled()) log.debug("Adding master XSLT @Provider");
-	singletons.add(new ModelXSLTWriter(DataManager.get())); // writes XHTML responses
+	if (log.isDebugEnabled()) log.debug("Adding XSLT @Providers");
+	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
+	singletons.add(new XSLTBuilderProvider(DataManager.get())); // loads XSLT stylesheet
     }
 
     /**
@@ -116,9 +120,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
                 configureServiceContext(endpointURI, authUser, authPwd);
         }
 
-	if (getResourceConfig().getProperty(GS.sparqlGraphStore.getURI()) != null)
+	if (getResourceConfig().getProperty(GS.graphStore.getURI()) != null)
 	{
-	    String graphStoreURI = (String)getResourceConfig().getProperty(GS.sparqlGraphStore.getURI());
+	    String graphStoreURI = (String)getResourceConfig().getProperty(GS.graphStore.getURI());
 	    // reuses SPARQL query endpoint authentication properties -- not ideal
 	    String authUser = (String)getResourceConfig().getProperty(Service.queryAuthUser.getSymbol());
 	    String authPwd = (String)getResourceConfig().getProperty(Service.queryAuthPwd.getSymbol());
@@ -148,8 +152,12 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 
 	try
 	{
-	    singletons.add(new JSONLDWriter(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl"),
-		DataManager.get())); // writes JSON-LD responses
+	    singletons.add(new JSONLDWriter(XSLTBuilder.fromStylesheet(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")).
+		resolver(DataManager.get()))); // writes JSON-LD responses
+	}
+	catch (TransformerConfigurationException ex)
+	{
+	    if (log.isErrorEnabled()) log.error("XSLT transformer config error", ex);
 	}
 	catch (FileNotFoundException ex)
 	{

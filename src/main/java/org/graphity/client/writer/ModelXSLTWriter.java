@@ -24,19 +24,17 @@ import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.XSLTBuilder;
-import org.graphity.client.vocabulary.GC;
 import org.graphity.server.provider.ModelProvider;
 import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
@@ -56,44 +54,39 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
-    private Source stylesheet = null;
-    private URIResolver resolver = null;
-	
+    private final XSLTBuilder builder;
+ 
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
     @Context private ResourceConfig resourceConfig;
     @Context private ServletContext servletContext;
+    @Context private Providers providers;
     
     /**
-     * Constructs from stylesheet source and URI resolver
+     * Constructs from XSLT builder.
      * 
-     * @param stylesheet the source of the XSLT transformation
-     * @param resolver URI resolver to be used in the transformation
-     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
-     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
+     * @param builder XSLT builder for this writer
+     * @see org.graphity.client.util.XSLTBuilder
      */
-    public ModelXSLTWriter(Source stylesheet, URIResolver resolver)
+    public ModelXSLTWriter(XSLTBuilder builder)
     {
-	if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
-	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-	this.stylesheet = stylesheet;
-	this.resolver = resolver;
+	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
+	this.builder = builder;
     }
 
-    public ModelXSLTWriter(URIResolver resolver)
+    public ModelXSLTWriter()
     {
-	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-	this.resolver = resolver;
+        this.builder = null;
     }
-
+    
     @Override
     public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException, WebApplicationException
     {
 	if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
 	try
-	{
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	{        
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    model.write(baos, WebContent.langRDFXML);
 
 	    // create XSLTBuilder per request output to avoid document() caching
@@ -103,21 +96,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	catch (TransformerException ex)
 	{
 	    if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-	}
-	catch (FileNotFoundException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-	}
-	catch (URISyntaxException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-	}
-	catch (MalformedURLException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
     }
@@ -147,38 +125,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
     }
-
-    /**
-     * Provides XML source from filename
-     * 
-     * @param filename
-     * @return XML source
-     * @throws FileNotFoundException
-     * @throws URISyntaxException 
-     * @throws java.net.MalformedURLException 
-     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
-     */
-    public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
-    {
-	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
-	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
-        URL xsltUrl = getServletContext().getResource(filename);
-	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
-	String xsltUri = xsltUrl.toURI().toString();
-	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
-	return new StreamSource(xsltUri);
-    }
-
-    public URIResolver getURIResolver()
-    {
-	return resolver;
-    }
-
-    public Source getStylesheet()
-    {
-	return stylesheet;
-    }
-
+    
     public UriInfo getUriInfo()
     {
 	return uriInfo;
@@ -198,27 +145,30 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     {
         return servletContext;
     }
-
-    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
+    
+    public Providers getProviders()
     {
-	Source styleSource;
-	if (getStylesheet() == null)
-	{
-	    if (getResourceConfig().getProperty(GC.stylesheet.getURI()) == null)
-		throw new IllegalStateException("XSLT stylesheet source not specified (either in constructor or in web.xml)");
+        return providers;
+    }
 
-	    styleSource = getSource(getResourceConfig().getProperty(GC.stylesheet.getURI()).toString());
-	}
-	else
-	    styleSource = getStylesheet();
-	
-	// injecting Resource to get its OntModel. Is there a better way to do this?
+    public XSLTBuilder getXSLTBuilder()
+    {
+        if (builder != null) return builder;
+        else
+        {
+            ContextResolver<XSLTBuilder> cr = getProviders().getContextResolver(XSLTBuilder.class, null);
+            return cr.getContext(XSLTBuilder.class);
+        }
+    }
+    
+    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
+    {
+	// injecting Resource to get the final state of its OntModel. Is there a better way to do this?
 	Object resource = getUriInfo().getMatchedResources().get(0);
 	OntResource ontResource = (OntResource)resource;
 	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
 
-	XSLTBuilder builder = XSLTBuilder.fromStylesheet(styleSource).
-	    resolver(getURIResolver()).
+        XSLTBuilder bld = getXSLTBuilder().
 	    document(is).
 	    parameter("base-uri", getUriInfo().getBaseUri()).
 	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
@@ -231,26 +181,26 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (contentType != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
-	    builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
+	    bld.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
 	}
 	
 	Object contentLanguage = headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
 	if (contentLanguage != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
-	    builder.parameter("lang", contentLanguage.toString());
+	    bld.parameter("lang", contentLanguage.toString());
 	}
 	
 	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
-	    builder.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
+	    bld.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
 	if (getUriInfo().getQueryParameters().getFirst("query") != null)
-	    builder.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
+	    bld.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	    builder.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
+	    bld.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
 	if (getUriInfo().getQueryParameters().getFirst("endpoint-uri") != null)
-	    builder.parameter("endpoint-uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("endpoint-uri")).build());
+	    bld.parameter("endpoint-uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("endpoint-uri")).build());
 
-	return builder;
+	return bld;
     }
 
 }

@@ -17,6 +17,7 @@
 package org.graphity.processor.vocabulary;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -44,7 +45,7 @@ public class GP
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
         
-    // public static final OntClass Service = m_model.createClass( NS + "Service" );
+    public static final ObjectProperty service = m_model.createObjectProperty( NS + "service" );
     
     public static final DatatypeProperty ontologyPath = m_model.createDatatypeProperty( NS + "ontologyPath" );
 

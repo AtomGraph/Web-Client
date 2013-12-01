@@ -243,7 +243,7 @@ exclude-result-prefixes="#all">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
 			<xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
 			<li>
-			    <xsl:if test=". = $absolute-path">
+			    <xsl:if test="gc:document-uri(.) = $absolute-path">
 				<xsl:attribute name="class">active</xsl:attribute>
 			    </xsl:if>
 			    <xsl:apply-templates select="."/>
@@ -308,7 +308,9 @@ exclude-result-prefixes="#all">
                     var onSaxonLoad = function() { Saxon.run( { stylesheet: stylesheetUri,
                         parameters: { "base-uri-string": baseUri,
                             "absolute-path-string": "]]><xsl:value-of select="$absolute-path"/><![CDATA[",
-                            "mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[" },
+                            "mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[",
+                            "graph-string": "]]><xsl:value-of select="$graph"/><![CDATA[",
+                            "lang": "]]><xsl:value-of select="$lang"/><![CDATA[" },
                         initialTemplate: "main", logLevel: "FINE"
                     }); }
                 ]]>

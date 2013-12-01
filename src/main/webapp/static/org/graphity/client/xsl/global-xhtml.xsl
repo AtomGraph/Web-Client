@@ -159,7 +159,7 @@ exclude-result-prefixes="#all">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
 			<xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
 			<li>
-			    <xsl:if test=". = $absolute-path">
+			    <xsl:if test="gc:document-uri(.) = $absolute-path">
 				<xsl:attribute name="class">active</xsl:attribute>
 			    </xsl:if>
 			    <xsl:apply-templates select="."/>

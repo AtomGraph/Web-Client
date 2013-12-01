@@ -14,6 +14,7 @@
 @prefix void:	<http://rdfs.org/ns/void#> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+@prefix gc:     <http://client.graphity.org/ontology#> .
 @prefix gp:	<http://processor.graphity.org/ontology#> .
 
 : a owl:Ontology ;
@@ -63,6 +64,8 @@ void:inDataset a owl:ObjectProperty ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;
     foaf:maker <http://graphityhq.com/#company> ;
+    gc:stylesheet <static/org/graphity/client/xsl/global-xhtml.xsl> ;
+    gp:service :Service ;
     rdfs:isDefinedBy : ;
     void:inDataset :Dataset ;
     rdfs:seeAlso : , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .

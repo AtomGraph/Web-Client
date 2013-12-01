@@ -28,13 +28,13 @@
         </init-param>
 	<!--
         <init-param>
-            <param-name>http://rdfs.org/ns/void#sparqlEndpoint</param-name>
+            <param-name>http://server.graphity.org/ontology#endpoint</param-name>
             <param-value>http://dydra.com/graphity/client/sparql</param-value>
         </init-param>
 	-->
         <!--
         <init-param>
-            <param-name>http://server.graphity.org/ontology#sparqlGraphStore</param-name>
+            <param-name>http://server.graphity.org/ontology#graphStore</param-name>
             <param-value>http://de2.dydra.com/graphity/client/service</param-value>
         </init-param>
         -->

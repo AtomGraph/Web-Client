@@ -35,6 +35,17 @@
 
 # PROPERTIES
 
+:service a owl:ObjectProperty ;
+    rdfs:domain sioc:Site ;
+    rdfs:range sd:Service ;
+    rdfs:label "SPARQL service" ;
+    rdfs:isDefinedBy : .
+
+:graphStore a owl:ObjectProperty ;
+    rdfs:domain sd:Service ;
+    rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy : .
+
 :cacheControl a owl:DatatypeProperty ;
     rdfs:subPropertyOf http:fieldValue ;
     rdfs:label "Cache control header value" ;

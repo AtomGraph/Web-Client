@@ -91,7 +91,7 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 
     public GraphStore getGraphStore()
     {
-	return GraphStoreFactory.createGraphStore(getRequest(), getResourceConfig());
+	return GraphStoreFactory.createGraphStore(getUriInfo(), getRequest(), getResourceConfig());
     }
 
 }
