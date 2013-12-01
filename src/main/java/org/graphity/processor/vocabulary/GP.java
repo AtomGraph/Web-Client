@@ -46,7 +46,9 @@ public class GP
     public static final Resource NAMESPACE = m_model.createResource( NS );
         
     public static final ObjectProperty service = m_model.createObjectProperty( NS + "service" );
-    
+
+    public static final ObjectProperty graphStore = m_model.createObjectProperty( NS + "graphStore" );
+
     public static final DatatypeProperty ontologyPath = m_model.createDatatypeProperty( NS + "ontologyPath" );
 
     public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );

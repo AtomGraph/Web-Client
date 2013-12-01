@@ -17,13 +17,18 @@
 package org.graphity.processor.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
+import java.util.HashMap;
+import java.util.Map;
 import javax.naming.ConfigurationException;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -89,11 +94,13 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
 	
-	if (endpoint.equals(getOntModelEndpoint(uriInfo)) && !DataManager.get().hasServiceContext(endpoint))
+        /*
+	if (getOntModelEndpoint(uriInfo).equals(endpoint) && !DataManager.get().hasServiceContext(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
 	    DataManager.get().addServiceContext(endpoint);
 	}
+        */
     }
 
     /**
@@ -134,6 +141,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     
     /**
      * Returns configured SPARQL endpoint resource.
+     * Uses <code>sd:endpoint</code> parameter value from current SPARQL service resource.
      * 
      * @return endpoint resource
      */
@@ -143,9 +151,21 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
         try
         {
             if (getService() == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-            Resource endpoint = getService().getPropertyResourceValue(ResourceFactory.createProperty("http://www.w3.org/ns/sparql-service-description#endpoint"));
+            Resource endpoint = getRemoteEndpoint(getService());
             if (endpoint == null) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) does not have an endpoint (sd:endpoint)");
+            if (!endpoint.isURIResource()) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) has endpoint (sd:endpoint) which is not URI resource");
 
+            Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
+            String username = null;
+            if (getService().getProperty(userProp).getObject().isLiteral())
+                username = getService().getProperty(userProp).getLiteral().getString();
+            Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
+            String password = null;
+            if (getService().getProperty(pwdProp).getObject().isLiteral())
+                password = getService().getProperty(pwdProp).getLiteral().getString();
+                
+            configureServiceContext(endpoint.getURI(), username, password);
+            
             return endpoint;
         }
         catch (ConfigurationException ex)
@@ -153,6 +173,12 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
             if (log.isErrorEnabled()) log.warn("SPARQL endpoint configuration error", ex);
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);            
         }
+    }
+    
+    public Resource getRemoteEndpoint(Resource service)
+    {
+        if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
+        return service.getPropertyResourceValue(ResourceFactory.createProperty("http://www.w3.org/ns/sparql-service-description#endpoint"));
     }
 
     /**
@@ -168,7 +194,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (endpoint.equals(getOntModelEndpoint()))
+	if (getOntModelEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
@@ -193,7 +219,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (endpoint.equals(getOntModelEndpoint()))
+	if (getOntModelEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
@@ -218,7 +244,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (endpoint.equals(getOntModelEndpoint()))
+	if (getOntModelEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().ask(getModel(), query);
@@ -236,7 +262,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (endpoint.equals(getOntModelEndpoint()))
+	if (getOntModelEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}
@@ -246,7 +272,41 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	    super.executeUpdateRequest(endpoint, updateRequest);
 	}
     }
-    
+
+    /**
+     * Configures HTTP Basic authentication for SPARQL endpoint context
+     * 
+     * @param endpointURI the endpoint to be configured
+     * @param authUser username
+     * @param authPwd password
+     * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
+     */
+    public void configureServiceContext(String endpointURI, String authUser, String authPwd)
+    {
+	if (endpointURI == null) throw new IllegalArgumentException("SPARQL endpoint URI cannot be null");
+	if (authUser == null) throw new IllegalArgumentException("SPARQL endpoint authentication username cannot be null");
+	if (authPwd == null) throw new IllegalArgumentException("SPARQL endpoint authentication password cannot be null");
+
+	if (log.isDebugEnabled()) log.debug("Setting username/password credentials for SPARQL endpoint: {}", endpointURI);
+	com.hp.hpl.jena.sparql.util.Context queryContext = new com.hp.hpl.jena.sparql.util.Context();
+	queryContext.put(Service.queryAuthUser, authUser);
+	queryContext.put(Service.queryAuthPwd, authPwd);
+
+	if (ARQ.getContext().isDefined(Service.serviceContext))
+	{
+	    Map<String, com.hp.hpl.jena.sparql.util.Context> serviceContext = (Map<String, com.hp.hpl.jena.sparql.util.Context>) ARQ.getContext().get(Service.serviceContext);
+	    if (log.isDebugEnabled()) log.debug("Adding SPARQL endpoint {} to existing service Context: {}", endpointURI, serviceContext);
+	    serviceContext.put(endpointURI, queryContext);
+	}
+	else
+	{
+	    Map<String, com.hp.hpl.jena.sparql.util.Context> serviceContext = new HashMap<>();
+	    if (log.isDebugEnabled()) log.debug("Adding SPARQL endpoint {} to new service Context", endpointURI);
+	    serviceContext.put(endpointURI, queryContext);
+	    ARQ.getContext().put(Service.serviceContext, serviceContext);
+	}
+    }
+
     /**
      * Returns URI information of the current request.
      * 

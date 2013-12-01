@@ -42,6 +42,7 @@ import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.writer.xslt.JSONLDWriter;
 import org.graphity.client.writer.ModelXSLTWriter;
+import org.graphity.processor.model.GraphStoreBase;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
@@ -75,6 +76,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     {
 	classes.add(GlobalResourceBase.class); // handles all
 	classes.add(SPARQLResourceBase.class); // handles /sparql queries
+	classes.add(GraphStoreBase.class); // handles /service requests
 	classes.add(LabelledContainer.class); // handles /search
 
 	singletons.addAll(super.getSingletons());
