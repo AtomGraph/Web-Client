@@ -93,14 +93,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
-	
-        /*
-	if (getOntModelEndpoint(uriInfo).equals(endpoint) && !DataManager.get().hasServiceContext(endpoint))
-	{
-	    if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
-	    DataManager.get().addServiceContext(endpoint);
-	}
-        */
     }
 
     /**
@@ -141,7 +133,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     
     /**
      * Returns configured SPARQL endpoint resource.
-     * Uses <code>sd:endpoint</code> parameter value from current SPARQL service resource.
      * 
      * @return endpoint resource
      */
@@ -151,20 +142,10 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
         try
         {
             if (getService() == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-            Resource endpoint = getRemoteEndpoint(getService());
-            if (endpoint == null) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) does not have an endpoint (sd:endpoint)");
-            if (!endpoint.isURIResource()) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) has endpoint (sd:endpoint) which is not URI resource");
+            Resource endpoint = getEndpoint(getService());
+            if (endpoint == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
 
-            Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
-            String username = null;
-            if (getService().getProperty(userProp).getObject().isLiteral())
-                username = getService().getProperty(userProp).getLiteral().getString();
-            Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
-            String password = null;
-            if (getService().getProperty(pwdProp).getObject().isLiteral())
-                password = getService().getProperty(pwdProp).getLiteral().getString();
-                
-            configureServiceContext(endpoint.getURI(), username, password);
+            configureServiceContext(getService(), endpoint);
             
             return endpoint;
         }
@@ -174,13 +155,44 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);            
         }
     }
-    
-    public Resource getRemoteEndpoint(Resource service)
+
+    /**
+     * Returns SPARQL endpoint resource for the supplied SPARQL service.
+     * Uses <code>sd:endpoint</code> parameter value from current SPARQL service resource.
+     * 
+     * @param service SPARQL service resource
+     * @return endpoint resource
+     */
+    public Resource getEndpoint(Resource service)
     {
         if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
         return service.getPropertyResourceValue(ResourceFactory.createProperty("http://www.w3.org/ns/sparql-service-description#endpoint"));
     }
 
+    /**
+     * Configures HTTP Basic authentication for SPARQL endpoint context
+     * 
+     * @param service service resource
+     * @param endpoint endpoint resource
+     */
+    public void configureServiceContext(Resource service, Resource endpoint)
+    {
+        if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
+        if (endpoint == null) throw new IllegalArgumentException("SPARQL endpoint resource cannot be null");
+        if (!endpoint.isURIResource()) throw new IllegalArgumentException("SPARQL endpoint must be URI resource");
+
+        Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
+        String username = null;
+        if (service.getProperty(userProp).getObject().isLiteral())
+            username = service.getProperty(userProp).getLiteral().getString();
+        Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
+        String password = null;
+        if (service.getProperty(pwdProp).getObject().isLiteral())
+            password = service.getProperty(pwdProp).getLiteral().getString();
+
+        configureServiceContext(endpoint.getURI(), username, password);
+    }
+    
     /**
      * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
      * 

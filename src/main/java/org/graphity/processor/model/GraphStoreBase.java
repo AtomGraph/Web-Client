@@ -79,8 +79,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
 
      /**
      * Returns configured Graph Store resource.
-     * Uses <code>gp:graphStore</code> parameter value from current SPARQL service resource.
-
+     * 
      * @return graph store resource
      */
     @Override
@@ -89,9 +88,11 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
         try
         {
             if (getService() == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-            Resource graphStore = getService().getPropertyResourceValue(GP.graphStore);
+            Resource graphStore = getGraphStore(getService());
             if (graphStore == null) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) does not have a Graph Store (gp:graphStore)");
-
+            
+            // configure Context
+            
             return graphStore;
         }
         catch (ConfigurationException ex)
@@ -99,6 +100,19 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
             if (log.isErrorEnabled()) log.warn("Graph Store configuration error", ex);
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);            
         }
+    }
+       
+    /**
+     * Returns Graph Store resource for the supplied SPARQL service.
+     * Uses <code>gp:graphStore</code> parameter value from current SPARQL service resource.
+     * 
+     * @param service SPARQL service resource
+     * @return service resource
+     */
+    public Resource getGraphStore(Resource service)
+    {
+        if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
+        return service.getPropertyResourceValue(GP.graphStore);
     }
 
     /**

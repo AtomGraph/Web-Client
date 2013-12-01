@@ -19,13 +19,10 @@ package org.graphity.client.model;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
@@ -46,11 +43,10 @@ public class SPARQLResourceBase extends ResourceBase
     private final Query userQuery;
     private final URI endpointURI;
     private final MediaType mediaType;
-    @Context SPARQLEndpoint endpoint;
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
-	    @Context OntModel sitemap,
+	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -62,9 +58,7 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()),
-		SPARQLEndpointFactory.createEndpoint(sitemap.createResource(uriInfo.getAbsolutePath().toString()),
-		    uriInfo, request, resourceConfig),
+		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
 		limit, offset, orderBy, desc, graphURI, mode,
 		userQuery, endpointURI, mediaType);
     }
@@ -95,19 +89,7 @@ public class SPARQLResourceBase extends ResourceBase
 	    mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE)))
 	{
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is RDF or SPARQL Results, returning SPARQL Response", mostAcceptable);
-	    
-	    if (getEndpointURI() != null)
-	    {
-		if (log.isDebugEnabled()) log.debug("Querying user-provided endpoint {} with Query: {}", getEndpointURI(), getUserQuery());
-		return SPARQLEndpointFactory.createEndpoint(getEndpointURI().toString(),
-			getRequest(), getResourceConfig()).
-		    query(getUserQuery(), null, null);
-	    }
-	    else
-	    {
-		if (log.isDebugEnabled()) log.debug("Querying configured endpoint {} with Query: {}", endpoint, getUserQuery());
-		return endpoint.query(getUserQuery(), null, null);
-	    }
+            return getEndpoint().query(getUserQuery(), null, null);
 	}
 	else
 	    if (log.isDebugEnabled()) log.debug("Requested MediaType: {} is not RDF, returning default Response", mostAcceptable);
@@ -115,24 +97,15 @@ public class SPARQLResourceBase extends ResourceBase
 	return super.get(); // if HTML is requested, return DESCRIBE ?this results instead of user query
     }
 
+    /*
     @POST
     @Consumes(org.graphity.server.MediaType.APPLICATION_SPARQL_UPDATE)
     public Response updateDirectly(UpdateRequest update, @QueryParam("using-graph-uri") URI defaultGraphUri,
 	@QueryParam("using-named-graph-uri") URI graphUri)
     {
-	if (getEndpointURI() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Querying user-provided endpoint {} with Query: {}", getEndpointURI(), getUserQuery());
-	    return SPARQLEndpointFactory.createEndpoint(getEndpointURI().toString(),
-		    getRequest(), getResourceConfig()).
-		updateDirectly(update, null, null);
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Querying configured endpoint {} with Query: {}", endpoint, getUserQuery());
-	    return endpoint.updateDirectly(update, null, null);
-	}
+        return getEndpoint().updateDirectly(update, null, null);
     }
+    */
     
     public Query getUserQuery()
     {
@@ -144,6 +117,19 @@ public class SPARQLResourceBase extends ResourceBase
 	return endpointURI;
     }
 
+    @Override
+    public SPARQLEndpoint getEndpoint()
+    {
+	if (getEndpointURI() != null)
+	{
+            if (log.isDebugEnabled()) log.debug("Querying user-provided endpoint: {}", getEndpointURI());
+            return SPARQLEndpointFactory.createEndpoint(getOntModel().createResource(getEndpointURI().toString()),
+                    getUriInfo(), getRequest(), getResourceConfig());            
+        }
+        
+        return super.getEndpoint();
+    }
+    
     public MediaType getMediaType()
     {
 	return mediaType;
