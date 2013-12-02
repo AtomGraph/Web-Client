@@ -17,7 +17,6 @@
 package org.graphity.processor.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -27,8 +26,6 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.api.core.ResourceConfig;
-import java.util.HashMap;
-import java.util.Map;
 import javax.naming.ConfigurationException;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -124,11 +121,26 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * Uses <code>gp:service</code> parameter value from sitemap resource with application base URI.
      * 
      * @return service resource
+     * @throws javax.naming.ConfigurationException
      */
-    public Resource getService()
+    public Resource getService() throws ConfigurationException
     {
+        Resource service = getService(GP.service);
+        if (service == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
+        return service;
+    }
+
+    /**
+     * Returns  SPARQL service resource for site resource.
+     * 
+     * @param property property pointing to service resource
+     * @return service resource
+     */
+    public Resource getService(Property property)
+    {
+        if (property == null) throw new IllegalArgumentException("Property cannot be null");
         return getModel().createResource(getUriInfo().getBaseUri().toString()).
-                getPropertyResourceValue(GP.service);
+                getPropertyResourceValue(property);
     }
     
     /**
@@ -141,11 +153,11 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     {
         try
         {
-            if (getService() == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-            Resource endpoint = getEndpoint(getService());
+            Resource service = getService();
+            Resource endpoint = getEndpoint(service);
             if (endpoint == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
 
-            configureServiceContext(getService(), endpoint);
+            putAuthContext(service, endpoint);
             
             return endpoint;
         }
@@ -175,7 +187,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param service service resource
      * @param endpoint endpoint resource
      */
-    public void configureServiceContext(Resource service, Resource endpoint)
+    public void putAuthContext(Resource service, Resource endpoint)
     {
         if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
         if (endpoint == null) throw new IllegalArgumentException("SPARQL endpoint resource cannot be null");
@@ -183,14 +195,15 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
         Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
         String username = null;
-        if (service.getProperty(userProp).getObject().isLiteral())
+        if (service.getProperty(userProp) != null && service.getProperty(userProp).getObject().isLiteral())
             username = service.getProperty(userProp).getLiteral().getString();
         Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
         String password = null;
-        if (service.getProperty(pwdProp).getObject().isLiteral())
+        if (service.getProperty(pwdProp) != null && service.getProperty(pwdProp).getObject().isLiteral())
             password = service.getProperty(pwdProp).getLiteral().getString();
 
-        configureServiceContext(endpoint.getURI(), username, password);
+        if (username != null & password != null)
+            DataManager.get().putAuthContext(endpoint.getURI(), username, password);
     }
     
     /**
@@ -282,40 +295,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	{
 	    if (log.isDebugEnabled()) log.debug("Updating SPARQL endpoint: {} using UpdateRequest: {}", endpoint.getURI(), updateRequest);
 	    super.executeUpdateRequest(endpoint, updateRequest);
-	}
-    }
-
-    /**
-     * Configures HTTP Basic authentication for SPARQL endpoint context
-     * 
-     * @param endpointURI the endpoint to be configured
-     * @param authUser username
-     * @param authPwd password
-     * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
-     */
-    public void configureServiceContext(String endpointURI, String authUser, String authPwd)
-    {
-	if (endpointURI == null) throw new IllegalArgumentException("SPARQL endpoint URI cannot be null");
-	if (authUser == null) throw new IllegalArgumentException("SPARQL endpoint authentication username cannot be null");
-	if (authPwd == null) throw new IllegalArgumentException("SPARQL endpoint authentication password cannot be null");
-
-	if (log.isDebugEnabled()) log.debug("Setting username/password credentials for SPARQL endpoint: {}", endpointURI);
-	com.hp.hpl.jena.sparql.util.Context queryContext = new com.hp.hpl.jena.sparql.util.Context();
-	queryContext.put(Service.queryAuthUser, authUser);
-	queryContext.put(Service.queryAuthPwd, authPwd);
-
-	if (ARQ.getContext().isDefined(Service.serviceContext))
-	{
-	    Map<String, com.hp.hpl.jena.sparql.util.Context> serviceContext = (Map<String, com.hp.hpl.jena.sparql.util.Context>) ARQ.getContext().get(Service.serviceContext);
-	    if (log.isDebugEnabled()) log.debug("Adding SPARQL endpoint {} to existing service Context: {}", endpointURI, serviceContext);
-	    serviceContext.put(endpointURI, queryContext);
-	}
-	else
-	{
-	    Map<String, com.hp.hpl.jena.sparql.util.Context> serviceContext = new HashMap<>();
-	    if (log.isDebugEnabled()) log.debug("Adding SPARQL endpoint {} to new service Context", endpointURI);
-	    serviceContext.put(endpointURI, queryContext);
-	    ARQ.getContext().put(Service.serviceContext, serviceContext);
 	}
     }
 

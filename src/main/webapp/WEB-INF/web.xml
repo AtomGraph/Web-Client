@@ -24,24 +24,6 @@
         <init-param>
             <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
             <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
-	    <!-- <param-value>org/graphity/client/ontology/quad-sitemap.ttl</param-value> -->
-        </init-param>
-	<!--
-        <init-param>
-            <param-name>http://server.graphity.org/ontology#endpoint</param-name>
-            <param-value>http://dydra.com/graphity/client/sparql</param-value>
-        </init-param>
-	-->
-        <!--
-        <init-param>
-            <param-name>http://server.graphity.org/ontology#graphStore</param-name>
-            <param-value>http://de2.dydra.com/graphity/client/service</param-value>
-        </init-param>
-        -->
-        <init-param>
-            <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
-            <param-value>/static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
-	    <!-- <param-value>/static/org/graphity/client/xsl/local-xhtml.xsl</param-value> -->
         </init-param>
         <init-param>
             <param-name>http://server.graphity.org/ontology#resultLimit</param-name>

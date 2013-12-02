@@ -32,8 +32,8 @@
     dct:title "Graphity Client endpoint" ;
     sd:endpoint <sparql> ;
     gp:graphStore <service> ;
-    srv:queryAuthUser "graphity" ;
-    srv:queryAuthPwd "46bWLRPh6Lutmd7f" ;
+    # srv:queryAuthUser "username" ;
+    # srv:queryAuthPwd "password" ;
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:defaultDataset [ a sd:Dataset ;
 	    sd:defaultGraph :Dataset

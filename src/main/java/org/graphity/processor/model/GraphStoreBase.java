@@ -18,7 +18,10 @@
 package org.graphity.processor.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.sun.jersey.api.core.ResourceConfig;
 import javax.naming.ConfigurationException;
 import javax.ws.rs.Path;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.graphity.client.util.DataManager;
 import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,11 +74,25 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * Uses <code>gp:service</code> parameter value from sitemap resource with application base URI.
      * 
      * @return service resource
+     * @throws javax.naming.ConfigurationException
      */
-    public Resource getService()
+    public Resource getService() throws ConfigurationException
+    {
+        Resource service = getService(GP.service);
+        if (service == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
+        return service;
+    }
+    
+    /**
+     * Returns  SPARQL service resource for site resource.
+     * 
+     * @param property property pointing to service resource
+     * @return service resource
+     */
+    public Resource getService(Property property)
     {
         return getModel().createResource(getUriInfo().getBaseUri().toString()).
-                getPropertyResourceValue(GP.service);
+                getPropertyResourceValue(property);
     }
 
      /**
@@ -87,11 +105,11 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     {
         try
         {
-            if (getService() == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-            Resource graphStore = getGraphStore(getService());
+            Resource service = getService();
+            Resource graphStore = getGraphStore(service);
             if (graphStore == null) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) does not have a Graph Store (gp:graphStore)");
             
-            // configure Context
+            putAuthContext(service, graphStore);
             
             return graphStore;
         }
@@ -113,6 +131,31 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     {
         if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
         return service.getPropertyResourceValue(GP.graphStore);
+    }
+
+    /**
+     * Configures HTTP Basic authentication for SPARQL endpoint context
+     * 
+     * @param service service resource
+     * @param endpoint endpoint resource
+     */
+    public void putAuthContext(Resource service, Resource endpoint)
+    {
+        if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
+        if (endpoint == null) throw new IllegalArgumentException("SPARQL endpoint resource cannot be null");
+        if (!endpoint.isURIResource()) throw new IllegalArgumentException("SPARQL endpoint must be URI resource");
+
+        Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
+        String username = null;
+        if (service.getProperty(userProp) != null && service.getProperty(userProp).getObject().isLiteral())
+            username = service.getProperty(userProp).getLiteral().getString();
+        Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
+        String password = null;
+        if (service.getProperty(pwdProp) != null && service.getProperty(pwdProp).getObject().isLiteral())
+            password = service.getProperty(pwdProp).getLiteral().getString();
+
+        if (username != null & password != null)
+            DataManager.get().putAuthContext(endpoint.getURI(), username, password);
     }
 
     /**
