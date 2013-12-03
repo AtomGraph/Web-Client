@@ -311,7 +311,14 @@ void:inDataset a owl:ObjectProperty ;
 
 # ====
 
-_:OrdnanceSurvey a void:Dataset ;
+<datasets/OrdnanceSurvey> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/OrdnanceSurvey#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/OrdnanceSurvey#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/OrdnanceSurvey> ;
     dct:title "Ordnance Survey" ;
     dct:description "Ordnance Survey is Great Britain's national mapping agency, providing the most accurate and up-to-date geographic data, relied on by government, business and individuals" ;
     foaf:homepage <http://data.ordnancesurvey.co.uk/datasets/os-linked-data> ;
@@ -323,7 +330,16 @@ _:OrdnanceSurvey a void:Dataset ;
 [ a sd:Service ;
     sd:endpoint <http://data.ordnancesurvey.co.uk/datasets/os-linked-data/apis/sparql> ] .
 
-_:CodePoint a void:Dataset ;
+# ====
+
+<datasets/CodePoint> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/CodePoint#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/CodePoint#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/CodePoint> ;
     dct:title "Code-Point Open" ;
     dct:description "Code-Point® Open contains postcode units for Great Britain, each of which has a precise geographic location." ;
     foaf:homepage <http://data.ordnancesurvey.co.uk/datasets/code-point-open> ;
@@ -335,7 +351,16 @@ _:CodePoint a void:Dataset ;
 [ a sd:Service ;
     sd:endpoint <http://data.ordnancesurvey.co.uk/datasets/code-point-open/apis/sparql> ] .
 
-_:Eurostat a void:Dataset ;
+# ====
+
+<datasets/Eurostat> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/Eurostat#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/Eurostat#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/Eurostat> ;
     dct:title "Eurostat" ;
     dct:description "Detailed statistics on the EU and candidate countries, and various statistical publications for sale" ;
     foaf:homepage <http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/> ;
@@ -347,7 +372,16 @@ _:Eurostat a void:Dataset ;
 [ a sd:Service ;
     sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ] .
 
-_:UKStatistics a void:Dataset ;
+# ====
+
+<datasets/UKStatistics> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/UKStatistics#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/UKStatistics#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/UKStatistics> ;
     dct:title "UK Statistics" ;
     dct:description "This site contains Linked Data relating to UK Statistics" ;
     foaf:homepage <http://data.gov.uk> ;
@@ -358,7 +392,16 @@ _:UKStatistics a void:Dataset ;
 [ a sd:Service ;
     sd:endpoint <http://services.data.gov.uk/statistics/sparql> ] .
 
-_:Nature a void:Dataset ;
+# ====
+
+<datasets/Nature> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/Nature#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/Nature#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/Nature> ;
     dct:title "Nature" ;
     dct:description "The NPG Linked Data Platform provides access to datasets from NPG published as linked data and made available through SPARQL services" ;
     foaf:homepage <http://data.nature.com> ;
@@ -370,27 +413,46 @@ _:Nature a void:Dataset ;
 [ a sd:Service ;
     sd:endpoint <http://data.nature.com/sparql> ] .
 
-_:BBC a void:Dataset ;
+# ====
+
+<datasets/BBC> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/BBC#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/BBC#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/BBC> ;
     dct:title "BBC" ;
     foaf:logo <http://upload.wikimedia.org/wikipedia/commons/e/eb/BBC.svg> ;
     void:exampleResource <http://www.bbc.co.uk/programmes/b006t6c5> .
 
-_:Twitter a void:Dataset ;
-    dct:title "Twitter" ;
-    foaf:homepage <http://twitter.com> ;
-    foaf:logo <https://abs.twimg.com/a/1369413260/images/resources/twitter-bird-callout.png> ;
-    void:exampleResource <https://api.twitter.com/1/users/show.xml?screen_name=pumba_lt> ,
-	<https://api.twitter.com/1/users/show.xml?screen_name=graphityhq> ;
-    void:uriSpace "https://api.twitter.com/1/" .
+# ====
 
-_:EEA a void:Dataset ;
+<datasets/EEA> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/EEA#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/EEA#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/EEA> ;
     dct:title "European Environment Agency" ;
     dct:description "Semantic Data Service is an object-oriented search engine where you can search for the content of data in Eionet" ;
     foaf:homepage <http://semantic.eea.europa.eu/> ;
     foaf:depiction <http://wwws4.eea.europa.eu/about-us/documents/logos/eps_logos/eea_mini.gif> ;
     void:sparqlEndpoint <http://semantic.eea.europa.eu/sparql> .
 
-_:SWDogFood a void:Dataset ;
+# ====
+
+<datasets/SWDogFood> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/SWDogFood#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/SWDogFood#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/SWDogFood> ;
     dct:title "Semantic Web Dog Food Corpus" ;
     dct:description "Information on papers that were presented, people who attended, and other things that have to do with the main conferences and workshops in the area of Semantic Web research" ;
     foaf:homepage <http://data.semanticweb.org/> ;
@@ -403,7 +465,16 @@ _:SWDogFood a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://data.semanticweb.org/sparql> .
 
-_:LinkedMDB a void:Dataset ;
+# ====
+
+<datasets/LinkedMDB> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/LinkedMDB#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/LinkedMDB#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/LinkedMDB> ;
     dct:title "LinkedMDB" ;
     dct:description "The project aims at publishing the first open semantic web database for movies, including a large number of interlinks to several datasets on the open data cloud and references to related webpages." ;
     foaf:homepage <http://data.linkedmdb.org/> ;
@@ -413,7 +484,16 @@ _:LinkedMDB a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://data.linkedmdb.org/sparql> .
 
-_:Health a void:Dataset ;
+# ====
+
+<datasets/Health> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/Health#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/Health#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/Health> ;
     dct:title "Health Data Community" ;
     dct:description "Public resource designed to bring together high-value datasets, tools, and applications using data about health and health care to support your need for better knowledge and to help you to solve problems" ;
     foaf:homepage <http://healthdata.gov> ;
@@ -422,7 +502,16 @@ _:Health a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://health.data.gov/sparql> .
 
-_:Commerce a void:Dataset ;
+# ====
+
+<datasets/Commerce> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/Commerce#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/Commerce#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/Commerce> ;
     dct:title "The Linked Open Commerce Dataspace" ;
     dct:description "An Emerging, Open Architecture for Global e-Commerce based on Linked Data" ;
     foaf:homepage <http://linkedopencommerce.com> ;
@@ -432,7 +521,16 @@ _:Commerce a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://linkedopencommerce.com/sparql> .
 
-_:WorldBank a void:Dataset ;
+# ====
+
+<datasets/WorldBank> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/WorldBank#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/WorldBank#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/WorldBank> ;
     dct:title "World Bank" ;
     dct:description "This site contains The World Bank data published using the Linked Data design principles" ;
     foaf:homepage <http://worldbank.270a.info> ;
@@ -443,7 +541,16 @@ _:WorldBank a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://worldbank.270a.info/sparql> .
 
-_:OpenDataCommunities a void:Dataset ;
+# ====
+
+<datasets/OpenDataCommunities> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/OpenDataCommunities#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/OpenDataCommunities#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/OpenDataCommunities> ;
     dct:title "Open Data Communities" ;
     dct:description "This site is the Department for Communities and Local Government's first step towards more open, accessible and re-usable data." ;
     foaf:homepage <http://opendatacommunities.org> ;
@@ -452,17 +559,16 @@ _:OpenDataCommunities a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://opendatacommunities.org/sparql> .
 
-_:SchoolsInDenmark a void:Dataset ;
-    dct:title "Schools in Denmark" ;
-    dct:description "Dataset with geo-located school information (Denmark only)" ;
-    dct:source <http://oiorest.dk/danmark> ;
-    # dct:subject <http://dbpedia.org/resource/Denmark> ;
-    void:sparqlEndpoint <http://semantic-web.dk/projects/schools/sparql> ;
-    void:exampleResource <http://semantic-web.dk/projects/schools/resource/101172> .
-[] a sd:Service ;
-    sd:endpoint <http://semantic-web.dk/projects/schools/sparql> .
+# ====
 
-_:Reegle a void:Dataset ;
+<datasets/Reegle> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/Reegle#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/Reegle#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/Reegle> ;
     dct:title "reegle Data" ;
     dct:description "Energy policy reports for more than 160 countries; clean energy stakeholders; project output documents; more than 3000 clean energy terms from our thesaurus" ;
     foaf:homepage <http://data.reegle.info> ;
@@ -473,7 +579,16 @@ _:Reegle a void:Dataset ;
 [] a sd:Service ;
     sd:endpoint <http://sparql.reegle.info> .
 
-_:LinkedLifeData a void:Dataset ;
+# ====
+
+<datasets/LinkedLifeData> a foaf:Document, sioc:Item ;
+    sioc:has_container <datasets> ;
+    foaf:primaryTopic <datasets/LinkedLifeData#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<datasets/LinkedLifeData#this> a void:Dataset ;
+    foaf:isPrimaryTopicOf <datasets/LinkedLifeData> ;
     dct:title "LinkedLifeData" ;
     dct:description "A semantic data integration platform for the biomedical domain" ;
     foaf:homepage <http://linkedlifedata.com> ;
