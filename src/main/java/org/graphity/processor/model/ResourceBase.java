@@ -203,18 +203,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
-	if (matchedOntClass.hasSuperClass(LDP.Container))
-	{
-	    Query baseQuery = getQuery(matchedOntClass, ontResource);
-	    if (log.isDebugEnabled()) log.debug("Resource is an ldp:Container, making QueryBuilder with pagination from Query: {}", baseQuery);
-	    queryBuilder = getQueryBuilder(ARQ2SPIN.parseQuery(baseQuery.toString(), getModel()));
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Resource is not an ldp:Container, returning Query without pagination");
-	    queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
-	}
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
+        queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()));
+        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
 	dataset = getDataset(matchedOntClass);
 	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
@@ -472,9 +462,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
 	if (hasRDFType(LDP.Container))
 	{
-	    if (log.isDebugEnabled()) log.debug("Adding description of the ldp:Container");
-	    description.add(DataManager.get().loadModel(getModel(), super.getQuery()));
-	    
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
 	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
 		addProperty(RDF.type, LDP.Page).
@@ -532,35 +519,51 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Given a SPIN query resource, returns a query builder.
-     * This method is used to build queries for page resources. It sets LIMIT and OFFSET modifiers as well as
-     * ORDER BY / DESC clauses on SELECT sub-queries. Currently only one ORDER BY condition is supported.
+     * Sets <code>SELECT</code> on a supplied query builder, if it contains such sub-query.
      * 
-     * @param query SPIN query resource
-     * @return query builder based on the given query
+     * @param queryBuilder query builder
+     * @return query builder with set modifiers
      * @see org.graphity.processor.query.QueryBuilder
+     */
+    public QueryBuilder setSelectModifiers(QueryBuilder queryBuilder)
+    {
+        if (queryBuilder == null) throw new IllegalArgumentException("QueryBuilder cannot be null");
+        
+        SelectBuilder selectBuilder = queryBuilder.getSubSelectBuilder();
+        if (selectBuilder != null) setSelectModifiers(selectBuilder);
+        
+        return queryBuilder;
+    }
+
+    /**
+     * Sets <code>SELECT</code> on a supplied builder.
+     * This method is used to build queries for page resources. It sets <code>LIMIT</code> and <code>OFFSET</code>
+     * modifiers as well as <code>ORDER BY</code>/<code>DESC</code> clauses on <code>SELECT</code> sub-queries.
+     * Currently only one <code>ORDER BY</code> condition is supported.
+     * 
+     * @param selectBuilder SELECT builder
+     * @return SELECT builder with set modifiers
      * @see org.graphity.processor.query.SelectBuilder
      */
-    public final QueryBuilder getQueryBuilder(org.topbraid.spin.model.Query query)
-    {
-	QueryBuilder qb = QueryBuilder.fromQuery(query);
-	SelectBuilder selectBuilder = qb.getSubSelectBuilder();
-	if (selectBuilder == null) throw new IllegalStateException("The SPIN query for ldp:Container class does not have a SELECT subquery");
-	
-	selectBuilder.replaceLimit(getLimit()).replaceOffset(getOffset());
+    public SelectBuilder setSelectModifiers(SelectBuilder selectBuilder)
+    {	
+        if (selectBuilder == null) throw new IllegalArgumentException("SelectBuilder cannot be null");
+        selectBuilder.replaceLimit(getLimit()).replaceOffset(getOffset());
 
-	if (getOrderBy() != null)
-	    try
-	    {
-		selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
-		    orderBy(getOrderBy(), getDesc());
-	    }
-	    catch (IllegalStateException ex)
-	    {
-		if (log.isWarnEnabled()) log.warn("Tried to use ORDER BY variable ?{} which is not present in the WHERE pattern", getOrderBy());
-	    }
-
-	return qb;
+        if (getOrderBy() != null)
+        {
+            try
+            {
+                selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
+                    orderBy(getOrderBy(), getDesc());
+            }
+            catch (IllegalStateException ex)
+            {
+                if (log.isWarnEnabled()) log.warn("Tried to use ORDER BY variable ?{} which is not present in the WHERE pattern", getOrderBy());
+            }
+        }
+        
+	return selectBuilder;
     }
 
     /**
