@@ -82,6 +82,27 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy : ;
     void:inDataset <dataset#this> .
 
+<ontologies/linked-data-api> a foaf:Document, sioc:Item ;
+    sioc:has_container <ontologies> ;
+    dct:title "Linked Data API ontology document" ;
+    foaf:primaryTopic lda: ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<ontologies/foaf> a foaf:Document, sioc:Item ;
+    sioc:has_container <ontologies> ;
+    dct:title "FOAF ontology document" ;
+    foaf:primaryTopic foaf: ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<ontologies/void> a foaf:Document, sioc:Item ;
+    sioc:has_container <ontologies> ;
+    dct:title "VoID ontology document" ;
+    foaf:primaryTopic void: ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
 <dataset> a foaf:Document, sioc:Item ;
     sioc:has_container <.> ;
     dct:title "Dataset document" ;
@@ -99,12 +120,6 @@ void:inDataset a owl:ObjectProperty ;
 <resources> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Resources" ;
-    rdfs:isDefinedBy : ;
-    void:inDataset <dataset#this> .
-
-<instances> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Instances" ;
     rdfs:isDefinedBy : ;
     void:inDataset <dataset#this> .
 
@@ -246,9 +261,17 @@ void:inDataset a owl:ObjectProperty ;
 	<http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
     void:uriSpace "http://dbpedia.org/resource/" ;
     void:triples "550000000"^^xsd:integer .
-[ a sd:Service ;
+
+<services/DBPedia> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/DBPedia#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/DBPedia#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/DBPedia> ;
     sd:endpoint <http://dbpedia.org/sparql> ;
-    sd:supportedLanguage sd:SPARQL11Query ] .
+    sd:supportedLanguage sd:SPARQL11Query .
 
 # ====
 
@@ -266,8 +289,16 @@ void:inDataset a owl:ObjectProperty ;
     foaf:logo <http://enipedia.tudelft.nl/enipedia/images/b/bd/eni.png> ;
     void:sparqlEndpoint <http://enipedia.tudelft.nl/sparql/> ;
     void:triples "4317758"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://enipedia.tudelft.nl/sparql/> ] .
+
+<services/Enipedia> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/Enipedia#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/Enipedia#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/Enipedia> ;
+    sd:endpoint <http://enipedia.tudelft.nl/sparql/> .
 
 # ====
 
@@ -286,8 +317,16 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://en.openei.org/lod/resource/wiki/Japan> ;
     void:uriSpace "http://en.openei.org/lod/resource/" ;
     void:triples "17231136"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://en.openei.org/sparql> ] .
+
+<services/OpenEI> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/OpenEI#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/OpenEI#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/OpenEI> ;
+    sd:endpoint <http://en.openei.org/sparql> .
 
 # ====
 
@@ -306,8 +345,16 @@ void:inDataset a owl:ObjectProperty ;
     void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
     void:exampleResource <http://linkedgeodata.org/triplify/node264695865> ;
     void:uriSpace "http://linkedgeodata.org/triplify/" .
-[ a sd:Service ;
-    sd:endpoint <http://linkedgeodata.org/sparql> ] .
+
+<services/LinkedGeoData> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/LinkedGeoData#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/LinkedGeoData#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/LinkedGeoData> ;
+    sd:endpoint <http://linkedgeodata.org/sparql> .
 
 # ====
 
@@ -327,8 +374,16 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://data.ordnancesurvey.co.uk/id/postcodeunit/SO164GU> ,
 	<http://data.ordnancesurvey.co.uk/id/7000000000037256> ;
     void:uriSpace "http://data.ordnancesurvey.co.uk/id/", "http://data.ordnancesurvey.co.uk/ontology/" .
-[ a sd:Service ;
-    sd:endpoint <http://data.ordnancesurvey.co.uk/datasets/os-linked-data/apis/sparql> ] .
+
+<services/OrdnanceSurvey> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/OrdnanceSurvey#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/OrdnanceSurvey#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/OrdnanceSurvey> ;
+    sd:endpoint <http://data.ordnancesurvey.co.uk/datasets/os-linked-data/apis/sparql> .
 
 # ====
 
@@ -348,8 +403,16 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://data.ordnancesurvey.co.uk/id/postcodeunit/SO164GU> ,
 	<http://data.ordnancesurvey.co.uk/id/7000000000037256> .
     # void:uriSpace "http://data.ordnancesurvey.co.uk/id/" .
-[ a sd:Service ;
-    sd:endpoint <http://data.ordnancesurvey.co.uk/datasets/code-point-open/apis/sparql> ] .
+
+<services/CodePoint> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/CodePoint#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/CodePoint#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/CodePoint> ;
+    sd:endpoint <http://data.ordnancesurvey.co.uk/datasets/code-point-open/apis/sparql> .
 
 # ====
 
@@ -369,8 +432,16 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://www4.wiwiss.fu-berlin.de/eurostat/resource/countries/Danmark> ;
     void:uriSpace "http://www4.wiwiss.fu-berlin.de/eurostat/resource/" ;
     void:triples "8850"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> ] .
+
+<services/Eurostat> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/Eurostat#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/Eurostat#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/Eurostat> ;
+    sd:endpoint <http://www4.wiwiss.fu-berlin.de/eurostat/sparql> .
 
 # ====
 
@@ -389,8 +460,16 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://statistics.data.gov.uk/id/local-authority-district/00AK> ;
     void:uriSpace "http://statistics.data.gov.uk/id/" ;
     void:triples "343733"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://services.data.gov.uk/statistics/sparql> ] .
+
+<services/UKStatistics> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/UKStatistics#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/UKStatistics#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/UKStatistics> ;
+    sd:endpoint <http://services.data.gov.uk/statistics/sparql> .
 
 # ====
 
@@ -410,8 +489,16 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://data.nature.com/ns/articles/10.1038/111697a0> ;
     void:uriSpace "http://data.nature.com/" ;
     void:triples "327539066"^^xsd:integer .
-[ a sd:Service ;
-    sd:endpoint <http://data.nature.com/sparql> ] .
+
+<services/Nature> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/Nature#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/Nature#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/Nature> ;
+    sd:endpoint <http://data.nature.com/sparql> .
 
 # ====
 
@@ -443,6 +530,16 @@ void:inDataset a owl:ObjectProperty ;
     foaf:depiction <http://wwws4.eea.europa.eu/about-us/documents/logos/eps_logos/eea_mini.gif> ;
     void:sparqlEndpoint <http://semantic.eea.europa.eu/sparql> .
 
+<services/EEA> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/EEA#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/EEA#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/EEA> ;
+    sd:endpoint <http://semantic.eea.europa.eu/sparql> .
+
 # ====
 
 <datasets/SWDogFood> a foaf:Document, sioc:Item ;
@@ -462,7 +559,15 @@ void:inDataset a owl:ObjectProperty ;
 	<http://data.semanticweb.org/organization/w3c> ,
 	<http://data.semanticweb.org/person/ora-lassila> ;
     void:triples "221690"^^xsd:integer .
-[] a sd:Service ;
+
+<services/SWDogFood> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/SWDogFood#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/SWDogFood#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/SWDogFood> ;
     sd:endpoint <http://data.semanticweb.org/sparql> .
 
 # ====
@@ -481,7 +586,15 @@ void:inDataset a owl:ObjectProperty ;
     void:sparqlEndpoint <http://data.linkedmdb.org/sparql> ;
     void:exampleResource <http://data.linkedmdb.org/resource/film/2014> ;
     void:uriSpace "http://data.linkedmdb.org/resource/" .
-[] a sd:Service ;
+
+<services/LinkedMDB> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/LinkedMDB#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/LinkedMDB#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/LinkedMDB> ;
     sd:endpoint <http://data.linkedmdb.org/sparql> .
 
 # ====
@@ -499,7 +612,15 @@ void:inDataset a owl:ObjectProperty ;
     foaf:homepage <http://healthdata.gov> ;
     void:sparqlEndpoint <http://health.data.gov/sparql> ;
     void:exampleResource <http://health.data.gov/id/ahrqp/2011-12-14/recordset/3065/record/19> .
-[] a sd:Service ;
+
+<services/Health> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/Health#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/Health#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/Health> ;
     sd:endpoint <http://health.data.gov/sparql> .
 
 # ====
@@ -518,7 +639,15 @@ void:inDataset a owl:ObjectProperty ;
     void:sparqlEndpoint <http://linkedopencommerce.com/sparql> .
 #    void:exampleResource <http://openean.kaufkauf.net/id/businessentities/GLN_6079860000028> ,
 #	<http://rdf4ecommerce.esolda.com/camcorder/model_110401#model> .
-[] a sd:Service ;
+
+<services/Commerce> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/Commerce#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/Commerce#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/Commerce> ;
     sd:endpoint <http://linkedopencommerce.com/sparql> .
 
 # ====
@@ -538,7 +667,15 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://worldbank.270a.info/classification/country/CA> ,
 	<http://worldbank.270a.info/dataset/world-development-indicators> ;
     void:uriSpace "http://worldbank.270a.info/" .
-[] a sd:Service ;
+
+<services/WorldBank> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/WorldBank#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/WorldBank#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/WorldBank> ;
     sd:endpoint <http://worldbank.270a.info/sparql> .
 
 # ====
@@ -556,7 +693,15 @@ void:inDataset a owl:ObjectProperty ;
     foaf:homepage <http://opendatacommunities.org> ;
     void:sparqlEndpoint <http://opendatacommunities.org/sparql> ;
     void:exampleResource <http://opendatacommunities.org/id/housing/homelessness-decisions/2011-Q3/E09000033/rejected-not-priority> .
-[] a sd:Service ;
+
+<services/OpenDataCommunities> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/OpenDataCommunities#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/OpenDataCommunities#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/OpenDataCommunities> ;
     sd:endpoint <http://opendatacommunities.org/sparql> .
 
 # ====
@@ -576,7 +721,15 @@ void:inDataset a owl:ObjectProperty ;
     void:sparqlEndpoint <http://sparql.reegle.info> ;
     void:exampleResource <http://reegle.info/actors/2354> ,
 	<http://reegle.info/countries/AT> .
-[] a sd:Service ;
+
+<services/Reegle> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/Reegle#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/Reegle#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/Reegle> ;
     sd:endpoint <http://sparql.reegle.info> .
 
 # ====
@@ -597,7 +750,15 @@ void:inDataset a owl:ObjectProperty ;
     void:exampleResource <http://linkedlifedata.com/resource/entrezgene/id/7158> ,
 	<http://linkedlifedata.com/resource/drug-target/16> ;
     void:triples "1000000000"^^xsd:integer .
-[] a sd:Service ;
+
+<services/LinkedLifeData> a foaf:Document, sioc:Item ;
+    sioc:has_container <services> ;
+    foaf:primaryTopic <services/LinkedLifeData#this> ;
+    rdfs:isDefinedBy : ;
+    void:inDataset <dataset#this> .
+
+<services/LinkedLifeData#this> a sd:Service ;
+    foaf:isPrimaryTopicOf <services/LinkedLifeData> ;
     sd:endpoint <http://linkedlifedata.com/sparql> .
 
 # QUERY TEMPLATES
@@ -622,8 +783,6 @@ DESCRIBE ?this ?doc ?thing WHERE {
         UNION
         {
             {
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
                 SELECT ?doc ?thing
                 WHERE {
                     ?doc sioc:has_container ?this .
