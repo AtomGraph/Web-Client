@@ -41,8 +41,8 @@
 	] .
 
 <dataset#this> a sd:Graph, void:Dataset ;
-    dct:title "Graphity Client dataset" ;
     foaf:isPrimaryTopicOf <dataset> ;
+    dct:title "Graphity Client dataset" ;
     rdfs:isDefinedBy : ;
     void:triples "494"^^xsd:integer ;
     void:sparqlEndpoint <sparql> .
@@ -64,7 +64,7 @@ void:inDataset a owl:ObjectProperty ;
 
 # RESOURCES
 
-<.> a sioc:Site, ldp:Container, foaf:Document ;
+<.> a sioc:Space, ldp:Container, foaf:Document ;
     dct:title "Graphity Client" ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;
@@ -114,12 +114,6 @@ void:inDataset a owl:ObjectProperty ;
     sioc:has_container <.> ;
     dct:title "Service document" ;
     foaf:primaryTopic <service#this> ;
-    rdfs:isDefinedBy : ;
-    void:inDataset <dataset#this> .
-
-<resources> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Resources" ;
     rdfs:isDefinedBy : ;
     void:inDataset <dataset#this> .
 

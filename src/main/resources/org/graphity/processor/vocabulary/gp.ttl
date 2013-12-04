@@ -36,7 +36,7 @@
 # PROPERTIES
 
 :service a owl:ObjectProperty ;
-    rdfs:domain sioc:Site ;
+    rdfs:domain sioc:Space ;
     rdfs:range sd:Service ;
     rdfs:label "SPARQL service" ;
     rdfs:isDefinedBy : .

@@ -93,30 +93,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     }
 
     /**
-     * Builds URI resource of the local SPARQL endpoint (which is serving the sitemap ontology).
-     * 
-     * @return endpoint resource
-     */
-    public Resource getOntModelEndpoint()
-    {
-	return getOntModelEndpoint(getUriInfo());
-    }
-
-    /**
-     * Builds local SPARQL endpoint resource from URI information of a request.
-     * 
-     * @param uriInfo URI information of the current request
-     * @return resource
-     */
-    public final Resource getOntModelEndpoint(UriInfo uriInfo)
-    {
-	return ResourceFactory.createResource(uriInfo.
-		getBaseUriBuilder().
-		path(getClass()).
-		build().toString());
-    }
-
-    /**
      * Returns configured SPARQL service resource.
      * Uses <code>gp:service</code> parameter value from sitemap resource with application base URI.
      * 
@@ -219,7 +195,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (getOntModelEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
@@ -244,7 +220,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (getOntModelEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
@@ -269,7 +245,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (getOntModelEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().ask(getModel(), query);
@@ -287,7 +263,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
 	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
 
-	if (getOntModelEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(endpoint))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}

@@ -142,8 +142,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()),
-		endpoint,
+		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
 		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -523,7 +522,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @return query builder with set modifiers
      * @see org.graphity.processor.query.QueryBuilder
      */
-    public QueryBuilder setSelectModifiers(QueryBuilder queryBuilder)
+    public final QueryBuilder setSelectModifiers(QueryBuilder queryBuilder)
     {
         if (queryBuilder == null) throw new IllegalArgumentException("QueryBuilder cannot be null");
         
