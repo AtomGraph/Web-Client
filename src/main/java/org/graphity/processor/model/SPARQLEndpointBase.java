@@ -90,6 +90,12 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
+
+        if (!DataManager.get().hasServiceContext(endpoint))
+        {
+            if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
+            DataManager.get().addServiceContext(endpoint);
+        }
     }
 
     /**
@@ -185,93 +191,66 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     /**
      * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
      * 
-     * @param endpoint endpoint resource
      * @param query query object
      * @return loaded model
      */
     @Override
-    public Model loadModel(Resource endpoint, Query query)
+    public Model loadModel(Query query)
     {
-	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
-	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
-
-	if (getRemoteEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
 	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from SPARQL endpoint: {} using Query: {}", endpoint, query);
-	    return super.loadModel(endpoint, query);
-	}
+
+        return super.loadModel(query);
     }
 
     /**
      * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
      * 
-     * @param endpoint endpoint resource
      * @param query query object
      * @return loaded model
      */
     @Override
-    public ResultSetRewindable loadResultSetRewindable(Resource endpoint, Query query)
+    public ResultSetRewindable loadResultSetRewindable(Query query)
     {
-	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
-	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
-
-	if (getRemoteEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
 	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from SPARQL endpoint: {} using Query: {}", endpoint.getURI(), query);
-	    return super.loadResultSetRewindable(endpoint, query);
-	}
+        
+        return super.loadResultSetRewindable(query);
     }
 
     /**
      * Asks for boolean result by querying either local or remote SPARQL endpoint (depends on its URI).
      * 
-     * @param endpoint endpoint resource
      * @param query query object
      * @return boolean result
      */
     @Override
-    public boolean ask(Resource endpoint, Query query)
+    public boolean ask(Query query)
     {
-	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
-	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
-
-	if (getRemoteEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().ask(getModel(), query);
 	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from SPARQL endpoint: {} using Query: {}", endpoint, query);
-	    return super.ask(endpoint, query);
-	}
+
+        return super.ask(query);
     }
 
     @Override
-    public void executeUpdateRequest(Resource endpoint, UpdateRequest updateRequest)
+    public void executeUpdateRequest(UpdateRequest updateRequest)
     {
-	if (endpoint == null) throw new IllegalArgumentException("Endpoint cannot be null");
-	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint must be URI Resource (not a blank node)");
-
-	if (getRemoteEndpoint().equals(endpoint))
+	if (getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Updating SPARQL endpoint: {} using UpdateRequest: {}", endpoint.getURI(), updateRequest);
-	    super.executeUpdateRequest(endpoint, updateRequest);
-	}
+
+        super.executeUpdateRequest(updateRequest);
     }
 
     /**
