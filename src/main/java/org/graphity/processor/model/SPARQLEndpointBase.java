@@ -91,7 +91,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
 
-        if (!DataManager.get().hasServiceContext(endpoint))
+        if (endpoint.isURIResource() && !DataManager.get().hasServiceContext(endpoint))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
             DataManager.get().addServiceContext(endpoint);

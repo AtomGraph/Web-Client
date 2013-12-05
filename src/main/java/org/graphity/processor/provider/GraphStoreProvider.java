@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.provider;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
@@ -27,7 +28,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.GraphStoreFactory;
+import org.graphity.processor.model.GraphStoreFactory;
 
 /**
  *
@@ -67,6 +68,12 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 	return request;
     }
 
+    public OntModel getOntModel()
+    {
+	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
+	return cr.getContext(OntModel.class);
+    }
+
     @Override
     public Injectable<GraphStore> getInjectable(ComponentContext cc, Context a)
     {
@@ -91,7 +98,7 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 
     public GraphStore getGraphStore()
     {
-	return GraphStoreFactory.createGraphStore(getUriInfo(), getRequest(), getResourceConfig());
+	return GraphStoreFactory.createGraphStore(getUriInfo(), getRequest(), getResourceConfig(), getOntModel());
     }
 
 }

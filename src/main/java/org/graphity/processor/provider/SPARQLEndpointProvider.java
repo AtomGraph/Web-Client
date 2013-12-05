@@ -85,8 +85,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	    @Override
 	    public SPARQLEndpoint getValue()
 	    {
-		return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
-			getOntModel());
+		return getEndpoint();
 	    }
 	};
     }
@@ -94,8 +93,12 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     @Override
     public SPARQLEndpoint getContext(Class<?> type)
     {
-	return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(),
-		getOntModel());
+	return getEndpoint();
     }
 
+    public SPARQLEndpoint getEndpoint()
+    {
+        return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(), getOntModel());
+    }
+    
 }

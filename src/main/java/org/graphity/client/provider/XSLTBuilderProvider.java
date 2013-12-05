@@ -131,7 +131,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
                     getPropertyResourceValue(property);
         try
         {
-            if (stylesheet == null) throw new ConfigurationException("XSLT stylesheed not configured");
+            if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet not configured");
 
             return getXSLTBuilder(stylesheet, getUriInfo());
         }

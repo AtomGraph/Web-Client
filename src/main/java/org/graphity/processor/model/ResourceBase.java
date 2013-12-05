@@ -687,19 +687,32 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 
     /**
      * Given a relative URI, returns ontology class with a matching URI template, if any.
-     * URIs are matched against the URI templates specified in ontology class restrictions in the sitemap
-     * ontology. This method uses Jersey implementation of the JAX-RS URI matching algorithm.
-     * The URI template restrictions use <code>lda:uriTemplate</code> property (from Linked Data API) with
-     * template string as the object literal. Note: the property might change in future processor versions.
+     * By default, <code>lda:uriTemplate</code> property (from Linked Data API) is used for the <code>owl:HasValue</code>
+     * restrictions, with URI template string as the object literal.
      * 
      * @param path absolute path (relative URI)
      * @return matching ontology class or null, if none
+     * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
+     */
+    public OntClass matchOntClass(CharSequence path)
+    {
+        return matchOntClass(path, LDA.uriTemplate);
+    }
+    
+    /**
+     * Given a relative URI and URI template property, returns ontology class with a matching URI template, if any.
+     * URIs are matched against the URI templates specified in ontology class <code>owl:hasValue</code> restrictions
+     * on the given property in the sitemap ontology.
+     * This method uses Jersey implementation of the JAX-RS URI matching algorithm.
+     * 
+     * @param path absolute path (relative URI)
+     * @param property restriction property holding the URI template value
+     * @return matching ontology class or null, if none
      * @see <a href="https://jsr311.java.net/nonav/releases/1.1/spec/spec3.html#x3-340003.7">3.7 Matching Requests to Resource Methods (JAX-RS 1.1)</a>
      * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
-     * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
      */
-    public final OntClass matchOntClass(CharSequence path)
+    public final OntClass matchOntClass(CharSequence path, Property property)
     {
 	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
 	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();
@@ -714,7 +727,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		if (restriction.canAs(HasValueRestriction.class))
 		{
 		    HasValueRestriction hvr = restriction.asHasValueRestriction();
-		    if (hvr.getOnProperty().equals(LDA.uriTemplate))
+		    if (hvr.getOnProperty().equals(property))
 		    {
 			UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
 			HashMap<String, String> map = new HashMap<>();

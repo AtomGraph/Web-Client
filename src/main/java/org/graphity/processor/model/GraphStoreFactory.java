@@ -37,7 +37,7 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * @param request current request
      * @param resourceConfig webapp configuration
      * @param sitemap ontology of this webapp
-     * @return new graph store
+     * @return graph store instance
      */
     public static GraphStore createGraphStore(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
 	    OntModel sitemap)
@@ -52,7 +52,7 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param resourceConfig webapp configuration
-     * @return new graph stor
+     * @return graph store instance
      */
     public static GraphStore createGraphStore(Resource graphStore, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
