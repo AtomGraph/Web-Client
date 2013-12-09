@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.openjena.riot.WebContent;
+import org.apache.jena.riot.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,14 +49,18 @@ import org.slf4j.LoggerFactory;
  */
 public class LocatorLinkedData implements Locator
 {
-    private static Logger log = LoggerFactory.getLogger(LocatorLinkedData.class);
+    private static final Logger log = LoggerFactory.getLogger(LocatorLinkedData.class);
     
     static final String[] schemeNames = { "http:" , "https:" } ;
     public static final Map<String, Double> QUALIFIED_TYPES;
     static
     {
 	Map<String, Double> typeMap = new HashMap<>();
-	
+
+        for (String type : Lang.RDFXML.getAltContentTypes())
+            typeMap.put(type, null);
+
+        /*
 	typeMap.put(WebContent.contentTypeRDFXML, null);
 
 	typeMap.put(WebContent.contentTypeTurtle, 0.9);
@@ -75,14 +79,12 @@ public class LocatorLinkedData implements Locator
 	typeMap.put(WebContent.contentTypeTriGAlt, 0.8);
 	typeMap.put(WebContent.contentTypeNQuads, 0.8);
 	typeMap.put(WebContent.contentTypeNQuadsAlt, 0.8);
-	
-	//typeMap.put(WebContent.contentTypeTextPlain, 0.7);
-	//typeMap.put(WebContent.contentTypeXML, 0.5);
+	*/
 	
 	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }
 
-    private URLConnection conn = null;
+    private final URLConnection conn = null;
 
     @Override
     public TypedStream open(String filenameOrURI)

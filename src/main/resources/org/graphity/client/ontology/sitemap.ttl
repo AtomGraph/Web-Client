@@ -1,4 +1,4 @@
-@prefix :	<#> .
+# @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
@@ -18,7 +18,7 @@
 @prefix gp:	<http://processor.graphity.org/ontology#> .
 @prefix srv:    <http://jena.hpl.hp.com/Service#> .
 
-: a owl:Ontology ;
+<#> a owl:Ontology ;
     owl:imports gp:, lda: , void:, foaf: ;
     dct:title "Sitemap" ;
     rdfs:label "Sitemap" ;
@@ -38,14 +38,15 @@
     sd:supportedLanguage sd:SPARQL11Query ;
     sd:defaultDataset [ a sd:Dataset ;
 	    sd:defaultGraph <dataset#this>
-	] .
+	] ;
+    rdfs:isDefinedBy <#> .
 
 <dataset#this> a sd:Graph, void:Dataset ;
     foaf:isPrimaryTopicOf <dataset> ;
     dct:title "Graphity Client dataset" ;
-    rdfs:isDefinedBy : ;
     void:triples "494"^^xsd:integer ;
-    void:sparqlEndpoint <sparql> .
+    void:sparqlEndpoint <sparql> ;
+    rdfs:isDefinedBy <#> .
 
 # EXTERNAL
 
@@ -71,97 +72,97 @@ void:inDataset a owl:ObjectProperty ;
     foaf:maker <http://graphityhq.com/#company> ;
     gc:stylesheet <static/org/graphity/client/xsl/global-xhtml.xsl> ;
     gp:service <service#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> ;
-    rdfs:seeAlso : , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+    rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 
 <ontology> a foaf:Document, sioc:Item ;
     sioc:has_container <.> ;
     dct:title "Ontology document" ;
-    foaf:primaryTopic : ;
-    rdfs:isDefinedBy : ;
+    foaf:primaryTopic <#> ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <ontologies/linked-data-api> a foaf:Document, sioc:Item ;
     sioc:has_container <ontologies> ;
     dct:title "Linked Data API ontology document" ;
     foaf:primaryTopic lda: ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <ontologies/foaf> a foaf:Document, sioc:Item ;
     sioc:has_container <ontologies> ;
     dct:title "FOAF ontology document" ;
     foaf:primaryTopic foaf: ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <ontologies/void> a foaf:Document, sioc:Item ;
     sioc:has_container <ontologies> ;
     dct:title "VoID ontology document" ;
     foaf:primaryTopic void: ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <dataset> a foaf:Document, sioc:Item ;
     sioc:has_container <.> ;
     dct:title "Dataset document" ;
     foaf:primaryTopic <dataset#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <service> a foaf:Document, sioc:Item ;
     sioc:has_container <.> ;
     dct:title "Service document" ;
     foaf:primaryTopic <service#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Ontologies" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <classes> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Classes" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Datasets" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Services" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <queries> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <.> ;
     dct:title "Queries" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <resources/labelled> a ldp:Container, foaf:Document ;
     sioc:has_space <resources> ;
     dct:title "Labelled resources" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <properties/labelled> a ldp:Container, foaf:Document ;
     sioc:has_space <properties> ;
     dct:title "Labelled properties" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <sparql> a foaf:Document ;
     dct:title "SPARQL endpoint" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 # RESOURCE CLASSES
@@ -169,7 +170,7 @@ void:inDataset a owl:ObjectProperty ;
 <classes/resource> a foaf:Document, sioc:Item ;
     sioc:has_container <classes> ;
     foaf:primaryTopic <classes/resource#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <classes/resource#this> a owl:Class ;
@@ -179,10 +180,10 @@ void:inDataset a owl:ObjectProperty ;
 		owl:onProperty lda:uriTemplate ;
 		owl:hasValue "/{path: .*}"
 	] ;
-    spin:query [ a :DescribeTemplate ] ;
+    spin:query [ a gp:DescribeWithChildrenTemplate ] ;
     rdfs:label "Resource" ;
     rdfs:comment "Catch-all resource class (template)" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 # ====
@@ -190,7 +191,7 @@ void:inDataset a owl:ObjectProperty ;
 <classes/ontology-doc> a foaf:Document, sioc:Item ;
     sioc:has_container <classes> ;
     foaf:primaryTopic <classes/ontology-doc#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <classes/ontology-doc#this> a owl:Class ;
@@ -202,12 +203,12 @@ void:inDataset a owl:ObjectProperty ;
 	] ;
     spin:query [ a gp:ConstructResourcesTemplate ] ;
     rdfs:label "Ontology document resource" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 # ====
 
-:LabelledResourceContainer a owl:Class ;
+<#LabelledResourceContainer> a owl:Class ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty lda:uriTemplate ;
@@ -215,12 +216,12 @@ void:inDataset a owl:ObjectProperty ;
 	] ;
     spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
     rdfs:label "Labelled resource container" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 # ====
 
-:LabelledPropertyContainer a owl:Class, gp:Template ;
+<#LabelledPropertyContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
 	[ a owl:Restriction ;
 		owl:onProperty void:inDataset ;
@@ -232,7 +233,7 @@ void:inDataset a owl:ObjectProperty ;
 	] ;
     spin:query [ a gp:DescribeLabelPropertiesTemplate ] ;
     rdfs:label "Labelled properties container" ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 # DATASETS & SERVICES
@@ -240,7 +241,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/DBPedia> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/DBPedia#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/DBPedia#this> a void:Dataset ;
@@ -259,7 +260,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/DBPedia> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/DBPedia#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/DBPedia#this> a sd:Service ;
@@ -272,7 +273,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/Enipedia> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/Enipedia#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/Enipedia#this> a void:Dataset ;
@@ -287,7 +288,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/Enipedia> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/Enipedia#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/Enipedia#this> a sd:Service ;
@@ -299,7 +300,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/OpenEI> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/OpenEI#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/OpenEI#this> a void:Dataset ;
@@ -315,7 +316,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/OpenEI> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/OpenEI#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/OpenEI#this> a sd:Service ;
@@ -327,7 +328,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/LinkedGeoData> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/LinkedGeoData#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/LinkedGeoData#this> a void:Dataset ;
@@ -343,7 +344,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/LinkedGeoData> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/LinkedGeoData#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/LinkedGeoData#this> a sd:Service ;
@@ -355,7 +356,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/OrdnanceSurvey> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/OrdnanceSurvey#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/OrdnanceSurvey#this> a void:Dataset ;
@@ -372,7 +373,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/OrdnanceSurvey> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/OrdnanceSurvey#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/OrdnanceSurvey#this> a sd:Service ;
@@ -384,7 +385,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/CodePoint> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/CodePoint#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/CodePoint#this> a void:Dataset ;
@@ -401,7 +402,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/CodePoint> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/CodePoint#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/CodePoint#this> a sd:Service ;
@@ -413,7 +414,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/Eurostat> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/Eurostat#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/Eurostat#this> a void:Dataset ;
@@ -430,7 +431,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/Eurostat> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/Eurostat#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/Eurostat#this> a sd:Service ;
@@ -442,7 +443,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/UKStatistics> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/UKStatistics#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/UKStatistics#this> a void:Dataset ;
@@ -458,7 +459,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/UKStatistics> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/UKStatistics#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/UKStatistics#this> a sd:Service ;
@@ -470,7 +471,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/Nature> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/Nature#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/Nature#this> a void:Dataset ;
@@ -487,7 +488,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/Nature> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/Nature#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/Nature#this> a sd:Service ;
@@ -499,7 +500,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/BBC> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/BBC#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/BBC#this> a void:Dataset ;
@@ -513,7 +514,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/EEA> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/EEA#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/EEA#this> a void:Dataset ;
@@ -527,7 +528,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/EEA> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/EEA#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/EEA#this> a sd:Service ;
@@ -539,7 +540,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/SWDogFood> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/SWDogFood#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/SWDogFood#this> a void:Dataset ;
@@ -557,7 +558,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/SWDogFood> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/SWDogFood#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/SWDogFood#this> a sd:Service ;
@@ -569,7 +570,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/LinkedMDB> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/LinkedMDB#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/LinkedMDB#this> a void:Dataset ;
@@ -584,7 +585,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/LinkedMDB> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/LinkedMDB#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/LinkedMDB#this> a sd:Service ;
@@ -596,7 +597,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/Health> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/Health#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/Health#this> a void:Dataset ;
@@ -610,7 +611,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/Health> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/Health#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/Health#this> a sd:Service ;
@@ -622,7 +623,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/Commerce> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/Commerce#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/Commerce#this> a void:Dataset ;
@@ -637,7 +638,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/Commerce> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/Commerce#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/Commerce#this> a sd:Service ;
@@ -649,7 +650,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/WorldBank> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/WorldBank#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/WorldBank#this> a void:Dataset ;
@@ -665,7 +666,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/WorldBank> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/WorldBank#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/WorldBank#this> a sd:Service ;
@@ -677,7 +678,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/OpenDataCommunities> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/OpenDataCommunities#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/OpenDataCommunities#this> a void:Dataset ;
@@ -691,7 +692,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/OpenDataCommunities> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/OpenDataCommunities#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/OpenDataCommunities#this> a sd:Service ;
@@ -703,7 +704,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/Reegle> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/Reegle#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/Reegle#this> a void:Dataset ;
@@ -719,7 +720,7 @@ void:inDataset a owl:ObjectProperty ;
 <services/Reegle> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/Reegle#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/Reegle#this> a sd:Service ;
@@ -731,7 +732,7 @@ void:inDataset a owl:ObjectProperty ;
 <datasets/LinkedLifeData> a foaf:Document, sioc:Item ;
     sioc:has_container <datasets> ;
     foaf:primaryTopic <datasets/LinkedLifeData#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <datasets/LinkedLifeData#this> a void:Dataset ;
@@ -748,71 +749,9 @@ void:inDataset a owl:ObjectProperty ;
 <services/LinkedLifeData> a foaf:Document, sioc:Item ;
     sioc:has_container <services> ;
     foaf:primaryTopic <services/LinkedLifeData#this> ;
-    rdfs:isDefinedBy : ;
+    rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
 <services/LinkedLifeData#this> a sd:Service ;
     foaf:isPrimaryTopicOf <services/LinkedLifeData> ;
     sd:endpoint <http://linkedlifedata.com/sparql> .
-
-# QUERY TEMPLATES
-
-:DescribeTemplate a spin:Template ;
-    spin:body :Describe ;
-    rdfs:isDefinedBy : .
-
-:Describe    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:docVar _:thingVar) ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-DESCRIBE ?this ?doc ?thing WHERE {
-    OPTIONAL {
-        {
-            ?this foaf:primaryTopic ?thing .
-        }
-        UNION
-        {
-            ?doc sioc:has_space ?this .
-        }
-        UNION
-        {
-            {
-                SELECT ?doc ?thing
-                WHERE {
-                    ?doc sioc:has_container ?this .
-                    OPTIONAL {
-                        ?doc foaf:primaryTopic ?thing .
-                    } .
-                }
-            } .
-        } .
-    } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:Optional ;
-                  sp:elements ([ a       sp:Union ;
-                              sp:elements (([ sp:object _:thingVar ;
-                                            sp:predicate foaf:primaryTopic ;
-                                            sp:subject spin:_this
-                                          ]) ([ sp:object spin:_this ;
-                                            sp:predicate sioc:has_space ;
-                                            sp:subject _:docVar
-                                          ]) ([ a       sp:SubQuery ;
-                                            sp:query
-                                                    [ a       sp:Select ;
-                                                      sp:resultVariables (_:docVar _:thingVar) ;
-                                                      sp:where ([ sp:object spin:_this ;
-                                                                  sp:predicate sioc:has_container ;
-                                                                  sp:subject _:docVar
-                                                                ] [ a       sp:Optional ;
-                                                                  sp:elements ([ sp:object _:thingVar ;
-                                                                              sp:predicate foaf:primaryTopic ;
-                                                                              sp:subject _:docVar
-                                                                            ])
-                                                                ])
-                                                    ]
-                                          ]))
-                            ])
-                ]) .
-
-_:docVar  sp:varName "doc"^^xsd:string .
-_:thingVar  sp:varName "thing"^^xsd:string .

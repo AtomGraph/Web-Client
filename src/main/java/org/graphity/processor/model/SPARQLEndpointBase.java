@@ -243,14 +243,14 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     }
 
     @Override
-    public void executeUpdateRequest(UpdateRequest updateRequest)
+    public void update(UpdateRequest updateRequest)
     {
 	if (getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}
 
-        super.executeUpdateRequest(updateRequest);
+        super.update(updateRequest);
     }
 
     /**

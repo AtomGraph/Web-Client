@@ -40,9 +40,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
 import org.graphity.client.locator.LocatorLinkedData;
 import org.graphity.client.locator.PrefixMapper;
-import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +58,13 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     private static DataManager s_instance = null;
 
    // important: needs to match LocatorLinkedData.QUALIFIED_TYPES
-   public static final Map<String, String> LANGS = new HashMap<>() ;
+
+    /*
+    public static final Map<String, String> LANGS = new HashMap<>() ;
     static
     {
-        LANGS.put(WebContent.contentTypeRDFXML, WebContent.langRDFXML);
-	LANGS.put(WebContent.contentTypeTurtle, WebContent.langTurtle);
+        LANGS.put(Lang.RDFXML.getContentType().getContentType(), Lang.RDFXML.getName());
+	LANGS.put(Lang.TURTLE.getContentType().getContentType(), Lang.TURTLE.getName());
 	LANGS.put(WebContent.contentTypeTurtleAlt1, WebContent.langTurtle);
 	LANGS.put(WebContent.contentTypeTurtleAlt2, WebContent.langTurtle);
         LANGS.put(WebContent.contentTypeNTriples, WebContent.langNTriple); // text/plain
@@ -74,6 +77,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	LANGS.put(WebContent.contentTypeNQuads, WebContent.langNQuads);
 	LANGS.put(WebContent.contentTypeNQuadsAlt, WebContent.langNQuads);
     }
+    */
     
     public static final List<String> IGNORED_EXT = new ArrayList<>();
     static
@@ -202,10 +206,10 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	{
 	    if (log.isDebugEnabled()) log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, in);
 
-	    String syntax = langFromContentType(in.getMimeType());
-
-	    if (syntax != null) // do not read if MimeType/syntax are not known
+            Lang lang = RDFLanguages.contentTypeToLang(in.getMimeType());
+	    if (lang != null) // do not read if MimeType/syntax are not known
 	    {
+                String syntax = lang.getName();
 		if (log.isDebugEnabled()) log.debug("URI {} syntax is {}, reading it", filenameOrURI, syntax);
 
 		model.read(in.getInput(), filenameOrURI, syntax) ;
@@ -247,13 +251,15 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	}
     }
     
-    // ---- To riot.WebContent
+    // ---- To riot.WebContent\
+    /*
     public static String langFromContentType(String mimeType)
     {
         if ( mimeType == null )
             return null ;
         return LANGS.get(mimeType.toLowerCase()) ;
     }
+    */
 
     @Override
     public Source resolve(String href, String base) throws TransformerException

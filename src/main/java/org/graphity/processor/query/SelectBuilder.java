@@ -38,7 +38,7 @@ import org.topbraid.spin.vocabulary.SP;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see QueryBuilder
  * @see <a href="http://spinrdf.org/sp.html">SPIN - SPARQL Syntax</a>
- * @see <a href="http://topbraid.org/spin/api/1.2.0/spin/apidocs/org/topbraid/spin/model/Select.html">SPIN Select</a>
+ * @see <a href="http://topbraid.org/spin/api/">SPIN API</a>
  */
 public class SelectBuilder extends QueryBuilder implements Select
 {

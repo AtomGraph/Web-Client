@@ -45,7 +45,7 @@ import org.topbraid.spin.vocabulary.SP;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see SelectBuilder
  * @see <a href="http://spinrdf.org/sp.html">SPIN - SPARQL Syntax</a>
- * @see <a href="http://topbraid.org/spin/api/1.2.0/spin/apidocs/org/topbraid/spin/model/Query.html">SPIN Query</a>
+ * @see <a href="http://topbraid.org/spin/api/">SPIN API</a>
  */
 public class QueryBuilder implements org.topbraid.spin.model.Query
 {
@@ -776,5 +776,11 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     public String toString()
     {
 	return getQuery().toString();
+    }
+
+    @Override
+    public Values getValues()
+    {
+        return getQuery().getValues();
     }
 }

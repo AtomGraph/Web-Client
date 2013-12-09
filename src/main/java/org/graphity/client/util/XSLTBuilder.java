@@ -44,6 +44,10 @@ public class XSLTBuilder
     private Transformer transformer = null;
     private Result result = null; 
 
+    protected XSLTBuilder()
+    {
+    }
+    
     protected static XSLTBuilder newInstance()
     {
 	return new XSLTBuilder();

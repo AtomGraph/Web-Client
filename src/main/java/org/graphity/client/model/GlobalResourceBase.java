@@ -152,7 +152,7 @@ public class GlobalResourceBase extends ResourceBase
      * 
      * @return variant list
      */
-    @Override
+    /*
     public List<Variant> getVariants()
     {
 	if (getMediaType() != null)
@@ -162,6 +162,7 @@ public class GlobalResourceBase extends ResourceBase
 
 	return super.getVariants();
     }
+    */
 
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
@@ -181,11 +182,11 @@ public class GlobalResourceBase extends ResourceBase
 
 	    Model model = DataManager.get().loadModel(getTopicURI().toString());
 	    LinkedDataResource topic = LinkedDataResourceFactory.createResource(model.createResource(getTopicURI().toString()),
-		getResourceConfig());
+		getRequest(), getResourceConfig());
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 
-	    return getResponseBuilder(model, getVariants()).build();
+	    return getResponse(model);
 	}	
 
 	return super.get();

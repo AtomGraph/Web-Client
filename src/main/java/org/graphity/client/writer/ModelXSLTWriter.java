@@ -25,7 +25,6 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.servlet.ServletContext;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.ContextResolver;
@@ -34,9 +33,11 @@ import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.server.provider.ModelProvider;
-import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML})
+//@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML})
 public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
@@ -85,9 +86,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
 	try
-	{        
+	{
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    model.write(baos, WebContent.langRDFXML);
+	    model.write(baos, RDFLanguages.RDFXML.getName());
 
 	    // create XSLTBuilder per request output to avoid document() caching
 	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
@@ -98,6 +99,12 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
 	}
+    }
+
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    {
+        return Model.class.isAssignableFrom(type);
     }
     
     public Source getSource(Model model)
@@ -120,7 +127,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	ontModel.writeAll(stream, null, WebContent.langRDFXML);
+	ontModel.writeAll(stream, null, Lang.RDFXML.getName());
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	

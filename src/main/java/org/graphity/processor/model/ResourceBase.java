@@ -81,9 +81,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Resource dataset;
     private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
-    private final Request request;
+    //private final Request request;
     private final HttpHeaders httpHeaders;
-    private final ResourceConfig resourceConfig;
+    //private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
     private final URI graphURI;
     private final CacheControl cacheControl;
@@ -176,19 +176,19 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	super(ontResource, endpoint, resourceConfig);
+	super(ontResource, endpoint, request, resourceConfig);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	if (request == null) throw new IllegalArgumentException("Request cannot be null");
+	//if (request == null) throw new IllegalArgumentException("Request cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
 	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
-	this.request = request;
+	//this.request = request;
 	this.httpHeaders = httpHeaders;
-	this.resourceConfig = resourceConfig;
+	//this.resourceConfig = resourceConfig;
 	this.limit = limit;
 	this.offset = offset;
 	this.orderBy = orderBy;
@@ -1023,16 +1023,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final UriInfo getUriInfo()
     {
 	return uriInfo;
-    }
-
-    /**
-     * Returns current request.
-     * 
-     * @return request object
-     */
-    public Request getRequest()
-    {
-	return request;
     }
 
     /**

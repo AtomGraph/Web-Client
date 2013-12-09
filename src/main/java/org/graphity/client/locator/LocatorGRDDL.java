@@ -31,8 +31,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
-import org.openjena.riot.WebContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class LocatorGRDDL extends LocatorLinkedData
     @Override
     public TypedStream open(String filenameOrURI)
     {
-	if (log.isDebugEnabled()) log.debug("Opening URI {} via GRDDL: {}", filenameOrURI, stylesheet.getSystemId());
+	if (log.isDebugEnabled()) log.debug("Opening URI {} via GRDDL: {}", filenameOrURI, getStylesheet().getSystemId());
 	
 	if (!getUriTemplate().match(filenameOrURI, new HashMap<String, String>()))
 	{
@@ -99,7 +100,7 @@ public class LocatorGRDDL extends LocatorLinkedData
 	    if (log.isTraceEnabled()) log.trace("GRDDL RDF/XML output: {}", bos.toString());
 
 	    return new TypedStream(new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray())),
-		    WebContent.contentTypeRDFXML,
+		    Lang.RDFXML.getContentType().getContentType(),
 		    "UTF-8");
 	}
 	catch (TransformerException ex)
@@ -125,7 +126,7 @@ public class LocatorGRDDL extends LocatorLinkedData
     @Override
     public String getName()
     {
-	return "LocatorGRDDL(" + stylesheet.getSystemId() + ")";
+	return "LocatorGRDDL(" + getStylesheet().getSystemId() + ")";
     }
 
     public UriTemplate getUriTemplate()
@@ -141,6 +142,11 @@ public class LocatorGRDDL extends LocatorLinkedData
     public URIResolver getURIResolver()
     {
 	return resolver;
+    }
+
+    public Source getStylesheet()
+    {
+        return stylesheet;
     }
 
 }

@@ -21,11 +21,11 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
-import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
@@ -45,17 +45,6 @@ import org.topbraid.spin.vocabulary.SPIN;
 public class ResourceBase extends org.graphity.processor.model.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
-
-    /**
-     * Media types that can be used for representation of RDF model, including XHTML
-     */
-    public static List<Variant> XHTML_VARIANTS = Variant.VariantListBuilder.newInstance().
-		mediaTypes(MediaType.APPLICATION_XHTML_XML_TYPE,
-		    //MediaType.TEXT_HTML_TYPE,
-		    org.graphity.client.MediaType.APPLICATION_RDF_XML_TYPE,
-		    org.graphity.client.MediaType.TEXT_TURTLE_TYPE,
-		    org.graphity.client.MediaType.APPLICATION_LD_JSON_TYPE).
-		add().build();
 
     private final URI mode;
 
@@ -142,19 +131,21 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	return description;
     }
 
+    /**
+     * Returns response builder for the given RDF model.
+     * 
+     * @param model RDF model
+     * @return response builder
+     */
     @Override
-    public Response getResponse(Model model)
+    public ResponseBuilder getResponseBuilder(Model model)
     {
-	return getResponseBuilder(model).build();
+        return ModelResponse.fromRequest(getRequest()).
+                getResponseBuilder(model).
+                cacheControl(getCacheControl());
     }
 
-    @Override
-    public Response.ResponseBuilder getResponseBuilder(Model model)
-    {
-	return getEndpoint().getResponseBuilder(model, getVariants()).
-		cacheControl(getCacheControl());
-    }
-
+    /*
     public List<Variant> getVariants()
     {
         // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
@@ -172,7 +163,8 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
 	return XHTML_VARIANTS;
     }
-
+    */
+    
     public URI getMode()
     {
 	return mode;
