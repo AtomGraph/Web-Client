@@ -25,7 +25,7 @@
     dct:description "Default sitemap for SPARQL service" ;
     dct:created "2013-03-09T13:53:00+03:00"^^xsd:dateTime ;
     dct:modified "2013-08-06T23:39:00+03:00"^^xsd:dateTime ;
-    foaf:isPrimaryTopicOf <ontology> ;
+    foaf:isPrimaryTopicOf <> ;
     rdfs:seeAlso <sparql> .
 
 <service#this> a sd:Service ;
@@ -76,7 +76,7 @@ void:inDataset a owl:ObjectProperty ;
     void:inDataset <dataset#this> ;
     rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 
-<ontology> a foaf:Document, sioc:Item ;
+<> a foaf:Document, sioc:Item ;
     sioc:has_container <.> ;
     dct:title "Ontology document" ;
     foaf:primaryTopic <#> ;

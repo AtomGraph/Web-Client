@@ -21,11 +21,11 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
@@ -132,20 +132,11 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     }
 
     /**
-     * Returns response builder for the given RDF model.
+     * Builds a list of acceptable response variants
      * 
-     * @param model RDF model
-     * @return response builder
+     * @return supported variants
      */
     @Override
-    public ResponseBuilder getResponseBuilder(Model model)
-    {
-        return ModelResponse.fromRequest(getRequest()).
-                getResponseBuilder(model).
-                cacheControl(getCacheControl());
-    }
-
-    /*
     public List<Variant> getVariants()
     {
         // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
@@ -153,17 +144,15 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	if (getMode() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
-	    return Variant.VariantListBuilder.newInstance().
-		    mediaTypes(MediaType.TEXT_HTML_TYPE,
-                        org.graphity.client.MediaType.APPLICATION_RDF_XML_TYPE,
-                        org.graphity.client.MediaType.TEXT_TURTLE_TYPE,
-                        org.graphity.client.MediaType.APPLICATION_LD_JSON_TYPE).
-		    add().build();
+	    List<Variant> list = super.getVariants();
+            list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null));
+            return list;
 	}
 
-	return XHTML_VARIANTS;
+        List<Variant> list = super.getVariants();
+        list.add(0, new Variant(MediaType.APPLICATION_XHTML_XML_TYPE, null, null));
+        return list;
     }
-    */
     
     public URI getMode()
     {
