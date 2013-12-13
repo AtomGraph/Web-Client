@@ -20,7 +20,7 @@
 
 <#> a owl:Ontology ;
     owl:imports sp:, spin:, spl: ;
-    owl:versionInfo "1.0.9" ;
+    owl:versionInfo "1.0.10" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
     dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
@@ -268,6 +268,89 @@ DESCRIBE ?this ?doc ?thing WHERE {
                                                                               sp:predicate foaf:primaryTopic ;
                                                                               sp:subject _:docVar
                                                                             ])
+                                                                ])
+                                                    ]
+                                          ]))
+                            ])
+                ]) .
+
+_:docVar  sp:varName "doc"^^xsd:string .
+_:thingVar  sp:varName "thing"^^xsd:string .
+
+# ====
+
+<#DescribeFromGraphWithChildrenTemplate> a spin:Template ;
+    spin:body <#DescribeFromGraphWithChildren> ;
+    rdfs:isDefinedBy <#> .
+
+<#DescribeFromGraphWithChildren>    a       sp:Describe ;
+      sp:resultNodes (spin:_this _:docVar _:thingVar) ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+DESCRIBE ?this ?doc ?thing WHERE {
+    OPTIONAL {
+        {
+            GRAPH ?graph {
+                ?this foaf:primaryTopic ?thing .
+            } .
+        }
+        UNION
+        {
+            GRAPH ?docGraph {
+                ?doc sioc:has_space ?this .
+            } .
+        }
+        UNION
+        {
+            {
+                SELECT ?doc ?thing
+                WHERE {
+                    GRAPH ?childGraph {
+                        ?doc sioc:has_container ?this .
+                        OPTIONAL {
+                            ?doc foaf:primaryTopic ?thing .
+                        } .
+                    } .
+                }
+            } .
+        } .
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:Optional ;
+                  sp:elements ([ a       sp:Union ;
+                              sp:elements (([ a       sp:NamedGraph ;
+                                            sp:elements ([ sp:object _:thingVar ;
+                                                        sp:predicate foaf:primaryTopic ;
+                                                        sp:subject spin:_this
+                                                      ]) ;
+                                            sp:graphNameNode
+                                                    [ sp:varName "graph"^^xsd:string
+                                                    ]
+                                          ]) ([ a       sp:NamedGraph ;
+                                            sp:elements ([ sp:object spin:_this ;
+                                                        sp:predicate sioc:has_space ;
+                                                        sp:subject _:docVar
+                                                      ]) ;
+                                            sp:graphNameNode
+                                                    [ sp:varName "docGraph"^^xsd:string
+                                                    ]
+                                          ]) ([ a       sp:SubQuery ;
+                                            sp:query
+                                                    [ a       sp:Select ;
+                                                      sp:resultVariables (_:docVar _:thingVar) ;
+                                                      sp:where ([ a       sp:NamedGraph ;
+                                                                  sp:elements ([ sp:object spin:_this ;
+                                                                              sp:predicate sioc:has_container ;
+                                                                              sp:subject _:docVar
+                                                                            ] [ a       sp:Optional ;
+                                                                              sp:elements ([ sp:object _:thingVar ;
+                                                                                          sp:predicate foaf:primaryTopic ;
+                                                                                          sp:subject _:docVar
+                                                                                        ])
+                                                                            ]) ;
+                                                                  sp:graphNameNode
+                                                                          [ sp:varName "childGraph"^^xsd:string
+                                                                          ]
                                                                 ])
                                                     ]
                                           ]))

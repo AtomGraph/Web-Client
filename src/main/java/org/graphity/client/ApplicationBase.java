@@ -30,7 +30,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
-import org.graphity.client.model.SPARQLResourceBase;
+import org.graphity.client.resource.SPARQLResourceBase;
 import org.graphity.client.resource.LabelledContainer;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
 import org.graphity.client.provider.NotFoundExceptionMapper;

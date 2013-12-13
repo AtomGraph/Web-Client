@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.client.model;
+package org.graphity.client.resource;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
@@ -26,6 +26,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
+import org.graphity.client.model.ResourceBase;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;

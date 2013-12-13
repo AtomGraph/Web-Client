@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.vocabulary;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -50,5 +51,7 @@ public class VoID
     public static final ObjectProperty inDataset = m_model.createObjectProperty( NS + "inDataset" );
     
     public static final ObjectProperty sparqlEndpoint = m_model.createObjectProperty( NS + "sparqlEndpoint" );
+
+    public static final DatatypeProperty triples = m_model.createDatatypeProperty( NS + "triples" );
 
 }

@@ -23,13 +23,16 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.sun.jersey.api.core.ResourceConfig;
+import java.util.List;
 import javax.naming.ConfigurationException;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Variant;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
@@ -67,6 +70,37 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
         
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
+        
+        if (graphStore.isURIResource() && !DataManager.get().hasServiceContext(graphStore))
+        {
+            if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
+            DataManager.get().addServiceContext(graphStore);
+        }
+    }
+
+    /**
+     * Builds a list of acceptable response variants
+     * 
+     * @return supported variants
+     */
+    @Override
+    public List<Variant> getVariants()
+    {
+        // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
+        // https://saxonica.plan.io/issues/1447
+        /*
+	if (getMode() != null)
+	{
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
+	    List<Variant> list = super.getVariants();
+            list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null));
+            return list;
+	}
+        */
+        
+        List<Variant> list = super.getVariants();
+        list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null)); // TO-DO: move this out to Client!
+        return list;
     }
 
     /**

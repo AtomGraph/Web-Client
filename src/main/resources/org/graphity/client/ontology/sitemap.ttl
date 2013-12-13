@@ -20,11 +20,12 @@
 
 <#> a owl:Ontology ;
     owl:imports gp:, lda: , void:, foaf: ;
+    owl:versionInfo "1.0.10" ;
     dct:title "Sitemap" ;
     rdfs:label "Sitemap" ;
     dct:description "Default sitemap for SPARQL service" ;
     dct:created "2013-03-09T13:53:00+03:00"^^xsd:dateTime ;
-    dct:modified "2013-08-06T23:39:00+03:00"^^xsd:dateTime ;
+    dct:modified "2013-12-12T14:58:00+02:00"^^xsd:dateTime ;
     foaf:isPrimaryTopicOf <> ;
     rdfs:seeAlso <sparql> .
 
