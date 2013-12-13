@@ -54,7 +54,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
     private final UriInfo uriInfo;
-    private final Resource remote;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -92,10 +91,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
-        
-        Resource service = getService(GP.service);
-        if (service != null) remote = getRemoteEndpoint(service);
-        else remote = null;
 
         if (endpoint.isURIResource() && !DataManager.get().hasServiceContext(endpoint))
         {
@@ -110,7 +105,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param property property pointing to service resource
      * @return service resource
      */
-    public final Resource getService(Property property)
+    public Resource getService(Property property)
     {
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
         return getModel().createResource(getUriInfo().getBaseUri().toString()).
@@ -123,7 +118,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param service SPARQL service
      * @return endpoint resource
      */
-    public final Resource getRemoteEndpoint(Resource service)
+    public Resource getRemoteEndpoint(Resource service)
     {
         if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
 
@@ -152,7 +147,9 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Resource getRemoteEndpoint()
     {
-        return remote;
+        Resource service = getService(GP.service);
+        if (service != null) return getRemoteEndpoint(service);
+        else return null;
     }
     
     /**

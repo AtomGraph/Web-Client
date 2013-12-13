@@ -53,7 +53,6 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 
     private final UriInfo uriInfo;
-    private final Resource remote;
     
     public GraphStoreBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
             @Context OntModel sitemap)
@@ -72,10 +71,6 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
         
-        Resource service = getService(GP.service);
-        if (service != null) remote = getRemoteStore(service);
-        else remote = null;
-
         if (graphStore.isURIResource() && !DataManager.get().hasServiceContext(graphStore))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
@@ -114,7 +109,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * @param property property pointing to service resource
      * @return service resource
      */
-    public final Resource getService(Property property)
+    public Resource getService(Property property)
     {
         return getModel().createResource(getUriInfo().getBaseUri().toString()).
                 getPropertyResourceValue(property);
@@ -128,7 +123,9 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     @Override
     public Resource getRemoteStore()
     {
-        return remote;
+        Resource service = getService(GP.service);
+        if (service != null) return getRemoteStore(service);
+        else return null;
     }
 
      /**
@@ -137,7 +134,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * @param service SPARQL service
      * @return graph store resource
      */
-    public final Resource getRemoteStore(Resource service)
+    public Resource getRemoteStore(Resource service)
     {
         if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
 
