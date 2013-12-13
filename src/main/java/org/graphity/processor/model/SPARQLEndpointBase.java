@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.vocabulary.GP;
+import org.graphity.processor.vocabulary.SD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
     private final UriInfo uriInfo;
+    private final Resource remote;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -90,26 +92,16 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
+        
+        Resource service = getService(GP.service);
+        if (service != null) remote = getRemoteEndpoint(service);
+        else remote = null;
 
         if (endpoint.isURIResource() && !DataManager.get().hasServiceContext(endpoint))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
             DataManager.get().addServiceContext(endpoint);
-        }
-    }
-
-    /**
-     * Returns configured SPARQL service resource.
-     * Uses <code>gp:service</code> parameter value from sitemap resource with application base URI.
-     * 
-     * @return service resource
-     * @throws javax.naming.ConfigurationException
-     */
-    public Resource getService() throws ConfigurationException
-    {
-        Resource service = getService(GP.service);
-        if (service == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-        return service;
+        }        
     }
 
     /**
@@ -118,7 +110,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param property property pointing to service resource
      * @return service resource
      */
-    public Resource getService(Property property)
+    public final Resource getService(Property property)
     {
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
         return getModel().createResource(getUriInfo().getBaseUri().toString()).
@@ -126,21 +118,22 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     }
     
     /**
-     * Returns configured SPARQL endpoint resource.
+     * Returns configured SPARQL endpoint resource for a given service.
      * 
+     * @param service SPARQL service
      * @return endpoint resource
      */
-    @Override
-    public Resource getRemoteEndpoint()
+    public final Resource getRemoteEndpoint(Resource service)
     {
+        if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
+
         try
         {
-            Resource service = getService();
-            Resource endpoint = getEndpoint(service);
+            Resource endpoint = service.getPropertyResourceValue(SD.endpoint);
             if (endpoint == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
 
             putAuthContext(service, endpoint);
-            
+
             return endpoint;
         }
         catch (ConfigurationException ex)
@@ -151,18 +144,17 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     }
 
     /**
-     * Returns SPARQL endpoint resource for the supplied SPARQL service.
-     * Uses <code>sd:endpoint</code> parameter value from current SPARQL service resource.
+     * Returns configured SPARQL endpoint resource.
+     * This endpoint is a proxy for the remote endpoint.
      * 
-     * @param service SPARQL service resource
      * @return endpoint resource
      */
-    public Resource getEndpoint(Resource service)
+    @Override
+    public Resource getRemoteEndpoint()
     {
-        if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
-        return service.getPropertyResourceValue(ResourceFactory.createProperty("http://www.w3.org/ns/sparql-service-description#endpoint"));
+        return remote;
     }
-
+    
     /**
      * Configures HTTP Basic authentication for SPARQL endpoint context
      * 
@@ -197,7 +189,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Model loadModel(Query query)
     {
-	if (getRemoteEndpoint().equals(this))
+	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
@@ -215,7 +207,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public ResultSetRewindable loadResultSetRewindable(Query query)
     {
-	if (getRemoteEndpoint().equals(this))
+	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
@@ -233,7 +225,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public boolean ask(Query query)
     {
-	if (getRemoteEndpoint().equals(this))
+	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().ask(getModel(), query);
@@ -245,7 +237,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public void update(UpdateRequest updateRequest)
     {
-	if (getRemoteEndpoint().equals(this))
+	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}

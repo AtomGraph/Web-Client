@@ -49,10 +49,11 @@ import org.slf4j.LoggerFactory;
  */
 @Path("/service") // not standard
 public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
-
-{    private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
+{
+    private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 
     private final UriInfo uriInfo;
+    private final Resource remote;
     
     public GraphStoreBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
             @Context OntModel sitemap)
@@ -71,6 +72,10 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
         
+        Resource service = getService(GP.service);
+        if (service != null) remote = getRemoteStore(service);
+        else remote = null;
+
         if (graphStore.isURIResource() && !DataManager.get().hasServiceContext(graphStore))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
@@ -102,20 +107,6 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
         list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null)); // TO-DO: move this out to Client!
         return list;
     }
-
-    /**
-     * Returns configured SPARQL service resource.
-     * Uses <code>gp:service</code> parameter value from sitemap resource with application base URI.
-     * 
-     * @return service resource
-     * @throws javax.naming.ConfigurationException
-     */
-    public Resource getService() throws ConfigurationException
-    {
-        Resource service = getService(GP.service);
-        if (service == null) throw new ConfigurationException("SPARQL service not configured (gp:service not set in sitemap ontology)");
-        return service;
-    }
     
     /**
      * Returns  SPARQL service resource for site resource.
@@ -123,7 +114,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * @param property property pointing to service resource
      * @return service resource
      */
-    public Resource getService(Property property)
+    public final Resource getService(Property property)
     {
         return getModel().createResource(getUriInfo().getBaseUri().toString()).
                 getPropertyResourceValue(property);
@@ -137,9 +128,21 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     @Override
     public Resource getRemoteStore()
     {
+        return remote;
+    }
+
+     /**
+     * Returns configured Graph Store resource for a given service.
+     * 
+     * @param service SPARQL service
+     * @return graph store resource
+     */
+    public final Resource getRemoteStore(Resource service)
+    {
+        if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
+
         try
         {
-            Resource service = getService();
             Resource graphStore = getGraphStore(service);
             if (graphStore == null) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) does not have a Graph Store (gp:graphStore)");
             
