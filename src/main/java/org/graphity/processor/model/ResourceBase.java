@@ -313,9 +313,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	{
 	    while (resIt.hasNext())
 	    {
-		Resource created = resIt.next();
+		Resource resource = resIt.next();
 
-		if (created.isURIResource()) return created;
+		if (resource.isURIResource()) return resource;
 	    }
 	}
 	finally
