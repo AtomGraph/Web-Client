@@ -186,7 +186,8 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Model loadModel(Query query)
     {
-	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
+        Resource remote = getRemoteEndpoint();
+	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().loadModel(getModel(), query);
@@ -204,7 +205,8 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public ResultSetRewindable loadResultSetRewindable(Query query)
     {
-	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
+        Resource remote = getRemoteEndpoint();
+	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
 	    return DataManager.get().loadResultSet(getModel(), query);
@@ -222,7 +224,8 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public boolean ask(Query query)
     {
-	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
+        Resource remote = getRemoteEndpoint();
+	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
 	    return DataManager.get().ask(getModel(), query);
@@ -234,7 +237,8 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public void update(UpdateRequest updateRequest)
     {
-	if (getRemoteEndpoint() == null || getRemoteEndpoint().equals(this))
+        Resource remote = getRemoteEndpoint();
+	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
 	}
