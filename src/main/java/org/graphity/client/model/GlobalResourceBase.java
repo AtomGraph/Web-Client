@@ -22,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -150,7 +151,7 @@ public class GlobalResourceBase extends ResourceBase
      * 
      * @return variant list
      */
-    /*
+    @Override
     public List<Variant> getVariants()
     {
 	if (getMediaType() != null)
@@ -160,7 +161,6 @@ public class GlobalResourceBase extends ResourceBase
 
 	return super.getVariants();
     }
-    */
 
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.

@@ -24,7 +24,9 @@ import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
 import javax.servlet.ServletContext;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.ContextResolver;
@@ -42,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Transforms RDF with XSLT stylesheet and writes XHTML/XML result to response
+ * Transforms RDF with XSLT stylesheet and writes (X)HTML result to response
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/Model.html">Model</a>
@@ -50,7 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-//@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML})
+@Produces({MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML}) // MediaType.APPLICATION_XML ?
 public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
@@ -199,13 +201,13 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	}
 	
 	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
-	    bld.parameter("mode", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("mode")).build());
+	    bld.parameter("mode", URI.create(getUriInfo().getQueryParameters().getFirst("mode")));
 	if (getUriInfo().getQueryParameters().getFirst("query") != null)
 	    bld.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	    bld.parameter("uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("uri")).build());
+	    bld.parameter("uri", URI.create(getUriInfo().getQueryParameters().getFirst("uri")));
 	if (getUriInfo().getQueryParameters().getFirst("endpoint-uri") != null)
-	    bld.parameter("endpoint-uri", UriBuilder.fromUri(getUriInfo().getQueryParameters().getFirst("endpoint-uri")).build());
+	    bld.parameter("endpoint-uri", URI.create(getUriInfo().getQueryParameters().getFirst("endpoint-uri")));
 
 	return bld;
     }
