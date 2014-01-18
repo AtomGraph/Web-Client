@@ -554,7 +554,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
                 selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
                     orderBy(getOrderBy(), getDesc());
             }
-            catch (IllegalStateException ex)
+            catch (IllegalArgumentException ex)
             {
                 if (log.isWarnEnabled()) log.warn("Tried to use ORDER BY variable ?{} which is not present in the WHERE pattern", getOrderBy());
             }

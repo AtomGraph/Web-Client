@@ -504,8 +504,8 @@ _:objectVar  sp:varName "object"^^xsd:string .
     rdfs:isDefinedBy <#> .
 
 <#DescribeGraphInstances>    a       sp:Describe, sp:Query ;
-      sp:resultNodes (_:instanceVar) ;
-      sp:text """DESCRIBE ?instance WHERE {
+      sp:resultNodes (spin:_this _:instanceVar) ;
+      sp:text """DESCRIBE ?this ?instance WHERE {
     {
         SELECT ?instance
         WHERE {

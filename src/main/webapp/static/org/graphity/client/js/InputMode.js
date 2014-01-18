@@ -6,7 +6,7 @@ function loadXML(uri)
     var jqXHR = $.ajax({url: uri, async: false,
         headers: { 'Accept': 'application/rdf+xml' }
       });
-    return jqXHR.responseXML;		    
+    return jqXHR.responseXML;
 }
 
 function loadResourcesXML(event, query)

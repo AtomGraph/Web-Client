@@ -118,7 +118,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param service SPARQL service
      * @return endpoint resource
      */
-    public Resource getRemoteEndpoint(Resource service)
+    public Resource getOrigin(Resource service)
     {
         if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
 
@@ -145,10 +145,10 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @return endpoint resource
      */
     @Override
-    public Resource getRemoteEndpoint()
+    public Resource getOrigin()
     {
         Resource service = getService(GP.service);
-        if (service != null) return getRemoteEndpoint(service);
+        if (service != null) return getOrigin(service);
         else return null;
     }
     
@@ -186,7 +186,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Model loadModel(Query query)
     {
-        Resource remote = getRemoteEndpoint();
+        Resource remote = getOrigin();
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
@@ -205,7 +205,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public ResultSetRewindable loadResultSetRewindable(Query query)
     {
-        Resource remote = getRemoteEndpoint();
+        Resource remote = getOrigin();
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
@@ -224,7 +224,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public boolean ask(Query query)
     {
-        Resource remote = getRemoteEndpoint();
+        Resource remote = getOrigin();
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
@@ -237,7 +237,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public void update(UpdateRequest updateRequest)
     {
-        Resource remote = getRemoteEndpoint();
+        Resource remote = getOrigin();
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);

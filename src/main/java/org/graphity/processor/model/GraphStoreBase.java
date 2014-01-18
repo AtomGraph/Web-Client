@@ -121,10 +121,10 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * @return graph store resource
      */
     @Override
-    public Resource getRemoteStore()
+    public Resource getOrigin()
     {
         Resource service = getService(GP.service);
-        if (service != null) return getRemoteStore(service);
+        if (service != null) return getOrigin(service);
         else return null;
     }
 
@@ -134,7 +134,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * @param service SPARQL service
      * @return graph store resource
      */
-    public Resource getRemoteStore(Resource service)
+    public Resource getOrigin(Resource service)
     {
         if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
 
