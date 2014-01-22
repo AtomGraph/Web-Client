@@ -14,7 +14,7 @@ function loadResourcesXML(event, query)
     var searchUri = UriBuilder.fromUri(baseUri).
         segment('resources').
         segment('labelled').
-        queryParam('query', query).
+        queryParam('label', query).
         build();
 
     $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } }).
@@ -34,7 +34,7 @@ function loadPropertiesXML(event, query)
     var searchUri = UriBuilder.fromUri(baseUri).
         segment('properties').
         segment('labelled').
-        queryParam('query', query).
+        queryParam('label', query).
         build();
 
     $.ajax({url: searchUri, headers: { 'Accept': 'application/rdf+xml' } , cache: false }).

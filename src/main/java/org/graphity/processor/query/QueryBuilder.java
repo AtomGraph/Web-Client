@@ -273,7 +273,7 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     }
 
     // method taken from com.sun.org.apache.xerces.internal.impl.xpath.regex.REUtil
-    public static String quoteRegexMeta(String literal)
+    public String quoteRegexMeta(String literal)
     {
         int len = literal.length();
         StringBuffer buffer = null;

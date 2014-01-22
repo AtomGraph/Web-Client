@@ -20,7 +20,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
 import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -45,8 +44,7 @@ public class SPARQLResourceBase extends ResourceBase
     private final URI endpointURI;
     private final MediaType mediaType;
 
-    public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
-	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
+    public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
