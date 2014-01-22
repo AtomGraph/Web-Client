@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.graphity.client.resource;
+package org.graphity.client.resource.labelled;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -31,13 +31,13 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Path("/{path}/labelled")
-public class LabelledContainer extends ResourceBase
+public class Container extends ResourceBase
 {
-    private static final Logger log = LoggerFactory.getLogger(LabelledContainer.class);
+    private static final Logger log = LoggerFactory.getLogger(Container.class);
 
     private final String searchString;
     
-    public LabelledContainer(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig, @Context SecurityContext securityContext, @Context HttpContext httpContext,
+    public Container(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig, @Context SecurityContext securityContext, @Context HttpContext httpContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
@@ -45,7 +45,7 @@ public class LabelledContainer extends ResourceBase
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode,
-            @QueryParam("query") String searchString)
+            @QueryParam("label") String searchString)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
@@ -57,7 +57,7 @@ public class LabelledContainer extends ResourceBase
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (searchString != null && selectBuilder != null)
 	    {
-		selectBuilder.filter(RDFS.label.getLocalName(), Pattern.compile(searchString));
+		selectBuilder.filter(RDFS.label.getLocalName(), Pattern.compile(Pattern.quote(searchString)).toString());
 		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", searchString, getQueryBuilder());
 	    }
         }	
