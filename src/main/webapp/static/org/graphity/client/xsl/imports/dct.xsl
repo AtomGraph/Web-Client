@@ -29,6 +29,7 @@ xmlns:rdf="&rdf;"
 xmlns:dct="&dct;"
 exclude-result-prefixes="#all">
 
+    <!-- this is Graphity-specific! -->
     <xsl:template match="dct:title | dct:description | dct:subject" mode="gc:PropertyListMode"/>
 
     <xsl:template match="@rdf:about[../dct:title[lang($lang)]] | @rdf:nodeID[../dct:title[lang($lang)]]" mode="gc:LabelMode" priority="3">

@@ -256,7 +256,13 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     {
 	if (var == null) throw new IllegalArgumentException("FILTER variable name cannot be null");
 	if (pattern == null) throw new IllegalArgumentException("regex() match string cannot be null");
-	
+
+	if (!isWhereVariable(var))
+	{
+	    if (log.isErrorEnabled()) log.error("Variable var: {} not in the WHERE pattern", var);
+	    throw new IllegalArgumentException("Cannot ORDER BY variable '" + var + "' that is not specified in the WHERE pattern");
+	}
+        
 	if (log.isTraceEnabled()) log.trace("Setting FILTER regex(str({}), \"{}\")", var, pattern); // flags?
 	
 	Resource strExpr = getModel().createResource().

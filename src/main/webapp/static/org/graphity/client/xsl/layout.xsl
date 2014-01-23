@@ -352,7 +352,7 @@ exclude-result-prefixes="#all">
 		<xsl:apply-templates select="key('resources', $absolute-path)"/>
 
 		<!-- page resource -->
-		<xsl:apply-templates select="key('resources', $request-uri)" mode="gc:PaginationMode"/>
+		<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
 
 		<!-- apply all other URI resources -->
 		<xsl:variable name="secondary-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]"/>
@@ -365,7 +365,7 @@ exclude-result-prefixes="#all">
 		</xsl:if>
 		
 		<!-- page resource -->
-		<xsl:apply-templates select="key('resources', $request-uri)" mode="gc:PaginationMode"/>
+		<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
