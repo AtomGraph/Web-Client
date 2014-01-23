@@ -109,7 +109,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     }
 
     @Override
-    public Model describe()
+    public Model getDescription()
     {	
         if (getMode() != null && hasRDFType(LDP.Container) &&
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
@@ -118,7 +118,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    return DataManager.get().loadModel(getModel(), getQuery(getURI()));
 	}
 
-	Model description = super.describe();
+	Model description = super.getDescription();
 
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
 	addRDFType(getMatchedOntClass());

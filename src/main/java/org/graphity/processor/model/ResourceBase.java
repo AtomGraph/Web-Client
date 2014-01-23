@@ -45,8 +45,7 @@ import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
-import org.graphity.server.model.LDPResource;
-import org.graphity.server.model.QueriedResourceBase;
+import org.graphity.server.model.LinkedDataResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.model.SPARQLUpdateEndpoint;
 import org.graphity.util.ModelUtils;
@@ -69,7 +68,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("{path: .*}")
-public class ResourceBase extends QueriedResourceBase implements LDPResource, PageResource, OntResource
+public class ResourceBase extends LinkedDataResourceBase implements PageResource, OntResource
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
@@ -77,14 +76,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Long limit, offset;
     private final String orderBy;
     private final Boolean desc;
-    private final OntClass matchedOntClass;
-    private final Resource dataset;
-    private final SPARQLEndpoint endpoint;
+    //private final OntClass matchedOntClass;
+    //private final Resource dataset;
+    //private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
-    //private final Request request;
     private final HttpHeaders httpHeaders;
-    //private final ResourceConfig resourceConfig;
-    private final QueryBuilder queryBuilder;
     private final URI graphURI;
     private final CacheControl cacheControl;
     
@@ -176,7 +172,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	super(ontResource, endpoint, request, resourceConfig);
+	super(ontResource, request, resourceConfig);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	//if (request == null) throw new IllegalArgumentException("Request cannot be null");
@@ -193,24 +189,10 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	this.offset = offset;
 	this.orderBy = orderBy;
 	this.desc = desc;
-	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
-	else this.graphURI = null;
+	this.graphURI = graphURI;
 
-	matchedOntClass = matchOntClass(getRealURI(), uriInfo.getBaseUri());
-	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
-	
-        queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()));
-        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
-	dataset = getDataset(matchedOntClass);
-	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
-	    this.endpoint = new SPARQLEndpointBase(dataset.getPropertyResourceValue(VoID.sparqlEndpoint),
-		    uriInfo, request, resourceConfig);
-	else this.endpoint = endpoint;	    
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, this.endpoint);	
-
-        cacheControl = getCacheControl(matchedOntClass);
+        //cacheControl = getCacheControl(matchedOntClass);
     }
 
     /**
@@ -383,7 +365,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	}
 	
-	Model description = describe();	
+	Model description = getDescription();	
 	UpdateRequest updateRequest = UpdateFactory.create();
 	
 	if (!description.isEmpty()) // remove existing representation
@@ -443,58 +425,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	endpoint.update(deleteRequest, null, null);
 	
 	return Response.noContent().build();
-    }
-
-    /**
-     * Returns RDF description of this resource.
-     * 
-     * @return RDF description
-     * @see getQuery()
-     */
-    @Override
-    public Model describe()
-    {	
-	Model description = super.describe();
-	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
-
-	if (hasRDFType(LDP.Container)) // && !description.isEmpty()
-	{
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
-		addProperty(RDF.type, LDP.Page).
-                addProperty(LDP.pageOf, this);
-
-	    if (getOffset() >= getLimit())
-	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
-		page.addProperty(XHV.prev, description.createResource(getPreviousUriBuilder().build().toString()));
-	    }
-
-	    // no way to know if there's a next page without counting results (either total or in current page)
-	    //int subjectCount = describe().listSubjects().toList().size();
-	    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
-	    //if (subjectCount >= getLimit())
-	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
-		page.addProperty(XHV.next, description.createResource(getNextUriBuilder().build().toString()));
-	    }
-	}
-
-	return description;
-    }
-
-    /**
-     * Returns dataset resource, specified in an ontology class restriction.
-     * 
-     * @param ontClass the ontology class with the restriction
-     * @return dataset resource or null, if no dataset restriction was found
-     */
-    public final Resource getDataset(OntClass ontClass)
-    {
-	RDFNode hasValue = getRestrictionHasValue(ontClass, VoID.inDataset);
-	if (hasValue != null && hasValue.isResource()) return hasValue.asResource();
-
-	return null;
     }
 
     /**
@@ -994,26 +924,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return endpoint;
     }
 
-    /**
-     * Returns query used to retrieve RDF description of this resource
-     * 
-     * @return query object
-     */
-    @Override
-    public Query getQuery()
-    {
-	return getQueryBuilder().build();
-    }
-
-    /**
-     * Returns query builder, which is used to build SPARQL query to retrieve RDF description of this resource.
-     * 
-     * @return query builder
-     */
-    public QueryBuilder getQueryBuilder()
-    {
-	return queryBuilder;
-    }
 
     /**
      * Returns URI information of current request.
