@@ -383,7 +383,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    throw new WebApplicationException(Response.Status.BAD_REQUEST);
 	}
 	
-	Model description = describe();	
+	Model description = getDescription();	
 	UpdateRequest updateRequest = UpdateFactory.create();
 	
 	if (!description.isEmpty()) // remove existing representation
@@ -452,9 +452,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @see getQuery()
      */
     @Override
-    public Model describe()
+    public Model getDescription()
     {	
-	Model description = super.describe();
+	Model description = super.getDescription();
 	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
 	if (hasRDFType(LDP.Container)) // && !description.isEmpty()
