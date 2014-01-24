@@ -41,10 +41,10 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointProvider.class);
 
-    @Context Providers providers;
-    @Context ResourceConfig resourceConfig;
     @Context UriInfo uriInfo;
     @Context Request request;
+    @Context Providers providers;
+    @Context ResourceConfig resourceConfig;
     
     public SPARQLEndpointProvider()
     {

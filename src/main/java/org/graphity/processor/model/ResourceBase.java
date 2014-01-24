@@ -26,11 +26,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.api.uri.UriTemplate;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -41,7 +38,6 @@ import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
@@ -81,9 +77,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final Resource dataset;
     private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
-    //private final Request request;
     private final HttpHeaders httpHeaders;
-    //private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
     private final URI graphURI;
     private final CacheControl cacheControl;
@@ -100,6 +94,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceContext resource context
      * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
+     * @param matchedOntClass the template class this resource matched
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -111,6 +106,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
+            @Context OntClass matchedOntClass, @Context Query query,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -118,7 +114,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    @QueryParam("graph") URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap, endpoint,
+		sitemap, endpoint, matchedOntClass, query,
 		limit, offset, orderBy, desc, graphURI);
     }
     
@@ -131,6 +127,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceConfig webapp configuration
      * @param ontModel sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
+     * @param matchedOntClass the template class this resource matched
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -139,10 +136,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
+            OntClass matchedOntClass, Query query,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
+                matchedOntClass, query,
 		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -165,6 +164,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param resourceConfig webapp configuration
      * @param ontResource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
+     * @param matchedOntClass the template class this resource matched
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -174,6 +174,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
+            OntClass matchedOntClass, Query query,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	super(ontResource, endpoint, request, resourceConfig);
@@ -183,12 +184,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
 	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
-
+	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+        
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
-	//this.request = request;
 	this.httpHeaders = httpHeaders;
-	//this.resourceConfig = resourceConfig;
 	this.limit = limit;
 	this.offset = offset;
 	this.orderBy = orderBy;
@@ -196,11 +196,10 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
 	else this.graphURI = null;
 
-	matchedOntClass = matchOntClass(getRealURI(), uriInfo.getBaseUri());
-	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+	this.matchedOntClass = matchedOntClass;
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
-        queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()));
+        queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()));
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
 	dataset = getDataset(matchedOntClass);
@@ -563,74 +562,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return selectBuilder;
     }
 
-    /**
-     * Given an RDF resource, returns a SPARQL query that can be used to retrieve its description.
-     * The query is built using a SPIN template call attached to the ontology class that this resource matches.
-     * 
-     * @param resource the resource to be described
-     * @return query object
-     */
-    public Query getQuery(Resource resource)
-    {
-	return getQuery(getMatchedOntClass(), resource);
-    }
-
-    /**
-     * Given an RDF resource and an ontology class that it belongs to, returns a SPARQL query that can be used
-     * to retrieve its description.
-     * The ontology class must have a SPIN template call attached (using <code>spin:constraint</code>).
-     * 
-     * @param ontClass ontology class of the resource
-     * @param resource resource to be described
-     * @return query object
-     * @see org.topbraid.spin.model.TemplateCall
-     */
-    public final Query getQuery(OntClass ontClass, Resource resource)
-    {
-	return getQuery(getQueryCall(ontClass), resource);
-    }
-    
-    /**
-     * Given an ontology class, returns the SPIN template call attached to it.
-     * The class must have a <code>spin:query</code> property with the template call resource as object.
-     * 
-     * @param ontClass ontology class
-     * @return SPIN template call resource
-     * @see org.topbraid.spin.model.TemplateCall
-     */
-    public TemplateCall getQueryCall(OntClass ontClass)
-    {
-	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (!ontClass.hasProperty(SPIN.query))
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query Template");	    
-
-	RDFNode constraint = getModel().getResource(ontClass.getURI()).getProperty(SPIN.query).getObject();
-	return SPINFactory.asTemplateCall(constraint);
-    }
-    
-    /**
-     * Given a SPIN template call and an RDF resource, returns a SPARQL query that can be used to retrieve
-     * resource's description.
-     * Following the convention of SPIN API, variable name <code>?this</code> has a special meaning and
-     * is assigned to the value of the resource (which is usually this resource).
-     * If this resource is a page resource, the SELECT sub-query modifiers (<code>LIMIT</code> and
-     * <code>OFFSET</code>) will be set to implement pagination.
-     * 
-     * @param call SPIN template call resource
-     * @param resource RDF resource
-     * @return query object
-     */
-    public Query getQuery(TemplateCall call, Resource resource)
-    {
-	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
-	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-	
-	QuerySolutionMap qsm = new QuerySolutionMap();
-	qsm.add("this", resource);
-	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
-	return queryString.asQuery();
-    }
-
     public final UpdateBuilder getUpdateBuilder(Update update)
     {
 	UpdateBuilder ub = UpdateBuilder.fromUpdate(update);
@@ -663,102 +594,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	qsm.add("this", resource);
 	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
 	return queryString.asUpdate();
-    }
-
-    /**
-     * Given an absolute URI and a base URI, returns ontology class with a matching URI template, if any.
-     * 
-     * @param uri absolute URI being matched
-     * @param base base URI
-     * @return matching ontology class or null, if none
-     */
-    public final OntClass matchOntClass(URI uri, URI base)
-    {
-	if (uri == null) throw new IllegalArgumentException("URI being matched cannot be null");
-	if (base == null) throw new IllegalArgumentException("Base URI cannot be null");
-	if (!uri.isAbsolute()) throw new IllegalArgumentException("URI being matched \"" + uri + "\" is not absolute");
-	if (base.relativize(uri).equals(uri)) throw new IllegalArgumentException("URI being matched \"" + uri + "\" is not relative to the base URI \"" + base + "\"");
-	    
-	StringBuilder path = new StringBuilder();
-	// instead of path, include query string by relativizing request URI against base URI
-	path.append("/").append(base.relativize(uri));
-	return matchOntClass(path);
-    }
-
-    /**
-     * Given a relative URI, returns ontology class with a matching URI template, if any.
-     * By default, <code>lda:uriTemplate</code> property (from Linked Data API) is used for the <code>owl:HasValue</code>
-     * restrictions, with URI template string as the object literal.
-     * 
-     * @param path absolute path (relative URI)
-     * @return matching ontology class or null, if none
-     * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
-     */
-    public OntClass matchOntClass(CharSequence path)
-    {
-        return matchOntClass(path, LDA.uriTemplate);
-    }
-    
-    /**
-     * Given a relative URI and URI template property, returns ontology class with a matching URI template, if any.
-     * URIs are matched against the URI templates specified in ontology class <code>owl:hasValue</code> restrictions
-     * on the given property in the sitemap ontology.
-     * This method uses Jersey implementation of the JAX-RS URI matching algorithm.
-     * 
-     * @param path absolute path (relative URI)
-     * @param property restriction property holding the URI template value
-     * @return matching ontology class or null, if none
-     * @see <a href="https://jsr311.java.net/nonav/releases/1.1/spec/spec3.html#x3-340003.7">3.7 Matching Requests to Resource Methods (JAX-RS 1.1)</a>
-     * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
-     */
-    public final OntClass matchOntClass(CharSequence path, Property property)
-    {
-	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
-	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();
-
-	try
-	{
-	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<>(UriTemplate.COMPARATOR);
-
-	    while (it.hasNext())
-	    {
-		Restriction restriction = it.next();	    
-		if (restriction.canAs(HasValueRestriction.class))
-		{
-		    HasValueRestriction hvr = restriction.asHasValueRestriction();
-		    if (hvr.getOnProperty().equals(property))
-		    {
-			UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
-			HashMap<String, String> map = new HashMap<>();
-
-			if (uriTemplate.match(path, map))
-			{
-			    if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
-
-			    OntClass ontClass = hvr.listSubClasses(true).next(); //hvr.getSubClass();	    
-			    if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
-			    matchedClasses.put(uriTemplate, ontClass);
-			}
-			else
-			    if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
-		    }
-		}
-	    }
-	    
-	    if (!matchedClasses.isEmpty())
-	    {
-		if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
-		return matchedClasses.firstEntry().getValue();
-	    }
-
-	    if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);
-	    return null;
-	}
-	finally
-	{
-	    it.close();
-	}	
     }
 
     /**

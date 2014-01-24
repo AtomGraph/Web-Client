@@ -16,6 +16,7 @@
  */
 package org.graphity.client.resource;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
@@ -46,6 +47,7 @@ public class SPARQLResourceBase extends ResourceBase
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
+            @Context OntClass matchedOntClass, @Context Query query,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -58,17 +60,20 @@ public class SPARQLResourceBase extends ResourceBase
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
+                matchedOntClass, query,
 		limit, offset, orderBy, desc, graphURI, mode,
 		userQuery, endpointURI, mediaType);
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
+            OntClass matchedOntClass, Query query,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    Query userQuery, URI endpointURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		ontResource, endpoint,
+                matchedOntClass, query,
 		limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.userQuery = userQuery;

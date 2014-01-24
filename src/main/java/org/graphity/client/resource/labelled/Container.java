@@ -4,7 +4,9 @@
  */
 package org.graphity.client.resource.labelled;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
@@ -36,6 +38,7 @@ public class Container extends ResourceBase
     
     public Container(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
+            @Context OntClass matchedOntClass, @Context Query query,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") @DefaultValue("label") String orderBy,
@@ -46,6 +49,7 @@ public class Container extends ResourceBase
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
 		sitemap, endpoint,
+                matchedOntClass, query,
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	
