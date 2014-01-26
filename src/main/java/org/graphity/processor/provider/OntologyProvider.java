@@ -61,6 +61,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public static final String PROPERTY_ONTOLOGY_GRAPH = "org.graphity.platform.ontology.graph";
 
+    private OntModel ontModel = null;
     @Context UriInfo uriInfo;
     @Context ResourceConfig resourceConfig;
 
@@ -103,8 +104,10 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public OntModel getOntModel()
     {
-	return getOntModel(getUriInfo(), getResourceConfig());
+        if (ontModel == null) ontModel = getOntModel(getUriInfo(), getResourceConfig());
+	return ontModel;
     }
+    
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
      * @param uriInfo URI information of the current request
@@ -158,10 +161,10 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 		OntDocumentManager.getInstance().addAltEntry(localUri, ontologyLocation.toString());
 	    }
 	}
-	OntModel ontModel = OntDocumentManager.getInstance().
+	OntModel temp = OntDocumentManager.getInstance().
 		getOntology(localUri, OntModelSpec.OWL_MEM);
-	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
-	return ontModel;
+	if (log.isDebugEnabled()) log.debug("Ontology size: {}", temp.size());
+	return temp;
     }
 
 }

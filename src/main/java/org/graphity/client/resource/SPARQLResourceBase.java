@@ -28,6 +28,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.model.ResourceBase;
 import org.graphity.processor.model.SPARQLEndpointFactory;
+import org.graphity.processor.query.QueryBuilder;
+import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +48,8 @@ public class SPARQLResourceBase extends ResourceBase
     private final MediaType mediaType;
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-            @Context OntClass matchedOntClass, @Context Query query,
+	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint, @Context OntClass matchedOntClass,
+            @Context QueryBuilder queryBuilder, @Context UpdateBuilder updateBuilder, @Context CacheControl cacheControl,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -59,21 +61,21 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-                matchedOntClass, query,
+		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, matchedOntClass,
+                queryBuilder, updateBuilder, cacheControl,
 		limit, offset, orderBy, desc, graphURI, mode,
 		userQuery, endpointURI, mediaType);
     }
 
     protected SPARQLResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint,
-            OntClass matchedOntClass, Query query,
+	    OntResource ontResource, SPARQLEndpoint endpoint, OntClass matchedOntClass,
+            QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    Query userQuery, URI endpointURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint,
-                matchedOntClass, query,
+		ontResource, endpoint, matchedOntClass,
+                queryBuilder, updateBuilder, cacheControl,
 		limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.userQuery = userQuery;

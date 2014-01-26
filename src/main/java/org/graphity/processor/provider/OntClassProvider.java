@@ -66,8 +66,7 @@ public class OntClassProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public OntModel getOntModel()
     {
-	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
-	return cr.getContext(OntModel.class);
+	return getProviders().getContextResolver(OntModel.class, null).getContext(OntModel.class);
     }
 
     @Override
@@ -80,7 +79,6 @@ public class OntClassProvider extends PerRequestTypeInjectableProvider<Context, 
 	    {
 		return getOntClass(getUriInfo().getAbsolutePath(), getUriInfo().getBaseUri());
 	    }
-
 	};
     }
 
@@ -107,7 +105,7 @@ public class OntClassProvider extends PerRequestTypeInjectableProvider<Context, 
 	StringBuilder path = new StringBuilder();
 	// instead of path, include query string by relativizing request URI against base URI
 	path.append("/").append(base.relativize(uri));
-	return matchOntClass(path);
+	return getOntClass(path);
     }
 
     /**
@@ -119,9 +117,9 @@ public class OntClassProvider extends PerRequestTypeInjectableProvider<Context, 
      * @return matching ontology class or null, if none
      * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
      */
-    public OntClass matchOntClass(CharSequence path)
+    public OntClass getOntClass(CharSequence path)
     {
-        return matchOntClass(path, LDA.uriTemplate);
+        return getOntClass(path, LDA.uriTemplate);
     }
     
     /**
@@ -137,7 +135,7 @@ public class OntClassProvider extends PerRequestTypeInjectableProvider<Context, 
      * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
      */
-    public OntClass matchOntClass(CharSequence path, Property property)
+    public OntClass getOntClass(CharSequence path, Property property)
     {
 	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
 	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();

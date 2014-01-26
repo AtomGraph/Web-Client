@@ -19,7 +19,6 @@ package org.graphity.client.model;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -30,6 +29,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.util.DataManager;
+import org.graphity.processor.query.QueryBuilder;
+import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.model.LinkedDataResourceBase;
 import org.graphity.server.model.LinkedDataResourceFactory;
@@ -69,6 +70,7 @@ public class GlobalResourceBase extends ResourceBase
      * @param sitemap sitemap ontology
      * @param endpoint active SPARQL endpoint (used to execute queries)
      * @param matchedOntClass the template class this resource matched
+     * @param queryBuilder query builder that retrieves description of this resource
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -81,8 +83,8 @@ public class GlobalResourceBase extends ResourceBase
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
     public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-            @Context OntClass matchedOntClass, @Context Query query,
+	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint, @Context OntClass matchedOntClass,
+            @Context QueryBuilder queryBuilder, @Context UpdateBuilder updateBuilder, @Context CacheControl cacheControl,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -93,8 +95,8 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-                sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-                matchedOntClass, query,
+                sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, matchedOntClass,
+                queryBuilder, updateBuilder, cacheControl,
 		limit, offset, orderBy, desc, graphURI, mode,
 		topicURI, mediaType);	
     }
@@ -109,6 +111,7 @@ public class GlobalResourceBase extends ResourceBase
      * @param ontResource this resource as RDF resource
      * @param endpoint SPARQL endpoint of this resource
      * @param matchedOntClass the template class this resource matched
+     * @param queryBuilder query builder that retrieves description of this resource
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -120,13 +123,13 @@ public class GlobalResourceBase extends ResourceBase
      */
     protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
-            OntClass matchedOntClass, Query query,
+            OntClass matchedOntClass, QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    URI topicURI, MediaType mediaType)
     {
 	super(uriInfo, request, httpHeaders, resourceConfig,
-		ontResource, endpoint,
-                matchedOntClass, query,
+		ontResource, endpoint, matchedOntClass,
+                queryBuilder, updateBuilder, cacheControl,
                 limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.mediaType = mediaType;

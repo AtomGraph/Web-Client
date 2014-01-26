@@ -37,21 +37,16 @@ import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.update.UpdateBuilder;
-import org.graphity.processor.vocabulary.GP;
+import org.graphity.processor.util.OntModelUtils;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLUpdateEndpoint;
 import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.model.SPINFactory;
-import org.topbraid.spin.model.TemplateCall;
-import org.topbraid.spin.model.update.Update;
-import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  * Base class of generic read-write Graphity Processor resources.
@@ -70,15 +65,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
     private final OntResource ontResource;
+    private final OntClass matchedOntClass;
     private final Long limit, offset;
     private final String orderBy;
     private final Boolean desc;
-    private final OntClass matchedOntClass;
     private final Resource dataset;
     private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
     private final HttpHeaders httpHeaders;
     private final QueryBuilder queryBuilder;
+    private final UpdateBuilder updateBuilder;
     private final URI graphURI;
     private final CacheControl cacheControl;
     
@@ -95,6 +91,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
      * @param matchedOntClass the template class this resource matched
+     * @param queryBuilder query builder that retrieves description of this resource
+     * @param updateBuilder update builder
+     * @param cacheControl cache control
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -105,8 +104,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-            @Context OntClass matchedOntClass, @Context Query query,
+	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint, @Context OntClass matchedOntClass,
+            @Context QueryBuilder queryBuilder, @Context UpdateBuilder updateBuilder, @Context CacheControl cacheControl,
 	    @QueryParam("limit") @DefaultValue("20") Long limit,
 	    @QueryParam("offset") @DefaultValue("0") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -114,7 +113,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    @QueryParam("graph") URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
-		sitemap, endpoint, matchedOntClass, query,
+		sitemap, endpoint, matchedOntClass, queryBuilder, updateBuilder, cacheControl,
 		limit, offset, orderBy, desc, graphURI);
     }
     
@@ -128,6 +127,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param ontModel sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
      * @param matchedOntClass the template class this resource matched
+     * @param queryBuilder query builder that retrieves description of this resource
+     * @param updateBuilder update builder
+     * @param cacheControl cache control
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -136,12 +138,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
-            OntClass matchedOntClass, Query query,
+            OntClass matchedOntClass, QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-                matchedOntClass, query,
+                matchedOntClass, queryBuilder, updateBuilder, cacheControl,
 		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -165,6 +167,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param ontResource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
      * @param matchedOntClass the template class this resource matched
+     * @param queryBuilder query builder that retrieves description of this resource
+     * @param updateBuilder update builder
+     * @param cacheControl cache control
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -174,18 +179,17 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
-            OntClass matchedOntClass, Query query,
+            OntClass matchedOntClass, QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	super(ontResource, endpoint, request, resourceConfig);
 
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	//if (request == null) throw new IllegalArgumentException("Request cannot be null");
-	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
-	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
-	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-        
+	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
+	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
+	if (queryBuilder == null) throw new IllegalArgumentException("QueryBuilder cannot be null. The matched ontology class is missing spin:query.");
+
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
@@ -195,12 +199,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	this.desc = desc;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
 	else this.graphURI = null;
-
-	this.matchedOntClass = matchedOntClass;
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
-        queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()));
-        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
+        this.matchedOntClass = matchedOntClass;
+        this.queryBuilder = setSelectModifiers(queryBuilder);
+        this.updateBuilder = updateBuilder;
+        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", this.queryBuilder);
 
 	dataset = getDataset(matchedOntClass);
 	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
@@ -209,7 +212,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	else this.endpoint = endpoint;	    
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, this.endpoint);	
 
-        cacheControl = getCacheControl(matchedOntClass);
+        this.cacheControl = cacheControl;
     }
 
     /**
@@ -240,31 +243,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response post(Model model)
     {
-	return post(model, getEndpoint());
-    }
-
-    /**
-     * Handles POST method, stores the submitted RDF model in the specified named graph on the default SPARQL endpoint, and returns response.
-     * 
-     * @param model the RDF payload
-     * @param graphURI target graph name
-     * @return response
-     */
-    public Response post(Model model, URI graphURI)
-    {
-	return post(model, graphURI, getEndpoint());
-    }
-
-    /**
-     * Handles POST method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
-     * 
-     * @param model the RDF payload
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */
-    public Response post(Model model, SPARQLUpdateEndpoint endpoint)
-    {
-	return post(model, getGraphURI(), endpoint);
+	return post(model, getGraphURI());
     }
     
     /**
@@ -272,14 +251,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * 
      * @param model the RDF payload
      * @param graphURI target graph name
-     * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response post(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
+    public Response post(Model model, URI graphURI)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
-	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
 
 	Resource created = getURIResource(model, FOAF.Document);
@@ -294,7 +270,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
 	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 
-	endpoint.update(insertDataRequest, null, null);
+	getEndpoint().update(insertDataRequest, null, null);
 	
 	URI createdURI = UriBuilder.fromUri(created.getURI()).build();
 	if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
@@ -334,31 +310,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response put(Model model)
     {
-	return put(model, getEndpoint());
-    }
-
-    /**
-     * Handles PUT method, stores the submitted RDF model in the specified named graph of default SPARQL endpoint, and returns response.
-     * 
-     * @param model RDF payload
-     * @param graphURI target graph name
-     * @return response
-     */
-    public Response put(Model model, URI graphURI)
-    {
-	return put(model, graphURI, getEndpoint());
-    }
-
-    /**
-     * Handles PUT method, stores the submitted RDF model in the default graph of the specified SPARQL endpoint, and returns response.
-     * 
-     * @param model RDF payload
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */
-    public Response put(Model model, SPARQLUpdateEndpoint endpoint)
-    {
-	return put(model, getGraphURI(), endpoint);
+	return put(model, getGraphURI());
     }
     
     /**
@@ -366,14 +318,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * 
      * @param model RDF payload
      * @param graphURI target graph name
-     * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response put(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
+    public Response put(Model model, URI graphURI)
     {
+        if (getUpdateBuilder() == null) throw new WebApplicationException(405); // spin:update template missing
+        
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
-	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("PUT Model: {}", model);
 
 	if (!model.containsResource(this))
@@ -395,7 +346,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 		return rb.build();
 	    }
 	    
-	    UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
+	    UpdateRequest deleteRequest = getUpdateRequest();
 	    if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
 	    Iterator<com.hp.hpl.jena.update.Update> it = deleteRequest.getOperations().iterator();
 	    while (it.hasNext()) updateRequest.add(it.next());
@@ -409,7 +360,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	while (it.hasNext()) updateRequest.add(it.next());
 	
 	if (log.isDebugEnabled()) log.debug("Combined DELETE/INSERT DATA request: {}", updateRequest);
-	endpoint.update(updateRequest, null, null);
+	getEndpoint().update(updateRequest, null, null);
 	
 	if (description.isEmpty()) return Response.created(getRealURI()).build();
 	else return getResponse(model);
@@ -424,26 +375,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response delete()
     {
-	return delete(getEndpoint());
-    }
-    
-    /**
-     * Handles DELETE method, deletes the RDF representation of this resource from the specified SPARQL endpoint, and
-     * returns response.
-     * 
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */    
-    public Response delete(SPARQLUpdateEndpoint endpoint)
-    {
-	if (log.isDebugEnabled()) log.debug("DELETEing resource: {} matched OntClass: {}", this, getMatchedOntClass());
-	UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
+        if (getUpdateBuilder() == null) throw new WebApplicationException(405); // spin:update template missing
+        
+	if (log.isDebugEnabled()) log.debug("DELETEing resource: {}", this);
+	UpdateRequest deleteRequest = getUpdateRequest();
 	if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
-	endpoint.update(deleteRequest, null, null);
+	getEndpoint().update(deleteRequest, null, null);
 	
 	return Response.noContent().build();
     }
-
+    
     /**
      * Returns RDF description of this resource.
      * 
@@ -490,26 +431,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final Resource getDataset(OntClass ontClass)
     {
-	RDFNode hasValue = getRestrictionHasValue(ontClass, VoID.inDataset);
+	RDFNode hasValue = OntModelUtils.getRestrictionHasValue(ontClass, VoID.inDataset);
 	if (hasValue != null && hasValue.isResource()) return hasValue.asResource();
-
-	return null;
-    }
-
-    /**
-     * Returns `Cache-Control` HTTP header value, specified in an ontology class restriction.
-     * 
-     * @param ontClass the ontology class with the restriction
-     * @return CacheControl instance or null, if no dataset restriction was found
-     */
-    public final CacheControl getCacheControl(OntClass ontClass)
-    {
-	RDFNode hasValue = getRestrictionHasValue(ontClass, GP.cacheControl);
-	if (hasValue != null && hasValue.isLiteral())
-        {
-            String controlString = hasValue.asLiteral().getString();
-            return CacheControl.valueOf(controlString); // will fail on bad config
-        }
 
 	return null;
     }
@@ -562,40 +485,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	return selectBuilder;
     }
 
-    public final UpdateBuilder getUpdateBuilder(Update update)
+    public UpdateRequest getUpdateRequest()
     {
-	UpdateBuilder ub = UpdateBuilder.fromUpdate(update);
-	
-	return ub;
+        return getUpdateBuilder().build();
     }
     
-    public final UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
+    public UpdateBuilder getUpdateBuilder()
     {
-	return getUpdateRequest(getUpdateCall(ontClass), resource);
-    }
-
-    public TemplateCall getUpdateCall(OntClass ontClass)
-    {
-	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (!ontClass.hasProperty(ResourceFactory.createProperty(SPIN.NS, "update")))
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update Template");	    
-
-	RDFNode update = getModel().getResource(ontClass.getURI()).
-		getProperty(ResourceFactory.createProperty(SPIN.NS, "update")).getObject();
-	return SPINFactory.asTemplateCall(update);
+	return updateBuilder;
     }
     
-    public UpdateRequest getUpdateRequest(TemplateCall call, Resource resource)
-    {
-	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
-	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-	
-	QuerySolutionMap qsm = new QuerySolutionMap();
-	qsm.add("this", resource);
-	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
-	return queryString.asUpdate();
-    }
-
     /**
      * Returns value of "limit" query string parameter, which indicates the number of resources per page.
      * This value is set as <code>LIMIT</code> query modifier when this resource is a page (therefore
@@ -660,45 +559,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public URI getGraphURI()
     {
 	return graphURI;
-    }
-
-    /**
-     * Given an ontology class and ontology property, returns value of <code>owl:hasValue</code> restriction,
-     * if one is present.
-     * The ontology class must be a subclass of the restriction, and the property must be used as
-     * <code>owl:onProperty</code>.
-     * 
-     * @param ontClass ontology class
-     * @param property ontology property
-     * @return RDF node or null, if not present
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
-     */
-    public RDFNode getRestrictionHasValue(OntClass ontClass, Property property)
-    {
-	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (property == null) throw new IllegalArgumentException("OntProperty cannot be null");
-	
-	ExtendedIterator<OntClass> it = ontClass.listSuperClasses(true);
-	
-	try
-	{
-	    while (it.hasNext())
-	    {
-		OntClass superClass = it.next();
-		if (superClass.canAs(HasValueRestriction.class))
-		{
-		    HasValueRestriction restriction = superClass.asRestriction().asHasValueRestriction();
-		    if (restriction.getOnProperty().equals(property))
-			return restriction.getHasValue();
-		}
-	    }
-	    
-	    return null;
-	}
-	finally
-	{
-	    it.close();
-	}
     }
 
     /**
@@ -780,16 +640,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns ontology class that this resource matches.
-     * If the request URI did not match any ontology class, <code>404 Not Found</code> was returned.
-     * 
-     * @return ontology class
-     */
+    * Returns ontology class that this resource matches.
+    * If the request URI did not match any ontology class, <code>404 Not Found</code> was returned.
+    *
+    * @return ontology class
+    */
     public OntClass getMatchedOntClass()
     {
-	return matchedOntClass;
+        return matchedOntClass;
     }
-
+    
     /**
      * Returns the VoID dataset of this resource, if specified.
      * The dataset can be specified as a <code>void:inDataset</code> value restriction on an ontology class in

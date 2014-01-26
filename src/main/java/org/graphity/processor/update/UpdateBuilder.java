@@ -53,7 +53,7 @@ public class UpdateBuilder implements Update
     {
 	return update;
     }
-
+    
     public static UpdateBuilder fromUpdate(Update update)
     {
 	return new UpdateBuilder(update);
@@ -66,6 +66,11 @@ public class UpdateBuilder implements Update
 	return fromUpdate(SPINFactory.asUpdate(resource));
     }
 
+    public static UpdateBuilder fromUpdate(com.hp.hpl.jena.update.Update update, Model model)
+    {
+	return fromUpdate(update, null, model);
+    }
+    
     public static UpdateBuilder fromUpdate(com.hp.hpl.jena.update.Update update, String uri, Model model)
     {
 	if (update == null) throw new IllegalArgumentException("Update cannot be null");

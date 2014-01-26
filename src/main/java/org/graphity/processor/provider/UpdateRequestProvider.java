@@ -20,9 +20,10 @@ package org.graphity.processor.provider;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -41,16 +42,16 @@ import org.topbraid.spin.vocabulary.SPIN;
  *
  * @author Martynas
  */
-public class QueryProvider extends PerRequestTypeInjectableProvider<Context, Query> implements ContextResolver<Query>
+public class UpdateRequestProvider extends PerRequestTypeInjectableProvider<Context, UpdateRequest> implements ContextResolver<UpdateRequest>
 {
-    private static final Logger log = LoggerFactory.getLogger(QueryProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateRequestProvider.class);
 
     @Context UriInfo uriInfo;
-    @Context Providers providers;
+    @Context Providers providers;    
 
-    public QueryProvider()
+    public UpdateRequestProvider()
     {
-        super(Query.class);
+        super(UpdateRequest.class);
     }
 
     public UriInfo getUriInfo()
@@ -72,63 +73,43 @@ public class QueryProvider extends PerRequestTypeInjectableProvider<Context, Que
     {
 	return getProviders().getContextResolver(OntClass.class, null).getContext(OntClass.class);
     }
-
+    
     @Override
-    public Injectable<Query> getInjectable(ComponentContext cc, Context a)
+    public Injectable<UpdateRequest> getInjectable(ComponentContext cc, Context a)
     {
-	return new Injectable<Query>()
+	return new Injectable<UpdateRequest>()
 	{
 	    @Override
-	    public Query getValue()
+	    public UpdateRequest getValue()
 	    {
-                return getQuery();
+                return getUpdateRequest();
 	    }
 	};
     }
-    
+
     @Override
-    public Query getContext(Class<?> type)
+    public UpdateRequest getContext(Class<?> type)
     {
-        return getQuery();
+        return getUpdateRequest();
     }
 
-    public Query getQuery()
+    public UpdateRequest getUpdateRequest()
     {
-        return getQuery(getOntClass(), getUriInfo().getAbsolutePath());
+        return getUpdateRequest(getOntClass(), getUriInfo().getAbsolutePath());
     }
-
-    /**
-     * Given an RDF resource and an ontology class that it belongs to, returns a SPARQL query that can be used
-     * to retrieve its description.
-     * The ontology class must have a SPIN template call attached (using <code>spin:constraint</code>).
-     * 
-     * @param ontClass ontology class of the resource
-     * @param uri URI of the resource
-     * @return query object
-     * @see org.topbraid.spin.model.TemplateCall
-     */
-    public Query getQuery(OntClass ontClass, URI uri)
+    
+    public final UpdateRequest getUpdateRequest(OntClass ontClass, URI uri)
     {
-	if (ontClass.hasProperty(SPIN.query))
+	if (ontClass.hasProperty(ResourceFactory.createProperty(SPIN.NS, "update")))
         {
-            TemplateCall call = SPINFactory.asTemplateCall(ontClass.getProperty(SPIN.query).getObject());
-            return getQuery(call, getOntModel().createResource(uri.toString()));
+            TemplateCall call = SPINFactory.asTemplateCall(ontClass.getProperty(ResourceFactory.createProperty(SPIN.NS, "update")).getObject());
+            return getUpdateRequest(call, getOntModel().createResource(uri.toString()));
         }
-        
+
         return null;
     }
     
-    /**
-     * Given a SPIN template call and an RDF resource, returns a SPARQL query that can be used to retrieve
-     * resource's description.
-     * Following the convention of SPIN API, variable name <code>?this</code> has a special meaning and
-     * is assigned to the value of the resource (which is usually request resource).
-     * 
-     * @param call SPIN template call resource
-     * @param resource RDF resource
-     * @return query object
-     */
-    public Query getQuery(TemplateCall call, Resource resource)
+    public UpdateRequest getUpdateRequest(TemplateCall call, Resource resource)
     {
 	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
@@ -136,7 +117,6 @@ public class QueryProvider extends PerRequestTypeInjectableProvider<Context, Que
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
 	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
-	return queryString.asQuery();
+	return queryString.asUpdate();
     }
-
 }

@@ -70,8 +70,7 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 
     public OntModel getOntModel()
     {
-	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
-	return cr.getContext(OntModel.class);
+	return getProviders().getContextResolver(OntModel.class, null).getContext(OntModel.class);
     }
 
     @Override
