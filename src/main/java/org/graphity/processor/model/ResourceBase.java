@@ -137,8 +137,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntModel ontModel, SPARQLEndpoint endpoint,
-            OntClass matchedOntClass, QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
+	    OntModel ontModel, SPARQLEndpoint endpoint, OntClass matchedOntClass,
+            QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
@@ -178,8 +178,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
-	    OntResource ontResource, SPARQLEndpoint endpoint,
-            OntClass matchedOntClass, QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
+	    OntResource ontResource, SPARQLEndpoint endpoint, OntClass matchedOntClass,
+            QueryBuilder queryBuilder, UpdateBuilder updateBuilder, CacheControl cacheControl,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	super(ontResource, endpoint, request, resourceConfig);
