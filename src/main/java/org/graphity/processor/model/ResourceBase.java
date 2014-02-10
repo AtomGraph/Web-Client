@@ -604,7 +604,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (!ontClass.hasProperty(SPIN.query))
 	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query Template");	    
 
-	RDFNode constraint = getModel().getResource(ontClass.getURI()).getProperty(SPIN.query).getObject();
+	RDFNode constraint = ontClass.getProperty(SPIN.query).getObject();
 	return SPINFactory.asTemplateCall(constraint);
     }
     
@@ -649,8 +649,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (!ontClass.hasProperty(ResourceFactory.createProperty(SPIN.NS, "update")))
 	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update Template");	    
 
-	RDFNode update = getModel().getResource(ontClass.getURI()).
-		getProperty(ResourceFactory.createProperty(SPIN.NS, "update")).getObject();
+	RDFNode update = ontClass.getProperty(ResourceFactory.createProperty(SPIN.NS, "update")).getObject();
 	return SPINFactory.asTemplateCall(update);
     }
     
