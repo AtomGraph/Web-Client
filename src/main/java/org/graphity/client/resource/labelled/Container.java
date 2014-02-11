@@ -49,10 +49,10 @@ public class Container extends ResourceBase
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	
-	if (hasRDFType(LDP.Container))
+	if (!(searchString == null || searchString.isEmpty()) && hasRDFType(LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
-	    if (searchString != null && selectBuilder != null)
+	    if (selectBuilder != null)
 	    {
                 selectBuilder.filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(searchString)); // escape special regex() characters!
 		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", searchString, getQueryBuilder());

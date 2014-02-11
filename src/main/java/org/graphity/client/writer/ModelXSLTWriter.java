@@ -25,6 +25,10 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -56,6 +60,9 @@ import org.slf4j.LoggerFactory;
 public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
+
+    public static List<String> RESERVED_PARAMS = Arrays.asList("base-uri", "absolute-path", "request-uri", "http-headers",
+            "ont-model", "offset", "limit", "order-by", "desc", "lang", "mode", "uri", "endpoint-uri");
 
     private final XSLTBuilder builder;
  
@@ -192,18 +199,30 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
 	    bld.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
 	}
-	
 	Object contentLanguage = headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
 	if (contentLanguage != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
 	    bld.parameter("lang", contentLanguage.toString());
 	}
-	
+
+        // pass HTTP query parameters into XSLT, ignore reserved param names (as params cannot be unset)
+	Iterator<Entry<String, List<String>>> it = getUriInfo().getQueryParameters().entrySet().iterator();
+        while (it.hasNext())
+        {
+            Entry<String, List<String>> entry = it.next();
+            if (!getReservedParameterNames().contains(entry.getKey()))
+            {
+                bld.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
+                if (log.isDebugEnabled()) log.debug("Setting XSLT param \"{}\" from HTTP query string with value: {}", entry.getKey(), entry.getValue().get(0));
+            }
+            else
+                if (log.isDebugEnabled()) log.debug("HTTP query string param \"{}\" is reserved in XSLT writer, ignoring", entry.getKey());
+        }
+
+        // override the reserved parameters that need special types
 	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
 	    bld.parameter("mode", URI.create(getUriInfo().getQueryParameters().getFirst("mode")));
-	if (getUriInfo().getQueryParameters().getFirst("query") != null)
-	    bld.parameter("query", getUriInfo().getQueryParameters().getFirst("query"));
 	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
 	    bld.parameter("uri", URI.create(getUriInfo().getQueryParameters().getFirst("uri")));
 	if (getUriInfo().getQueryParameters().getFirst("endpoint-uri") != null)
@@ -212,4 +231,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	return bld;
     }
 
+    public List<String> getReservedParameterNames()
+    {
+        return RESERVED_PARAMS;
+    }
+    
 }

@@ -825,8 +825,8 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
             
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:EditMode"/>
-            <xsl:apply-templates mode="gc:EditMode">
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+            <xsl:apply-templates mode="#current">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
             
