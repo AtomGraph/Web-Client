@@ -491,13 +491,13 @@ exclude-result-prefixes="#all">
             </div>
 
             <div class="controls">
-                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:EditMode">
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
                     <xsl:with-param name="id" select="generate-id()"/>
                 </xsl:apply-templates>
             </div>
             <xsl:if test="@xml:lang | @rdf:datatype">
                 <div class="controls">
-                    <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="gc:EditMode"/>
+                    <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current"/>
                 </div>
             </xsl:if>
         </div>        
@@ -596,13 +596,17 @@ exclude-result-prefixes="#all">
 	<xsl:param name="class" as="xs:string?"/>
 
         <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
-
 	<xsl:choose>
 	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode" mode="gc:EditMode"/>
-	    </xsl:when>
+                <xsl:apply-templates select="." mode="gc:InputMode">
+                    <xsl:with-param name="type" select="'hidden'"/>
+                </xsl:apply-templates>
+		<xsl:apply-templates select="$bnode" mode="#current"/>
+                <!-- restore subject context -->
+                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
+            </xsl:when>
 	    <xsl:otherwise>
-		<xsl:apply-templates select="." mode="gc:InputMode">
+                <xsl:apply-templates select="." mode="gc:InputMode">
                     <xsl:with-param name="type" select="$type"/>
                     <xsl:with-param name="id" select="$id"/>
                     <xsl:with-param name="class" select="$class"/>

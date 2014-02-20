@@ -309,8 +309,7 @@ exclude-result-prefixes="#all">
                     var onSaxonLoad = function() { Saxon.run( { stylesheet: stylesheetUri,
                         parameters: { "base-uri-string": baseUri,
                             "absolute-path-string": "]]><xsl:value-of select="$absolute-path"/><![CDATA[",
-                            "mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[",
-                            "graph-string": "]]><xsl:value-of select="$graph"/><![CDATA[",
+                            ]]><xsl:if test="$mode"><![CDATA["mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[",]]></xsl:if><![CDATA[
                             "lang": "]]><xsl:value-of select="$lang"/><![CDATA[" },
                         initialTemplate: "main", logLevel: "FINE"
                     }); }
@@ -769,18 +768,6 @@ exclude-result-prefixes="#all">
 		    <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
 		</div>
 	    </fieldset>
-	    
-            <!--
-	    <fieldset>
-		<legend>Target graph</legend>
-		<div class="control-group">
-		    <label class="control-label" for="select-graph">Graph</label>
-		    <div class="controls">
-			<select name="graph" id="select-graph"/>
-		    </div>
-		</div>
-	    </fieldset>
-            -->
 
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary create-mode">Save</button>
@@ -817,7 +804,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
 	<xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
-
+        <xsl:param name="add-statements" select="true()" as="xs:boolean?" tunnel="yes"/>
+        
 	<fieldset id="fieldset-{generate-id()}">
             <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
                 <legend>
@@ -829,11 +817,13 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates mode="#current">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
-            
-            <div class="control-group">
-                <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
-            </div>
+
+            <xsl:if test="$add-statements">
+                <div class="control-group">
+                    <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
+                </div>
+            </xsl:if>
 	</fieldset>
     </xsl:template>
-    
+        
 </xsl:stylesheet>
