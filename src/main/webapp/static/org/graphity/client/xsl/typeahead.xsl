@@ -90,7 +90,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:param name="query" as="xs:string"/>
         <xsl:param name="name" as="xs:string"/>
         <xsl:variable name="label">
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+            <xsl:apply-templates select="." mode="gc:LabelMode"/>
         </xsl:variable>
 
         <li>

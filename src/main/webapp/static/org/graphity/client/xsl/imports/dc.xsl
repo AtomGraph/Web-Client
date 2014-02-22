@@ -31,46 +31,39 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="dc:title | dc:description" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="@rdf:about[../dc:title[lang($lang)]] | @rdf:nodeID[../dc:title[lang($lang)]]" mode="gc:LabelMode" priority="3">
-	<xsl:variable name="label" select="../dc:title[lang($lang)][1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="dc:title[lang($lang)]" mode="gc:LabelMode" priority="3">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../dc:title[not(@xml:lang)]] | @rdf:nodeID[../dc:title[not(@xml:lang)]]" mode="gc:LabelMode" priority="2">
-	<xsl:variable name="label" select="../dc:title[not(@xml:lang)][1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="dc:title[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../dc:title] | @rdf:about[../@dc:title] | @rdf:nodeID[../dc:title] | @rdf:nodeID[../@dc:title]" mode="gc:LabelMode">
-	<xsl:variable name="label" select="(../dc:title | ../@dc:title)[1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="dc:title | @dc:title" mode="gc:LabelMode">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../dc:description[lang($lang)]] | @rdf:nodeID[../dc:description[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
-	<p>
-	    <xsl:value-of select="substring(../dc:description[lang($lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="dc:description[lang($lang)]" mode="gc:DescriptionMode" priority="1">
+        <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../dc:description[not(@xml:lang)]] | @rdf:nodeID[../dc:description[not(@xml:lang)]]" mode="gc:DescriptionMode">
-	<p>
-	    <xsl:value-of select="substring(../dc:description[not(@xml:lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="dc:description[not(@xml:lang)]" mode="gc:DescriptionMode">
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="dc:subject" mode="gc:SidebarNavMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
 	
 	<div class="well sidebar-nav">
 	    <h2 class="nav-header">
-		<xsl:apply-templates select="."/>
+		<xsl:apply-templates select="." mode="gc:InlineMode"/>
 	    </h2>
 		
 	    <!-- TO-DO: fix for a single resource! -->
 	    <ul class="nav nav-pills nav-stacked">
 		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
-		    <xsl:sort select="gc:label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
-		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="gc:SidebarNavMode"/>
+		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
+		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
 		</xsl:for-each-group>
 	    </ul>
 	</div>
@@ -78,7 +71,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="dc:subject/@rdf:resource" mode="gc:SidebarNavMode">
 	<li>
-	    <xsl:apply-templates select="."/>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</li>
     </xsl:template>
 

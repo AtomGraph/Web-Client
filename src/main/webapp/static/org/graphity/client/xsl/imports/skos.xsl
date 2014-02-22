@@ -30,19 +30,16 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="skos:prefLabel" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="@rdf:about[../skos:prefLabel[lang($lang)]] | @rdf:nodeID[../skos:prefLabel[lang($lang)]]" mode="gc:LabelMode" priority="3">
-	<xsl:variable name="label" select="../skos:prefLabel[lang($lang)][1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="skos:prefLabel[lang($lang)]" mode="gc:LabelMode" priority="3">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../skos:prefLabel[not(@xml:lang)]] | @rdf:nodeID[../skos:prefLabel[not(@xml:lang)]]" mode="gc:LabelMode" priority="2">
-	<xsl:variable name="label" select="../skos:prefLabel[not(@xml:lang)][1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="skos:prefLabel[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../skos:prefLabel] | @rdf:about[../@skos:prefLabel] | @rdf:nodeID[../skos:prefLabel] | @rdf:nodeID[../@skos:prefLabel]" mode="gc:LabelMode">
-	<xsl:variable name="label" select="(../skos:prefLabel | ../@skos:prefLabel)[1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="skos:prefLabel | @skos:prefLabel" mode="gc:LabelMode">
+	<xsl:value-of select="."/>
     </xsl:template>
 
 </xsl:stylesheet>

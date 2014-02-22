@@ -20,7 +20,7 @@
 <!-- this contains the URL of the source document whether it was provided by the base or as a parameter e.g. http://example.org/bla/file.html-->
 <variable name='this' >
 	<choose>
-		<when test="string-length($base)>0"><value-of select="$base"/></when>
+		<when test="string-length($base)&gt; 0"><value-of select="$base"/></when>
 		<otherwise><value-of select="$url"/></otherwise>
 	</choose>
 </variable>

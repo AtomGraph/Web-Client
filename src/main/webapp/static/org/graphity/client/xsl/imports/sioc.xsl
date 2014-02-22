@@ -30,62 +30,51 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="@rdf:about[../sioc:name[lang($lang)]] | @rdf:nodeID[../sioc:name[lang($lang)]]" mode="gc:LabelMode" priority="3">
-	<xsl:value-of select="../sioc:name[lang($lang)][1]"/>
+    <xsl:template match="sioc:name[lang($lang)]" mode="gc:LabelMode" priority="3">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../sioc:name[not(@xml:lang)]] | @rdf:nodeID[../sioc:name[not(@xml:lang)]]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="../sioc:name[not(@xml:lang)][1]"/>
+    <xsl:template match="sioc:name[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../sioc:name] | @rdf:about[../@sioc:name] | @rdf:nodeID[../sioc:name] | @rdf:nodeID[../@sioc:name]" mode="gc:LabelMode">
-	<xsl:variable name="label" select="(../sioc:name | ../@sioc:name)[1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="sioc:name | @sioc:name" mode="gc:LabelMode">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../sioc:content[lang($lang)]] | @rdf:nodeID[../sioc:content[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
-	<p>
-	    <xsl:value-of select="substring(../sioc:content[lang($lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="sioc:content[lang($lang)]" mode="gc:DescriptionMode" priority="1">
+        <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../sioc:content[not(@xml:lang)]] | @rdf:nodeID[../sioc:content[not(@xml:lang)]]" mode="gc:DescriptionMode">
-	<p>
-	    <xsl:value-of select="substring(../sioc:content[not(@xml:lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="sioc:content[not(@xml:lang)]" mode="gc:DescriptionMode">
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="sioc:avatar" mode="gc:PropertyListMode" priority="1"/>
 
-    <xsl:template match="@rdf:about[../sioc:avatar/@rdf:resource]" mode="gc:ImageMode">
-	<a href="{.}">
-	    <img src="{../sioc:avatar/@rdf:resource}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+    <xsl:template match="sioc:avatar[../@rdf:about][@rdf:resource]" mode="gc:ImageMode">
+	<a href="{../@rdf:about}">
+	    <img src="{@rdf:resource}">
+		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="@rdf:nodeID[../sioc:avatar/@rdf:resource]" mode="gc:ImageMode">
-	<img src="{../sioc:avatar/@rdf:resource}">
-	    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+    <xsl:template match="sioc:avatar[../@rdf:nodeID][@rdf:resource]" mode="gc:ImageMode">
+	<img src="{sioc:avatar/@rdf:resource}">
+	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
 	</img>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../sioc:avatar/@rdf:resource]" mode="gc:ParaImageMode">
-	<p>
-	    <xsl:apply-templates select="." mode="gc:ImageMode"/>
-	</p>
-    </xsl:template>
-
-    <xsl:template match="sioc:avatar/@rdf:resource">
+    <xsl:template match="sioc:avatar/@rdf:resource" mode="gc:InlineMode">
 	<a href="{.}">
 	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="gc:LabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:ObjectLabelMode"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="sioc:email/@rdf:resource">
+    <xsl:template match="sioc:email/@rdf:resource" mode="gc:InlineMode">
 	<a href="{.}">
 	    <xsl:value-of select="substring-after(., 'mailto:')"/>
 	</a>

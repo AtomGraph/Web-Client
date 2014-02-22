@@ -76,9 +76,21 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="gc:label" as="xs:string?">
-	<xsl:param name="resource" as="node()"/>
+	<xsl:param name="resource" as="element()"/>
 	
 	<xsl:apply-templates select="$resource" mode="gc:LabelMode"/>
+    </xsl:function>
+
+    <xsl:function name="gc:property-label" as="xs:string?">
+	<xsl:param name="property" as="element()"/>
+	
+	<xsl:apply-templates select="$property" mode="gc:PropertyLabelMode"/>
+    </xsl:function>
+
+    <xsl:function name="gc:object-label" as="xs:string?">
+	<xsl:param name="object" as="attribute()"/>
+	
+	<xsl:apply-templates select="$object" mode="gc:ObjectLabelMode"/>
     </xsl:function>
 
     <xsl:function name="rdfs:domain" as="attribute()*">

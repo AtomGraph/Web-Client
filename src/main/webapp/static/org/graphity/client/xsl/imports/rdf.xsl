@@ -28,4 +28,10 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:type" mode="gc:PropertyListMode"/>
 
+    <xsl:template match="rdf:type/@rdf:resource" priority="1" mode="gc:InlineMode">
+	<span title="{.}" class="btn">
+            <xsl:next-match/>
+        </span>
+    </xsl:template>
+
 </xsl:stylesheet>

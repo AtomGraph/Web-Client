@@ -44,47 +44,42 @@ exclude-result-prefixes="#all">
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 
-    <xsl:template match="rdf:type/@rdf:resource" priority="1">
-	<span title="{.}" class="btn">
-	    <xsl:next-match/>
-	</span>
-    </xsl:template>
-
     <!-- subject resource -->
-    <xsl:template match="@rdf:about">
+    <xsl:template match="@rdf:about" mode="gc:InlineMode">
 	<a href="{.}" title="{.}">
 	    <xsl:if test="substring-after(., concat($request-uri, '#'))">
 		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
 	    </xsl:if>	
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
-
-    <!-- object resource -->    
-    <xsl:template match="@rdf:resource | sparql:uri">
-	<a href="{.}" title="{.}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
-
-    <xsl:template match="@rdf:nodeID">
+    
+    <xsl:template match="@rdf:nodeID" mode="gc:InlineMode">
 	<span id="{.}" title="{.}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 	</span>
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InlineMode">
+	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        
 	<span title="{$this}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
 	</span>
+    </xsl:template>
+
+    <!-- object resource -->    
+    <xsl:template match="@rdf:resource | sparql:uri" mode="gc:InlineMode">
+	<a href="{.}" title="{.}">
+            <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
+	</a>
     </xsl:template>
 	
     <!-- object blank node (avoid infinite loop) -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:InlineMode">
 	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
-	
+
 	<xsl:choose>
 	    <xsl:when test="$bnode">
 		<xsl:apply-templates select="$bnode"/>
@@ -98,29 +93,29 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object literal -->
-    <xsl:template match="text()">
+    <xsl:template match="text()" mode="gc:InlineMode">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]">
+    <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]" mode="gc:InlineMode">
 	<span title="{../@rdf:datatype | @datatype}">
 	    <xsl:value-of select="."/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1" mode="gc:InlineMode">
 	<span title="{../@rdf:datatype}">
 	    <xsl:value-of select="format-number(., '#####.00')"/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="gc:InlineMode">
 	<span title="{../@rdf:datatype}">
 	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1" mode="gc:InlineMode">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}">
@@ -128,149 +123,83 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
-    <!-- LABEL MODE -->
+    <!-- LABEL MODES -->
+<!-- <xsl:template match="@rdf:about" mode="gc:LabelMode">SHIT</xsl:template> -->
     
-    <!-- subject -->
-    <xsl:template match="@rdf:about[contains(., '#') and not(ends-with(., '#'))]" mode="gc:LabelMode" priority="3">
-	<xsl:variable name="label" select="substring-after(., '#')"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="node()" mode="gc:LabelMode"/>
+    
+    <xsl:template match="node()" mode="gc:PropertyLabelMode"/>
+        
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyLabelMode">
+	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        
+        <xsl:choose>
+            <xsl:when test="key('resources', $this, document(namespace-uri()))">
+                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="gc:LabelMode"/>
+            </xsl:when>
+            <xsl:when test="key('resources', $this)">
+                <xsl:apply-templates select="key('resources', $this)" mode="gc:LabelMode"/>
+            </xsl:when>
+            <xsl:when test="contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))">
+                <xsl:value-of select="substring-after(concat(namespace-uri(), local-name()), '#')"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
+                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>                    
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$this"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[string-length(tokenize(., '/')[last()]) &gt; 0]" mode="gc:LabelMode" priority="2">
-	<xsl:variable name="label" use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
-	<xsl:variable name="label" use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:LabelMode">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[key('resources', concat(namespace-uri(), local-name()), document(namespace-uri()))/@rdf:about]" mode="gc:LabelMode" priority="4">
-	<xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(namespace-uri()))/@rdf:about" mode="gc:LabelMode"/>
+    <xsl:template match="node()" mode="gc:ObjectLabelMode"/>
+        
+    <xsl:template match="@rdf:resource | sparql:uri" mode="gc:ObjectLabelMode">
+        <xsl:choose>
+            <xsl:when test="key('resources', ., document(gc:document-uri(.)))">
+                <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="gc:LabelMode"/>
+            </xsl:when>
+            <xsl:when test="key('resources', .)">
+                <xsl:apply-templates select="key('resources', .)" mode="gc:LabelMode"/>
+            </xsl:when>
+            <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
+                <xsl:value-of select="substring-after(., '#')"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
+                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>                    
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="."/>
+            </xsl:otherwise>
+        </xsl:choose>        
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[key('resources', concat(namespace-uri(), local-name()))/@rdf:about]" mode="gc:LabelMode" priority="3">
-	<xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()))/@rdf:about" mode="gc:LabelMode"/>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="substring-after(concat(namespace-uri(), local-name()), '#')"/>
-    </xsl:template>
-    
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[string-length(tokenize(concat(namespace-uri(), local-name()), '/')[last()]) &gt; 0]" mode="gc:LabelMode" priority="1">
-	<xsl:variable name="this" select="concat(namespace-uri(), local-name())" as="xs:string"/>
-        <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
-        <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
-    </xsl:template>
-	
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:LabelMode">
-	<xsl:value-of select="concat(namespace-uri(), local-name())"/>
-    </xsl:template>
-
-    <!-- object -->
-    <xsl:template match="@rdf:resource[key('resources', ., document(gc:document-uri(.)))/@rdf:about] | @rdf:resource[key('resources', ., document(gc:document-uri(.)))/@rdf:nodeID] | sparql:uri[key('resources', ., document(gc:document-uri(.)))/@rdf:about] | sparql:uri[key('resources', ., document(gc:document-uri(.)))/@rdf:nodeID]" mode="gc:LabelMode" priority="4">
-	<xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))/@rdf:about" mode="gc:LabelMode"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:resource[key('resources', ., document(gc:document-uri(.)))/@rdf:nodeID] | sparql:uri[key('resources', ., document(gc:document-uri(.)))/@rdf:nodeID]" mode="gc:LabelMode" priority="4">
-	<xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))/@rdf:nodeID" mode="gc:LabelMode"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:resource[key('resources', .)/@rdf:about] | sparql:uri[key('resources', .)/@rdf:about]" mode="gc:LabelMode" priority="3">
-	<xsl:apply-templates select="key('resources', .)/@rdf:about" mode="gc:LabelMode"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:resource[key('resources', .)/@rdf:nodeID] | sparql:uri[key('resources', .)/@rdf:nodeID]" mode="gc:LabelMode" priority="3">
-	<xsl:apply-templates select="key('resources', .)/@rdf:nodeID" mode="gc:LabelMode"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:resource[contains(., '#') and not(ends-with(., '#'))] | sparql:uri[contains(., '#') and not(ends-with(., '#'))]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="substring-after(., '#')"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:resource[string-length(tokenize(., '/')[last()]) &gt; 0] | sparql:uri[string-length(tokenize(., '/')[last()]) &gt; 0]" mode="gc:LabelMode" priority="1">
-        <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
-        <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
-    </xsl:template>
-
-    <xsl:template match="@rdf:resource | sparql:uri" mode="gc:LabelMode">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
     <!-- DESCRIPTION MODE -->
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:DescriptionMode"/>
     
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:DescriptionMode"/>
-
-    <!-- HEADER MODE -->
-    
-    <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
-	<div class="btn-group pull-right">
-	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
-	</div>
-
-	<h1 class="page-header">
-	    <xsl:apply-templates select="."/>
-	</h1>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode">
-	<h2>
-	    <xsl:apply-templates select="."/>
-	</h2>
-    </xsl:template>
-
-    <xsl:template match="rdf:type" mode="gc:HeaderMode">
-	<li>
-	    <xsl:apply-templates select="@rdf:resource | @rdf:nodeID"/>
-	</li>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
-	<xsl:if test="$query-res/sp:text">
-	    <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
-	</xsl:if>
-    </xsl:template>
-
     <!-- IMAGE MODE -->
 
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:ImageMode"/>
-    
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:ParaImageMode"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:ImageMode"/>
 
     <!-- PROPERTY LIST MODE -->
-    
-    <!-- property -->
+
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyListMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
+        <!-- <dt> is added in upper layer template <xsl:for-each-group> -->
+        <!--
 	<xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
 	    <dt>
-		<xsl:apply-templates select="."/>
+		<xsl:apply-templates select="." mode="gc:InlineMode"/>
 	    </dt>
 	</xsl:if>
+        -->
 	<dd>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:PropertyListMode"/>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</dd>
-    </xsl:template>
-    
-    <xsl:template match="node() | @rdf:resource" mode="gc:PropertyListMode">
-	<xsl:apply-templates select="."/>
-    </xsl:template>
-
-    <!-- include blank nodes recursively but avoid infinite loop -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:PropertyListMode">
-	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
-
-	<xsl:choose>
-	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:apply-templates select="."/>
-	    </xsl:otherwise>
-	</xsl:choose>
     </xsl:template>
 
     <!-- TABLE HEADER MODE -->
@@ -279,33 +208,25 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
 	<th>
-	    <span title="{$this}">
-		<xsl:apply-templates select="." mode="gc:LabelMode"/>
-	    </span>
+            <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</th>
     </xsl:template>
 
     <!-- TABLE MODE -->
-    
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:TableMode">
-	<td>
-	    <xsl:apply-templates select="."/>
-	</td>
-    </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableMode"/>
 
     <!-- apply properties that match lang() -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($lang)]" mode="gc:TableMode" priority="1">
 	<td>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="gc:TableMode" priority="1">
 	<td>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>
     </xsl:template>
 
@@ -483,8 +404,8 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
-            <label class="control-label" for="{generate-id()}" title="{$this}">
-                <xsl:apply-templates select="." mode="gc:LabelMode"/>
+            <label class="control-label" for="{generate-id()}">
+                <xsl:apply-templates select="." mode="gc:InlineMode"/>
             </label>
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>

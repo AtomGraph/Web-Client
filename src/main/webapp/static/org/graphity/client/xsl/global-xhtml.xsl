@@ -81,9 +81,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
 	<xsl:choose>
 	    <xsl:when test="$uri">
-		<xsl:apply-templates select="key('resources', $base-uri, $ont-model)/@rdf:about" mode="gc:LabelMode"/>
+		<xsl:apply-templates select="key('resources', $base-uri, $ont-model)" mode="gc:LabelMode"/>
 		<xsl:text> - </xsl:text>
-		<xsl:apply-templates select="key('resources', $uri)" mode="gc:TitleMode"/>
+		<xsl:apply-templates select="key('resources', $uri)" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:otherwise>
 		<xsl:apply-imports/>
@@ -99,8 +99,8 @@ exclude-result-prefixes="#all">
 	</button>
 
 	<a class="brand" href="{$base-uri}">
-	    <xsl:for-each select="key('resources', $base-uri, $ont-model)/@rdf:about">
-		<img src="{../foaf:logo/@rdf:resource}">
+	    <xsl:for-each select="key('resources', $base-uri, $ont-model)">
+		<img src="{foaf:logo/@rdf:resource}">
 		    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
 		</img>
 	    </xsl:for-each>
@@ -117,12 +117,10 @@ exclude-result-prefixes="#all">
 				<xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
 				    <xsl:choose>
 					<xsl:when test="foaf:homepage/@rdf:resource">
-					    <a href="{foaf:homepage/@rdf:resource}">
-						<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
-					    </a>
+                                            <xsl:apply-templates select="foaf:homepage/@rdf:resource" mode="gc:InlineMode"/>
 					</xsl:when>
 					<xsl:otherwise>
-					    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+					    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
 					</xsl:otherwise>
 				    </xsl:choose>
 				</xsl:for-each>
@@ -132,7 +130,7 @@ exclude-result-prefixes="#all">
 			    <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
 			    <span class="add-on">
 				<xsl:for-each select="key('resources', key('resources', $absolute-path)/void:inDataset/@rdf:resource, $ont-model)">
-				    <xsl:apply-templates select="@rdf:about | @rdf:nodeID"/>
+				    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
 				</xsl:for-each>
 			    </span>
 			</xsl:when>
@@ -157,12 +155,12 @@ exclude-result-prefixes="#all">
 	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
 		<ul class="nav pull-right">
 		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
-			<xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+			<!-- <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/> -->
 			<li>
 			    <xsl:if test="gc:document-uri(.) = $absolute-path">
 				<xsl:attribute name="class">active</xsl:attribute>
 			    </xsl:if>
-			    <xsl:apply-templates select="."/>
+			    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 			</li>
 		    </xsl:for-each>
 		</ul>
@@ -201,12 +199,12 @@ exclude-result-prefixes="#all">
 		<xsl:choose>
 		    <xsl:when test=". = $default-mode">
 			<a href="{$absolute-path}{gc:query-string($uri, ())}">
-			    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 			</a>		
 		    </xsl:when>
 		    <xsl:otherwise>
 			<a href="{$absolute-path}{gc:query-string($uri, .)}">
-			    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 			</a>		
 		    </xsl:otherwise>
 		</xsl:choose>
@@ -223,7 +221,7 @@ exclude-result-prefixes="#all">
 	    <xsl:text> </xsl:text>
 	    <select id="endpoint-select" name="endpoint-uri" class="span6">
 		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', $ont-model)[void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
-		    <xsl:sort select="gc:label(@rdf:about | @rdf:nodeID)" order="ascending"/>
+		    <xsl:sort select="gc:label(.)" order="ascending"/>
 		</xsl:apply-templates>
 	    </select>
 	</p>
@@ -237,7 +235,7 @@ exclude-result-prefixes="#all">
 		<xsl:attribute name="selected">selected</xsl:attribute>
 	    </xsl:if>
 
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	    [<xsl:value-of select="void:sparqlEndpoint/@rdf:resource"/>]
 	</option>	
     </xsl:template>
@@ -248,9 +246,9 @@ exclude-result-prefixes="#all">
 		<xsl:attribute name="selected">selected</xsl:attribute>
 	    </xsl:if>
 
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	    [<xsl:value-of select="void:sparqlEndpoint/@rdf:resource"/>]
-	</option>	
+	</option>
     </xsl:template>
 
 </xsl:stylesheet>

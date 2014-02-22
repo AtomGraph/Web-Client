@@ -28,7 +28,7 @@ xmlns:rdf="&rdf;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="dbpedia-owl:wikiPageExternalLink/@rdf:resource">
+    <xsl:template match="dbpedia-owl:wikiPageExternalLink/@rdf:resource" mode="gc:InlineMode">
 	<a href="{.}">
 	    <xsl:choose>
 		<xsl:when test="starts-with(., 'http://')">
@@ -46,24 +46,20 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="dbpedia-owl:abstract" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
+    <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource" mode="gc:InlineMode">
 	<a href="{.}">
 	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:ObjectLabelMode"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../dbpedia-owl:abstract[lang($lang)]] | @rdf:nodeID[../dbpedia-owl:abstract[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
-	<p>
-	    <xsl:value-of select="substring(../dbpedia-owl:abstract[lang($lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="dbpedia-owl:abstract[lang($lang)]" mode="gc:DescriptionMode" priority="1">
+        <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../dbpedia-owl:abstract[not(@xml:lang)]] | @rdf:nodeID[../dbpedia-owl:abstract[not(@xml:lang)]]" mode="gc:DescriptionMode">
-	<p>
-	    <xsl:value-of select="substring(../dbpedia-owl:abstract[not(@xml:lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="dbpedia-owl:abstract[not(@xml:lang)]" mode="gc:DescriptionMode">
+        <xsl:value-of select="."/>
     </xsl:template>
 
 </xsl:stylesheet>

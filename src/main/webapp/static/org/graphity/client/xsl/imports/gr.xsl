@@ -29,29 +29,24 @@ xmlns:rdf="&rdf;"
 xmlns:gr="&gr;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="@rdf:about[../gr:name[lang($lang)]] | @rdf:nodeID[../gr:name[lang($lang)]]" mode="gc:LabelMode" priority="6">
-	<xsl:value-of select="../gr:name[lang($lang)][1]"/>
+    <xsl:template match="gr:name[lang($lang)]" mode="gc:LabelMode" priority="6">
+	<xsl:value-of select="."/>
     </xsl:template>
     
-    <xsl:template match="@rdf:about[../gr:name[not(@xml:lang)]] | @rdf:nodeID[../gr:name[not(@xml:lang)]]" mode="gc:LabelMode" priority="4">
-	<xsl:value-of select="../gr:name[not(@xml:lang)][1]"/>
+    <xsl:template match="gr:name[not(@xml:lang)]" mode="gc:LabelMode" priority="4">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../gr:name] | @rdf:about[../@gr:name] | @rdf:nodeID[../gr:name] | @rdf:nodeID[../@gr:name]" mode="gc:LabelMode">
-	<xsl:variable name="label" select="(../gr:name | ../@gr:name)[1]"/>
-	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    <xsl:template match="gr:name | @gr:name" mode="gc:LabelMode">
+	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../gr:description[lang($lang)]] | @rdf:nodeID[../gr:description[lang($lang)]]" mode="gc:DescriptionMode" priority="1">
-	<p>
-	    <xsl:value-of select="substring(../gr:description[lang($lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="gr:description[lang($lang)]" mode="gc:DescriptionMode" priority="1">
+        <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[../gr:description[not(@xml:lang)]] | @rdf:nodeID[../gr:description[not(@xml:lang)]]" mode="gc:DescriptionMode">
-	<p>
-	    <xsl:value-of select="substring(../gr:description[not(@xml:lang)][1], 1, 300)"/>
-	</p>
+    <xsl:template match="gr:description[not(@xml:lang)]" mode="gc:DescriptionMode">
+        <xsl:value-of select="."/>
     </xsl:template>
 
 </xsl:stylesheet>

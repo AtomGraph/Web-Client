@@ -52,20 +52,16 @@ xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
     <xsl:param name="base-uri" as="xs:anyURI"/>
-
-    <xsl:template match="rdf:type/@rdf:resource" priority="1">
-	<span title="{.}" class="btn">
-	    <xsl:next-match/>
-	</span>
-    </xsl:template>
-
+    
     <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode" priority="1">
-	<div class="btn-group pull-right">
+	<!--
+        <div class="btn-group pull-right">
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 	</div>
+        -->
 
 	<h1 class="page-header">
-	    <xsl:apply-templates select="."/>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
     </xsl:template>
 
@@ -75,7 +71,7 @@ exclude-result-prefixes="#all">
 	</div>
 
 	<h2>
-	    <xsl:apply-templates select="."/>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h2>
     </xsl:template>
 
@@ -87,18 +83,25 @@ exclude-result-prefixes="#all">
 	<a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
 	    
-    <!-- subject/object resource -->
-    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))] | @rdf:resource[not(starts-with(., $base-uri))] | sparql:uri[not(starts-with(., $base-uri))]">
+    <!-- subject resource -->
+    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:InlineMode">
 	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(starts-with(concat(namespace-uri(), local-name()), $base-uri))]">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(starts-with(concat(namespace-uri(), local-name()), $base-uri))]" mode="gc:InlineMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
 	<a href="{$base-uri}{gc:query-string($this, (), (), (), (), ())}" title="{$this}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
+	</a>
+    </xsl:template>
+
+    <!-- object -->
+    <xsl:template match="@rdf:resource[not(starts-with(., $base-uri))] | sparql:uri[not(starts-with(., $base-uri))]" mode="gc:InlineMode">
+	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
+	    <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
 	</a>
     </xsl:template>
 

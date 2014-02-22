@@ -30,7 +30,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="void:sparqlEndpoint/@rdf:resource">
 	<a href="{resolve-uri('sparql', $base-uri)}?endpoint-uri={encode-for-uri(.)}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
 	</a>
     </xsl:template>
 

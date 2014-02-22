@@ -76,34 +76,34 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
         <option value="{@rdf:about | @rdf:nodeID}">
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+            <xsl:apply-templates select="." mode="gc:LabelMode"/>
         </option>
     </xsl:template>
     
-    <xsl:template match="@rdf:*" mode="gc:LabelMode">
+    <xsl:template match="*" mode="gc:LabelMode">
         <xsl:choose>
-            <xsl:when test="../rdfs:label">
-                <xsl:value-of select="../rdfs:label"/>
+            <xsl:when test="rdfs:label">
+                <xsl:value-of select="rdfs:label"/>
             </xsl:when>
-            <xsl:when test="../dct:title">
-                <xsl:value-of select="../dct:title"/>
+            <xsl:when test="dct:title">
+                <xsl:value-of select="dct:title"/>
             </xsl:when>
-            <xsl:when test="../foaf:name">
-                <xsl:value-of select="../foaf:name"/>
+            <xsl:when test="foaf:name">
+                <xsl:value-of select="foaf:name"/>
             </xsl:when>
-            <xsl:when test="../foaf:givenName and ../foaf:familyName">
-                <xsl:value-of select="../foaf:givenName"/>
+            <xsl:when test="foaf:givenName and foaf:familyName">
+                <xsl:value-of select="foaf:givenName"/>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="../foaf:familyName"/>
+                <xsl:value-of select="foaf:familyName"/>
             </xsl:when>
-            <xsl:when test="../foaf:nick">
-                <xsl:value-of select="../foaf:nick"/>
+            <xsl:when test="foaf:nick">
+                <xsl:value-of select="foaf:nick"/>
             </xsl:when>
-            <xsl:when test="../sioc:name">
-                <xsl:value-of select="../sioc:name"/>
+            <xsl:when test="sioc:name">
+                <xsl:value-of select="sioc:name"/>
             </xsl:when>
-            <xsl:when test="../skos:prefLabel">
-                <xsl:value-of select="../skos:prefLabel"/>
+            <xsl:when test="skos:prefLabel">
+                <xsl:value-of select="skos:prefLabel"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="."/>
@@ -161,7 +161,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:result-document href="?select=../../.." method="ixsl:replace-content">
             <xsl:for-each select="$property">
                 <label class="control-label"> <!-- for="?" -->
-                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="." mode="gc:LabelMode"/>
                 </label>
                 <input type="hidden" name="pu" value="{@rdf:about}"/>
 
@@ -222,7 +222,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:result-document href="?select=../.." method="ixsl:replace-content">
             <xsl:for-each select="$resource">
                 <a href="{@rdf:about}" class="btn span4">
-                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="." mode="gc:LabelMode"/>
                     <input type="hidden" name="ou" value="{@rdf:about}"/>
                 </a>
                 <span class="help-inline span2">Resource</span>
