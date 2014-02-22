@@ -363,7 +363,9 @@ exclude-result-prefixes="#all">
 			<xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
 		    </xsl:apply-templates>
 
-		    <xsl:apply-templates select="$secondary-resources"/>
+		    <xsl:apply-templates select="$secondary-resources">
+                        <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                    </xsl:apply-templates>
 		</xsl:if>
 		
 		<!-- page resource -->
@@ -683,7 +685,9 @@ exclude-result-prefixes="#all">
 	<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
 
 	<!-- all resources that are not recursive blank nodes, except page -->
-	<xsl:apply-templates select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current"/>
+	<xsl:apply-templates select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
 	
 	<!-- page resource -->
 	<xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="gc:PaginationMode"/>
@@ -798,7 +802,8 @@ exclude-result-prefixes="#all">
 	    <xsl:variable name="thumbnail-items" as="element()*">	    
 		<!-- all resources that are not recursive blank nodes, except page -->
 		<xsl:apply-templates select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-		    <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
+                    <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                    <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
 		</xsl:apply-templates>
 	    </xsl:variable>
 

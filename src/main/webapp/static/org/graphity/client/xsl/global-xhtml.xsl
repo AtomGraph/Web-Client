@@ -181,6 +181,7 @@ exclude-result-prefixes="#all">
 
 		    <!-- apply all other URI resources -->
 		    <xsl:apply-templates select="$secondary-resources">
+                        <xsl:sort select="gc:label(.)" lang="{$lang}"/>            
 			<xsl:with-param name="default-mode" select="xs:anyURI('&gc;PropertyListMode')" tunnel="yes"/>
 		    </xsl:apply-templates>
 		</xsl:if>
