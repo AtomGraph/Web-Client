@@ -501,12 +501,12 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ImageMode">
-        <xsl:variable name="image">
+        <xsl:variable name="images">
             <xsl:apply-templates mode="#current"/>
         </xsl:variable>
-        <xsl:if test="$image">
+        <xsl:if test="$images">
             <p>
-                <xsl:copy-of select="$image"/>
+                <xsl:copy-of select="$images[1]"/>
             </p>
         </xsl:if>
     </xsl:template>
@@ -699,9 +699,9 @@ exclude-result-prefixes="#all">
             
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 	    
-	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>            
-
 	    <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
+
+	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>            
 
 	    <xsl:if test="@rdf:nodeID">
 		<xsl:apply-templates select="." mode="gc:PropertyListMode"/>
