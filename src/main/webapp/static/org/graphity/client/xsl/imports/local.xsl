@@ -393,7 +393,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="constraint-violations" as="element()*"/>
         <xsl:param name="required" select="true()" as="xs:boolean"/>
 	<!-- <xsl:variable name="ranges" select="rdfs:range(xs:anyURI(concat(namespace-uri(), local-name())))"/> -->
-	<xsl:variable name="this" select="concat(namespace-uri(), local-name())" as="xs:string"/>
+	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
  
         <div class="control-group">
 	    <xsl:if test="$constraint-violations[spin:violationPath/@rdf:resource = $this and

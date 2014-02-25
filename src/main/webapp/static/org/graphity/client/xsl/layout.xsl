@@ -519,7 +519,6 @@ exclude-result-prefixes="#all">
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="not(empty($labels))">
-                <xsl:message>LABELS: <xsl:copy-of select="$labels"/></xsl:message>
                 <xsl:value-of select="concat(upper-case(substring($labels[1], 1, 1)), substring($labels[1], 2))"/>
             </xsl:when>
             <xsl:when test="contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))">
