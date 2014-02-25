@@ -29,29 +29,12 @@ xmlns:rdf="&rdf;"
 xmlns:dct="&dct;"
 exclude-result-prefixes="#all">
 
-    <!-- this is Graphity-specific! -->
     <xsl:template match="dct:title | dct:description | dct:subject" mode="gc:PropertyListMode"/>
-
-    <xsl:template match="dct:title[lang($lang)]" mode="gc:LabelMode" priority="3">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="dct:title[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
+    
     <xsl:template match="dct:title | @dct:title" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
-
-    <xsl:template match="dct:description[lang($lang)]" mode="gc:DescriptionMode" priority="1">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="dct:description[not(@xml:lang)]" mode="gc:DescriptionMode">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
+    
     <xsl:template match="dct:subject" mode="gc:SidebarNavMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
 	

@@ -109,19 +109,12 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:nick[lang($lang)]" mode="gc:LabelMode" priority="7">
+
+    <xsl:template match="foaf:nick" mode="gc:LabelMode" priority="5">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="foaf:name[lang($lang)]" mode="gc:LabelMode" priority="6">
-	<xsl:value-of select="."/>
-    </xsl:template>
-    
-    <xsl:template match="foaf:nick[not(@xml:lang)]" mode="gc:LabelMode" priority="5">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="foaf:name[not(@xml:lang)]" mode="gc:LabelMode" priority="4">
+    <xsl:template match="foaf:name" mode="gc:LabelMode" priority="4">
 	<xsl:value-of select="."/>
     </xsl:template>
 

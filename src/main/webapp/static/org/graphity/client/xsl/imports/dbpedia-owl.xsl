@@ -54,11 +54,7 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <xsl:template match="dbpedia-owl:abstract[lang($lang)]" mode="gc:DescriptionMode" priority="1">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="dbpedia-owl:abstract[not(@xml:lang)]" mode="gc:DescriptionMode">
+    <xsl:template match="dbpedia-owl:abstract" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
     </xsl:template>
 

@@ -515,10 +515,11 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:LabelMode">
         <xsl:variable name="labels" as="xs:string*">
-            <xsl:apply-templates mode="#current"/>
+            <xsl:apply-templates select="*[lang($lang) or not(@xml:lang)]" mode="#current"/>
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="not(empty($labels))">
+                <xsl:message>LABELS: <xsl:copy-of select="$labels"/></xsl:message>
                 <xsl:value-of select="concat(upper-case(substring($labels[1], 1, 1)), substring($labels[1], 2))"/>
             </xsl:when>
             <xsl:when test="contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))">
@@ -540,7 +541,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:DescriptionMode">
         <xsl:variable name="descriptions" as="xs:string*">
-            <xsl:apply-templates mode="#current"/>
+            <xsl:apply-templates select="*[lang($lang) or not(@xml:lang)]" mode="#current"/>
         </xsl:variable>
         <xsl:if test="not(empty($descriptions))">
             <p>

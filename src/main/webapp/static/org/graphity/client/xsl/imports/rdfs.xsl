@@ -31,23 +31,11 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdfs:label | rdfs:comment | rdfs:seeAlso" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="rdfs:label[lang($lang)]" mode="gc:LabelMode" priority="3">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="rdfs:label[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
     <xsl:template match="rdfs:label | @rdfs:label" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment[lang($lang)]" mode="gc:DescriptionMode" priority="1">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="rdfs:comment[not(@xml:lang)]" mode="gc:DescriptionMode">
+    <xsl:template match="rdfs:comment" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
     </xsl:template>
 

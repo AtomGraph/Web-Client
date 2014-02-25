@@ -30,14 +30,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="skos:prefLabel" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="skos:prefLabel[lang($lang)]" mode="gc:LabelMode" priority="3">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="skos:prefLabel[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
     <xsl:template match="skos:prefLabel | @skos:prefLabel" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>

@@ -31,23 +31,11 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="dc:title | dc:description" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="dc:title[lang($lang)]" mode="gc:LabelMode" priority="3">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="dc:title[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
     <xsl:template match="dc:title | @dc:title" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="dc:description[lang($lang)]" mode="gc:DescriptionMode" priority="1">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="dc:description[not(@xml:lang)]" mode="gc:DescriptionMode">
+    <xsl:template match="dc:description" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
     </xsl:template>
 

@@ -29,23 +29,11 @@ xmlns:rdf="&rdf;"
 xmlns:gr="&gr;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gr:name[lang($lang)]" mode="gc:LabelMode" priority="6">
-	<xsl:value-of select="."/>
-    </xsl:template>
-    
-    <xsl:template match="gr:name[not(@xml:lang)]" mode="gc:LabelMode" priority="4">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
     <xsl:template match="gr:name | @gr:name" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="gr:description[lang($lang)]" mode="gc:DescriptionMode" priority="1">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="gr:description[not(@xml:lang)]" mode="gc:DescriptionMode">
+    <xsl:template match="gr:description" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
     </xsl:template>
 

@@ -124,7 +124,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- LABEL MODES -->
-<!-- <xsl:template match="@rdf:about" mode="gc:LabelMode">SHIT</xsl:template> -->
     
     <xsl:template match="node()" mode="gc:LabelMode"/>
     

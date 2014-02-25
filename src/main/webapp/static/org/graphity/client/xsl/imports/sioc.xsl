@@ -30,23 +30,11 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
 
-    <xsl:template match="sioc:name[lang($lang)]" mode="gc:LabelMode" priority="3">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="sioc:name[not(@xml:lang)]" mode="gc:LabelMode" priority="2">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
     <xsl:template match="sioc:name | @sioc:name" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="sioc:content[lang($lang)]" mode="gc:DescriptionMode" priority="1">
-        <xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="sioc:content[not(@xml:lang)]" mode="gc:DescriptionMode">
+    <xsl:template match="sioc:content" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
     </xsl:template>
 
