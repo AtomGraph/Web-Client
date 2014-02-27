@@ -515,7 +515,14 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:LabelMode">
         <xsl:variable name="labels" as="xs:string*">
-            <xsl:apply-templates select="*[lang($lang) or not(@xml:lang)]" mode="#current"/>
+            <xsl:choose>
+                <xsl:when test="*[lang($lang)]">
+                    <xsl:apply-templates select="*[lang($lang)]" mode="#current"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="not(empty($labels))">
