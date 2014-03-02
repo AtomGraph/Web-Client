@@ -56,28 +56,6 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
     private static DataManager s_instance = null;
-
-   // important: needs to match LocatorLinkedData.QUALIFIED_TYPES
-
-    /*
-    public static final Map<String, String> LANGS = new HashMap<>() ;
-    static
-    {
-        LANGS.put(Lang.RDFXML.getContentType().getContentType(), Lang.RDFXML.getName());
-	LANGS.put(Lang.TURTLE.getContentType().getContentType(), Lang.TURTLE.getName());
-	LANGS.put(WebContent.contentTypeTurtleAlt1, WebContent.langTurtle);
-	LANGS.put(WebContent.contentTypeTurtleAlt2, WebContent.langTurtle);
-        LANGS.put(WebContent.contentTypeNTriples, WebContent.langNTriple); // text/plain
-        LANGS.put(WebContent.contentTypeNTriplesAlt, WebContent.langNTriple);
-	LANGS.put(WebContent.contentTypeN3, WebContent.langN3);
-	LANGS.put(WebContent.contentTypeN3Alt1, WebContent.langN3);
-	LANGS.put(WebContent.contentTypeN3Alt2, WebContent.langN3);
-	LANGS.put(WebContent.contentTypeTriG, WebContent.langTriG);
-	LANGS.put(WebContent.contentTypeTriGAlt, WebContent.langTriG);
-	LANGS.put(WebContent.contentTypeNQuads, WebContent.langNQuads);
-	LANGS.put(WebContent.contentTypeNQuadsAlt, WebContent.langNQuads);
-    }
-    */
     
     public static final List<String> IGNORED_EXT = new ArrayList<>();
     static
@@ -250,16 +228,6 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	    remove(locURL);
 	}
     }
-    
-    // ---- To riot.WebContent\
-    /*
-    public static String langFromContentType(String mimeType)
-    {
-        if ( mimeType == null )
-            return null ;
-        return LANGS.get(mimeType.toLowerCase()) ;
-    }
-    */
 
     @Override
     public Source resolve(String href, String base) throws TransformerException
@@ -268,73 +236,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	{
 	    if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
 	    String uri = URI.create(base).resolve(href).toString();
-
-	    if (isIgnored(uri))
-	    {
-		if (log.isDebugEnabled()) log.debug("URI ignored by file extension: {}", uri);
-		return getDefaultSource();
-	    }
-	    
-	    Model model = getFromCache(uri);
-	    if (model == null) // URI not cached, 
-	    {
-		if (log.isDebugEnabled())
-		{
-		    log.debug("No cached Model for URI: {}", uri);
-		    log.debug("isMapped({}): {}", uri, isMapped(uri));
-		}
-
-		Map.Entry<String, Context> endpoint = findEndpoint(uri);
-		if (endpoint != null)
-		    if (log.isDebugEnabled()) log.debug("URI {} has SPARQL endpoint: {}", uri, endpoint.getKey());
-		else
-		    if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
-
-		if (resolvingUncached ||
-			(resolvingSPARQL && endpoint != null) ||
-			(resolvingMapped && isMapped(uri)))
-		    try
-		    {
-			Query query = parseQuery(uri);
-			if (query != null)
-			{
-			    if (query.isSelectType() || query.isAskType())
-			    {
-				if (log.isTraceEnabled()) log.trace("Loading ResultSet for URI: {} using Query: {}", uri, query);
-				return getSource(loadResultSet(UriBuilder.fromUri(uri).
-					replaceQuery(null).
-					build().toString(),
-				    query, parseParamMap(uri)));
-			    }
-			    if (query.isConstructType() || query.isDescribeType())
-			    {
-				if (log.isTraceEnabled()) log.trace("Loading Model for URI: {} using Query: {}", uri, query);
-				return getSource(loadModel(UriBuilder.fromUri(uri).
-					replaceQuery(null).
-					build().toString(),
-				    query, parseParamMap(uri)));
-			    }
-			}
-
-			if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
-			return getSource(loadModel(uri));
-		    }
-		    catch (IllegalArgumentException | UriBuilderException ex)
-		    {
-			if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
-			return getDefaultSource(); // return empty Model
-		    }
-		else
-		{
-		    if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
-		    return getDefaultSource(); // return empty Model
-		}
-	    }
-	    else
-	    {
-		if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
-		return getSource(model);
-	    }
+            return resolve(uri);
 	}
 	else
 	{
@@ -343,6 +245,76 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	}
     }
 
+    public Source resolve(String uri)
+    {
+        if (isIgnored(uri))
+        {
+            if (log.isDebugEnabled()) log.debug("URI ignored by file extension: {}", uri);
+            return getDefaultSource();
+        }
+
+        Model model = getFromCache(uri);
+        if (model == null) // URI not cached, 
+        {
+            if (log.isDebugEnabled())
+            {
+                log.debug("No cached Model for URI: {}", uri);
+                log.debug("isMapped({}): {}", uri, isMapped(uri));
+            }
+
+            Map.Entry<String, Context> endpoint = findEndpoint(uri);
+            if (endpoint != null)
+                if (log.isDebugEnabled()) log.debug("URI {} has SPARQL endpoint: {}", uri, endpoint.getKey());
+            else
+                if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
+
+            if (resolvingUncached ||
+                    (resolvingSPARQL && endpoint != null) ||
+                    (resolvingMapped && isMapped(uri)))
+                try
+                {
+                    Query query = parseQuery(uri);
+                    if (query != null)
+                    {
+                        if (query.isSelectType() || query.isAskType())
+                        {
+                            if (log.isTraceEnabled()) log.trace("Loading ResultSet for URI: {} using Query: {}", uri, query);
+                            return getSource(loadResultSet(UriBuilder.fromUri(uri).
+                                    replaceQuery(null).
+                                    build().toString(),
+                                query, parseParamMap(uri)));
+                        }
+                        if (query.isConstructType() || query.isDescribeType())
+                        {
+                            if (log.isTraceEnabled()) log.trace("Loading Model for URI: {} using Query: {}", uri, query);
+                            return getSource(loadModel(UriBuilder.fromUri(uri).
+                                    replaceQuery(null).
+                                    build().toString(),
+                                query, parseParamMap(uri)));
+                        }
+                    }
+
+                    if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
+                    return getSource(loadModel(uri));
+                }
+                catch (IllegalArgumentException | UriBuilderException ex)
+                {
+                    if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
+                    return getDefaultSource(); // return empty Model
+                }
+            else
+            {
+                if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
+                return getDefaultSource(); // return empty Model
+            }
+        }
+        else
+        {
+            if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
+            return getSource(model);
+        }
+    }
+    
     protected Source getDefaultSource()
     {
 	return getSource(ModelFactory.createDefaultModel());
