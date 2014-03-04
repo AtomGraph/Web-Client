@@ -127,9 +127,13 @@ exclude-result-prefixes="#all">
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="foaf:givenName[../foaf:familyName]" mode="gc:LabelMode" priority="1">
+    <xsl:template match="foaf:givenName[../foaf:familyName]" mode="gc:LabelMode" priority="1.5">
 	<xsl:variable name="label" select="concat(., ' ', ../foaf:familyName[1])"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
+    <xsl:template match="foaf:familyName | @foaf:familyName" mode="gc:LabelMode" priority="1">
+	<xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="foaf:name | @foaf:name" mode="gc:LabelMode">

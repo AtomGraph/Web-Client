@@ -45,7 +45,6 @@ import org.graphity.processor.model.GraphStoreBase;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
-import org.openjena.riot.SysRIOT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
@@ -105,7 +104,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     {
 	if (log.isDebugEnabled()) log.debug("Application.init() with ResourceConfig: {} and SerlvetContext: {}", getResourceConfig(), getServletContext());
 	if (log.isDebugEnabled()) log.debug("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
-	SysRIOT.wireIntoJena(); // enable RIOT parser
+
 	// WARNING! ontology caching can cause concurrency/consistency problems
 	OntDocumentManager.getInstance().setCacheModels(false);
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
