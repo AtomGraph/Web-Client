@@ -87,6 +87,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("Adding XSLT @Providers");
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new XSLTBuilderProvider(DataManager.get())); // loads XSLT stylesheet
+        singletons.add(DataManager.get());  // makes sense?
     }
 
     /**

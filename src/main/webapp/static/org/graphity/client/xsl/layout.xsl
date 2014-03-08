@@ -515,9 +515,12 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:LabelMode">
         <xsl:variable name="labels" as="xs:string*">
+            <xsl:variable name="lang-labels" as="xs:string*">
+                <xsl:apply-templates select="*[lang($lang)]" mode="#current"/>
+            </xsl:variable>
             <xsl:choose>
-                <xsl:when test="*[lang($lang)]">
-                    <xsl:apply-templates select="*[lang($lang)]" mode="#current"/>
+                <xsl:when test="not(empty($lang-labels))">
+                    <xsl:sequence select="$lang-labels"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates mode="#current"/>
@@ -601,12 +604,13 @@ exclude-result-prefixes="#all">
 		
 		<xsl:if test="$properties">
 		    <div class="well well-small span6">
-			<h3>
-			    <span class="btn">
-				<xsl:variable name="type" select="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about"/>
-				<xsl:apply-templates select="$type" mode="gc:InlineMode"/>
-			    </span>
-			</h3>
+                        <xsl:if test="not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))">
+                            <h3>
+                                <span class="btn">
+                                    <xsl:apply-templates select="rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))" mode="gc:InlineMode"/>
+                                </span>
+                            </h3>
+                        </xsl:if>
 			<dl>
 			    <xsl:copy-of select="$properties"/>
 			</dl>
@@ -756,7 +760,8 @@ exclude-result-prefixes="#all">
 	    <tbody>
 		<xsl:apply-templates select="$selected-resources" mode="#current">
 		    <xsl:with-param name="predicates" select="$predicates"/>
-		</xsl:apply-templates>
+                    <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                </xsl:apply-templates>
 	    </tbody>
 	</table>
 	

@@ -36,6 +36,8 @@ import java.util.*;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -51,11 +53,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
+@Provider
 public class DataManager extends org.graphity.server.util.DataManager implements URIResolver
 {
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
     private static DataManager s_instance = null;
+    
+    @javax.ws.rs.core.Context UriInfo uriInfo;
     
     public static final List<String> IGNORED_EXT = new ArrayList<>();
     static
@@ -235,7 +240,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	if (!href.equals("") && URI.create(href).isAbsolute())
 	{
 	    if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
-	    String uri = URI.create(base).resolve(href).toString();
+	    URI uri = URI.create(base).resolve(href);
             return resolve(uri);
 	}
 	else
@@ -245,24 +250,37 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	}
     }
 
-    public Source resolve(String uri)
+    public Source resolve(URI uri)
     {
-        if (isIgnored(uri))
+        if (uri == null) throw new IllegalArgumentException("URI cannot be null");
+        if (!uri.isAbsolute()) throw new IllegalArgumentException("URI to be resolved must be absolute");
+        
+        if (isIgnored(uri.toString()))
         {
             if (log.isDebugEnabled()) log.debug("URI ignored by file extension: {}", uri);
             return getDefaultSource();
         }
 
-        Model model = getFromCache(uri);
+        Model model = getFromCache(uri.toString());
         if (model == null) // URI not cached, 
         {
             if (log.isDebugEnabled())
             {
                 log.debug("No cached Model for URI: {}", uri);
-                log.debug("isMapped({}): {}", uri, isMapped(uri));
+                log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
             }
 
-            Map.Entry<String, Context> endpoint = findEndpoint(uri);
+            if (getUriInfo() != null) // DataManager neeeds to be registered as @Provider
+            {
+                URI relative = getUriInfo().getBaseUri().relativize(uri);
+                if (!relative.isAbsolute())
+                {
+                    if (log.isTraceEnabled()) log.trace("Loading Model for local (relative to webapp base) URI: {}", uri);
+                    return getSource(loadModel(uri.toString()));
+                }
+            }
+            
+            Map.Entry<String, Context> endpoint = findEndpoint(uri.toString());
             if (endpoint != null)
                 if (log.isDebugEnabled()) log.debug("URI {} has SPARQL endpoint: {}", uri, endpoint.getKey());
             else
@@ -270,10 +288,10 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 
             if (resolvingUncached ||
                     (resolvingSPARQL && endpoint != null) ||
-                    (resolvingMapped && isMapped(uri)))
+                    (resolvingMapped && isMapped(uri.toString())))
                 try
                 {
-                    Query query = parseQuery(uri);
+                    Query query = parseQuery(uri.toString());
                     if (query != null)
                     {
                         if (query.isSelectType() || query.isAskType())
@@ -282,7 +300,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
                             return getSource(loadResultSet(UriBuilder.fromUri(uri).
                                     replaceQuery(null).
                                     build().toString(),
-                                query, parseParamMap(uri)));
+                                query, parseParamMap(uri.toString())));
                         }
                         if (query.isConstructType() || query.isDescribeType())
                         {
@@ -290,12 +308,12 @@ public class DataManager extends org.graphity.server.util.DataManager implements
                             return getSource(loadModel(UriBuilder.fromUri(uri).
                                     replaceQuery(null).
                                     build().toString(),
-                                query, parseParamMap(uri)));
+                                query, parseParamMap(uri.toString())));
                         }
                     }
 
                     if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
-                    return getSource(loadModel(uri));
+                    return getSource(loadModel(uri.toString()));
                 }
                 catch (IllegalArgumentException | UriBuilderException ex)
                 {
@@ -411,4 +429,9 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	return null;
     }
 
+    public UriInfo getUriInfo()
+    {
+        return uriInfo;
+    }
+    
 }
