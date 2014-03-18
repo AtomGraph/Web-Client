@@ -191,11 +191,11 @@ exclude-result-prefixes="#all">
 	<xsl:param name="mode" as="xs:anyURI?"/>
 	
 	<xsl:variable name="query-string">
-	    <xsl:text>limit=</xsl:text><xsl:value-of select="$limit"/><xsl:text>&amp;</xsl:text>
-	    <xsl:text>offset=</xsl:text><xsl:value-of select="$offset"/><xsl:text>&amp;</xsl:text>
-	    <xsl:if test="$order-by">order-by=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($offset))">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($limit))">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($order-by))">order-by=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
 	    <xsl:if test="$desc">desc=true&amp;</xsl:if>
-	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	</xsl:variable>
 	
 	<xsl:if test="string-length($query-string) &gt; 1">
@@ -208,8 +208,8 @@ exclude-result-prefixes="#all">
 	<xsl:param name="mode" as="xs:anyURI?"/>
 
 	<xsl:variable name="query-string">
-	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
-	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($uri))">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	</xsl:variable>
 	
 	<xsl:if test="string-length($query-string) &gt; 1">
@@ -223,9 +223,9 @@ exclude-result-prefixes="#all">
 	<xsl:param name="accept" as="xs:string?"/>
 
 	<xsl:variable name="query-string">
-	    <xsl:if test="$endpoint-uri">endpoint-uri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
-	    <xsl:if test="$query">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
-	    <xsl:if test="$accept">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($endpoint-uri))">endpoint-uri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($query))">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($accept))">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
 	</xsl:variable>
 	
 	<xsl:if test="string-length($query-string) &gt; 1">

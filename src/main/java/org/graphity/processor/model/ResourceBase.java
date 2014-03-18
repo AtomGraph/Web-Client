@@ -873,8 +873,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public UriBuilder getPageUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam("limit", getLimit()).
-	    queryParam("offset", getOffset());
+	    queryParam("offset", getOffset()).
+	    queryParam("limit", getLimit());
 	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
 	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
     
@@ -889,9 +889,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public UriBuilder getPreviousUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam("limit", getLimit()).
-	    queryParam("offset", getOffset() - getLimit());
-	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	    queryParam("offset", getOffset() - getLimit()).
+	    queryParam("limit", getLimit());
+        if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
 	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
 	
 	return uriBuilder;
@@ -905,9 +905,9 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public UriBuilder getNextUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam("limit", getLimit()).
-	    queryParam("offset", getOffset() + getLimit());
-	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
+	    queryParam("offset", getOffset() + getLimit()).
+	    queryParam("limit", getLimit());
+        if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
 	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
 	
 	return uriBuilder;
