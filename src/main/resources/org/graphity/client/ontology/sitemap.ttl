@@ -174,13 +174,10 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
-<classes/resource#this> a owl:Class ;
+<classes/resource#this> a owl:Class, gp:Template ;
     foaf:isPrimaryTopicOf <classes/resource> ;
-    rdfs:subClassOf foaf:Document ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/{path: .*}"
-	] ;
+    rdfs:subClassOf foaf:Document ;
+    lda:uriTemplate "/{path: .*}" ;
     spin:query [ a gp:DescribeWithChildrenTemplate ] ;
     rdfs:label "Resource" ;
     rdfs:comment "Catch-all resource class (template)" ;
@@ -195,13 +192,10 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
-<classes/ontology-doc#this> a owl:Class ;
+<classes/ontology-doc#this> a owl:Class, gp:Template ;
     foaf:isPrimaryTopicOf <classes/ontology-doc> ;
-    rdfs:subClassOf foaf:Document ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/ontology"
-	] ;
+    rdfs:subClassOf foaf:Document ;
+    lda:uriTemplate "/ontology" ;
     spin:query [ a gp:ConstructResourcesTemplate ] ;
     rdfs:label "Ontology document resource" ;
     rdfs:isDefinedBy <#> ;
@@ -209,12 +203,9 @@ void:inDataset a owl:ObjectProperty ;
 
 # ====
 
-<#LabelledResourceContainer> a owl:Class ;
-        rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/resources/labelled"
-	] ;
+<#LabelledResourceContainer> a owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
+    lda:uriTemplate "/resources/labelled" ;
     spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> ;
@@ -227,11 +218,8 @@ void:inDataset a owl:ObjectProperty ;
 	[ a owl:Restriction ;
 		owl:onProperty void:inDataset ;
 		owl:hasValue <dataset#this>
-	] ,
-	[ a owl:Restriction ;
-		owl:onProperty lda:uriTemplate ;
-		owl:hasValue "/properties/labelled"
 	] ;
+    lda:uriTemplate "/properties/labelled" ;
     spin:query [ a gp:DescribeLabelPropertiesTemplate ] ;
     rdfs:label "Labelled properties container" ;
     rdfs:isDefinedBy <#> ;

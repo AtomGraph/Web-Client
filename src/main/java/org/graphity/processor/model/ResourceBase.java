@@ -498,19 +498,27 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns `Cache-Control` HTTP header value, specified in an ontology class restriction.
+     * Returns `Cache-Control` HTTP header value, specified on an ontology class.
      * 
      * @param ontClass the ontology class with the restriction
      * @return CacheControl instance or null, if no dataset restriction was found
      */
     public final CacheControl getCacheControl(OntClass ontClass)
     {
-	RDFNode hasValue = getRestrictionHasValue(ontClass, GP.cacheControl);
-	if (hasValue != null && hasValue.isLiteral())
-        {
-            String controlString = hasValue.asLiteral().getString();
-            return CacheControl.valueOf(controlString); // will fail on bad config
-        }
+       return getCacheControl(ontClass, GP.cacheControl);
+    }
+
+    /**
+     * Returns `Cache-Control` HTTP header value, specified on an ontology class with given property.
+     * 
+     * @param ontClass the ontology class with the restriction
+     * @param property the property holding the literal value
+     * @return CacheControl instance or null, if no dataset restriction was found
+     */
+    public final CacheControl getCacheControl(OntClass ontClass, DatatypeProperty property)
+    {
+        if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
+            return CacheControl.valueOf(ontClass.getPropertyValue(property).asLiteral().getString()); // will fail on bad config
 
 	return null;
     }
@@ -714,34 +722,28 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final OntClass matchOntClass(CharSequence path, Property property)
     {
 	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
-	ExtendedIterator<Restriction> it = getOntModel().listRestrictions();
-
+        ExtendedIterator<OntClass> it = getOntModel().listClasses();
+        
 	try
 	{
 	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<>(UriTemplate.COMPARATOR);
 
 	    while (it.hasNext())
 	    {
-		Restriction restriction = it.next();	    
-		if (restriction.canAs(HasValueRestriction.class))
+		OntClass ontClass = it.next();	    
+                if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
 		{
-		    HasValueRestriction hvr = restriction.asHasValueRestriction();
-		    if (hvr.getOnProperty().equals(property))
-		    {
-			UriTemplate uriTemplate = new UriTemplate(hvr.getHasValue().toString());
-			HashMap<String, String> map = new HashMap<>();
+                    UriTemplate uriTemplate = new UriTemplate(ontClass.getPropertyValue(property).asLiteral().getString());
+                    HashMap<String, String> map = new HashMap<>();
 
-			if (uriTemplate.match(path, map))
-			{
-			    if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
-
-			    OntClass ontClass = hvr.listSubClasses(true).next(); //hvr.getSubClass();	    
-			    if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
-			    matchedClasses.put(uriTemplate, ontClass);
-			}
-			else
-			    if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
-		    }
+                    if (uriTemplate.match(path, map))
+                    {
+                        if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
+                        if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
+                        matchedClasses.put(uriTemplate, ontClass);
+                    }
+                    else
+                        if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
 		}
 	    }
 	    

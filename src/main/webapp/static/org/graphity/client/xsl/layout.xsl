@@ -640,6 +640,10 @@ exclude-result-prefixes="#all">
 
     <!-- PAGINATION MODE -->
 
+    <xsl:template match="rdf:RDF" mode="gc:PaginationMode" priority="1">
+        <xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="#current"/>
+    </xsl:template>
+
     <xsl:template match="*" mode="gc:PaginationMode"/>
 
     <xsl:template match="*[xhv:prev/@rdf:resource] | *[xhv:next/@rdf:resource]" mode="gc:PaginationMode">
