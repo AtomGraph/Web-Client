@@ -156,12 +156,14 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="@rdf:resource | sparql:uri" mode="gc:ObjectLabelMode">
         <xsl:choose>
-            <xsl:when test="key('resources', ., document(gc:document-uri(.)))">
-                <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="gc:LabelMode"/>
-            </xsl:when>
             <xsl:when test="key('resources', .)">
                 <xsl:apply-templates select="key('resources', .)" mode="gc:LabelMode"/>
             </xsl:when>
+            <!--
+            <xsl:when test="key('resources', ., document(gc:document-uri(.)))">
+                <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="gc:LabelMode"/>
+            </xsl:when>
+            -->
             <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
                 <xsl:value-of select="substring-after(., '#')"/>
             </xsl:when>
