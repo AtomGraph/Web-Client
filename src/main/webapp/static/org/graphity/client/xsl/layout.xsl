@@ -334,7 +334,6 @@ exclude-result-prefixes="#all">
 	    <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
 		<xsl:apply-templates select="." mode="gc:TableMode">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                    <xsl:with-param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]"/>
 		</xsl:apply-templates>
 	    </xsl:when>
 	    <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
@@ -740,21 +739,19 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="gc:TableMode">
 	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-	<xsl:param name="selected-resources" select="*"/>
+	<!-- SELECTed resources = everything except container, page, and non-root blank nodes -->
+	<xsl:param name="predicates" as="element()*">
+	    <xsl:for-each-group select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]/*" group-by="concat(namespace-uri(), local-name())">
+		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$lang}"/>
+		<xsl:sequence select="current-group()[1]"/>
+	    </xsl:for-each-group>
+	</xsl:param>
 
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
 	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
 	<xsl:apply-templates select="." mode="gc:PaginationMode"/>
-
-	<!-- SELECTed resources = everything except container, page, and non-root blank nodes -->
-	<xsl:variable name="predicates" as="element()*">
-	    <xsl:for-each-group select="$selected-resources/*" group-by="concat(namespace-uri(), local-name())">
-		<xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
-		<xsl:sequence select="current-group()[1]"/>
-	    </xsl:for-each-group>
-	</xsl:variable>
 
 	<table class="table table-bordered table-striped">
 	    <thead>
@@ -767,7 +764,7 @@ exclude-result-prefixes="#all">
 		</tr>
 	    </thead>
 	    <tbody>
-		<xsl:apply-templates select="$selected-resources" mode="#current">
+		<xsl:apply-templates mode="#current">
 		    <xsl:with-param name="predicates" select="$predicates"/>
                     <xsl:sort select="gc:label(.)" lang="{$lang}"/>
                 </xsl:apply-templates>

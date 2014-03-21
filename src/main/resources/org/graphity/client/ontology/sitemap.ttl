@@ -20,7 +20,7 @@
 
 <#> a owl:Ontology ;
     owl:imports gp:, lda: , void:, foaf: ;
-    owl:versionInfo "1.0.10" ;
+    owl:versionInfo "1.0.12" ;
     dct:title "Sitemap" ;
     rdfs:label "Sitemap" ;
     dct:description "Default sitemap for SPARQL service" ;
