@@ -113,7 +113,7 @@ exclude-result-prefixes="#all">
 	<rdfs:label xml:lang="en">Next</rdfs:label>
     </rdf:Description>
 
-    <rdf:Description rdf:about="&gc;PropertyListMode">
+    <rdf:Description rdf:about="&gc;PropertyMode">
 	<rdf:type rdf:resource="&gc;Mode"/>
 	<rdf:type rdf:resource="&gc;ItemMode"/>
 	<rdf:type rdf:resource="&gc;PageMode"/>
@@ -323,7 +323,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-	<xsl:variable name="default-mode" select="if (key('resources-by-page-of', $absolute-path)) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;PropertyListMode')"/>
+	<xsl:param name="default-mode" select="if (key('resources-by-page-of', $absolute-path)) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/>
 
 	<xsl:choose>
 	    <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
@@ -352,24 +352,31 @@ exclude-result-prefixes="#all">
 		</xsl:apply-templates>
 	    </xsl:when>
 	    <xsl:otherwise>
-                <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-                <xsl:apply-templates select="." mode="gc:ModeSelectMode">
+		<xsl:apply-templates select="." mode="gc:PropertyMode">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                </xsl:apply-templates>
-
-                <!-- page resource -->
-                <xsl:apply-templates select="." mode="gc:PaginationMode"/>
-
-		<!-- apply all other URI resources -->
-		<xsl:variable name="secondary-resources" select="*"/>
-                <xsl:apply-templates select="$secondary-resources">
-                    <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-                </xsl:apply-templates>
-		
-		<xsl:apply-templates select="." mode="gc:PaginationMode"/>
-	    </xsl:otherwise>
+		</xsl:apply-templates>
+            </xsl:otherwise>
 	</xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF" mode="gc:PropertyMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
+            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+        </xsl:apply-templates>
+
+        <!-- page resource -->
+        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
+
+        <!-- apply all other URI resources -->
+        <xsl:apply-templates mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+
+        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
     </xsl:template>
 
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
@@ -435,9 +442,9 @@ exclude-result-prefixes="#all">
 
     <!-- subject -->
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyMode"/>
 
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" priority="1">
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="gc:PropertyMode" priority="1">
         <xsl:if test="@rdf:about">
             <xsl:apply-templates select="." mode="gc:HeaderMode"/>
         </xsl:if>

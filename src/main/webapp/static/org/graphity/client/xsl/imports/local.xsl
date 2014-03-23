@@ -82,7 +82,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:choose>
 	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode"/>
+		<xsl:apply-templates select="$bnode" mode="gc:PropertyListMode"/>
 	    </xsl:when>
 	    <xsl:otherwise>
 		<span id="{.}" title="{.}">
