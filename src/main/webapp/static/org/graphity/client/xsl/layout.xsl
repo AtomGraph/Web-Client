@@ -594,7 +594,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode">
 	<xsl:variable name="type-containers" as="element()*">
 	    <xsl:for-each-group select="*" group-by="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about">
-		<!-- <xsl:sort select="gc:label(if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))[1] else xs:anyURI('&rdfs;Resource'))"/> -->
+		<xsl:sort select="if (rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))) then gc:object-label(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))[1]) else ()"/>
 
 		<xsl:variable name="properties" as="element()*">
                     <xsl:for-each-group select="current-group()" group-by="concat(namespace-uri(), local-name())">
