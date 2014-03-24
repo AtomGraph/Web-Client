@@ -31,7 +31,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -43,7 +42,6 @@ import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
-import org.graphity.processor.vocabulary.VoID;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
@@ -78,7 +76,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final String orderBy;
     private final Boolean desc;
     private final OntClass matchedOntClass;
-    //private final Resource dataset;
     private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
     private final HttpHeaders httpHeaders;
@@ -112,7 +109,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, resourceConfig,
@@ -179,7 +176,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
-	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
+	//if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
@@ -209,10 +206,19 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
             }
             else this.limit = limit;
             
-            this.orderBy = orderBy; // set default value if null
-            this.desc = desc; // set default value if null
+            if (orderBy == null) this.orderBy = getStringValue(matchedOntClass, GP.orderBy);
+            else this.orderBy = orderBy;
+            
+            if (desc == null)
+            {
+                Boolean defaultDesc = getBooleanValue(matchedOntClass, GP.desc);
+                if (defaultDesc == null) defaultDesc = false; // ORDERY BY is always ASC() by default
+                this.desc = defaultDesc;
+            }
+            else this.desc = desc;
 
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()));
+            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()),
+                    this.offset, this.limit, this.orderBy, this.desc);
         }
         else
         {
@@ -224,14 +230,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
-        /*
-	dataset = getDataset(matchedOntClass);
-	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
-	    this.endpoint = new SPARQLEndpointBase(dataset.getPropertyResourceValue(VoID.sparqlEndpoint),
-		    uriInfo, request, resourceConfig);
-	else this.endpoint = endpoint;	    
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, this.endpoint);	
-        */
 	this.endpoint = endpoint;	    
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with SPARQL endpoint: {}", this.endpoint);
         
@@ -245,7 +243,23 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
         
         return null;
     }
-    
+
+    public final Boolean getBooleanValue(OntClass ontClass, DatatypeProperty property)
+    {
+        if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
+            return ontClass.getPropertyValue(property).asLiteral().getBoolean();
+        
+        return null;
+    }
+
+    public final String getStringValue(OntClass ontClass, DatatypeProperty property)
+    {
+        if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
+            return ontClass.getPropertyValue(property).asLiteral().getString();
+        
+        return null;
+    }
+
     /**
      * Handles GET request and returns response with RDF description of this resource.
      * In case this resource is a container, a redirect to its first page is returned.
@@ -517,21 +531,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns dataset resource, specified in an ontology class restriction.
-     * 
-     * @param ontClass the ontology class with the restriction
-     * @return dataset resource or null, if no dataset restriction was found
-     */
-    public final Resource getDataset(OntClass ontClass)
-    {
-	RDFNode hasValue = getRestrictionHasValue(ontClass, VoID.inDataset);
-	if (hasValue != null && hasValue.isResource()) return hasValue.asResource();
-
-	return null;
-    }
-
-    /**
-     * Returns `Cache-Control` HTTP header value, specified on an ontology class.
+     * Returns <samp>Cache-Control</samp> HTTP header value, specified on an ontology class.
      * 
      * @param ontClass the ontology class with the restriction
      * @return CacheControl instance or null, if no dataset restriction was found
@@ -557,18 +557,22 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Sets <code>SELECT</code> on a supplied query builder, if it contains such sub-query.
+     * Sets <code>SELECT</code> on a supplied query builder, if it contains such sub-query
      * 
      * @param queryBuilder query builder
+     * @param offset <code>OFFSET</code> value
+     * @param limit <code>LIMIT</code> value
+     * @param orderBy <code>ORDER BY</code> variable name
+     * @param desc ordering direction (true for <code>DESC()</code>
      * @return query builder with set modifiers
      * @see org.graphity.processor.query.QueryBuilder
      */
-    public final QueryBuilder setSelectModifiers(QueryBuilder queryBuilder)
+    public final QueryBuilder setSelectModifiers(QueryBuilder queryBuilder, Long offset, Long limit, String orderBy, Boolean desc)
     {
         if (queryBuilder == null) throw new IllegalArgumentException("QueryBuilder cannot be null");
         
         SelectBuilder selectBuilder = queryBuilder.getSubSelectBuilder();
-        if (selectBuilder != null) setSelectModifiers(selectBuilder);
+        if (selectBuilder != null) setSelectModifiers(selectBuilder, offset, limit, orderBy, desc);
         
         return queryBuilder;
     }
@@ -579,21 +583,28 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * modifiers as well as <code>ORDER BY</code>/<code>DESC</code> clauses on <code>SELECT</code> sub-queries.
      * Currently only one <code>ORDER BY</code> condition is supported.
      * 
-     * @param selectBuilder SELECT builder
+     * @param selectBuilder <code>SELECT</code> builder
+     * @param offset <code>OFFSET</code> value
+     * @param limit <code>LIMIT</code> value
+     * @param orderBy <code>ORDER BY</code> variable name
+     * @param desc ordering direction (true for <code>DESC()</code>
      * @return SELECT builder with set modifiers
      * @see org.graphity.processor.query.SelectBuilder
      */
-    public SelectBuilder setSelectModifiers(SelectBuilder selectBuilder)
+    public SelectBuilder setSelectModifiers(SelectBuilder selectBuilder, Long offset, Long limit, String orderBy, Boolean desc)
     {	
         if (selectBuilder == null) throw new IllegalArgumentException("SelectBuilder cannot be null");
-        selectBuilder.replaceLimit(getLimit()).replaceOffset(getOffset());
+        if (offset == null) throw new IllegalArgumentException("Offset cannot be null");
+        if (limit == null) throw new IllegalArgumentException("Limit cannot be null");
+        
+        selectBuilder.replaceOffset(offset).replaceLimit(limit);
 
-        if (getOrderBy() != null)
+        if (orderBy != null)
         {
             try
             {
                 selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
-                    orderBy(getOrderBy(), getDesc());
+                    orderBy(orderBy, desc);
             }
             catch (IllegalArgumentException ex)
             {

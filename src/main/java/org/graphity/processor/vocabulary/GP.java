@@ -58,5 +58,9 @@ public class GP
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
     
     public static final DatatypeProperty limit = m_model.createDatatypeProperty( NS + "limit" );
-    
+
+    public static final DatatypeProperty orderBy = m_model.createDatatypeProperty( NS + "orderBy" );
+
+    public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
+
 }

@@ -22,7 +22,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
 import java.util.List;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
@@ -73,7 +72,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {

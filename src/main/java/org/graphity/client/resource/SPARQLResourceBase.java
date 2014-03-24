@@ -21,7 +21,6 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Query;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
@@ -49,7 +48,7 @@ public class SPARQLResourceBase extends ResourceBase
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode,
 	    @QueryParam("query") Query userQuery,

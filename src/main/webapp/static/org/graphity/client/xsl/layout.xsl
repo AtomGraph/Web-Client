@@ -444,12 +444,15 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyMode"/>
 
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="gc:PropertyMode" priority="1">
-        <xsl:if test="@rdf:about">
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))]" mode="gc:PropertyMode" priority="1">
+        <xsl:param name="nested" as="xs:boolean?"/>
+        
+        <!-- show root blank nodes or nested blank nodes -->
+        <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
             <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-        </xsl:if>
 
-        <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+            <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+        </xsl:if>
     </xsl:template>
 
     <!-- HEADER MODE -->

@@ -8,7 +8,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -38,8 +37,8 @@ public class Container extends ResourceBase
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") @DefaultValue("label") String orderBy,
-	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
+	    @QueryParam("order-by") String orderBy,
+	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode,
             @QueryParam("label") String searchString)
