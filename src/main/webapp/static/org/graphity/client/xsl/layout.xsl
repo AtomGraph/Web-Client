@@ -83,8 +83,8 @@ exclude-result-prefixes="#all">
     <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
-    <!-- <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/> -->
-    <xsl:variable name="select-res" select="key('resources-by-type', '&sp;Select', $ont-model)" as="element()?"/>
+    <xsl:variable name="select-res" select="key('resources', $where-res/sp:query/@rdf:resource | $where-res/sp:query/@rdf:nodeID, $ont-model)" as="element()?"/>
+    <!-- <xsl:variable name="select-res" select="key('resources-by-type', '&sp;Select', $ont-model)" as="element()?"/> -->
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
     <xsl:variable name="ontology-uri" select="xs:anyURI(key('resources-by-type', '&owl;Ontology', $ont-model)/@rdf:about)" as="xs:anyURI"/>
     <xsl:variable name="config" select="document('../../../../../WEB-INF/web.xml')" as="document-node()"/>

@@ -55,4 +55,8 @@ public class GP
 
     public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
+    public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
+    
+    public static final DatatypeProperty limit = m_model.createDatatypeProperty( NS + "limit" );
+    
 }

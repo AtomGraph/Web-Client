@@ -46,8 +46,8 @@ public class SPARQLResourceBase extends ResourceBase
 
     public SPARQLResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-	    @QueryParam("limit") @DefaultValue("20") Long limit,
-	    @QueryParam("offset") @DefaultValue("0") Long offset,
+	    @QueryParam("limit") Long limit,
+	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
 	    @QueryParam("graph") URI graphURI,

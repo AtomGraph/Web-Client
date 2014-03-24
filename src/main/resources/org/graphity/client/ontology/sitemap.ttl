@@ -176,9 +176,11 @@ void:inDataset a owl:ObjectProperty ;
 
 <classes/resource#this> a owl:Class, gp:Template ;
     foaf:isPrimaryTopicOf <classes/resource> ;
-    rdfs:subClassOf foaf:Document ;
+    rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     lda:uriTemplate "/{path: .*}" ;
     spin:query [ a gp:DescribeWithChildrenTemplate ] ;
+    # gp:offset 0 ;
+    gp:limit 20 ;
     rdfs:label "Resource" ;
     rdfs:comment "Catch-all resource class (template)" ;
     rdfs:isDefinedBy <#> ;
@@ -196,7 +198,9 @@ void:inDataset a owl:ObjectProperty ;
     foaf:isPrimaryTopicOf <classes/ontology-doc> ;
     rdfs:subClassOf foaf:Document ;
     lda:uriTemplate "/ontology" ;
-    spin:query [ a gp:ConstructResourcesTemplate ] ;
+    #spin:query [ a gp:ConstructResourcesTemplate ] ;
+    spin:query [ a sp:Describe ; sp:text "describe * { select * { ?s ?p ?o } order by ?s }" ] ;
+    gp:limit 20 ;
     rdfs:label "Ontology document resource" ;
     rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
@@ -214,11 +218,7 @@ void:inDataset a owl:ObjectProperty ;
 # ====
 
 <#LabelledPropertyContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, ldp:Page, lda:ListEndpoint ,
-	[ a owl:Restriction ;
-		owl:onProperty void:inDataset ;
-		owl:hasValue <dataset#this>
-	] ;
+    rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
     lda:uriTemplate "/properties/labelled" ;
     spin:query [ a gp:DescribeLabelPropertiesTemplate ] ;
     rdfs:label "Labelled properties container" ;

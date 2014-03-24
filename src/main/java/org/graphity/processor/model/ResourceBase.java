@@ -78,12 +78,10 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     private final String orderBy;
     private final Boolean desc;
     private final OntClass matchedOntClass;
-    private final Resource dataset;
+    //private final Resource dataset;
     private final SPARQLEndpoint endpoint;
     private final UriInfo uriInfo;
-    //private final Request request;
     private final HttpHeaders httpHeaders;
-    //private final ResourceConfig resourceConfig;
     private final QueryBuilder queryBuilder;
     private final URI graphURI;
     private final CacheControl cacheControl;
@@ -111,8 +109,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-	    @QueryParam("limit") @DefaultValue("20") Long limit,
-	    @QueryParam("offset") @DefaultValue("0") Long offset,
+	    @QueryParam("limit") Long limit,
+	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") @DefaultValue("false") Boolean desc,
 	    @QueryParam("graph") URI graphURI)
@@ -179,20 +177,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	super(ontResource, endpoint, request, resourceConfig);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	//if (request == null) throw new IllegalArgumentException("Request cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
 	if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
 	this.ontResource = ontResource;
 	this.uriInfo = uriInfo;
-	//this.request = request;
 	this.httpHeaders = httpHeaders;
-	//this.resourceConfig = resourceConfig;
-	this.limit = limit;
-	this.offset = offset;
-	this.orderBy = orderBy;
-	this.desc = desc;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
 	else this.graphURI = null;
 
@@ -200,19 +191,61 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
-        queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()));
+        if (ontResource.hasRDFType(LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
+        {
+            if (offset == null)
+            {
+                Long defaultOffset = getLongValue(matchedOntClass, GP.offset);
+                if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is always 0 by default
+                this.offset = defaultOffset;
+            }
+            else this.offset = offset;
+            
+            if (limit == null)
+            {
+                Long defaultLimit = getLongValue(matchedOntClass, GP.limit);
+                if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + matchedOntClass.getURI() + "' must have gp:limit if it is used as container");
+                this.limit = defaultLimit;
+            }
+            else this.limit = limit;
+            
+            this.orderBy = orderBy; // set default value if null
+            this.desc = desc; // set default value if null
+
+            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()));
+        }
+        else
+        {
+            this.offset = this.limit = null;
+            this.orderBy = null;
+            this.desc = null;
+            
+            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
+        }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
+        /*
 	dataset = getDataset(matchedOntClass);
 	if (dataset != null && dataset.hasProperty(VoID.sparqlEndpoint))
 	    this.endpoint = new SPARQLEndpointBase(dataset.getPropertyResourceValue(VoID.sparqlEndpoint),
 		    uriInfo, request, resourceConfig);
 	else this.endpoint = endpoint;	    
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with Dataset: {} and SPARQL endpoint: {}", dataset, this.endpoint);	
-
+        */
+	this.endpoint = endpoint;	    
+	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with SPARQL endpoint: {}", this.endpoint);
+        
         cacheControl = getCacheControl(matchedOntClass);
     }
 
+    public final Long getLongValue(OntClass ontClass, DatatypeProperty property)
+    {
+        if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
+            return ontClass.getPropertyValue(property).asLiteral().getLong();
+        
+        return null;
+    }
+    
     /**
      * Handles GET request and returns response with RDF description of this resource.
      * In case this resource is a container, a redirect to its first page is returned.
@@ -586,7 +619,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     /**
      * Given an RDF resource and an ontology class that it belongs to, returns a SPARQL query that can be used
      * to retrieve its description.
-     * The ontology class must have a SPIN template call attached (using <code>spin:constraint</code>).
+     * The ontology class must have a SPIN template call attached (using <code>spin:query</code>).
      * 
      * @param ontClass ontology class of the resource
      * @param resource resource to be described
@@ -595,25 +628,19 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      */
     public final Query getQuery(OntClass ontClass, Resource resource)
     {
-	return getQuery(getQueryCall(ontClass), resource);
-    }
-    
-    /**
-     * Given an ontology class, returns the SPIN template call attached to it.
-     * The class must have a <code>spin:query</code> property with the template call resource as object.
-     * 
-     * @param ontClass ontology class
-     * @return SPIN template call resource
-     * @see org.topbraid.spin.model.TemplateCall
-     */
-    public TemplateCall getQueryCall(OntClass ontClass)
-    {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (!ontClass.hasProperty(SPIN.query))
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query Template");	    
+	if (ontClass.getPropertyResourceValue(SPIN.query) == null)
+	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (spin:query)");
 
-	RDFNode constraint = ontClass.getProperty(SPIN.query).getObject();
-	return SPINFactory.asTemplateCall(constraint);
+	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(SPIN.query);
+	
+        org.topbraid.spin.model.Query query = SPINFactory.asQuery(queryOrTemplateCall);
+        if (query != null) return getQuery(query.toString(), resource);
+                
+        TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
+        if (templateCall != null) return getQuery(templateCall.getQueryString(), resource);
+        
+        return null;
     }
     
     /**
@@ -624,19 +651,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * If this resource is a page resource, the SELECT sub-query modifiers (<code>LIMIT</code> and
      * <code>OFFSET</code>) will be set to implement pagination.
      * 
-     * @param call SPIN template call resource
+     * @param queryString SPARQL query string
      * @param resource RDF resource
      * @return query object
      */
-    public Query getQuery(TemplateCall call, Resource resource)
+    public Query getQuery(String queryString, Resource resource)
     {
-	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
+	if (queryString == null) throw new IllegalArgumentException("TemplateCall cannot be null");
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 	
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
-	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
-	return queryString.asQuery();
+	return new ParameterizedSparqlString(queryString, qsm).asQuery();
     }
 
     public final UpdateBuilder getUpdateBuilder(Update update)
@@ -648,28 +674,28 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     
     public final UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
     {
-	return getUpdateRequest(getUpdateCall(ontClass), resource);
+	if (ontClass.getPropertyResourceValue(ResourceFactory.createProperty(SPIN.NS, "update")) == null)
+	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update or template call resource (spin:update)");
+
+	Resource updateOrTemplateCall = ontClass.getPropertyResourceValue(ResourceFactory.createProperty(SPIN.NS, "update"));
+	
+        Update update = SPINFactory.asUpdate(updateOrTemplateCall);
+        if (update != null) return getUpdateRequest(update.toString(), resource);
+
+        TemplateCall templateCall = SPINFactory.asTemplateCall(updateOrTemplateCall);
+        if (templateCall != null) return getUpdateRequest(templateCall.getQueryString(), resource);
+        
+        return null;
     }
 
-    public TemplateCall getUpdateCall(OntClass ontClass)
+    public UpdateRequest getUpdateRequest(String queryString, Resource resource)
     {
-	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (!ontClass.hasProperty(ResourceFactory.createProperty(SPIN.NS, "update")))
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update Template");	    
-
-	RDFNode update = ontClass.getProperty(ResourceFactory.createProperty(SPIN.NS, "update")).getObject();
-	return SPINFactory.asTemplateCall(update);
-    }
-    
-    public UpdateRequest getUpdateRequest(TemplateCall call, Resource resource)
-    {
-	if (call == null) throw new IllegalArgumentException("TemplateCall cannot be null");
+	if (queryString == null) throw new IllegalArgumentException("TemplateCall cannot be null");
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 	
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
-	ParameterizedSparqlString queryString = new ParameterizedSparqlString(call.getQueryString(), qsm);
-	return queryString.asUpdate();
+	return new ParameterizedSparqlString(queryString, qsm).asUpdate();
     }
 
     /**
@@ -722,6 +748,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public final OntClass matchOntClass(CharSequence path, Property property)
     {
 	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
+ 	if (property == null) throw new IllegalArgumentException("URI template property cannot be null");
+        
         ExtendedIterator<OntClass> it = getOntModel().listClasses();
         
 	try
@@ -763,7 +791,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns value of "limit" query string parameter, which indicates the number of resources per page.
+     * Returns value of <samp>limit</samp> query string parameter, which indicates the number of resources per page.
      * This value is set as <code>LIMIT</code> query modifier when this resource is a page (therefore
      * pagination is used).
      * 
@@ -777,7 +805,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns value of "offset" query string parameter, which indicates the number of resources the page
+     * Returns value of <samp>offset</samp> query string parameter, which indicates the number of resources the page
      * has skipped from the start of the container.
      * This value is set as <code>OFFSET</code> query modifier when this resource is a page (therefore
      * pagination is used).
@@ -792,7 +820,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns value of "order-by" query string parameter, which indicates the name of the variable after
+     * Returns value of <samp>order-by</samp> query string parameter, which indicates the name of the variable after
      * which the container (and the page) is sorted.
      * This value is set as <code>ORDER BY</code> query modifier when this resource is a page (therefore
      * pagination is used).
@@ -809,7 +837,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     }
 
     /**
-     * Returns value of "desc" query string parameter, which indicates the direction of resource ordering
+     * Returns value of <samp>desc</samp> query string parameter, which indicates the direction of resource ordering
      * in the container (and the page).
      * If this method returns true, <code>DESC</code> order modifier is set if this resource is a page
      * (therefore pagination is used).
@@ -954,18 +982,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     public OntClass getMatchedOntClass()
     {
 	return matchedOntClass;
-    }
-
-    /**
-     * Returns the VoID dataset of this resource, if specified.
-     * The dataset can be specified as a <code>void:inDataset</code> value restriction on an ontology class in
-     * the sitemap ontology.
-     * 
-     * @return dataset resource or null, if not specified
-     */
-    public Resource getDataset()
-    {
-	return dataset;
     }
 
     /**
