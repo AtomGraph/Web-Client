@@ -65,9 +65,6 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     <xsl:param name="absolute-path-string" as="xs:string"/>
     <xsl:param name="absolute-path" select="xs:anyURI($absolute-path-string)" as="xs:anyURI"/>
     <xsl:param name="lang" select="'en'" as="xs:string"/>
-    <xsl:param name="graph-store-uri" select="resolve-uri('graphs', $base-uri)" as="xs:anyURI"/>
-    <xsl:param name="graph-string" as="xs:string"/>
-    <xsl:param name="graph" select="xs:anyURI($graph-string)" as="xs:anyURI?"/>
     <xsl:param name="mode-string" as="xs:string"/>
     <xsl:param name="mode" select="xs:anyURI($mode-string)" as="xs:anyURI?"/>
 
@@ -75,12 +72,18 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
+        <xsl:param name="selected" as="xs:string*"/>
+
         <option value="{@rdf:about | @rdf:nodeID}">
+            <xsl:if test="(@rdf:about, @rdf:nodeID) = $selected">
+                <xsl:attribute name="selected">selected</xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates select="." mode="gc:LabelMode"/>
         </option>
     </xsl:template>
     
-    <xsl:template match="*" mode="gc:LabelMode">
+    <!-- <xsl:template match="*" mode="gc:LabelMode"> -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:LabelMode">
         <xsl:choose>
             <xsl:when test="rdfs:label">
                 <xsl:value-of select="rdfs:label"/>
@@ -303,38 +306,6 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
             </xsl:result-document>
         </xsl:for-each>
     </xsl:template>
-
-    <!--
-    <xsl:template match="form" mode="ixsl:onsubmit">
-	<xsl:value-of select="ixsl:call(ixsl:window(), 'alert', 'HELLO!')"/>
-	<ixsl:set-attribute name="action" select="concat('?graph=', encode-for-uri('http://test'))"/>
-    </xsl:template>
-    -->
-
-    <!--
-    <xsl:template match="button[@type = 'submit']" mode="ixsl:onclick">
-	<xsl:for-each select="ancestor::form">
-            <xsl:variable name="graph" select=".//select[@name = 'graph']/@prop:value"/>
-            <xsl:message>graph: <xsl:value-of select="$graph"/></xsl:message>
-            <xsl:message>form @action: <xsl:value-of select="@action"/></xsl:message>
-            <xsl:variable name="separator">
-                <xsl:choose>
-                    <xsl:when test="not(contains(@action, '?'))">?</xsl:when>
-                    <xsl:otherwise>&amp;</xsl:otherwise>
-                </xsl:choose>
-            </xsl:variable>
-            <xsl:message>separator: <xsl:value-of select="$separator"/></xsl:message>
-            <xsl:choose>
-		<xsl:when test="not($graph)">
-		    <ixsl:set-attribute name="action" select="concat(@action, $separator, 'mode=', encode-for-uri($mode), '&amp;default=true')"/>
-		</xsl:when>
-		<xsl:otherwise>
-		    <ixsl:set-attribute name="action" select="concat(@action, $separator, 'mode=', encode-for-uri($mode), '&amp;graph=', encode-for-uri($graph))"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</xsl:for-each>
-    </xsl:template>
-    -->
 
     <!-- CALLBACKS -->
     

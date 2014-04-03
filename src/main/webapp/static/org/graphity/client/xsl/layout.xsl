@@ -565,7 +565,17 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:DescriptionMode">
         <xsl:variable name="descriptions" as="xs:string*">
-            <xsl:apply-templates select="*[lang($lang) or not(@xml:lang)]" mode="#current"/>
+            <xsl:variable name="lang-descriptions" as="xs:string*">
+                <xsl:apply-templates select="*[lang($lang)]" mode="#current"/>
+            </xsl:variable>
+            <xsl:choose>
+                <xsl:when test="not(empty($lang-descriptions))">
+                    <xsl:sequence select="$lang-descriptions"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
         <xsl:if test="not(empty($descriptions))">
             <p>

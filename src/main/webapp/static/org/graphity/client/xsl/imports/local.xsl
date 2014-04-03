@@ -208,8 +208,6 @@ exclude-result-prefixes="#all">
     <!-- TABLE HEADER MODE -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableHeaderMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
-
 	<th>
             <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</th>
@@ -394,14 +392,13 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
-	<xsl:param name="constraint-violations" as="element()*"/>
-        <xsl:param name="required" select="true()" as="xs:boolean"/>
-	<!-- <xsl:variable name="ranges" select="rdfs:range(xs:anyURI(concat(namespace-uri(), local-name())))"/> -->
+        <xsl:param name="resource" select=".." as="element()" tunnel="yes"/>
+        <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
+        <xsl:param name="required" select="false()" as="xs:boolean" tunnel="yes"/>
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
  
         <div class="control-group">
-	    <xsl:if test="$constraint-violations[spin:violationPath/@rdf:resource = $this and
-                    (spin:violationRoot/@rdf:resource = current()/../@rdf:about or spin:violationRoot/@rdf:nodeID = current()/../@rdf:nodeID)]">
+	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
 		<xsl:attribute name="class">control-group warning</xsl:attribute>
 	    </xsl:if>
             <xsl:apply-templates select="." mode="gc:InputMode">
@@ -410,9 +407,11 @@ exclude-result-prefixes="#all">
             <label class="control-label" for="{generate-id()}">
                 <xsl:apply-templates select="." mode="gc:InlineMode"/>
             </label>
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
-            </div>
+            <xsl:if test="not($required)">
+                <div class="btn-group pull-right">
+                    <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
+                </div>
+            </xsl:if>
 
             <div class="controls">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">

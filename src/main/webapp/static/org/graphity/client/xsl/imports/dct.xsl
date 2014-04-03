@@ -34,6 +34,10 @@ exclude-result-prefixes="#all">
     <xsl:template match="dct:title | @dct:title" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
+
+    <xsl:template match="dct:description" mode="gc:DescriptionMode">
+        <xsl:value-of select="."/>
+    </xsl:template>
     
     <xsl:template match="dct:subject" mode="gc:SidebarNavMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
