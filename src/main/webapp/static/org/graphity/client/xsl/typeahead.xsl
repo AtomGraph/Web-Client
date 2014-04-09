@@ -86,7 +86,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:TypeaheadMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:TypeaheadOptionMode">
         <xsl:param name="query" as="xs:string"/>
         <xsl:param name="name" as="xs:string"/>
         <xsl:variable name="label">
@@ -238,7 +238,7 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
         <xsl:param name="name" as="xs:string"/>
         
         <xsl:result-document href="#{$menu/@id}" method="ixsl:replace-content">
-            <xsl:apply-templates select="$items" mode="gc:TypeaheadMode">
+            <xsl:apply-templates select="$items" mode="gc:TypeaheadOptionMode">
                 <xsl:with-param name="query" select="$element/@prop:value"/>
                 <xsl:with-param name="name" select="$name"/>
                 <xsl:sort select="rdfs:label[1]"/>

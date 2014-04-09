@@ -270,23 +270,20 @@ public class DataManager extends org.graphity.server.util.DataManager implements
                 log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
             }
 
+            URI relative = null; // indicates whether the URI being resolved is relative to the base URI
             if (getUriInfo() != null) // DataManager neeeds to be registered as @Provider
             {
-                URI relative = getUriInfo().getBaseUri().relativize(uri);
-                if (!relative.isAbsolute())
-                {
-                    if (log.isTraceEnabled()) log.trace("Loading Model for local (relative to webapp base) URI: {}", uri);
-                    return getSource(loadModel(uri.toString()));
-                }
+                relative = getUriInfo().getBaseUri().relativize(uri);
+                if (relative.isAbsolute()) relative = null;
             }
-            
+
             Map.Entry<String, Context> endpoint = findEndpoint(uri.toString());
             if (endpoint != null)
                 if (log.isDebugEnabled()) log.debug("URI {} has SPARQL endpoint: {}", uri, endpoint.getKey());
             else
                 if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
-
-            if (resolvingUncached ||
+            
+            if (resolvingUncached || relative != null ||
                     (resolvingSPARQL && endpoint != null) ||
                     (resolvingMapped && isMapped(uri.toString())))
                 try
