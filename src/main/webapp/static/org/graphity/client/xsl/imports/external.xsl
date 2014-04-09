@@ -69,7 +69,7 @@ exclude-result-prefixes="#all">
 	<div class="btn-group pull-right">
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 	</div>
-
+WHAT??
 	<h2>
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h2>
@@ -102,6 +102,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:resource[not(starts-with(., $base-uri))] | sparql:uri[not(starts-with(., $base-uri))]" mode="gc:InlineMode">
 	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
 	    <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
+	</a>
+    </xsl:template>
+
+    <xsl:template match="sparql:uri[not(starts-with(., $base-uri))]" mode="gc:TableMode">
+	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
+	    <xsl:value-of select="."/>
 	</a>
     </xsl:template>
 

@@ -91,7 +91,7 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="/" mode="gc:HeaderMode">
+    <xsl:template match="/" mode="gc:NavBarMode">
 	<button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
 	    <span class="icon-bar"></span>
 	    <span class="icon-bar"></span>
@@ -167,30 +167,12 @@ exclude-result-prefixes="#all">
 	    </xsl:if>
 	</div>
     </xsl:template>
-
-    <xsl:template match="rdf:RDF">
-	<xsl:choose>
-	    <xsl:when test="$uri">
-		<xsl:apply-templates select="key('resources', $uri)"/>
-
-		<xsl:variable name="secondary-resources" select="*[not(@rdf:about = $uri)][not(key('predicates-by-object', @rdf:nodeID))]"/>
-		<xsl:if test="$secondary-resources">
-		    <xsl:apply-templates select="." mode="gc:ModeSelectMode">
-			<xsl:with-param name="default-mode" select="xs:anyURI('&gc;PropertyListMode')" tunnel="yes"/>
-		    </xsl:apply-templates>
-
-		    <!-- apply all other URI resources -->
-		    <xsl:apply-templates select="$secondary-resources">
-                        <xsl:sort select="gc:label(.)" lang="{$lang}"/>            
-			<xsl:with-param name="default-mode" select="xs:anyURI('&gc;PropertyListMode')" tunnel="yes"/>
-		    </xsl:apply-templates>
-		</xsl:if>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:apply-imports/>
-	    </xsl:otherwise>
-	</xsl:choose>
+    
+    <xsl:template match="rdf:RDF[$uri]" mode="gc:HeaderMode">
+	<xsl:apply-templates select="key('resources', $uri)" mode="#current"/>
     </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:PropertyMode"/>
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>

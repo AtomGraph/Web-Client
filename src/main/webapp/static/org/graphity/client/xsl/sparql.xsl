@@ -58,14 +58,15 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
+    <!--
     <xsl:template match="void:sparqlEndpoint/@rdf:resource[. = resolve-uri('sparql', $base-uri)]">
 	<a href="{resolve-uri('sparql', $base-uri)}">
 	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
-
-    <!-- *[@rdf:about = resolve-uri(concat('sparql?=', encode-for-uri($query)), $base-uri)] -->
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" priority="1">
+    -->
+    
+    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:PropertyMode" priority="1">
 	<form action="" method="get" id="query-form">
 	    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 	</form>
@@ -109,7 +110,7 @@ LIMIT 100</xsl:param>
 		</div>
 	    </div>
 
-	    <xsl:apply-templates select="$result-doc/rdf:RDF/*"/>
+	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:PropertyMode"/>
 	</xsl:if>
 	<!-- result of SELECT or ASK -->
 	<xsl:if test="$result-doc/sparql:sparql">
@@ -123,46 +124,8 @@ LIMIT 100</xsl:param>
 		</div>
 	    </div>
 
-	    <xsl:apply-templates select="$result-doc/sparql:sparql"/>
+	    <xsl:apply-templates select="$result-doc/sparql:sparql" mode="gc:TableMode"/>
 	</xsl:if>
-    </xsl:template>
-    
-    <xsl:template match="sparql:sparql">
-	<table class="table table-bordered table-striped">
-	    <xsl:apply-templates/>
-	</table>
-    </xsl:template>
-    
-    <xsl:template match="sparql:head">
-	<thead>
-	    <tr>
-		<xsl:apply-templates/>
-	    </tr>
-	</thead>
-    </xsl:template>
-
-    <xsl:template match="sparql:variable">
-	<th>
-	    <xsl:value-of select="@name"/>
-	</th>
-    </xsl:template>
-
-    <xsl:template match="sparql:results">
-	<tbody>
-	    <xsl:apply-templates/>
-	</tbody>
-    </xsl:template>
-
-    <xsl:template match="sparql:result">
-	<tr>
-	    <xsl:apply-templates/>
-	</tr>
-    </xsl:template>
-
-    <xsl:template match="sparql:binding">
-	<td>
-	    <xsl:apply-templates/>
-	</td>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -135,11 +135,11 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
         <xsl:choose>
-            <xsl:when test="key('resources', $this, document(namespace-uri()))">
-                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="gc:LabelMode"/>
-            </xsl:when>
             <xsl:when test="key('resources', $this)">
                 <xsl:apply-templates select="key('resources', $this)" mode="gc:LabelMode"/>
+            </xsl:when>
+            <xsl:when test="key('resources', $this, document(namespace-uri()))">
+                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="gc:LabelMode"/>
             </xsl:when>
             <xsl:when test="contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))">
                 <xsl:value-of select="substring-after(concat(namespace-uri(), local-name()), '#')"/>
@@ -229,6 +229,50 @@ exclude-result-prefixes="#all">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>
+    </xsl:template>
+
+    <xsl:template match="sparql:sparql" mode="gc:TableMode">
+	<table class="table table-bordered table-striped">
+	    <xsl:apply-templates mode="#current"/>
+	</table>
+    </xsl:template>
+    
+    <xsl:template match="sparql:head" mode="gc:TableMode">
+	<thead>
+	    <tr>
+		<xsl:apply-templates mode="#current"/>
+	    </tr>
+	</thead>
+    </xsl:template>
+
+    <xsl:template match="sparql:variable" mode="gc:TableMode">
+	<th>
+	    <xsl:value-of select="@name"/>
+	</th>
+    </xsl:template>
+
+    <xsl:template match="sparql:results" mode="gc:TableMode">
+	<tbody>
+	    <xsl:apply-templates mode="#current"/>
+	</tbody>
+    </xsl:template>
+
+    <xsl:template match="sparql:result" mode="gc:TableMode">
+	<tr>
+	    <xsl:apply-templates mode="#current"/>
+	</tr>
+    </xsl:template>
+
+    <xsl:template match="sparql:binding" mode="gc:TableMode">
+	<td>
+	    <xsl:apply-templates mode="#current"/>
+	</td>
+    </xsl:template>
+    
+    <xsl:template match="sparql:uri" mode="gc:TableMode">
+	<a href="{.}" title="{.}">
+	    <xsl:value-of select="."/>
+	</a>
     </xsl:template>
 
     <!-- SIDEBAR NAV MODE -->
