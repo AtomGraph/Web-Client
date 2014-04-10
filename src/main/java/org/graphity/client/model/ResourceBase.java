@@ -40,7 +40,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-@Path("{path: .*}")
+@Path("/") //@Path("{path: .*}")
 public class ResourceBase extends org.graphity.processor.model.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
@@ -97,7 +97,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @param mode <samp>mode</samp> query string param
      */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders,ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode)
     {
@@ -105,6 +105,23 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 		ontResource, endpoint,
 		limit, offset, orderBy, desc, graphURI);
 	this.mode = mode;
+    }
+
+    @Path("sparql")
+    @Override
+    public Object getSPARQLResource()
+    {
+	MediaType mostAcceptable = getHttpHeaders().getAcceptableMediaTypes().get(0);
+
+	// check formats supported by Jena instead
+        // getUserQuery() != null && 
+	if (mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
+	    mostAcceptable.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
+	    mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
+	{
+            return super.getSPARQLResource();
+        }
+        else return this;
     }
 
     @Override

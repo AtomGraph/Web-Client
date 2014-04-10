@@ -19,12 +19,14 @@ package org.graphity.client.provider;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Maps (tunnels) Jena's remote query execution exception.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
+@Provider
 public class QueryExceptionHTTPMapper implements ExceptionMapper<QueryExceptionHTTP>
 {
 

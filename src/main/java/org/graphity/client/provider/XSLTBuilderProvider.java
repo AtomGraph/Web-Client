@@ -36,6 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas
  */
+@Provider
 public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Context, XSLTBuilder> implements ContextResolver<XSLTBuilder>
 {
 
@@ -133,7 +135,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         {
             if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet not configured");
 
-            return getXSLTBuilder(stylesheet, getUriInfo());
+            return getXSLTBuilder(stylesheet, uriInfo.getBaseUri());
         }
         catch (ConfigurationException ex)
         {
@@ -142,7 +144,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         }
     }
     
-    public XSLTBuilder getXSLTBuilder(Resource stylesheet, UriInfo uriInfo) throws ConfigurationException
+    public XSLTBuilder getXSLTBuilder(Resource stylesheet, URI baseURI) throws ConfigurationException
     {
 	if (stylesheet == null) throw new IllegalArgumentException("Stylesheet resource cannot be null");	
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");	
@@ -152,7 +154,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
             URI stylesheetUri = URI.create(stylesheet.getURI());
     	    if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetUri);            
             // TO-DO: handle cases with remote URIs (not starting with base URI)
-            stylesheetUri = uriInfo.getBaseUri().relativize(stylesheetUri);
+            stylesheetUri = baseURI.relativize(stylesheetUri);
             if (stylesheetUri == null) throw new ConfigurationException("Remote XSLT stylesheets not supported");
             
             Source styleSource = getSource(stylesheetUri.toString());

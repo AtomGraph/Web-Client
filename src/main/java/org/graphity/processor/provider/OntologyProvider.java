@@ -91,7 +91,6 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    {
 		return getOntModel();
 	    }
-
 	};
     }
 

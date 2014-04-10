@@ -69,7 +69,7 @@ exclude-result-prefixes="#all">
 	<div class="btn-group pull-right">
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 	</div>
-WHAT??
+
 	<h2>
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h2>

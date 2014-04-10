@@ -66,7 +66,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-@Path("{path: .*}")
+@Path("/") //@Path("{path: .*}")
 public class ResourceBase extends QueriedResourceBase implements LDPResource, PageResource, OntResource
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
@@ -258,6 +258,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
             return ontClass.getPropertyValue(property).asLiteral().getString();
         
         return null;
+    }
+
+    @Path("{path: .+}") // @Path("{path: .*}")
+    public Object getResource()
+    {
+        return this;
+    }
+
+    @Path("sparql")
+    public Object getSPARQLResource()
+    {
+        return getEndpoint();
     }
 
     /**

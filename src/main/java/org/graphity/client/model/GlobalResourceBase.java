@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @see org.graphity.client.locator.LocatorLinkedData
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-@Path("{path: .*}")
+@Path("/") //@Path("/{path: .+}") // @Path("{path: .*}")
 public class GlobalResourceBase extends ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(GlobalResourceBase.class);

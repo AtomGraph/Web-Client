@@ -30,7 +30,6 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
-import org.graphity.client.resource.SPARQLResourceBase;
 import org.graphity.client.resource.labelled.Container;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
 import org.graphity.client.provider.NotFoundExceptionMapper;
@@ -71,8 +70,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     public ApplicationBase()
     {
 	classes.add(GlobalResourceBase.class); // handles all
-	classes.add(SPARQLResourceBase.class); // handles /sparql queries
-	classes.add(GraphStoreBase.class); // handles /service requests
+        //classes.add(ResourceBase.class);
+        classes.add(GraphStoreBase.class); // handles /service requests
 	classes.add(Container.class); // handles /search
 
 	singletons.addAll(super.getSingletons());
@@ -83,6 +82,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());
 	singletons.add(new QueryExceptionHTTPMapper());
+	//singletons.add(new ExternalModelProvider()); // if exception is thrown, resource class not instantiated
 
 	if (log.isDebugEnabled()) log.debug("Adding XSLT @Providers");
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
