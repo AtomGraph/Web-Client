@@ -46,7 +46,6 @@ import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLUpdateEndpoint;
 import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -322,7 +321,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response post(Model model, SPARQLUpdateEndpoint endpoint)
+    public Response post(Model model, SPARQLEndpoint endpoint)
     {
 	return post(model, getGraphURI(), endpoint);
     }
@@ -335,11 +334,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response post(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
+    public Response post(Model model, URI graphURI, SPARQLEndpoint endpoint)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
 	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
+	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
 
 	Resource created = getURIResource(model, FOAF.Document);
@@ -354,7 +353,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
 	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 
-	endpoint.update(insertDataRequest, null, null);
+	endpoint.post(insertDataRequest, null, null);
 	
 	URI createdURI = UriBuilder.fromUri(created.getURI()).build();
 	if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
@@ -416,7 +415,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response put(Model model, SPARQLUpdateEndpoint endpoint)
+    public Response put(Model model, SPARQLEndpoint endpoint)
     {
 	return put(model, getGraphURI(), endpoint);
     }
@@ -429,11 +428,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response put(Model model, URI graphURI, SPARQLUpdateEndpoint endpoint)
+    public Response put(Model model, URI graphURI, SPARQLEndpoint endpoint)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
 	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLUpdateEndpoint: {}", graphURI, endpoint);
+	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("PUT Model: {}", model);
 
 	if (!model.containsResource(this))
@@ -469,7 +468,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
 	while (it.hasNext()) updateRequest.add(it.next());
 	
 	if (log.isDebugEnabled()) log.debug("Combined DELETE/INSERT DATA request: {}", updateRequest);
-	endpoint.update(updateRequest, null, null);
+	endpoint.post(updateRequest, null, null);
 	
 	if (description.isEmpty()) return Response.created(getRealURI()).build();
 	else return getResponse(model);
@@ -494,12 +493,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * @param endpoint target SPARQL endpoint
      * @return response
      */    
-    public Response delete(SPARQLUpdateEndpoint endpoint)
+    public Response delete(SPARQLEndpoint endpoint)
     {
 	if (log.isDebugEnabled()) log.debug("DELETEing resource: {} matched OntClass: {}", this, getMatchedOntClass());
 	UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
 	if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
-	endpoint.update(deleteRequest, null, null);
+	endpoint.post(deleteRequest, null, null);
 	
 	return Response.noContent().build();
     }
