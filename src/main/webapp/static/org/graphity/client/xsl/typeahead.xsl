@@ -109,12 +109,15 @@ xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 <xsl:value-of select="substring($label, $query-end-pos)"/>
                 <xsl:text> </xsl:text>                                
                 <span class="pull-right" style="font-size: smaller;">
+                    <xsl:apply-templates select="rdf:type/@rdf:resource" mode="gc:ObjectLabelMode"/>
+                    <!--
                     <xsl:for-each select="rdf:type/@rdf:resource">
                         <xsl:value-of select="substring-after(., '#')"/>
                         <xsl:if test="position() != last()">
                             <xsl:text> </xsl:text>
                         </xsl:if>
                     </xsl:for-each>
+                    -->
                 </span>
             </a>
         </li>

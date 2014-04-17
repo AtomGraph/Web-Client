@@ -516,7 +516,7 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ImageMode">
-        <xsl:variable name="images">
+        <xsl:variable name="images" as="element()*">
             <xsl:apply-templates mode="#current"/>
         </xsl:variable>
         <xsl:if test="$images">

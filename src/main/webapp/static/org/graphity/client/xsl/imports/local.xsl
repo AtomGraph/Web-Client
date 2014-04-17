@@ -287,7 +287,8 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="style" as="xs:string?"/>
-	<xsl:param name="value" as="xs:string?"/>
+	<xsl:param name="disabled" as="xs:boolean?"/>
+        <xsl:param name="value" as="xs:string?"/>
 
         <input type="{$type}" name="{$name}">
             <xsl:if test="$id">
@@ -298,6 +299,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:if test="$style">
                 <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$disabled">
+                <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
             <xsl:if test="$value">
                 <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
@@ -310,12 +314,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'su'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -325,12 +331,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'sb'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -340,14 +348,15 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'pu'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="value" select="$this"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="value" select="concat(namespace-uri(), local-name())"/>
 	</xsl:call-template>
     </xsl:template>
     
@@ -356,12 +365,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ou'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -371,12 +382,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ob'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -386,12 +399,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ol'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -401,12 +416,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'lt'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -416,12 +433,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
 	<xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ll'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -436,10 +455,11 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
-        <xsl:param name="resource" select=".." as="element()" tunnel="yes"/>
-        <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
+        <!-- <xsl:param name="resource" select=".." as="element()"/> -->
+        <xsl:param name="constraint-violations" as="element()*"/>
         <xsl:param name="required" select="false()" as="xs:boolean" tunnel="yes"/>
-	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
  
         <div class="control-group">
 	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
@@ -448,7 +468,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
-            <label class="control-label" for="{generate-id()}">
+            <label class="control-label" for="{$id}">
                 <xsl:apply-templates select="." mode="gc:InlineMode"/>
             </label>
             <xsl:if test="not($required)">
@@ -459,7 +479,7 @@ exclude-result-prefixes="#all">
 
             <div class="controls">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
-                    <xsl:with-param name="id" select="generate-id()"/>
+                    <xsl:with-param name="id" select="$id"/>
                 </xsl:apply-templates>
             </div>
             <xsl:if test="@xml:lang | @rdf:datatype">
