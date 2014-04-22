@@ -359,26 +359,6 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF" mode="gc:PropertyMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
-            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-        </xsl:apply-templates>
-
-        <!-- page resource -->
-        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
-
-        <!-- apply all other URI resources -->
-        <xsl:apply-templates mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-        </xsl:apply-templates>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
-    </xsl:template>
-
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
 
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
@@ -386,11 +366,6 @@ exclude-result-prefixes="#all">
 
 	<ul class="nav nav-tabs">
 	    <xsl:choose>
-                <!--
-		<xsl:when test="key('resources-by-page-of', $absolute-path)">
-		    <xsl:apply-templates select="key('resources-by-type', '&gc;PageMode', document(''))" mode="#current"/>
-		</xsl:when>
-                -->
 		<xsl:when test="key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
 		    <xsl:apply-templates select="key('resources-by-type', '&gc;ContainerMode', document(''))" mode="#current"/>
 		</xsl:when>
@@ -441,6 +416,26 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- subject -->
+
+    <xsl:template match="rdf:RDF" mode="gc:PropertyMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
+            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+        </xsl:apply-templates>
+
+        <!-- page resource -->
+        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
+
+        <!-- apply all other URI resources -->
+        <xsl:apply-templates mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+
+        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
+    </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyMode"/>
 

@@ -48,6 +48,16 @@ public class GC
     public static final OntClass CreateMode = m_model.createClass( NS + "CreateMode" );
     
     public static final OntClass EditMode = m_model.createClass( NS + "EditMode" );
+
+    public static final OntClass ListMode = m_model.createClass( NS + "ListMode" );
+    
+    public static final OntClass TableMode = m_model.createClass( NS + "TableMode" );
+
+    public static final OntClass ThumbnailMode = m_model.createClass( NS + "ThumbnailMode" );
+    
+    public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
+
+    public static final OntClass PropertyMode = m_model.createClass( NS + "PropertyMode" );
     
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
 
