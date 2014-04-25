@@ -921,15 +921,11 @@ exclude-result-prefixes="#all">
             <![CDATA[
                 function initialize]]><xsl:value-of select="generate-id()"/><![CDATA[()
                 {
-                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat"/>,<xsl:value-of select="geo:long"/><![CDATA[);            
+                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat"/>, <xsl:value-of select="geo:long"/><![CDATA[);            
                     var marker = new google.maps.Marker({
                         position: latLng,
                         map: map,
                         title: "]]><xsl:apply-templates select="." mode="gc:LabelMode"/><![CDATA["
-                    });
-
-                    google.maps.event.addListener(marker, 'click', function() {
-                        openInfoWindow(map, marker, ']]><xsl:value-of select="@rdf:about"/><![CDATA[');
                     });
                 }
 
