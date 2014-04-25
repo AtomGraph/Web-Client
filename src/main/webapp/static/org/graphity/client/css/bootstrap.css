@@ -1,0 +1,14 @@
+body { padding-top: 60px; padding-bottom: 40px; }
+.brand img { height: 0.8em; width: auto; }
+form.form-inline { margin: 0; }
+ul.inline { margin-left: 0; max-height: 7em; overflow-y: auto; }
+.inline li { display: inline; }
+.well-small { background-color: #FAFAFA; }
+.well-small dl { max-height: 60em; overflow-y: auto; }
+textarea#query-string { font-family: monospace; }
+.thumbnail img { display: block; margin: auto; }
+.thumbnail { min-height: 15em; }
+#map-canvas { height: 35em; width: 100%; }
+ul.typeahead { max-height: 20em; overflow: auto; }
+label.typeahead input { display: block; max-width: 160px; }
+label.typeahead { float: left; width: 160px; }

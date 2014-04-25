@@ -16,22 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY java "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc "http://client.graphity.org/ontology#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#">
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY java   "http://xml.apache.org/xalan/java/">
+    <!ENTITY gc     "http://client.graphity.org/ontology#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldp "http://www.w3.org/ns/ldp#">
-    <!ENTITY dct "http://purl.org/dc/terms/">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
-    <!ENTITY sp "http://spinrdf.org/sp#">
-    <!ENTITY spin "http://spinrdf.org/spin#">
-    <!ENTITY void "http://rdfs.org/ns/void#">
-    <!ENTITY list "http://jena.hpl.hp.com/ARQ/list#">
-    <!ENTITY xhv "http://www.w3.org/1999/xhtml/vocab#">
+    <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
+    <!ENTITY dct    "http://purl.org/dc/terms/">
+    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
+    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
+    <!ENTITY sp     "http://spinrdf.org/sp#">
+    <!ENTITY spin   "http://spinrdf.org/spin#">
+    <!ENTITY void   "http://rdfs.org/ns/void#">
+    <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
+    <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
+    <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -51,6 +52,7 @@ xmlns:spin="&spin;"
 xmlns:void="&void;"
 xmlns:list="&list;"
 xmlns:xhv="&xhv;"
+xmlns:geo="&geo;"
 xmlns:uuid="java:java.util.UUID"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
@@ -141,6 +143,14 @@ exclude-result-prefixes="#all">
 	<rdf:type rdf:resource="&gc;PageMode"/>
 	<rdf:type rdf:resource="&gc;ContainerMode"/>
 	<rdfs:label xml:lang="en-US">Gallery</rdfs:label>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="&gc;MapMode">
+	<rdf:type rdf:resource="&gc;Mode"/>
+	<rdf:type rdf:resource="&gc;ItemMode"/>
+        <rdf:type rdf:resource="&gc;PageMode"/>
+	<rdf:type rdf:resource="&gc;ContainerMode"/>
+	<rdfs:label xml:lang="en-US">Map</rdfs:label>
     </rdf:Description>
 
     <rdf:Description rdf:about="&gc;EditMode">
@@ -274,30 +284,16 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:StyleMode">
 	<link href="static/css/bootstrap.css" rel="stylesheet"/>
 	<link href="static/css/bootstrap-responsive.css" rel="stylesheet"/>
-
-	<style type="text/css">
-	    <![CDATA[
-		body { padding-top: 60px; padding-bottom: 40px; }
-		.brand img { height: 0.8em; width: auto; }
-		form.form-inline { margin: 0; }
-		ul.inline { margin-left: 0; max-height: 7em; overflow-y: auto; }
-		.inline li { display: inline; }
-		.well-small { background-color: #FAFAFA; }
-		.well-small dl { max-height: 60em; overflow-y: auto; }
-		textarea#query-string { font-family: monospace; }
-		.thumbnail img { display: block; margin: auto; }
-		.thumbnail { min-height: 15em; }
-		
-                ul.typeahead { max-height: 20em; overflow: auto; }
-                label.typeahead input { display: block; max-width: 160px; }
-		label.typeahead { float: left; width: 160px; }
-	    ]]>
-	</style>	
+	<link href="static/org/graphity/client/css/bootstrap.css" rel="stylesheet"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
-	<script type="text/javascript" src="static/org/graphity/client/js/jquery.min.js"></script>
-	<script type="text/javascript" src="static/org/graphity/client/js/bootstrap.js"></script>
+	<script type="text/javascript" src="static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="static/js/bootstrap.js"></script>
+        <xsl:if test="$mode = '&gc;MapMode'">
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
+            <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
+        </xsl:if>
         <xsl:if test="$mode = ('&gc;CreateMode', '&gc;EditMode')">
             <script type="text/javascript" src="static/org/graphity/client/js/UriBuilder.js"></script>
             <script type="text/javascript" src="static/org/graphity/client/js/saxon-ce/Saxonce.nocache.js"></script>
@@ -341,7 +337,12 @@ exclude-result-prefixes="#all">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
 		</xsl:apply-templates>
 	    </xsl:when>
-	    <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
+	    <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
+		<xsl:apply-templates select="." mode="gc:MapMode">
+		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+		</xsl:apply-templates>
+	    </xsl:when>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
 		<xsl:apply-templates select="." mode="gc:EditMode">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
 		</xsl:apply-templates>
@@ -515,9 +516,20 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates mode="#current"/>
         </xsl:variable>
         <xsl:if test="$images">
-            <p>
-                <xsl:copy-of select="$images[1]"/>
-            </p>
+            <div class="carousel slide">
+                <div class="carousel-inner">
+                    <xsl:for-each select="$images">
+                        <div class="item">
+                            <xsl:if test="position() = 1">
+                                <xsl:attribute name="class">active item</xsl:attribute>
+                            </xsl:if>
+                            <xsl:copy-of select="."/>
+                        </div>
+                    </xsl:for-each>
+                    <a class="carousel-control left" onclick="$(this).parents('.carousel').carousel('prev');">&#8249;</a>
+                    <a class="carousel-control right" onclick="$(this).parents('.carousel').carousel('next');">&#8250;</a>
+                </div>
+            </div>
         </xsl:if>
     </xsl:template>
 
@@ -874,6 +886,56 @@ exclude-result-prefixes="#all">
         <h3>
             <xsl:apply-templates select="." mode="gc:InlineMode"/>
         </h3>
+    </xsl:template>
+
+    <!-- MAP MODE -->
+    
+    <xsl:template match="rdf:RDF" mode="gc:MapMode">
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
+            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+        </xsl:apply-templates>
+
+        <!-- page resource -->
+        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
+
+        <div id="map-canvas"/>
+
+        <!-- apply all other URI resources -->
+        <xsl:apply-templates mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+
+        <xsl:apply-templates select="." mode="gc:PaginationMode"/>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:MapMode"/>
+
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][geo:lat][geo:long]" mode="gc:MapMode" priority="1">
+        <xsl:param name="nested" as="xs:boolean?"/>
+
+        <script type="text/javascript">
+            <![CDATA[
+                function initialize]]><xsl:value-of select="generate-id()"/><![CDATA[()
+                {
+                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat"/>,<xsl:value-of select="geo:long"/><![CDATA[);            
+                    var marker = new google.maps.Marker({
+                        position: latLng,
+                        map: map,
+                        title: "]]><xsl:apply-templates select="." mode="gc:LabelMode"/><![CDATA["
+                    });
+
+                    google.maps.event.addListener(marker, 'click', function() {
+                        openInfoWindow(map, marker, ']]><xsl:value-of select="@rdf:about"/><![CDATA[');
+                    });
+                }
+
+                google.maps.event.addDomListener(window, 'load', initialize]]><xsl:value-of select="generate-id()"/><![CDATA[);
+            ]]>
+        </script>
     </xsl:template>
 
     <!-- CREATE MODE -->

@@ -121,7 +121,8 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	{
             return super.getSPARQLResource();
         }
-        else return this;
+        
+        return this;
     }
 
     @Override
