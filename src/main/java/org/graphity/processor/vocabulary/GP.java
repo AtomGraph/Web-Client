@@ -53,6 +53,10 @@ public class GP
 
     public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );
 
+    public static final ObjectProperty ontologyEndpoint = m_model.createObjectProperty( NS + "ontologyEndpoint" );
+
+    public static final ObjectProperty ontologyQuery = m_model.createObjectProperty( NS + "ontologyQuery" );
+
     public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );

@@ -21,6 +21,16 @@
             <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>
             <param-value>ontology</param-value>
         </init-param>
+        <!--
+        <init-param>
+            <param-name>http://processor.graphity.org/ontology#ontologyEndpoint</param-name>
+            <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
+            <param-value><![CDATA[ CONSTRUCT WHERE { ?s ?p ?o } ]]></param-value>
+        </init-param>
+        -->
         <init-param>
             <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
             <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>

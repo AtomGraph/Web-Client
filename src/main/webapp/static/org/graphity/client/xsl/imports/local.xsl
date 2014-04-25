@@ -44,6 +44,8 @@ exclude-result-prefixes="#all">
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 
+    <!-- INLINE MODE -->
+    
     <!-- subject resource -->
     <xsl:template match="@rdf:about" mode="gc:InlineMode">
 	<a href="{.}" title="{.}">
@@ -203,6 +205,14 @@ exclude-result-prefixes="#all">
 	<dd>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</dd>
+    </xsl:template>
+
+    <!-- MEDIA TYPE SELECT MODE -->
+    
+    <!-- ideally should provide all serialization formats supported by Jena -->
+    <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
+	<a href="{.}?accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+	<a href="{.}?accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
 
     <!-- TABLE HEADER MODE -->

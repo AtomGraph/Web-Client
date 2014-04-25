@@ -19,16 +19,23 @@ package org.graphity.processor.provider;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.util.FileManager;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import java.net.URI;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import org.graphity.client.locator.PrefixMapper;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
@@ -42,24 +49,6 @@ import org.slf4j.LoggerFactory;
 public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, OntModel> implements ContextResolver<OntModel>
 {
     private static final Logger log = LoggerFactory.getLogger(OntologyProvider.class);
-
-    /**
-     * Configuration property for absolute ontology URI (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_URI = "org.graphity.platform.ontology.uri";
-
-    /**
-     * Configuration property for ontology SPARQL endpoint (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_ENDPOINT = "org.graphity.platform.ontology.endpoint";
-
-    /**
-     * Configuration property for ontology named graph URI (set in web.xml)
-     * 
-     */
-    public static final String PROPERTY_ONTOLOGY_GRAPH = "org.graphity.platform.ontology.graph";
 
     @Context UriInfo uriInfo;
     @Context ResourceConfig resourceConfig;
@@ -113,52 +102,54 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public OntModel getOntModel(UriInfo uriInfo, ResourceConfig resourceConfig)
     {
-	//if (log.isDebugEnabled()) log.debug("web.xml properties: {}", resourceConfig.getProperties());
+        DataManager dataManager = new DataManager(FileManager.get(), ARQ.getContext());
+        dataManager.setLocationMapper(new PrefixMapper("prefix-mapping.n3"));
+        DataManager.setStdLocators(dataManager);
+        dataManager.setModelCaching(true);
+        OntDocumentManager ontManager = new OntDocumentManager(DataManager.get(), (String)null);
+        ontManager.setFileManager(dataManager);
+
 	Object ontologyPath = resourceConfig.getProperty(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
-	if (resourceConfig.getProperty(PROPERTY_ONTOLOGY_ENDPOINT) != null)
+	if (resourceConfig.getProperty(GP.ontologyEndpoint.getURI()) != null)
 	{
-	    Object ontologyEndpoint = resourceConfig.getProperty(PROPERTY_ONTOLOGY_ENDPOINT);
-	    Object graphUri = resourceConfig.getProperty(PROPERTY_ONTOLOGY_GRAPH);
-	    Query query;
-	    if (graphUri != null)
-	    {
-		if (log.isDebugEnabled()) log.debug("Reading ontology from named graph {} in SPARQL endpoint {}", graphUri.toString(), ontologyEndpoint);
-		query = QueryFactory.create("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH <" + graphUri.toString() +  "> { ?s ?p ?o } }");
-	    }
-	    else
-	    {
-		if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
-		query = QueryFactory.create("CONSTRUCT WHERE { ?s ?p ?o }");		
-	    }
+	    Object ontologyEndpoint = resourceConfig.getProperty(GP.ontologyEndpoint.getURI());
+	    Object ontologyQuery = resourceConfig.getProperty(GP.ontologyQuery.getURI());
+            if (ontologyQuery == null) throw new IllegalStateException("Sitemap ontology query is not configured properly. Check ResourceConfig and/or web.xml");
+
+            if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
+            Query query = QueryFactory.create(ontologyQuery.toString());
     
-	    OntDocumentManager.getInstance().addModel(localUri,
-		    DataManager.get().loadModel(ontologyEndpoint.toString(), query),
-		    true);	    
+            Model model = DataManager.get().loadModel(ontologyEndpoint.toString(), query);
+            if (model.isEmpty())
+            {
+                if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
+                throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            }
+            ontManager.addModel(localUri, model, true);	    
 	}
 	else
 	{
-	    if (resourceConfig.getProperty(PROPERTY_ONTOLOGY_URI) != null)
+            Object ontologyLocation = resourceConfig.getProperty(GP.ontologyLocation.getURI());
+            if (ontologyLocation == null) throw new IllegalStateException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
+            URI ontologyLocationURI = URI.create((String)ontologyLocation);
+            if (ontologyLocationURI.isAbsolute())
 	    {
-		Object externalUri = resourceConfig.getProperty(PROPERTY_ONTOLOGY_URI);
-		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", externalUri);
-		OntDocumentManager.getInstance().addModel(localUri,
-			DataManager.get().loadModel(externalUri.toString()),
+		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", ontologyLocationURI);
+		ontManager.addModel(localUri,
+			DataManager.get().loadModel(ontologyLocationURI.toString()),
 			true);
 	    }
 	    else
 	    {
-		Object ontologyLocation = resourceConfig.getProperty(GP.ontologyLocation.getURI());
-		if (ontologyLocation == null) throw new IllegalStateException("Ontology for this Graphity LDP Application is not configured properly. Check ResourceConfig and/or web.xml");
 		if (log.isDebugEnabled()) log.debug("Mapping ontology to a local file: {}", ontologyLocation.toString());
-		OntDocumentManager.getInstance().addAltEntry(localUri, ontologyLocation.toString());
+		ontManager.addAltEntry(localUri, ontologyLocation.toString());
 	    }
 	}
-	OntModel ontModel = OntDocumentManager.getInstance().
-		getOntology(localUri, OntModelSpec.OWL_MEM);
+	OntModel ontModel = ontManager.getOntology(localUri, OntModelSpec.OWL_MEM);
 	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
 	return ontModel;
     }

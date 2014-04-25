@@ -71,7 +71,7 @@ void:inDataset a owl:ObjectProperty ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;
     foaf:maker <http://graphityhq.com/#company> ;
-    gc:stylesheet <static/org/graphity/client/xsl/global-xhtml.xsl> ;
+    gc:stylesheet <static/org/graphity/client/xsl/local-xhtml.xsl> ;
     gp:service <service#this> ;
     rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> ;
