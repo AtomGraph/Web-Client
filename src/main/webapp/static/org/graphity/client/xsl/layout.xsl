@@ -1001,19 +1001,22 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
-	<xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
+        <xsl:param name="instance" select="." as="element()"/>
+        <xsl:param name="constraint-violations" select="key('constraints-by-root', $instance/(@rdf:about, @rdf:nodeID), root($instance))" as="element()*"/>
         <xsl:param name="add-statements" select="true()" as="xs:boolean?" tunnel="yes"/>
         
 	<fieldset id="fieldset-{generate-id()}">
-            <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
+            <xsl:if test="$instance/@rdf:about or not(key('predicates-by-object', $instance/@rdf:nodeID))">
                 <legend>
-                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
+                    <xsl:apply-templates select="$instance/@rdf:about | $instance/@rdf:nodeID" mode="gc:InlineMode"/>
                 </legend>
             </xsl:if>
-            
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-            <xsl:apply-templates mode="#current">
+
+            <xsl:apply-templates select="$instance/@rdf:about | $instance/@rdf:nodeID" mode="#current"/>
+
+            <xsl:apply-templates select="$instance/* | *[not(concat(namespace-uri(), local-name()) = $instance/*/concat(namespace-uri(), local-name()))]" mode="#current">
                 <xsl:sort select="gc:property-label(.)"/>
+                <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
             </xsl:apply-templates>
 
             <xsl:if test="$add-statements">

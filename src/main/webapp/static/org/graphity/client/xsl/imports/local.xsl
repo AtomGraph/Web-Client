@@ -465,9 +465,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
-        <!-- <xsl:param name="resource" select=".." as="element()"/> -->
         <xsl:param name="constraint-violations" as="element()*"/>
-        <xsl:param name="required" select="false()" as="xs:boolean" tunnel="yes"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
  
