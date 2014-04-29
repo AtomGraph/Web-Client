@@ -456,25 +456,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:HeaderMode">
 	<xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
     </xsl:template>
-    
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode">
-	<div class="well">
-            <xsl:apply-templates select="." mode="gc:ImageMode"/>
 
-            <xsl:if test="starts-with(@rdf:about, $base-uri) and not($mode = '&gc;EditMode')">
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
-                        <xsl:apply-templates select="key('resources', '&gc;EditMode', document(''))" mode="gc:LabelMode"/>
-                    </a>
-                </div>
-            </xsl:if>
-            <xsl:if test="rdf:type/@rdf:resource = '&ldp;Container' and not($mode = '&gc;CreateMode')">
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
-                        <xsl:apply-templates select="key('resources', '&gc;CreateMode', document(''))" mode="gc:LabelMode"/>
-                    </a>
-                </div>
-            </xsl:if>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode" priority="1">
+	<div class="well header">
+            <xsl:apply-templates select="." mode="gc:ImageMode"/>
+            
+            <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
 
             <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 
@@ -485,7 +472,7 @@ exclude-result-prefixes="#all">
 	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>
 	</div>
     </xsl:template>
-
+    
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:MediaTypeSelectMode">
         <div class="btn-group pull-right">
             
@@ -509,6 +496,30 @@ exclude-result-prefixes="#all">
 	</h1>
     </xsl:template>
 
+    <!-- MODE TOGGLE MODE (Create/Edit buttons) -->
+
+    <xsl:template match="*" mode="gc:ModeToggleMode"/>
+    
+    <xsl:template match="*[starts-with(@rdf:about, $base-uri)]" mode="gc:ModeToggleMode" priority="1">
+        <xsl:if test="not($mode = '&gc;EditMode')">
+            <div class="pull-right">
+                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
+                    <xsl:apply-templates select="key('resources', '&gc;EditMode', document(''))" mode="gc:LabelMode"/>
+                </a>                        
+            </div>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&sioc;Container']" mode="gc:ModeToggleMode" priority="1">
+        <xsl:if test="not($mode = '&gc;CreateMode')">
+            <div class="pull-right">
+                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
+                    <xsl:apply-templates select="key('resources', '&gc;CreateMode', document(''))" mode="gc:LabelMode"/>
+                </a>
+            </div>
+        </xsl:if>
+    </xsl:template>
+    
     <!-- IMAGE MODE -->
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ImageMode">

@@ -5,7 +5,7 @@
     <version>1.0.12-SNAPSHOT</version>
 
     <name>Graphity Client</name>
-    <description>Graphity Linked Data client</description>
+    <description>Generic Linked Data client</description>
 
     <developers>
 	<developer>
