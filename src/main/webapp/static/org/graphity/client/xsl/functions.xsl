@@ -16,18 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY java "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc "http://client.graphity.org/ontology#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY java   "http://xml.apache.org/xalan/java/">
+    <!ENTITY gc     "http://client.graphity.org/ontology#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY dc "http://purl.org/dc/elements/1.1/">
-    <!ENTITY dct "http://purl.org/dc/terms/">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
-    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
-    <!ENTITY gr "http://purl.org/goodrelations/v1#">
-    <!ENTITY list "http://jena.hpl.hp.com/ARQ/list#">
+    <!ENTITY dc     "http://purl.org/dc/elements/1.1/">
+    <!ENTITY dct    "http://purl.org/dc/terms/">
+    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
+    <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
+    <!ENTITY sp     "http://spinrdf.org/sp#">
+    <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -44,7 +44,7 @@ xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:skos="&skos;"
-xmlns:gr="&gr;"
+xmlns:sp="&sp;"
 xmlns:list="&list;"
 exclude-result-prefixes="#all">
 
@@ -231,6 +231,23 @@ exclude-result-prefixes="#all">
 	<xsl:if test="string-length($query-string) &gt; 1">
 	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
 	</xsl:if>
+    </xsl:function>
+
+    <xsl:function name="gc:visit-elements" as="element()*">
+        <xsl:param name="element" as="element()"/>
+        <xsl:param name="type" as="xs:string?"/>
+        
+        <xsl:choose>
+            <xsl:when test="$element/rdf:type/@rdf:resource = $type">
+                <xsl:sequence select="key('resources', $element/sp:query/(@rdf:resource, @rdf:nodeID), root($element))"/>
+            </xsl:when>
+            <xsl:when test="list:member($element, root($element))">
+                <xsl:sequence select="list:member($element, root($element))/gc:visit-elements(., $type)"/>
+            </xsl:when>
+            <xsl:when test="$element/sp:elements/@rdf:nodeID">
+                <xsl:sequence select="key('resources', $element/sp:elements/@rdf:nodeID, root($element))/gc:visit-elements(., $type)"/>
+            </xsl:when>
+        </xsl:choose>
     </xsl:function>
 
 </xsl:stylesheet>
