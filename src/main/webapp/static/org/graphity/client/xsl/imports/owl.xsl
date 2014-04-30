@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc "http://client.graphity.org/ontology#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#">    
+    <!ENTITY gc     "http://client.graphity.org/ontology#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"

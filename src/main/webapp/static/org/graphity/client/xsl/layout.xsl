@@ -99,7 +99,8 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="ldp:pageOf/@rdf:resource"/>
     <xsl:key name="resources-by-topic" match="*[@rdf:about] | *[@rdf:nodeID]" use="foaf:primaryTopic/@rdf:resource"/>
     <xsl:key name="resources-by-topic-of" match="*[@rdf:about] | *[@rdf:nodeID]" use="foaf:isPrimaryTopicOf/@rdf:resource"/>
-    <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource"/>
+    <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
+    <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
     <rdf:Description rdf:about="">
@@ -1012,7 +1013,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="instance" select="." as="element()"/>
-        <xsl:param name="constraint-violations" select="key('constraints-by-root', $instance/(@rdf:about, @rdf:nodeID), root($instance))" as="element()*"/>
+        <xsl:param name="constraint-violations" select="key('violations-by-root', $instance/(@rdf:about, @rdf:nodeID), root($instance))" as="element()*"/>
         <xsl:param name="add-statements" select="true()" as="xs:boolean?" tunnel="yes"/>
         
 	<fieldset id="fieldset-{generate-id()}">

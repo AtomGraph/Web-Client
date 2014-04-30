@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY java "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc "http://client.graphity.org/ontology#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#">    
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY java   "http://xml.apache.org/xalan/java/">
+    <!ENTITY gc     "http://client.graphity.org/ontology#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
+    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY sp "http://spinrdf.org/sp#">
-    <!ENTITY spin "http://spinrdf.org/spin#">
+    <!ENTITY sp     "http://spinrdf.org/sp#">
+    <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
