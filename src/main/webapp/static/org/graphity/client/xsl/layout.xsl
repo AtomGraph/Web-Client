@@ -508,10 +508,7 @@ exclude-result-prefixes="#all">
                 </a>                        
             </div>
         </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&sioc;Container']" mode="gc:ModeToggleMode" priority="1">
-        <xsl:if test="not($mode = '&gc;CreateMode')">
+        <xsl:if test="not($mode = '&gc;CreateMode') and rdf:type/@rdf:resource = '&sioc;Container'">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;CreateMode', document(''))" mode="gc:LabelMode"/>
