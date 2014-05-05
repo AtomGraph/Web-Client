@@ -19,7 +19,7 @@
 @prefix srv:    <http://jena.hpl.hp.com/Service#> .
 
 <#> a owl:Ontology ;
-    owl:imports gp:, lda: , void:, foaf: ;
+    owl:imports gp:, gc:, lda: , void:, foaf: ;
     owl:versionInfo "1.0.12" ;
     dct:title "Sitemap" ;
     rdfs:label "Sitemap" ;
@@ -180,6 +180,8 @@ void:inDataset a owl:ObjectProperty ;
     lda:uriTemplate "/{path: .*}" ;
     spin:query [ a gp:DescribeWithChildrenTemplate ] ;
     gp:limit 20 ;
+    gc:defaultMode gc:PropertyMode ;
+    gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
     rdfs:label "Resource" ;
     rdfs:comment "Catch-all resource class (template)" ;
     rdfs:isDefinedBy <#> ;

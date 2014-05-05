@@ -1,1 +1,53 @@
-# gc:stylesheet
+# @prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix gc:     <http://client.graphity.org/ontology#> .
+
+# ONTOLOGY
+
+<#> a owl:Ontology ;
+    rdfs:label "Graphity Client vocabulary" .
+
+# PROPERTIES
+
+gc:stylesheet a owl:ObjectProperty ;
+    rdfs:label "Master XSLT stylesheet of this application" .
+
+gc:defaultMode a owl:ObjectProperty ;
+    rdfs:label "Default layout mode" .
+
+gc:mode a owl:ObjectProperty ;
+    rdfs:label "Layout mode" .
+
+# CLASSES
+
+gc:Mode a owl:Class ;
+    rdfs:label "Class of layout modes" .
+
+gc:ContainerMode a owl:Class ;
+    rdfs:subClassOf gc:Mode ;
+    rdfs:label "Class of container layout modes" .
+
+gc:ItemMode a owl:Class ;
+    rdfs:subClassOf gc:Mode ;
+    rdfs:label "Class of item layout modes" .
+
+# INDIVIDUALS
+
+gc:PropertyMode a gc:Mode, gc:ContainerMode, gc:ItemMode ;
+    rdfs:label "Properties" .
+gc:EditMode a gc:Mode, gc:ContainerMode, gc:ItemMode ;
+    rdfs:label "Edit" .
+gc:CreateMode a gc:Mode, gc:ContainerMode ;
+    rdfs:label "Create" .
+
+gc:TableMode a gc:Mode, gc:ContainerMode ;
+    rdfs:label "Table" .
+gc:ListMode a gc:Mode, gc:ContainerMode ;
+    rdfs:label "List" .
+gc:ThumbnailMode a gc:Mode, gc:ContainerMode ;
+    rdfs:label "Gallery" .
+gc:MapMode a gc:Mode, gc:ContainerMode ;
+    rdfs:label "Map" .

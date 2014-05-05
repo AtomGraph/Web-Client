@@ -75,6 +75,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="graph" as="xs:anyURI?"/>
     <xsl:param name="mode" as="xs:anyURI?"/>
     <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
+    <xsl:param name="matched-ont-class-uri" as="xs:anyURI"/>
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="order-by" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $ont-model)/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
@@ -83,6 +84,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
+    <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $ont-model)" as="element()"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="if ($query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
@@ -113,57 +115,6 @@ exclude-result-prefixes="#all">
 
     <rdf:Description rdf:nodeID="next">
 	<rdfs:label xml:lang="en">Next</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;PropertyMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;ItemMode"/>
-	<rdf:type rdf:resource="&gc;PageMode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-	<rdfs:label xml:lang="en-US">Properties</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;TableMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;PageMode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-	<rdfs:label xml:lang="en-US">Table</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;ListMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<!-- <rdf:type rdf:resource="&gc;ItemMode"/> -->
-	<rdf:type rdf:resource="&gc;PageMode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-	<rdfs:label xml:lang="en-US">List</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;ThumbnailMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;PageMode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-	<rdfs:label xml:lang="en-US">Gallery</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;MapMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;ItemMode"/>
-        <rdf:type rdf:resource="&gc;PageMode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-	<rdfs:label xml:lang="en-US">Map</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;EditMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;ItemMode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-	<rdfs:label xml:lang="en-US">Edit</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&gc;CreateMode">
-	<rdf:type rdf:resource="&gc;Mode"/>
-	<rdf:type rdf:resource="&gc;ContainerMode"/>
-        <rdfs:label xml:lang="en-US">Create</rdfs:label>
     </rdf:Description>
 
     <xsl:template match="/">
@@ -207,7 +158,9 @@ exclude-result-prefixes="#all">
 		    <xsl:variable name="grouped-rdf" as="document-node()">
 			<xsl:apply-templates select="." mode="gc:GroupTriples"/>
 		    </xsl:variable>
-		    <xsl:apply-templates select="$grouped-rdf/rdf:RDF"/>
+		    <xsl:apply-templates select="$grouped-rdf/rdf:RDF">
+                        <xsl:with-param name="default-mode" select="if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/>
+                    </xsl:apply-templates>
 		</div>
 
 		<div class="span4">
@@ -319,9 +272,10 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-	<xsl:param name="default-mode" select="if (key('resources-by-page-of', $absolute-path)) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/>
+	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
+	<!-- <xsl:param name="default-mode" select="if (key('resources-by-page-of', $absolute-path)) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/> -->
 
-	<xsl:choose>
+        <xsl:choose>
 	    <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
 		<xsl:apply-templates select="." mode="gc:ListMode">
 		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
@@ -363,18 +317,27 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
 
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
-	<ul class="nav nav-tabs">
-	    <xsl:choose>
-		<xsl:when test="key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
-		    <xsl:apply-templates select="key('resources-by-type', '&gc;ContainerMode', document(''))" mode="#current"/>
-		</xsl:when>
+        <ul class="nav nav-tabs">
+            <xsl:choose>
+                <xsl:when test="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))">
+                    <xsl:choose>
+                        <xsl:when test="key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
+                            <xsl:apply-templates select="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))[rdf:type/@rdf:resource = '&gc;ContainerMode']" mode="#current">
+                                <xsl:sort select="gc:label(.)"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))[rdf:type/@rdf:resource = '&gc;ItemMode']" mode="#current">
+                                <xsl:sort select="gc:label(.)"/>                    
+                            </xsl:apply-templates>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
                 <xsl:otherwise>
-		    <xsl:apply-templates select="key('resources-by-type', '&gc;ItemMode', document(''))" mode="#current"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</ul>
+                    <xsl:apply-templates select="key('resources', '&gc;PropertyMode', document('&gc;'))" mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </ul>
     </xsl:template>
 
     <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode">
@@ -419,13 +382,9 @@ exclude-result-prefixes="#all">
     <!-- subject -->
 
     <xsl:template match="rdf:RDF" mode="gc:PropertyMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
-            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-        </xsl:apply-templates>
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
         <!-- page resource -->
         <xsl:apply-templates select="." mode="gc:PaginationMode"/>
@@ -504,14 +463,14 @@ exclude-result-prefixes="#all">
         <xsl:if test="not($mode = '&gc;EditMode')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gc;EditMode', document(''))" mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>                        
             </div>
         </xsl:if>
         <xsl:if test="not($mode = '&gc;CreateMode') and rdf:type/@rdf:resource = '&sioc;Container'">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gc;CreateMode', document(''))" mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="key('resources', '&gc;CreateMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>
             </div>
         </xsl:if>
@@ -730,8 +689,6 @@ exclude-result-prefixes="#all">
     <!-- LIST MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:ListMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-	
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
 	
 	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
@@ -773,7 +730,6 @@ exclude-result-prefixes="#all">
     <!-- TABLE MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:TableMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
 	<!-- SELECTed resources = everything except container, page, and non-root blank nodes -->
 	<xsl:param name="predicates" as="element()*">
 	    <xsl:for-each-group select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]/*" group-by="concat(namespace-uri(), local-name())">
@@ -842,7 +798,6 @@ exclude-result-prefixes="#all">
     <!-- THUMBNAIL MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ThumbnailMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
 	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
 
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
@@ -899,13 +854,9 @@ exclude-result-prefixes="#all">
     <!-- MAP MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:MapMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
-            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-        </xsl:apply-templates>
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
         <!-- page resource -->
         <xsl:apply-templates select="." mode="gc:PaginationMode"/>
@@ -929,7 +880,7 @@ exclude-result-prefixes="#all">
             <![CDATA[
                 function initialize]]><xsl:value-of select="generate-id()"/><![CDATA[()
                 {
-                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat"/>, <xsl:value-of select="geo:long"/><![CDATA[);            
+                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
                     var marker = new google.maps.Marker({
                         position: latLng,
                         map: map,
@@ -945,13 +896,9 @@ exclude-result-prefixes="#all">
     <!-- CREATE MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode">
-            <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-        </xsl:apply-templates>
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
 	<form class="form-horizontal" method="post" action="{$absolute-path}?mode={encode-for-uri($mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
@@ -984,8 +931,6 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
 	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
 	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>

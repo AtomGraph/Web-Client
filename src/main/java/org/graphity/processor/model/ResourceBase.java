@@ -60,13 +60,13 @@ import org.topbraid.spin.vocabulary.SPIN;
  * Supports pagination on containers (implemented using SPARQL query solution modifiers).
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see PageResource
+ * @see ContainerResource
  * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/OntResource.html">OntResource</a>
  * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/") //@Path("{path: .*}")
-public class ResourceBase extends QueriedResourceBase implements LDPResource, PageResource, OntResource
+public class ResourceBase extends QueriedResourceBase implements LDPResource, ContainerResource, OntResource, MatchedIndividual
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
@@ -280,7 +280,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
     @Override
     public Response get()
     {
-	 // ldp:Container always redirects to first ldp:Page
+        // ldp:Container always redirects to first ldp:Page
 	if (hasRDFType(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
@@ -1001,6 +1001,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Pa
      * 
      * @return ontology class
      */
+    @Override
     public OntClass getMatchedOntClass()
     {
 	return matchedOntClass;

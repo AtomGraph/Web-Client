@@ -19,6 +19,7 @@ package org.graphity.client.model;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
 import java.util.List;
@@ -26,7 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.vocabulary.LDP;
+import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
@@ -126,16 +127,39 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     }
 
     @Override
+    public Response get()
+    {
+	// if no mode specified, redirect to default mode, if it is specified for this resource
+        Resource defaultMode = getMatchedOntClass().getPropertyResourceValue(GC.defaultMode);
+        if (getMode() == null && defaultMode != null)
+        {
+            URI redirectURI;
+            if (hasRDFType(SIOC.CONTAINER)) redirectURI = getPageUriBuilder().replaceQueryParam("mode", defaultMode.getURI()).build();
+            else redirectURI = getUriBuilder().replaceQueryParam("mode", defaultMode.getURI()).build();
+            
+            if (!getUriInfo().getRequestUri().equals(redirectURI))
+            {
+                if (log.isDebugEnabled()) log.debug("OntResource has gc:defaultMode specified, redirecting to its URI: {}", redirectURI);
+                return Response.seeOther(redirectURI).build();
+            }
+        }
+        
+	return super.get();
+    }
+
+    @Override
     public Model describe()
-    {	
-        if (getMode() != null && hasRDFType(LDP.Container) &&
+    {
+	Model description;
+        
+        if (getMode() != null && hasRDFType(SIOC.CONTAINER) &&
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
-	    return DataManager.get().loadModel(getModel(), getQuery(getURI()));
+	    description = DataManager.get().loadModel(getModel(), getQuery(getURI()));
 	}
-
-	Model description = super.describe();
+        else
+            description = super.describe();
 
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
 	addRDFType(getMatchedOntClass());

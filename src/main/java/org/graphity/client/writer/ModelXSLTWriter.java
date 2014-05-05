@@ -43,6 +43,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
+import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.server.provider.ModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,6 +184,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	Object resource = getUriInfo().getMatchedResources().get(0);
 	OntResource ontResource = (OntResource)resource;
 	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
+	MatchedIndividual match = (MatchedIndividual)resource;
 
         XSLTBuilder bld = getXSLTBuilder().
 	    document(is).
@@ -190,7 +192,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
 	    parameter("request-uri", getUriInfo().getRequestUri()).
 	    parameter("http-headers", headerMap.toString()).
-	    parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource (with imports)
+	    parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
+            parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);

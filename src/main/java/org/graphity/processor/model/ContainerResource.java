@@ -19,14 +19,14 @@ package org.graphity.processor.model;
 import org.graphity.server.model.LinkedDataResource;
 
 /**
- * Interface of page resources. A page is a unit pagination, and only applies to container resources.
+ * Interface of container resources. A pages (pagination units) only applies to container resources.
  * SPARQL-based solution modifiers are used to implement pagination.
  * 
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  * @see <a href="http://www.w3.org/TR/2012/WD-ldp-20121025/#ldpc-paging">Linked Data Platform 1.0: Paging</a>
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface PageResource extends LinkedDataResource
+public interface ContainerResource extends LinkedDataResource
 {
     /**
      * Returns the value of <code>LIMIT</code> query modifier.

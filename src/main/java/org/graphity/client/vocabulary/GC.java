@@ -62,5 +62,9 @@ public class GC
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
 
     //public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );
+    
+    public static final ObjectProperty defaultMode = m_model.createObjectProperty( NS + "defaultMode" );
+
+    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
 }
