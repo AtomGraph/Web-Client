@@ -23,7 +23,7 @@ import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
@@ -35,7 +35,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import org.graphity.client.locator.PrefixMapper;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
@@ -91,22 +90,30 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public OntModel getOntModel()
     {
-	return getOntModel(getUriInfo(), getResourceConfig());
+	return getOntModel(getDataManager(), getUriInfo(), getResourceConfig());
+    }
+    
+    public DataManager getDataManager()
+    {
+        DataManager dataManager = new DataManager(LocationMapper.get(), ARQ.getContext(), getResourceConfig());
+        DataManager.setStdLocators(dataManager);
+        dataManager.setModelCaching(true);
+        
+        return dataManager;
     }
     
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
+     * 
+     * @param dataManager RDF data manager for this provider
      * @param uriInfo URI information of the current request
      * @param resourceConfig webapp configuration
      * @return ontology Model
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel(UriInfo uriInfo, ResourceConfig resourceConfig)
+    public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ResourceConfig resourceConfig)
     {
-        DataManager dataManager = new DataManager(new FileManager(new PrefixMapper("prefix-mapping.n3")), ARQ.getContext(), resourceConfig);
-        DataManager.setStdLocators(dataManager);
-        dataManager.setModelCaching(true);
-        OntDocumentManager ontManager = new OntDocumentManager(DataManager.get(), (String)null);
+        OntDocumentManager ontManager = new OntDocumentManager(dataManager, (String)null);
         ontManager.setFileManager(dataManager);
 
 	Object ontologyPath = resourceConfig.getProperty(GP.ontologyPath.getURI());

@@ -40,6 +40,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
@@ -111,7 +112,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 	    @Override
 	    public XSLTBuilder getValue()
 	    {
-                return getXSLTBuilder(getUriInfo(), getOntModel(), GC.stylesheet);
+                return getXSLTBuilder();
 	    }
 	};
     }
@@ -119,10 +120,15 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     @Override
     public XSLTBuilder getContext(Class<?> type)
     {
-        return getXSLTBuilder(getUriInfo(), getOntModel(), GC.stylesheet);
+        return getXSLTBuilder();
     }
 
-    public XSLTBuilder getXSLTBuilder(UriInfo uriInfo, OntModel ontModel, Property property)
+    public XSLTBuilder getXSLTBuilder()
+    {
+        return getXSLTBuilder(getUriInfo(), getOntModel(), GC.stylesheet, getDataManager());
+    }
+    
+    public XSLTBuilder getXSLTBuilder(UriInfo uriInfo, OntModel ontModel, Property property, URIResolver uriResolver)
     {
         Resource stylesheet = ontModel.createResource(uriInfo.getBaseUri().toString()).
                     getPropertyResourceValue(property);
@@ -130,32 +136,13 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         {
             if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet not configured");
 
-            return getXSLTBuilder(stylesheet, uriInfo.getBaseUri());
+            return XSLTBuilder.fromStylesheet(getSource(stylesheet, uriInfo.getBaseUri())).
+                    resolver(uriResolver);
         }
         catch (ConfigurationException ex)
         {
     	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not configured", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    public XSLTBuilder getXSLTBuilder(Resource stylesheet, URI baseURI) throws ConfigurationException
-    {
-	if (stylesheet == null) throw new IllegalArgumentException("Stylesheet resource cannot be null");	
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");	
-
-        try
-        {            
-            URI stylesheetUri = URI.create(stylesheet.getURI());
-    	    if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetUri);            
-            // TO-DO: handle cases with remote URIs (not starting with base URI)
-            stylesheetUri = baseURI.relativize(stylesheetUri);
-            if (stylesheetUri == null) throw new ConfigurationException("Remote XSLT stylesheets not supported");
-            
-            Source styleSource = getSource(stylesheetUri.toString());
-
-            return XSLTBuilder.fromStylesheet(styleSource).
-                    resolver(getDataManager());
         }
         catch (TransformerConfigurationException ex)
         {
@@ -173,7 +160,18 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    public Source getSource(Resource stylesheet, URI baseURI) throws ConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
+    {
+        URI stylesheetUri = URI.create(stylesheet.getURI());
+        if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetUri);            
+        // TO-DO: handle cases with remote URIs (not starting with base URI)
+        stylesheetUri = baseURI.relativize(stylesheetUri);
+        if (stylesheetUri == null) throw new ConfigurationException("Remote XSLT stylesheets not supported");
 
+        return getSource(stylesheetUri.toString());
+    }
+    
     /**
      * Provides XML source from filename
      * 

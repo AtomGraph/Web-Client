@@ -19,6 +19,7 @@ package org.graphity.client.provider;
 
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
@@ -27,7 +28,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,14 +80,14 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(getResourceConfig(), getUriInfo(), new PrefixMapper("prefix-mapping.n3"));
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getResourceConfig(), getUriInfo());
     }
     
-    public DataManager getDataManager(ResourceConfig resourceConfig, UriInfo uriInfo, PrefixMapper mapper)
+    public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
+            ResourceConfig resourceConfig, UriInfo uriInfo)
     {
-        DataManager dataManager = new DataManager(new FileManager(mapper), ARQ.getContext(), resourceConfig, uriInfo);
+        DataManager dataManager = new DataManager(mapper, context, resourceConfig, uriInfo);
         FileManager.setStdLocators(dataManager);
-	dataManager.setModelCaching(false);
 	if (log.isDebugEnabled()) log.debug("DataManager LocationMapper: {}", dataManager.getLocationMapper());
 
         return dataManager;

@@ -21,8 +21,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.sparql.util.Context;
-import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
+import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -87,9 +87,9 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     }
     */
     
-    public DataManager(FileManager fMgr, Context context, ResourceConfig resourceConfig, UriInfo uriInfo)
+    public DataManager(LocationMapper mapper, Context context, ResourceConfig resourceConfig, UriInfo uriInfo)
     {
-	super(fMgr, context, resourceConfig);
+	super(mapper, context, resourceConfig);
         this.uriInfo = uriInfo;
         
 	addLocatorLinkedData();

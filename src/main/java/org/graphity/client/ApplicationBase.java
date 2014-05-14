@@ -16,6 +16,8 @@
  */
 package org.graphity.client;
 
+import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -24,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.resource.labelled.Container;
@@ -103,9 +106,11 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	//OntDocumentManager.getInstance().setCacheModels(false);
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 	//ARQFactory.get().setUseCaches(false);
-	
-	//OntDocumentManager.getInstance().setFileManager(DataManager.get());
-	//if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance(): {} OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance(), OntDocumentManager.getInstance().getFileManager());
+
+	// initialize locally cached ontology mapping
+	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3"); // check if file exists?
+	LocationMapper.setGlobalLocationMapper(mapper);
+	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
         /*
 	try
