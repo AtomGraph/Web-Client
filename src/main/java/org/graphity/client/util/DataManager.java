@@ -91,9 +91,12 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     {
 	super(mapper, context, resourceConfig);
         this.uriInfo = uriInfo;
-        
+
+        // moved to DataManagerProvider
+        /*
 	addLocatorLinkedData();
 	removeLocatorURL();
+        */
     }
 
     @Override
@@ -220,7 +223,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
         addLocator(loc) ;
     }
 
-    private void removeLocatorURL()
+    public void removeLocatorURL()
     {
 	Locator locURL = null;
 	Iterator<Locator> it = locators();

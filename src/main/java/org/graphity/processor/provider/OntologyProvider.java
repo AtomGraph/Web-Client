@@ -147,7 +147,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    {
 		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", ontologyLocationURI);
 		ontManager.addModel(localUri,
-			DataManager.get().loadModel(ontologyLocationURI.toString()),
+			dataManager.loadModel(ontologyLocationURI.toString()),
 			true);
 	    }
 	    else

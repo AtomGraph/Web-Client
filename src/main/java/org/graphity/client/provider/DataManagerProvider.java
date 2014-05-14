@@ -88,7 +88,10 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     {
         DataManager dataManager = new DataManager(mapper, context, resourceConfig, uriInfo);
         FileManager.setStdLocators(dataManager);
-	if (log.isDebugEnabled()) log.debug("DataManager LocationMapper: {}", dataManager.getLocationMapper());
+	dataManager.addLocatorLinkedData();
+	dataManager.removeLocatorURL();
+
+        if (log.isDebugEnabled()) log.debug("DataManager LocationMapper: {}", dataManager.getLocationMapper());
 
         return dataManager;
     }
