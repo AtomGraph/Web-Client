@@ -33,7 +33,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.graphity.client.util.DataManager;
+import org.graphity.server.util.DataManager;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SD;
 import org.slf4j.Logger;

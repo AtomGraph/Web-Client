@@ -16,7 +16,6 @@
  */
 package org.graphity.client;
 
-import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -83,7 +82,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("Adding XSLT @Providers");
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new XSLTBuilderProvider()); // loads XSLT stylesheet
-        //singletons.add(DataManager.get()); // needed to inject UriInfo
     }
 
     /**
