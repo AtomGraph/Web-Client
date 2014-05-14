@@ -22,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceConfig;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+import org.graphity.client.util.DataManager;
 import org.graphity.server.model.GraphStore;
 
 /**
@@ -33,30 +34,33 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
     /**
      * Creates new Graph Store from application configuration, request data, and sitemap ontology.
      * 
+     * @param sitemap ontology of this webapp
      * @param uriInfo URI information of the current request
+     * @param dataManager RDF data manager for this graph store
      * @param request current request
      * @param resourceConfig webapp configuration
-     * @param sitemap ontology of this webapp
      * @return graph store instance
      */
-    public static GraphStore createGraphStore(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
-	    OntModel sitemap)
+    public static GraphStore createGraphStore(OntModel sitemap, DataManager dataManager,
+            UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-	return new GraphStoreBase(uriInfo, request, resourceConfig, sitemap);
+	return new GraphStoreBase(sitemap, dataManager, uriInfo, request, resourceConfig);
     }
 
     /**
      * Creates new Graph Store from explicit URI resource, application configuration, and request data.
      * 
      * @param graphStore graph store resource
+     * @param dataManager RDF data manager for this graph store
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param resourceConfig webapp configuration
      * @return graph store instance
      */
-    public static GraphStore createGraphStore(Resource graphStore, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    public static GraphStore createGraphStore(Resource graphStore, DataManager dataManager,
+            UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-	return new GraphStoreBase(graphStore, uriInfo, request, resourceConfig);
+	return new GraphStoreBase(graphStore, dataManager, uriInfo, request, resourceConfig);
     }
 
 }

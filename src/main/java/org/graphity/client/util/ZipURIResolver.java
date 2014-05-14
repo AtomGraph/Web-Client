@@ -41,6 +41,11 @@ public class ZipURIResolver implements URIResolver
 	this.zipFile = zipFile;
     }
 
+    public ZipFile getZipFile()
+    {
+        return zipFile;
+    }
+
     @Override
     public Source resolve(String href, String base) throws TransformerException
     {
@@ -49,7 +54,7 @@ public class ZipURIResolver implements URIResolver
 	try
 	{
 	    // set system ID?
-	    return new StreamSource(zipFile.getInputStream(zipFile.getEntry(href)));
+	    return new StreamSource(getZipFile().getInputStream(getZipFile().getEntry(href)));
 	}
 	catch (IOException ex)
 	{

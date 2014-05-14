@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import org.graphity.client.util.DataManager;
 import org.graphity.server.model.GraphStore;
 import org.graphity.processor.model.GraphStoreFactory;
 
@@ -74,6 +75,12 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 	return cr.getContext(OntModel.class);
     }
 
+    public DataManager getDataManager()
+    {
+	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+	return cr.getContext(DataManager.class);
+    }
+
     @Override
     public Injectable<GraphStore> getInjectable(ComponentContext cc, Context a)
     {
@@ -98,7 +105,8 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 
     public GraphStore getGraphStore()
     {
-	return GraphStoreFactory.createGraphStore(getUriInfo(), getRequest(), getResourceConfig(), getOntModel());
+	return GraphStoreFactory.createGraphStore(getOntModel(), getDataManager(),
+                getUriInfo(), getRequest(), getResourceConfig());
     }
 
 }

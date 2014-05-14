@@ -54,27 +54,27 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
 
     private final UriInfo uriInfo;
     
-    public GraphStoreBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
-            @Context OntModel sitemap)
+    public GraphStoreBase(@Context OntModel sitemap, @Context DataManager dataManager,
+            @Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
     {
         this(sitemap.createResource(uriInfo.getBaseUriBuilder().
                 path(GraphStoreBase.class).
                 build().
                 toString()),
-            uriInfo, request, resourceConfig);
+            dataManager, uriInfo, request, resourceConfig);
     }
 
-    public GraphStoreBase(Resource graphStore, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    public GraphStoreBase(Resource graphStore, DataManager dataManager, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-        super(graphStore, request, resourceConfig);
+        super(graphStore, dataManager, request, resourceConfig);
         
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
         
-        if (graphStore.isURIResource() && !DataManager.get().hasServiceContext(graphStore))
+        if (graphStore.isURIResource() && !getDataManager().hasServiceContext(graphStore))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
-            DataManager.get().addServiceContext(graphStore);
+            dataManager.addServiceContext(graphStore);
         }
     }
 
@@ -189,7 +189,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
             password = service.getProperty(pwdProp).getLiteral().getString();
 
         if (username != null & password != null)
-            DataManager.get().putAuthContext(endpoint.getURI(), username, password);
+            getDataManager().putAuthContext(endpoint.getURI(), username, password);
     }
 
     /**

@@ -109,107 +109,95 @@ exclude-result-prefixes="#all">
 	<dct:creator rdf:resource="http://semantic-web.dk/#martynas"/>
     </rdf:Description>
 
-    <rdf:Description rdf:nodeID="previous">
+    <rdf:Description rdf:about="&xhv;prev">
 	<rdfs:label xml:lang="en">Previous</rdfs:label>
     </rdf:Description>
 
-    <rdf:Description rdf:nodeID="next">
+    <rdf:Description rdf:about="&xhv;next">
 	<rdfs:label xml:lang="en">Next</rdfs:label>
     </rdf:Description>
 
     <xsl:template match="/">
 	<html xml:lang="{$lang}">
-	    <head>
-		<xsl:apply-templates select="." mode="gc:HeadMode"/>
-      	    </head>
-	    <body>
-		<xsl:apply-templates select="." mode="gc:BodyMode"/>
-	    </body>
+            <xsl:apply-templates select="." mode="gc:HeadMode"/>
+            <xsl:apply-templates select="." mode="gc:BodyMode"/>
 	</html>
     </xsl:template>
 
     <xsl:template match="/" mode="gc:HeadMode">
-	<title>
-	    <xsl:apply-templates mode="gc:TitleMode"/>
-	</title>
-	<base href="{$base-uri}" />
+        <head>
+            <title>
+                <xsl:apply-templates mode="gc:TitleMode"/>
+            </title>
+            <base href="{$base-uri}" />
 
-	<xsl:for-each select="key('resources', $base-uri, $ont-model)">
-	    <meta name="author" content="{dct:creator/@rdf:resource}"/>
-	</xsl:for-each>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <xsl:for-each select="key('resources', $base-uri, $ont-model)">
+                <meta name="author" content="{dct:creator/@rdf:resource}"/>
+            </xsl:for-each>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-	<xsl:apply-templates mode="gc:StyleMode"/>
-	<xsl:apply-templates mode="gc:ScriptMode"/>
+            <xsl:apply-templates mode="gc:StyleMode"/>
+            <xsl:apply-templates mode="gc:ScriptMode"/>
+        </head>
     </xsl:template>
     
     <xsl:template match="/" mode="gc:BodyMode">
-	<div class="navbar navbar-fixed-top">
-	    <div class="navbar-inner">
-		<div class="container-fluid">    
-		    <xsl:apply-templates select="." mode="gc:NavBarMode"/>
-		</div>
-	    </div>
-	</div>
+        <body>
+            <xsl:apply-templates select="." mode="gc:NavBarMode"/>
 
-	<div class="container-fluid">
-	    <div class="row-fluid">
-		<div class="span8">
-		    <xsl:variable name="grouped-rdf" as="document-node()">
-			<xsl:apply-templates select="." mode="gc:GroupTriples"/>
-		    </xsl:variable>
-		    <xsl:apply-templates select="$grouped-rdf/rdf:RDF">
-                        <xsl:with-param name="default-mode" select="if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/>
-                    </xsl:apply-templates>
-		</div>
+            <xsl:variable name="grouped-rdf" as="document-node()">
+                <xsl:apply-templates select="." mode="gc:GroupTriples"/>
+            </xsl:variable>
+            <xsl:apply-templates select="$grouped-rdf/rdf:RDF">
+                <xsl:with-param name="default-mode" select="if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/>
+            </xsl:apply-templates>
 
-		<div class="span4">
-		    <xsl:apply-templates select="." mode="gc:SidebarNavMode"/>
-		</div>
-	    </div>		    
-
-	    <div class="footer">
-		<xsl:apply-templates select="." mode="gc:FooterMode"/>
-	    </div>
-	</div>
+            <xsl:apply-templates select="." mode="gc:FooterMode"/>
+        </body>
     </xsl:template>
     
     <xsl:template match="/" mode="gc:NavBarMode">
-	<button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
-	    <span class="icon-bar"></span>
-	    <span class="icon-bar"></span>
-	    <span class="icon-bar"></span>
-	</button>
+	<div class="navbar navbar-fixed-top">
+	    <div class="navbar-inner">
+		<div class="container-fluid">
+                    <button class="btn btn-navbar" onclick="if ($('#collapsing-top-navbar').hasClass('in')) $('#collapsing-top-navbar').removeClass('collapse in').height(0); else $('#collapsing-top-navbar').addClass('collapse in').height('auto');">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
 
-	<a class="brand" href="{$base-uri}">
-	    <xsl:for-each select="key('resources', $base-uri, $ont-model)">
-		<img src="{foaf:logo/@rdf:resource}">
-		    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
-		</img>
-	    </xsl:for-each>
-	</a>
+                    <a class="brand" href="{$base-uri}">
+                        <xsl:for-each select="key('resources', $base-uri, $ont-model)">
+                            <img src="{foaf:logo/@rdf:resource}">
+                                <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+                            </img>
+                        </xsl:for-each>
+                    </a>
 
-	<div id="collapsing-navbar" class="nav-collapse collapse">
-	    <ul class="nav">
-		<!-- make menu links for all resources in the ontology, except base URI -->
-		<xsl:apply-templates select="key('resources-by-space', $base-uri, $ont-model)" mode="gc:NavBarMode">
-		    <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
-		</xsl:apply-templates>
-	    </ul>
+                    <div id="collapsing-top-navbar" class="nav-collapse collapse">
+                        <ul class="nav">
+                            <!-- make menu links for all resources in the ontology, except base URI -->
+                            <xsl:apply-templates select="key('resources-by-space', $base-uri, $ont-model)" mode="gc:NavBarMode">
+                                <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+                            </xsl:apply-templates>
+                        </ul>
 
-	    <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
-		<ul class="nav pull-right">
-		    <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
-			<!-- <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/> -->
-			<li>
-			    <xsl:if test="gc:document-uri(.) = $absolute-path">
-				<xsl:attribute name="class">active</xsl:attribute>
-			    </xsl:if>
-			    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-			</li>
-		    </xsl:for-each>
-		</ul>
-	    </xsl:if>
+                        <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
+                            <ul class="nav pull-right">
+                                <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
+                                    <!-- <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/> -->
+                                    <li>
+                                        <xsl:if test="gc:document-uri(.) = $absolute-path">
+                                            <xsl:attribute name="class">active</xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:apply-templates select="." mode="gc:InlineMode"/>
+                                    </li>
+                                </xsl:for-each>
+                            </ul>
+                        </xsl:if>
+                    </div>
+		</div>
+	    </div>
 	</div>
     </xsl:template>
 
@@ -223,9 +211,11 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="/" mode="gc:FooterMode">
-	<p>
-	    <xsl:value-of select="format-date(current-date(), '[Y]', $lang, (), ())"/>
-	</p>
+        <div class="footer">
+            <p>
+                <xsl:value-of select="format-date(current-date(), '[Y]', $lang, (), ())"/>
+            </p>
+        </div>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
@@ -275,43 +265,53 @@ exclude-result-prefixes="#all">
 	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
 	<!-- <xsl:param name="default-mode" select="if (key('resources-by-page-of', $absolute-path)) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/> -->
 
-        <xsl:choose>
-	    <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
-		<xsl:apply-templates select="." mode="gc:ListMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
-		<xsl:apply-templates select="." mode="gc:TableMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
-		<xsl:apply-templates select="." mode="gc:ThumbnailMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
-		<xsl:apply-templates select="." mode="gc:MapMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-	    </xsl:when>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
-		<xsl:apply-templates select="." mode="gc:EditMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:when test="(not($mode) and $default-mode = '&gc;CreateMode') or $mode = '&gc;CreateMode'">
-		<xsl:apply-templates select="." mode="gc:CreateMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:apply-templates select="." mode="gc:PropertyMode">
-		    <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-		</xsl:apply-templates>
-            </xsl:otherwise>
-	</xsl:choose>
+	<div class="container-fluid">
+	    <div class="row-fluid">
+		<div class="span8">
+                    <xsl:choose>
+                        <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
+                            <xsl:apply-templates select="." mode="gc:ListMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
+                            <xsl:apply-templates select="." mode="gc:TableMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
+                            <xsl:apply-templates select="." mode="gc:ThumbnailMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
+                            <xsl:apply-templates select="." mode="gc:MapMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
+                            <xsl:apply-templates select="." mode="gc:EditMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:when test="(not($mode) and $default-mode = '&gc;CreateMode') or $mode = '&gc;CreateMode'">
+                            <xsl:apply-templates select="." mode="gc:CreateMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="." mode="gc:PropertyMode">
+                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:otherwise>
+                    </xsl:choose>
+		</div>
+
+		<div class="span4">
+		    <xsl:apply-templates select="." mode="gc:SidebarNavMode"/>
+		</div>
+	    </div>
+	</div>
     </xsl:template>
 
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
@@ -433,14 +433,15 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:MediaTypeSelectMode">
+        <!--
         <div class="btn-group pull-right">
-            
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
             
             <xsl:if test="@rdf:about = $absolute-path and $query-res/sp:text">
                 <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
             </xsl:if>
         </div>
+        -->
     </xsl:template>
     
     <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
@@ -654,14 +655,12 @@ exclude-result-prefixes="#all">
 		<li class="previous">
 		    <xsl:choose>
 			<xsl:when test="xhv:prev">
-			    <a href="{xhv:prev/@rdf:resource}" class="active">
-				&#8592; <xsl:apply-templates select="key('resources', 'previous', document(''))" mode="gc:LabelMode"/>
-			    </a>
+                            <xsl:apply-templates select="xhv:prev" mode="#current"/>
 			</xsl:when>
 			<xsl:otherwise>
 			    <xsl:attribute name="class">previous disabled</xsl:attribute>
 			    <a>
-				&#8592; <xsl:apply-templates select="key('resources', 'previous', document(''))" mode="gc:LabelMode"/>
+				&#8592; <xsl:apply-templates select="key('resources', '&xhv;prev', document(''))" mode="gc:LabelMode"/>
 			    </a>
 			</xsl:otherwise>
 		    </xsl:choose>
@@ -669,21 +668,30 @@ exclude-result-prefixes="#all">
 		<li class="next">
 		    <xsl:choose>
 			<xsl:when test="xhv:next">
-			    <!-- possible to add arrows by overriding -->
-			    <a href="{xhv:next/@rdf:resource}">
-				<xsl:apply-templates select="key('resources', 'next', document(''))" mode="gc:LabelMode"/> &#8594;
-			    </a>
+                            <xsl:apply-templates select="xhv:next" mode="#current"/>
 			</xsl:when>
 			<xsl:otherwise>
 			    <xsl:attribute name="class">next disabled</xsl:attribute>
 			    <a>
-				<xsl:apply-templates select="key('resources', 'next', document(''))" mode="gc:LabelMode"/> &#8594;
+				<xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="gc:LabelMode"/> &#8594;
 			    </a>
 			</xsl:otherwise>
 		    </xsl:choose>
 		</li>
 	    </ul>
 	<!-- </xsl:if> -->
+    </xsl:template>
+
+    <xsl:template match="xhv:prev[@rdf:resource]" mode="gc:PaginationMode">
+        <a href="{@rdf:resource}" class="active">
+            &#8592; <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/>
+        </a>
+    </xsl:template>
+        
+    <xsl:template match="xhv:next[@rdf:resource]" mode="gc:PaginationMode">
+        <a href="{@rdf:resource}">
+            <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/> &#8594;
+        </a>        
     </xsl:template>
 
     <!-- LIST MODE -->
@@ -806,23 +814,21 @@ exclude-result-prefixes="#all">
 
 	<xsl:apply-templates select="." mode="gc:PaginationMode"/>
 
-	<ul class="thumbnails">
-	    <xsl:variable name="thumbnail-items" as="element()*">	    
-		<!-- all resources that are not recursive blank nodes, except page -->
-		<xsl:apply-templates mode="#current">
-                    <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-                    <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
-		</xsl:apply-templates>
-	    </xsl:variable>
+        <xsl:variable name="thumbnail-items" as="element()*">	    
+            <!-- all resources that are not recursive blank nodes, except page -->
+            <xsl:apply-templates mode="#current">
+                <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
+            </xsl:apply-templates>
+        </xsl:variable>
 
-	    <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
-		<div class="row-fluid">
-		    <ul class="thumbnails">
-			<xsl:copy-of select="current-group()"/>
-		    </ul>
-		</div>
-	    </xsl:for-each-group>	    
-	</ul>
+        <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
+            <div class="row-fluid">
+                <ul class="thumbnails">
+                    <xsl:copy-of select="current-group()"/>
+                </ul>
+            </div>
+        </xsl:for-each-group>	    
 
 	<xsl:apply-templates select="." mode="gc:PaginationMode"/>
     </xsl:template>

@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import org.graphity.client.util.DataManager;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.slf4j.Logger;
@@ -76,7 +77,13 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
 	return cr.getContext(OntModel.class);
     }
-    
+
+    public DataManager getDataManager()
+    {
+	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+	return cr.getContext(DataManager.class);
+    }
+
     @Override
     public Injectable<SPARQLEndpoint> getInjectable(ComponentContext cc, Context context)
     {
@@ -98,7 +105,8 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 
     public SPARQLEndpoint getEndpoint()
     {
-        return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getResourceConfig(), getOntModel());
+        return SPARQLEndpointFactory.createEndpoint(getOntModel(), getDataManager(),
+                getUriInfo(), getRequest(), getResourceConfig());
     }
     
 }

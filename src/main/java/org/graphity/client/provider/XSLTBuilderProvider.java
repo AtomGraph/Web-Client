@@ -40,8 +40,8 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.slf4j.Logger;
@@ -57,8 +57,6 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     private static final Logger log = LoggerFactory.getLogger(XSLTBuilderProvider.class);
 
-    private URIResolver resolver = null;
-
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
     @Context private ResourceConfig resourceConfig;
@@ -66,14 +64,11 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     /**
      * 
-     * @param resolver 
      * @see <a href="http://docs.oracle.com/javase/7/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
      */
-    public XSLTBuilderProvider(URIResolver resolver)
+    public XSLTBuilderProvider()
     {
 	super(XSLTBuilder.class);
-	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-	this.resolver = resolver;
     }
     
     public ResourceConfig getResourceConfig()
@@ -95,18 +90,19 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
         return servletContext;
     }
-
-    public URIResolver getURIResolver()
-    {
-	return resolver;
-    }
-
+    
     public OntModel getOntModel()
     {
 	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
 	return cr.getContext(OntModel.class);
     }
-    
+
+    public DataManager getDataManager()
+    {
+	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+	return cr.getContext(DataManager.class);
+    }
+
     @Override
     public Injectable<XSLTBuilder> getInjectable(ComponentContext cc, Context a)
     {
@@ -117,7 +113,6 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 	    {
                 return getXSLTBuilder(getUriInfo(), getOntModel(), GC.stylesheet);
 	    }
-
 	};
     }
 
@@ -160,7 +155,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
             Source styleSource = getSource(stylesheetUri.toString());
 
             return XSLTBuilder.fromStylesheet(styleSource).
-                    resolver(getURIResolver());
+                    resolver(getDataManager());
         }
         catch (TransformerConfigurationException ex)
         {

@@ -25,6 +25,7 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,7 +38,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -53,14 +53,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Provider
 public class DataManager extends org.graphity.server.util.DataManager implements URIResolver
 {
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    private static DataManager s_instance = null;
+    //private static DataManager s_instance = null;
     
-    @javax.ws.rs.core.Context UriInfo uriInfo;
+    private final UriInfo uriInfo;
     
     public static final List<String> IGNORED_EXT = new ArrayList<>();
     static
@@ -78,6 +77,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
 
+    /*
     public static DataManager get() {
         if (s_instance == null) {
             s_instance = new DataManager(FileManager.get(), ARQ.getContext());
@@ -85,10 +85,13 @@ public class DataManager extends org.graphity.server.util.DataManager implements
         }
         return s_instance;
     }
-
-    public DataManager(FileManager fMgr, Context context)
+    */
+    
+    public DataManager(FileManager fMgr, Context context, ResourceConfig resourceConfig, UriInfo uriInfo)
     {
-	super(fMgr, context);
+	super(fMgr, context, resourceConfig);
+        this.uriInfo = uriInfo;
+        
 	addLocatorLinkedData();
 	removeLocatorURL();
     }

@@ -21,6 +21,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceConfig;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+import org.graphity.client.util.DataManager;
 import org.graphity.server.model.SPARQLEndpoint;
 
 /**
@@ -34,29 +35,31 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
      * Creates new SPARQL endpoint from application configuration, request data, and sitemap ontology.
      * 
      * @param uriInfo URI information of the current request
+     * @param sitemap ontology of this webapp
+     * @param dataManager RDF data manager for this endpoint
      * @param request current request
      * @param resourceConfig webapp configuration
-     * @param sitemap ontology of this webapp
      * @return new endpoint
      */
-    public static SPARQLEndpoint createEndpoint(UriInfo uriInfo, Request request, ResourceConfig resourceConfig,
-	    OntModel sitemap)
+    public static SPARQLEndpoint createEndpoint(OntModel sitemap, DataManager dataManager,
+            UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-	return new SPARQLEndpointBase(uriInfo, request, resourceConfig, sitemap);
+	return new SPARQLEndpointBase(sitemap, dataManager, uriInfo, request, resourceConfig);
     }
 
     /**
      * Creates new SPARQL endpoint from explicit URI resource, application configuration, and request data.
      * 
      * @param endpoint endpoint resource
+     * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param resourceConfig webapp configuration
      * @return new endpoint
      */
-    public static SPARQLEndpoint createEndpoint(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    public static SPARQLEndpoint createEndpoint(Resource endpoint, DataManager dataManager, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-	return new SPARQLEndpointBase(endpoint, uriInfo, request, resourceConfig);
+	return new SPARQLEndpointBase(endpoint, dataManager, uriInfo, request, resourceConfig);
     }
 
 }

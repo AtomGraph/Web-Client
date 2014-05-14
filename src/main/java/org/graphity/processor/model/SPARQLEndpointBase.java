@@ -61,19 +61,20 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * Otherwise, uses <code>@Path</code> annotation value for this class (usually <code>/sparql</code> to
      * build local endpoint URI.
      * 
+     * @param sitemap ontology of this webapp
+     * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param resourceConfig webapp configuration
-     * @param sitemap ontology of this webapp
      */
-    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig,
-	    @Context OntModel sitemap)
+    public SPARQLEndpointBase(@Context OntModel sitemap, @Context DataManager dataManager,
+            @Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
     {
 	this(sitemap.createResource(uriInfo.getBaseUriBuilder().
                 path(SPARQLEndpointBase.class).
                 build().
                 toString()),
-            uriInfo, request, resourceConfig);
+            dataManager, uriInfo, request, resourceConfig);
     }
     
     /**
@@ -81,21 +82,22 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * Not suitable for JAX-RS but can be used when subclassing.
      * 
      * @param endpoint RDF resource of this endpoint (must be URI resource, not a blank node)
+     * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param resourceConfig webapp configuration
      */
-    protected SPARQLEndpointBase(Resource endpoint, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    protected SPARQLEndpointBase(Resource endpoint, DataManager dataManager, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
     {
-	super(endpoint, request, resourceConfig);
+	super(endpoint, dataManager, request, resourceConfig);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
 
-        if (endpoint.isURIResource() && !DataManager.get().hasServiceContext(endpoint))
+        if (endpoint.isURIResource() && !dataManager.hasServiceContext(endpoint))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
-            DataManager.get().addServiceContext(endpoint);
+            dataManager.addServiceContext(endpoint);
         }        
     }
 
@@ -174,7 +176,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
             password = service.getProperty(pwdProp).getLiteral().getString();
 
         if (username != null & password != null)
-            DataManager.get().putAuthContext(endpoint.getURI(), username, password);
+            getDataManager().putAuthContext(endpoint.getURI(), username, password);
     }
     
     /**
@@ -190,7 +192,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
-	    return DataManager.get().loadModel(getModel(), query);
+	    return getDataManager().loadModel(getModel(), query);
 	}
 
         return super.loadModel(query);
@@ -209,7 +211,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
-	    return DataManager.get().loadResultSet(getModel(), query);
+	    return getDataManager().loadResultSet(getModel(), query);
 	}
         
         return super.loadResultSetRewindable(query);
@@ -228,7 +230,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
 	if (remote == null || remote.equals(this))
 	{
 	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
-	    return DataManager.get().ask(getModel(), query);
+	    return getDataManager().ask(getModel(), query);
 	}
 
         return super.ask(query);

@@ -180,7 +180,6 @@ void:inDataset a owl:ObjectProperty ;
     lda:uriTemplate "/{path: .*}" ;
     spin:query [ a gp:DescribeWithChildrenTemplate ] ;
     gp:limit 20 ;
-    gc:defaultMode gc:PropertyMode ;
     gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
     rdfs:label "Resource" ;
     rdfs:comment "Catch-all resource class (template)" ;

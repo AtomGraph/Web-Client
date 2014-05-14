@@ -30,7 +30,6 @@ import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -157,7 +156,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
-	    description = DataManager.get().loadModel(getModel(), getQuery(getURI()));
+	    description = getEndpoint().loadModel(getQuery(getURI()));
 	}
         else
             description = super.describe();

@@ -127,6 +127,18 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
+    <xsl:template match="@rdf:datatype[starts-with(., '&xsd;')]" mode="gc:InlineMode" priority="1">
+        <span class="help-inline" title="{.}">
+            xsd:<xsl:value-of select="substring-after(., '&xsd;')"/>
+        </span>
+    </xsl:template>
+
+    <xsl:template match="@rdf:datatype" mode="gc:InlineMode">
+        <span class="help-inline" title="{.}">
+            <xsl:value-of select="."/>
+        </span>
+    </xsl:template>
+
     <!-- LABEL MODES -->
     
     <xsl:template match="node()" mode="gc:LabelMode"/>
@@ -510,7 +522,14 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
         <xsl:if test="not($type = 'hidden')">
-            <span class="help-inline">Literal</span>
+            <xsl:choose>
+                <xsl:when test="../@rdf:datatype">
+                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="help-inline">Literal</span>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:if>
     </xsl:template>
 
@@ -538,7 +557,15 @@ exclude-result-prefixes="#all">
 
             <xsl:value-of select="$value"/>
         </textarea>
-        <span class="help-inline">Literal</span>
+        
+        <xsl:choose>
+            <xsl:when test="../@rdf:datatype">
+                <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <span class="help-inline">Literal</span>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="@rdf:resource" mode="gc:EditMode">

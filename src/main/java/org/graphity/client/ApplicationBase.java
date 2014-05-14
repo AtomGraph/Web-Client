@@ -16,9 +16,6 @@
  */
 package org.graphity.client;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -26,19 +23,15 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
+import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.resource.labelled.Container;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
 import org.graphity.client.provider.NotFoundExceptionMapper;
 import org.graphity.client.provider.QueryExceptionHTTPMapper;
 import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
-import org.graphity.client.util.DataManager;
-import org.graphity.client.util.XSLTBuilder;
-import org.graphity.client.writer.xslt.JSONLDWriter;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.model.GraphStoreBase;
 import org.graphity.processor.provider.GraphStoreProvider;
@@ -75,19 +68,19 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	classes.add(Container.class); // handles /search
 
 	singletons.addAll(super.getSingletons());
-	singletons.add(new RDFPostReader());
+	singletons.add(new DataManagerProvider());
 	singletons.add(new OntologyProvider());
 	singletons.add(new SPARQLEndpointProvider());
 	singletons.add(new GraphStoreProvider());
-	singletons.add(new DoesNotExistExceptionMapper());
+	singletons.add(new RDFPostReader());
+        singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());
 	singletons.add(new QueryExceptionHTTPMapper());
-	//singletons.add(new ExternalModelProvider()); // if exception is thrown, resource class not instantiated
 
 	if (log.isDebugEnabled()) log.debug("Adding XSLT @Providers");
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-	singletons.add(new XSLTBuilderProvider(DataManager.get())); // loads XSLT stylesheet
-        singletons.add(DataManager.get());  // makes sense?
+	singletons.add(new XSLTBuilderProvider()); // loads XSLT stylesheet
+        //singletons.add(DataManager.get()); // needed to inject UriInfo
     }
 
     /**
@@ -107,31 +100,14 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
 
 	// WARNING! ontology caching can cause concurrency/consistency problems
-	OntDocumentManager.getInstance().setCacheModels(false);
+	//OntDocumentManager.getInstance().setCacheModels(false);
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 	//ARQFactory.get().setUseCaches(false);
-        
-	// initialize locally cached ontology mapping
-	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3");
-	LocationMapper.setGlobalLocationMapper(mapper);
-	if (log.isDebugEnabled())
-	{
-	    log.debug("LocationMapper.get(): {}", LocationMapper.get());
-	    log.debug("FileManager.get().getLocationMapper(): {}", FileManager.get().getLocationMapper());
-	}
 	
-	DataManager.get().setLocationMapper(mapper);
-	// WARNING! ontology caching can cause concurrency/consistency problems
-	DataManager.get().setModelCaching(false);
-	if (log.isDebugEnabled())
-	{
-	    log.debug("FileManager.get(): {} DataManager.get(): {}", FileManager.get(), DataManager.get());
-	    log.debug("DataManager.get().getLocationMapper(): {}", DataManager.get().getLocationMapper());
-	}
-	
-	OntDocumentManager.getInstance().setFileManager(DataManager.get());
-	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance(): {} OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance(), OntDocumentManager.getInstance().getFileManager());
+	//OntDocumentManager.getInstance().setFileManager(DataManager.get());
+	//if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance(): {} OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance(), OntDocumentManager.getInstance().getFileManager());
 
+        /*
 	try
 	{
 	    singletons.add(new JSONLDWriter(XSLTBuilder.fromStylesheet(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")).
@@ -153,6 +129,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	{
 	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
 	}
+        */
     }
 
     /**

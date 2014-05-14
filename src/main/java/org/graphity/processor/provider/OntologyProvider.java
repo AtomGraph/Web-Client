@@ -93,6 +93,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
 	return getOntModel(getUriInfo(), getResourceConfig());
     }
+    
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
      * @param uriInfo URI information of the current request
@@ -102,8 +103,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public OntModel getOntModel(UriInfo uriInfo, ResourceConfig resourceConfig)
     {
-        DataManager dataManager = new DataManager(FileManager.get(), ARQ.getContext());
-        dataManager.setLocationMapper(new PrefixMapper("prefix-mapping.n3"));
+        DataManager dataManager = new DataManager(new FileManager(new PrefixMapper("prefix-mapping.n3")), ARQ.getContext(), resourceConfig);
         DataManager.setStdLocators(dataManager);
         dataManager.setModelCaching(true);
         OntDocumentManager ontManager = new OntDocumentManager(DataManager.get(), (String)null);
@@ -123,7 +123,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
             if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
             Query query = QueryFactory.create(ontologyQuery.toString());
     
-            Model model = DataManager.get().loadModel(ontologyEndpoint.toString(), query);
+            Model model = dataManager.loadModel(ontologyEndpoint.toString(), query);
             if (model.isEmpty())
             {
                 if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
@@ -149,6 +149,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 		ontManager.addAltEntry(localUri, ontologyLocation.toString());
 	    }
 	}
+        
 	OntModel ontModel = ontManager.getOntology(localUri, OntModelSpec.OWL_MEM);
 	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
 	return ontModel;
