@@ -57,8 +57,6 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 {
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    //private static DataManager s_instance = null;
-    
     private final UriInfo uriInfo;
     
     public static final List<String> IGNORED_EXT = new ArrayList<>();
@@ -76,27 +74,11 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     protected boolean resolvingUncached = false;
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
-
-    /*
-    public static DataManager get() {
-        if (s_instance == null) {
-            s_instance = new DataManager(FileManager.get(), ARQ.getContext());
-	    if (log.isDebugEnabled()) log.debug("new DataManager({}): {}", FileManager.get(), s_instance);
-        }
-        return s_instance;
-    }
-    */
     
     public DataManager(LocationMapper mapper, Context context, ResourceConfig resourceConfig, UriInfo uriInfo)
     {
 	super(mapper, context, resourceConfig);
         this.uriInfo = uriInfo;
-
-        // moved to DataManagerProvider
-        /*
-	addLocatorLinkedData();
-	removeLocatorURL();
-        */
     }
 
     @Override
