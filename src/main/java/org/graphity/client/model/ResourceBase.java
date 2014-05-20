@@ -19,7 +19,6 @@ package org.graphity.client.model;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
 import java.util.List;
@@ -28,7 +27,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
-import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,28 +123,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
         
         return this;
     }
-
-    @Override
-    public Response get()
-    {
-	// if no mode specified, redirect to default mode, if it is specified for this resource
-        Resource defaultMode = getMatchedOntClass().getPropertyResourceValue(GC.defaultMode);
-        if (getMode() == null && defaultMode != null)
-        {
-            URI redirectURI;
-            if (hasRDFType(SIOC.CONTAINER)) redirectURI = getPageUriBuilder().replaceQueryParam("mode", defaultMode.getURI()).build();
-            else redirectURI = getUriBuilder().replaceQueryParam("mode", defaultMode.getURI()).build();
-            
-            if (!getUriInfo().getRequestUri().equals(redirectURI))
-            {
-                if (log.isDebugEnabled()) log.debug("OntResource has gc:defaultMode specified, redirecting to its URI: {}", redirectURI);
-                return Response.seeOther(redirectURI).build();
-            }
-        }
-        
-	return super.get();
-    }
-
+    
     @Override
     public Model describe()
     {
@@ -162,7 +139,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
             description = super.describe();
 
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
-	addRDFType(getMatchedOntClass());
+	addRDFType(getMatchedOntClass()); // getOntModel().add(description); ?
 	
 	// set metadata properties after description query is executed
 	getQueryBuilder().build(); // sets sp:text value

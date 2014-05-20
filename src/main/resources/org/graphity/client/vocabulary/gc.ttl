@@ -49,5 +49,5 @@ gc:ListMode a gc:Mode, gc:ContainerMode ;
     rdfs:label "List" .
 gc:ThumbnailMode a gc:Mode, gc:ContainerMode ;
     rdfs:label "Gallery" .
-gc:MapMode a gc:Mode, gc:ContainerMode ;
+gc:MapMode a gc:Mode, gc:ContainerMode, gc:ItemMode ;
     rdfs:label "Map" .

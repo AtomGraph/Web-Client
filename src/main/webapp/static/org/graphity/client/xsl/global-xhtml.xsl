@@ -175,8 +175,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:PropertyMode"/>
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
 	<xsl:choose>
 	    <xsl:when test="$uri">
 		<xsl:choose>

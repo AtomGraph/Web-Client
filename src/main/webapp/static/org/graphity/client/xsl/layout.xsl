@@ -85,6 +85,7 @@ exclude-result-prefixes="#all">
 
     <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
     <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $ont-model)" as="element()"/>
+    <xsl:variable name="default-mode" select="if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else xs:anyURI('&gc;PropertyMode')"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
     <xsl:variable name="select-res" select="if ($query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
@@ -148,9 +149,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="grouped-rdf" as="document-node()">
                 <xsl:apply-templates select="." mode="gc:GroupTriples"/>
             </xsl:variable>
-            <xsl:apply-templates select="$grouped-rdf/rdf:RDF">
-                <xsl:with-param name="default-mode" select="if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/>
-            </xsl:apply-templates>
+            <xsl:apply-templates select="$grouped-rdf/rdf:RDF"/>
 
             <xsl:apply-templates select="." mode="gc:FooterMode"/>
         </body>
@@ -233,7 +232,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
 	<script type="text/javascript" src="static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="static/js/bootstrap.js"></script>
-        <xsl:if test="$mode = '&gc;MapMode'">
+        <xsl:if test="($default-mode, $mode) = '&gc;MapMode'">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
         </xsl:if>
@@ -262,47 +261,30 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-	<!-- <xsl:param name="default-mode" select="if (key('resources-by-page-of', $absolute-path)) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;PropertyMode')" tunnel="yes"/> -->
-
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
                     <xsl:choose>
                         <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
-                            <xsl:apply-templates select="." mode="gc:ListMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:ListMode"/>
                         </xsl:when>
                         <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
-                            <xsl:apply-templates select="." mode="gc:TableMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:TableMode"/>
                         </xsl:when>
                         <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
-                            <xsl:apply-templates select="." mode="gc:ThumbnailMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:ThumbnailMode"/>
                         </xsl:when>
                         <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
-                            <xsl:apply-templates select="." mode="gc:MapMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:MapMode"/>
                         </xsl:when>
                         <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
-                            <xsl:apply-templates select="." mode="gc:EditMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:EditMode"/>
                         </xsl:when>
                         <xsl:when test="(not($mode) and $default-mode = '&gc;CreateMode') or $mode = '&gc;CreateMode'">
-                            <xsl:apply-templates select="." mode="gc:CreateMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:CreateMode"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:apply-templates select="." mode="gc:PropertyMode">
-                                <xsl:with-param name="default-mode" select="$default-mode" tunnel="yes"/>
-                            </xsl:apply-templates>
+                            <xsl:apply-templates select="." mode="gc:PropertyMode"/>
                         </xsl:otherwise>
                     </xsl:choose>
 		</div>
@@ -341,8 +323,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
 	<li>
 	    <xsl:if test="(not($mode) and $default-mode = @rdf:about) or $mode = @rdf:about">
 		<xsl:attribute name="class">active</xsl:attribute>
@@ -353,8 +333,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
-	<xsl:param name="default-mode" as="xs:anyURI" tunnel="yes"/>
-
 	<xsl:choose>
 	    <xsl:when test="not(empty($offset)) and not(empty($limit)) and . = $default-mode">
 		<a href="{$absolute-path}{gc:query-string($offset, $limit, $order-by, $desc, ())}">
