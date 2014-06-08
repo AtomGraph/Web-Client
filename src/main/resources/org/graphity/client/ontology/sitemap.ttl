@@ -29,19 +29,6 @@
     foaf:isPrimaryTopicOf <> ;
     rdfs:seeAlso <sparql> .
 
-<service#this> a sd:Service ;
-    foaf:isPrimaryTopicOf <service> ;
-    dct:title "Graphity Client endpoint" ;
-    sd:endpoint <sparql> ;
-    gp:graphStore <service> ;
-    # srv:queryAuthUser "username" ;
-    # srv:queryAuthPwd "password" ;
-    sd:supportedLanguage sd:SPARQL11Query ;
-    sd:defaultDataset [ a sd:Dataset ;
-	    sd:defaultGraph <dataset#this>
-	] ;
-    rdfs:isDefinedBy <#> .
-
 <dataset#this> a sd:Graph, void:Dataset ;
     foaf:isPrimaryTopicOf <dataset> ;
     dct:title "Graphity Client dataset" ;
@@ -71,8 +58,6 @@ void:inDataset a owl:ObjectProperty ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;
     foaf:maker <http://graphityhq.com/#company> ;
-    gc:stylesheet <static/org/graphity/client/xsl/local-xhtml.xsl> ;
-    gp:service <service#this> ;
     rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> ;
     rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
@@ -149,7 +134,7 @@ void:inDataset a owl:ObjectProperty ;
     rdfs:isDefinedBy <#> ;
     void:inDataset <dataset#this> .
 
-<resources/labelled> a ldp:Container, foaf:Document ;
+<resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <resources> ;
     dct:title "Labelled resources" ;
     rdfs:isDefinedBy <#> ;

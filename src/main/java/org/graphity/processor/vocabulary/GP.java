@@ -44,18 +44,22 @@ public class GP
     
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
-        
+
+    public static final ObjectProperty base = m_model.createObjectProperty( NS + "base" );
+    
     public static final ObjectProperty service = m_model.createObjectProperty( NS + "service" );
 
     public static final ObjectProperty graphStore = m_model.createObjectProperty( NS + "graphStore" );
 
+    public static final ObjectProperty configLocation = m_model.createObjectProperty( NS + "configLocation" );
+
     public static final DatatypeProperty ontologyPath = m_model.createDatatypeProperty( NS + "ontologyPath" );
 
-    public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );
+    public static final ObjectProperty ontologyLocation = m_model.createObjectProperty( NS + "ontologyLocation" );
 
     public static final ObjectProperty ontologyEndpoint = m_model.createObjectProperty( NS + "ontologyEndpoint" );
 
-    public static final ObjectProperty ontologyQuery = m_model.createObjectProperty( NS + "ontologyQuery" );
+    public static final DatatypeProperty ontologyQuery = m_model.createDatatypeProperty( NS + "ontologyQuery" );
 
     public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     

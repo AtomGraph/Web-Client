@@ -67,7 +67,7 @@ public class Container extends ResourceBase
     @Override
     public UriBuilder getPageUriBuilder()
     {
-	if (getSearchString() != null) return super.getPageUriBuilder().queryParam("query", getSearchString());
+	if (getSearchString() != null) return super.getPageUriBuilder().queryParam("label", getSearchString());
 	
 	return super.getPageUriBuilder();
     }
@@ -75,7 +75,7 @@ public class Container extends ResourceBase
     @Override
     public UriBuilder getPreviousUriBuilder()
     {
-	if (getSearchString() != null) return super.getPreviousUriBuilder().queryParam("query", getSearchString());
+	if (getSearchString() != null) return super.getPreviousUriBuilder().queryParam("label", getSearchString());
 	
 	return super.getPreviousUriBuilder();
     }
@@ -83,7 +83,7 @@ public class Container extends ResourceBase
     @Override
     public UriBuilder getNextUriBuilder()
     {
-	if (getSearchString() != null) return super.getNextUriBuilder().queryParam("query", getSearchString());
+	if (getSearchString() != null) return super.getNextUriBuilder().queryParam("label", getSearchString());
 	
 	return super.getNextUriBuilder();
     }

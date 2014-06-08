@@ -17,10 +17,10 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
@@ -43,9 +43,10 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointProvider.class);
 
     @Context Providers providers;
-    @Context ResourceConfig resourceConfig;
+    @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     @Context Request request;
+    @Context javax.ws.rs.core.Application application;
     
     public SPARQLEndpointProvider()
     {
@@ -57,9 +58,9 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	return request;
     }
 
-    public ResourceConfig getResourceConfig()
+    public ServletContext getServletContext()
     {
-	return resourceConfig;
+	return servletContext;
     }
 
     public UriInfo getUriInfo()
@@ -70,6 +71,11 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     public Providers getProviders()
     {
 	return providers;
+    }
+
+    public javax.ws.rs.core.Application getApplication()
+    {
+        return application;
     }
 
     public OntModel getOntModel()
@@ -106,7 +112,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     public SPARQLEndpoint getEndpoint()
     {
         return SPARQLEndpointFactory.createEndpoint(getOntModel(), getDataManager(),
-                getUriInfo(), getRequest(), getResourceConfig());
+                getUriInfo(), getRequest(), getServletContext(), getApplication());
     }
     
 }

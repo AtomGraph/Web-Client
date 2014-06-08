@@ -25,7 +25,6 @@ import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,6 +33,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.*;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
@@ -75,9 +75,9 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
     
-    public DataManager(LocationMapper mapper, Context context, ResourceConfig resourceConfig, UriInfo uriInfo)
+    public DataManager(LocationMapper mapper, Context context, ServletContext servletContext, UriInfo uriInfo)
     {
-	super(mapper, context, resourceConfig);
+	super(mapper, context, servletContext);
         this.uriInfo = uriInfo;
     }
 

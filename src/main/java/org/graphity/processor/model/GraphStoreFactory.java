@@ -19,7 +19,7 @@ package org.graphity.processor.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.sun.jersey.api.core.ResourceConfig;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.util.DataManager;
@@ -38,13 +38,14 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * @param uriInfo URI information of the current request
      * @param dataManager RDF data manager for this graph store
      * @param request current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
+     * @param application webapp instance
      * @return graph store instance
      */
     public static GraphStore createGraphStore(OntModel sitemap, DataManager dataManager,
-            UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+            UriInfo uriInfo, Request request, ServletContext servletContext, javax.ws.rs.core.Application application)
     {
-	return new GraphStoreBase(sitemap, dataManager, uriInfo, request, resourceConfig);
+	return new GraphStoreBase(sitemap, dataManager, uriInfo, request, servletContext, application);
     }
 
     /**
@@ -54,13 +55,14 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * @param dataManager RDF data manager for this graph store
      * @param uriInfo URI information of the current request
      * @param request current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
+     * @param application webapp instance
      * @return graph store instance
      */
     public static GraphStore createGraphStore(Resource graphStore, DataManager dataManager,
-            UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+            UriInfo uriInfo, Request request, ServletContext servletContext, javax.ws.rs.core.Application application)
     {
-	return new GraphStoreBase(graphStore, dataManager, uriInfo, request, resourceConfig);
+	return new GraphStoreBase(graphStore, dataManager, uriInfo, request, servletContext, application);
     }
 
 }

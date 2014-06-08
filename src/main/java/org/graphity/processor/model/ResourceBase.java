@@ -216,7 +216,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
             }
             else this.desc = desc;
 
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel()),
+            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, ontResource), getModel()),
                     this.offset, this.limit, this.orderBy, this.desc);
         }
         else
@@ -225,7 +225,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
             this.orderBy = null;
             this.desc = null;
             
-            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, ontResource), getModel());
+            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, ontResource), getModel());
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
@@ -635,7 +635,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      */
     public Query getQuery(Resource resource)
     {
-	return getQuery(getMatchedOntClass(), resource);
+	return getQuery(getMatchedOntClass(), SPIN.query, resource);
     }
 
     /**
@@ -644,17 +644,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * The ontology class must have a SPIN template call attached (using <code>spin:query</code>).
      * 
      * @param ontClass ontology class of the resource
+     * @param property property for the query object
      * @param resource resource to be described
      * @return query object
      * @see org.topbraid.spin.model.TemplateCall
      */
-    public final Query getQuery(OntClass ontClass, Resource resource)
+    public final Query getQuery(OntClass ontClass, Property property, Resource resource)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (ontClass.getPropertyResourceValue(SPIN.query) == null)
+	if (ontClass.getPropertyResourceValue(property) == null)
 	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (spin:query)");
 
-	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(SPIN.query);
+	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(property);
 	
         org.topbraid.spin.model.Query query = SPINFactory.asQuery(queryOrTemplateCall);
         if (query != null) return getQuery(query.toString(), resource);

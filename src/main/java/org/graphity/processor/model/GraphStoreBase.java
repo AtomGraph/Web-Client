@@ -22,9 +22,9 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
-import com.sun.jersey.api.core.ResourceConfig;
 import java.util.List;
 import javax.naming.ConfigurationException;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -53,23 +53,26 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 
     private final UriInfo uriInfo;
+    private final javax.ws.rs.core.Application application;
     
     public GraphStoreBase(@Context OntModel sitemap, @Context DataManager dataManager,
-            @Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
+            @Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context javax.ws.rs.core.Application application)
     {
         this(sitemap.createResource(uriInfo.getBaseUriBuilder().
                 path(GraphStoreBase.class).
                 build().
                 toString()),
-            dataManager, uriInfo, request, resourceConfig);
+            dataManager, uriInfo, request, servletContext, application);
     }
 
-    public GraphStoreBase(Resource graphStore, DataManager dataManager, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    public GraphStoreBase(Resource graphStore, DataManager dataManager,
+            UriInfo uriInfo, Request request, ServletContext servletContext, javax.ws.rs.core.Application application)
     {
-        super(graphStore, dataManager, request, resourceConfig);
+        super(graphStore, dataManager, request, servletContext);
         
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
+        this.application = application;
         
         if (graphStore.isURIResource() && !getDataManager().hasServiceContext(graphStore))
         {
@@ -108,11 +111,13 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * 
      * @param property property pointing to service resource
      * @return service resource
+     * @throws javax.naming.ConfigurationException
      */
-    public Resource getService(Property property)
+    public Resource getService(Property property) throws ConfigurationException
     {
-        return getModel().createResource(getUriInfo().getBaseUri().toString()).
-                getPropertyResourceValue(property);
+        if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        
+        return getApplication().getResource(getUriInfo()).getPropertyResourceValue(property);
     }
 
      /**
@@ -123,9 +128,17 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     @Override
     public Resource getOrigin()
     {
-        Resource service = getService(GP.service);
-        if (service != null) return getOrigin(service);
-        else return null;
+        try
+        {
+            Resource service = getService(GP.service);
+            if (service != null) return getOrigin(service);
+            
+            return null;
+        }
+        catch (ConfigurationException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
     }
 
      /**
@@ -201,5 +214,10 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     {
 	return uriInfo;
     }
-    
+
+    public Application getApplication()
+    {
+        return (Application)application;
+    }
+
 }

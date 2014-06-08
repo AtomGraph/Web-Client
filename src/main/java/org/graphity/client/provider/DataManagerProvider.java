@@ -20,10 +20,10 @@ package org.graphity.client.provider;
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
@@ -41,7 +41,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
 
-    @Context ResourceConfig resourceConfig;
+    @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     
     public DataManagerProvider()
@@ -54,9 +54,9 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 	return uriInfo;
     }
 
-    public ResourceConfig getResourceConfig()
+    public ServletContext getServletContext()
     {
-        return resourceConfig;
+        return servletContext;
     }
 
     @Override
@@ -80,13 +80,13 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getResourceConfig(), getUriInfo());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getServletContext(), getUriInfo());
     }
     
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
-            ResourceConfig resourceConfig, UriInfo uriInfo)
+            ServletContext servletContext, UriInfo uriInfo)
     {
-        DataManager dataManager = new DataManager(mapper, context, resourceConfig, uriInfo);
+        DataManager dataManager = new DataManager(mapper, context, servletContext, uriInfo);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();

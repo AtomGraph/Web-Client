@@ -25,8 +25,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.update.UpdateRequest;
-import com.sun.jersey.api.core.ResourceConfig;
 import javax.naming.ConfigurationException;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -54,6 +54,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
     private final UriInfo uriInfo;
+    private final javax.ws.rs.core.Application application;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -65,16 +66,17 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
+     * @param application webapp instance
      */
     public SPARQLEndpointBase(@Context OntModel sitemap, @Context DataManager dataManager,
-            @Context UriInfo uriInfo, @Context Request request, @Context ResourceConfig resourceConfig)
+            @Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context javax.ws.rs.core.Application application)
     {
 	this(sitemap.createResource(uriInfo.getBaseUriBuilder().
                 path(SPARQLEndpointBase.class).
                 build().
                 toString()),
-            dataManager, uriInfo, request, resourceConfig);
+            dataManager, uriInfo, request, servletContext, application);
     }
     
     /**
@@ -85,14 +87,17 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
+     * @param application webapp instance
      */
-    protected SPARQLEndpointBase(Resource endpoint, DataManager dataManager, UriInfo uriInfo, Request request, ResourceConfig resourceConfig)
+    protected SPARQLEndpointBase(Resource endpoint, DataManager dataManager, UriInfo uriInfo, Request request,
+            ServletContext servletContext, javax.ws.rs.core.Application application)
     {
-	super(endpoint, dataManager, request, resourceConfig);
+	super(endpoint, dataManager, request, servletContext);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	this.uriInfo = uriInfo;
+        this.application = application;
 
         if (endpoint.isURIResource() && !dataManager.hasServiceContext(endpoint))
         {
@@ -102,18 +107,20 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     }
 
     /**
-     * Returns  SPARQL service resource for site resource.
+     * Returns SPARQL service resource for site resource.
      * 
      * @param property property pointing to service resource
      * @return service resource
+     * @throws javax.naming.ConfigurationException
      */
-    public Resource getService(Property property)
+    
+    public Resource getService(Property property) throws ConfigurationException
     {
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        return getModel().createResource(getUriInfo().getBaseUri().toString()).
-                getPropertyResourceValue(property);
+        
+        return getApplication().getResource(getUriInfo()).getPropertyResourceValue(property);
     }
-    
+
     /**
      * Returns configured SPARQL endpoint resource for a given service.
      * 
@@ -149,9 +156,17 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Resource getOrigin()
     {
-        Resource service = getService(GP.service);
-        if (service != null) return getOrigin(service);
-        else return null;
+        try
+        {
+            Resource service = getService(GP.service);
+            if (service != null) return getOrigin(service);
+            
+            return null;
+        }
+        catch (ConfigurationException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
     }
     
     /**
@@ -256,6 +271,11 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     public UriInfo getUriInfo()
     {
 	return uriInfo;
+    }
+
+    public Application getApplication()
+    {
+        return (Application)application;
     }
 
 }

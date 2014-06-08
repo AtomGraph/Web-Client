@@ -17,10 +17,7 @@
 
 package org.graphity.client.provider;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -40,11 +37,11 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.processor.model.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +57,8 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
-    @Context private ResourceConfig resourceConfig;
     @Context private ServletContext servletContext;
+    @Context private javax.ws.rs.core.Application application;
 
     /**
      * 
@@ -72,11 +69,6 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 	super(XSLTBuilder.class);
     }
     
-    public ResourceConfig getResourceConfig()
-    {
-	return resourceConfig;
-    }
-
     public UriInfo getUriInfo()
     {
 	return uriInfo;
@@ -91,13 +83,12 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
         return servletContext;
     }
-    
-    public OntModel getOntModel()
-    {
-	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
-	return cr.getContext(OntModel.class);
-    }
 
+    public Application getApplication()
+    {
+        return (Application)application;
+    }
+    
     public DataManager getDataManager()
     {
 	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
@@ -123,21 +114,20 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         return getXSLTBuilder();
     }
 
-    public XSLTBuilder getXSLTBuilder()
+    public Resource getStylesheet(UriInfo uriInfo) throws ConfigurationException
     {
-        return getXSLTBuilder(getUriInfo(), getOntModel(), GC.stylesheet, getDataManager());
+        Resource stylesheet = getApplication().getResource(uriInfo).getPropertyResourceValue(GC.stylesheet);
+        if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet not configured");
+
+        return stylesheet;
     }
     
-    public XSLTBuilder getXSLTBuilder(UriInfo uriInfo, OntModel ontModel, Property property, URIResolver uriResolver)
+    public XSLTBuilder getXSLTBuilder()
     {
-        Resource stylesheet = ontModel.createResource(uriInfo.getBaseUri().toString()).
-                    getPropertyResourceValue(property);
         try
         {
-            if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet not configured");
-
-            return XSLTBuilder.fromStylesheet(getSource(stylesheet, uriInfo.getBaseUri())).
-                    resolver(uriResolver);
+            return XSLTBuilder.fromStylesheet(getSource(getStylesheet(getUriInfo()), getUriInfo().getBaseUri())).
+                    resolver(getDataManager());
         }
         catch (ConfigurationException ex)
         {

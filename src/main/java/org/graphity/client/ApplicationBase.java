@@ -16,13 +16,21 @@
  */
 package org.graphity.client;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import javax.naming.ConfigurationException;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
@@ -39,6 +47,7 @@ import org.graphity.processor.model.GraphStoreBase;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
+import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
@@ -52,7 +61,7 @@ import org.topbraid.spin.system.SPINModuleRegistry;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class ApplicationBase extends org.graphity.server.ApplicationBase
+public class ApplicationBase extends org.graphity.server.ApplicationBase implements org.graphity.processor.model.Application
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
@@ -100,10 +109,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("Application.init() with ResourceConfig: {} and SerlvetContext: {}", getResourceConfig(), getServletContext());
 	if (log.isDebugEnabled()) log.debug("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
 
-	// WARNING! ontology caching can cause concurrency/consistency problems
-	//OntDocumentManager.getInstance().setCacheModels(false);
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
-	//ARQFactory.get().setUseCaches(false);
 
 	// initialize locally cached ontology mapping
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3"); // check if file exists?
@@ -133,6 +139,34 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
 	}
         */
+    }
+
+    @Override
+    public Model getConfigModel(UriInfo uriInfo) throws ConfigurationException
+    {
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+
+        if (getServletContext().getInitParameter(GP.NS + "configLocation") == null)
+            throw new ConfigurationException("External RDF configuration (gp:configLocation) not provided for this Application");
+    
+        return ModelFactory.createDefaultModel().read(getServletContext().getResourceAsStream(
+                getServletContext().getInitParameter(GP.configLocation.getURI())), uriInfo.getBaseUri().toString(), "TURTLE"); // TO-DO: make generic
+    }
+
+    @Override
+    public Resource getResource(UriInfo uriInfo) throws ConfigurationException
+    {
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+        return getResource(getConfigModel(uriInfo), GP.base, uriInfo.getBaseUri());
+    }
+    
+    public Resource getResource(Model configModel, Property property, URI baseURI) throws ConfigurationException
+    {
+        if (configModel == null) throw new IllegalArgumentException("Config Model cannot be null");
+        ResIterator it = configModel.listResourcesWithProperty(property, configModel.createResource(baseURI.toString()));
+        
+        if (!it.hasNext()) throw new ConfigurationException("Graphity application (gp:Application) not configured");
+        return it.next();
     }
 
     /**

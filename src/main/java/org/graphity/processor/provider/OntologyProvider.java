@@ -24,11 +24,11 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.LocationMapper;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import java.net.URI;
+import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -50,16 +50,16 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     private static final Logger log = LoggerFactory.getLogger(OntologyProvider.class);
 
     @Context UriInfo uriInfo;
-    @Context ResourceConfig resourceConfig;
+    @Context ServletContext servletContext;
 
     public OntologyProvider()
     {
 	super(OntModel.class);
     }
 
-    public ResourceConfig getResourceConfig()
+    public ServletContext getServletContext()
     {
-	return resourceConfig;
+	return servletContext;
     }
 
     public UriInfo getUriInfo()
@@ -90,12 +90,12 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public OntModel getOntModel()
     {
-	return getOntModel(getDataManager(), getUriInfo(), getResourceConfig());
+	return getOntModel(getDataManager(), getUriInfo(), getServletContext());
     }
     
     public DataManager getDataManager()
     {
-        DataManager dataManager = new DataManager(LocationMapper.get(), ARQ.getContext(), getResourceConfig());
+        DataManager dataManager = new DataManager(LocationMapper.get(), ARQ.getContext(), getServletContext());
         DataManager.setStdLocators(dataManager);
         dataManager.setModelCaching(true);
         
@@ -107,24 +107,24 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      * 
      * @param dataManager RDF data manager for this provider
      * @param uriInfo URI information of the current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
      * @return ontology Model
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ResourceConfig resourceConfig)
+    public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext)
     {
         OntDocumentManager ontManager = new OntDocumentManager(dataManager, (String)null);
         ontManager.setFileManager(dataManager);
 
-	Object ontologyPath = resourceConfig.getProperty(GP.ontologyPath.getURI());
+	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
-	if (resourceConfig.getProperty(GP.ontologyEndpoint.getURI()) != null)
+	if (servletContext.getInitParameter(GP.ontologyEndpoint.getURI()) != null)
 	{
-	    Object ontologyEndpoint = resourceConfig.getProperty(GP.ontologyEndpoint.getURI());
-	    Object ontologyQuery = resourceConfig.getProperty(GP.ontologyQuery.getURI());
+	    Object ontologyEndpoint = servletContext.getInitParameter(GP.ontologyEndpoint.getURI());
+	    Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
             if (ontologyQuery == null) throw new IllegalStateException("Sitemap ontology query is not configured properly. Check ResourceConfig and/or web.xml");
 
             if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
@@ -140,7 +140,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	}
 	else
 	{
-            Object ontologyLocation = resourceConfig.getProperty(GP.ontologyLocation.getURI());
+            Object ontologyLocation = servletContext.getInitParameter(GP.ontologyLocation.getURI());
             if (ontologyLocation == null) throw new IllegalStateException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
             URI ontologyLocationURI = URI.create((String)ontologyLocation);
             if (ontologyLocationURI.isAbsolute())

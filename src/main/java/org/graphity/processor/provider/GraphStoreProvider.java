@@ -17,10 +17,11 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
@@ -40,18 +41,19 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 {
 
     @Context Providers providers;
-    @Context ResourceConfig resourceConfig;
+    @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     @Context Request request;
+    @Context javax.ws.rs.core.Application application;
 
     public GraphStoreProvider()
     {
 	super(GraphStore.class);
     }
 
-    public ResourceConfig getResourceConfig()
+    public ServletContext getServletContext()
     {
-	return resourceConfig;
+	return servletContext;
     }
 
     public UriInfo getUriInfo()
@@ -67,6 +69,11 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
     public Request getRequest()
     {
 	return request;
+    }
+
+    public Application getApplication()
+    {
+        return application;
     }
 
     public OntModel getOntModel()
@@ -106,7 +113,7 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
     public GraphStore getGraphStore()
     {
 	return GraphStoreFactory.createGraphStore(getOntModel(), getDataManager(),
-                getUriInfo(), getRequest(), getResourceConfig());
+                getUriInfo(), getRequest(), getServletContext(), getApplication());
     }
 
 }

@@ -6,6 +6,32 @@
     id="graphity-client" version="3.0">
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#configLocation</param-name>
+        <param-value>WEB-INF/web.ttl</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>
+        <param-value>ontology</param-value>
+    </context-param>
+    <!--
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#ontologyEndpoint</param-name>
+        <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
+        <param-value><![CDATA[ CONSTRUCT WHERE { ?s ?p ?o } ]]></param-value>
+    </context-param>
+    -->
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
+        <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://server.graphity.org/ontology#resultLimit</param-name>
+        <param-value>100</param-value>
+    </context-param>
     <filter>
         <filter-name>index</filter-name>
         <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
@@ -16,28 +42,6 @@
         <init-param>
             <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
             <param-value>(/static/.*)|(/robots\.txt)</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>
-            <param-value>ontology</param-value>
-        </init-param>
-        <!--
-        <init-param>
-            <param-name>http://processor.graphity.org/ontology#ontologyEndpoint</param-name>
-            <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
-            <param-value><![CDATA[ CONSTRUCT WHERE { ?s ?p ?o } ]]></param-value>
-        </init-param>
-        -->
-        <init-param>
-            <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
-            <param-value>org/graphity/client/ontology/sitemap.ttl</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://server.graphity.org/ontology#resultLimit</param-name>
-            <param-value>100</param-value>
         </init-param>
         <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
