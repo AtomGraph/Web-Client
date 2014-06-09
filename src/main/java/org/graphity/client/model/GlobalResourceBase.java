@@ -20,9 +20,9 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.sun.jersey.api.core.ResourceConfig;
 import java.net.URI;
 import java.util.List;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
@@ -62,7 +62,7 @@ public class GlobalResourceBase extends ResourceBase
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
      * @param sitemap sitemap ontology
      * @param endpoint active SPARQL endpoint (used to execute queries)
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
@@ -76,7 +76,7 @@ public class GlobalResourceBase extends ResourceBase
      * @see org.graphity.processor.provider.OntologyProvider
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ResourceConfig resourceConfig,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ServletContext servletContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
@@ -87,7 +87,7 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
     {
-	this(uriInfo, request, httpHeaders, resourceConfig,
+	this(uriInfo, request, httpHeaders, servletContext,
                 sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
 		limit, offset, orderBy, desc, graphURI, mode,
 		topicURI, mediaType);	
@@ -99,7 +99,7 @@ public class GlobalResourceBase extends ResourceBase
      * @param uriInfo URI information of the request
      * @param request current request
      * @param httpHeaders HTTP headers of current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
      * @param ontResource this resource as RDF resource
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
@@ -111,12 +111,12 @@ public class GlobalResourceBase extends ResourceBase
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
-    protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+    protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
 	    URI topicURI, MediaType mediaType)
     {
-	super(uriInfo, request, httpHeaders, resourceConfig,
+	super(uriInfo, request, httpHeaders, servletContext,
 		ontResource, endpoint, limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.mediaType = mediaType;
@@ -179,7 +179,7 @@ public class GlobalResourceBase extends ResourceBase
 
 	    Model model = DataManager.get().loadModel(getTopicURI().toString());
 	    LinkedDataResource topic = LinkedDataResourceFactory.createResource(model.createResource(getTopicURI().toString()),
-		getRequest(), getResourceConfig());
+		getRequest(), getServletContext());
 	    
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 

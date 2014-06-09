@@ -69,7 +69,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
  
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
-    @Context private ResourceConfig resourceConfig;
     @Context private ServletContext servletContext;
     @Context private Providers providers;
     
@@ -151,11 +150,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     public HttpHeaders getHttpHeaders()
     {
 	return httpHeaders;
-    }
-
-    public ResourceConfig getResourceConfig()
-    {
-	return resourceConfig;
     }
 
     public ServletContext getServletContext()

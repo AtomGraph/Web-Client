@@ -24,13 +24,13 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.api.uri.UriTemplate;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -90,7 +90,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
      * @param resourceContext resource context
      * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
@@ -103,7 +103,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
-	    @Context ResourceConfig resourceConfig, @Context ResourceContext resourceContext,
+	    @Context ServletContext servletContext, @Context ResourceContext resourceContext,
 	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
@@ -111,7 +111,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI)
     {
-	this(uriInfo, request, httpHeaders, resourceConfig,
+	this(uriInfo, request, httpHeaders, servletContext,
 		sitemap, endpoint,
 		limit, offset, orderBy, desc, graphURI);
     }
@@ -122,7 +122,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
      * @param ontModel sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
@@ -131,11 +131,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
 	    OntModel ontModel, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	this(uriInfo, request, httpHeaders, resourceConfig,
+	this(uriInfo, request, httpHeaders, servletContext,
 		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
 		limit, offset, orderBy, desc, graphURI);
 	
@@ -156,7 +156,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
-     * @param resourceConfig webapp configuration
+     * @param servletContext webapp context
      * @param ontResource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
@@ -166,15 +166,15 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ResourceConfig resourceConfig,
+    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
 	    OntResource ontResource, SPARQLEndpoint endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	super(ontResource, endpoint, request, resourceConfig);
+	super(ontResource, endpoint, request, servletContext);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
-	if (resourceConfig == null) throw new IllegalArgumentException("ResourceConfig cannot be null");
+	if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
 	//if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
 	this.ontResource = ontResource;
