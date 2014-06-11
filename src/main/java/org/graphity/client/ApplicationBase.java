@@ -106,8 +106,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
     @Override
     public void init()
     {
-	if (log.isDebugEnabled()) log.debug("Application.init() with SerlvetContext: {}", getServletContext());
-	if (log.isDebugEnabled()) log.debug("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
+        super.init(); // Server init() turns off Model caching
+        
+        if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
 
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
 
