@@ -99,7 +99,6 @@ public class UpdateBuilder implements Update
 
     public UpdateRequest build()
     {
-	// ARQFactory.get().setUseCaches(false) to avoid caching
 	com.hp.hpl.jena.update.UpdateRequest request = ARQFactory.get().createUpdateRequest(getUpdate());
 	
 	// generate SPARQL query string

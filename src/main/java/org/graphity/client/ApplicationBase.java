@@ -50,6 +50,7 @@ import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
@@ -87,8 +88,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
         singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());
 	singletons.add(new QueryExceptionHTTPMapper());
-
-	if (log.isDebugEnabled()) log.debug("Adding XSLT @Providers");
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new XSLTBuilderProvider()); // loads XSLT stylesheet
     }
@@ -111,7 +110,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
 
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
-
+        ARQFactory.get().setUseCaches(false); // enabled caching leads to unexpected QueryBuilder behaviour
+        
 	// initialize locally cached ontology mapping
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3"); // check if file exists?
 	LocationMapper.setGlobalLocationMapper(mapper);

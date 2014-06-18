@@ -39,7 +39,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-@Path("/") //@Path("{path: .*}")
+@Path("/")
 public class ResourceBase extends org.graphity.processor.model.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);

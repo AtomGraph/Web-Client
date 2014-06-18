@@ -426,7 +426,6 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 
     public Query build()
     {
-	// ARQFactory.get().setUseCaches(false) to avoid caching
 	com.hp.hpl.jena.query.Query arqQuery = ARQFactory.get().createQuery(getQuery());
 	
 	// generate SPARQL query string
