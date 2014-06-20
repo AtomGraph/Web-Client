@@ -52,3 +52,9 @@ Support
 Please [report issues](../../issues) if you've encountered a bug or have a feature request.
 
 Commercial Graphity consulting, development, and support are available from [GraphityHQ](http://graphityhq.com).
+
+Community
+=========
+
+Please join the W3C [Declarative Linked Data Apps Community Group](http://www.w3.org/community/declarative-apps/) to discuss
+and develop Graphity and declarative Linked Data architecture in general.
