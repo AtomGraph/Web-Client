@@ -65,7 +65,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-@Path("/") //@Path("{path: .*}")
+@Path("/")
 public class ResourceBase extends QueriedResourceBase implements LDPResource, ContainerResource, OntResource, MatchedIndividual
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
@@ -365,20 +365,20 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 
     public Resource getURIResource(Model model, Resource type)
     {
-	ResIterator resIt = model.listSubjectsWithProperty(RDF.type, type);
+	ResIterator it = model.listSubjectsWithProperty(RDF.type, type);
 
 	try
 	{
-	    while (resIt.hasNext())
+	    while (it.hasNext())
 	    {
-		Resource resource = resIt.next();
+		Resource resource = it.next();
 
 		if (resource.isURIResource()) return resource;
 	    }
 	}
 	finally
 	{
-	    resIt.close();
+	    it.close();
 	}
 	
 	return null;

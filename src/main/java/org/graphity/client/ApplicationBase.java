@@ -166,8 +166,15 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
         if (configModel == null) throw new IllegalArgumentException("Config Model cannot be null");
         ResIterator it = configModel.listResourcesWithProperty(property, configModel.createResource(baseURI.toString()));
         
-        if (!it.hasNext()) throw new ConfigurationException("Graphity application (gp:Application) not configured");
-        return it.next();
+        try
+        {
+            if (!it.hasNext()) throw new ConfigurationException("Graphity application (gp:Application) not configured");
+            return it.next();
+        }
+        finally
+        {
+            it.close();
+        }
     }
 
     /**

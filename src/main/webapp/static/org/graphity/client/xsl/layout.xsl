@@ -264,30 +264,8 @@ exclude-result-prefixes="#all">
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
-                    <xsl:choose>
-                        <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
-                            <xsl:apply-templates select="." mode="gc:ListMode"/>
-                        </xsl:when>
-                        <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
-                            <xsl:apply-templates select="." mode="gc:TableMode"/>
-                        </xsl:when>
-                        <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
-                            <xsl:apply-templates select="." mode="gc:ThumbnailMode"/>
-                        </xsl:when>
-                        <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
-                            <xsl:apply-templates select="." mode="gc:MapMode"/>
-                        </xsl:when>
-                        <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
-                            <xsl:apply-templates select="." mode="gc:EditMode"/>
-                        </xsl:when>
-                        <xsl:when test="(not($mode) and $default-mode = '&gc;CreateMode') or $mode = '&gc;CreateMode'">
-                            <xsl:apply-templates select="." mode="gc:CreateMode"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:apply-templates select="." mode="gc:PropertyMode"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-		</div>
+                    <xsl:apply-templates select="." mode="gc:ModeChoiceMode"/>
+                </div>
 
 		<div class="span4">
 		    <xsl:apply-templates select="." mode="gc:SidebarNavMode"/>
@@ -296,6 +274,32 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF" mode="gc:ModeChoiceMode">
+        <xsl:choose>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
+                <xsl:apply-templates select="." mode="gc:ListMode"/>
+            </xsl:when>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
+                <xsl:apply-templates select="." mode="gc:TableMode"/>
+            </xsl:when>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
+                <xsl:apply-templates select="." mode="gc:ThumbnailMode"/>
+            </xsl:when>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
+                <xsl:apply-templates select="." mode="gc:MapMode"/>
+            </xsl:when>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
+                <xsl:apply-templates select="." mode="gc:EditMode"/>
+            </xsl:when>
+            <xsl:when test="(not($mode) and $default-mode = '&gc;CreateMode') or $mode = '&gc;CreateMode'">
+                <xsl:apply-templates select="." mode="gc:CreateMode"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates select="." mode="gc:PropertyMode"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     <xsl:template match="*" mode="gc:ModeSelectMode"/>
 
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
