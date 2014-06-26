@@ -267,13 +267,13 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	
 	Resource strExpr = getModel().createResource().
 		addProperty(RDF.type, SP.getArgProperty("str")).
-		addProperty(SP.getArgProperty(1), var);
+		addProperty(SP.arg1, var);
 	
 	Resource regexExpr = getModel().createResource().
 		addProperty(RDF.type, SP.regex).
-		addProperty(SP.getArgProperty(1), strExpr).
-		addLiteral(SP.getArgProperty(2), getModel().createLiteral(pattern)).
-		addLiteral(SP.getArgProperty(3), getModel().createLiteral(flags));
+		addProperty(SP.arg1, strExpr).
+		addLiteral(SP.arg2, getModel().createLiteral(pattern)).
+		addLiteral(SP.arg3, getModel().createLiteral(flags));
 
 	return filter(SPINFactory.createFilter(getModel(), regexExpr));
     }
@@ -307,12 +307,12 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	
 	Resource langExpr = getModel().createResource().
 		addProperty(RDF.type, SP.getArgProperty("lang")).
-		addProperty(SP.getArgProperty(1), var);
+		addProperty(SP.arg1, var);
 	
 	Resource eqExpr = getModel().createResource().
 		addProperty(RDF.type, SP.eq).
-		addProperty(SP.getArgProperty(1), langExpr).
-		addLiteral(SP.getArgProperty(2), getModel().createLiteral(locale.toLanguageTag()));
+		addProperty(SP.arg1, langExpr).
+		addLiteral(SP.arg2, getModel().createLiteral(locale.toLanguageTag()));
 
 	return filter(SPINFactory.createFilter(getModel(), eqExpr));
     }
@@ -339,8 +339,8 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     {
 	Resource eqExpr = getModel().createResource().
 		addProperty(RDF.type, SP.eq).
-		addProperty(SP.getArgProperty(1), var).
-		addProperty(SP.getArgProperty(2), resources.getHead());
+		addProperty(SP.arg1, var).
+		addProperty(SP.arg2, resources.getHead());
 
 	if (resources.getTail().isEmpty()) // no more resources in list
 	    return eqExpr;
@@ -348,8 +348,8 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	    // more resources follow - join recursively with current value using || (or)
 	    return getModel().createResource().
 		addProperty(RDF.type, SP.getArgProperty("or")).
-		addProperty(SP.getArgProperty(1), eqExpr).
-		addProperty(SP.getArgProperty(2), createFilterExpression(var, resources.getTail()));
+		addProperty(SP.arg1, eqExpr).
+		addProperty(SP.arg2, createFilterExpression(var, resources.getTail()));
     }
     
     public QueryBuilder filter(String varName, RDFList resources)
