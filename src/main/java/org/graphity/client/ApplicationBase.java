@@ -44,6 +44,7 @@ import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.model.GraphStoreBase;
+import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
@@ -81,7 +82,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
 
 	singletons.addAll(super.getSingletons());
 	singletons.add(new DataManagerProvider());
-	singletons.add(new OntologyProvider());
+	singletons.add(new DatasetProvider());
+        singletons.add(new OntologyProvider());
 	singletons.add(new SPARQLEndpointProvider());
 	singletons.add(new GraphStoreProvider());
 	singletons.add(new RDFPostReader());

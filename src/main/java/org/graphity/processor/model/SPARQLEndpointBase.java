@@ -16,26 +16,19 @@
  */
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.update.UpdateRequest;
-import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.server.util.DataManager;
-import org.graphity.processor.vocabulary.GP;
-import org.graphity.processor.vocabulary.SD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +41,13 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
  */
-@Path("/sparql")
+@Path("/meta/sparql")
 public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpointBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
-    private final UriInfo uriInfo;
-    private final javax.ws.rs.core.Application application;
+    private final Dataset dataset;
+    private final DataManager dataManager;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -62,21 +55,20 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * Otherwise, uses <code>@Path</code> annotation value for this class (usually <code>/sparql</code> to
      * build local endpoint URI.
      * 
-     * @param sitemap ontology of this webapp
+     * @param dataset ontology of this webapp
      * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param servletContext webapp context
-     * @param application webapp instance
      */
-    public SPARQLEndpointBase(@Context OntModel sitemap, @Context DataManager dataManager,
-            @Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context javax.ws.rs.core.Application application)
+    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context Dataset dataset, @Context DataManager dataManager)
     {
-	this(sitemap.createResource(uriInfo.getBaseUriBuilder().
+	this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
                 path(SPARQLEndpointBase.class).
                 build().
                 toString()),
-            dataManager, uriInfo, request, servletContext, application);
+            request, servletContext, dataset, dataManager);
     }
     
     /**
@@ -85,113 +77,18 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * 
      * @param endpoint RDF resource of this endpoint (must be URI resource, not a blank node)
      * @param dataManager RDF data manager for this endpoint
-     * @param uriInfo URI information of the current request
      * @param request current request
+     * @param dataset dataset of this webapp
      * @param servletContext webapp context
-     * @param application webapp instance
      */
-    protected SPARQLEndpointBase(Resource endpoint, DataManager dataManager, UriInfo uriInfo, Request request,
-            ServletContext servletContext, javax.ws.rs.core.Application application)
+    protected SPARQLEndpointBase(Resource endpoint, Request request, ServletContext servletContext,
+            Dataset dataset, DataManager dataManager)
     {
-	super(endpoint, dataManager, request, servletContext);
-
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	this.uriInfo = uriInfo;
-        this.application = application;
-
-        if (endpoint.isURIResource() && !dataManager.hasServiceContext(endpoint))
-        {
-            if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
-            dataManager.addServiceContext(endpoint);
-        }        
-    }
-
-    /**
-     * Returns SPARQL service resource for site resource.
-     * 
-     * @param property property pointing to service resource
-     * @return service resource
-     * @throws javax.naming.ConfigurationException
-     */
-    
-    public Resource getService(Property property) throws ConfigurationException
-    {
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        
-        return getApplication().getResource(getUriInfo()).getPropertyResourceValue(property);
-    }
-
-    /**
-     * Returns configured SPARQL endpoint resource for a given service.
-     * 
-     * @param service SPARQL service
-     * @return endpoint resource
-     */
-    public Resource getOrigin(Resource service)
-    {
-        if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
-
-        try
-        {
-            Resource endpoint = service.getPropertyResourceValue(SD.endpoint);
-            if (endpoint == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
-
-            putAuthContext(service, endpoint);
-
-            return endpoint;
-        }
-        catch (ConfigurationException ex)
-        {
-            if (log.isErrorEnabled()) log.warn("SPARQL endpoint configuration error", ex);
-            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);            
-        }
-    }
-
-    /**
-     * Returns configured SPARQL endpoint resource.
-     * This endpoint is a proxy for the remote endpoint.
-     * 
-     * @return endpoint resource
-     */
-    @Override
-    public Resource getOrigin()
-    {
-        try
-        {
-            Resource service = getService(GP.service);
-            if (service != null) return getOrigin(service);
-            
-            return null;
-        }
-        catch (ConfigurationException ex)
-        {
-            throw new WebApplicationException(ex);
-        }
-    }
-    
-    /**
-     * Configures HTTP Basic authentication for SPARQL endpoint context
-     * 
-     * @param service service resource
-     * @param endpoint endpoint resource
-     */
-    public void putAuthContext(Resource service, Resource endpoint)
-    {
-        if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
-        if (endpoint == null) throw new IllegalArgumentException("SPARQL endpoint resource cannot be null");
-        if (!endpoint.isURIResource()) throw new IllegalArgumentException("SPARQL endpoint must be URI resource");
-
-        Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
-        String username = null;
-        if (service.getProperty(userProp) != null && service.getProperty(userProp).getObject().isLiteral())
-            username = service.getProperty(userProp).getLiteral().getString();
-        Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
-        String password = null;
-        if (service.getProperty(pwdProp) != null && service.getProperty(pwdProp).getObject().isLiteral())
-            password = service.getProperty(pwdProp).getLiteral().getString();
-
-        if (username != null & password != null)
-            getDataManager().putAuthContext(endpoint.getURI(), username, password);
+	super(endpoint, request, servletContext);
+	if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
+        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+        this.dataset = dataset;
+        this.dataManager = dataManager;
     }
     
     /**
@@ -203,14 +100,8 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Model loadModel(Query query)
     {
-        Resource remote = getOrigin();
-	if (remote == null || remote.equals(this))
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
-	    return getDataManager().loadModel(getModel(), query);
-	}
-
-        return super.loadModel(query);
+        if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
+        return getDataManager().loadModel(getDataset(), query);
     }
 
     /**
@@ -220,16 +111,10 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @return loaded model
      */
     @Override
-    public ResultSetRewindable loadResultSetRewindable(Query query)
+    public ResultSetRewindable select(Query query)
     {
-        Resource remote = getOrigin();
-	if (remote == null || remote.equals(this))
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
-	    return getDataManager().loadResultSet(getModel(), query);
-	}
-        
-        return super.loadResultSetRewindable(query);
+        if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
+        return getDataManager().loadResultSet(getDataset(), query);
     }
 
     /**
@@ -241,41 +126,24 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public boolean ask(Query query)
     {
-        Resource remote = getOrigin();
-	if (remote == null || remote.equals(this))
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
-	    return getDataManager().ask(getModel(), query);
-	}
-
-        return super.ask(query);
+        if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
+        return getDataManager().ask(getDataset(), query);
     }
 
     @Override
     public void update(UpdateRequest updateRequest)
     {
-        Resource remote = getOrigin();
-	if (remote == null || remote.equals(this))
-	{
-	    if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
-	}
-
-        super.update(updateRequest);
+        if (log.isDebugEnabled()) log.debug("Attempting to update local Model, discarding UpdateRequest: {}", updateRequest);
     }
 
-    /**
-     * Returns URI information of the current request.
-     * 
-     * @return URI information
-     */
-    public UriInfo getUriInfo()
+    public Dataset getDataset()
     {
-	return uriInfo;
+        return dataset;
     }
 
-    public Application getApplication()
+    public DataManager getDataManager()
     {
-        return (Application)application;
+        return dataManager;
     }
 
 }

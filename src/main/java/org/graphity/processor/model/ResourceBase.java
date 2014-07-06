@@ -46,6 +46,7 @@ import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.LDPResource;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.server.model.SPARQLEndpointProxy;
 import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +67,11 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
-public class ResourceBase extends QueriedResourceBase implements LDPResource, ContainerResource, OntResource, MatchedIndividual
+public class ResourceBase extends QueriedResourceBase implements LDPResource, ContainerResource, MatchedIndividual
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
-    private final OntResource ontResource;
+    //private final OntResource resource;
     private final Long limit, offset;
     private final String orderBy;
     private final Boolean desc;
@@ -92,7 +93,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param httpHeaders HTTP headers of the current request
      * @param servletContext webapp context
      * @param resourceContext resource context
-     * @param sitemap sitemap ontology
+     * @param metaEndpoint sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
@@ -104,7 +105,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
 	    @Context ServletContext servletContext, @Context ResourceContext resourceContext,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
+	    @Context SPARQLEndpoint metaEndpoint, @Context SPARQLEndpointProxy endpoint,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -112,7 +113,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 	    @QueryParam("graph") URI graphURI)
     {
 	this(uriInfo, request, httpHeaders, servletContext,
-		sitemap, endpoint,
+		metaEndpoint, endpoint,
 		limit, offset, orderBy, desc, graphURI);
     }
     
@@ -123,7 +124,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
      * @param servletContext webapp context
-     * @param ontModel sitemap ontology
+     * @param metaEndpoint sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
@@ -132,11 +133,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
     protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
-	    OntModel ontModel, SPARQLEndpoint endpoint,
+	    SPARQLEndpoint metaEndpoint, SPARQLEndpointProxy endpoint,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	this(uriInfo, request, httpHeaders, servletContext,
-		ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
+	this(ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()), endpoint, request, servletContext,
+                metaEndpoint, uriInfo, httpHeaders,
 		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -157,7 +158,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
      * @param servletContext webapp context
-     * @param ontResource this resource as OWL resource
+     * @param resource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
@@ -166,18 +167,18 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
-	    OntResource ontResource, SPARQLEndpoint endpoint,
+    protected ResourceBase(Resource resource, SPARQLEndpointProxy endpoint, Request request, ServletContext servletContext,
+            SPARQLEndpoint metaEndpoint, UriInfo uriInfo, HttpHeaders httpHeaders,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	super(ontResource, endpoint, request, servletContext);
+	super(resource, endpoint, request, servletContext);
 
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
 	//if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
-	this.ontResource = ontResource;
+	//this.resource = resource;
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
@@ -187,7 +188,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
-        if (ontResource.hasRDFType(LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
+        if (resource.hasProperty(RDF.type, LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
         {
             if (offset == null)
             {
@@ -216,7 +217,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
             }
             else this.desc = desc;
 
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, ontResource), getModel()),
+            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, resource), getModel()),
                     this.offset, this.limit, this.orderBy, this.desc);
         }
         else
@@ -225,7 +226,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
             this.orderBy = null;
             this.desc = null;
             
-            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, ontResource), getModel());
+            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, resource), getModel());
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
@@ -281,7 +282,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     public Response get()
     {
         // ldp:Container always redirects to first ldp:Page
-	if (hasRDFType(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
+	if (hasProperty(RDF.type, LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
 	    return Response.seeOther(getPageUriBuilder().build()).build();
@@ -515,7 +516,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 	Model description = super.describe();
 	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
-	if (hasRDFType(LDP.Container)) // && !description.isEmpty()
+	if (hasProperty(RDF.type, LDP.Container)) // && !description.isEmpty()
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
 	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
@@ -991,11 +992,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * 
      * @return ontology resource
      */
+    /*
     public OntResource getOntResource()
     {
-	return ontResource;
+	return resource;
     }
-
+    */
+    
     /**
      * Returns ontology class that this resource matches.
      * If the request URI did not match any ontology class, <code>404 Not Found</code> was returned.
@@ -1074,510 +1077,6 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     public HttpHeaders getHttpHeaders()
     {
 	return httpHeaders;
-    }
-    
-    @Override
-    public final OntModel getOntModel()
-    {
-	return getOntResource().getOntModel();
-    }
-    
-    @Override
-    public Profile getProfile()
-    {
-	return getOntResource().getProfile();
-    }
-
-    @Override
-    public boolean isOntLanguageTerm()
-    {
-	return getOntResource().isOntLanguageTerm();
-    }
-
-    @Override
-    public void setSameAs(Resource rsrc)
-    {
-	getOntResource().setSameAs(rsrc);
-    }
-
-    @Override
-    public void addSameAs(Resource rsrc)
-    {
-	getOntResource().addSameAs(rsrc);
-    }
-
-    @Override
-    public OntResource getSameAs()
-    {
-	return getOntResource().getSameAs();
-    }
-
-    @Override
-    public ExtendedIterator<? extends Resource> listSameAs()
-    {
-	return getOntResource().listSameAs();
-    }
-
-    @Override
-    public boolean isSameAs(Resource rsrc)
-    {
-	return getOntResource().isSameAs(rsrc);
-    }
-
-    @Override
-    public void removeSameAs(Resource rsrc)
-    {
-	getOntResource().removeSameAs(rsrc);
-    }
-
-    @Override
-    public void setDifferentFrom(Resource rsrc)
-    {
-	getOntResource().setDifferentFrom(rsrc);
-    }
-
-    @Override
-    public void addDifferentFrom(Resource rsrc)
-    {
-	getOntResource().addDifferentFrom(rsrc);
-    }
-
-    @Override
-    public OntResource getDifferentFrom()
-    {
-	return getOntResource().getDifferentFrom();
-    }
-
-    @Override
-    public ExtendedIterator<? extends Resource> listDifferentFrom()
-    {
-	return getOntResource().listDifferentFrom();
-    }
-
-    @Override
-    public boolean isDifferentFrom(Resource rsrc)
-    {
-	return getOntResource().isDifferentFrom(rsrc);
-    }
-
-    @Override
-    public void removeDifferentFrom(Resource rsrc)
-    {
-	getOntResource().removeDifferentFrom(rsrc);
-    }
-
-    @Override
-    public void setSeeAlso(Resource rsrc)
-    {
-	getOntResource().setSeeAlso(rsrc);
-    }
-
-    @Override
-    public void addSeeAlso(Resource rsrc)
-    {
-	getOntResource().addSeeAlso(rsrc);
-    }
-
-    @Override
-    public Resource getSeeAlso()
-    {
-	return getOntResource().getSeeAlso();
-    }
-
-    @Override
-    public ExtendedIterator<RDFNode> listSeeAlso()
-    {
-	return getOntResource().listSeeAlso();
-    }
-
-    @Override
-    public boolean hasSeeAlso(Resource rsrc)
-    {
-	return getOntResource().hasSeeAlso(rsrc);
-    }
-
-    @Override
-    public void removeSeeAlso(Resource rsrc)
-    {
-	getOntResource().removeSeeAlso(rsrc);
-    }
-
-    @Override
-    public void setIsDefinedBy(Resource rsrc)
-    {
-	getOntResource().setIsDefinedBy(rsrc);
-    }
-
-    @Override
-    public void addIsDefinedBy(Resource rsrc)
-    {
-	getOntResource().addIsDefinedBy(rsrc);
-    }
-
-    @Override
-    public Resource getIsDefinedBy()
-    {
-	return getOntResource().getIsDefinedBy();
-    }
-
-    @Override
-    public ExtendedIterator<RDFNode> listIsDefinedBy()
-    {
-	return getOntResource().listIsDefinedBy();
-    }
-
-    @Override
-    public boolean isDefinedBy(Resource rsrc)
-    {
-	return getOntResource().isDefinedBy(rsrc);
-    }
-
-    @Override
-    public void removeDefinedBy(Resource rsrc)
-    {
-	getOntResource().removeDefinedBy(rsrc);
-    }
-
-    @Override
-    public void setVersionInfo(String string)
-    {
-	getOntResource().setVersionInfo(string);
-    }
-
-    @Override
-    public void addVersionInfo(String string)
-    {
-	getOntResource().addVersionInfo(string);
-    }
-
-    @Override
-    public String getVersionInfo()
-    {
-	return getOntResource().getVersionInfo();
-    }
-
-    @Override
-    public ExtendedIterator<String> listVersionInfo()
-    {
-	return getOntResource().listVersionInfo();
-    }
-
-    @Override
-    public boolean hasVersionInfo(String string)
-    {
-	return getOntResource().hasVersionInfo(string);
-    }
-
-    @Override
-    public void removeVersionInfo(String string)
-    {
-	getOntResource().removeVersionInfo(string);
-    }
-
-    @Override
-    public void setLabel(String string, String string1)
-    {
-	getOntResource().setLabel(string, string1);
-    }
-
-    @Override
-    public void addLabel(String string, String string1)
-    {
-	getOntResource().addLabel(string, string1);
-    }
-
-    @Override
-    public void addLabel(Literal ltrl)
-    {
-	getOntResource().addLabel(ltrl);
-    }
-
-    @Override
-    public String getLabel(String string)
-    {
-	return getOntResource().getLabel(string);
-    }
-
-    @Override
-    public ExtendedIterator<RDFNode> listLabels(String string)
-    {
-	return getOntResource().listLabels(string);
-    }
-
-    @Override
-    public boolean hasLabel(String string, String string1)
-    {
-	return getOntResource().hasLabel(string, string1);
-    }
-
-    @Override
-    public boolean hasLabel(Literal ltrl)
-    {
-	return getOntResource().hasLabel(ltrl);
-    }
-
-    @Override
-    public void removeLabel(String string, String string1)
-    {
-	getOntResource().removeLabel(string, string1);
-    }
-
-    @Override
-    public void removeLabel(Literal ltrl)
-    {
-	getOntResource().removeLabel(ltrl);
-    }
-
-    @Override
-    public void setComment(String string, String string1)
-    {
-	getOntResource().setComment(string, string1);
-    }
-
-    @Override
-    public void addComment(String string, String string1)
-    {
-	getOntResource().addComment(string, string1);
-    }
-
-    @Override
-    public void addComment(Literal ltrl)
-    {
-	getOntResource().addComment(ltrl);
-    }
-
-    @Override
-    public String getComment(String string)
-    {
-	return getOntResource().getComment(string);
-    }
-
-    @Override
-    public ExtendedIterator<RDFNode> listComments(String string)
-    {
-	return getOntResource().listComments(string);
-    }
-
-    @Override
-    public boolean hasComment(String string, String string1)
-    {
-	return getOntResource().hasComment(string, string1);
-    }
-
-    @Override
-    public boolean hasComment(Literal ltrl)
-    {
-	return getOntResource().hasComment(ltrl);
-    }
-
-    @Override
-    public void removeComment(String string, String string1)
-    {
-	getOntResource().removeComment(string, string1);
-    }
-
-    @Override
-    public void removeComment(Literal ltrl)
-    {
-	getOntResource().removeComment(ltrl);
-    }
-
-    @Override
-    public void setRDFType(Resource rsrc)
-    {
-	getOntResource().setRDFType(rsrc);
-    }
-
-    @Override
-    public void addRDFType(Resource rsrc)
-    {
-	getOntResource().addRDFType(rsrc);
-    }
-
-    @Override
-    public Resource getRDFType()
-    {
-	return getOntResource().getRDFType();
-    }
-
-    @Override
-    public Resource getRDFType(boolean bln)
-    {
-	return getOntResource().getRDFType(bln);
-    }
-
-    @Override
-    public ExtendedIterator<Resource> listRDFTypes(boolean bln)
-    {
-	return getOntResource().listRDFTypes(bln);
-    }
-
-    @Override
-    public boolean hasRDFType(Resource rsrc, boolean bln)
-    {
-	return getOntResource().hasRDFType(rsrc, bln);
-    }
-
-    @Override
-    public boolean hasRDFType(Resource rsrc)
-    {
-	return getOntResource().hasRDFType(rsrc);
-    }
-
-    @Override
-    public void removeRDFType(Resource rsrc)
-    {
-	getOntResource().removeRDFType(rsrc);
-    }
-
-    @Override
-    public boolean hasRDFType(String string)
-    {
-	return getOntResource().hasRDFType(string);
-    }
-
-    @Override
-    public int getCardinality(Property prprt)
-    {
-	return getOntResource().getCardinality(prprt);
-    }
-
-    @Override
-    public void setPropertyValue(Property prprt, RDFNode rdfn)
-    {
-	getOntResource().setPropertyValue(prprt, rdfn);
-    }
-
-    @Override
-    public RDFNode getPropertyValue(Property prprt)
-    {
-	return getOntResource().getPropertyValue(prprt);
-    }
-
-    @Override
-    public NodeIterator listPropertyValues(Property prprt)
-    {
-	return getOntResource().listPropertyValues(prprt);
-    }
-
-    @Override
-    public void removeProperty(Property prprt, RDFNode rdfn)
-    {
-	getOntResource().removeProperty(prprt, rdfn);
-    }
-
-    @Override
-    public void remove()
-    {
-	getOntResource().remove();
-    }
-
-    @Override
-    public OntProperty asProperty()
-    {
-	return getOntResource().asProperty();
-    }
-
-    @Override
-    public AnnotationProperty asAnnotationProperty()
-    {
-	return getOntResource().asAnnotationProperty();
-    }
-
-    @Override
-    public ObjectProperty asObjectProperty()
-    {
-	return getOntResource().asObjectProperty();
-    }
-
-    @Override
-    public DatatypeProperty asDatatypeProperty()
-    {
-	return getOntResource().asDatatypeProperty();
-    }
-
-    @Override
-    public Individual asIndividual()
-    {
-	return getOntResource().asIndividual();
-    }
-
-    @Override
-    public OntClass asClass()
-    {
-	return getOntResource().asClass();
-    }
-
-    @Override
-    public Ontology asOntology()
-    {
-	return getOntResource().asOntology();
-    }
-
-    @Override
-    public DataRange asDataRange()
-    {
-	return getOntResource().asDataRange();
-    }
-
-    @Override
-    public AllDifferent asAllDifferent()
-    {
-	return getOntResource().asAllDifferent();
-    }
-
-    @Override
-    public boolean isProperty()
-    {
-	return getOntResource().isProperty();
-    }
-
-    @Override
-    public boolean isAnnotationProperty()
-    {
-	return getOntResource().isAnnotationProperty();
-    }
-
-    @Override
-    public boolean isObjectProperty()
-    {
-	return getOntResource().isObjectProperty();
-    }
-
-    @Override
-    public boolean isDatatypeProperty()
-    {
-	return getOntResource().isDatatypeProperty();
-    }
-
-    @Override
-    public boolean isIndividual()
-    {
-	return getOntResource().isIndividual();
-    }
-
-    @Override
-    public boolean isClass()
-    {
-	return getOntResource().isClass();
-    }
-
-    @Override
-    public boolean isOntology()
-    {
-	return getOntResource().isOntology();
-    }
-
-    @Override
-    public boolean isDataRange()
-    {
-	return getOntResource().isDataRange();
-    }
-
-    @Override
-    public boolean isAllDifferent()
-    {
-	return getOntResource().isAllDifferent();
     }
 
 }

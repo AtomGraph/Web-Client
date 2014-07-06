@@ -16,7 +16,7 @@
  */
 package org.graphity.processor.provider;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Dataset;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -46,7 +46,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     @Context Request request;
-    @Context javax.ws.rs.core.Application application;
+    //@Context javax.ws.rs.core.Application application;
     
     public SPARQLEndpointProvider()
     {
@@ -73,15 +73,17 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	return providers;
     }
 
+    /*
     public javax.ws.rs.core.Application getApplication()
     {
         return application;
     }
-
-    public OntModel getOntModel()
+    */
+    
+    public Dataset getDataset()
     {
-	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
-	return cr.getContext(OntModel.class);
+	ContextResolver<Dataset> cr = getProviders().getContextResolver(Dataset.class, null);
+	return cr.getContext(Dataset.class);
     }
 
     public DataManager getDataManager()
@@ -111,8 +113,8 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 
     public SPARQLEndpoint getEndpoint()
     {
-        return SPARQLEndpointFactory.createEndpoint(getOntModel(), getDataManager(),
-                getUriInfo(), getRequest(), getServletContext(), getApplication());
+        return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getServletContext(),
+                getDataset(), getDataManager());
     }
     
 }

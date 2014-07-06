@@ -16,7 +16,7 @@
  */
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Resource;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
@@ -35,34 +35,32 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
      * Creates new SPARQL endpoint from application configuration, request data, and sitemap ontology.
      * 
      * @param uriInfo URI information of the current request
-     * @param sitemap ontology of this webapp
-     * @param dataManager RDF data manager for this endpoint
      * @param request current request
      * @param servletContext webapp context
-     * @param application webapp instance
+     * @param dataset dataset of this webapp
+     * @param dataManager RDF data manager for this endpoint
      * @return new endpoint
      */
-    public static SPARQLEndpoint createEndpoint(OntModel sitemap, DataManager dataManager,
-            UriInfo uriInfo, Request request, ServletContext servletContext, javax.ws.rs.core.Application application)
+    public static SPARQLEndpoint createEndpoint(UriInfo uriInfo, Request request, ServletContext servletContext,
+            Dataset dataset, DataManager dataManager)
     {
-	return new SPARQLEndpointBase(sitemap, dataManager, uriInfo, request, servletContext, application);
+	return new SPARQLEndpointBase(uriInfo, request, servletContext, dataset, dataManager);
     }
 
     /**
      * Creates new SPARQL endpoint from explicit URI resource, application configuration, and request data.
      * 
      * @param endpoint endpoint resource
-     * @param dataManager RDF data manager for this endpoint
-     * @param uriInfo URI information of the current request
      * @param request current request
      * @param servletContext webapp context
-     * @param application webapp
+     * @param dataset dataset of this webapp
+     * @param dataManager RDF data manager for this endpoint
      * @return new endpoint
      */
-    public static SPARQLEndpoint createEndpoint(Resource endpoint, DataManager dataManager,
-            UriInfo uriInfo, Request request, ServletContext servletContext, javax.ws.rs.core.Application application)
+    public static SPARQLEndpoint createEndpoint(Resource endpoint, Request request, ServletContext servletContext,
+            Dataset dataset, DataManager dataManager)
     {
-	return new SPARQLEndpointBase(endpoint, dataManager, uriInfo, request, servletContext, application);
+	return new SPARQLEndpointBase(endpoint, request, servletContext, dataset, dataManager);
     }
 
 }
