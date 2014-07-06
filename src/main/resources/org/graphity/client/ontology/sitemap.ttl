@@ -16,11 +16,10 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 @prefix gc:     <http://client.graphity.org/ontology#> .
 @prefix gp:	<http://processor.graphity.org/ontology#> .
-@prefix srv:    <http://jena.hpl.hp.com/Service#> .
 
 <#> a owl:Ontology ;
     owl:imports gp:, gc:, lda: , void:, foaf: ;
-    owl:versionInfo "1.0.12" ;
+    owl:versionInfo "1.0.13" ;
     dct:title "Sitemap" ;
     rdfs:label "Sitemap" ;
     dct:description "Default sitemap for SPARQL service" ;

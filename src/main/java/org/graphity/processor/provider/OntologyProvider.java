@@ -117,7 +117,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         ontManager.setFileManager(dataManager);
 
 	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
-	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
+	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set as context-param in web.xml");
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
