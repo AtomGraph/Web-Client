@@ -12,7 +12,7 @@
     gp:service [ a sd:Service ;
         dct:title "Graphity Client service" ;
         sd:supportedLanguage sd:SPARQL11Query ;
-        sd:endpoint <sparql> ;
+        sd:endpoint <meta/sparql> ;
         gp:graphStore <service>
         # srv:queryAuthUser "username" ;
         # srv:queryAuthPwd "password"

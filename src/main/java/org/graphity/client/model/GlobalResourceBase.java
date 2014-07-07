@@ -17,9 +17,9 @@
 package org.graphity.client.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
 import javax.servlet.ServletContext;
@@ -30,7 +30,6 @@ import org.graphity.client.util.DataManager;
 import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.model.LinkedDataResourceBase;
 import org.graphity.server.model.LinkedDataResourceFactory;
-import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,51 +55,11 @@ public class GlobalResourceBase extends ResourceBase
 
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
-     * The URI of the resource being created is the current request URI (note: this is different from Server).
-     * The sitemap ontology model and the SPARQL endpoint resource are injected via JAX-RS providers.
-     * 
-     * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param servletContext webapp context
-     * @param sitemap sitemap ontology
-     * @param endpoint active SPARQL endpoint (used to execute queries)
-     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
-     * @param mode <samp>mode</samp> query string param
-     * @param topicURI remote URI to be loaded (<samp>uri</samp> query string param)
-     * @param mediaType media type of the representation (<samp>accept</samp> query string param)
-     * @see org.graphity.processor.provider.OntologyProvider
-     * @see org.graphity.processor.provider.SPARQLEndpointProvider
-     */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ServletContext servletContext,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-	    @QueryParam("limit") Long limit,
-	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("graph") URI graphURI,
-	    @QueryParam("mode") URI mode,
-	    @QueryParam("uri") URI topicURI,
-	    @QueryParam("accept") MediaType mediaType)
-    {
-	this(uriInfo, request, httpHeaders, servletContext,
-                sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-		limit, offset, orderBy, desc, graphURI, mode,
-		topicURI, mediaType);	
-    }
-
-    /**
-     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
      * 
      * @param uriInfo URI information of the request
      * @param request current request
      * @param httpHeaders HTTP headers of current request
      * @param servletContext webapp context
-     * @param ontResource this resource as RDF resource
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
@@ -111,13 +70,21 @@ public class GlobalResourceBase extends ResourceBase
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
-    protected GlobalResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
-	    OntResource ontResource, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode,
-	    URI topicURI, MediaType mediaType)
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+	    //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
+            @Context ResourceContext resourceContext, @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+	    @QueryParam("limit") Long limit,
+	    @QueryParam("offset") Long offset,
+	    @QueryParam("order-by") String orderBy,
+	    @QueryParam("desc") Boolean desc,
+	    @QueryParam("graph") URI graphURI,
+	    @QueryParam("mode") URI mode,
+	    @QueryParam("uri") URI topicURI,
+	    @QueryParam("accept") MediaType mediaType)
     {
-	super(uriInfo, request, httpHeaders, servletContext,
-		ontResource, endpoint, limit, offset, orderBy, desc, graphURI, mode);
+	super(uriInfo, request, servletContext,
+		resourceContext, ontModel, httpHeaders,
+                limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.mediaType = mediaType;
 	this.topicURI = topicURI;

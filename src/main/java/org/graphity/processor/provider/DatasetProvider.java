@@ -65,7 +65,7 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
 
         //return RDFDataMgr.loadDataset("org/graphity/platform/ontology/sitemap.trig");
         Dataset dataset = DatasetFactory.createMem();
-        RDFDataMgr.read(dataset, "org/graphity/platform/ontology/sitemap.trig", localUri, null); // Lang.TURTLE
+        RDFDataMgr.read(dataset, "org/graphity/client/ontology/sitemap.trig", localUri, null); // Lang.TURTLE
         return dataset;
     }
 

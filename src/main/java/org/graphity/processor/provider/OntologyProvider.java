@@ -35,7 +35,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import org.graphity.processor.vocabulary.GP;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     @Context UriInfo uriInfo;
     @Context ServletContext servletContext;
+    @Context Providers providers;
 
     public OntologyProvider()
     {
@@ -86,6 +89,12 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     public OntModel getContext(Class<?> type)
     {
 	return getOntModel();
+    }
+
+    public SPARQLEndpoint getSPARQLEndpoint()
+    {
+	ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
+	return cr.getContext(SPARQLEndpoint.class);
     }
 
     public OntModel getOntModel()
@@ -143,6 +152,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
             Object ontologyLocation = servletContext.getInitParameter(GP.ontologyLocation.getURI());
             if (ontologyLocation == null) throw new IllegalStateException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
             URI ontologyLocationURI = URI.create((String)ontologyLocation);
+            /*
             if (ontologyLocationURI.isAbsolute())
 	    {
 		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", ontologyLocationURI);
@@ -155,6 +165,10 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 		if (log.isDebugEnabled()) log.debug("Mapping ontology to a local file: {}", ontologyLocation.toString());
 		ontManager.addAltEntry(localUri, ontologyLocation.toString());
 	    }
+            */
+            
+            ontManager.addModel(localUri, getModel(getSPARQLEndpoint()));
+            //return getOntModel(getSPARQLEndpoint());
 	}
         
 	OntModel ontModel = ontManager.getOntology(localUri, OntModelSpec.OWL_MEM);
@@ -162,4 +176,17 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	return ontModel;
     }
 
+    public final Model getModel(SPARQLEndpoint metaEndpoint)
+    {
+        String queryString = "PREFIX gp: <http://processor.graphity.org/ontology#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> DESCRIBE ?sitemap ?s WHERE { GRAPH ?sitemapGraph { ?sitemap a gp:Sitemap } GRAPH ?g { ?s rdfs:isDefinedBy ?sitemap } }";
+        Query query = QueryFactory.create(queryString);
+        return metaEndpoint.loadModel(query);
+        //return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+    }
+
+    public Providers getProviders()
+    {
+        return providers;
+    }
+   
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Martynas
+ * Copyright (C) 2013 Martynas Jusevičius <martynas@graphity.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,13 +14,107 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.graphity.processor.provider;
+
+import com.hp.hpl.jena.query.Dataset;
+import com.sun.jersey.core.spi.component.ComponentContext;
+import com.sun.jersey.spi.inject.Injectable;
+import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
+import org.graphity.client.util.DataManager;
+import org.graphity.processor.model.SPARQLEndpointFactory;
+import org.graphity.server.model.SPARQLEndpointProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Martynas
+ * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class SPARQLEndpointProxyProvider {
+@Provider
+public class SPARQLEndpointProxyProvider extends PerRequestTypeInjectableProvider<Context, SPARQLEndpointProxy> implements ContextResolver<SPARQLEndpointProxy>
+{
+    private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointProvider.class);
+
+    @Context Providers providers;
+    @Context ServletContext servletContext;
+    @Context UriInfo uriInfo;
+    @Context Request request;
+    //@Context javax.ws.rs.core.Application application;
+    
+    public SPARQLEndpointProxyProvider()
+    {
+	super(SPARQLEndpointProxy.class);
+    }
+
+    public Request getRequest()
+    {
+	return request;
+    }
+
+    public ServletContext getServletContext()
+    {
+	return servletContext;
+    }
+
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
+    }
+
+    public Providers getProviders()
+    {
+	return providers;
+    }
+
+    /*
+    public javax.ws.rs.core.Application getApplication()
+    {
+        return application;
+    }
+    */
+    
+    public Dataset getDataset()
+    {
+	ContextResolver<Dataset> cr = getProviders().getContextResolver(Dataset.class, null);
+	return cr.getContext(Dataset.class);
+    }
+
+    public DataManager getDataManager()
+    {
+	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+	return cr.getContext(DataManager.class);
+    }
+
+    @Override
+    public Injectable<SPARQLEndpointProxy> getInjectable(ComponentContext cc, Context context)
+    {
+	return new Injectable<SPARQLEndpointProxy>()
+	{
+	    @Override
+	    public SPARQLEndpointProxy getValue()
+	    {
+		return getEndpointProxy();
+	    }
+	};
+    }
+
+    @Override
+    public SPARQLEndpointProxy getContext(Class<?> type)
+    {
+	return getEndpointProxy();
+    }
+
+    public SPARQLEndpointProxy getEndpointProxy()
+    {
+        return SPARQLEndpointFactory.createEndpointProxy(getUriInfo(), getRequest(), getServletContext(),
+                getDataManager());
+    }
     
 }

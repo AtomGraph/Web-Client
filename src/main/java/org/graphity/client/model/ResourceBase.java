@@ -17,8 +17,9 @@
 package org.graphity.client.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
 import javax.servlet.ServletContext;
@@ -27,7 +28,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
-import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -48,14 +48,11 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
-     * The URI of the resource being created is the current request URI (note: this is different from Server).
-     * The sitemap ontology model and the SPARQL endpoint resource are injected via JAX-RS providers.
      * 
      * @param uriInfo URI information of the current request
      * @param request current request
      * @param httpHeaders HTTP headers of the current request
      * @param servletContext webapp context
-     * @param sitemap sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
@@ -63,45 +60,19 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @param mode <samp>mode</samp> query string param
-     * @see org.graphity.processor.provider.OntologyProvider
-     * @see org.graphity.processor.provider.SPARQLEndpointProvider
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ServletContext servletContext,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-	    @QueryParam("limit") Long limit,
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
+            @Context ResourceContext resourceContext, @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+            @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {
-	this(uriInfo, request, httpHeaders, servletContext,
-		sitemap.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-		limit, offset, orderBy, desc, graphURI, mode);	
-    }
-
-    /**
-     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
-     * 
-     * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param servletContext webapp context
-     * @param ontResource this resource as OWL resource
-     * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
-     * @param mode <samp>mode</samp> query string param
-     */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
-	    OntResource ontResource, SPARQLEndpoint endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI, URI mode)
-    {
-	super(uriInfo, request, httpHeaders, servletContext,
-		ontResource, endpoint,
+	super(uriInfo, request, servletContext,
+		resourceContext, ontModel, httpHeaders,
 		limit, offset, orderBy, desc, graphURI);
 	this.mode = mode;
     }
@@ -125,11 +96,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
     }
     
     @Override
+    
     public Model describe()
     {
 	Model description;
         
-        if (getMode() != null && hasRDFType(LDP.Container) &&
+        if (getMode() != null && hasProperty(RDF.type, LDP.Container) &&
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
@@ -139,12 +111,12 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
             description = super.describe();
 
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
-	addRDFType(getMatchedOntClass()); // getOntModel().add(description); ?
+	addProperty(RDF.type, getMatchedOntClass()); // getOntModel().add(description); ?
 	
 	// set metadata properties after description query is executed
 	getQueryBuilder().build(); // sets sp:text value
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, getQueryBuilder());
-	setPropertyValue(SPIN.query, getQueryBuilder());
+	addProperty(SPIN.query, getQueryBuilder());
 
 	return description;
     }

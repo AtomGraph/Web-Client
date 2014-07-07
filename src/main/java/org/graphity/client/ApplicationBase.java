@@ -48,6 +48,7 @@ import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
+import org.graphity.processor.provider.SPARQLEndpointProxyProvider;
 import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
 	singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
 	singletons.add(new SPARQLEndpointProvider());
-	singletons.add(new GraphStoreProvider());
+	singletons.add(new SPARQLEndpointProxyProvider());
+        singletons.add(new GraphStoreProvider());
 	singletons.add(new RDFPostReader());
         singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());

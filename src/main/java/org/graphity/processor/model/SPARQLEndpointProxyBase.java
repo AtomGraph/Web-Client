@@ -24,6 +24,7 @@ import com.hp.hpl.jena.sparql.engine.http.Service;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -44,8 +45,8 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
     private final UriInfo uriInfo;
     private final javax.ws.rs.core.Application application;
 
-    public SPARQLEndpointProxyBase(UriInfo uriInfo, Request request, ServletContext servletContext, DataManager dataManager,
-            javax.ws.rs.core.Application application)
+    public SPARQLEndpointProxyBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context DataManager dataManager,
+            @Context javax.ws.rs.core.Application application)
     {
         super(uriInfo, request, servletContext, dataManager);
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
@@ -90,12 +91,13 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
 
         try
         {
-            Resource endpoint = service.getPropertyResourceValue(SD.endpoint);
-            if (endpoint == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
+            Resource remote = service.getPropertyResourceValue(SD.endpoint);
+            if (remote == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
+            if (remote.equals(this)) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) is not remote. This will lead to a request loop");
 
-            putAuthContext(service, endpoint);
+            putAuthContext(service, remote);
 
-            return endpoint;
+            return remote;
         }
         catch (ConfigurationException ex)
         {

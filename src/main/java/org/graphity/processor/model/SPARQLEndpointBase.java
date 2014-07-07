@@ -92,7 +92,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     }
     
     /**
-     * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
+     * Loads RDF model by querying RDF dataset.
      * 
      * @param query query object
      * @return loaded model
@@ -100,7 +100,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
     @Override
     public Model loadModel(Query query)
     {
-        if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
+        if (log.isDebugEnabled()) log.debug("Loading Model from Dataset using Query: {}", query);
         return getDataManager().loadModel(getDataset(), query);
     }
 

@@ -5,7 +5,9 @@
 package org.graphity.client.resource.labelled;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
@@ -19,6 +21,7 @@ import org.graphity.client.model.ResourceBase;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.server.model.SPARQLEndpointProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +36,10 @@ public class Container extends ResourceBase
 
     private final String searchString;
     
-    public Container(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context ServletContext servletContext,
-	    @Context OntModel sitemap, @Context SPARQLEndpoint endpoint,
-	    @QueryParam("limit") Long limit,
+    public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
+            @Context ResourceContext resourceContext, @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+            @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
@@ -43,12 +47,12 @@ public class Container extends ResourceBase
 	    @QueryParam("mode") URI mode,
             @QueryParam("label") String searchString)
     {
-	super(uriInfo, request, httpHeaders, servletContext,
-		sitemap, endpoint,
+	super(uriInfo, request, servletContext,
+		resourceContext, ontModel, httpHeaders,
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	
-	if (!(searchString == null || searchString.isEmpty()) && hasRDFType(LDP.Container))
+	if (!(searchString == null || searchString.isEmpty()) && hasProperty(RDF.type, LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)

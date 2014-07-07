@@ -71,51 +71,17 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
-    //private final OntResource resource;
+    private final OntResource ontResource;
     private final Long limit, offset;
     private final String orderBy;
     private final Boolean desc;
     private final OntClass matchedOntClass;
-    private final SPARQLEndpoint endpoint;
+    //private final SPARQLEndpoint metaEndpoint;
     private final UriInfo uriInfo;
     private final HttpHeaders httpHeaders;
     private final QueryBuilder queryBuilder;
     private final URI graphURI;
     private final CacheControl cacheControl;
-    
-    /**
-     * JAX-RS-compatible resource constructor with injected initialization objects.
-     * The URI of the resource being created is the current request URI (note: this is different from Server).
-     * The sitemap ontology model and the SPARQL endpoint resource are injected via JAX-RS providers.
-     * 
-     * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param servletContext webapp context
-     * @param resourceContext resource context
-     * @param metaEndpoint sitemap ontology
-     * @param endpoint SPARQL endpoint of this resource
-     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
-     * @see org.graphity.processor.provider.OntologyProvider
-     * @see org.graphity.processor.provider.SPARQLEndpointProvider
-     */
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
-	    @Context ServletContext servletContext, @Context ResourceContext resourceContext,
-	    @Context SPARQLEndpoint metaEndpoint, @Context SPARQLEndpointProxy endpoint,
-	    @QueryParam("limit") Long limit,
-	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("graph") URI graphURI)
-    {
-	this(uriInfo, request, httpHeaders, servletContext,
-		metaEndpoint, endpoint,
-		limit, offset, orderBy, desc, graphURI);
-    }
     
     /**
      * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
@@ -132,12 +98,19 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
-    protected ResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, ServletContext servletContext,
-	    SPARQLEndpoint metaEndpoint, SPARQLEndpointProxy endpoint,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context ResourceContext resourceContext, @Context OntModel ontModel,
+            //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
+            @Context HttpHeaders httpHeaders,
+	    @QueryParam("limit") Long limit,
+	    @QueryParam("offset") Long offset,
+	    @QueryParam("order-by") String orderBy,
+	    @QueryParam("desc") Boolean desc,
+	    @QueryParam("graph") URI graphURI)
     {
-	this(ResourceFactory.createResource(uriInfo.getAbsolutePath().toString()), endpoint, request, servletContext,
-                metaEndpoint, uriInfo, httpHeaders,
+	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), request, servletContext,
+                resourceContext.getResource(SPARQLEndpointProxyBase.class),
+                uriInfo, httpHeaders,
 		limit, offset, orderBy, desc, graphURI);
 	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -167,24 +140,24 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
-    protected ResourceBase(Resource resource, SPARQLEndpointProxy endpoint, Request request, ServletContext servletContext,
-            SPARQLEndpoint metaEndpoint, UriInfo uriInfo, HttpHeaders httpHeaders,
+    protected ResourceBase(OntResource resource, Request request, ServletContext servletContext,
+            SPARQLEndpointProxy endpoint, // SPARQLEndpoint metaEndpoint,
+            UriInfo uriInfo, HttpHeaders httpHeaders,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
-	super(resource, endpoint, request, servletContext);
+	super(resource, request, servletContext, endpoint);
 
+	if (resource == null) throw new IllegalArgumentException("OntResource cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
-	if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
-	//if (desc == null) throw new IllegalArgumentException("DESC Boolean cannot be null");
 
-	//this.resource = resource;
+        this.ontResource = resource;
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
 	else this.graphURI = null;
 
-	matchedOntClass = matchOntClass(getRealURI(), uriInfo.getBaseUri());
+	matchedOntClass = matchOntClass(resource.getOntModel(), getRealURI(), uriInfo.getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 	
@@ -230,8 +203,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
 
-	this.endpoint = endpoint;	    
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with SPARQL endpoint: {}", this.endpoint);
+	//this.metaEndpoint = metaEndpoint;	    
+	//if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with SPARQL meta-endpoint: {}", this.metaEndpoint);
         
         cacheControl = getCacheControl(matchedOntClass);
     }
@@ -729,7 +702,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param base base URI
      * @return matching ontology class or null, if none
      */
-    public final OntClass matchOntClass(URI uri, URI base)
+    public final OntClass matchOntClass(OntModel ontModel, URI uri, URI base)
     {
 	if (uri == null) throw new IllegalArgumentException("URI being matched cannot be null");
 	if (base == null) throw new IllegalArgumentException("Base URI cannot be null");
@@ -739,7 +712,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 	StringBuilder path = new StringBuilder();
 	// instead of path, include query string by relativizing request URI against base URI
 	path.append("/").append(base.relativize(uri));
-	return matchOntClass(path);
+	return matchOntClass(ontModel, path);
     }
 
     /**
@@ -751,11 +724,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @return matching ontology class or null, if none
      * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
      */
-    public OntClass matchOntClass(CharSequence path)
+    public OntClass matchOntClass(OntModel ontModel, CharSequence path)
     {
-        return matchOntClass(path, LDA.uriTemplate);
+        return matchOntClass(ontModel, path, LDA.uriTemplate);
     }
-    
+
     /**
      * Given a relative URI and URI template property, returns ontology class with a matching URI template, if any.
      * URIs are matched against the URI templates specified in ontology class <code>owl:hasValue</code> restrictions
@@ -769,12 +742,13 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
      */
-    public final OntClass matchOntClass(CharSequence path, Property property)
+    public final OntClass matchOntClass(OntModel ontModel, CharSequence path, Property property)
     {
-	if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
+	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
+        if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
  	if (property == null) throw new IllegalArgumentException("URI template property cannot be null");
         
-        ExtendedIterator<OntClass> it = getOntModel().listClasses();
+        ExtendedIterator<OntClass> it = ontModel.listClasses();
         
 	try
 	{
@@ -986,18 +960,16 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     {
 	return getUriBuilder().build();
     }
-
+    
     /**
      * Returns this resource as ontology resource.
      * 
      * @return ontology resource
      */
-    /*
     public OntResource getOntResource()
     {
-	return resource;
+	return ontResource;
     }
-    */
     
     /**
      * Returns ontology class that this resource matches.
@@ -1025,19 +997,17 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     }
 
     /**
-     * Returns the active SPARQL endpoint of this resource.
-     * The default endpoint is supplied as constructor argument. However, it is overridden if the matching
-     * ontology class has a <code>void:inDataset</code> value restriction and that dataset has a SPARQL
-     * endpoint resource defined.
+     * Returns the SPARQL meta-endpoint of this resource.
      * 
      * @return endpoint resource
      */
-    @Override
-    public SPARQLEndpoint getEndpoint()
+    /*
+    public SPARQLEndpoint getMetaEndpoint()
     {
-	return endpoint;
+	return metaEndpoint;
     }
-
+    */
+    
     /**
      * Returns query used to retrieve RDF description of this resource
      * 

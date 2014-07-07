@@ -61,6 +61,8 @@ public class GP
 
     public static final DatatypeProperty ontologyQuery = m_model.createDatatypeProperty( NS + "ontologyQuery" );
 
+    public static final DatatypeProperty uriTemplate = m_model.createDatatypeProperty( NS + "uriTemplate" );
+    
     public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
