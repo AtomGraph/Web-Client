@@ -17,10 +17,12 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
@@ -29,6 +31,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.model.SPARQLEndpointFactory;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.model.SPARQLEndpointProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +49,8 @@ public class SPARQLEndpointProxyProvider extends PerRequestTypeInjectableProvide
     @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     @Context Request request;
-    //@Context javax.ws.rs.core.Application application;
+    @Context ResourceContext resourceContext;
+    @Context javax.ws.rs.core.Application application;
     
     public SPARQLEndpointProxyProvider()
     {
@@ -92,6 +96,12 @@ public class SPARQLEndpointProxyProvider extends PerRequestTypeInjectableProvide
 	return cr.getContext(DataManager.class);
     }
 
+    public SPARQLEndpoint getSPARQLEndpoint()
+    {
+	ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
+	return cr.getContext(SPARQLEndpoint.class);
+    }
+
     @Override
     public Injectable<SPARQLEndpointProxy> getInjectable(ComponentContext cc, Context context)
     {
@@ -113,8 +123,18 @@ public class SPARQLEndpointProxyProvider extends PerRequestTypeInjectableProvide
 
     public SPARQLEndpointProxy getEndpointProxy()
     {
-        return SPARQLEndpointFactory.createEndpointProxy(getUriInfo(), getRequest(), getServletContext(),
-                getDataManager());
+        return SPARQLEndpointFactory.createEndpointProxy(getUriInfo(), getRequest(), getServletContext(), getDataManager(),
+                getSPARQLEndpoint(), getApplication());
+    }
+
+    public ResourceContext getResourceContext()
+    {
+        return resourceContext;
+    }
+
+    public Application getApplication()
+    {
+        return application;
     }
     
 }

@@ -30,6 +30,7 @@ import org.graphity.client.util.DataManager;
 import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.model.LinkedDataResourceBase;
 import org.graphity.server.model.LinkedDataResourceFactory;
+import org.graphity.server.model.SPARQLEndpointProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +72,9 @@ public class GlobalResourceBase extends ResourceBase
      * @param mediaType media type of the representation
      */
     public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-	    //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
-            @Context ResourceContext resourceContext, @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+	    @Context SPARQLEndpointProxy endpoint, // @Context SPARQLEndpoint metaEndpoint,
+            @Context OntModel ontModel,
+            @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -83,7 +85,8 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("accept") MediaType mediaType)
     {
 	super(uriInfo, request, servletContext,
-		resourceContext, ontModel, httpHeaders,
+		endpoint, ontModel,
+                httpHeaders, resourceContext,
                 limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.mediaType = mediaType;

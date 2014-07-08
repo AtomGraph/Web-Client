@@ -37,8 +37,9 @@ public class Container extends ResourceBase
     private final String searchString;
     
     public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
-            @Context ResourceContext resourceContext, @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+            @Context SPARQLEndpointProxy endpoint, //@Context SPARQLEndpoint metaEndpoint,
+            @Context OntModel ontModel,
+            @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -48,7 +49,8 @@ public class Container extends ResourceBase
             @QueryParam("label") String searchString)
     {
 	super(uriInfo, request, servletContext,
-		resourceContext, ontModel, httpHeaders,
+		endpoint, ontModel,
+                httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	

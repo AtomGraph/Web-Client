@@ -100,7 +100,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 	    @Override
 	    public SPARQLEndpoint getValue()
 	    {
-		return getEndpoint();
+		return getSPARQLEndpoint();
 	    }
 	};
     }
@@ -108,10 +108,10 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     @Override
     public SPARQLEndpoint getContext(Class<?> type)
     {
-	return getEndpoint();
+	return getSPARQLEndpoint();
     }
 
-    public SPARQLEndpoint getEndpoint()
+    public SPARQLEndpoint getSPARQLEndpoint()
     {
         return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getServletContext(),
                 getDataset(), getDataManager());

@@ -76,8 +76,8 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     private final String orderBy;
     private final Boolean desc;
     private final OntClass matchedOntClass;
-    //private final SPARQLEndpoint metaEndpoint;
     private final UriInfo uriInfo;
+    private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
     private final QueryBuilder queryBuilder;
     private final URI graphURI;
@@ -99,20 +99,21 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            @Context ResourceContext resourceContext, @Context OntModel ontModel,
-            //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
+            @Context SPARQLEndpointProxy endpoint,
+            @Context OntModel ontModel,
             @Context HttpHeaders httpHeaders,
-	    @QueryParam("limit") Long limit,
+            @Context ResourceContext resourceContext,
+            @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI)
     {
 	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), request, servletContext,
-                resourceContext.getResource(SPARQLEndpointProxyBase.class),
-                uriInfo, httpHeaders,
+                //resourceContext.getResource(SPARQLEndpointProxyBase.class),
+                endpoint,
+                uriInfo, httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI);
-	
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
     }
 
@@ -142,7 +143,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      */
     protected ResourceBase(OntResource resource, Request request, ServletContext servletContext,
             SPARQLEndpointProxy endpoint, // SPARQLEndpoint metaEndpoint,
-            UriInfo uriInfo, HttpHeaders httpHeaders,
+            UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
 	super(resource, request, servletContext, endpoint);
@@ -150,10 +151,12 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
 	if (resource == null) throw new IllegalArgumentException("OntResource cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
+	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
 
         this.ontResource = resource;
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
+        this.resourceContext = resourceContext;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
 	else this.graphURI = null;
 
@@ -233,16 +236,22 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
         return null;
     }
 
-    @Path("{path: .+}") // @Path("{path: .*}")
+    @Path("{path: .+}")
     public Object getResource()
     {
         return this;
     }
 
     @Path("sparql")
-    public Object getSPARQLResource()
+    public Object getSPARQLProxyResource()
     {
-        return getEndpoint();
+        return getSPARQLEndpoint();
+    }
+
+    @Path("meta/sparql")
+    public Object getSPARQLMetaResource()
+    {
+        return getResourceContext().getResource(SPARQLEndpointBase.class);
     }
 
     /**
@@ -273,7 +282,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     @Override
     public Response post(Model model)
     {
-	return post(model, getEndpoint());
+	return post(model, getSPARQLEndpoint());
     }
 
     /**
@@ -285,7 +294,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      */
     public Response post(Model model, URI graphURI)
     {
-	return post(model, graphURI, getEndpoint());
+	return post(model, graphURI, getSPARQLEndpoint());
     }
 
     /**
@@ -367,7 +376,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     @Override
     public Response put(Model model)
     {
-	return put(model, getEndpoint());
+	return put(model, getSPARQLEndpoint());
     }
 
     /**
@@ -379,7 +388,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
      */
     public Response put(Model model, URI graphURI)
     {
-	return put(model, graphURI, getEndpoint());
+	return put(model, graphURI, getSPARQLEndpoint());
     }
 
     /**
@@ -457,7 +466,7 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     @Override
     public Response delete()
     {
-	return delete(getEndpoint());
+	return delete(getSPARQLEndpoint());
     }
     
     /**
@@ -1047,6 +1056,11 @@ public class ResourceBase extends QueriedResourceBase implements LDPResource, Co
     public HttpHeaders getHttpHeaders()
     {
 	return httpHeaders;
+    }
+
+    public ResourceContext getResourceContext()
+    {
+        return resourceContext;
     }
 
 }

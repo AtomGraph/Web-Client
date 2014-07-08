@@ -17,10 +17,15 @@
 
 package org.graphity.processor.model;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
+import com.hp.hpl.jena.update.UpdateRequest;
+import com.sun.jersey.api.core.ResourceContext;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
@@ -30,6 +35,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SD;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,26 +48,63 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
+    private final SPARQLEndpoint metaEndpoint;
     private final UriInfo uriInfo;
     private final javax.ws.rs.core.Application application;
 
     public SPARQLEndpointProxyBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context DataManager dataManager,
-            @Context javax.ws.rs.core.Application application)
+            @Context SPARQLEndpoint metaEndpoint, @Context javax.ws.rs.core.Application application)
     {
-        super(uriInfo, request, servletContext, dataManager);
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+        this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
+                path(org.graphity.server.model.SPARQLEndpointProxyBase.class).
+                build().
+                toString()), request, servletContext, dataManager,
+                //resourceContext.getResource(SPARQLEndpointBase.class),
+                metaEndpoint,
+                uriInfo, application);
+    }
+
+    protected SPARQLEndpointProxyBase(Resource endpoint, Request request, ServletContext servletContext, DataManager dataManager,
+            SPARQLEndpoint metaEndpoint, UriInfo uriInfo, javax.ws.rs.core.Application application)
+    {
+        super(endpoint, request, servletContext, dataManager);
+	if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	if (application == null) throw new IllegalArgumentException("Application cannot be null");
 
+        this.metaEndpoint = metaEndpoint;
         this.uriInfo = uriInfo;
         this.application = application;
         
-        /*
         if (endpoint.isURIResource() && !dataManager.hasServiceContext(endpoint))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
             dataManager.addServiceContext(endpoint);
         }
-        */
+    }
+
+    @Override
+    public void update(UpdateRequest updateRequest) {
+        super.update(updateRequest); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean ask(Query query) {
+        return super.ask(query); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ResultSetRewindable select(Query query) {
+        return super.select(query); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Model loadModel(Query query)
+    {
+        if (getOrigin().equals(getSPARQLEndpoint()))
+            return getSPARQLEndpoint().loadModel(query);
+        
+        return super.loadModel(query);
     }
 
     /**
@@ -153,6 +196,11 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
             getDataManager().putAuthContext(endpoint.getURI(), username, password);
     }
 
+    public SPARQLEndpoint getSPARQLEndpoint()
+    {
+        return metaEndpoint;
+    }
+    
     /**
      * Returns URI information of the current request.
      * 

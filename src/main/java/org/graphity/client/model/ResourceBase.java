@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.LDP;
+import org.graphity.server.model.SPARQLEndpointProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -62,8 +63,9 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
      * @param mode <samp>mode</samp> query string param
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            //@Context SPARQLEndpointProxy endpoint, @Context SPARQLEndpoint metaEndpoint,
-            @Context ResourceContext resourceContext, @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+            @Context SPARQLEndpointProxy endpoint, // @Context SPARQLEndpoint metaEndpoint,
+            @Context OntModel ontModel, @Context HttpHeaders httpHeaders,
+            @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -72,14 +74,16 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    @QueryParam("mode") URI mode)
     {
 	super(uriInfo, request, servletContext,
-		resourceContext, ontModel, httpHeaders,
+		//resourceContext,
+                endpoint, ontModel,
+                httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI);
 	this.mode = mode;
     }
 
     @Path("sparql")
     @Override
-    public Object getSPARQLResource()
+    public Object getSPARQLProxyResource()
     {
 	MediaType mostAcceptable = getHttpHeaders().getAcceptableMediaTypes().get(0);
 
@@ -89,7 +93,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
 	    mostAcceptable.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
 	    mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
 	{
-            return super.getSPARQLResource();
+            return super.getSPARQLProxyResource();
         }
         
         return this;
@@ -105,7 +109,7 @@ public class ResourceBase extends org.graphity.processor.model.ResourceBase
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
-	    description = getEndpoint().loadModel(getQuery(getURI()));
+	    description = getSPARQLEndpoint().loadModel(getQuery(getURI()));
 	}
         else
             description = super.describe();

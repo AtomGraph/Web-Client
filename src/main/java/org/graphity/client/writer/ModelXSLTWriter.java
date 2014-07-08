@@ -17,8 +17,8 @@
 package org.graphity.client.writer;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -173,10 +173,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {
-	// injecting Resource to get the final state of its OntModel. Is there a better way to do this?
-	Object resource = getUriInfo().getMatchedResources().get(0);
-	OntResource ontResource = (OntResource)resource;
-	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", ontResource);
+	// injecting Resource to get the final state of its Model. Is there a better way to do this?
+	Resource resource = (Resource)getUriInfo().getMatchedResources().get(0);
+	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", resource);
 	MatchedIndividual match = (MatchedIndividual)resource;
 
         XSLTBuilder bld = getXSLTBuilder().
@@ -186,7 +185,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("request-uri", getUriInfo().getRequestUri()).
 	    parameter("http-headers", headerMap.toString()).
 	    parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
-            parameter("ont-model", getSource(ontResource.getOntModel())). // $ont-model from the current Resource (with imports)
+            parameter("ont-model", getSource(resource.getModel())). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);

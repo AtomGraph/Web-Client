@@ -18,11 +18,13 @@ package org.graphity.processor.model;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.sun.jersey.api.core.ResourceContext;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.util.DataManager;
 import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.server.model.SPARQLEndpointProxy;
 
 /**
  * A factory class for creating SPARQL endpoints.
@@ -61,6 +63,18 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
             Dataset dataset, DataManager dataManager)
     {
 	return new SPARQLEndpointBase(endpoint, request, servletContext, dataset, dataManager);
+    }
+
+    public static SPARQLEndpointProxy createEndpointProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
+            DataManager dataManager, SPARQLEndpoint metaEndpoint, javax.ws.rs.core.Application application)
+    {
+	return new SPARQLEndpointProxyBase(uriInfo, request, servletContext, dataManager, metaEndpoint, application);
+    }
+
+    public static SPARQLEndpointProxy createEndpointProxy(Resource endpoint, Request request, ServletContext servletContext,
+            DataManager dataManager, SPARQLEndpoint metaEndpoint, UriInfo uriInfo, javax.ws.rs.core.Application application)
+    {
+	return new SPARQLEndpointProxyBase(endpoint, request, servletContext, dataManager, metaEndpoint, uriInfo, application);
     }
 
 }
