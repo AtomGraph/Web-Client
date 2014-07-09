@@ -53,7 +53,7 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
             @Context SPARQLEndpoint metaEndpoint, @Context Application application)
     {
         this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
-                path(org.graphity.server.model.SPARQLEndpointProxyBase.class).
+                path(SPARQLEndpointProxyBase.class).
                 build().
                 toString()), request, servletContext, dataManager,
                 //resourceContext.getResource(SPARQLEndpointBase.class),
@@ -79,17 +79,20 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
     }
 
     @Override
-    public void update(UpdateRequest updateRequest) {
+    public void update(UpdateRequest updateRequest)
+    {
         super.update(updateRequest); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean ask(Query query) {
+    public boolean ask(Query query)
+    {
         return super.ask(query); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ResultSetRewindable select(Query query) {
+    public ResultSetRewindable select(Query query)
+    {
         return super.select(query); //To change body of generated methods, choose Tools | Templates.
     }
 

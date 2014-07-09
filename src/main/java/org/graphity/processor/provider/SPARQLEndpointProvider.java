@@ -46,7 +46,6 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     @Context Request request;
-    //@Context javax.ws.rs.core.Application application;
     
     public SPARQLEndpointProvider()
     {
@@ -72,13 +71,6 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
     {
 	return providers;
     }
-
-    /*
-    public javax.ws.rs.core.Application getApplication()
-    {
-        return application;
-    }
-    */
     
     public Dataset getDataset()
     {
@@ -113,7 +105,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 
     public SPARQLEndpoint getSPARQLEndpoint()
     {
-        return SPARQLEndpointFactory.createEndpoint(getUriInfo(), getRequest(), getServletContext(),
+        return SPARQLEndpointFactory.create(getUriInfo(), getRequest(), getServletContext(),
                 getDataset(), getDataManager());
     }
     

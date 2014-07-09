@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Martynas Jusevičius <martynas@graphity.org>
+ * Copyright (C) 2014 Martynas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -28,28 +29,35 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.client.util.DataManager;
-import org.graphity.server.model.GraphStore;
+import org.graphity.processor.model.Application;
 import org.graphity.processor.model.GraphStoreFactory;
+import org.graphity.server.model.GraphStore;
+import org.graphity.server.model.GraphStoreProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Martynas Jusevičius <martynas@graphity.org>
+ * @author Martynas
  */
 @Provider
-public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context, GraphStore> implements ContextResolver<GraphStore>
+public class GraphStoreProxyProvider  extends PerRequestTypeInjectableProvider<Context, GraphStoreProxy> implements ContextResolver<GraphStoreProxy>
 {
-    private static final Logger log = LoggerFactory.getLogger(GraphStoreProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(GraphStoreProxyProvider.class);
 
     @Context Providers providers;
     @Context ServletContext servletContext;
     @Context UriInfo uriInfo;
     @Context Request request;
-
-    public GraphStoreProvider()
+    
+    public GraphStoreProxyProvider()
     {
-	super(GraphStore.class);
+	super(GraphStoreProxy.class);
+    }
+
+    public Request getRequest()
+    {
+	return request;
     }
 
     public ServletContext getServletContext()
@@ -66,12 +74,7 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
     {
 	return providers;
     }
-
-    public Request getRequest()
-    {
-	return request;
-    }
-
+    
     public Dataset getDataset()
     {
 	ContextResolver<Dataset> cr = getProviders().getContextResolver(Dataset.class, null);
@@ -84,32 +87,41 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 	return cr.getContext(DataManager.class);
     }
 
-    @Override
-    public Injectable<GraphStore> getInjectable(ComponentContext cc, Context a)
+    public GraphStore getGraphStore()
     {
-	//if (log.isDebugEnabled()) log.debug("GraphStoreProvider UriInfo: {} ResourceConfig.getProperties(): {}", uriInfo, resourceConfig.getProperties());
-	
-	return new Injectable<GraphStore>()
+	ContextResolver<GraphStore> cr = getProviders().getContextResolver(GraphStore.class, null);
+	return cr.getContext(GraphStore.class);
+    }
+
+    public Application getApplication()
+    {
+	ContextResolver<Application> cr = getProviders().getContextResolver(Application.class, null);
+	return cr.getContext(Application.class);
+    }
+
+    @Override
+    public Injectable<GraphStoreProxy> getInjectable(ComponentContext cc, Context context)
+    {
+	return new Injectable<GraphStoreProxy>()
 	{
 	    @Override
-	    public GraphStore getValue()
+	    public GraphStoreProxy getValue()
 	    {
-		return getGraphStore();
+		return getEndpointProxy();
 	    }
-
 	};
     }
 
     @Override
-    public GraphStore getContext(Class<?> type)
+    public GraphStoreProxy getContext(Class<?> type)
     {
-	return getGraphStore();
+	return getEndpointProxy();
     }
 
-    public GraphStore getGraphStore()
+    public GraphStoreProxy getEndpointProxy()
     {
-	return GraphStoreFactory.create(getUriInfo(), getRequest(), getServletContext(),
-                getDataset(), getDataManager());
+        return GraphStoreFactory.createProxy(getUriInfo(), getRequest(), getServletContext(),
+                getDataManager(), getGraphStore(), getApplication());
     }
 
 }

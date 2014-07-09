@@ -27,7 +27,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
-import org.graphity.client.provider.ApplicationProvider;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.resource.labelled.Container;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
@@ -36,9 +35,9 @@ import org.graphity.client.provider.QueryExceptionHTTPMapper;
 import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
-import org.graphity.processor.model.GraphStoreBase;
 import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
+import org.graphity.processor.provider.GraphStoreProxyProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.processor.provider.SPARQLEndpointProxyProvider;
@@ -70,7 +69,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     {
 	classes.add(GlobalResourceBase.class); // handles all
         //classes.add(ResourceBase.class);
-        classes.add(GraphStoreBase.class); // handles /service requests
+        //classes.add(GraphStoreBase.class); // handles /service requests
 	classes.add(Container.class); // handles /search
 
 	singletons.addAll(super.getSingletons());
@@ -82,6 +81,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new SPARQLEndpointProvider());
 	singletons.add(new SPARQLEndpointProxyProvider());
         singletons.add(new GraphStoreProvider());
+        singletons.add(new GraphStoreProxyProvider());
 	singletons.add(new RDFPostReader());
         singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());

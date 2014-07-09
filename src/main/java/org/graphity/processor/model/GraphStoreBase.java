@@ -17,24 +17,19 @@
 
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.sparql.engine.http.Service;
 import java.util.List;
-import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.server.util.DataManager;
-import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,34 +42,36 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-http-rdf-update/">SPARQL 1.1 Graph Store HTTP Protocol</a>
  */
-@Path("/service") // not standard
+@Path("/meta/service") // not standard
 public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
 {
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 
-    private final UriInfo uriInfo;
-    private final javax.ws.rs.core.Application application;
+    private final Dataset dataset;
+    private final DataManager dataManager;
     
-    public GraphStoreBase(@Context OntModel sitemap, @Context DataManager dataManager,
-            @Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context javax.ws.rs.core.Application application)
+    public GraphStoreBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context Dataset dataset, @Context DataManager dataManager)
     {
-        this(sitemap.createResource(uriInfo.getBaseUriBuilder().
+        this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
                 path(GraphStoreBase.class).
                 build().
                 toString()),
-            dataManager, uriInfo, request, servletContext, application);
+            uriInfo, request, servletContext,
+            dataset, dataManager);
     }
 
-    public GraphStoreBase(Resource graphStore, DataManager dataManager,
-            UriInfo uriInfo, Request request, ServletContext servletContext, javax.ws.rs.core.Application application)
+    protected GraphStoreBase(Resource graphStore,
+            UriInfo uriInfo, Request request, ServletContext servletContext,
+            Dataset dataset, DataManager dataManager)
     {
-        super(graphStore, dataManager, request, servletContext);
+        super(graphStore, request, servletContext);
+	if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
+        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+        this.dataset = dataset;
+        this.dataManager = dataManager;
         
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	this.uriInfo = uriInfo;
-        this.application = application;
-        
-        if (graphStore.isURIResource() && !getDataManager().hasServiceContext(graphStore))
+        if (graphStore.isURIResource() && !dataManager.hasServiceContext(graphStore))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
             dataManager.addServiceContext(graphStore);
@@ -105,119 +102,63 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
         list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null)); // TO-DO: move this out to Client!
         return list;
     }
-    
-    /**
-     * Returns  SPARQL service resource for site resource.
-     * 
-     * @param property property pointing to service resource
-     * @return service resource
-     * @throws javax.naming.ConfigurationException
-     */
-    public Resource getService(Property property) throws ConfigurationException
-    {
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        
-        return getApplication().getPropertyResourceValue(property);
-    }
 
-     /**
-     * Returns configured Graph Store resource.
-     * 
-     * @return graph store resource
-     */
     @Override
-    public Resource getOrigin()
+    public Model getModel(String uri)
     {
-        try
-        {
-            Resource service = getService(GP.service);
-            if (service != null) return getOrigin(service);
-            
-            return null;
-        }
-        catch (ConfigurationException ex)
-        {
-            throw new WebApplicationException(ex);
-        }
+        return getDataset().getNamedModel(uri);
     }
 
-     /**
-     * Returns configured Graph Store resource for a given service.
-     * 
-     * @param service SPARQL service
-     * @return graph store resource
-     */
-    public Resource getOrigin(Resource service)
+    @Override
+    public boolean containsModel(String uri)
     {
-        if (service == null) throw new IllegalArgumentException("Service resource cannot be null");
-
-        try
-        {
-            Resource graphStore = getGraphStore(service);
-            if (graphStore == null) throw new ConfigurationException("Configured SPARQL service (gp:service in sitemap ontology) does not have a Graph Store (gp:graphStore)");
-            
-            putAuthContext(service, graphStore);
-            
-            return graphStore;
-        }
-        catch (ConfigurationException ex)
-        {
-            if (log.isErrorEnabled()) log.warn("Graph Store configuration error", ex);
-            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);            
-        }
-    }
-       
-    /**
-     * Returns Graph Store resource for the supplied SPARQL service.
-     * Uses <code>gp:graphStore</code> parameter value from current SPARQL service resource.
-     * 
-     * @param service SPARQL service resource
-     * @return service resource
-     */
-    public Resource getGraphStore(Resource service)
-    {
-        if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
-        return service.getPropertyResourceValue(GP.graphStore);
+        return getDataset().containsNamedModel(uri);
     }
 
-    /**
-     * Configures HTTP Basic authentication for SPARQL endpoint context
-     * 
-     * @param service service resource
-     * @param endpoint endpoint resource
-     */
-    public void putAuthContext(Resource service, Resource endpoint)
+    @Override
+    public void putModel(Model model)
     {
-        if (service == null) throw new IllegalArgumentException("SPARQL service resource cannot be null");
-        if (endpoint == null) throw new IllegalArgumentException("SPARQL endpoint resource cannot be null");
-        if (!endpoint.isURIResource()) throw new IllegalArgumentException("SPARQL endpoint must be URI resource");
-
-        Property userProp = ResourceFactory.createProperty(Service.queryAuthUser.getSymbol());            
-        String username = null;
-        if (service.getProperty(userProp) != null && service.getProperty(userProp).getObject().isLiteral())
-            username = service.getProperty(userProp).getLiteral().getString();
-        Property pwdProp = ResourceFactory.createProperty(Service.queryAuthPwd.getSymbol());
-        String password = null;
-        if (service.getProperty(pwdProp) != null && service.getProperty(pwdProp).getObject().isLiteral())
-            password = service.getProperty(pwdProp).getLiteral().getString();
-
-        if (username != null & password != null)
-            getDataManager().putAuthContext(endpoint.getURI(), username, password);
+        getDataset().setDefaultModel(model);
     }
 
-    /**
-     * Returns URI information of the current request.
-     * 
-     * @return URI information
-     */
-    public UriInfo getUriInfo()
+    @Override
+    public void putModel(String uri, Model model)
     {
-	return uriInfo;
+        getDataset().replaceNamedModel(uri, model);
     }
 
-    public Application getApplication()
+    @Override
+    public void deleteDefault()
     {
-        return (Application)application;
+        getDataset().setDefaultModel(null);
+    }
+
+    @Override
+    public void deleteModel(String uri)
+    {
+        getDataset().removeNamedModel(uri);
+    }
+
+    @Override
+    public void add(Model model)
+    {
+        getDataset().getDefaultModel().add(model);
+    }
+
+    @Override
+    public void add(String uri, Model model)
+    {
+        getDataset().addNamedModel(uri, model);
+    }
+
+    public Dataset getDataset()
+    {
+        return dataset;
+    }
+
+    public DataManager getDataManager()
+    {
+        return dataManager;
     }
 
 }

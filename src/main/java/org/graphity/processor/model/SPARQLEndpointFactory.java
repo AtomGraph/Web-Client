@@ -18,7 +18,6 @@ package org.graphity.processor.model;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.sun.jersey.api.core.ResourceContext;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
@@ -43,7 +42,7 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
      * @param dataManager RDF data manager for this endpoint
      * @return new endpoint
      */
-    public static SPARQLEndpoint createEndpoint(UriInfo uriInfo, Request request, ServletContext servletContext,
+    public static SPARQLEndpoint create(UriInfo uriInfo, Request request, ServletContext servletContext,
             Dataset dataset, DataManager dataManager)
     {
 	return new SPARQLEndpointBase(uriInfo, request, servletContext, dataset, dataManager);
@@ -59,22 +58,24 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
      * @param dataManager RDF data manager for this endpoint
      * @return new endpoint
      */
-    public static SPARQLEndpoint createEndpoint(Resource endpoint, Request request, ServletContext servletContext,
+    public static SPARQLEndpoint create(Resource endpoint, Request request, ServletContext servletContext,
             Dataset dataset, DataManager dataManager)
     {
 	return new SPARQLEndpointBase(endpoint, request, servletContext, dataset, dataManager);
     }
 
-    public static SPARQLEndpointProxy createEndpointProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
+    public static SPARQLEndpointProxy createProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
             DataManager dataManager, SPARQLEndpoint metaEndpoint, Application application)
     {
-	return new SPARQLEndpointProxyBase(uriInfo, request, servletContext, dataManager, metaEndpoint, application);
+	return new SPARQLEndpointProxyBase(uriInfo, request, servletContext,
+                dataManager, metaEndpoint, application);
     }
 
-    public static SPARQLEndpointProxy createEndpointProxy(Resource endpoint, Request request, ServletContext servletContext,
+    public static SPARQLEndpointProxy createProxy(Resource endpoint, Request request, ServletContext servletContext,
             DataManager dataManager, SPARQLEndpoint metaEndpoint, Application application)
     {
-	return new SPARQLEndpointProxyBase(endpoint, request, servletContext, dataManager, metaEndpoint, application);
+	return new SPARQLEndpointProxyBase(endpoint, request, servletContext,
+                dataManager, metaEndpoint, application);
     }
 
 }
