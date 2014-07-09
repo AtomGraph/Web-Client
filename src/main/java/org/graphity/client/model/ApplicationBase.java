@@ -15,18 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.processor.model;
+package org.graphity.client.model;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.graphity.client.vocabulary.GC;
 
 /**
  *
  * @author Martynas
  */
-public interface Application extends Resource
+public class ApplicationBase extends org.graphity.processor.model.ApplicationBase implements Application
 {
-    public Resource getBase();
+
+    public ApplicationBase(Resource resource)
+    {
+        super(resource);
+    }
     
-    public Resource getService();
+    @Override
+    public Resource getStylesheet()
+    {
+        return getPropertyResourceValue(GC.stylesheet);
+    }
 
 }

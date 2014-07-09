@@ -17,6 +17,20 @@
 @prefix gc:     <http://client.graphity.org/ontology#> .
 @prefix gp:	<http://processor.graphity.org/ontology#> .
 
+[ a gp:Application ;
+    dct:title "Graphity Client application" ;
+    gp:base <.> ;
+    gc:stylesheet <static/org/graphity/client/xsl/global-xhtml.xsl> ;
+    gp:service [ a sd:Service ;
+        dct:title "Graphity Client service" ;
+        sd:supportedLanguage sd:SPARQL11Query ;
+        sd:endpoint <meta/sparql> ;
+        gp:graphStore <service>
+        # srv:queryAuthUser "username" ;
+        # srv:queryAuthPwd "password"
+    ]
+] .
+
 <graphs/ontology>
 {
 

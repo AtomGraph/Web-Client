@@ -25,7 +25,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.update.UpdateRequest;
-import com.sun.jersey.api.core.ResourceContext;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
@@ -33,7 +32,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SD;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
@@ -49,11 +47,10 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
     private final SPARQLEndpoint metaEndpoint;
-    private final UriInfo uriInfo;
-    private final javax.ws.rs.core.Application application;
+    private final Application application;
 
     public SPARQLEndpointProxyBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context DataManager dataManager,
-            @Context SPARQLEndpoint metaEndpoint, @Context javax.ws.rs.core.Application application)
+            @Context SPARQLEndpoint metaEndpoint, @Context Application application)
     {
         this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
                 path(org.graphity.server.model.SPARQLEndpointProxyBase.class).
@@ -61,19 +58,17 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
                 toString()), request, servletContext, dataManager,
                 //resourceContext.getResource(SPARQLEndpointBase.class),
                 metaEndpoint,
-                uriInfo, application);
+                application);
     }
 
     protected SPARQLEndpointProxyBase(Resource endpoint, Request request, ServletContext servletContext, DataManager dataManager,
-            SPARQLEndpoint metaEndpoint, UriInfo uriInfo, javax.ws.rs.core.Application application)
+            SPARQLEndpoint metaEndpoint, Application application)
     {
         super(endpoint, request, servletContext, dataManager);
 	if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
-        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	if (application == null) throw new IllegalArgumentException("Application cannot be null");
+        if (application == null) throw new IllegalArgumentException("Application cannot be null");
 
         this.metaEndpoint = metaEndpoint;
-        this.uriInfo = uriInfo;
         this.application = application;
         
         if (endpoint.isURIResource() && !dataManager.hasServiceContext(endpoint))
@@ -105,21 +100,6 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
             return getSPARQLEndpoint().loadModel(query);
         
         return super.loadModel(query);
-    }
-
-    /**
-     * Returns SPARQL service resource for site resource.
-     * 
-     * @param property property pointing to service resource
-     * @return service resource
-     * @throws javax.naming.ConfigurationException
-     */
-    
-    public Resource getService(Property property) throws ConfigurationException
-    {
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        
-        return getApplication().getResource(getUriInfo()).getPropertyResourceValue(property);
     }
 
     /**
@@ -160,10 +140,10 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
     {
         try
         {
-            Resource service = getService(GP.service);
-            if (service != null) return getOrigin(service);
-            
-            return null;
+            Resource service = getApplication().getService();
+            if (service == null) throw new ConfigurationException("Application RDF service (gp:service) is not configured");
+
+            return getOrigin(service);
         }
         catch (ConfigurationException ex)
         {
@@ -201,19 +181,9 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
         return metaEndpoint;
     }
     
-    /**
-     * Returns URI information of the current request.
-     * 
-     * @return URI information
-     */
-    public UriInfo getUriInfo()
-    {
-	return uriInfo;
-    }
-
     public Application getApplication()
     {
-        return (Application)application;
+	return application;
     }
 
 }

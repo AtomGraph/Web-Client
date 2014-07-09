@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.processor.model;
+package org.graphity.client.model;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -23,10 +23,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
  *
  * @author Martynas
  */
-public interface Application extends Resource
+public interface Application
 {
-    public Resource getBase();
+    public Resource getStylesheet();
     
-    public Resource getService();
-
 }

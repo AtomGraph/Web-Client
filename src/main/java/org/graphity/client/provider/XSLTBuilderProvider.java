@@ -40,8 +40,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
-import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.model.Application;
+import org.graphity.client.model.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,6 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
     @Context private ServletContext servletContext;
-    @Context private javax.ws.rs.core.Application application;
 
     /**
      * 
@@ -86,7 +84,8 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     public Application getApplication()
     {
-        return (Application)application;
+	ContextResolver<Application> cr = getProviders().getContextResolver(Application.class, null);
+	return cr.getContext(Application.class);
     }
     
     public DataManager getDataManager()
@@ -114,10 +113,10 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         return getXSLTBuilder();
     }
 
-    public Resource getStylesheet(UriInfo uriInfo) throws ConfigurationException
+    public Resource getStylesheet() throws ConfigurationException
     {
-        Resource stylesheet = getApplication().getResource(uriInfo).getPropertyResourceValue(GC.stylesheet);
-        if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet not configured");
+        Resource stylesheet = getApplication().getStylesheet();
+        if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet (gp:stylesheet) not configured");
 
         return stylesheet;
     }
@@ -126,7 +125,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
         try
         {
-            return XSLTBuilder.fromStylesheet(getSource(getStylesheet(getUriInfo()), getUriInfo().getBaseUri())).
+            return XSLTBuilder.fromStylesheet(getSource(getStylesheet(), getUriInfo().getBaseUri())).
                     resolver(getDataManager());
         }
         catch (ConfigurationException ex)

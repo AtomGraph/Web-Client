@@ -66,15 +66,15 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
     }
 
     public static SPARQLEndpointProxy createEndpointProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
-            DataManager dataManager, SPARQLEndpoint metaEndpoint, javax.ws.rs.core.Application application)
+            DataManager dataManager, SPARQLEndpoint metaEndpoint, Application application)
     {
 	return new SPARQLEndpointProxyBase(uriInfo, request, servletContext, dataManager, metaEndpoint, application);
     }
 
     public static SPARQLEndpointProxy createEndpointProxy(Resource endpoint, Request request, ServletContext servletContext,
-            DataManager dataManager, SPARQLEndpoint metaEndpoint, UriInfo uriInfo, javax.ws.rs.core.Application application)
+            DataManager dataManager, SPARQLEndpoint metaEndpoint, Application application)
     {
-	return new SPARQLEndpointProxyBase(endpoint, request, servletContext, dataManager, metaEndpoint, uriInfo, application);
+	return new SPARQLEndpointProxyBase(endpoint, request, servletContext, dataManager, metaEndpoint, application);
     }
 
 }

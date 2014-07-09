@@ -117,7 +117,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
     {
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
         
-        return getApplication().getResource(getUriInfo()).getPropertyResourceValue(property);
+        return getApplication().getPropertyResourceValue(property);
     }
 
      /**

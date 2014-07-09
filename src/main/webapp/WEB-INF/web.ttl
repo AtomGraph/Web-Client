@@ -13,11 +13,6 @@
         dct:title "Graphity Client service" ;
         sd:supportedLanguage sd:SPARQL11Query ;
         sd:endpoint <meta/sparql> ;
-
-        #sd:endpoint <http://graphity.dydra.com/statsbiblioteket/danish-newspapers-test/sparql> ;
-        #srv:queryAuthUser "statsbiblioteket" ;
-        #srv:queryAuthPwd "buj3kz6mfDfqAzKw" ;
-
         gp:graphStore <service>
         # srv:queryAuthUser "username" ;
         # srv:queryAuthPwd "password"

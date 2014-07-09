@@ -16,25 +16,18 @@
  */
 package org.graphity.client;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-import javax.naming.ConfigurationException;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.GlobalResourceBase;
+import org.graphity.client.provider.ApplicationProvider;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.resource.labelled.Container;
 import org.graphity.client.provider.DoesNotExistExceptionMapper;
@@ -49,7 +42,6 @@ import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.processor.provider.SPARQLEndpointProxyProvider;
-import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -64,7 +56,7 @@ import org.topbraid.spin.system.SPINModuleRegistry;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class ApplicationBase extends org.graphity.server.ApplicationBase implements org.graphity.processor.model.Application
+public class ApplicationBase extends org.graphity.server.ApplicationBase
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
@@ -82,7 +74,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
 	classes.add(Container.class); // handles /search
 
 	singletons.addAll(super.getSingletons());
-	singletons.add(new DataManagerProvider());
+	singletons.add(new org.graphity.client.provider.ApplicationProvider());
+	singletons.add(new org.graphity.processor.provider.ApplicationProvider());
+        singletons.add(new DataManagerProvider());
 	singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
 	singletons.add(new SPARQLEndpointProvider());
@@ -145,42 +139,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase impleme
 	}
         */
     }
-
-    @Override
-    public Model getConfigModel(UriInfo uriInfo) throws ConfigurationException
-    {
-        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-
-        if (getServletContext().getInitParameter(GP.NS + "configLocation") == null)
-            throw new ConfigurationException("External RDF configuration (gp:configLocation) not provided for this Application");
     
-        return ModelFactory.createDefaultModel().read(getServletContext().getResourceAsStream(
-                getServletContext().getInitParameter(GP.configLocation.getURI())), uriInfo.getBaseUri().toString(), "TURTLE"); // TO-DO: make generic
-    }
-
-    @Override
-    public Resource getResource(UriInfo uriInfo) throws ConfigurationException
-    {
-        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-        return getResource(getConfigModel(uriInfo), GP.base, uriInfo.getBaseUri());
-    }
-    
-    public Resource getResource(Model configModel, Property property, URI baseURI) throws ConfigurationException
-    {
-        if (configModel == null) throw new IllegalArgumentException("Config Model cannot be null");
-        ResIterator it = configModel.listResourcesWithProperty(property, configModel.createResource(baseURI.toString()));
-        
-        try
-        {
-            if (!it.hasNext()) throw new ConfigurationException("Graphity application (gp:Application) not configured");
-            return it.next();
-        }
-        finally
-        {
-            it.close();
-        }
-    }
-
     /**
      * Provides JAX-RS root resource classes.
      *
