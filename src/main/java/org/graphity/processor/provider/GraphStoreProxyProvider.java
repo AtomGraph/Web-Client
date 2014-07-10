@@ -120,8 +120,7 @@ public class GraphStoreProxyProvider  extends PerRequestTypeInjectableProvider<C
 
     public GraphStoreProxy getEndpointProxy()
     {
-        return GraphStoreFactory.createProxy(getUriInfo(), getRequest(), getServletContext(),
-                getDataManager(), getGraphStore(), getApplication());
+        return GraphStoreFactory.createProxy(getRequest(), getServletContext(), getDataManager(), getApplication());
     }
 
 }

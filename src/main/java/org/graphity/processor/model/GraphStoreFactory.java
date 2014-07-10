@@ -18,10 +18,8 @@
 package org.graphity.processor.model;
 
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Resource;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
 import org.graphity.client.util.DataManager;
 import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.GraphStoreProxy;
@@ -43,12 +41,14 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * @param application webapp instance
      * @return graph store instance
      */
+    /*
     public static GraphStore create(UriInfo uriInfo, Request request, ServletContext servletContext,
             Dataset dataset, DataManager dataManager)
     {
 	return new GraphStoreBase(uriInfo, request, servletContext,
                 dataset, dataManager);
     }
+    */
 
     /**
      * Creates new Graph Store from explicit URI resource, application configuration, and request data.
@@ -61,26 +61,26 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * @param application webapp instance
      * @return graph store instance
      */
-    public static GraphStore create(Resource graphStore,
-            UriInfo uriInfo, Request request, ServletContext servletContext,
+    public static GraphStore create(Request request, ServletContext servletContext,
             Dataset dataset, DataManager dataManager)
     {
-	return new GraphStoreBase(graphStore, uriInfo, request, servletContext,
-                dataset, dataManager);
+	return new GraphStoreBase(request, servletContext, dataset, dataManager);
     }
 
+    /*
     public static GraphStoreProxy createProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
             DataManager dataManager, GraphStore metaGraphStore, Application application)
     {
 	return new GraphStoreProxyBase(uriInfo, request, servletContext,
                 dataManager, metaGraphStore, application);
     }
+    */
 
-    public static GraphStoreProxy createProxy(Resource endpoint, Request request, ServletContext servletContext,
-            DataManager dataManager, GraphStore metaGraphStore, Application application)
+    public static GraphStoreProxy createProxy(Request request, ServletContext servletContext,
+            DataManager dataManager, Application application)
     {
-	return new GraphStoreProxyBase(endpoint, request, servletContext,
-                dataManager, metaGraphStore, application);
+	return new GraphStoreProxyBase(request, servletContext,
+                dataManager, application);
     }
 
 }

@@ -19,16 +19,10 @@ package org.graphity.processor.model;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Variant;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +41,11 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
 {
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 
+    //private final Resource resource;
     private final Dataset dataset;
     private final DataManager dataManager;
     
+    /*
     public GraphStoreBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
             @Context Dataset dataset, @Context DataManager dataManager)
     {
@@ -60,22 +56,25 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
             uriInfo, request, servletContext,
             dataset, dataManager);
     }
-
-    protected GraphStoreBase(Resource graphStore,
-            UriInfo uriInfo, Request request, ServletContext servletContext,
-            Dataset dataset, DataManager dataManager)
+    */
+    
+    public GraphStoreBase(@Context Request request, @Context ServletContext servletContext,
+            @Context Dataset dataset, @Context DataManager dataManager)
     {
-        super(graphStore, request, servletContext);
+        super(request, servletContext);
 	if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
         if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataset = dataset;
         this.dataManager = dataManager;
-        
+
+        /*
         if (graphStore.isURIResource() && !dataManager.hasServiceContext(graphStore))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
             dataManager.addServiceContext(graphStore);
         }
+        */
+        
     }
 
     /**
@@ -83,26 +82,22 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
      * 
      * @return supported variants
      */
+    /*
     @Override
     public List<Variant> getVariants()
-    {
-        // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
-        // https://saxonica.plan.io/issues/1447
-        /*
-	if (getMode() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
-	    List<Variant> list = super.getVariants();
-            list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null));
-            return list;
-	}
-        */
-        
+    {        
         List<Variant> list = super.getVariants();
         list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null)); // TO-DO: move this out to Client!
         return list;
     }
+    */
 
+    @Override
+    public Model getModel()
+    {
+        return getDataset().getDefaultModel();
+    }
+    
     @Override
     public Model getModel(String uri)
     {

@@ -18,6 +18,7 @@ package org.graphity.client.model;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
@@ -27,9 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.graphity.client.util.DataManager;
-import org.graphity.server.model.LinkedDataResource;
 import org.graphity.server.model.LinkedDataResourceBase;
-import org.graphity.server.model.LinkedDataResourceFactory;
 import org.graphity.server.model.SPARQLEndpointProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,9 +147,8 @@ public class GlobalResourceBase extends ResourceBase
 	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicURI());
 
 	    Model model = DataManager.get().loadModel(getTopicURI().toString());
-	    LinkedDataResource topic = LinkedDataResourceFactory.createResource(model.createResource(getTopicURI().toString()),
-		getRequest(), getServletContext());
-	    
+            Resource topic = getModel().createResource(getTopicURI().toString());
+            
 	    addProperty(FOAF.primaryTopic, topic); // does this have any effect?
 
 	    return getResponse(model);

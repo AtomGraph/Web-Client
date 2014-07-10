@@ -27,9 +27,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.server.model.GraphStore;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +41,8 @@ public class GraphStoreProxyBase extends org.graphity.server.model.GraphStorePro
     private static final Logger log = LoggerFactory.getLogger(GraphStoreProxyBase.class);
 
     private final Application application;
-    private final GraphStore graphStore;
     
+    /*
     public GraphStoreProxyBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context DataManager dataManager,
         @Context GraphStore metaGraphStore, @Context Application application)
     {
@@ -56,17 +54,15 @@ public class GraphStoreProxyBase extends org.graphity.server.model.GraphStorePro
             metaGraphStore,
             application);
     }
-
-    public GraphStoreProxyBase(Resource endpoint, Request request, ServletContext servletContext, DataManager dataManager,
-            GraphStore metaGraphStore, Application application)
+    */
+    
+    public GraphStoreProxyBase(@Context Request request, @Context ServletContext servletContext,
+            @Context DataManager dataManager, @Context Application application)
     {
-        super(endpoint, request, servletContext, dataManager);
-	if (metaGraphStore == null) throw new IllegalArgumentException("GraphStore cannot be null");
+        super(request, servletContext, dataManager);
         if (application == null) throw new IllegalArgumentException("Application cannot be null");
 
-        this.graphStore = metaGraphStore;
         this.application = application;
-        
     }
     
     /**
@@ -159,11 +155,6 @@ public class GraphStoreProxyBase extends org.graphity.server.model.GraphStorePro
     public Application getApplication()
     {
         return application;
-    }
-
-    public GraphStore getGraphStore()
-    {
-        return graphStore;
     }
 
 }

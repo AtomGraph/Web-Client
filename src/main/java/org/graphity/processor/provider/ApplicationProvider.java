@@ -31,8 +31,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import org.graphity.client.util.DataManager;
 import org.graphity.processor.model.Application;
 import org.graphity.processor.model.ApplicationBase;
 import org.graphity.processor.vocabulary.GP;
@@ -42,6 +42,7 @@ import org.graphity.server.model.SPARQLEndpoint;
  *
  * @author Martynas
  */
+@Provider
 public class ApplicationProvider extends PerRequestTypeInjectableProvider<Context, Application> implements ContextResolver<Application>
 {
     @Context UriInfo uriInfo;

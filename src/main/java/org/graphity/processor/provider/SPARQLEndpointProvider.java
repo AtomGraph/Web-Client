@@ -28,8 +28,8 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.client.util.DataManager;
-import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.processor.model.SPARQLEndpointFactory;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,8 +105,7 @@ public class SPARQLEndpointProvider extends PerRequestTypeInjectableProvider<Con
 
     public SPARQLEndpoint getSPARQLEndpoint()
     {
-        return SPARQLEndpointFactory.create(getUriInfo(), getRequest(), getServletContext(),
-                getDataset(), getDataManager());
+        return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
     }
     
 }

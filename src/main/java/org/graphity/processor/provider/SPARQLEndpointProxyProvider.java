@@ -119,8 +119,8 @@ public class SPARQLEndpointProxyProvider extends PerRequestTypeInjectableProvide
 
     public SPARQLEndpointProxy getEndpointProxy()
     {
-        return SPARQLEndpointFactory.createProxy(getUriInfo(), getRequest(), getServletContext(),
-                getDataManager(), getSPARQLEndpoint(), getApplication());
+        return SPARQLEndpointFactory.createProxy(getRequest(), getServletContext(),
+                getDataManager(), getApplication());
     }
     
 }

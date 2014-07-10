@@ -17,23 +17,17 @@
 
 package org.graphity.processor.model;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.Service;
-import com.hp.hpl.jena.update.UpdateRequest;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import org.graphity.processor.vocabulary.SD;
-import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +36,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas
  */
+//@Path("/sparql")
 public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEndpointProxyBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
-    private final SPARQLEndpoint metaEndpoint;
     private final Application application;
 
+    /*
     public SPARQLEndpointProxyBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext, @Context DataManager dataManager,
             @Context SPARQLEndpoint metaEndpoint, @Context Application application)
     {
@@ -60,40 +55,53 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
                 metaEndpoint,
                 application);
     }
-
-    protected SPARQLEndpointProxyBase(Resource endpoint, Request request, ServletContext servletContext, DataManager dataManager,
-            SPARQLEndpoint metaEndpoint, Application application)
+    */
+    
+    public SPARQLEndpointProxyBase(@Context Request request, @Context ServletContext servletContext, @Context DataManager dataManager,
+            @Context Application application)
     {
-        super(endpoint, request, servletContext, dataManager);
-	if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
+        super(request, servletContext, dataManager);
+	//if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
         if (application == null) throw new IllegalArgumentException("Application cannot be null");
 
-        this.metaEndpoint = metaEndpoint;
+        //this.metaEndpoint = metaEndpoint;
         this.application = application;
         
+        /*
         if (endpoint.isURIResource() && !dataManager.hasServiceContext(endpoint))
         {
             if (log.isDebugEnabled()) log.debug("Adding service Context for local SPARQL endpoint with URI: {}", endpoint.getURI());
             dataManager.addServiceContext(endpoint);
         }
+        */
     }
 
+    /*
     @Override
     public void update(UpdateRequest updateRequest)
     {
-        super.update(updateRequest); //To change body of generated methods, choose Tools | Templates.
+        if (getOrigin().equals(getSPARQLEndpoint()))
+            getSPARQLEndpoint().update(updateRequest);
+
+        super.update(updateRequest);
     }
 
     @Override
     public boolean ask(Query query)
     {
-        return super.ask(query); //To change body of generated methods, choose Tools | Templates.
+        if (getOrigin().equals(getSPARQLEndpoint()))
+            return getSPARQLEndpoint().ask(query);
+
+        return super.ask(query);
     }
 
     @Override
     public ResultSetRewindable select(Query query)
     {
-        return super.select(query); //To change body of generated methods, choose Tools | Templates.
+        if (getOrigin().equals(getSPARQLEndpoint()))
+            return getSPARQLEndpoint().select(query);
+
+        return super.select(query);
     }
 
     @Override
@@ -104,7 +112,8 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
         
         return super.loadModel(query);
     }
-
+    */
+    
     /**
      * Returns configured SPARQL endpoint resource for a given service.
      * 
@@ -119,7 +128,7 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
         {
             Resource remote = service.getPropertyResourceValue(SD.endpoint);
             if (remote == null) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) does not have an endpoint (sd:endpoint)");
-            if (remote.equals(this)) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) is not remote. This will lead to a request loop");
+            //if (remote.equals(this)) throw new ConfigurationException("Configured SPARQL endpoint (sd:endpoint in the sitemap ontology) is not remote. This will lead to a request loop");
 
             putAuthContext(service, remote);
 
@@ -179,10 +188,12 @@ public class SPARQLEndpointProxyBase extends org.graphity.server.model.SPARQLEnd
             getDataManager().putAuthContext(endpoint.getURI(), username, password);
     }
 
+    /*
     public SPARQLEndpoint getSPARQLEndpoint()
     {
         return metaEndpoint;
     }
+    */
     
     public Application getApplication()
     {

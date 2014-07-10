@@ -20,14 +20,10 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
 import org.graphity.server.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +37,12 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
  */
-@Path("/meta/sparql")
+//@Path("/meta/sparql")
 public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpointBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
+    //private final Resource resource;
     private final Dataset dataset;
     private final DataManager dataManager;
 
@@ -61,6 +58,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param request current request
      * @param servletContext webapp context
      */
+    /*
     public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
             @Context Dataset dataset, @Context DataManager dataManager)
     {
@@ -70,6 +68,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
                 toString()),
             request, servletContext, dataset, dataManager);
     }
+    */
     
     /**
      * Protected constructor with explicit endpoint resource.
@@ -81,12 +80,14 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param dataset dataset of this webapp
      * @param servletContext webapp context
      */
-    protected SPARQLEndpointBase(Resource endpoint, Request request, ServletContext servletContext,
-            Dataset dataset, DataManager dataManager)
+    public SPARQLEndpointBase(@Context Request request, @Context ServletContext servletContext,
+            @Context Dataset dataset, @Context DataManager dataManager)
     {
-	super(endpoint, request, servletContext);
-	if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
+	super(request, servletContext);
+	//if (endpoint == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
         if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+        //this.resource = endpoint;
         this.dataset = dataset;
         this.dataManager = dataManager;
     }
