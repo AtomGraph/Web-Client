@@ -20,6 +20,7 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -28,6 +29,7 @@ import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import java.net.URI;
+import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -130,9 +132,9 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
-	if (servletContext.getInitParameter(GP.ontologyEndpoint.getURI()) != null)
+	if (servletContext.getInitParameter(GP.datasetEndpoint.getURI()) != null)
 	{
-	    Object ontologyEndpoint = servletContext.getInitParameter(GP.ontologyEndpoint.getURI());
+	    Object ontologyEndpoint = servletContext.getInitParameter(GP.datasetEndpoint.getURI());
 	    Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
             if (ontologyQuery == null) throw new IllegalStateException("Sitemap ontology query is not configured properly. Check ResourceConfig and/or web.xml");
 
@@ -149,7 +151,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	}
 	else
 	{
-            Object ontologyLocation = servletContext.getInitParameter(GP.ontologyLocation.getURI());
+            Object ontologyLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
             if (ontologyLocation == null) throw new IllegalStateException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
             URI ontologyLocationURI = URI.create((String)ontologyLocation);
             /*
@@ -167,8 +169,14 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    }
             */
             
-            ontManager.addModel(localUri, getModel(getSPARQLEndpoint()));
-            //return getOntModel(getSPARQLEndpoint());
+            try
+            {
+                ontManager.addModel(localUri, getSPARQLEndpoint().loadModel(getQuery(getServletContext(), getUriInfo())));
+            }
+            catch (ConfigurationException ex)
+            {
+                throw new WebApplicationException(ex);
+            }
 	}
         
 	OntModel ontModel = ontManager.getOntology(localUri, OntModelSpec.OWL_MEM);
@@ -176,12 +184,17 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	return ontModel;
     }
 
-    public final Model getModel(SPARQLEndpoint metaEndpoint)
+    public Query getQuery(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
-        String queryString = "PREFIX gp: <http://processor.graphity.org/ontology#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> DESCRIBE ?sitemap ?s WHERE { GRAPH ?sitemapGraph { ?sitemap a gp:Sitemap } GRAPH ?g { ?s rdfs:isDefinedBy ?sitemap } }";
-        Query query = QueryFactory.create(queryString);
-        return metaEndpoint.loadModel(query);
-        //return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+
+	Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
+	if (ontologyQuery == null) throw new ConfigurationException("Property '" + GP.ontologyQuery.getURI() + "' needs to be set in ServletContext (web.xml)");
+
+        ParameterizedSparqlString queryString = new ParameterizedSparqlString(ontologyQuery.toString());
+        queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
+        return queryString.asQuery();
     }
 
     public Providers getProviders()

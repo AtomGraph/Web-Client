@@ -18,6 +18,7 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -27,6 +28,7 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import java.net.URI;
 import javax.naming.ConfigurationException;
+import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -45,7 +47,9 @@ import org.graphity.server.model.SPARQLEndpoint;
 @Provider
 public class ApplicationProvider extends PerRequestTypeInjectableProvider<Context, Application> implements ContextResolver<Application>
 {
+    
     @Context UriInfo uriInfo;
+    @Context ServletContext servletContext;
     @Context Providers providers;
     
     public ApplicationProvider()
@@ -82,6 +86,11 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
         return uriInfo;
     }
 
+    public ServletContext getServletContext()
+    {
+        return servletContext;
+    }
+
     public SPARQLEndpoint getSPARQLEndpoint()
     {
 	ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
@@ -90,17 +99,15 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
 
     public Application getApplication()
     {
-        return getApplication(getSPARQLEndpoint(), getUriInfo());
+        return getApplication(getSPARQLEndpoint(), getServletContext(), getUriInfo());
     }
     
-    public Application getApplication(SPARQLEndpoint metaEndpoint, UriInfo uriInfo)
+    public Application getApplication(SPARQLEndpoint metaEndpoint, ServletContext servletContext, UriInfo uriInfo)
     {
         if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 
-        ParameterizedSparqlString queryString = new ParameterizedSparqlString("PREFIX gp: <http://processor.graphity.org/ontology#> DESCRIBE ?app WHERE { GRAPH ?g { ?app gp:base ?baseUri } }");
-        queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
-        Model model = metaEndpoint.loadModel(queryString.asQuery());
+        Model model = metaEndpoint.loadModel(getQuery(servletContext, uriInfo));
         Resource resource = getResource(model, GP.base, uriInfo.getBaseUri());
         
         if (resource == null) throw new WebApplicationException(new ConfigurationException("Graphity Processor application (gp:Application) not configured"));
@@ -108,6 +115,19 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
         return new ApplicationBase(resource);
     }
 
+    public Query getQuery(ServletContext servletContext, UriInfo uriInfo)
+    {
+        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+
+        Object appQuery = servletContext.getInitParameter(GP.applicationQuery.getURI());
+	if (appQuery == null) throw new ConfigurationException("Property '" + GP.applicationQuery.getURI() + "' needs to be set in ServletContext (web.xml)");
+
+        ParameterizedSparqlString queryString = new ParameterizedSparqlString(appQuery.toString());
+        queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
+        return queryString.asQuery();
+    }
+    
     public Resource getResource(Model model, Property property, URI baseURI)
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");

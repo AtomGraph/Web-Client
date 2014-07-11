@@ -67,7 +67,7 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     
     public Dataset getDataset(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
-        Object ontologyLocation = servletContext.getInitParameter(GP.ontologyLocation.getURI());
+        Object ontologyLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
         if (ontologyLocation == null) throw new ConfigurationException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
 	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new ConfigurationException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");

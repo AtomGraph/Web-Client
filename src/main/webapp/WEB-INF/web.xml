@@ -6,28 +6,35 @@
     id="graphity-client" version="3.0">
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
-    <!--
-    <context-param>
-        <param-name>http://processor.graphity.org/ontology#configLocation</param-name>
-        <param-value>WEB-INF/web.ttl</param-value>
-    </context-param>
-    -->
     <context-param>
         <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>
         <param-value>ontology</param-value>
     </context-param>
     <!--
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontologyEndpoint</param-name>
+        <param-name>http://processor.graphity.org/ontology#datasetEndpoint</param-name>
         <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
-        <param-value><![CDATA[ CONSTRUCT WHERE { ?s ?p ?o } ]]></param-value>
     </context-param>
     -->
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontologyLocation</param-name>
+        <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
+        <param-value><![CDATA[
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  gp:   <http://processor.graphity.org/ontology#>
+
+DESCRIBE ?sitemap ?s
+WHERE
+  { GRAPH ?appGraph
+      { ?app gp:base ?baseUri .
+        ?app rdfs:isDefinedBy ?sitemap
+      }
+    GRAPH ?g
+      { ?s rdfs:isDefinedBy ?sitemap }
+  }
+]]></param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#datasetLocation</param-name>
         <param-value>org/graphity/client/ontology/sitemap.trig</param-value>
     </context-param>
     <context-param>
