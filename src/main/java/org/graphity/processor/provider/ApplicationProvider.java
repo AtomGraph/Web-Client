@@ -98,12 +98,12 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
         if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 
-        ParameterizedSparqlString queryString = new ParameterizedSparqlString("PREFIX gp: <http://processor.graphity.org/ontology#> DESCRIBE ?app WHERE { ?app gp:base ?baseUri }");
+        ParameterizedSparqlString queryString = new ParameterizedSparqlString("PREFIX gp: <http://processor.graphity.org/ontology#> DESCRIBE ?app WHERE { GRAPH ?g { ?app gp:base ?baseUri } }");
         queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
         Model model = metaEndpoint.loadModel(queryString.asQuery());
         Resource resource = getResource(model, GP.base, uriInfo.getBaseUri());
         
-        if (resource == null) throw new WebApplicationException(new ConfigurationException("Graphity application (gp:Application) not configured"));
+        if (resource == null) throw new WebApplicationException(new ConfigurationException("Graphity Processor application (gp:Application) not configured"));
 
         return new ApplicationBase(resource);
     }

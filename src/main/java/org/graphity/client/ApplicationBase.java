@@ -74,7 +74,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 
 	singletons.addAll(super.getSingletons());
 	singletons.add(new org.graphity.client.provider.ApplicationProvider());
-	//singletons.add(new org.graphity.processor.provider.ApplicationProvider());
+	singletons.add(new org.graphity.processor.provider.ApplicationProvider());
         singletons.add(new DataManagerProvider());
 	singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());

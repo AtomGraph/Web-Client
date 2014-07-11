@@ -11,7 +11,9 @@ import com.hp.hpl.jena.query.DatasetFactory;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
@@ -53,19 +55,28 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     
     public Dataset getDataset()
     {
-        return getDataset(getServletContext(), getUriInfo());
+        try
+        {
+            return getDataset(getServletContext(), getUriInfo());
+        }
+        catch (ConfigurationException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
     }
     
-    public Dataset getDataset(ServletContext servletContext, UriInfo uriInfo)
+    public Dataset getDataset(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
+        Object ontologyLocation = servletContext.getInitParameter(GP.ontologyLocation.getURI());
+        if (ontologyLocation == null) throw new ConfigurationException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
 	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
-	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
+	if (ontologyPath == null) throw new ConfigurationException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
         //return RDFDataMgr.loadDataset("org/graphity/platform/ontology/sitemap.trig");
         Dataset dataset = DatasetFactory.createMem();
-        RDFDataMgr.read(dataset, "org/graphity/client/ontology/sitemap.trig", localUri, null); // Lang.TURTLE
+        RDFDataMgr.read(dataset, ontologyLocation.toString(), localUri, null); // Lang.TURTLE
         return dataset;
     }
 

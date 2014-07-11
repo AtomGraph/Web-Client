@@ -17,19 +17,33 @@
 @prefix gc:     <http://client.graphity.org/ontology#> .
 @prefix gp:	<http://processor.graphity.org/ontology#> .
 
-[ a gp:Application ;
-    dct:title "Graphity Client application" ;
-    gp:base <.> ;
-    gc:stylesheet <static/org/graphity/client/xsl/global-xhtml.xsl> ;
-    gp:service [ a sd:Service ;
-        dct:title "Graphity Client service" ;
-        sd:supportedLanguage sd:SPARQL11Query ;
-        sd:endpoint <meta/sparql> ;
-        gp:graphStore <service>
-        # srv:queryAuthUser "username" ;
-        # srv:queryAuthPwd "password"
-    ]
-] .
+<graphs/application>
+{
+
+    <application#this> a gc:Application ;
+        dct:title "Graphity Client application" ;
+        gp:base <.> ;
+        gc:stylesheet <static/org/graphity/client/xsl/global-xhtml.xsl> ;
+        gp:service [ a sd:Service ;
+            dct:title "Graphity Client service" ;
+            sd:supportedLanguage sd:SPARQL11Query ;
+            sd:endpoint <meta/sparql> ;
+            gp:graphStore <service>
+            # srv:queryAuthUser "username" ;
+            # srv:queryAuthPwd "password"
+        ] ;
+        foaf:isPrimaryTopicOf <application> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+    <application> a foaf:Document, sioc:Item ;
+        sioc:has_container <.> ;
+        dct:title "Application document" ;
+        foaf:primaryTopic <application#this> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
 
 <graphs/ontology>
 {
@@ -79,100 +93,164 @@
         void:sparqlEndpoint <sparql> ;
         rdfs:isDefinedBy <#> .
 
+    <dataset> a foaf:Document, sioc:Item ;
+        sioc:has_container <.> ;
+        dct:title "Dataset document" ;
+        foaf:primaryTopic <dataset#this> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
 }
 
 # RESOURCES
 
-<.> a sioc:Space, ldp:Container, foaf:Document ;
-    dct:title "Graphity Client" ;
-    dct:description "Generic Linked Data browser and end-user-oriented platform" ;
-    foaf:logo <static/img/graphity-logo.svg> ;
-    foaf:maker <http://graphityhq.com/#company> ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> ;
-    rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+<graphs/>
+{
 
-<ontologies/linked-data-api> a foaf:Document, sioc:Item ;
-    sioc:has_container <ontologies> ;
-    dct:title "Linked Data API ontology document" ;
-    foaf:primaryTopic lda: ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+    <.> a sioc:Space, ldp:Container, foaf:Document ;
+        dct:title "Graphity Client" ;
+        dct:description "Generic Linked Data browser and end-user-oriented platform" ;
+        foaf:logo <static/img/graphity-logo.svg> ;
+        foaf:maker <http://graphityhq.com/#company> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> ;
+        rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+}
 
-<ontologies/foaf> a foaf:Document, sioc:Item ;
-    sioc:has_container <ontologies> ;
-    dct:title "FOAF ontology document" ;
-    foaf:primaryTopic foaf: ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+<graphs/ontologies/linked-data-api>
+{
 
-<ontologies/void> a foaf:Document, sioc:Item ;
-    sioc:has_container <ontologies> ;
-    dct:title "VoID ontology document" ;
-    foaf:primaryTopic void: ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+    <ontologies/linked-data-api> a foaf:Document, sioc:Item ;
+        sioc:has_container <ontologies> ;
+        dct:title "Linked Data API ontology document" ;
+        foaf:primaryTopic lda: ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
 
-<dataset> a foaf:Document, sioc:Item ;
-    sioc:has_container <.> ;
-    dct:title "Dataset document" ;
-    foaf:primaryTopic <dataset#this> ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+}
 
-<service> a foaf:Document, sioc:Item ;
-    sioc:has_container <.> ;
-    dct:title "Service document" ;
-    foaf:primaryTopic <service#this> ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+<graphs/ontologies/foaf>
+{
 
-<ontologies> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Ontologies" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+    <ontologies/foaf> a foaf:Document, sioc:Item ;
+        sioc:has_container <ontologies> ;
+        dct:title "FOAF ontology document" ;
+        foaf:primaryTopic foaf: ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
 
-<classes> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Classes" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+}
 
-<datasets> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Datasets" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+<graphs/ontologies/void>
+{
 
-<services> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Services" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+    <ontologies/void> a foaf:Document, sioc:Item ;
+        sioc:has_container <ontologies> ;
+        dct:title "VoID ontology document" ;
+        foaf:primaryTopic void: ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
 
-<queries> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <.> ;
-    dct:title "Queries" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+}
 
-<resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <resources> ;
-    dct:title "Labelled resources" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+<graphs/service>
+{
 
-<properties/labelled> a ldp:Container, foaf:Document ;
-    sioc:has_space <properties> ;
-    dct:title "Labelled properties" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+    <service> a foaf:Document, sioc:Item ;
+        sioc:has_container <.> ;
+        dct:title "Service document" ;
+        foaf:primaryTopic <service#this> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
 
-<sparql> a foaf:Document ;
-    dct:title "SPARQL endpoint" ;
-    rdfs:isDefinedBy <#> ;
-    void:inDataset <dataset#this> .
+}
+
+<graphs/ontologies>
+{
+
+    <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <.> ;
+        dct:title "Ontologies" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/classes>
+{
+
+    <classes> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <.> ;
+        dct:title "Classes" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/datasets>
+{
+
+    <datasets> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <.> ;
+        dct:title "Datasets" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/services>
+{
+
+    <services> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <.> ;
+        dct:title "Services" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/queries>
+{
+
+    <queries> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <.> ;
+        dct:title "Queries" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/resources/labelled>
+{
+
+    <resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <resources> ;
+        dct:title "Labelled resources" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/properties/labelled>
+{
+
+    <properties/labelled> a ldp:Container, foaf:Document ;
+        sioc:has_space <properties> ;
+        dct:title "Labelled properties" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/sparql>
+{
+
+    <sparql> a foaf:Document ;
+        dct:title "SPARQL endpoint" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
 
 # RESOURCE CLASSES
 
@@ -189,7 +267,7 @@
         foaf:isPrimaryTopicOf <classes/resource> ;
         rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
         lda:uriTemplate "/{path: .*}" ;
-        spin:query [ a gp:DescribeWithChildrenTemplate ] ;
+        spin:query [ a gp:DescribeFromGraphWithChildrenTemplate ] ;
         gp:limit 20 ;
         gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
         rdfs:label "Resource" ;
