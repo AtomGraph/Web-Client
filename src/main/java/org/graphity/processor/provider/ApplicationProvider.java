@@ -99,23 +99,30 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
 
     public Application getApplication()
     {
-        return getApplication(getSPARQLEndpoint(), getServletContext(), getUriInfo());
+        try
+        {
+            return getApplication(getSPARQLEndpoint(), getServletContext(), getUriInfo());
+        }
+        catch (ConfigurationException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
     }
     
-    public Application getApplication(SPARQLEndpoint metaEndpoint, ServletContext servletContext, UriInfo uriInfo)
+    public Application getApplication(SPARQLEndpoint metaEndpoint, ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
         if (metaEndpoint == null) throw new IllegalArgumentException("SPARQLEndpoint cannot be null");
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 
         Model model = metaEndpoint.loadModel(getQuery(servletContext, uriInfo));
         Resource resource = getResource(model, GP.base, uriInfo.getBaseUri());
-        
-        if (resource == null) throw new WebApplicationException(new ConfigurationException("Graphity Processor application (gp:Application) not configured"));
+
+        if (resource == null) throw new ConfigurationException("Graphity Processor application (gp:Application) not configured");
 
         return new ApplicationBase(resource);
     }
 
-    public Query getQuery(ServletContext servletContext, UriInfo uriInfo)
+    public Query getQuery(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
         if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");

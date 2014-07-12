@@ -34,6 +34,18 @@ WHERE
 ]]></param-value>
     </context-param>
     <context-param>
+        <param-name>http://processor.graphity.org/ontology#applicationQuery</param-name>
+        <param-value><![CDATA[
+PREFIX  gp:   <http://processor.graphity.org/ontology#>
+
+DESCRIBE ?app
+WHERE
+  { GRAPH ?g
+      { ?app gp:base ?baseUri }
+  }
+]]></param-value>
+    </context-param>
+    <context-param>
         <param-name>http://processor.graphity.org/ontology#datasetLocation</param-name>
         <param-value>org/graphity/client/ontology/sitemap.trig</param-value>
     </context-param>

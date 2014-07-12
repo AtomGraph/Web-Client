@@ -101,7 +101,14 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public OntModel getOntModel()
     {
-	return getOntModel(getDataManager(), getUriInfo(), getServletContext());
+        try
+        {
+            return getOntModel(getDataManager(), getUriInfo(), getServletContext());
+        }
+        catch (ConfigurationException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
     }
     
     public DataManager getDataManager()
@@ -122,7 +129,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      * @return ontology Model
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext)
+    public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext) throws ConfigurationException
     {
         OntDocumentManager ontManager = new OntDocumentManager(dataManager, (String)null);
         ontManager.setFileManager(dataManager);
@@ -169,14 +176,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	    }
             */
             
-            try
-            {
-                ontManager.addModel(localUri, getSPARQLEndpoint().loadModel(getQuery(getServletContext(), getUriInfo())));
-            }
-            catch (ConfigurationException ex)
-            {
-                throw new WebApplicationException(ex);
-            }
+            ontManager.addModel(localUri, getSPARQLEndpoint().loadModel(getQuery(getServletContext(), getUriInfo())));
 	}
         
 	OntModel ontModel = ontManager.getOntology(localUri, OntModelSpec.OWL_MEM);

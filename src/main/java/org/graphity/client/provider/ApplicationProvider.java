@@ -96,7 +96,14 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
 
     public Application getApplication()
     {
-        return getApplication(getSPARQLEndpoint(), getServletContext(), getUriInfo());
+        try
+        {
+            return getApplication(getSPARQLEndpoint(), getServletContext(), getUriInfo());
+        }
+        catch (ConfigurationException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
     }
     
     public Application getApplication(SPARQLEndpoint metaEndpoint, ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
@@ -107,7 +114,7 @@ public class ApplicationProvider extends PerRequestTypeInjectableProvider<Contex
         Model model = metaEndpoint.loadModel(getQuery(servletContext, uriInfo));
         Resource resource = getResource(model, GP.base, uriInfo.getBaseUri());
         
-        if (resource == null) throw new WebApplicationException(new ConfigurationException("Graphity Client application (gc:Application) not configured"));
+        if (resource == null) throw new ConfigurationException("Graphity Client application (gc:Application) not configured");
 
         return new ApplicationBase(resource);
     }

@@ -13,7 +13,7 @@
 # PROPERTIES
 
 gc:stylesheet a owl:ObjectProperty ;
-    rdfs:label "Master XSLT stylesheet of this application" .
+    rdfs:label "Master XSLT stylesheet" .
 
 gc:defaultMode a owl:ObjectProperty ;
     rdfs:label "Default layout mode" .
