@@ -28,7 +28,6 @@ import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import org.graphity.processor.vocabulary.GP;
 
 /**
  *
@@ -44,6 +43,7 @@ public class ApplicationBase implements Application
         this.resource = resource;
     }
 
+    /*
     @Override
     public Resource getBase()
     {
@@ -51,12 +51,13 @@ public class ApplicationBase implements Application
     }
 
     @Override
-    public Resource getService()
+    public Resource getRemoteService()
     {
         return getPropertyResourceValue(GP.service);
     }
-
-    public Resource getResource()
+    */
+    
+    private Resource getResource()
     {
         return resource;
     }

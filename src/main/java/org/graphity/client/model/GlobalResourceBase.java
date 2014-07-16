@@ -26,10 +26,17 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Variant;
 import org.graphity.client.util.DataManager;
+import org.graphity.processor.model.Application;
 import org.graphity.server.model.LinkedDataResourceBase;
-import org.graphity.server.model.SPARQLEndpointProxy;
+import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +77,8 @@ public class GlobalResourceBase extends ResourceBase
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-	    @Context SPARQLEndpointProxy endpoint, // @Context SPARQLEndpoint metaEndpoint,
-            @Context OntModel ontModel,
-            @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel, @Context Application application,
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -83,9 +88,8 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
     {
-	super(uriInfo, request, servletContext,
-		endpoint, ontModel,
-                httpHeaders, resourceContext,
+	super(uriInfo, endpoint, ontModel, application,
+                request, servletContext, httpHeaders, resourceContext,
                 limit, offset, orderBy, desc, graphURI, mode);
 	
 	this.mediaType = mediaType;

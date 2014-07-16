@@ -8,7 +8,8 @@
 # ONTOLOGY
 
 <#> a owl:Ontology ;
-    rdfs:label "Graphity Client vocabulary" .
+    rdfs:label "Graphity Client vocabulary" ;
+    owl:versionInfo "1.0.14" .
 
 # PROPERTIES
 

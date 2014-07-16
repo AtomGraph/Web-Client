@@ -23,10 +23,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
  *
  * @author Martynas
  */
-public interface Application extends Resource
+public interface Application extends Resource // need a distinct type for injections etc
 {
-    public Resource getBase();
-    
-    public Resource getService();
 
 }

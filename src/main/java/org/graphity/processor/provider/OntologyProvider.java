@@ -20,6 +20,7 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -33,11 +34,13 @@ import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.util.DataManager;
@@ -54,6 +57,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     private static final Logger log = LoggerFactory.getLogger(OntologyProvider.class);
 
     @Context UriInfo uriInfo;
+    @Context Request request;
     @Context ServletContext servletContext;
     @Context Providers providers;
 
@@ -71,7 +75,18 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
 	return uriInfo;
     }
-    
+
+    public Request getRequest()
+    {
+        return request;
+    }
+
+    public Dataset getDataset()
+    {
+	ContextResolver<Dataset> cr = getProviders().getContextResolver(Dataset.class, null);
+	return cr.getContext(Dataset.class);
+    }
+
     @Override
     public Injectable<OntModel> getInjectable(ComponentContext cc, Context context)
     {
@@ -95,8 +110,9 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     public SPARQLEndpoint getSPARQLEndpoint()
     {
-	ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
-	return cr.getContext(SPARQLEndpoint.class);
+	//ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
+	//return cr.getContext(SPARQLEndpoint.class);
+        return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
     }
 
     public OntModel getOntModel()

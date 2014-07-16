@@ -27,10 +27,8 @@
         gp:service [ a sd:Service ;
             dct:title "Graphity Client service" ;
             sd:supportedLanguage sd:SPARQL11Query ;
-            sd:endpoint <meta/sparql> ;
-            gp:graphStore <service>
-            # srv:queryAuthUser "username" ;
-            # srv:queryAuthPwd "password"
+            sd:endpoint <sparql> ;
+            gp:graphStore <service> ;
         ] ;
         foaf:isPrimaryTopicOf <application> ;
         rdfs:isDefinedBy <#> ;
@@ -55,7 +53,7 @@
         rdfs:label "Sitemap" ;
         dct:description "Default sitemap for SPARQL service" ;
         dct:created "2013-03-09T13:53:00+03:00"^^xsd:dateTime ;
-        dct:modified "2013-12-12T14:58:00+02:00"^^xsd:dateTime ;
+        dct:modified "2014-07-16T00:11:00+02:00"^^xsd:dateTime ;
         foaf:isPrimaryTopicOf <> ;
         rdfs:seeAlso <sparql> .
 
@@ -156,10 +154,9 @@
 <graphs/service>
 {
 
-    <service> a foaf:Document, sioc:Item ;
+    <service> a foaf:Document ;
         sioc:has_container <.> ;
-        dct:title "Service document" ;
-        foaf:primaryTopic <service#this> ;
+        dct:title "Graph Store Protocol endpoint" ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
@@ -307,7 +304,7 @@
     <classes/resources-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
         lda:uriTemplate "/resources/labelled" ;
-        spin:query [ a gp:DescribeLabelResourcesTemplate ] ;
+        spin:query [ a gp:DescribeGraphLabelResourcesTemplate ] ;
         gp:limit 20 ;
         gp:orderBy "label"^^xsd:string ;
         rdfs:label "Labelled resource container" ;

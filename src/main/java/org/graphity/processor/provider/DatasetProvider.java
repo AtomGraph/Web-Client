@@ -68,13 +68,12 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     public Dataset getDataset(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
         Object ontologyLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
-        if (ontologyLocation == null) throw new ConfigurationException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
+        if (ontologyLocation == null) throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured properly. Check ServletContext and/or web.xml");
 	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
 	if (ontologyPath == null) throw new ConfigurationException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
 	
 	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
 
-        //return RDFDataMgr.loadDataset("org/graphity/platform/ontology/sitemap.trig");
         Dataset dataset = DatasetFactory.createMem();
         RDFDataMgr.read(dataset, ontologyLocation.toString(), localUri, null); // Lang.TURTLE
         return dataset;

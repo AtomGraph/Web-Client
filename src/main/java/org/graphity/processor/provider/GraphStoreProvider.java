@@ -30,6 +30,7 @@ import javax.ws.rs.ext.Providers;
 import org.graphity.client.util.DataManager;
 import org.graphity.server.model.GraphStore;
 import org.graphity.processor.model.GraphStoreFactory;
+import org.graphity.server.model.GraphStoreOrigin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +85,12 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 	return cr.getContext(DataManager.class);
     }
 
+    public GraphStoreOrigin getGraphStoreOrigin()
+    {
+	ContextResolver<GraphStoreOrigin> cr = getProviders().getContextResolver(GraphStoreOrigin.class, null);
+	return cr.getContext(GraphStoreOrigin.class);
+    }
+
     @Override
     public Injectable<GraphStore> getInjectable(ComponentContext cc, Context a)
     {
@@ -108,7 +115,7 @@ public class GraphStoreProvider extends PerRequestTypeInjectableProvider<Context
 
     public GraphStore getGraphStore()
     {
-	return GraphStoreFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
+	return GraphStoreFactory.createProxy(getRequest(), getServletContext(), getGraphStoreOrigin(), getDataManager());
     }
 
 }

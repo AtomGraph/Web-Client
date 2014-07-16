@@ -19,9 +19,8 @@ package org.graphity.processor.model;
 import com.hp.hpl.jena.query.Dataset;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
-import org.graphity.client.util.DataManager;
+import org.graphity.server.util.DataManager;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLEndpointProxy;
 
 /**
  * A factory class for creating SPARQL endpoints.
@@ -74,10 +73,12 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
     }
     */
     
+    /*
     public static SPARQLEndpointProxy createProxy(Request request, ServletContext servletContext,
             DataManager dataManager, Application application)
     {
 	return new SPARQLEndpointProxyBase(request, servletContext, dataManager, application);
     }
-
+    */
+    
 }

@@ -35,12 +35,17 @@ import org.graphity.client.provider.QueryExceptionHTTPMapper;
 import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
+import org.graphity.processor.provider.ApplicationProvider;
 import org.graphity.processor.provider.DatasetProvider;
+import org.graphity.processor.provider.GraphStoreOriginProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
-import org.graphity.processor.provider.GraphStoreProxyProvider;
 import org.graphity.processor.provider.OntologyProvider;
+import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
-import org.graphity.processor.provider.SPARQLEndpointProxyProvider;
+import org.graphity.server.provider.ModelProvider;
+import org.graphity.server.provider.QueryParamProvider;
+import org.graphity.server.provider.ResultSetWriter;
+import org.graphity.server.provider.UpdateRequestReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -72,16 +77,20 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         //classes.add(GraphStoreBase.class); // handles /service requests
 	classes.add(Container.class); // handles /search
 
-	singletons.addAll(super.getSingletons());
-	singletons.add(new org.graphity.client.provider.ApplicationProvider());
-	singletons.add(new org.graphity.processor.provider.ApplicationProvider());
+	//singletons.addAll(super.getSingletons());
+	singletons.add(new ModelProvider());
+	singletons.add(new ResultSetWriter());
+	singletons.add(new QueryParamProvider());
+	singletons.add(new UpdateRequestReader());
+
+        singletons.add(new ApplicationProvider());
         singletons.add(new DataManagerProvider());
 	singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
 	singletons.add(new SPARQLEndpointProvider());
-	singletons.add(new SPARQLEndpointProxyProvider());
+	singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new GraphStoreProvider());
-        singletons.add(new GraphStoreProxyProvider());
+        singletons.add(new GraphStoreOriginProvider());
 	singletons.add(new RDFPostReader());
         singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());

@@ -18,10 +18,10 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.model.ResourceBase;
+import org.graphity.processor.model.Application;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLEndpointProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +36,8 @@ public class Container extends ResourceBase
 
     private final String searchString;
     
-    public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            @Context SPARQLEndpointProxy endpoint, //@Context SPARQLEndpoint metaEndpoint,
-            @Context OntModel ontModel,
-            @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
+    public Container(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel, @Context Application application,
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
@@ -48,9 +46,8 @@ public class Container extends ResourceBase
 	    @QueryParam("mode") URI mode,
             @QueryParam("label") String searchString)
     {
-	super(uriInfo, request, servletContext,
-		endpoint, ontModel,
-                httpHeaders, resourceContext,
+	super(uriInfo, endpoint, ontModel, application,
+                request, servletContext, httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	

@@ -20,9 +20,8 @@ package org.graphity.processor.model;
 import com.hp.hpl.jena.query.Dataset;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;
-import org.graphity.client.util.DataManager;
+import org.graphity.server.util.DataManager;
 import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.GraphStoreProxy;
 
 /**
  *
@@ -76,11 +75,13 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
     }
     */
 
-    public static GraphStoreProxy createProxy(Request request, ServletContext servletContext,
+    /*
+    public static GraphStore createProxy(Request request, ServletContext servletContext,
             DataManager dataManager, Application application)
     {
 	return new GraphStoreProxyBase(request, servletContext,
                 dataManager, application);
     }
-
+    */
+    
 }

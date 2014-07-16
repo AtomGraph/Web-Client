@@ -47,7 +47,6 @@ import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLEndpointProxy;
 import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +72,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
     private final OntResource ontResource;
+    private final Application application;
     private final Long limit, offset;
     private final String orderBy;
     private final Boolean desc;
@@ -99,19 +99,16 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            @Context SPARQLEndpointProxy endpoint, @Context OntModel ontModel,
-            @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
+    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel, @Context Application application,
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI)
     {
-	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), request, servletContext,
-                //resourceContext.getResource(SPARQLEndpointProxyBase.class),
-                endpoint,
-                uriInfo, httpHeaders, resourceContext,
+	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, application,
+                request, servletContext, uriInfo, httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI);
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
     }
@@ -140,8 +137,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
-    protected ResourceBase(OntResource resource, Request request, ServletContext servletContext,
-            SPARQLEndpointProxy endpoint, // SPARQLEndpoint metaEndpoint,
+    protected ResourceBase(OntResource resource, SPARQLEndpoint endpoint, Application application,
+            Request request, ServletContext servletContext,
             UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
     {
@@ -149,11 +146,13 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
 	if (resource == null) throw new IllegalArgumentException("OntResource cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
+	if (application == null) throw new IllegalArgumentException("Application cannot be null");
+        if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
 
         this.ontResource = resource;
 	this.uriInfo = uriInfo;
+        this.application = application;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
@@ -162,7 +161,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	matchedOntClass = matchOntClass(resource.getOntModel(), getRealURI(), uriInfo.getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
-	
+
         if (resource.hasProperty(RDF.type, LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
         {
             if (offset == null)
@@ -239,17 +238,21 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
 
     @Path("sparql")
-    public Object getSPARQLProxyResource()
+    public Object getSPARQLResource()
     {
-        return getSPARQLEndpoint();
+        //return getSPARQLEndpoint();
+        //return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
+        return getResourceContext().getResource(SPARQLEndpoint.class);
     }
 
+    /*
     @Path("meta/sparql")
     public Object getSPARQLMetaResource()
     {
         return getResourceContext().getResource(SPARQLEndpointBase.class);
     }
-
+    */
+    
     /**
      * Handles GET request and returns response with RDF description of this resource.
      * In case this resource is a container, a redirect to its first page is returned.
@@ -664,6 +667,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
+        //if (service != null) qsm.add("service", service);
 	return new ParameterizedSparqlString(queryString, qsm).asQuery();
     }
 
@@ -1002,16 +1006,14 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
 
     /**
-     * Returns the SPARQL meta-endpoint of this resource.
+     * Returns the application of this resource.
      * 
-     * @return endpoint resource
+     * @return application
      */
-    /*
-    public SPARQLEndpoint getMetaEndpoint()
+    public Application getApplication()
     {
-	return metaEndpoint;
+	return application;
     }
-    */
     
     /**
      * Returns query used to retrieve RDF description of this resource

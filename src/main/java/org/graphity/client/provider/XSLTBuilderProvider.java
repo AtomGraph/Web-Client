@@ -40,7 +40,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
-import org.graphity.client.model.Application;
+import org.graphity.client.vocabulary.GC;
+import org.graphity.processor.model.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +116,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     public Resource getStylesheet() throws ConfigurationException
     {
-        Resource stylesheet = getApplication().getStylesheet();
+        Resource stylesheet = getApplication().getPropertyResourceValue(GC.stylesheet);
         if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet (gp:stylesheet) not configured");
 
         return stylesheet;
