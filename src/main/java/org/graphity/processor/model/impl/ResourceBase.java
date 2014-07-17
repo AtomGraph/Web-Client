@@ -48,6 +48,8 @@ import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.XHV;
+import org.graphity.server.model.Origin;
+import org.graphity.server.model.Proxy;
 import org.graphity.server.model.impl.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.util.ModelUtils;
@@ -243,7 +245,14 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     @Path("sparql")
     public Object getSPARQLResource()
     {
-        return getResourceContext().getResource(SPARQLEndpointBase.class);
+        // avoid eternal loop if endpoint proxy is configured to point to local SPARQL endpoint
+        if (getSPARQLEndpoint() instanceof Proxy)
+        {
+            Origin origin = ((Proxy)getSPARQLEndpoint()).getOrigin();
+            if (origin.getURI().equals(getURI())) return getResourceContext().getResource(SPARQLEndpointBase.class);
+        }
+        
+        return getSPARQLEndpoint();
     }
     
     /**
