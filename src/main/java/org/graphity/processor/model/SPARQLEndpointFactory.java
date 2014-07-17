@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.model;
 
+import org.graphity.processor.model.impl.SPARQLEndpointBase;
 import com.hp.hpl.jena.query.Dataset;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Request;

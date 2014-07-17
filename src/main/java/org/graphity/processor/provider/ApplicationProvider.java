@@ -39,7 +39,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.model.Application;
-import org.graphity.processor.model.ApplicationBase;
+import org.graphity.processor.model.impl.ApplicationBase;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.SPARQLEndpoint;

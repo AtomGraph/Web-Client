@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.client.model;
+package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -48,7 +48,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
-public class ResourceBase extends org.graphity.processor.model.ResourceBase
+public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 

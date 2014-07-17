@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.graphity.processor.model;
+package org.graphity.processor.model.impl;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -37,27 +37,13 @@ import org.slf4j.LoggerFactory;
  * @see <a href="http://www.w3.org/TR/sparql11-http-rdf-update/">SPARQL 1.1 Graph Store HTTP Protocol</a>
  */
 @Path("/meta/service") // not standard
-public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
+public class GraphStoreBase extends org.graphity.server.model.impl.GraphStoreBase
 {
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 
-    //private final Resource resource;
     private final Dataset dataset;
     private final DataManager dataManager;
-    
-    /*
-    public GraphStoreBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            @Context Dataset dataset, @Context DataManager dataManager)
-    {
-        this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
-                path(GraphStoreBase.class).
-                build().
-                toString()),
-            uriInfo, request, servletContext,
-            dataset, dataManager);
-    }
-    */
-    
+        
     public GraphStoreBase(@Context Request request, @Context ServletContext servletContext,
             @Context Dataset dataset, @Context DataManager dataManager)
     {
@@ -73,8 +59,7 @@ public class GraphStoreBase extends org.graphity.server.model.GraphStoreBase
             if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
             dataManager.addServiceContext(graphStore);
         }
-        */
-        
+        */    
     }
 
     /**

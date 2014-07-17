@@ -29,7 +29,7 @@ import org.graphity.processor.model.Application;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SD;
 import org.graphity.server.model.SPARQLEndpointOrigin;
-import org.graphity.server.model.SPARQLEndpointOriginBase;
+import org.graphity.server.model.impl.SPARQLEndpointOriginBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

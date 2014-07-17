@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.processor.model;
+package org.graphity.processor.model.impl;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
@@ -38,11 +38,10 @@ import org.slf4j.LoggerFactory;
  * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
  */
 //@Path("/meta/sparql")
-public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpointBase
+public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEndpointBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 
-    //private final Resource resource;
     private final Dataset dataset;
     private final DataManager dataManager;
 
@@ -56,28 +55,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.SPARQLEndpoint
      * @param dataManager RDF data manager for this endpoint
      * @param uriInfo URI information of the current request
      * @param request current request
-     * @param servletContext webapp context
-     */
-    /*
-    public SPARQLEndpointBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
-            @Context Dataset dataset, @Context DataManager dataManager)
-    {
-	this(ResourceFactory.createResource(uriInfo.getBaseUriBuilder().
-                path(SPARQLEndpointBase.class).
-                build().
-                toString()),
-            request, servletContext, dataset, dataManager);
-    }
-    */
-    
-    /**
-     * Protected constructor with explicit endpoint resource.
-     * Not suitable for JAX-RS but can be used when subclassing.
-     * 
-     * @param endpoint RDF resource of this endpoint (must be URI resource, not a blank node)
-     * @param dataManager RDF data manager for this endpoint
-     * @param request current request
-     * @param dataset dataset of this webapp
      * @param servletContext webapp context
      */
     public SPARQLEndpointBase(@Context Request request, @Context ServletContext servletContext,

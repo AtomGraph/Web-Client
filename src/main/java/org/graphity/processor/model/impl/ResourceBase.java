@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.processor.model;
+package org.graphity.processor.model.impl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -37,6 +37,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
+import org.graphity.processor.model.Application;
+import org.graphity.processor.model.ContainerResource;
+import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
@@ -45,7 +48,7 @@ import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.XHV;
-import org.graphity.server.model.QueriedResourceBase;
+import org.graphity.server.model.impl.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.util.ModelUtils;
 import org.slf4j.Logger;
@@ -242,7 +245,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     {
         //return getSPARQLEndpoint();
         //return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
-        return getResourceContext().getResource(SPARQLEndpoint.class);
+        return getResourceContext().getResource(SPARQLEndpointBase.class);
     }
 
     /*

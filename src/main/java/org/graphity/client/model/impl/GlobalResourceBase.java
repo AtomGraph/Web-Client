@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.client.model;
+package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -35,7 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.model.Application;
-import org.graphity.server.model.LinkedDataResourceBase;
+import org.graphity.server.model.impl.LinkedDataResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

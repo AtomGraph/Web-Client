@@ -17,7 +17,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import org.graphity.client.model.ResourceBase;
+import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.processor.model.Application;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.LDP;

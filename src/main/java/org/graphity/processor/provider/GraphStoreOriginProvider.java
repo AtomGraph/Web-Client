@@ -27,7 +27,7 @@ import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.Application;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.GraphStoreOrigin;
-import org.graphity.server.model.GraphStoreOriginBase;
+import org.graphity.server.model.impl.GraphStoreOriginBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
