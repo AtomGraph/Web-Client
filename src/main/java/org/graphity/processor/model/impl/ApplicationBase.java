@@ -43,20 +43,6 @@ public class ApplicationBase implements Application
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
         this.resource = resource;
     }
-
-    /*
-    @Override
-    public Resource getBase()
-    {
-        return getPropertyResourceValue(GP.base);
-    }
-
-    @Override
-    public Resource getRemoteService()
-    {
-        return getPropertyResourceValue(GP.service);
-    }
-    */
     
     private Resource getResource()
     {
