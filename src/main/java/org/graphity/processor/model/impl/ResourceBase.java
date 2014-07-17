@@ -243,18 +243,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     @Path("sparql")
     public Object getSPARQLResource()
     {
-        //return getSPARQLEndpoint();
-        //return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
         return getResourceContext().getResource(SPARQLEndpointBase.class);
     }
-
-    /*
-    @Path("meta/sparql")
-    public Object getSPARQLMetaResource()
-    {
-        return getResourceContext().getResource(SPARQLEndpointBase.class);
-    }
-    */
     
     /**
      * Handles GET request and returns response with RDF description of this resource.
