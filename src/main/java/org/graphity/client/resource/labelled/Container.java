@@ -51,7 +51,7 @@ public class Container extends ResourceBase
 		limit, offset, orderBy, desc, graphURI, mode);
 	this.searchString = searchString;
 	
-	if (!(searchString == null || searchString.isEmpty()) && hasProperty(RDF.type, LDP.Container))
+	if (!(searchString == null || searchString.isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)
