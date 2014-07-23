@@ -32,6 +32,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -78,16 +79,16 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
     private final OntResource ontResource;
     private final Application application;
-    private final Long limit, offset;
-    private final String orderBy;
-    private final Boolean desc;
-    private final OntClass matchedOntClass;
     private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
-    private final QueryBuilder queryBuilder;
     private final URI graphURI;
-    private final CacheControl cacheControl;
+    private String orderBy;
+    private Boolean desc;
+    private Long limit, offset;
+    private QueryBuilder queryBuilder;
+    private OntClass matchedOntClass;
+    private CacheControl cacheControl;
     
     /**
      * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
@@ -162,11 +163,20 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         this.resourceContext = resourceContext;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
 	else this.graphURI = null;
+        this.offset = offset;
+        this.limit = limit;
+        this.orderBy = orderBy;
+        this.desc = desc;
+    }
 
-	matchedOntClass = matchOntClass(resource.getOntModel(), getRealURI(), uriInfo.getBaseUri());
+    @PostConstruct
+    public void init()
+    {
+	matchedOntClass = matchOntClass(getOntModel(), getRealURI(), uriInfo.getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
-
+        QuerySolutionMap qsm = getQuerySolutionMap(this);
+        
         //if (resource.hasProperty(RDF.type, LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
         if (matchedOntClass.hasSuperClass(LDP.Container))
         {
@@ -176,7 +186,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                 if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is always 0 by default
                 this.offset = defaultOffset;
             }
-            else this.offset = offset;
             
             if (limit == null)
             {
@@ -184,10 +193,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                 if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + matchedOntClass.getURI() + "' must have gp:limit if it is used as container");
                 this.limit = defaultLimit;
             }
-            else this.limit = limit;
             
             if (orderBy == null) this.orderBy = getStringValue(matchedOntClass, GP.orderBy);
-            else this.orderBy = orderBy;
             
             if (desc == null)
             {
@@ -195,9 +202,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                 if (defaultDesc == null) defaultDesc = false; // ORDERY BY is always ASC() by default
                 this.desc = defaultDesc;
             }
-            else this.desc = desc;
 
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, resource), resource.getModel()),
+            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, qsm), getModel()),
                     this.offset, this.limit, this.orderBy, this.desc);
         }
         else
@@ -206,14 +212,16 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
             this.orderBy = null;
             this.desc = null;
             
-            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, resource), resource.getModel());
+            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, qsm), getModel());
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
         cacheControl = getCacheControl(matchedOntClass);
-    }
 
-    public final Long getLongValue(OntClass ontClass, DatatypeProperty property)
+        if (log.isDebugEnabled()) log.debug("HELLO @PostConstruct!");
+    }
+    
+    public Long getLongValue(OntClass ontClass, DatatypeProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return ontClass.getPropertyValue(property).asLiteral().getLong();
@@ -221,7 +229,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         return null;
     }
 
-    public final Boolean getBooleanValue(OntClass ontClass, DatatypeProperty property)
+    public Boolean getBooleanValue(OntClass ontClass, DatatypeProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return ontClass.getPropertyValue(property).asLiteral().getBoolean();
@@ -229,7 +237,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         return null;
     }
 
-    public final String getStringValue(OntClass ontClass, DatatypeProperty property)
+    public String getStringValue(OntClass ontClass, DatatypeProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return ontClass.getPropertyValue(property).asLiteral().getString();
@@ -537,7 +545,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param ontClass the ontology class with the restriction
      * @return CacheControl instance or null, if no dataset restriction was found
      */
-    public final CacheControl getCacheControl(OntClass ontClass)
+    public CacheControl getCacheControl(OntClass ontClass)
     {
        return getCacheControl(ontClass, GP.cacheControl);
     }
@@ -549,7 +557,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param property the property holding the literal value
      * @return CacheControl instance or null, if no dataset restriction was found
      */
-    public final CacheControl getCacheControl(OntClass ontClass, DatatypeProperty property)
+    public CacheControl getCacheControl(OntClass ontClass, DatatypeProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return CacheControl.valueOf(ontClass.getPropertyValue(property).asLiteral().getString()); // will fail on bad config
@@ -568,7 +576,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @return query builder with set modifiers
      * @see org.graphity.processor.query.QueryBuilder
      */
-    public final QueryBuilder setSelectModifiers(QueryBuilder queryBuilder, Long offset, Long limit, String orderBy, Boolean desc)
+    public QueryBuilder setSelectModifiers(QueryBuilder queryBuilder, Long offset, Long limit, String orderBy, Boolean desc)
     {
         if (queryBuilder == null) throw new IllegalArgumentException("QueryBuilder cannot be null");
         
@@ -617,18 +625,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
 
     /**
-     * Given an RDF resource, returns a SPARQL query that can be used to retrieve its description.
-     * The query is built using a SPIN template call attached to the ontology class that this resource matches.
-     * 
-     * @param resource the resource to be described
-     * @return query object
-     */
-    public Query getQuery(Resource resource)
-    {
-	return getQuery(getMatchedOntClass(), SPIN.query, resource);
-    }
-
-    /**
      * Given an RDF resource and an ontology class that it belongs to, returns a SPARQL query that can be used
      * to retrieve its description.
      * The ontology class must have a SPIN template call attached (using <code>spin:query</code>).
@@ -639,7 +635,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @return query object
      * @see org.topbraid.spin.model.TemplateCall
      */
-    public final Query getQuery(OntClass ontClass, Property property, Resource resource)
+    public Query getQuery(OntClass ontClass, Property property, QuerySolutionMap qsm)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (ontClass.getPropertyResourceValue(property) == null)
@@ -648,12 +644,19 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(property);
 	
         org.topbraid.spin.model.Query query = SPINFactory.asQuery(queryOrTemplateCall);
-        if (query != null) return getQuery(query.toString(), resource);
+        if (query != null) return getQuery(query.toString(), qsm);
                 
         TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
-        if (templateCall != null) return getQuery(templateCall.getQueryString(), resource);
+        if (templateCall != null) return getQuery(templateCall.getQueryString(), qsm);
         
         return null;
+    }
+    
+    public QuerySolutionMap getQuerySolutionMap(Resource resource)
+    {
+	QuerySolutionMap qsm = new QuerySolutionMap();
+	qsm.add("this", resource);
+        return qsm;
     }
     
     /**
@@ -668,25 +671,22 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param resource RDF resource
      * @return query object
      */
-    public Query getQuery(String queryString, Resource resource)
+    public Query getQuery(String queryString, QuerySolutionMap qsm)
     {
-	if (queryString == null) throw new IllegalArgumentException("TemplateCall cannot be null");
-	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+	if (queryString == null) throw new IllegalArgumentException("Query string cannot be null");
+	if (qsm == null) throw new IllegalArgumentException("QuerySolutionMap cannot be null");
 	
-	QuerySolutionMap qsm = new QuerySolutionMap();
-	qsm.add("this", resource);
-        //if (service != null) qsm.add("service", service);
 	return new ParameterizedSparqlString(queryString, qsm).asQuery();
     }
 
-    public final UpdateBuilder getUpdateBuilder(Update update)
+    public UpdateBuilder getUpdateBuilder(Update update)
     {
 	UpdateBuilder ub = UpdateBuilder.fromUpdate(update);
 	
 	return ub;
     }
     
-    public final UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
+    public UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
     {
 	if (ontClass.getPropertyResourceValue(ResourceFactory.createProperty(SPIN.NS, "update")) == null)
 	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update or template call resource (spin:update)");
@@ -719,7 +719,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param base base URI
      * @return matching ontology class or null, if none
      */
-    public final OntClass matchOntClass(OntModel ontModel, URI uri, URI base)
+    public OntClass matchOntClass(OntModel ontModel, URI uri, URI base)
     {
 	if (uri == null) throw new IllegalArgumentException("URI being matched cannot be null");
 	if (base == null) throw new IllegalArgumentException("Base URI cannot be null");
@@ -759,7 +759,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
      */
-    public final OntClass matchOntClass(OntModel ontModel, CharSequence path, Property property)
+    public OntClass matchOntClass(OntModel ontModel, CharSequence path, Property property)
     {
 	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
         if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
@@ -814,7 +814,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modResultLimit">15.5 LIMIT</a>
      */
     @Override
-    public final Long getLimit()
+    public Long getLimit()
     {
 	return limit;
     }
@@ -829,7 +829,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOffset">15.4 OFFSET</a>
      */
     @Override
-    public final Long getOffset()
+    public Long getOffset()
     {
 	return offset;
     }
@@ -846,7 +846,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
      */
     @Override
-    public final String getOrderBy()
+    public String getOrderBy()
     {
 	return orderBy;
     }
@@ -861,7 +861,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
      */
     @Override
-    public final Boolean getDesc()
+    public Boolean getDesc()
     {
 	return desc;
     }
@@ -963,7 +963,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * 
      * @return URI builder
      */
-    public final UriBuilder getUriBuilder()
+    public UriBuilder getUriBuilder()
     {
 	return UriBuilder.fromUri(getURI());
     }
@@ -973,7 +973,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * 
      * @return URI object
      */
-    public final URI getRealURI()
+    public URI getRealURI()
     {
 	return getUriBuilder().build();
     }
@@ -1049,7 +1049,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * 
      * @return URI information
      */
-    public final UriInfo getUriInfo()
+    public UriInfo getUriInfo()
     {
 	return uriInfo;
     }
@@ -1076,7 +1076,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
     
     @Override
-    public final OntModel getOntModel()
+    public OntModel getOntModel()
     {
 	return getOntResource().getOntModel();
     }

@@ -38,7 +38,9 @@ import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.ApplicationProvider;
 import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
+import org.graphity.processor.provider.OntClassProvider;
 import org.graphity.processor.provider.OntologyProvider;
+import org.graphity.processor.provider.QueryBuilderProvider;
 import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.server.provider.GraphStoreProvider;
 import org.graphity.server.provider.ModelProvider;
@@ -82,6 +84,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
+
+        singletons.add(new OntClassProvider());
+        singletons.add(new QueryBuilderProvider());
 
         singletons.add(new ApplicationProvider());
         singletons.add(new DataManagerProvider());

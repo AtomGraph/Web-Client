@@ -224,9 +224,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:StyleMode">
-	<link href="static/css/bootstrap.css" rel="stylesheet"/>
-	<link href="static/css/bootstrap-responsive.css" rel="stylesheet"/>
-	<link href="static/org/graphity/client/css/bootstrap.css" rel="stylesheet"/>
+	<link href="static/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+	<link href="static/css/bootstrap-responsive.css" rel="stylesheet" type="text/css"/>
+	<link href="static/org/graphity/client/css/bootstrap.css" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
