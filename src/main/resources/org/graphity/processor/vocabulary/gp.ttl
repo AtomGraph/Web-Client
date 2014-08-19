@@ -41,6 +41,11 @@
     rdfs:label "SPARQL service" ;
     rdfs:isDefinedBy <#> .
 
+<#base> a owl:ObjectProperty ;
+    rdfs:range sioc:Space ;
+    rdfs:label "Base URI" ;
+    rdfs:isDefinedBy <#> .
+
 <#graphStore> a owl:ObjectProperty ;
     rdfs:domain sd:Service ;
     rdfs:label "Graph Store" ;
@@ -51,9 +56,13 @@
     rdfs:label "Cache control header value" ;
     rdfs:isDefinedBy <#> .
 
-# QUERIES & TEMPLATES
+# CLASSES
 
-# ====
+<#Template> a owl:Class ;
+    rdfs:label "Resource template" ;
+    rdfs:isDefinedBy <#> .
+
+# QUERIES & TEMPLATES
 
 <#DescribeInstancesTemplate> a spin:Template ;
     spin:body <#DescribeInstances> ;

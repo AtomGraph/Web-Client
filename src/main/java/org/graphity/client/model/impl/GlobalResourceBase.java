@@ -16,7 +16,6 @@
  */
 package org.graphity.client.model.impl;
 
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -36,7 +35,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.model.Application;
-import org.graphity.processor.query.QueryBuilder;
 import org.graphity.server.model.impl.LinkedDataResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
@@ -88,8 +86,7 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode,
 	    @QueryParam("uri") URI topicURI,
-	    @QueryParam("accept") MediaType mediaType,
-            @Context OntClass matchedOntClass, @Context QueryBuilder queryBuilder)
+	    @QueryParam("accept") MediaType mediaType)
     {
 	super(uriInfo, endpoint, ontModel, application,
                 request, servletContext, httpHeaders, resourceContext,

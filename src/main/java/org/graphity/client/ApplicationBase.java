@@ -85,8 +85,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
 
-        singletons.add(new OntClassProvider());
-        singletons.add(new QueryBuilderProvider());
+        //singletons.add(new OntClassProvider());
+        //singletons.add(new QueryBuilderProvider());
 
         singletons.add(new ApplicationProvider());
         singletons.add(new DataManagerProvider());

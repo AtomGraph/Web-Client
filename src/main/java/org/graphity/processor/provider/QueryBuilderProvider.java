@@ -61,7 +61,7 @@ public class QueryBuilderProvider extends PerRequestTypeInjectableProvider<Conte
     public Query getQuery()
     {
 	//return getProviders().getContextResolver(Query.class, null).getContext(Query.class);
-        return QueryFactory.create("DESCRIBE <http://localhost:8080/graphity-platform/>");
+	return QueryFactory.create("DESCRIBE <" + getUriInfo().getAbsolutePath().toString() + ">");
     }
 
     public OntModel getOntModel() // needs QueryProvider registered as well!
@@ -92,4 +92,5 @@ public class QueryBuilderProvider extends PerRequestTypeInjectableProvider<Conte
     {
         return getQueryBuilder();        
     }
+    
 }
