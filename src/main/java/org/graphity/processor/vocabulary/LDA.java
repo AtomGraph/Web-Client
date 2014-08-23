@@ -45,8 +45,8 @@ public class LDA
         
     // public static final OntClass Service = m_model.createClass( NS + "Service" );
     
-    public static final Property uriTemplate = m_model.createProperty( NS + "uriTemplate" );
+    // public static final Property uriTemplate = m_model.createProperty( NS + "uriTemplate" );
 
-    public static final Property itemTemplate = m_model.createProperty( NS + "itemTemplate" );
+    // public static final Property itemTemplate = m_model.createProperty( NS + "itemTemplate" );
 
 }

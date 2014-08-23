@@ -356,7 +356,7 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <!-- subject -->
+    <!-- PROPERTY MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:PropertyMode">
         <xsl:param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
@@ -392,6 +392,18 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
         </xsl:if>
     </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:PropertyMode" priority="2">
+        <div class="well">
+            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+            
+            <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:resource)" mode="gc:HeaderMode"/>
+
+            <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:resource)" mode="gc:PropertyListMode"/>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:PropertyMode" priority="2"/>
 
     <!-- HEADER MODE -->
 
@@ -720,7 +732,17 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InlineMode"/>
         </h2>
     </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ListMode" priority="2">
+        <div class="well">
+            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
             
+            <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:resource)" mode="gc:HeaderMode"/>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:ListMode" priority="2"/>
+
     <!-- TABLE MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:TableMode">
@@ -986,5 +1008,29 @@ exclude-result-prefixes="#all">
             </xsl:if>
 	</fieldset>
     </xsl:template>
-        
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:HeaderMode" priority="1">
+        <div class="well well-small clearfix">
+            <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
+            
+            <div class="btn-group pull-right">
+                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                  Export
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="">RDF/XML</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:InlinePropertyListMode">
+        <xsl:apply-templates mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
 </xsl:stylesheet>

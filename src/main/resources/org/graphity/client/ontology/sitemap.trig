@@ -31,8 +31,7 @@
             gp:graphStore <service> ;
         ] ;
         foaf:isPrimaryTopicOf <application> ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
+        rdfs:isDefinedBy <#> .
 
     <application> a foaf:Document, sioc:Item ;
         sioc:has_container <.> ;
@@ -263,14 +262,13 @@
     <classes/resource#this> a owl:Class, gp:Template ;
         foaf:isPrimaryTopicOf <classes/resource> ;
         rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
-        lda:uriTemplate "/{path: .*}" ;
+        gp:uriTemplate "/{path: .*}" ;
         spin:query [ a gp:DescribeFromGraphWithChildrenTemplate ] ;
         gp:limit 20 ;
         gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
         rdfs:label "Resource" ;
         rdfs:comment "Catch-all resource class (template)" ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
+        rdfs:isDefinedBy <#> .
 
 }
 
@@ -288,11 +286,10 @@
     <classes/ontology-doc#this> a owl:Class, gp:Template ;
         foaf:isPrimaryTopicOf <classes/ontology-doc> ;
         rdfs:subClassOf foaf:Document ;
-        lda:uriTemplate "/ontology" ;
+        gp:uriTemplate "/ontology" ;
         spin:query [ a gp:ConstructResourcesTemplate ] ;
         rdfs:label "Ontology document resource" ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
+        rdfs:isDefinedBy <#> .
 
 }
 
@@ -303,13 +300,12 @@
 
     <classes/resources-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
-        lda:uriTemplate "/resources/labelled" ;
+        gp:uriTemplate "/resources/labelled" ;
         spin:query [ a gp:DescribeGraphLabelResourcesTemplate ] ;
         gp:limit 20 ;
         gp:orderBy "label"^^xsd:string ;
         rdfs:label "Labelled resource container" ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
+        rdfs:isDefinedBy <#> .
 
 }
 
@@ -320,12 +316,11 @@
 
     <classes/properties-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
-        lda:uriTemplate "/properties/labelled" ;
+        gp:uriTemplate "/properties/labelled" ;
         spin:query [ a gp:DescribeLabelPropertiesTemplate ] ;
         gp:limit 20 ;
         gp:orderBy "label"^^xsd:string ;
         rdfs:label "Labelled properties container" ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
+        rdfs:isDefinedBy <#> .
 
 }

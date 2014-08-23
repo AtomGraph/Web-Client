@@ -219,6 +219,10 @@ exclude-result-prefixes="#all">
 	</dd>
     </xsl:template>
 
+    <!-- INLINE PROPERTY LIST MODE -->
+    
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InlinePropertyListMode"/>
+
     <!-- MEDIA TYPE SELECT MODE -->
     
     <!-- ideally should provide all serialization formats supported by Jena -->

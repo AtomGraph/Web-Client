@@ -51,6 +51,20 @@
     rdfs:label "Graph Store" ;
     rdfs:isDefinedBy <#> .
 
+<#uriTemplate> a owl:DatatypeProperty ;
+    rdfs:domain owl:Class ; # rdfs:domain <#Template> ;
+    rdfs:range rdfs:Literal ;
+    rdfs:label "URI template" ;
+    rdfs:comment "URI template for resource matching and skolemization (JAX-RS syntax)" ;
+    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html> ;
+    rdfs:isDefinedBy <#> .
+
+# <#itemTemplate> a owl:DatatypeProperty ;
+#    rdfs:domain <#Template> ;
+#    rdfs:range rdfs:Literal ;
+#    rdfs:label "URI template for POSTed resources (JAX-RS syntax)" ;
+#    rdfs:isDefinedBy <#> .
+
 <#cacheControl> a owl:DatatypeProperty ;
     rdfs:subPropertyOf http:fieldValue ;
     rdfs:label "Cache control header value" ;
@@ -59,6 +73,7 @@
 # CLASSES
 
 <#Template> a owl:Class ;
+    <#uriTemplate> "/templates/{isPrimaryTopicOf.uuid}" ;
     rdfs:label "Resource template" ;
     rdfs:isDefinedBy <#> .
 

@@ -68,4 +68,15 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
+    <xsl:template match="sioc:*" mode="gc:InlinePropertyListMode">
+        <dl class="pull-left" style="margin: 0; margin-right: 1em">
+            <dt>
+                <xsl:apply-templates select="." mode="gc:InlineMode"/>
+            </dt>
+            <dd>
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
+            </dd>
+        </dl>
+    </xsl:template>
+
 </xsl:stylesheet>

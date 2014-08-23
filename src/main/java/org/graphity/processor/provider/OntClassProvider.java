@@ -17,10 +17,8 @@
 
 package org.graphity.processor.provider;
 
-import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.sun.jersey.api.uri.UriTemplate;
@@ -34,7 +32,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
-import org.graphity.processor.vocabulary.LDA;
+import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +110,7 @@ public class OntClassProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public OntClass matchOntClass(OntModel ontModel, CharSequence path)
     {
-        return matchOntClass(ontModel, path, LDA.uriTemplate);
+        return matchOntClass(ontModel, path, GP.uriTemplate);
     }
 
     /**

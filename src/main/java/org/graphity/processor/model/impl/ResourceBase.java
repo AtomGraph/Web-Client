@@ -46,7 +46,6 @@ import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.processor.vocabulary.LDA;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.Origin;
@@ -743,7 +742,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      */
     public OntClass matchOntClass(OntModel ontModel, CharSequence path)
     {
-        return matchOntClass(ontModel, path, LDA.uriTemplate);
+        return matchOntClass(ontModel, path, GP.uriTemplate);
     }
 
     /**
@@ -774,7 +773,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	    while (it.hasNext())
 	    {
 		OntClass ontClass = it.next();	    
-                if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
+                if (ontClass.hasRDFType(GP.Template) && 
+                        ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
 		{
                     UriTemplate uriTemplate = new UriTemplate(ontClass.getPropertyValue(property).asLiteral().getString());
                     HashMap<String, String> map = new HashMap<>();

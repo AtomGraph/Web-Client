@@ -57,7 +57,7 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
+    <xsl:template match="foaf:primaryTopic | foaf:isPrimaryTopicOf | foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
 
     <xsl:template match="foaf:img[../@rdf:about][@rdf:resource]" mode="gc:ImageMode" priority="3">
 	<a href="{../@rdf:about}">
