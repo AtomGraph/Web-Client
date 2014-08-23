@@ -317,7 +317,7 @@
     <classes/properties-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
         gp:uriTemplate "/properties/labelled" ;
-        spin:query [ a gp:DescribeLabelPropertiesTemplate ] ;
+        spin:query [ a gp:DescribeGraphLabelPropertiesTemplate ] ;
         gp:limit 20 ;
         gp:orderBy "label"^^xsd:string ;
         rdfs:label "Labelled properties container" ;

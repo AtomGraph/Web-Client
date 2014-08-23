@@ -779,6 +779,44 @@ DESCRIBE ?property WHERE {
                 
 _:propertyVar  sp:varName "property"^^xsd:string .
 
+# ===
+
+<#DescribeGraphLabelPropertiesTemplate> a spin:Template ;
+    spin:body <#DescribeGraphLabelProperties> ;
+    rdfs:isDefinedBy <#> .
+
+<#DescribeGraphLabelProperties>    a       sp:Describe ;
+      sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct:  <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+DESCRIBE ?property WHERE {
+    {
+        SELECT ?property
+        WHERE {
+            GRAPH ?graph {
+                {
+                    ?property a rdf:Property .
+                }
+                UNION
+                {
+                    ?property a owl:ObjectProperty .
+                }
+                UNION
+                {
+                    ?property a owl:DatatypeProperty .
+                } .
+                ?property ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+            }
+        }
+    } .
+}"""^^xsd:string .
+ 
 # ====
 
 <#DeleteTemplate> a spin:Template ;

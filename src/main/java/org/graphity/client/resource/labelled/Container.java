@@ -5,7 +5,6 @@
 package org.graphity.client.resource.labelled;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
@@ -49,8 +48,14 @@ public class Container extends ResourceBase
 	super(uriInfo, endpoint, ontModel, application,
                 request, servletContext, httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI, mode);
-	this.searchString = searchString;
-	
+	this.searchString = searchString;	
+    }
+
+    @Override
+    public void init()
+    {
+        super.init();
+        
 	if (!(searchString == null || searchString.isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
@@ -61,7 +66,7 @@ public class Container extends ResourceBase
 	    }
         }	
     }
-
+    
     public String getSearchString()
     {
 	return searchString;
