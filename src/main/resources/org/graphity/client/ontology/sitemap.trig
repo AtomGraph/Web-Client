@@ -310,8 +310,15 @@ WHERE
 <graphs/classes/resources-labelled>
 {
 
+    <classes/resources-labelled> a foaf:Document, sioc:Item ;
+        sioc:has_container <classes> ;
+        foaf:primaryTopic <classes/resources-labelled#this> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
     <classes/resources-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
+        foaf:isPrimaryTopicOf <classes/resources-labelled> ;
         gp:uriTemplate "/resources/labelled" ;
         spin:query [ a gp:DescribeGraphLabelResourcesTemplate ] ;
         gp:limit 20 ;
@@ -326,8 +333,15 @@ WHERE
 <graphs/classes/properties-labelled>
 {
 
+    <classes/properties-labelled> a foaf:Document, sioc:Item ;
+        sioc:has_container <classes> ;
+        foaf:primaryTopic <classes/properties-labelled#this> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
     <classes/properties-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
+        foaf:isPrimaryTopicOf <classes/properties-labelled> ;
         gp:uriTemplate "/properties/labelled" ;
         spin:query [ a gp:DescribeGraphLabelPropertiesTemplate ] ;
         gp:limit 20 ;

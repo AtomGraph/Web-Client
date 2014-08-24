@@ -590,8 +590,8 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
     rdfs:isDefinedBy <#> .
 
 <#DescribeLabelResources>    a       sp:Describe ;
-      sp:resultNodes (_:resourceVar) ;
-      sp:text """DESCRIBE ?resource WHERE {
+      sp:resultNodes (spin:_this _:resourceVar) ;
+      sp:text """DESCRIBE ?this ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
@@ -655,8 +655,8 @@ _:resourceVar  sp:varName "resource"^^xsd:string .
     rdfs:isDefinedBy <#> .
 
 <#DescribeGraphLabelResources>    a       sp:Describe ;
-      sp:resultNodes (_:resourceVar) ;
-      sp:text """DESCRIBE ?resource WHERE {
+      sp:resultNodes (spin:_this _:resourceVar) ;
+      sp:text """DESCRIBE ?this ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
@@ -727,10 +727,10 @@ _:resourceVar  sp:varName "resource"^^xsd:string .
     rdfs:isDefinedBy <#> .
 
 <#DescribeLabelProperties>    a       sp:Describe ;
-      sp:resultNodes (_:propertyVar) ;
+      sp:resultNodes (spin:_this _:propertyVar) ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-DESCRIBE ?property WHERE {
+DESCRIBE ?this ?property WHERE {
     {
         SELECT ?property
         WHERE {
@@ -819,7 +819,7 @@ PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dct:  <http://purl.org/dc/terms/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-DESCRIBE ?property WHERE {
+DESCRIBE ?this ?property WHERE {
     {
         SELECT ?property
         WHERE {
