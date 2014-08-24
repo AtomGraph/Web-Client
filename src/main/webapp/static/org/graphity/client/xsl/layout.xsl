@@ -417,7 +417,7 @@ exclude-result-prefixes="#all">
             
             <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
 
-            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+            <!-- <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/> -->
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
             
@@ -427,16 +427,23 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:MediaTypeSelectMode">
-        <!--
-        <div class="btn-group pull-right">
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-            
-            <xsl:if test="@rdf:about = $absolute-path and $query-res/sp:text">
-                <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}" class="btn">SPARQL</a>
-            </xsl:if>
+    <xsl:template match="*[*][@rdf:about]" mode="gc:MediaTypeSelectMode">
+        <div class="btn-group pull-right" onclick="$(this).toggleClass('open');">
+            <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{@rdf:about}?accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
+                </li>
+                <li>
+                    <a href="{@rdf:about}?accept={encode-for-uri('text/turtle')}">Turtle</a>
+                </li>
+                <xsl:if test="@rdf:about = $absolute-path and $query-res/sp:text">
+                    <li>
+                        <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
+                    </li>
+                </xsl:if>
+            </ul>
         </div>
-        -->
     </xsl:template>
     
     <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
@@ -1013,17 +1020,7 @@ exclude-result-prefixes="#all">
         <div class="well well-small clearfix">
             <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
             
-            <div class="btn-group pull-right">
-                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                  Export
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="">RDF/XML</a>
-                    </li>
-                </ul>
-            </div>
+            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
         </div>
     </xsl:template>
 

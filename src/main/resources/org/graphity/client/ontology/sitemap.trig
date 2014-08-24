@@ -205,6 +205,17 @@
 
 }
 
+<graphs/templates>
+{
+
+    <templates> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <.> ;
+        dct:title "Templates" ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+}
+
 <graphs/queries>
 {
 
@@ -242,6 +253,7 @@
 {
 
     <sparql> a foaf:Document ;
+        sioc:has_space <.> ;
         dct:title "SPARQL endpoint" ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
@@ -250,41 +262,38 @@
 
 # RESOURCE CLASSES
 
-<graphs/classes/resource>
+<graphs/templates/resource>
 {
 
-    <classes/resource> a foaf:Document, sioc:Item ;
-        sioc:has_container <classes> ;
-        foaf:primaryTopic <classes/resource#this> ;
+    <templates/resource> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic <templates/resource#this> ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <classes/resource#this> a owl:Class, gp:Template ;
-        foaf:isPrimaryTopicOf <classes/resource> ;
+    <templates/resource#this> a owl:Class, gp:Template ;
+        foaf:isPrimaryTopicOf <templates/resource> ;
         rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
         gp:uriTemplate "/{path: .*}" ;
         spin:query [ a gp:DescribeFromGraphWithChildrenTemplate ] ;
         gp:limit 20 ;
         gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
         rdfs:label "Resource" ;
-        rdfs:comment "Catch-all resource class (template)" ;
         rdfs:isDefinedBy <#> .
 
 }
 
-# ====
-
-<graphs/classes/ontology-doc>
+<graphs/templates/ontology-doc>
 {
 
-    <classes/ontology-doc> a foaf:Document, sioc:Item ;
-        sioc:has_container <classes> ;
-        foaf:primaryTopic <classes/ontology-doc#this> ;
+    <templates/ontology-doc> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic <templates/ontology-doc#this> ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <classes/ontology-doc#this> a owl:Class, gp:Template ;
-        foaf:isPrimaryTopicOf <classes/ontology-doc> ;
+    <templates/ontology-doc#this> a owl:Class, gp:Template ;
+        foaf:isPrimaryTopicOf <templates/ontology-doc> ;
         rdfs:subClassOf foaf:Document ;
         gp:uriTemplate "/ontology" ;
         spin:query [ a sp:Describe ; sp:text """PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -307,18 +316,39 @@ WHERE
 
 # ====
 
-<graphs/classes/resources-labelled>
+<graphs/templates/dataset-doc>
 {
 
-    <classes/resources-labelled> a foaf:Document, sioc:Item ;
-        sioc:has_container <classes> ;
-        foaf:primaryTopic <classes/resources-labelled#this> ;
+    <templates/dataset-doc> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic <templates/dataset-doc#this> ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <classes/resources-labelled#this> a owl:Class, gp:Template ;
+    <templates/dataset-doc#this> a owl:Class, gp:Template ;
+        foaf:isPrimaryTopicOf <templates/dataset-doc> ;
+        rdfs:subClassOf foaf:Document ;
+        gp:uriTemplate "/dataset" ;
+        spin:query [ a gp:DescribeFromGraphWithChildrenTemplate ] ;
+        rdfs:label "Dataset document resource" ;
+        rdfs:isDefinedBy <#> .
+
+}
+
+# ====
+
+<graphs/templates/resources-labelled>
+{
+
+    <templates/resources-labelled> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic <templates/resources-labelled#this> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> .
+
+    <templates/resources-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
-        foaf:isPrimaryTopicOf <classes/resources-labelled> ;
+        foaf:isPrimaryTopicOf <templates/resources-labelled> ;
         gp:uriTemplate "/resources/labelled" ;
         spin:query [ a gp:DescribeGraphLabelResourcesTemplate ] ;
         gp:limit 20 ;
@@ -330,18 +360,18 @@ WHERE
 
 # ====
 
-<graphs/classes/properties-labelled>
+<graphs/templates/properties-labelled>
 {
 
-    <classes/properties-labelled> a foaf:Document, sioc:Item ;
-        sioc:has_container <classes> ;
-        foaf:primaryTopic <classes/properties-labelled#this> ;
+    <templates/properties-labelled> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic <templates/properties-labelled#this> ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <classes/properties-labelled#this> a owl:Class, gp:Template ;
+    <templates/properties-labelled#this> a owl:Class, gp:Template ;
         rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
-        foaf:isPrimaryTopicOf <classes/properties-labelled> ;
+        foaf:isPrimaryTopicOf <templates/properties-labelled> ;
         gp:uriTemplate "/properties/labelled" ;
         spin:query [ a gp:DescribeGraphLabelPropertiesTemplate ] ;
         gp:limit 20 ;
