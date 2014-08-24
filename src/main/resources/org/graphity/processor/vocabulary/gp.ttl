@@ -70,6 +70,30 @@
     rdfs:label "Cache control header value" ;
     rdfs:isDefinedBy <#> .
 
+<#limit> a owl:DatatypeProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:long ;
+    rdfs:label "The LIMIT solution modifier" ;
+    rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:limit ;
+    rdfs:isDefinedBy <#> .
+
+<#offset> a owl:DatatypeProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:long ;
+    rdfs:label "The OFFSET solution modifier" ;
+    rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:offset ;
+    rdfs:isDefinedBy <#> .
+
+<#orderBy> a owl:DatatypeProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:string ;
+    rdfs:label "ORDER BY variable name" ;
+    rdfs:comment "SPIN expects an rdf:List of OrderByConditions instead" ;
+    rdfs:seeAlso sp:orderBy ;
+    rdfs:isDefinedBy <#> .
+
 # CLASSES
 
 <#Template> a owl:Class ;

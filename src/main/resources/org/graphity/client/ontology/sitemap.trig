@@ -287,7 +287,19 @@
         foaf:isPrimaryTopicOf <classes/ontology-doc> ;
         rdfs:subClassOf foaf:Document ;
         gp:uriTemplate "/ontology" ;
-        spin:query [ a gp:ConstructResourcesTemplate ] ;
+        spin:query [ a sp:Describe ; sp:text """PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  gp:   <http://processor.graphity.org/ontology#>
+
+DESCRIBE ?sitemap ?s
+WHERE
+  { GRAPH ?appGraph
+      { ?app gp:base ?baseUri .
+        ?app rdfs:isDefinedBy ?sitemap
+      }
+    GRAPH ?g
+      { ?s rdfs:isDefinedBy ?sitemap }
+  }
+"""^^xsd:string ] ;
         rdfs:label "Ontology document resource" ;
         rdfs:isDefinedBy <#> .
 

@@ -1009,7 +1009,7 @@ exclude-result-prefixes="#all">
 	</fieldset>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:HeaderMode" priority="1">
+    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:HeaderMode" priority="2">
         <div class="well well-small clearfix">
             <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
             
