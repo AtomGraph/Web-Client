@@ -3,52 +3,80 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix gc:     <http://client.graphity.org/ontology#> .
+@prefix gp:     <http://processor.graphity.org/ontology#> .
 
 # ONTOLOGY
 
 <#> a owl:Ontology ;
+    owl:imports gp: ;
     rdfs:label "Graphity Client vocabulary" ;
     owl:versionInfo "1.0.14" .
 
 # PROPERTIES
 
-gc:stylesheet a owl:ObjectProperty ;
-    rdfs:label "Master XSLT stylesheet" .
+<#stylesheet> a owl:ObjectProperty ;
+    rdfs:domain <#Application> ;
+    rdfs:label "Master XSLT stylesheet" ;
+    rdfs:isDefinedBy <#> .
 
-gc:defaultMode a owl:ObjectProperty ;
-    rdfs:label "Default layout mode" .
+<#defaultMode> a owl:ObjectProperty ;
+    rdfs:domain gp:Template ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Default layout mode" ;
+    rdfs:isDefinedBy <#> .
 
-gc:mode a owl:ObjectProperty ;
-    rdfs:label "Layout mode" .
+<#mode> a owl:ObjectProperty ;
+    rdfs:domain gp:Template ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Layout mode" ;
+    rdfs:isDefinedBy <#> .
 
 # CLASSES
 
-gc:Mode a owl:Class ;
-    rdfs:label "Class of layout modes" .
+<#Application> a owl:Class ;
+    rdfs:label "Graphity Client application" ;
+    rdfs:isDefinedBy <#> .
 
-gc:ContainerMode a owl:Class ;
-    rdfs:subClassOf gc:Mode ;
-    rdfs:label "Class of container layout modes" .
+<#Mode> a owl:Class ;
+    rdfs:label "Class of layout modes" ;
+    rdfs:isDefinedBy <#> .
 
-gc:ItemMode a owl:Class ;
-    rdfs:subClassOf gc:Mode ;
-    rdfs:label "Class of item layout modes" .
+<#ContainerMode> a owl:Class ;
+    rdfs:subClassOf <#Mode> ;
+    rdfs:label "Class of container layout modes" ;
+    rdfs:isDefinedBy <#> .
+
+<#ItemMode> a owl:Class ;
+    rdfs:subClassOf <#Mode> ;
+    rdfs:label "Class of item layout modes" ;
+    rdfs:isDefinedBy <#> .
 
 # INDIVIDUALS
 
-gc:PropertyMode a gc:Mode, gc:ContainerMode, gc:ItemMode ;
-    rdfs:label "Properties" .
-gc:EditMode a gc:Mode, gc:ContainerMode, gc:ItemMode ;
-    rdfs:label "Edit" .
-gc:CreateMode a gc:Mode, gc:ContainerMode ;
-    rdfs:label "Create" .
+<#PropertyMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+    rdfs:label "Properties" ;
+    rdfs:isDefinedBy <#> .
 
-gc:TableMode a gc:Mode, gc:ContainerMode ;
-    rdfs:label "Table" .
-gc:ListMode a gc:Mode, gc:ContainerMode ;
-    rdfs:label "List" .
-gc:ThumbnailMode a gc:Mode, gc:ContainerMode ;
-    rdfs:label "Gallery" .
-gc:MapMode a gc:Mode, gc:ContainerMode, gc:ItemMode ;
-    rdfs:label "Map" .
+<#EditMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+    rdfs:label "Edit" ;
+    rdfs:isDefinedBy <#> .
+
+<#CreateMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "Create" ;
+    rdfs:isDefinedBy <#> .
+
+<#TableMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "Table" ;
+    rdfs:isDefinedBy <#> .
+
+<#ListMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "List" ;
+    rdfs:isDefinedBy <#> .
+
+<#ThumbnailMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "Gallery" ;
+    rdfs:isDefinedBy <#> .
+
+<#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+    rdfs:label "Map" ;
+    rdfs:isDefinedBy <#> .

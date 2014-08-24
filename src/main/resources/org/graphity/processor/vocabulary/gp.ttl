@@ -25,7 +25,7 @@
     rdfs:label "Graphity Processor ontology" ;
     dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
     dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
-    dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime ;
+    dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime, "2014-08-24T02:04:00+02:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "http://processor.graphity.org/ontology#" ;
     vann:preferredNamespacePrefix "gp";
     foaf:homepage <http://processor.graphity.org/ontology> ;
@@ -73,7 +73,7 @@
 <#limit> a owl:DatatypeProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
-    rdfs:label "The LIMIT solution modifier" ;
+    rdfs:label "LIMIT solution modifier" ;
     rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
     rdfs:seeAlso sp:limit ;
     rdfs:isDefinedBy <#> .
@@ -81,7 +81,7 @@
 <#offset> a owl:DatatypeProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
-    rdfs:label "The OFFSET solution modifier" ;
+    rdfs:label "OFFSET solution modifier" ;
     rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
     rdfs:seeAlso sp:offset ;
     rdfs:isDefinedBy <#> .
