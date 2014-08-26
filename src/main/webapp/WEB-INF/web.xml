@@ -47,7 +47,7 @@ WHERE
     </context-param>
     <context-param>
         <param-name>http://processor.graphity.org/ontology#datasetLocation</param-name>
-        <param-value>org/graphity/client/ontology/sitemap.trig</param-value>
+        <param-value>org/graphity/client/dataset/dataset.trig</param-value>
     </context-param>
     <context-param>
         <param-name>http://server.graphity.org/ontology#resultLimit</param-name>

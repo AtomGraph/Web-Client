@@ -31,6 +31,7 @@ import com.sun.jersey.api.uri.UriTemplate;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -176,8 +177,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
         QuerySolutionMap qsm = getQuerySolutionMap(this);
         
-        //if (resource.hasProperty(RDF.type, LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
-        if (matchedOntClass.hasSuperClass(LDP.Container))
+        if (hasRDFType(LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
         {
             if (offset == null)
             {
@@ -278,7 +278,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public Response get()
     {
         // ldp:Container always redirects to first ldp:Page
-	if (getMatchedOntClass().hasSuperClass(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
+	if (hasRDFType(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
 	    return Response.seeOther(getPageUriBuilder().build()).build();
@@ -512,7 +512,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	Model description = super.describe();
 	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
-	if (getMatchedOntClass().hasSuperClass(LDP.Container)) // && !description.isEmpty()
+	if (hasRDFType(LDP.Container)) // && !description.isEmpty()
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
 	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
@@ -761,48 +761,70 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public OntClass matchOntClass(OntModel ontModel, CharSequence path, Property property)
     {
 	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
+        
+        TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<>(UriTemplate.COMPARATOR);
+
+        // the main sitemap has precedence
+        matchedClasses.putAll(matchOntClasses(ontModel, path, property, true));
+        if (!matchedClasses.isEmpty())
+        {
+            if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
+            return matchedClasses.firstEntry().getValue();
+        }
+
+        // gp:Templates from imported ontologies have lower precedence
+        matchedClasses.putAll(matchOntClasses(ontModel, path, property, false));
+        if (!matchedClasses.isEmpty())
+        {
+            if (log.isDebugEnabled()) log.debug("Matched imported UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
+            return matchedClasses.firstEntry().getValue();
+        }
+        
+        if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);
+        return null;
+    }
+
+    public Map<UriTemplate, OntClass> matchOntClasses(OntModel ontModel, CharSequence path, Property property, boolean inBaseModel)
+    {
+	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
         if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
  	if (property == null) throw new IllegalArgumentException("URI template property cannot be null");
-        
-        ExtendedIterator<OntClass> it = ontModel.listClasses();
-        
-	try
-	{
-	    TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<>(UriTemplate.COMPARATOR);
 
+        Map<UriTemplate, OntClass> matchedClasses = new HashMap<>();
+        StmtIterator it = ontModel.listStatements(null, property, (RDFNode)null);
+
+        try
+	{
 	    while (it.hasNext())
 	    {
-		OntClass ontClass = it.next();	    
-                if (ontClass.hasRDFType(GP.Template) && 
-                        ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
-		{
-                    UriTemplate uriTemplate = new UriTemplate(ontClass.getPropertyValue(property).asLiteral().getString());
-                    HashMap<String, String> map = new HashMap<>();
-
-                    if (uriTemplate.match(path, map))
+                Statement stmt = it.next();
+                if (((ontModel.isInBaseModel(stmt) && inBaseModel) || (!ontModel.isInBaseModel(stmt) && !inBaseModel)) &&
+                        stmt.getSubject().canAs(OntClass.class))
+                {
+                    OntClass ontClass = stmt.getSubject().as(OntClass.class);
+                    if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
                     {
-                        if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
-                        if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
-                        matchedClasses.put(uriTemplate, ontClass);
-                    }
-                    else
-                        if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
-		}
-	    }
-	    
-	    if (!matchedClasses.isEmpty())
-	    {
-		if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
-		return matchedClasses.firstEntry().getValue();
-	    }
+                        UriTemplate uriTemplate = new UriTemplate(ontClass.getPropertyValue(property).asLiteral().getString());
+                        HashMap<String, String> map = new HashMap<>();
 
-	    if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);
-	    return null;
-	}
-	finally
-	{
-	    it.close();
-	}	
+                        if (uriTemplate.match(path, map))
+                        {
+                            if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
+                            if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
+                            matchedClasses.put(uriTemplate, ontClass);
+                        }
+                        else
+                            if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
+                    }
+                }
+            }
+        }
+        finally
+        {
+            it.close();
+        }
+        
+        return matchedClasses;
     }
 
     /**

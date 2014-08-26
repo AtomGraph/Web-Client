@@ -34,6 +34,7 @@
 # CLASSES
 
 <#Application> a owl:Class ;
+    rdfs:subClassOf gp:Application ;
     rdfs:label "Graphity Client application" ;
     rdfs:isDefinedBy <#> .
 

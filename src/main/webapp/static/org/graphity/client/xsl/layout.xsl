@@ -261,10 +261,29 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
+        <!-- *[not(@rdf:about = $absolute-path)] -->
+        <!-- [not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))] -->
+        <xsl:param name="selected-resources" select="*" as="element()*"/>
+
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
-                    <xsl:apply-templates select="." mode="gc:ModeChoiceMode"/>
+                    <xsl:apply-templates select="." mode="gc:PageHeaderMode"/>
+
+                    <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+
+                    <!-- page resource -->
+                    <xsl:apply-templates select="." mode="gc:PaginationMode">
+                        <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
+                    </xsl:apply-templates>
+
+                    <xsl:apply-templates select="." mode="gc:ModeChoiceMode">
+                        <xsl:with-param name="selected-resources" select="$selected-resources" tunnel="yes"/>
+                    </xsl:apply-templates>
+
+                    <xsl:apply-templates select="." mode="gc:PaginationMode">
+                        <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
+                    </xsl:apply-templates>
                 </div>
 
 		<div class="span4">
@@ -359,24 +378,8 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:PropertyMode">
-        <xsl:param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <!-- page resource -->
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-
-        <!-- apply all other URI resources -->
         <xsl:apply-templates mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-        </xsl:apply-templates>
-
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -393,6 +396,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
+    <!--
     <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:PropertyMode" priority="2">
         <div class="well">
             <xsl:apply-templates select="." mode="gc:HeaderMode"/>
@@ -404,11 +408,48 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:PropertyMode" priority="2"/>
-
+    -->
+    
     <!-- HEADER MODE -->
 
+    <xsl:template match="rdf:RDF" mode="gc:PageHeaderMode">
+        <xsl:apply-templates mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about = $absolute-path]" mode="gc:PageHeaderMode" priority="1">
+	<div class="well header">
+            <xsl:apply-templates select="." mode="gc:ImageMode"/>
+            
+            <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
+
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+            
+            <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
+
+            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+
+	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>            
+        </div>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PageHeaderMode"/>
+
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:PageHeaderMode">
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about = $absolute-path][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:PageHeaderMode" priority="2">
+        <div class="well well-small clearfix">
+            <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
+            
+            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+        </div>
+    </xsl:template>
+
     <xsl:template match="rdf:RDF" mode="gc:HeaderMode">
-	<xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
+
+        <xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode" priority="1">
@@ -426,6 +467,28 @@ exclude-result-prefixes="#all">
 	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>
 	</div>
     </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:HeaderMode" priority="2">
+        <div class="well well-small clearfix">
+            <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
+            
+            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+        </div>
+    </xsl:template>
+        
+    <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
+	<h1 class="page-header">
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</h1>
+    </xsl:template>
+
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode">
+	<h1>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</h1>
+    </xsl:template>
+
+    <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
     
     <xsl:template match="*[*][@rdf:about]" mode="gc:MediaTypeSelectMode">
         <div class="btn-group pull-right" onclick="$(this).toggleClass('open');">
@@ -444,18 +507,6 @@ exclude-result-prefixes="#all">
                 </xsl:if>
             </ul>
         </div>
-    </xsl:template>
-    
-    <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
-	<h1 class="page-header">
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</h1>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode">
-	<h1>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</h1>
     </xsl:template>
 
     <!-- MODE TOGGLE MODE (Create/Edit buttons) -->
@@ -696,23 +747,10 @@ exclude-result-prefixes="#all">
     <!-- LIST MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:ListMode">
-        <xsl:param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
+        <!-- <xsl:param name="selected-resources" as="element()*" tunnel="yes"/> -->
 
-	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
-	
-	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-
-	<!-- all resources that are not recursive blank nodes, except page -->
-	 <xsl:apply-templates mode="#current">
+        <xsl:apply-templates mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-        </xsl:apply-templates>
-	
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -753,21 +791,13 @@ exclude-result-prefixes="#all">
     <!-- TABLE MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:TableMode">
-        <xsl:param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 	<xsl:param name="predicates" as="element()*">
 	    <xsl:for-each-group select="$selected-resources/*" group-by="concat(namespace-uri(), local-name())">
 		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$lang}"/>
 		<xsl:sequence select="current-group()[1]"/>
 	    </xsl:for-each-group>
 	</xsl:param>
-
-	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
 
 	<table class="table table-bordered table-striped">
 	    <thead>
@@ -786,10 +816,6 @@ exclude-result-prefixes="#all">
                 </xsl:apply-templates>
 	    </tbody>
 	</table>
-	
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:TableMode"/>
@@ -825,16 +851,8 @@ exclude-result-prefixes="#all">
     <!-- THUMBNAIL MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ThumbnailMode">
-        <xsl:param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
-
-	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
 
         <xsl:variable name="thumbnail-items" as="element()*">	    
             <!-- all resources that are not recursive blank nodes, except page -->
@@ -851,10 +869,6 @@ exclude-result-prefixes="#all">
                 </ul>
             </div>
         </xsl:for-each-group>	    
-
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ThumbnailMode"/>
@@ -884,26 +898,11 @@ exclude-result-prefixes="#all">
     <!-- MAP MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:MapMode">
-        <xsl:param name="selected-resources" select="*[not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <!-- page resource -->
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-
         <div id="map-canvas"/>
 
         <!-- apply all other URI resources -->
         <xsl:apply-templates mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-        </xsl:apply-templates>
-
-	<xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -932,10 +931,6 @@ exclude-result-prefixes="#all">
     <!-- CREATE MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
-	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
 	<form class="form-horizontal" method="post" action="{$absolute-path}?mode={encode-for-uri($mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
@@ -967,18 +962,16 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
-	<xsl:apply-templates select="." mode="gc:HeaderMode"/>
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
-	<xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-	<form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT&amp;mode={encode-for-uri($mode)}" accept-charset="UTF-8"> <!-- enctype="multipart/form-data" -->
+        <form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT&amp;mode={encode-for-uri($mode)}" accept-charset="UTF-8"> <!-- enctype="multipart/form-data" -->
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:variable name="selected-resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]"/>
+            <!-- <xsl:variable name="selected-resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]"/> -->
 	    <xsl:apply-templates select="$selected-resources" mode="#current">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -1014,14 +1007,6 @@ exclude-result-prefixes="#all">
                 </div>
             </xsl:if>
 	</fieldset>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:HeaderMode" priority="2">
-        <div class="well well-small clearfix">
-            <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
-            
-            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
-        </div>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:InlinePropertyListMode">

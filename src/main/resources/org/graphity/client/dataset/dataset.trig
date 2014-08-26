@@ -3,7 +3,6 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix skos:	<http://www.w3.org/2004/02/skos/core#> .
 @prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix dc:	<http://purl.org/dc/elements/1.1/> .
@@ -16,6 +15,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 @prefix gc:     <http://client.graphity.org/ontology#> .
 @prefix gp:	<http://processor.graphity.org/ontology#> .
+@prefix gpt:	<http://processor.graphity.org/templates#> .
 
 <graphs/application>
 {
@@ -42,12 +42,25 @@
 
 }
 
+<graphs/>
+{
+
+    <.> a sioc:Space, ldp:Container, foaf:Document ;
+        dct:title "Graphity Client" ;
+        dct:description "Generic Linked Data browser and end-user-oriented platform" ;
+        foaf:logo <static/img/graphity-logo.svg> ;
+        foaf:maker <http://graphityhq.com/#company> ;
+        rdfs:isDefinedBy <#> ;
+        void:inDataset <dataset#this> ;
+        rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+}
+
 <graphs/ontology>
 {
 
     <#> a owl:Ontology, gp:Sitemap ;
-        owl:imports gp:, gc:, lda: , void:, foaf: ;
-        owl:versionInfo "1.0.13" ;
+        owl:imports gc:, gpt:, lda: , void:, foaf: ;
+        owl:versionInfo "1.0.14" ;
         dct:title "Sitemap" ;
         rdfs:label "Sitemap" ;
         dct:description "Default sitemap for SPARQL service" ;
@@ -100,19 +113,6 @@
 }
 
 # RESOURCES
-
-<graphs/>
-{
-
-    <.> a sioc:Space, ldp:Container, foaf:Document ;
-        dct:title "Graphity Client" ;
-        dct:description "Generic Linked Data browser and end-user-oriented platform" ;
-        foaf:logo <static/img/graphity-logo.svg> ;
-        foaf:maker <http://graphityhq.com/#company> ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> ;
-        rdfs:seeAlso <#> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
-}
 
 <graphs/ontologies/linked-data-api>
 {
@@ -167,17 +167,6 @@
     <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <.> ;
         dct:title "Ontologies" ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
-
-}
-
-<graphs/classes>
-{
-
-    <classes> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <.> ;
-        dct:title "Classes" ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
@@ -260,26 +249,16 @@
 
 }
 
-# RESOURCE CLASSES
-
 <graphs/templates/resource>
 {
 
     <templates/resource> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic <templates/resource#this> ;
+        foaf:primaryTopic gp:Resource ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <templates/resource#this> a owl:Class, gp:Template ;
-        foaf:isPrimaryTopicOf <templates/resource> ;
-        rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
-        gp:uriTemplate "/{path: .*}" ;
-        spin:query [ a gp:DescribeFromGraphWithChildrenTemplate ] ;
-        gp:limit 20 ;
-        gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-        rdfs:label "Resource" ;
-        rdfs:isDefinedBy <#> .
+    # gp:Resource foaf:isPrimaryTopicOf <templates/resource> .
 
 }
 
@@ -288,95 +267,32 @@
 
     <templates/ontology-doc> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic <templates/ontology-doc#this> ;
+        foaf:primaryTopic gpt:OntologyTemplate ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <templates/ontology-doc#this> a owl:Class, gp:Template ;
-        foaf:isPrimaryTopicOf <templates/ontology-doc> ;
-        rdfs:subClassOf foaf:Document ;
-        gp:uriTemplate "/ontology" ;
-        spin:query [ a sp:Describe ; sp:text """PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX  gp:   <http://processor.graphity.org/ontology#>
-
-DESCRIBE ?sitemap ?s
-WHERE
-  { GRAPH ?appGraph
-      { ?app gp:base ?baseUri .
-        ?app rdfs:isDefinedBy ?sitemap
-      }
-    GRAPH ?g
-      { ?s rdfs:isDefinedBy ?sitemap }
-  }
-"""^^xsd:string ] ;
-        rdfs:label "Ontology document resource" ;
-        rdfs:isDefinedBy <#> .
-
 }
-
-# ====
-
-<graphs/templates/dataset-doc>
-{
-
-    <templates/dataset-doc> a foaf:Document, sioc:Item ;
-        sioc:has_container <templates> ;
-        foaf:primaryTopic <templates/dataset-doc#this> ;
-        rdfs:isDefinedBy <#> ;
-        void:inDataset <dataset#this> .
-
-    <templates/dataset-doc#this> a owl:Class, gp:Template ;
-        foaf:isPrimaryTopicOf <templates/dataset-doc> ;
-        rdfs:subClassOf foaf:Document ;
-        gp:uriTemplate "/dataset" ;
-        spin:query [ a gp:DescribeFromGraphWithChildrenTemplate ] ;
-        rdfs:label "Dataset document resource" ;
-        rdfs:isDefinedBy <#> .
-
-}
-
-# ====
 
 <graphs/templates/resources-labelled>
 {
 
     <templates/resources-labelled> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic <templates/resources-labelled#this> ;
+        foaf:primaryTopic gpt:LabelResourcesTemplate ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <templates/resources-labelled#this> a owl:Class, gp:Template ;
-        rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
-        foaf:isPrimaryTopicOf <templates/resources-labelled> ;
-        gp:uriTemplate "/resources/labelled" ;
-        spin:query [ a gp:DescribeGraphLabelResourcesTemplate ] ;
-        gp:limit 20 ;
-        gp:orderBy "label"^^xsd:string ;
-        rdfs:label "Labelled resource container" ;
-        rdfs:isDefinedBy <#> .
-
 }
-
-# ====
 
 <graphs/templates/properties-labelled>
 {
 
     <templates/properties-labelled> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic <templates/properties-labelled#this> ;
+        foaf:primaryTopic gpt:LabelPropertiesTemplate ;
         rdfs:isDefinedBy <#> ;
         void:inDataset <dataset#this> .
 
-    <templates/properties-labelled#this> a owl:Class, gp:Template ;
-        rdfs:subClassOf foaf:Document, ldp:Container, lda:ListEndpoint ;
-        foaf:isPrimaryTopicOf <templates/properties-labelled> ;
-        gp:uriTemplate "/properties/labelled" ;
-        spin:query [ a gp:DescribeGraphLabelPropertiesTemplate ] ;
-        gp:limit 20 ;
-        gp:orderBy "label"^^xsd:string ;
-        rdfs:label "Labelled properties container" ;
-        rdfs:isDefinedBy <#> .
+    # gpt:LabelPropertiesTemplate foaf:isPrimaryTopicOf <templates/properties-labelled> ;
 
 }
