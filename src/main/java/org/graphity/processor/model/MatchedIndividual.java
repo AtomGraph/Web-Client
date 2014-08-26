@@ -18,13 +18,15 @@
 package org.graphity.processor.model;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntResource;
 
 /**
  *
  * @author Martynas
  */
-public interface MatchedIndividual
+public interface MatchedIndividual extends OntResource
 {
+    
     public OntClass getMatchedOntClass();
 
 }

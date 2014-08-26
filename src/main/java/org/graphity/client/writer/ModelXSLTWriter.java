@@ -185,7 +185,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("request-uri", getUriInfo().getRequestUri()).
 	    parameter("http-headers", headerMap.toString()).
 	    parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
-            parameter("ont-model", getSource(resource.getModel())). // $ont-model from the current Resource (with imports)
+            parameter("ont-model", getSource(match.getOntModel(), true)). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);

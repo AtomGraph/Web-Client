@@ -3,7 +3,9 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
 @prefix gp:     <http://processor.graphity.org/ontology#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 # ONTOLOGY
 
@@ -81,3 +83,17 @@
 <#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .
+
+# RESOURCE TEMPLATES
+
+#<#Resource> a owl:Class, gp:Template ;
+#    rdfs:subClassOf foaf:Document, gp:Resource ;
+#    gp:uriTemplate "/{path: .*}" ;
+#    spin:query gp:Describe ;
+#    gp:limit 20 ;
+#    <#mode> <#PropertyMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> ;
+#    rdfs:label "Resource" ;
+#    rdfs:comment "Linked Data resource backed by DESCRIBE query with XSLT layout" ;
+#    rdfs:isDefinedBy <#> .
+
+gp:Resource <#mode> <#PropertyMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .

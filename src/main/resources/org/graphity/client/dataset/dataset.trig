@@ -91,6 +91,24 @@
         rdfs:range void:Dataset ;
         rdfs:isDefinedBy void: .
 
+<#SpaceTemplate> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ;
+    gp:uriTemplate "/" ;
+    spin:query gpt:DescribeFromGraphWithChildren ;
+    gp:limit 20 ;
+    gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
+    rdfs:label "Container" ;
+    rdfs:isDefinedBy <#> .
+
+<#ContainerTemplate> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
+    gp:uriTemplate "/{container}" ;
+    spin:query gpt:DescribeFromGraphWithChildren ;
+    gp:limit 20 ;
+    gc:mode gc:PropertyMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
+    rdfs:label "Container" ;
+    rdfs:isDefinedBy <#> .
+
 }
 
 <graphs/dataset>

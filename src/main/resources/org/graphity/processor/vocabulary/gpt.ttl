@@ -19,7 +19,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology, gp:Sitemap ;
-    owl:imports gp:, sp:, spin:, spl:, lda:, foaf: ;
+    owl:imports gc:, sp:, spin:, spl:, lda:, foaf: ;
     owl:versionInfo "1.0.14" ;
     rdfs:comment "Library of reusable Graphity Processor templates" .
 
@@ -45,18 +45,18 @@ GRAPH ?g
     rdfs:isDefinedBy <#> .
 
 <#LabelResourcesTemplate> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, lda:ListEndpoint ;
+    rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     gp:uriTemplate "/resources/labelled" ;
-    spin:query [ a gp:DescribeGraphLabelResourcesTemplate ] ;
+    spin:query <#DescribeGraphLabelResources> ;
     gp:limit 20 ;
     gp:orderBy "label"^^xsd:string ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .
 
 <#LabelPropertiesTemplate> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, lda:ListEndpoint ;
+    rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     gp:uriTemplate "/properties/labelled" ;
-    spin:query [ a gp:DescribeGraphLabelPropertiesTemplate ] ;
+    spin:query <#DescribeGraphLabelProperties> ;
     gp:limit 20 ;
     gp:orderBy "label"^^xsd:string ;
     rdfs:label "Labelled properties container" ;
@@ -99,12 +99,7 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
 
 # ====
 
-<#DescribePropertiesTemplate> a spin:Template ;
-    spin:body <#DescribeProperties> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeProperties>    a       sp:Dscribe, sp:Query ;
-      sp:resultNodes (spin:_this _:propertyVar) ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 DESCRIBE ?this ?property WHERE {
@@ -124,65 +119,23 @@ DESCRIBE ?this ?property WHERE {
             } .
         }
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:propertyVar) ;
-                            sp:where ([ a       sp:Union ;
-                                        sp:elements (([ sp:object rdf:Property ;
-                                                      sp:predicate rdf:type ;
-                                                      sp:subject _:propertyVar
-                                                    ]) ([ sp:object owl:ObjectProperty ;
-                                                      sp:predicate rdf:type ;
-                                                      sp:subject _:propertyVar
-                                                    ]) ([ sp:object owl:DatatypeProperty ;
-                                                      sp:predicate rdf:type ;
-                                                      sp:subject _:propertyVar
-                                                    ]))
-                                      ])
-                          ]
-                ]) .
-
-_:propertyVar  sp:varName "property"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
-<#DescribeTopicTemplate> a spin:Template ;
-    spin:body <#DescribeTopic> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeTopic>    a       sp:Describe, sp:Query ;
-      sp:resultNodes (_:topicVar) ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?topic WHERE {
     ?topic foaf:isPrimaryTopicOf ?this .
-}"""^^xsd:string ;
-      sp:where ([ sp:object spin:_this ;
-                  sp:predicate foaf:isPrimaryTopicOf ;
-                  sp:subject _:topicVar
-                ]) .
-
-_:topicVar  sp:varName "topic"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
-<#DescribeWithTopicTemplate> a spin:Template ;
-    spin:body <#DescribeWithTopic> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeWithTopic>    a       sp:Describe, sp:Query ;
-      sp:resultNodes (spin:_this _:topicVar) ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
     ?topic foaf:isPrimaryTopicOf ?this .
-}"""^^xsd:string ;
-      sp:where ([ sp:object spin:_this ;
-                  sp:predicate foaf:isPrimaryTopicOf ;
-                  sp:subject _:topicVar
-                ]) .
-
-_:topicVar  sp:varName "topic"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
@@ -216,12 +169,7 @@ _:topicVar  sp:varName "topic"^^xsd:string .
 
 # ====
 
-<#DescribeWithChildrenTemplate> a spin:Template ;
-    spin:body <#DescribeWithChildren> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeWithChildren>    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:docVar _:thingVar) ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 DESCRIBE ?this ?doc ?thing WHERE {
@@ -246,44 +194,11 @@ DESCRIBE ?this ?doc ?thing WHERE {
             } .
         } .
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:Optional ;
-                  sp:elements ([ a       sp:Union ;
-                              sp:elements (([ sp:object _:thingVar ;
-                                            sp:predicate foaf:primaryTopic ;
-                                            sp:subject spin:_this
-                                          ]) ([ sp:object spin:_this ;
-                                            sp:predicate sioc:has_space ;
-                                            sp:subject _:docVar
-                                          ]) ([ a       sp:SubQuery ;
-                                            sp:query
-                                                    [ a       sp:Select ;
-                                                      sp:resultVariables (_:docVar _:thingVar) ;
-                                                      sp:where ([ sp:object spin:_this ;
-                                                                  sp:predicate sioc:has_container ;
-                                                                  sp:subject _:docVar
-                                                                ] [ a       sp:Optional ;
-                                                                  sp:elements ([ sp:object _:thingVar ;
-                                                                              sp:predicate foaf:primaryTopic ;
-                                                                              sp:subject _:docVar
-                                                                            ])
-                                                                ])
-                                                    ]
-                                          ]))
-                            ])
-                ]) .
-
-_:docVar  sp:varName "doc"^^xsd:string .
-_:thingVar  sp:varName "thing"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
-<#DescribeFromGraphWithChildrenTemplate> a spin:Template ;
-    spin:body <#DescribeFromGraphWithChildren> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeFromGraphWithChildren>    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:docVar _:thingVar) ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 DESCRIBE ?this ?doc ?thing WHERE {
@@ -314,111 +229,31 @@ DESCRIBE ?this ?doc ?thing WHERE {
             } .
         } .
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:Optional ;
-                  sp:elements ([ a       sp:Union ;
-                              sp:elements (([ a       sp:NamedGraph ;
-                                            sp:elements ([ sp:object _:thingVar ;
-                                                        sp:predicate foaf:primaryTopic ;
-                                                        sp:subject spin:_this
-                                                      ]) ;
-                                            sp:graphNameNode
-                                                    [ sp:varName "graph"^^xsd:string
-                                                    ]
-                                          ]) ([ a       sp:NamedGraph ;
-                                            sp:elements ([ sp:object spin:_this ;
-                                                        sp:predicate sioc:has_space ;
-                                                        sp:subject _:docVar
-                                                      ]) ;
-                                            sp:graphNameNode
-                                                    [ sp:varName "docGraph"^^xsd:string
-                                                    ]
-                                          ]) ([ a       sp:SubQuery ;
-                                            sp:query
-                                                    [ a       sp:Select ;
-                                                      sp:resultVariables (_:docVar _:thingVar) ;
-                                                      sp:where ([ a       sp:NamedGraph ;
-                                                                  sp:elements ([ sp:object spin:_this ;
-                                                                              sp:predicate sioc:has_container ;
-                                                                              sp:subject _:docVar
-                                                                            ] [ a       sp:Optional ;
-                                                                              sp:elements ([ sp:object _:thingVar ;
-                                                                                          sp:predicate foaf:primaryTopic ;
-                                                                                          sp:subject _:docVar
-                                                                                        ])
-                                                                            ]) ;
-                                                                  sp:graphNameNode
-                                                                          [ sp:varName "childGraph"^^xsd:string
-                                                                          ]
-                                                                ])
-                                                    ]
-                                          ]))
-                            ])
-                ]) .
-
-_:docVar  sp:varName "doc"^^xsd:string .
-_:thingVar  sp:varName "thing"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
-
-<#ConstructTemplate> a spin:Template ;
-    spin:body <#Construct> ;
-    rdfs:isDefinedBy <#> .
 
 <#Construct>    a       sp:Construct, sp:Query ;
-      sp:templates ([ sp:object _:objectVar ;
-                  sp:predicate _:propertyVar ;
-                  sp:subject spin:_this
-                ]) ;
       sp:text """CONSTRUCT {
     ?this ?property ?object .
 }
 WHERE {
     ?this ?property ?object .
-}"""^^xsd:string ;
-      sp:where ([ sp:object _:objectVar ;
-                  sp:predicate _:propertyVar ;
-                  sp:subject spin:_this
-                ]) .
-
-spin:_this  sp:varName "this"^^xsd:string .
-_:objectVar  sp:varName "object"^^xsd:string .
-_:propertyVar  sp:varName "property"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
-
-<#ConstructResourcesTemplate> a spin:Template ;
-    spin:body <#ConstructResources> ;
-    rdfs:isDefinedBy <#> .
 
 <#ConstructResources>    a       sp:Construct, sp:Query ;
-      sp:templates ([ sp:object _:objectVar ;
-                  sp:predicate _:propertyVar ;
-                  sp:subject _:subjectVar
-                ]) ;
       sp:text """CONSTRUCT {
     ?subject ?property ?object .
 }
 WHERE {
     ?subject ?property ?object .
-}"""^^xsd:string ;
-      sp:where ([ sp:object _:objectVar ;
-                  sp:predicate _:propertyVar ;
-                  sp:subject _:subjectVar
-                ]) .
-
-_:subjectVar  sp:varName "subject"^^xsd:string .
-_:propertyVar  sp:varName "property"^^xsd:string .
-_:objectVar  sp:varName "object"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
-<#DescribeNamedGraphsTemplate> a spin:Template ;
-    spin:body <#DescribeNamedGraphs> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeNamedGraphs>    a       sp:Describe, sp:Query ;
-      sp:resultNodes (_:graphVar) ;
       sp:text """DESCRIBE ?graph WHERE {
     {
         SELECT ?graph
@@ -428,28 +263,7 @@ _:objectVar  sp:varName "object"^^xsd:string .
             } .
         }
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:graphVar) ;
-                            sp:where ([ a       sp:NamedGraph ;
-                                        sp:elements ([ sp:object
-                                                            [ sp:varName "object"^^xsd:string
-                                                            ] ;
-                                                    sp:predicate
-                                                            [ sp:varName "property"^^xsd:string
-                                                            ] ;
-                                                    sp:subject
-                                                            [ sp:varName "subject"^^xsd:string
-                                                            ]
-                                                  ]) ;
-                                        sp:graphNameNode _:graphVar
-                                      ])
-                          ]
-                ]) .
-
-_:graphVar  sp:varName "graph"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
@@ -536,13 +350,15 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
 
 # ====
 
-<#DescribeLabelResourcesTemplate> a spin:Template ;
-    spin:body <#DescribeLabelResources> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeLabelResources>    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:resourceVar) ;
-      sp:text """DESCRIBE ?this ?resource WHERE {
+      sp:text """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct:  <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+DESCRIBE ?this ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
@@ -550,64 +366,20 @@ _:instanceVar  sp:varName "instance"^^xsd:string .
             FILTER isURI(?resource) .
         }
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:resourceVar) ;
-                            sp:where ([ a       sp:TriplePath ;
-                                        sp:object
-                                                [ sp:varName "label"^^xsd:string
-                                                ] ;
-                                        sp:path [ a       sp:AltPath ;
-                                                  sp:path1
-                                                          [ a       sp:AltPath ;
-                                                            sp:path1
-                                                                    [ a       sp:AltPath ;
-                                                                      sp:path1
-                                                                              [ a       sp:AltPath ;
-                                                                                sp:path1
-                                                                                        [ a       sp:AltPath ;
-                                                                                          sp:path1
-                                                                                                  [ a       sp:AltPath ;
-                                                                                                    sp:path1
-                                                                                                            [ a       sp:AltPath ;
-                                                                                                              sp:path1 rdfs:label ;
-                                                                                                              sp:path2 dc:title
-                                                                                                            ] ;
-                                                                                                    sp:path2 dct:title
-                                                                                                  ] ;
-                                                                                          sp:path2 foaf:name
-                                                                                        ] ;
-                                                                                sp:path2 foaf:givenName
-                                                                              ] ;
-                                                                      sp:path2 foaf:familyName
-                                                                    ] ;
-                                                            sp:path2 sioc:name
-                                                          ] ;
-                                                  sp:path2 skos:prefLabel
-                                                ] ;
-                                        sp:subject _:resourceVar
-                                      ] [ a       sp:Filter ;
-                                        sp:expression
-                                                [ a       sp:isURI ;
-                                                  sp:arg1 _:resourceVar
-                                                ]
-                                      ])
-                          ]
-                ]) .
-
-_:resourceVar  sp:varName "resource"^^xsd:string .
+}"""^^xsd:string .
 
 # ===
 
-<#DescribeGraphLabelResourcesTemplate> a spin:Template ;
-    spin:body <#DescribeGraphLabelResources> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeGraphLabelResources>    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:resourceVar) ;
-      sp:text """DESCRIBE ?this ?resource WHERE {
+      sp:text """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct:  <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+DESCRIBE ?this ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
@@ -617,70 +389,20 @@ _:resourceVar  sp:varName "resource"^^xsd:string .
             } .
         }
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:resourceVar) ;
-                            sp:where ([ a       sp:NamedGraph ;
-                                        sp:elements ([ a       sp:TriplePath ;
-                                                    sp:object
-                                                            [ sp:varName "label"^^xsd:string
-                                                            ] ;
-                                                    sp:path [ a       sp:AltPath ;
-                                                              sp:path1
-                                                                      [ a       sp:AltPath ;
-                                                                        sp:path1
-                                                                                [ a       sp:AltPath ;
-                                                                                  sp:path1
-                                                                                          [ a       sp:AltPath ;
-                                                                                            sp:path1
-                                                                                                    [ a       sp:AltPath ;
-                                                                                                      sp:path1
-                                                                                                              [ a       sp:AltPath ;
-                                                                                                                sp:path1
-                                                                                                                        [ a       sp:AltPath ;
-                                                                                                                          sp:path1 rdfs:label ;
-                                                                                                                          sp:path2 dc:title
-                                                                                                                        ] ;
-                                                                                                                sp:path2 dct:title
-                                                                                                              ] ;
-                                                                                                      sp:path2 foaf:name
-                                                                                                    ] ;
-                                                                                            sp:path2 foaf:givenName
-                                                                                          ] ;
-                                                                                  sp:path2 foaf:familyName
-                                                                                ] ;
-                                                                        sp:path2 sioc:name
-                                                                      ] ;
-                                                              sp:path2 skos:prefLabel
-                                                            ] ;
-                                                    sp:subject _:resourceVar
-                                                  ] [ a       sp:Filter ;
-                                                    sp:expression
-                                                            [ a       sp:isURI ;
-                                                              sp:arg1 _:resourceVar
-                                                            ]
-                                                  ]) ;
-                                        sp:graphNameNode
-                                                [ sp:varName "graph"^^xsd:string
-                                                ]
-                                      ])
-                          ]
-                ]) .
-
-_:resourceVar  sp:varName "resource"^^xsd:string .
+}"""^^xsd:string .
 
 # ===
 
-<#DescribeLabelPropertiesTemplate> a spin:Template ;
-    spin:body <#DescribeLabelProperties> ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeLabelProperties>    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:propertyVar) ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct:  <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
 DESCRIBE ?this ?property WHERE {
     {
         SELECT ?property
@@ -699,66 +421,9 @@ DESCRIBE ?this ?property WHERE {
             ?property ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
         }
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:propertyVar) ;
-                            sp:where ([ a       sp:Union ;
-                                        sp:elements (([ sp:object rdf:Property ;
-                                                      sp:predicate rdf:type ;
-                                                      sp:subject _:propertyVar
-                                                    ]) ([ sp:object owl:ObjectProperty ;
-                                                      sp:predicate rdf:type ;
-                                                      sp:subject _:propertyVar
-                                                    ]) ([ sp:object owl:DatatypeProperty ;
-                                                      sp:predicate rdf:type ;
-                                                      sp:subject _:propertyVar
-                                                    ]))
-                                      ] [ a       sp:TriplePath ;
-                                        sp:object
-                                                [ sp:varName "label"^^xsd:string
-                                                ] ;
-                                        sp:path [ a       sp:AltPath ;
-                                                  sp:path1
-                                                          [ a       sp:AltPath ;
-                                                            sp:path1
-                                                                    [ a       sp:AltPath ;
-                                                                      sp:path1
-                                                                              [ a       sp:AltPath ;
-                                                                                sp:path1
-                                                                                        [ a       sp:AltPath ;
-                                                                                          sp:path1
-                                                                                                  [ a       sp:AltPath ;
-                                                                                                    sp:path1
-                                                                                                            [ a       sp:AltPath ;
-                                                                                                              sp:path1 rdfs:label ;
-                                                                                                              sp:path2 dc:title
-                                                                                                            ] ;
-                                                                                                    sp:path2 dct:title
-                                                                                                  ] ;
-                                                                                          sp:path2 foaf:name
-                                                                                        ] ;
-                                                                                sp:path2 foaf:givenName
-                                                                              ] ;
-                                                                      sp:path2 foaf:familyName
-                                                                    ] ;
-                                                            sp:path2 sioc:name
-                                                          ] ;
-                                                  sp:path2 skos:prefLabel
-                                                ] ;
-                                        sp:subject _:propertyVar
-                                      ])
-                          ]
-                ]) .
-                
-_:propertyVar  sp:varName "property"^^xsd:string .
+}"""^^xsd:string .
 
 # ===
-
-<#DescribeGraphLabelPropertiesTemplate> a spin:Template ;
-    spin:body <#DescribeGraphLabelProperties> ;
-    rdfs:isDefinedBy <#> .
 
 <#DescribeGraphLabelProperties>    a       sp:Describe ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -794,29 +459,19 @@ DESCRIBE ?this ?property WHERE {
  
 # ====
 
-<#DeleteTemplate> a spin:Template ;
-    spin:body <#Delete> ;
-    rdfs:isDefinedBy <#> .
-
 <#Delete>    a       sp:DeleteWhere ;
       sp:text """DELETE WHERE {
     ?this ?p ?o .
-}"""^^xsd:string ;
-      sp:where ([ sp:object
-                          [ sp:varName "o"^^xsd:string
-                          ] ;
-                  sp:predicate
-                          [ sp:varName "p"^^xsd:string
-                          ] ;
-                  sp:subject
-                          [ sp:varName "this"^^xsd:string
-                          ]
-                ]) .
+}"""^^xsd:string .
 
 # ====
 
 <#DeleteFromGraphTemplate> a spin:Template ;
     spin:body <#DeleteFromGraph> ;
+    spin:constraint [ a       spl:Argument ;
+		spl:predicate <#graph> ;
+		spl:valueType rdfs:Resource
+	] ;
     rdfs:isDefinedBy <#> .
 
 <#DeleteFromGraph>    a       sp:DeleteWhere ;
@@ -843,10 +498,6 @@ DESCRIBE ?this ?property WHERE {
 
 # ====
 
-<#DeleteWithTopicTemplate> a spin:Template ;
-    spin:body <#DeleteWithTopic> ;
-    rdfs:isDefinedBy <#> .
-
 <#DeleteWithTopic>    a       sp:DeleteWhere ;
       sp:text """DELETE WHERE {
     ?this ?p ?o .
@@ -872,13 +523,7 @@ DESCRIBE ?this ?property WHERE {
                   sp:subject _:primaryTopicVar
                 ]) .
 
-_:primaryTopicVar  sp:varName "primaryTopic"^^xsd:string .
-
 # ====
-
-<#DeleteFromGraphWithTopicTemplate> a spin:Template ;
-    spin:body <#DeleteFromGraphWithTopic> ;
-    rdfs:isDefinedBy <#> .
 
 <#DeleteFromGraphWithTopic>    a       sp:DeleteWhere ;
       sp:text """DELETE WHERE {
@@ -887,29 +532,4 @@ _:primaryTopicVar  sp:varName "primaryTopic"^^xsd:string .
         ?primaryTopic foaf:isPrimaryTopicOf ?this .
         ?primaryTopic ?x ?y .
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:NamedGraph ;
-                  sp:elements ([ sp:object
-                                      [ sp:varName "o"^^xsd:string
-                                      ] ;
-                              sp:predicate
-                                      [ sp:varName "p"^^xsd:string
-                                      ] ;
-                              sp:subject spin:_this
-                            ] [ sp:object spin:_this ;
-                              sp:predicate foaf:isPrimaryTopicOf ;
-                              sp:subject _:primaryTopicVar
-                            ] [ sp:object
-                                      [ sp:varName "y"^^xsd:string
-                                      ] ;
-                              sp:predicate
-                                      [ sp:varName "x"^^xsd:string
-                                      ] ;
-                              sp:subject _:primaryTopicVar
-                            ]) ;
-                  sp:graphNameNode
-                          [ sp:varName "g"^^xsd:string
-                          ]
-                ]) .
-
-_:primaryTopicVar  sp:varName "primaryTopic"^^xsd:string .
+}"""^^xsd:string .

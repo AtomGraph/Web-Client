@@ -172,6 +172,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     @PostConstruct
     public void init()
     {
+        if (log.isDebugEnabled()) log.debug("@PostConstruct initializtion");
+
 	matchedOntClass = matchOntClass(getOntModel(), getRealURI(), uriInfo.getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
@@ -216,8 +218,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
         cacheControl = getCacheControl(matchedOntClass);
-
-        if (log.isDebugEnabled()) log.debug("HELLO @PostConstruct!");
     }
     
     public Long getLongValue(OntClass ontClass, DatatypeProperty property)
@@ -810,7 +810,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                         if (uriTemplate.match(path, map))
                         {
                             if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
-                            if (log.isDebugEnabled()) log.debug("Path {} matched endpoint OntClass {}", path, ontClass);
+                            if (log.isDebugEnabled()) log.debug("Path {} matched OntClass {}", path, ontClass);
                             matchedClasses.put(uriTemplate, ontClass);
                         }
                         else
