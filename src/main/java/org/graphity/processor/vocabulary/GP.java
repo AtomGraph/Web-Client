@@ -54,8 +54,6 @@ public class GP
 
     public static final ObjectProperty graphStore = m_model.createObjectProperty( NS + "graphStore" );
 
-    public static final DatatypeProperty ontologyPath = m_model.createDatatypeProperty( NS + "ontologyPath" );
-
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
     public static final ObjectProperty datasetEndpoint = m_model.createObjectProperty( NS + "datasetEndpoint" );

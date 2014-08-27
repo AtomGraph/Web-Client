@@ -16,6 +16,9 @@
  */
 package org.graphity.client;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -23,6 +26,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
@@ -46,6 +53,7 @@ import org.graphity.server.provider.QueryParamProvider;
 import org.graphity.server.provider.ResultSetWriter;
 import org.graphity.server.provider.SPARQLEndpointProvider;
 import org.graphity.server.provider.UpdateRequestReader;
+import org.graphity.client.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -67,6 +75,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     private final Set<Class<?>> classes = new HashSet<>();
     private final Set<Object> singletons = new HashSet<>();
 
+    private @Context ServletContext servletContext;
+    private @Context UriInfo uriInfo;
+    
     /**
      * Initializes root resource classes and provider singletons
      */
@@ -113,11 +124,9 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html">Locator</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
      */
-    @Override
+    @PostConstruct
     public void init()
     {
-        super.init(); // Server init() turns off Model caching
-        
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
 
 	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
@@ -128,6 +137,17 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
+        DataManager manager = new DataManager(mapper, ARQ.getContext(), getServletContext(), getUriInfo());
+        FileManager.setStdLocators(manager);
+	manager.addLocatorLinkedData();
+	manager.removeLocatorURL();
+        FileManager.setGlobalFileManager(manager);
+	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
+
+        OntDocumentManager.getInstance().setFileManager(FileManager.get());
+        OntDocumentManager.getInstance().setCacheModels(false);
+	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
+        
         /*
 	try
 	{
@@ -198,6 +218,26 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
 	return new StreamSource(xsltUri);
+    }
+
+    /**
+     * Returns servlet context
+     * 
+     * @return injected ServletContext
+     */
+    public ServletContext getServletContext()
+    {
+	return servletContext;
+    }
+
+    /**
+     * Returns URI information
+     * 
+     * @return injected UriInfo
+     */
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
     }
 
 }

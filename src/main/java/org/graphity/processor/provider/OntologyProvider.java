@@ -16,20 +16,19 @@
  */
 package org.graphity.processor.provider;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.util.LocationMapper;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.util.FileManager;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
-import java.net.URI;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
@@ -112,21 +111,22 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
 	//ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
 	//return cr.getContext(SPARQLEndpoint.class);
-        return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
+        return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), (DataManager)FileManager.get());
     }
 
     public OntModel getOntModel()
     {
         try
         {
-            return getOntModel(getDataManager(), getUriInfo(), getServletContext());
+            return getOntModel((DataManager)FileManager.get(), getUriInfo(), getServletContext());
         }
         catch (ConfigurationException ex)
         {
             throw new WebApplicationException(ex);
         }
     }
-    
+
+    /*
     public DataManager getDataManager()
     {
         DataManager dataManager = new DataManager(LocationMapper.get(), ARQ.getContext(), getServletContext());
@@ -135,6 +135,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         
         return dataManager;
     }
+    */
     
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
@@ -147,66 +148,44 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext) throws ConfigurationException
     {
-        OntDocumentManager ontManager = new OntDocumentManager(dataManager, (String)null);
-        ontManager.setFileManager(dataManager);
-
-	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
-	if (ontologyPath == null) throw new IllegalArgumentException("Property '" + GP.ontologyPath.getURI() + "' needs to be set as context-param in web.xml");
+       Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
+        if (ontologyQuery == null) throw new IllegalStateException("Sitemap ontology query is not configured properly. Check ResourceConfig and/or web.xml");
 	
-	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
+        Model model;
 
 	if (servletContext.getInitParameter(GP.datasetEndpoint.getURI()) != null)
 	{
 	    Object ontologyEndpoint = servletContext.getInitParameter(GP.datasetEndpoint.getURI());
-	    Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
-            if (ontologyQuery == null) throw new IllegalStateException("Sitemap ontology query is not configured properly. Check ResourceConfig and/or web.xml");
 
             if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
             Query query = QueryFactory.create(ontologyQuery.toString());
     
-            Model model = dataManager.loadModel(ontologyEndpoint.toString(), query);
-            if (model.isEmpty())
-            {
-                if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
-                throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-            }
-            ontManager.addModel(localUri, model, true);	    
+            model = dataManager.loadModel(ontologyEndpoint.toString(), query);
 	}
 	else
 	{
-            Object ontologyLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
-            if (ontologyLocation == null) throw new IllegalStateException("Sitemap ontology is not configured properly. Check ResourceConfig and/or web.xml");
-            URI ontologyLocationURI = URI.create((String)ontologyLocation);
-            /*
-            if (ontologyLocationURI.isAbsolute())
-	    {
-		if (log.isDebugEnabled()) log.debug("Reading ontology from remote file with URI: {}", ontologyLocationURI);
-		ontManager.addModel(localUri,
-			dataManager.loadModel(ontologyLocationURI.toString()),
-			true);
-	    }
-	    else
-	    {
-		if (log.isDebugEnabled()) log.debug("Mapping ontology to a local file: {}", ontologyLocation.toString());
-		ontManager.addAltEntry(localUri, ontologyLocation.toString());
-	    }
-            */
-            
-            ontManager.addModel(localUri, getSPARQLEndpoint().loadModel(getQuery(getServletContext(), getUriInfo())));
-	}
+            model = getSPARQLEndpoint().loadModel(getQuery(getServletContext(), getUriInfo(), GP.ontologyQuery));
+        }
         
-	OntModel ontModel = ontManager.getOntology(localUri, OntModelSpec.OWL_MEM);
+        if (model.isEmpty())
+        {
+            if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+
+        OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
 	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
 	return ontModel;
     }
 
-    public Query getQuery(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
+    public Query getQuery(ServletContext servletContext, UriInfo uriInfo, Property property) throws ConfigurationException
     {
         if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-
-	Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
-	if (ontologyQuery == null) throw new ConfigurationException("Property '" + GP.ontologyQuery.getURI() + "' needs to be set in ServletContext (web.xml)");
+        if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        
+	Object ontologyQuery = servletContext.getInitParameter(property.getURI());
+	if (ontologyQuery == null) throw new ConfigurationException("Property '" + property.getURI() + "' needs to be set in ServletContext (web.xml)");
 
         ParameterizedSparqlString queryString = new ParameterizedSparqlString(ontologyQuery.toString());
         queryString.setIri("baseUri", uriInfo.getBaseUri().toString());

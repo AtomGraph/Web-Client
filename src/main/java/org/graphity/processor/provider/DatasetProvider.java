@@ -67,15 +67,11 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     
     public Dataset getDataset(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
     {
-        Object ontologyLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
-        if (ontologyLocation == null) throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured properly. Check ServletContext and/or web.xml");
-	Object ontologyPath = servletContext.getInitParameter(GP.ontologyPath.getURI());
-	if (ontologyPath == null) throw new ConfigurationException("Property '" + GP.ontologyPath.getURI() + "' needs to be set in ResourceConfig (web.xml)");
+        Object datasetLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
+        if (datasetLocation == null) throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured properly. Check ServletContext and/or web.xml");
 	
-	String localUri = uriInfo.getBaseUriBuilder().path(ontologyPath.toString()).build().toString();
-
         Dataset dataset = DatasetFactory.createMem();
-        RDFDataMgr.read(dataset, ontologyLocation.toString(), localUri, null); // Lang.TURTLE
+        RDFDataMgr.read(dataset, datasetLocation.toString(), uriInfo.getBaseUri().toString(), null); // Lang.TURTLE
         return dataset;
     }
 

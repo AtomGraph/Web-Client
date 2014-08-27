@@ -6,10 +6,6 @@
     id="graphity-client" version="3.0">
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
-    <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontologyPath</param-name>
-        <param-value>ontology</param-value>
-    </context-param>
     <!--
     <context-param>
         <param-name>http://processor.graphity.org/ontology#datasetEndpoint</param-name>
