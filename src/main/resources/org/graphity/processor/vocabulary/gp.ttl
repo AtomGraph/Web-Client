@@ -92,7 +92,7 @@
 # CLASSES
 
 <#Template> rdfs:subClassOf owl:Class ; # a owl:Class ?
-    # <#uriTemplate> "/templates/{isPrimaryTopicOf.uuid}" ;
+    <#uriTemplate> "/templates/{isPrimaryTopicOf.uuid}" ;
     rdfs:label "Resource template" ;
     rdfs:isDefinedBy <#> .
 

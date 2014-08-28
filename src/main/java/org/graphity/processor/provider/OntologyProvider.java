@@ -144,6 +144,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      * @param uriInfo URI information of the current request
      * @param servletContext webapp context
      * @return ontology Model
+     * @throws javax.naming.ConfigurationException
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
     public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext) throws ConfigurationException

@@ -108,7 +108,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     {
 	Model description;
         
-        if (getMode() != null && getMatchedOntClass().hasSuperClass(LDP.Container) &&
+        if (getMode() != null && hasRDFType(LDP.Container) && // getMatchedOntClass().hasSuperClass(LDP.Container)
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
