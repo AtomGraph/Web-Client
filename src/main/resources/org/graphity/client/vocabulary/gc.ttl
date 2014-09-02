@@ -56,7 +56,7 @@
 
 # INDIVIDUALS
 
-<#PropertyMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#ReadMode> a <#Mode>, <#ItemMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
@@ -76,6 +76,10 @@
     rdfs:label "List" ;
     rdfs:isDefinedBy <#> .
 
+<#ListReadMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "Full list" ;
+    rdfs:isDefinedBy <#> .
+
 <#ThumbnailMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Gallery" ;
     rdfs:isDefinedBy <#> .
@@ -91,9 +95,9 @@
 #    gp:uriTemplate "/{path: .*}" ;
 #    spin:query gp:Describe ;
 #    gp:limit 20 ;
-#    <#mode> <#PropertyMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> ;
+#    <#mode> <#ReadMode>, <#ListReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> ;
 #    rdfs:label "Resource" ;
 #    rdfs:comment "Linked Data resource backed by DESCRIBE query with XSLT layout" ;
 #    rdfs:isDefinedBy <#> .
 
-gp:Resource <#mode> <#PropertyMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .
+gp:Resource <#mode> <#ReadMode>, <#ListReadMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .

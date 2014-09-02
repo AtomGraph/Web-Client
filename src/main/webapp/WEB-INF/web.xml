@@ -6,12 +6,11 @@
     id="graphity-client" version="3.0">
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
-    <!--
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#datasetEndpoint</param-name>
-        <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
+        <param-name>http://processor.graphity.org/ontology#ontology</param-name>
+        <param-value>http://processor.graphity.org/templates#</param-value>
     </context-param>
-    -->
+    <!--
     <context-param>
         <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
         <param-value><![CDATA[
@@ -29,6 +28,7 @@ WHERE
   }
 ]]></param-value>
     </context-param>
+    -->
     <context-param>
         <param-name>http://processor.graphity.org/ontology#applicationQuery</param-name>
         <param-value><![CDATA[

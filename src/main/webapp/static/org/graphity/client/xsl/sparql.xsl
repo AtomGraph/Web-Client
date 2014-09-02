@@ -66,7 +66,7 @@ LIMIT 100</xsl:param>
     </xsl:template>
     -->
     
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:PropertyMode" priority="2">
+    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:ReadMode" priority="2">
 	<form action="" method="get" id="query-form">
 	    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 	</form>
@@ -110,7 +110,7 @@ LIMIT 100</xsl:param>
 		</div>
 	    </div>
 
-	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:PropertyMode"/>
+	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:ReadMode"/>
 	</xsl:if>
 	<!-- result of SELECT or ASK -->
 	<xsl:if test="$result-doc/sparql:sparql">

@@ -802,7 +802,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                         stmt.getSubject().canAs(OntClass.class))
                 {
                     OntClass ontClass = stmt.getSubject().as(OntClass.class);
-                    if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
+                    if (ontClass.hasSuperClass(FOAF.Document) && 
+                            ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
                     {
                         UriTemplate uriTemplate = new UriTemplate(ontClass.getPropertyValue(property).asLiteral().getString());
                         HashMap<String, String> map = new HashMap<>();

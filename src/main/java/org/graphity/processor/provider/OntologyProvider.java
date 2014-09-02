@@ -16,13 +16,12 @@
  */
 package org.graphity.processor.provider;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.util.FileManager;
@@ -42,7 +41,7 @@ import javax.ws.rs.ext.Providers;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.util.DataManager;
+import org.graphity.client.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,17 +125,6 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         }
     }
 
-    /*
-    public DataManager getDataManager()
-    {
-        DataManager dataManager = new DataManager(LocationMapper.get(), ARQ.getContext(), getServletContext());
-        DataManager.setStdLocators(dataManager);
-        dataManager.setModelCaching(true);
-        
-        return dataManager;
-    }
-    */
-    
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
      * 
@@ -149,32 +137,52 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      */
     public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext) throws ConfigurationException
     {
-       Object ontologyQuery = servletContext.getInitParameter(GP.ontologyQuery.getURI());
-        if (ontologyQuery == null) throw new IllegalStateException("Sitemap ontology query is not configured properly. Check ResourceConfig and/or web.xml");
 	
-        Model model;
+        OntModel ontModel;
 
-	if (servletContext.getInitParameter(GP.datasetEndpoint.getURI()) != null)
-	{
-	    Object ontologyEndpoint = servletContext.getInitParameter(GP.datasetEndpoint.getURI());
+        Query query = getQuery(getServletContext(), getUriInfo(), GP.ontologyQuery);
+        if (query != null)
+        {
+            if (servletContext.getInitParameter(GP.datasetEndpoint.getURI()) != null)
+            {
+                Object ontologyEndpoint = servletContext.getInitParameter(GP.datasetEndpoint.getURI());
+                if (log.isDebugEnabled()) log.debug("Reading ontology from remote SPARQL endpoint {}", ontologyEndpoint);
 
-            if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontologyEndpoint);
-            Query query = QueryFactory.create(ontologyQuery.toString());
-    
-            model = dataManager.loadModel(ontologyEndpoint.toString(), query);
-	}
-	else
-	{
-            model = getSPARQLEndpoint().loadModel(getQuery(getServletContext(), getUriInfo(), GP.ontologyQuery));
+                ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM,
+                        dataManager.loadModel(ontologyEndpoint.toString(), query));
+            }
+            else
+            {
+                if (log.isDebugEnabled()) log.debug("Reading ontology from  SPARQL endpoint");
+                ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM,
+                        getSPARQLEndpoint().loadModel(query));
+            }
+        }
+        else
+        {
+            if (servletContext.getInitParameter(GP.ontology.getURI()) != null)
+            {
+                Object ontology = servletContext.getInitParameter(GP.ontology.getURI());
+                if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontology);
+
+                //ontModel = ModelFactory.createDefaultModel().read(ontology.toString());
+                ontModel = OntDocumentManager.getInstance().getOntology(ontology.toString(), OntModelSpec.OWL_MEM);
+                //ontModel.read(ontology.toString());
+            }
+            else
+            {
+                if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured in web.");
+                throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured in web.xml");
+            }
         }
         
-        if (model.isEmpty())
+        if (ontModel.isEmpty())
         {
             if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
 
-        OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        //OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, ontModel);
 	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
 	return ontModel;
     }
@@ -186,11 +194,15 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
         
 	Object ontologyQuery = servletContext.getInitParameter(property.getURI());
-	if (ontologyQuery == null) throw new ConfigurationException("Property '" + property.getURI() + "' needs to be set in ServletContext (web.xml)");
-
-        ParameterizedSparqlString queryString = new ParameterizedSparqlString(ontologyQuery.toString());
-        queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
-        return queryString.asQuery();
+	//if (ontologyQuery == null) throw new ConfigurationException("Property '" + property.getURI() + "' needs to be set in ServletContext (web.xml)");
+        if (ontologyQuery != null)
+        {
+            ParameterizedSparqlString queryString = new ParameterizedSparqlString(ontologyQuery.toString());
+            queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
+            return queryString.asQuery();
+        }
+        
+        return null;
     }
 
     public Providers getProviders()

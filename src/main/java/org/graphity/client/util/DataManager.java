@@ -23,12 +23,9 @@ import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.LocationMapper;
-import com.hp.hpl.jena.util.Locator;
-import com.hp.hpl.jena.util.TypedStream;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -42,10 +39,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.graphity.client.locator.LocatorLinkedData;
-import org.graphity.client.locator.PrefixMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +46,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class DataManager extends org.graphity.server.util.DataManager implements URIResolver
+public class DataManager extends org.graphity.processor.util.DataManager implements URIResolver
 {
+
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    private final UriInfo uriInfo;
-    
     public static final List<String> IGNORED_EXT = new ArrayList<>();
     static
     {
@@ -75,151 +67,12 @@ public class DataManager extends org.graphity.server.util.DataManager implements
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
     
+    private final UriInfo uriInfo;
+        
     public DataManager(LocationMapper mapper, Context context, ServletContext servletContext, UriInfo uriInfo)
     {
 	super(mapper, context, servletContext);
         this.uriInfo = uriInfo;
-    }
-
-    @Override
-    public void addCacheModel(String uri, Model m)
-    {
-	if (log.isTraceEnabled()) log.trace("Adding Model to cache with URI: ({})", uri);
-	super.addCacheModel(uri, m);
-    }
-
-    @Override
-    public boolean hasCachedModel(String filenameOrURI)
-    {
-	boolean cached = super.hasCachedModel(filenameOrURI);
-	if (log.isTraceEnabled()) log.trace("Is Model with URI {} cached: {}", filenameOrURI, cached);
-	return cached;
-    }
-
-    public boolean isPrefixMapped(String filenameOrURI)
-    {
-	return !getPrefix(filenameOrURI).equals(filenameOrURI);
-    }
-
-    public String getPrefix(String filenameOrURI)
-    {
-	if (getLocationMapper() instanceof PrefixMapper)
-	{
-	    String baseURI = ((PrefixMapper)getLocationMapper()).getPrefix(filenameOrURI);
-	    if (baseURI != null) return baseURI;
-	}
-	
-	return filenameOrURI;
-    }
-    
-    @Override
-    public Model loadModel(String filenameOrURI)
-    {
-	if (isPrefixMapped(filenameOrURI))
-	{
-	    String prefix = getPrefix(filenameOrURI);
-	    if (log.isDebugEnabled()) log.debug("URI {} is prefix mapped, loading prefix URI: {}", filenameOrURI, prefix);
-	    return loadModel(prefix);
-	}
-	
-	if (log.isDebugEnabled()) log.debug("loadModel({})", filenameOrURI);
-	filenameOrURI = UriBuilder.fromUri(filenameOrURI).fragment(null).build().toString(); // remove document fragments
-	
-        if (hasCachedModel(filenameOrURI))
-	{
-	    if (log.isDebugEnabled()) log.debug("Returning cached Model for URI: {}", filenameOrURI);
-	    return getFromCache(filenameOrURI) ;
-	}  
-
-	Model model;
-	Map.Entry<String, Context> endpoint = findEndpoint(filenameOrURI);
-	if (endpoint != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("URI {} is a SPARQL service, executing Query on SPARQL endpoint: {}", filenameOrURI);
-
-	    model = ModelFactory.createDefaultModel();
-	    Query query = parseQuery(filenameOrURI);
-	    if (query != null) model = loadModel(endpoint.getKey(), query);
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("URI {} is *not* a SPARQL service, reading Model from TypedStream", filenameOrURI);
-
-	    model = ModelFactory.createDefaultModel();
-	    readModel(model, filenameOrURI);
-	}
-
-	addCacheModel(filenameOrURI, model);
-	
-        return model;
-    }
-
-    public boolean isMapped(String filenameOrURI)
-    {
-	String mappedURI = mapURI(filenameOrURI);
-	return (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:"));
-    }
-
-    @Override
-    public Model readModel(Model model, String filenameOrURI)
-    {
-	String mappedURI = mapURI(filenameOrURI);
-	if (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:")) // if URI is mapped and local
-	{
-	    if (log.isDebugEnabled()) log.debug("URI {} is mapped to {}, letting FileManager.readModel() handle it", filenameOrURI, mappedURI);
-	    if (log.isDebugEnabled()) log.debug("FileManager.readModel() URI: {} Base URI: {}", mappedURI, filenameOrURI);
-
-	    return super.readModel(model, mappedURI, filenameOrURI, null); // let FileManager handle
-	}
-
-	TypedStream in = openNoMapOrNull(filenameOrURI);
-	if (in != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, in);
-
-            Lang lang = RDFLanguages.contentTypeToLang(in.getMimeType());
-	    if (lang != null) // do not read if MimeType/syntax are not known
-	    {
-                String syntax = lang.getName();
-		if (log.isDebugEnabled()) log.debug("URI {} syntax is {}, reading it", filenameOrURI, syntax);
-
-		model.read(in.getInput(), filenameOrURI, syntax) ;
-		try { in.getInput().close(); } catch (IOException ex) {}
-	    }
-	    else
-		if (log.isDebugEnabled()) log.debug("Syntax for URI {} unknown, ignoring", filenameOrURI);
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Failed to locate '"+filenameOrURI+"'") ;
-	    throw new NotFoundException("Not found: "+filenameOrURI) ;
-	}
-
-	return model;
-    }
-    
-    /** Add a Linked Data locator */
-    public final void addLocatorLinkedData()
-    {
-        Locator loc = new LocatorLinkedData() ;
-        addLocator(loc) ;
-    }
-
-    public void removeLocatorURL()
-    {
-	Locator locURL = null;
-	Iterator<Locator> it = locators();
-	while (it.hasNext())
-	{
-	    Locator loc = it.next();
-	    if (loc.getName().equals("LocatorURL")) locURL = loc;
-	}
-	// remove() needs to be called outside the iterator
-	if (locURL != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Removing Locator: {}", locURL);
-	    remove(locURL);
-	}
     }
 
     @Override
@@ -271,9 +124,9 @@ public class DataManager extends org.graphity.server.util.DataManager implements
             else
                 if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
             
-            if (resolvingUncached || relative != null ||
-                    (resolvingSPARQL && endpoint != null) ||
-                    (resolvingMapped && isMapped(uri.toString())))
+            if (isResolvingUncached() || relative != null ||
+                    (isResolvingSPARQL() && endpoint != null) ||
+                    (isResolvingMapped() && isMapped(uri.toString())))
                 try
                 {
                     Query query = parseQuery(uri.toString());
@@ -300,7 +153,7 @@ public class DataManager extends org.graphity.server.util.DataManager implements
                     if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
                     return getSource(loadModel(uri.toString()));
                 }
-                catch (IllegalArgumentException | UriBuilderException ex)
+                catch (IllegalArgumentException | UriBuilderException | NotFoundException ex)
                 {
                     if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
                     return getDefaultSource(); // return empty Model
@@ -347,21 +200,6 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
     }
     
-    public boolean isIgnored(String filenameOrURI)
-    {
-	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
-    }
-
-    public boolean isResolvingUncached()
-    {
-	return resolvingUncached;
-    }
-
-    public void setResolvingUncached(boolean resolvingUncached)
-    {
-	this.resolvingUncached = resolvingUncached;
-    }
-
     public static MultivaluedMap<String, String> parseParamMap(String uri)
     {
 	if (uri.indexOf("?") > 0)
@@ -412,6 +250,41 @@ public class DataManager extends org.graphity.server.util.DataManager implements
 	}
 	
 	return null;
+    }
+
+    public boolean isIgnored(String filenameOrURI)
+    {
+	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
+    }
+
+    public boolean isResolvingUncached()
+    {
+	return resolvingUncached;
+    }
+
+    public void setResolvingUncached(boolean resolvingUncached)
+    {
+	this.resolvingUncached = resolvingUncached;
+    }
+
+    public boolean isResolvingSPARQL()
+    {
+        return resolvingSPARQL;
+    }
+
+    public void setResolvingSPARQL(boolean resolvingSPARQL)
+    {
+	this.resolvingSPARQL = resolvingSPARQL;
+    }
+
+    public boolean isResolvingMapped()
+    {
+        return resolvingMapped;
+    }
+    
+    public void setResolvingMapped(boolean resolvingMapped)
+    {
+        this.resolvingMapped = resolvingMapped;
     }
 
     public UriInfo getUriInfo()

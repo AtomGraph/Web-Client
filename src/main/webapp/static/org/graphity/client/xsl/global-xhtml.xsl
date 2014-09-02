@@ -181,7 +181,7 @@ exclude-result-prefixes="#all">
 	<xsl:apply-templates select="key('resources', $uri)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:PropertyMode"/>
+    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:ReadMode"/>
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:choose>

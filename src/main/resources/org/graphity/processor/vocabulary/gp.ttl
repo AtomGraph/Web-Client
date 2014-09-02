@@ -9,6 +9,7 @@
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
+@prefix dqc:	<http://semwebquality.org/ontologies/dq-constraints#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix lda:	<http://purl.org/linked-data/api/vocab#> .
 @prefix vann:	<http://purl.org/vocab/vann/> .
@@ -16,7 +17,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin: ;
+    owl:imports sp:, spin:, dqc: ;
     owl:versionInfo "1.0.14" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
@@ -31,7 +32,7 @@
 # PROPERTIES
 
 <#service> a owl:ObjectProperty ;
-    rdfs:domain sioc:Space ;
+    rdfs:domain <#Application> ;
     rdfs:range sd:Service ;
     rdfs:label "SPARQL service" ;
     rdfs:isDefinedBy <#> .
@@ -91,13 +92,33 @@
 
 # CLASSES
 
-<#Template> rdfs:subClassOf owl:Class ; # a owl:Class ?
+<#Template> a owl:Class ;
     <#uriTemplate> "/templates/{isPrimaryTopicOf.uuid}" ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Template> ;
+	    sp:arg2 <#uriTemplate>
+	] ,
+        [ a dqc:MissingProperties ;
+	    sp:arg1 <#Template> ;
+	    sp:arg2 spin:query
+	] ,
+        [ a dqc:MissingProperties ;
+	    sp:arg1 <#Template> ;
+	    sp:arg2 <#label>
+	] ;
     rdfs:label "Resource template" ;
     rdfs:isDefinedBy <#> .
 
 <#Application> a owl:Class ;
-    # <#uriTemplate> "/apps/{isPrimaryTopicOf.uuid}" ;
+    <#uriTemplate> "/apps/{isPrimaryTopicOf.uuid}" ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Application> ;
+	    sp:arg2 <#base>
+	] ,
+        [ a dqc:MissingProperties ;
+	    sp:arg1 <#Application> ;
+	    sp:arg2 <#service>
+	] ;
     rdfs:label "Graphity Processor application" ;
     rdfs:isDefinedBy <#> .
 

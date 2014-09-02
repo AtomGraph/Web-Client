@@ -88,6 +88,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public Object getSPARQLResource()
     {
+        // refactor with selectVariant()?
 	MediaType mostAcceptable = getHttpHeaders().getAcceptableMediaTypes().get(0);
 
 	// check formats supported by Jena instead
