@@ -18,6 +18,7 @@
 package org.graphity.client.provider;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -41,7 +42,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.model.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,12 +82,6 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
         return servletContext;
     }
-
-    public Application getApplication()
-    {
-	ContextResolver<Application> cr = getProviders().getContextResolver(Application.class, null);
-	return cr.getContext(Application.class);
-    }
     
     public DataManager getDataManager()
     {
@@ -116,10 +110,10 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     public Resource getStylesheet() throws ConfigurationException
     {
-        Resource stylesheet = getApplication().getPropertyResourceValue(GC.stylesheet);
+        Object stylesheet = getServletContext().getInitParameter(GC.stylesheet.getURI());
         if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet (gp:stylesheet) not configured");
 
-        return stylesheet;
+        return ResourceFactory.createResource(stylesheet.toString());
     }
     
     public XSLTBuilder getXSLTBuilder()

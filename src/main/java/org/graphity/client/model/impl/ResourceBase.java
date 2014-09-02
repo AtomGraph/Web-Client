@@ -33,7 +33,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.model.Application;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
@@ -69,7 +68,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @param mode <samp>mode</samp> query string param
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel, @Context Application application,
+    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
@@ -78,7 +77,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {
-	super(uriInfo, endpoint, ontModel, application,
+	super(uriInfo, endpoint, ontModel,
                 request, servletContext, httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI);
 	this.mode = mode;

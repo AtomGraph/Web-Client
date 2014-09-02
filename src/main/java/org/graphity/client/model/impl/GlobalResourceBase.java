@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.util.DataManager;
-import org.graphity.processor.model.Application;
 import org.graphity.server.model.impl.LinkedDataResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
@@ -77,7 +76,7 @@ public class GlobalResourceBase extends ResourceBase
      * @param topicURI remote URI to be loaded
      * @param mediaType media type of the representation
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel, @Context Application application,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
 	    @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
@@ -88,7 +87,7 @@ public class GlobalResourceBase extends ResourceBase
 	    @QueryParam("uri") URI topicURI,
 	    @QueryParam("accept") MediaType mediaType)
     {
-	super(uriInfo, endpoint, ontModel, application,
+	super(uriInfo, endpoint, ontModel,
                 request, servletContext, httpHeaders, resourceContext,
                 limit, offset, orderBy, desc, graphURI, mode);
 	

@@ -1,4 +1,3 @@
-# @prefix :	<ontology#this> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
@@ -17,76 +16,26 @@
 @prefix gp:	<http://processor.graphity.org/ontology#> .
 @prefix gpt:	<http://processor.graphity.org/templates#> .
 
-<graphs/application>
-{
-
-    <application#this> a gc:Application ;
-        dct:title "Graphity Client application" ;
-        gp:ontology gpt: ;
-        gp:base <.> ;
-        gc:stylesheet <static/org/graphity/client/xsl/local-xhtml.xsl> ;
-        gp:service [ a sd:Service ;
-            dct:title "Graphity Client service" ;
-            sd:supportedLanguage sd:SPARQL11Query ;
-            sd:endpoint <sparql> ;
-            gp:graphStore <service> ;
-        ] ;
-        foaf:isPrimaryTopicOf <application> .
-
-    <application> a foaf:Document, sioc:Item ;
-        sioc:has_container <.> ;
-        dct:title "Application document" ;
-        foaf:primaryTopic <application#this> ;
-        void:inDataset <dataset#this> .
-
-}
-
 <graphs/>
 {
 
-    <.> a sioc:Space, ldp:Container, foaf:Document ;
+    <> a sioc:Space, ldp:Container, foaf:Document ;
         dct:title "Graphity Client" ;
         dct:description "Generic Linked Data browser and end-user-oriented platform" ;
         foaf:logo <static/img/graphity-logo.svg> ;
         foaf:maker <http://graphityhq.com/#company> ;
         void:inDataset <dataset#this> ;
-        rdfs:seeAlso <ontology#this> , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+        rdfs:seeAlso gpt: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }
 
 <graphs/ontology>
 {
 
-    <ontology#this> a owl:Ontology, gp:Sitemap ;
-        owl:imports gc:, gpt:, lda: , void:, foaf: ;
-        owl:versionInfo "1.0.14" ;
-        dct:title "Sitemap" ;
-        rdfs:label "Sitemap" ;
-        dct:description "Default sitemap for SPARQL service" ;
-        dct:created "2013-03-09T13:53:00+03:00"^^xsd:dateTime ;
-        dct:modified "2014-07-16T00:11:00+02:00"^^xsd:dateTime ;
-        foaf:isPrimaryTopicOf <> ;
-        rdfs:seeAlso <sparql> .
-
     <ontology> a foaf:Document, sioc:Item ;
-        sioc:has_container <.> ;
+        sioc:has_container <> ;
         dct:title "Ontology document" ;
-        foaf:primaryTopic <ontology#this> ;
+        foaf:primaryTopic gpt: ;
         void:inDataset <dataset#this> .
-
-    # EXTERNAL
-
-    ldp:pageOf a owl:ObjectProperty ;
-        rdfs:domain ldp:Page ;
-        rdfs:range ldp:Container ;
-        rdfs:isDefinedBy ldp: .
-
-    lda:ItemEndpoint a owl:Class .
-    lda:ListEndpoint a owl:Class.
-
-    #void:inDataset a owl:ObjectProperty ;
-    #    rdfs:domain foaf:Document ;
-    #    rdfs:range void:Dataset ;
-    #    rdfs:isDefinedBy void: .
 
 }
 
@@ -100,7 +49,7 @@
         void:sparqlEndpoint <sparql> .
 
     <dataset> a foaf:Document, sioc:Item ;
-        sioc:has_container <.> ;
+        sioc:has_container <> ;
         dct:title "Dataset document" ;
         foaf:primaryTopic <dataset#this> ;
         void:inDataset <dataset#this> .
@@ -146,7 +95,7 @@
 {
 
     <service> a foaf:Document ;
-        sioc:has_container <.> ;
+        sioc:has_container <> ;
         dct:title "Graph Store Protocol endpoint" ;
         void:inDataset <dataset#this> .
 
@@ -156,7 +105,7 @@
 {
 
     <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <.> ;
+        sioc:has_space <> ;
         dct:title "Ontologies" ;
         void:inDataset <dataset#this> .
 
@@ -166,7 +115,7 @@
 {
 
     <datasets> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <.> ;
+        sioc:has_space <> ;
         dct:title "Datasets" ;
         void:inDataset <dataset#this> .
 
@@ -176,7 +125,7 @@
 {
 
     <services> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <.> ;
+        sioc:has_space <> ;
         dct:title "Services" ;
         void:inDataset <dataset#this> .
 
@@ -186,7 +135,7 @@
 {
 
     <templates> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <.> ;
+        sioc:has_space <> ;
         dct:title "Templates" ;
         void:inDataset <dataset#this> .
 
@@ -196,7 +145,7 @@
 {
 
     <queries> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <.> ;
+        sioc:has_space <> ;
         dct:title "Queries" ;
         void:inDataset <dataset#this> .
 
@@ -226,7 +175,7 @@
 {
 
     <sparql> a foaf:Document ;
-        sioc:has_space <.> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
+        sioc:has_space <> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
         dct:title "SPARQL endpoint" ;
         void:inDataset <dataset#this> .
 

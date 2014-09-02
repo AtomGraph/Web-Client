@@ -30,24 +30,6 @@ import org.graphity.server.model.SPARQLEndpoint;
  */
 public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpointFactory
 {
-    /**
-     * Creates new SPARQL endpoint from application configuration, request data, and sitemap ontology.
-     * 
-     * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param servletContext webapp context
-     * @param dataset dataset of this webapp
-     * @param dataManager RDF data manager for this endpoint
-     * @return new endpoint
-     */
-    
-    /*
-    public static SPARQLEndpoint create(UriInfo uriInfo, Request request, ServletContext servletContext,
-            Dataset dataset, DataManager dataManager)
-    {
-	return new SPARQLEndpointBase(uriInfo, request, servletContext, dataset, dataManager);
-    }
-    */
     
     /**
      * Creates new SPARQL endpoint from explicit URI resource, application configuration, and request data.
@@ -64,22 +46,5 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
     {
 	return new SPARQLEndpointBase(request, servletContext, dataset, dataManager);
     }
-
-    /*
-    public static SPARQLEndpointProxy createProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
-            DataManager dataManager, SPARQLEndpoint metaEndpoint, Application application)
-    {
-	return new SPARQLEndpointProxyBase(uriInfo, request, servletContext,
-                dataManager, metaEndpoint, application);
-    }
-    */
-    
-    /*
-    public static SPARQLEndpointProxy createProxy(Request request, ServletContext servletContext,
-            DataManager dataManager, Application application)
-    {
-	return new SPARQLEndpointProxyBase(request, servletContext, dataManager, application);
-    }
-    */
     
 }

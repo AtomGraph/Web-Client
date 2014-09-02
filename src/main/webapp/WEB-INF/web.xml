@@ -7,43 +7,34 @@
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontology</param-name>
-        <param-value>http://processor.graphity.org/templates#</param-value>
+        <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
+        <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://server.graphity.org/ontology#graphStore</param-name>
+        <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
     </context-param>
     <!--
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontologyQuery</param-name>
-        <param-value><![CDATA[
-PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX  gp:   <http://processor.graphity.org/ontology#>
-
-DESCRIBE ?sitemap ?s
-WHERE
-  { GRAPH ?appGraph
-      { ?app gp:base ?baseUri .
-        ?app rdfs:isDefinedBy ?sitemap
-      }
-    GRAPH ?g
-      { ?s rdfs:isDefinedBy ?sitemap }
-  }
-]]></param-value>
+        <param-name>http://jena.hpl.hp.com/Service#queryAuthUser</param-name>
+        <param-value>username</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://jena.hpl.hp.com/Service#queryAuthPwd</param-name>
+        <param-value>password</param-value>
     </context-param>
     -->
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#applicationQuery</param-name>
-        <param-value><![CDATA[
-PREFIX  gp:   <http://processor.graphity.org/ontology#>
-
-DESCRIBE ?app
-WHERE
-  { GRAPH ?g
-      { ?app gp:base ?baseUri }
-  }
-]]></param-value>
-    </context-param>
-    <context-param>
         <param-name>http://processor.graphity.org/ontology#datasetLocation</param-name>
         <param-value>org/graphity/client/dataset/dataset.trig</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://processor.graphity.org/ontology#ontology</param-name>
+        <param-value>http://processor.graphity.org/templates#</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
+        <param-value>static/org/graphity/client/xsl/local-xhtml.xsl</param-value>
     </context-param>
     <context-param>
         <param-name>http://server.graphity.org/ontology#resultLimit</param-name>

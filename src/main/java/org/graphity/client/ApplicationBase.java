@@ -42,11 +42,10 @@ import org.graphity.client.provider.QueryExceptionHTTPMapper;
 import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
-import org.graphity.processor.provider.ApplicationProvider;
 import org.graphity.processor.provider.DatasetProvider;
-import org.graphity.processor.provider.GraphStoreOriginProvider;
 import org.graphity.processor.provider.OntologyProvider;
-import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
+import org.graphity.server.provider.SPARQLEndpointOriginProvider;
+import org.graphity.server.provider.GraphStoreOriginProvider;
 import org.graphity.server.provider.GraphStoreProvider;
 import org.graphity.server.provider.ModelProvider;
 import org.graphity.server.provider.QueryParamProvider;
@@ -97,7 +96,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         //singletons.add(new OntClassProvider());
         //singletons.add(new QueryBuilderProvider());
 
-        singletons.add(new ApplicationProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new org.graphity.server.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());

@@ -39,7 +39,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
-import org.graphity.processor.model.Application;
 import org.graphity.processor.model.ContainerResource;
 import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.processor.query.QueryBuilder;
@@ -78,7 +77,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
     private final OntResource ontResource;
-    private final Application application;
     private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
@@ -105,7 +103,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel, @Context Application application,
+    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
@@ -113,7 +111,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	    @QueryParam("desc") Boolean desc,
 	    @QueryParam("graph") URI graphURI)
     {
-	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint, application,
+	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
                 request, servletContext, uriInfo, httpHeaders, resourceContext,
 		limit, offset, orderBy, desc, graphURI);
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
@@ -143,7 +141,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
-    protected ResourceBase(OntResource resource, SPARQLEndpoint endpoint, Application application,
+    protected ResourceBase(OntResource resource, SPARQLEndpoint endpoint,
             Request request, ServletContext servletContext,
             UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext,
 	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
@@ -152,13 +150,11 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
 	if (resource == null) throw new IllegalArgumentException("OntResource cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-	if (application == null) throw new IllegalArgumentException("Application cannot be null");
         if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
 
         this.ontResource = resource;
 	this.uriInfo = uriInfo;
-        this.application = application;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
 	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
@@ -1034,16 +1030,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public CacheControl getCacheControl()
     {
 	return cacheControl;
-    }
-
-    /**
-     * Returns the application of this resource.
-     * 
-     * @return application
-     */
-    public Application getApplication()
-    {
-	return application;
     }
     
     /**

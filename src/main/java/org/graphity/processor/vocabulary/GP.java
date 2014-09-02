@@ -48,21 +48,11 @@ public class GP
 
     public static final OntClass Template = m_model.createClass( NS + "Template" );
 
-    public static final ObjectProperty base = m_model.createObjectProperty( NS + "base" );
-    
-    public static final ObjectProperty service = m_model.createObjectProperty( NS + "service" );
-
-    public static final ObjectProperty graphStore = m_model.createObjectProperty( NS + "graphStore" );
-
-    public static final ObjectProperty ontology = m_model.createObjectProperty( NS + "ontology" );
-
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
     public static final ObjectProperty datasetEndpoint = m_model.createObjectProperty( NS + "datasetEndpoint" );
 
-    public static final DatatypeProperty ontologyQuery = m_model.createDatatypeProperty( NS + "ontologyQuery" );
-
-    public static final DatatypeProperty applicationQuery = m_model.createDatatypeProperty( NS + "applicationQuery" );
+    public static final DatatypeProperty ontology = m_model.createDatatypeProperty( NS + "ontology" );
 
     public static final DatatypeProperty uriTemplate = m_model.createDatatypeProperty( NS + "uriTemplate" );
 

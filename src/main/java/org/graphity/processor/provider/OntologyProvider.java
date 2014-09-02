@@ -20,9 +20,6 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.util.FileManager;
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -39,9 +36,9 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.processor.model.SPARQLEndpointFactory;
-import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.client.util.DataManager;
+import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +114,16 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
         try
         {
-            return getOntModel((DataManager)FileManager.get(), getUriInfo(), getServletContext());
+            OntModel ontModel = getOntModel(getServletContext(), GP.ontology);
+
+            if (ontModel.isEmpty())
+            {
+                if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
+                throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            }
+
+            if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
+            return ontModel;
         }
         catch (ConfigurationException ex)
         {
@@ -135,79 +141,26 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      * @throws javax.naming.ConfigurationException
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel(DataManager dataManager, UriInfo uriInfo, ServletContext servletContext) throws ConfigurationException
-    {
-	
-        OntModel ontModel;
-
-        Query query = getQuery(getServletContext(), getUriInfo(), GP.ontologyQuery);
-        if (query != null)
-        {
-            if (servletContext.getInitParameter(GP.datasetEndpoint.getURI()) != null)
-            {
-                Object ontologyEndpoint = servletContext.getInitParameter(GP.datasetEndpoint.getURI());
-                if (log.isDebugEnabled()) log.debug("Reading ontology from remote SPARQL endpoint {}", ontologyEndpoint);
-
-                ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM,
-                        dataManager.loadModel(ontologyEndpoint.toString(), query));
-            }
-            else
-            {
-                if (log.isDebugEnabled()) log.debug("Reading ontology from  SPARQL endpoint");
-                ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM,
-                        getSPARQLEndpoint().loadModel(query));
-            }
-        }
-        else
-        {
-            if (servletContext.getInitParameter(GP.ontology.getURI()) != null)
-            {
-                Object ontology = servletContext.getInitParameter(GP.ontology.getURI());
-                if (log.isDebugEnabled()) log.debug("Reading ontology from default graph in SPARQL endpoint {}", ontology);
-
-                //ontModel = ModelFactory.createDefaultModel().read(ontology.toString());
-                ontModel = OntDocumentManager.getInstance().getOntology(ontology.toString(), OntModelSpec.OWL_MEM);
-                //ontModel.read(ontology.toString());
-            }
-            else
-            {
-                if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured in web.");
-                throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured in web.xml");
-            }
-        }
-        
-        if (ontModel.isEmpty())
-        {
-            if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-        }
-
-        //OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, ontModel);
-	if (log.isDebugEnabled()) log.debug("Ontology size: {}", ontModel.size());
-	return ontModel;
-    }
-
-    public Query getQuery(ServletContext servletContext, UriInfo uriInfo, Property property) throws ConfigurationException
+    public OntModel getOntModel(ServletContext servletContext, Property property) throws ConfigurationException
     {
         if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
-        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        
-	Object ontologyQuery = servletContext.getInitParameter(property.getURI());
-	//if (ontologyQuery == null) throw new ConfigurationException("Property '" + property.getURI() + "' needs to be set in ServletContext (web.xml)");
-        if (ontologyQuery != null)
+
+        Object ontology = getServletContext().getInitParameter(property.getURI());
+        if (ontology == null)
         {
-            ParameterizedSparqlString queryString = new ParameterizedSparqlString(ontologyQuery.toString());
-            queryString.setIri("baseUri", uriInfo.getBaseUri().toString());
-            return queryString.asQuery();
+            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured");
+            throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured");
         }
-        
-        return null;
+
+        String ontologyURI = ontology.toString();
+        if (log.isDebugEnabled()) log.error("Loading sitemap ontology from URI {}", ontologyURI);
+        return OntDocumentManager.getInstance().getOntology(ontologyURI, OntModelSpec.OWL_MEM);
     }
 
     public Providers getProviders()
     {
         return providers;
     }
-   
+
 }
