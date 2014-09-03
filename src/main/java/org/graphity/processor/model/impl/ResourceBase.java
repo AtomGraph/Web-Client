@@ -249,6 +249,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     @Path("sparql")
     public Object getSPARQLResource()
     {
+        /*
         // avoid eternal loop if endpoint proxy is configured to point to local SPARQL endpoint
         SPARQLEndpoint endpoint = getSPARQLEndpoint();
         if (endpoint instanceof Proxy)
@@ -262,6 +263,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         }
         
         return endpoint;
+        */
+        return getSPARQLEndpoint();
     }
     
     /**

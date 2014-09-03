@@ -25,7 +25,6 @@
 
 # RESOURCE TEMPLATES
 
-
 <#SpaceTemplate> a owl:Class, gp:Template ;
      rdfs:subClassOf gp:Resource, foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ;
      gp:uriTemplate "/" ;

@@ -230,13 +230,3 @@
         void:inDataset <dataset#this> .
 
 }
-
-<graphs/templates/container>
-{
-
-    <templates/container> a foaf:Document, sioc:Item ;
-        sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:ContainerTemplate ;
-        void:inDataset <dataset#this> .
-
-}

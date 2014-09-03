@@ -19,9 +19,7 @@ package org.graphity.processor.provider;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.util.FileManager;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -35,9 +33,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import org.graphity.processor.model.SPARQLEndpointFactory;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.client.util.DataManager;
 import org.graphity.processor.vocabulary.GP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +71,6 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         return request;
     }
 
-    public Dataset getDataset()
-    {
-	ContextResolver<Dataset> cr = getProviders().getContextResolver(Dataset.class, null);
-	return cr.getContext(Dataset.class);
-    }
-
     @Override
     public Injectable<OntModel> getInjectable(ComponentContext cc, Context context)
     {
@@ -101,13 +90,6 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     public OntModel getContext(Class<?> type)
     {
 	return getOntModel();
-    }
-
-    public SPARQLEndpoint getSPARQLEndpoint()
-    {
-	//ContextResolver<SPARQLEndpoint> cr = getProviders().getContextResolver(SPARQLEndpoint.class, null);
-	//return cr.getContext(SPARQLEndpoint.class);
-        return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), (DataManager)FileManager.get());
     }
 
     public OntModel getOntModel()
