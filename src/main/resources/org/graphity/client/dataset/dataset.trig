@@ -42,21 +42,43 @@
 <graphs/dataset>
 {
 
-    <dataset#this> a sd:Graph, void:Dataset ;
-        foaf:isPrimaryTopicOf <dataset> ;
-        dct:title "Graphity Client dataset" ;
-        void:triples "494"^^xsd:integer ;
-        void:sparqlEndpoint <sparql> .
-
     <dataset> a foaf:Document, sioc:Item ;
         sioc:has_container <> ;
         dct:title "Dataset document" ;
         foaf:primaryTopic <dataset#this> ;
         void:inDataset <dataset#this> .
 
+    <dataset#this> a sd:Graph, void:Dataset ;
+        foaf:isPrimaryTopicOf <dataset> ;
+        dct:title "Graphity Client dataset" ;
+        void:triples "494"^^xsd:integer ;
+        void:sparqlEndpoint <sparql> .
+
 }
 
 # RESOURCES
+
+<graphs/ontologies/graphity-processor>
+{
+
+    <ontologies/graphity-processor> a foaf:Document, sioc:Item ;
+        sioc:has_container <ontologies> ;
+        dct:title "Graphity Processor ontology document" ;
+        foaf:primaryTopic gp: ;
+        void:inDataset <dataset#this> .
+
+}
+
+<graphs/ontologies/graphity-client>
+{
+
+    <ontologies/graphity-client> a foaf:Document, sioc:Item ;
+        sioc:has_container <ontologies> ;
+        dct:title "Graphity Client ontology document" ;
+        foaf:primaryTopic gc: ;
+        void:inDataset <dataset#this> .
+
+}
 
 <graphs/ontologies/linked-data-api>
 {
@@ -107,16 +129,6 @@
     <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <> ;
         dct:title "Ontologies" ;
-        void:inDataset <dataset#this> .
-
-}
-
-<graphs/datasets>
-{
-
-    <datasets> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <> ;
-        dct:title "Datasets" ;
         void:inDataset <dataset#this> .
 
 }

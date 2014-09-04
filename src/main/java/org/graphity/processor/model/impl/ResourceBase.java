@@ -48,8 +48,6 @@ import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.XHV;
-import org.graphity.server.model.Origin;
-import org.graphity.server.model.Proxy;
 import org.graphity.server.model.impl.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.util.ModelUtils;
@@ -175,7 +173,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
         QuerySolutionMap qsm = getQuerySolutionMap(this);
         
-        if (hasRDFType(LDP.Container)) //if (matchedOntClass.hasSuperClass(LDP.Container))
+        if (matchedOntClass.hasSuperClass(LDP.Container))
         {
             if (offset == null)
             {
@@ -249,21 +247,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     @Path("sparql")
     public Object getSPARQLResource()
     {
-        /*
-        // avoid eternal loop if endpoint proxy is configured to point to local SPARQL endpoint
-        SPARQLEndpoint endpoint = getSPARQLEndpoint();
-        if (endpoint instanceof Proxy)
-        {
-            Origin origin = ((Proxy)endpoint).getOrigin();
-            if (origin.getURI().equals(getURI()))
-            {
-                if (log.isDebugEnabled()) log.debug("SPARQLEndpoint with URI {} is a proxy of itself, returning SPARQLEndpointBase", getURI());
-                return getResourceContext().getResource(SPARQLEndpointBase.class);
-            }
-        }
-        
-        return endpoint;
-        */
         return getSPARQLEndpoint();
     }
     
@@ -277,7 +260,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public Response get()
     {
         // ldp:Container always redirects to first ldp:Page
-	if (hasRDFType(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
+	if (getMatchedOntClass().hasSuperClass(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
 	    return Response.seeOther(getPageUriBuilder().build()).build();
@@ -511,7 +494,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	Model description = super.describe();
 	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
-	if (hasRDFType(LDP.Container)) // && !description.isEmpty()
+	if (getMatchedOntClass().hasSuperClass(LDP.Container)) // && !description.isEmpty()
 	{
 	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
 	    Resource page = description.createResource(getPageUriBuilder().build().toString()).

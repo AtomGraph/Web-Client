@@ -67,7 +67,7 @@ public class Container extends ResourceBase
     {
         super.init();
         
-	if (!(searchString == null || searchString.isEmpty()) && hasRDFType(LDP.Container)) // getMatchedOntClass().hasSuperClass(LDP.Container)
+	if (!(searchString == null || searchString.isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)

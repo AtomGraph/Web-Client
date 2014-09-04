@@ -6,6 +6,7 @@
     id="graphity-client" version="3.0">
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
+    <!--
     <context-param>
         <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
         <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
@@ -14,6 +15,7 @@
         <param-name>http://server.graphity.org/ontology#graphStore</param-name>
         <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
     </context-param>
+    -->
     <!--
     <context-param>
         <param-name>http://jena.hpl.hp.com/Service#queryAuthUser</param-name>
