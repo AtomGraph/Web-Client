@@ -84,7 +84,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
 	<xsl:choose>
 	    <xsl:when test="$uri">
-		<xsl:apply-templates select="key('resources', $base-uri, $ont-model)" mode="gc:LabelMode"/>
+		<xsl:apply-templates select="key('resources', $base-uri, document($base-uri))" mode="gc:LabelMode"/>
 		<xsl:text> - </xsl:text>
 		<xsl:apply-templates select="key('resources', $uri)" mode="gc:LabelMode"/>
 	    </xsl:when>
@@ -105,7 +105,7 @@ exclude-result-prefixes="#all">
                     </button>
 
                     <a class="brand" href="{$base-uri}">
-                        <xsl:for-each select="key('resources', $base-uri, $ont-model)">
+                        <xsl:for-each select="key('resources', $base-uri, document($base-uri))">
                             <img src="{foaf:logo/@rdf:resource}">
                                 <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
                             </img>
@@ -158,9 +158,9 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
+                        <xsl:if test="key('resources', $base-uri, document($base-uri))/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, document($base-uri))/void:inDataset/@rdf:resource, document($base-uri))/void:sparqlEndpoint/@rdf:resource">
                             <ul class="nav pull-right">
-                                <xsl:for-each select="key('resources', $base-uri, $ont-model)/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, $ont-model)/void:inDataset/@rdf:resource, $ont-model)/void:sparqlEndpoint/@rdf:resource">
+                                <xsl:for-each select="key('resources', $base-uri, document($base-uri))/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, document($base-uri))/void:inDataset/@rdf:resource, document($base-uri))/void:sparqlEndpoint/@rdf:resource">
                                     <!-- <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/> -->
                                     <li>
                                         <xsl:if test="gc:document-uri(.) = $absolute-path">
@@ -209,11 +209,14 @@ exclude-result-prefixes="#all">
 	<p class="form-inline">
 	    <label for="endpoint-select">SPARQL endpoint</label>
 	    <xsl:text> </xsl:text>
+            <!--
 	    <select id="endpoint-select" name="endpoint-uri" class="span6">
 		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', $ont-model)[void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
 		    <xsl:sort select="gc:label(.)" order="ascending"/>
 		</xsl:apply-templates>
 	    </select>
+            -->
+            <input name="endpoint-uri" class="span6" value="XXX"/>
 	</p>
 	
 	<xsl:apply-imports/>
