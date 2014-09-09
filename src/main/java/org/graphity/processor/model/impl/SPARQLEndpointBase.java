@@ -91,7 +91,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
     @Override
     public ResultSetRewindable select(Query query)
     {
-        if (log.isDebugEnabled()) log.debug("Loading ResultSet from Model using Query: {}", query);
+        if (log.isDebugEnabled()) log.debug("Loading ResultSet from Dataset using Query: {}", query);
         return getDataManager().loadResultSet(getDataset(), query);
     }
 
@@ -104,7 +104,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
     @Override
     public boolean ask(Query query)
     {
-        if (log.isDebugEnabled()) log.debug("Loading Model from Model using Query: {}", query);
+        if (log.isDebugEnabled()) log.debug("Loading Model from Dataset using Query: {}", query);
         return getDataManager().ask(getDataset(), query);
     }
 

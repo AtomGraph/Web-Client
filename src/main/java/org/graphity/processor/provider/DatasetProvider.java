@@ -57,7 +57,14 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     {
         try
         {
-            return getDataset(getServletContext(), getUriInfo());
+            String datasetLocation = getDatasetLocation(getServletContext(), GP.datasetLocation.getURI());
+            if (datasetLocation == null)
+            {
+                if (log.isErrorEnabled()) log.error("Application dataset (gp:datasetLocation) is not configured in web.");
+                throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured in web.xml");
+            }
+            
+            return getDataset(datasetLocation, getUriInfo());
         }
         catch (ConfigurationException ex)
         {
@@ -65,10 +72,18 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
         }
     }
     
-    public Dataset getDataset(ServletContext servletContext, UriInfo uriInfo) throws ConfigurationException
+    public String getDatasetLocation(ServletContext servletContext, String property)
     {
-        Object datasetLocation = servletContext.getInitParameter(GP.datasetLocation.getURI());
-        if (datasetLocation == null) throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured properly. Check ServletContext and/or web.xml");
+        Object datasetLocation = servletContext.getInitParameter(property);
+        if (datasetLocation != null) return datasetLocation.toString();
+        
+        return null;
+    }
+    
+    public Dataset getDataset(String datasetLocation, UriInfo uriInfo) throws ConfigurationException
+    {
+        if (datasetLocation == null) throw new IllegalArgumentException("Location String cannot be null");
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	
         Dataset dataset = DatasetFactory.createMem();
         RDFDataMgr.read(dataset, datasetLocation.toString(), uriInfo.getBaseUri().toString(), null); // Lang.TURTLE

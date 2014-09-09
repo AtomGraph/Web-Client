@@ -50,7 +50,7 @@ public class GP
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
-    public static final ObjectProperty datasetEndpoint = m_model.createObjectProperty( NS + "datasetEndpoint" );
+    //public static final ObjectProperty datasetEndpoint = m_model.createObjectProperty( NS + "datasetEndpoint" );
 
     public static final DatatypeProperty ontology = m_model.createDatatypeProperty( NS + "ontology" );
 

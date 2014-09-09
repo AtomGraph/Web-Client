@@ -240,28 +240,6 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
         </xsl:if>
-        <xsl:if test="$mode = ('&gc;CreateMode', '&gc;EditMode')">
-            <script type="text/javascript" src="static/org/graphity/client/js/UriBuilder.js"></script>
-            <script type="text/javascript" src="static/org/graphity/client/js/saxon-ce/Saxonce.nocache.js"></script>
-            <script type="text/javascript" src="static/org/graphity/client/js/UUID.js"></script>
-            <script type="text/javascript" src="static/org/graphity/client/js/InputMode.js"></script>
-            <script type="text/javascript">
-                <![CDATA[
-                    var baseUri = "]]><xsl:value-of select="$base-uri"/><![CDATA[";
-                    var stylesheetUri = UriBuilder.fromUri(baseUri).
-                            path("static/org/graphity/client/xsl/InputMode.xsl").
-                            build();
-
-                    var onSaxonLoad = function() { Saxon.run( { stylesheet: stylesheetUri,
-                        parameters: { "base-uri-string": baseUri,
-                            "absolute-path-string": "]]><xsl:value-of select="$absolute-path"/><![CDATA[",
-                            ]]><xsl:if test="$mode"><![CDATA["mode-string": "]]><xsl:value-of select="$mode"/><![CDATA[",]]></xsl:if><![CDATA[
-                            "lang": "]]><xsl:value-of select="$lang"/><![CDATA[" },
-                        initialTemplate: "main", logLevel: "FINE"
-                    }); }
-                ]]>
-            </script>
-        </xsl:if>
     </xsl:template>
 
     <xsl:template match="rdf:RDF">

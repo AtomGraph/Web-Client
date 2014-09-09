@@ -19,7 +19,6 @@ package org.graphity.processor.provider;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -96,8 +95,14 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
         try
         {
-            OntModel ontModel = getOntModel(getServletContext(), GP.ontology);
+            String ontologyURI = getOntologyURI(getServletContext(), GP.ontology.getURI());
+            if (ontologyURI == null)
+            {
+                if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured in web.xml");
+                throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured in web.xml");
+            }
 
+            OntModel ontModel = getOntModel(ontologyURI);
             if (ontModel.isEmpty())
             {
                 if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
@@ -113,6 +118,17 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         }
     }
 
+    public String getOntologyURI(ServletContext servletContext, String property)
+    {
+        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
+        if (property == null) throw new IllegalArgumentException("Property cannot be null");
+
+        Object ontology = servletContext.getInitParameter(property);
+        if (ontology != null) return ontology.toString();
+        
+        return null;
+    }
+    
     /**
      * Reads ontology model from configured file and resolves against base URI of the request
      * 
@@ -123,19 +139,10 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      * @throws javax.naming.ConfigurationException
      * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
      */
-    public OntModel getOntModel(ServletContext servletContext, Property property) throws ConfigurationException
+    public OntModel getOntModel(String ontologyURI) throws ConfigurationException
     {
-        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        if (ontologyURI == null) throw new IllegalArgumentException("URI cannot be null");
 
-        Object ontology = getServletContext().getInitParameter(property.getURI());
-        if (ontology == null)
-        {
-            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured");
-            throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured");
-        }
-
-        String ontologyURI = ontology.toString();
         if (log.isDebugEnabled()) log.error("Loading sitemap ontology from URI {}", ontologyURI);
         return OntDocumentManager.getInstance().getOntology(ontologyURI, OntModelSpec.OWL_MEM);
     }

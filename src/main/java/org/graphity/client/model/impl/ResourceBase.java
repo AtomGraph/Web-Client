@@ -136,16 +136,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public List<Variant> getVariants()
     {
-        // workaround for Saxon-CE - it currently seems to run only in HTML mode (not XHTML)
-        // https://saxonica.plan.io/issues/1447
-	if (getMode() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Saxon-CE workaround", getMode());
-	    List<Variant> list = super.getVariants();
-            list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null));
-            return list;
-	}
-
         List<Variant> list = super.getVariants();
         list.add(0, new Variant(MediaType.APPLICATION_XHTML_XML_TYPE, null, null));
         return list;

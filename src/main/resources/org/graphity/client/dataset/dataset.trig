@@ -24,7 +24,7 @@
         dct:description "Generic Linked Data browser and end-user-oriented platform" ;
         foaf:logo <static/img/graphity-logo.svg> ;
         foaf:maker <http://graphityhq.com/#company> ;
-        void:inDataset <dataset#this> ;
+        void:inDataset <graphs/#this> ;
         rdfs:seeAlso gpt: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }
 
@@ -35,7 +35,7 @@
         sioc:has_container <> ;
         dct:title "Ontology document" ;
         foaf:primaryTopic gpt: ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontology#this> .
 
 }
 
@@ -46,7 +46,7 @@
         sioc:has_container <> ;
         dct:title "Dataset document" ;
         foaf:primaryTopic <dataset#this> ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/dataset#this> .
 
     <dataset#this> a sd:Graph, void:Dataset ;
         foaf:isPrimaryTopicOf <dataset> ;
@@ -65,7 +65,7 @@
         sioc:has_container <ontologies> ;
         dct:title "Graphity Processor ontology document" ;
         foaf:primaryTopic gp: ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontologies/graphity-processor#this> .
 
 }
 
@@ -76,7 +76,7 @@
         sioc:has_container <ontologies> ;
         dct:title "Graphity Client ontology document" ;
         foaf:primaryTopic gc: ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontologies/graphity-client#this> .
 
 }
 
@@ -87,7 +87,7 @@
         sioc:has_container <ontologies> ;
         dct:title "Linked Data API ontology document" ;
         foaf:primaryTopic lda: ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontologies/linked-data-api#this> .
 
 }
 
@@ -98,7 +98,7 @@
         sioc:has_container <ontologies> ;
         dct:title "FOAF ontology document" ;
         foaf:primaryTopic foaf: ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontologies/foaf#this> .
 
 }
 
@@ -109,7 +109,7 @@
         sioc:has_container <ontologies> ;
         dct:title "VoID ontology document" ;
         foaf:primaryTopic void: ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontologies/void#this> .
 
 }
 
@@ -119,7 +119,7 @@
     <service> a foaf:Document ;
         sioc:has_container <> ;
         dct:title "Graph Store Protocol endpoint" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/service#this> .
 
 }
 
@@ -129,7 +129,7 @@
     <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <> ;
         dct:title "Ontologies" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/ontologies#this> .
 
 }
 
@@ -139,7 +139,7 @@
     <services> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <> ;
         dct:title "Services" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/services#this> .
 
 }
 
@@ -149,7 +149,7 @@
     <templates> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <> ;
         dct:title "Templates" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/templates#this> .
 
 }
 
@@ -159,7 +159,7 @@
     <queries> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <> ;
         dct:title "Queries" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/queries#this> .
 
 }
 
@@ -169,7 +169,7 @@
     <resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <resources> ;
         dct:title "Labelled resources" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/resources/labelled#this> .
 
 }
 
@@ -179,7 +179,7 @@
     <properties/labelled> a ldp:Container, sioc:Container, foaf:Document ;
         sioc:has_space <properties> ;
         dct:title "Labelled properties" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/properties/labelled#this> .
 
 }
 
@@ -189,7 +189,7 @@
     <sparql> a foaf:Document ;
         sioc:has_space <> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
         dct:title "SPARQL endpoint" ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/sparql#this> .
 
 }
 
@@ -199,7 +199,7 @@
     <templates/resource> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
         foaf:primaryTopic gp:Resource ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/templates/resource#this> .
 
 }
 
@@ -209,7 +209,7 @@
     <templates/ontology-doc> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
         foaf:primaryTopic gpt:OntologyTemplate ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/templates/ontology-doc#this> .
 
 }
 
@@ -219,7 +219,7 @@
     <templates/resources-labelled> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
         foaf:primaryTopic gpt:LabelResourcesTemplate ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/templates/resources-labelled#this> .
 
 }
 
@@ -229,7 +229,7 @@
     <templates/properties-labelled> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
         foaf:primaryTopic gpt:LabelPropertiesTemplate ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/templates/properties-labelled#this> .
 
 }
 
@@ -239,6 +239,6 @@
     <templates/space> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
         foaf:primaryTopic gpt:SpaceTemplate ;
-        void:inDataset <dataset#this> .
+        void:inDataset <graphs/templates/space#this> .
 
 }
