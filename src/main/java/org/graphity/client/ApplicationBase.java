@@ -85,7 +85,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	classes.add(GlobalResourceBase.class); // handles all
         //classes.add(ResourceBase.class);
         //classes.add(GraphStoreBase.class); // handles /service requests
-	classes.add(Container.class); // handles /search
+	classes.add(Container.class); // handles /{path}/labelled
 
 	//singletons.addAll(super.getSingletons());
 	singletons.add(new ModelProvider());

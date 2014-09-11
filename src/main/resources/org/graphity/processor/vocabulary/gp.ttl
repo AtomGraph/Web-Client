@@ -31,22 +31,6 @@
 
 # PROPERTIES
 
-<#service> a owl:ObjectProperty ;
-    rdfs:domain <#Application> ;
-    rdfs:range sd:Service ;
-    rdfs:label "SPARQL service" ;
-    rdfs:isDefinedBy <#> .
-
-<#base> a owl:ObjectProperty ;
-    rdfs:range sioc:Space ;
-    rdfs:label "Base URI" ;
-    rdfs:isDefinedBy <#> .
-
-<#graphStore> a owl:ObjectProperty ;
-    rdfs:domain sd:Service ;
-    rdfs:label "Graph Store" ;
-    rdfs:isDefinedBy <#> .
-
 <#uriTemplate> a owl:DatatypeProperty ;
     rdfs:domain owl:Class ; # rdfs:domain <#Template> ;
     rdfs:range rdfs:Literal ;
@@ -54,12 +38,6 @@
     rdfs:comment "URI template for resource matching and skolemization (JAX-RS syntax)" ;
     rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html> ;
     rdfs:isDefinedBy <#> .
-
-# <#itemTemplate> a owl:DatatypeProperty ;
-#    rdfs:domain <#Template> ;
-#    rdfs:range rdfs:Literal ;
-#    rdfs:label "URI template for POSTed resources (JAX-RS syntax)" ;
-#    rdfs:isDefinedBy <#> .
 
 <#cacheControl> a owl:DatatypeProperty ;
     rdfs:subPropertyOf http:fieldValue ;
@@ -104,22 +82,9 @@
 	] ,
         [ a dqc:MissingProperties ;
 	    sp:arg1 <#Template> ;
-	    sp:arg2 <#label>
+	    sp:arg2 rdfs:label
 	] ;
     rdfs:label "Resource template" ;
-    rdfs:isDefinedBy <#> .
-
-<#Application> a owl:Class ;
-    <#uriTemplate> "/apps/{isPrimaryTopicOf.uuid}" ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#Application> ;
-	    sp:arg2 <#base>
-	] ,
-        [ a dqc:MissingProperties ;
-	    sp:arg1 <#Application> ;
-	    sp:arg2 <#service>
-	] ;
-    rdfs:label "Graphity Processor application" ;
     rdfs:isDefinedBy <#> .
 
 # RESOURCE TEMPLATES

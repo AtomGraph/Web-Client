@@ -57,7 +57,7 @@ public class GC
     
     public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
 
-    public static final OntClass PropertyMode = m_model.createClass( NS + "PropertyMode" );
+    public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
     
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
 
