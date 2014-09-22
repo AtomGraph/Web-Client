@@ -264,7 +264,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
         UNION
         {
             GRAPH ?docGraph {
-                ?doc sioc:has_space ?this .
+                ?doc sioc:has_space ?this . # sioc:has_parent ?!
             } .
         }
         UNION
