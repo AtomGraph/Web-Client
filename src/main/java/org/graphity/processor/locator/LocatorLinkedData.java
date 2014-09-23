@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.client.locator;
+package org.graphity.processor.locator;
 
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
@@ -59,44 +59,14 @@ public class LocatorLinkedData implements Locator
 
         for (String type : Lang.RDFXML.getAltContentTypes())
             typeMap.put(type, null);
-
-        /*
-	typeMap.put(WebContent.contentTypeRDFXML, null);
-
-	typeMap.put(WebContent.contentTypeTurtle, 0.9);
-	typeMap.put(WebContent.contentTypeTurtleAlt1, 0.9);
-	typeMap.put(WebContent.contentTypeTurtleAlt2, 0.9);
-	
-	//typeMap.put(WebContent.contentTypeNTriples, 0.9);
-	typeMap.put(WebContent.contentTypeNTriplesAlt, 0.9);
-
-	typeMap.put(WebContent.contentTypeN3, 0.9);
-	typeMap.put(WebContent.contentTypeN3Alt1, 0.9);
-	typeMap.put(WebContent.contentTypeN3Alt2, 0.9);	
-
-	// these should temporarily have lower priority - current Jena dependency does not include readers
-	typeMap.put(WebContent.contentTypeTriG, 0.8);
-	typeMap.put(WebContent.contentTypeTriGAlt, 0.8);
-	typeMap.put(WebContent.contentTypeNQuads, 0.8);
-	typeMap.put(WebContent.contentTypeNQuadsAlt, 0.8);
-	*/
 	
 	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }
 
     private final URLConnection conn = null;
-
-    @Override
+    
     public TypedStream open(String filenameOrURI)
     {
-	/*
-        if ( !acceptByScheme(filenameOrURI))
-        {
-            if (log.isTraceEnabled())
-                log.trace("Not found : "+filenameOrURI);
-            return null;
-        }
-        */
 	if (log.isDebugEnabled()) log.debug("Request Accept header: {}", getAcceptHeader());
 
         try

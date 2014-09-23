@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graphity.client.locator.grddl;
+package org.graphity.processor.locator.grddl;
 
 import com.sun.jersey.api.uri.UriTemplate;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.URIResolver;
-import org.graphity.client.locator.LocatorGRDDL;
+import org.graphity.processor.locator.LocatorGRDDL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

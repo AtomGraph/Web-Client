@@ -32,8 +32,8 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
-import org.graphity.client.locator.LocatorLinkedData;
-import org.graphity.client.locator.PrefixMapper;
+import org.graphity.processor.locator.LocatorLinkedData;
+import org.graphity.processor.locator.PrefixMapper;
 import static org.graphity.client.util.DataManager.parseQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,7 +170,7 @@ public class DataManager extends org.graphity.server.util.DataManager
     }
     
     /** Add a Linked Data locator */
-    public final void addLocatorLinkedData()
+    public void addLocatorLinkedData()
     {
         Locator loc = new LocatorLinkedData() ;
         addLocator(loc) ;

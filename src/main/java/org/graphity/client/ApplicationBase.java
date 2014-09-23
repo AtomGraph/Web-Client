@@ -32,7 +32,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.client.locator.PrefixMapper;
+import org.graphity.processor.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.resource.labelled.Container;
