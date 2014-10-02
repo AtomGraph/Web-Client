@@ -25,7 +25,7 @@
 
 # RESOURCE TEMPLATES
 
-<#SpaceTemplate> a owl:Class, gp:Template ;
+<#ContainerContainer> a owl:Class, gp:Template ;
      rdfs:subClassOf gp:Resource, foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ;
      gp:uriTemplate "/" ;
      spin:query <#DescribeFromGraphWithChildren> ;
@@ -35,7 +35,7 @@
      rdfs:label "Space template" ;
      rdfs:isDefinedBy <#> .
 
-<#OntologyContainerTemplate> a owl:Class, gp:Template ;
+<#OntologyContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
     gp:uriTemplate "/ontologies" ;
     spin:query <#DescribeFromGraphWithChildren> ;
@@ -45,17 +45,9 @@
     rdfs:label "Ontology container template" ;
     rdfs:isDefinedBy <#> .
 
-<#ServiceContainerTemplate> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
-    gp:uriTemplate "/services" ;
-    spin:query <#DescribeFromGraphWithChildren> ;
-    gp:limit 20 ;
-    gc:defaultMode gc:ListMode ;
-    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-    rdfs:label "Service container template" ;
-    rdfs:isDefinedBy <#> .
+# templates
 
-<#TemplateContainerTemplate> a owl:Class, gp:Template ;
+<#TemplateContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
     gp:uriTemplate "/templates" ;
     spin:query <#DescribeFromGraphWithChildren> ;
@@ -65,7 +57,17 @@
     rdfs:label "Template container template" ;
     rdfs:isDefinedBy <#> .
 
-<#QueryContainerTemplate> a owl:Class, gp:Template ;
+<#TemplateDocument> a owl:Class, gp:Template ;
+     rdfs:subClassOf gp:Resource, foaf:Document ;
+     gp:uriTemplate "/templates/{uuid}" ;
+     spin:query <#DescribeFromGraphWithChildren> ;
+     gc:mode gc:ReadMode, gc:EditMode ;
+     rdfs:label "Template template" ;
+     rdfs:isDefinedBy <#> .
+
+# queries
+
+<#QueryContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
     gp:uriTemplate "/queries" ;
     spin:query <#DescribeFromGraphWithChildren> ;
@@ -75,29 +77,35 @@
     rdfs:label "Query container template" ;
     rdfs:isDefinedBy <#> .
 
-<#OntologyTemplate> a owl:Class, gp:Template ;
+<#OntologyDocument> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, gp:Resource ;
     gp:uriTemplate "/ontology" ;
     spin:query <#DescribeFromGraphWithChildren> ;
     rdfs:label "Ontology document resource" ;
     rdfs:isDefinedBy <#> .
 
-<#DatasetTemplate> a owl:Class, gp:Template ;
+# datasets
+
+<#DatasetContainer> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
+    gp:uriTemplate "/datasets" ;
+    spin:query <#DescribeFromGraphWithChildren> ;
+    gp:limit 20 ;
+    gc:defaultMode gc:ListMode ;
+    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
+    rdfs:label "Dataset container template" ;
+    rdfs:isDefinedBy <#> .
+
+<#DatasetDocument> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, gp:Resource ;
     gp:uriTemplate "/dataset" ;
     spin:query <#DescribeFromGraphWithChildren> ;
     rdfs:label "Dataset document resource" ;
     rdfs:isDefinedBy <#> .
 
-<#TemplateTemplate> a owl:Class, gp:Template ;
-     rdfs:subClassOf gp:Resource, foaf:Document ;
-     gp:uriTemplate "/templates/{uuid}" ;
-     spin:query <#DescribeFromGraphWithChildren> ;
-     gc:mode gc:ReadMode, gc:EditMode ;
-     rdfs:label "Space template" ;
-     rdfs:isDefinedBy <#> .
+# lookup
 
-<#LabelResourcesTemplate> a owl:Class, gp:Template ;
+<#LabelResourcesContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     gp:uriTemplate "/resources/labelled" ;
     spin:query <#DescribeGraphLabelResources> ;
@@ -106,7 +114,7 @@
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .
 
-<#LabelPropertiesTemplate> a owl:Class, gp:Template ;
+<#LabelPropertiesContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     gp:uriTemplate "/properties/labelled" ;
     spin:query <#DescribeGraphLabelProperties> ;

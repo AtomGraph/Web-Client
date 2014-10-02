@@ -67,15 +67,15 @@ public class Container extends ResourceBase
     {
         super.init();
         
-	if (!(searchString == null || searchString.isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
+	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)
 	    {
-                selectBuilder.filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(searchString)); // escape special regex() characters!
-		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", searchString, getQueryBuilder());
+                selectBuilder.filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(getSearchString())); // escape special regex() characters!
+		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", getSearchString(), getQueryBuilder());
 	    }
-        }	
+	}	
     }
     
     public String getSearchString()
