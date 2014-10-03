@@ -1,18 +1,18 @@
-/*
- * Copyright (C) 2013 Martynas Jusevičius <martynas@graphity.org>
+/**
+ *  Copyright 2013 Martynas Jusevičius <martynas@graphity.org>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 package org.graphity.client.util;
 
@@ -23,12 +23,9 @@ import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.LocationMapper;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.util.*;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MultivaluedMap;
@@ -43,7 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Data manager subclass that resolves URI to RDF/XML.
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 public class DataManager extends org.graphity.processor.util.DataManager implements URIResolver
@@ -75,6 +73,11 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
         this.uriInfo = uriInfo;
     }
 
+    /**
+     * Resolves relative URI to XML source.
+     * @param href relative URI
+     * @param base base URI
+     */
     @Override
     public Source resolve(String href, String base) throws TransformerException
     {
@@ -91,6 +94,16 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 	}
     }
 
+    /**
+     * Resolves URI to RDF/XML.
+     * Ignored extensions are rejected. Cached copy is returned, if it exists.
+     * Further processing tries to decode a SPARQL query from the query string, and executes it on the endpoint.
+     * If there is no query, attempting to load RDF model from URI.
+     * Finally the model is serialized as RDF/XML.
+     * 
+     * @param uri document URI
+     * @return XML source
+     */
     public Source resolve(URI uri)
     {
         if (uri == null) throw new IllegalArgumentException("URI cannot be null");
@@ -176,6 +189,12 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 	return getSource(ModelFactory.createDefaultModel());
     }
     
+    /**
+     * Serializes RDF model to XML source.
+     * 
+     * @param model RDF Model
+     * @return XML source
+     */
     protected Source getSource(Model model)
     {
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
@@ -188,6 +207,12 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
     }
 
+    /**
+     * Serializes SPARQL XML results to XML source.
+     * 
+     * @param results SPARQL XML results
+     * @return XML source
+     */
     protected Source getSource(ResultSet results)
     {
 	if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());
@@ -199,8 +224,14 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 	
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
     }
-    
-    public static MultivaluedMap<String, String> parseParamMap(String uri)
+ 
+    /**
+     * Parses parameter map from URI (if query string is present).
+     * 
+     * @param uri URI with optional query string
+     * @return parameter map
+     */
+    public MultivaluedMap<String, String> parseParamMap(String uri)
     {
 	if (uri.indexOf("?") > 0)
 	{
@@ -211,47 +242,6 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 	return null;
     }
     
-    public static MultivaluedMap<String, String> getParamMap(String query)  
-    {  
-	String[] params = query.split("&");
-	MultivaluedMap<String, String> map = new MultivaluedMapImpl();
-	
-	for (String param : params)  
-	{
-	    try
-	    {
-		String name = URLDecoder.decode(param.split("=")[0], "UTF-8");
-		String value = URLDecoder.decode(param.split("=")[1], "UTF-8");
-		map.add(name, value);
-	    }
-	    catch (UnsupportedEncodingException ex)
-	    {
-		if (log.isWarnEnabled()) log.warn("Could not URL-decode query string component", ex);
-	    }
-	}
-
-	return map;
-    }
-
-    public static Query parseQuery(String uri)
-    {
-	if (uri.indexOf("?") > 0)
-	{
-	    //String queryString = UriBuilder.fromUri(uri).build().getQuery();
-	    String queryString = uri.substring(uri.indexOf("?") + 1);
-	    MultivaluedMap<String, String> paramMap = getParamMap(queryString);
-	    if (paramMap.containsKey("query"))
-	    {
-		String sparqlString = paramMap.getFirst("query");
-		if (log.isDebugEnabled()) log.debug("Query string: {} from URI: {}", sparqlString, uri);
-
-		return QueryFactory.create(sparqlString);
-	    }
-	}
-	
-	return null;
-    }
-
     public boolean isIgnored(String filenameOrURI)
     {
 	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));

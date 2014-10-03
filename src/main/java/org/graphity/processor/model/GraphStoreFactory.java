@@ -1,18 +1,18 @@
-/*
- * Copyright (C) 2013 Martynas
+/**
+ *  Copyright 2013 Martynas Jusevičius <martynas@graphity.org>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 
 package org.graphity.processor.model;
@@ -25,40 +25,20 @@ import org.graphity.server.util.DataManager;
 import org.graphity.server.model.GraphStore;
 
 /**
- *
- * @author Martynas
+ * Factory class for creating Graph Stores.
+ * 
+ * @author Martynas Jusevičius <martynas@graphity.org>
  */
 public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFactory
 {
-    /**
-     * Creates new Graph Store from application configuration, request data, and sitemap ontology.
-     * 
-     * @param sitemap ontology of this webapp
-     * @param uriInfo URI information of the current request
-     * @param dataManager RDF data manager for this graph store
-     * @param request current request
-     * @param servletContext webapp context
-     * @param application webapp instance
-     * @return graph store instance
-     */
-    /*
-    public static GraphStore create(UriInfo uriInfo, Request request, ServletContext servletContext,
-            Dataset dataset, DataManager dataManager)
-    {
-	return new GraphStoreBase(uriInfo, request, servletContext,
-                dataset, dataManager);
-    }
-    */
 
     /**
-     * Creates new Graph Store from explicit URI resource, application configuration, and request data.
+     * Creates new Graph Store instance backed by dataset.
      * 
-     * @param graphStore graph store resource
-     * @param dataManager RDF data manager for this graph store
-     * @param uriInfo URI information of the current request
      * @param request current request
      * @param servletContext webapp context
-     * @param application webapp instance
+     * @param dataset dataset of the store
+     * @param dataManager RDF data manager for this graph store
      * @return graph store instance
      */
     public static GraphStore create(Request request, ServletContext servletContext,
@@ -67,22 +47,4 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
 	return new GraphStoreBase(request, servletContext, dataset, dataManager);
     }
 
-    /*
-    public static GraphStoreProxy createProxy(UriInfo uriInfo, Request request, ServletContext servletContext,
-            DataManager dataManager, GraphStore metaGraphStore, Application application)
-    {
-	return new GraphStoreProxyBase(uriInfo, request, servletContext,
-                dataManager, metaGraphStore, application);
-    }
-    */
-
-    /*
-    public static GraphStore createProxy(Request request, ServletContext servletContext,
-            DataManager dataManager, Application application)
-    {
-	return new GraphStoreProxyBase(request, servletContext,
-                dataManager, application);
-    }
-    */
-    
 }

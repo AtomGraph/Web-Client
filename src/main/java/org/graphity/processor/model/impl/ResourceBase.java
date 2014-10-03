@@ -1,18 +1,18 @@
-/*
- * Copyright (C) 2012 Martynas Jusevičius <martynas@graphity.org>
+/**
+ *  Copyright 2012 Martynas Jusevičius <martynas@graphity.org>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 package org.graphity.processor.model.impl;
 
@@ -90,11 +90,12 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
      * 
      * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param servletContext webapp context
-     * @param metaEndpoint sitemap ontology
      * @param endpoint SPARQL endpoint of this resource
+     * @param ontModel sitemap ontology model
+     * @param request current request
+     * @param servletContext webapp context
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceContext resource context
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -126,12 +127,13 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * that dataset in turn has a SPARQL endpoint defined using <code>void:sparqlEndpoint</code>, that
      * endpoint resource overrides the default value supplied as constructor argument.
      * 
-     * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param servletContext webapp context
      * @param resource this resource as OWL resource
      * @param endpoint SPARQL endpoint of this resource
+     * @param request current request
+     * @param servletContext webapp context
+     * @param uriInfo URI information of the current request
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceContext resource context
      * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -612,7 +614,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * 
      * @param ontClass ontology class of the resource
      * @param property property for the query object
-     * @param resource resource to be described
+     * @param qsm query variable bindings
      * @return query object
      * @see org.topbraid.spin.model.TemplateCall
      */
@@ -632,7 +634,13 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         
         return null;
     }
-    
+
+    /**
+     * Returns variable bindings for description query.
+     * 
+     * @param resource this resource
+     * @return map with variable bindings
+     */
     public QuerySolutionMap getQuerySolutionMap(Resource resource)
     {
 	QuerySolutionMap qsm = new QuerySolutionMap();
@@ -649,7 +657,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * <code>OFFSET</code>) will be set to implement pagination.
      * 
      * @param queryString SPARQL query string
-     * @param resource RDF resource
+     * @param qsm query variable bindings
      * @return query object
      */
     public Query getQuery(String queryString, QuerySolutionMap qsm)
@@ -696,6 +704,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     /**
      * Given an absolute URI and a base URI, returns ontology class with a matching URI template, if any.
      * 
+     * @param ontModel sitemap ontology model
      * @param uri absolute URI being matched
      * @param base base URI
      * @return matching ontology class or null, if none
@@ -718,6 +727,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * By default, <code>lda:uriTemplate</code> property (from Linked Data API) is used for the <code>owl:HasValue</code>
      * restrictions, with URI template string as the object literal.
      * 
+     * @param ontModel sitemap ontology model
      * @param path absolute path (relative URI)
      * @return matching ontology class or null, if none
      * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
@@ -729,10 +739,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
     /**
      * Given a relative URI and URI template property, returns ontology class with a matching URI template, if any.
-     * URIs are matched against the URI templates specified in ontology class <code>owl:hasValue</code> restrictions
-     * on the given property in the sitemap ontology.
-     * This method uses Jersey implementation of the JAX-RS URI matching algorithm.
+     * URIs are matched against the URI templates specified in resource templates (sitemap ontology classes).
+     * Templates in the base ontology model have priority (are matched first) against templates in imported ontologies.
      * 
+     * @param ontModel sitemap ontology model
      * @param path absolute path (relative URI)
      * @param property restriction property holding the URI template value
      * @return matching ontology class or null, if none
@@ -766,6 +776,16 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         return null;
     }
 
+    /**
+     * Matches path (relative URI) against URI templates in sitemap ontology.
+     * This method uses Jersey implementation of the JAX-RS URI matching algorithm.
+     * 
+     * @param ontModel sitemap ontology model
+     * @param path URI path
+     * @param property property attaching URI templates to ontology class
+     * @param inBaseModel whether to only use base model statements
+     * @return URI template/ontology class map
+     */
     public Map<UriTemplate, OntClass> matchOntClasses(OntModel ontModel, CharSequence path, Property property, boolean inBaseModel)
     {
 	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");

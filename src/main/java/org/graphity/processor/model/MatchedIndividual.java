@@ -22,7 +22,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 
 /**
  *
- * @author Martynas
+ * @author Martynas Jusevičius <martynas@graphity.org>
  */
 public interface MatchedIndividual extends OntResource
 {

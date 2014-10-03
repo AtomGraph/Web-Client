@@ -1,18 +1,18 @@
-/*
- * Copyright (C) 2013 Martynas
+/**
+ *  Copyright 2012 Martynas Jusevičius <martynas@graphity.org>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 
 package org.graphity.processor.model.impl;
@@ -20,7 +20,6 @@ package org.graphity.processor.model.impl;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import org.graphity.server.util.DataManager;
@@ -28,15 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class of Graph Store proxies.
- * Given a remote store, it functions as a proxy and forwards SPARQL Graph Store protocol requests to a remote graph store.
- * Otherwise, the store serves the sitemap ontology of the application.
- * 
+ * Base class for dataset-backed Graph Stores.
+ * Implementation of Graph Store Protocol on Jena dataset.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-http-rdf-update/">SPARQL 1.1 Graph Store HTTP Protocol</a>
  */
-@Path("/meta/service") // not standard
+//@Path("/meta/service") // not standard
 public class GraphStoreBase extends org.graphity.server.model.impl.GraphStoreBase
 {
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);

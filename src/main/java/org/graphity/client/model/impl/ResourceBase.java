@@ -1,18 +1,18 @@
-/*
- * Copyright (C) 2013 Martynas Jusevičius <martynas@graphity.org>
+/**
+ *  Copyright 2013 Martynas Jusevičius <martynas@graphity.org>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 package org.graphity.client.model.impl;
 
@@ -57,10 +57,12 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * JAX-RS-compatible resource constructor with injected initialization objects.
      * 
      * @param uriInfo URI information of the current request
-     * @param request current request
-     * @param httpHeaders HTTP headers of the current request
-     * @param servletContext webapp context
      * @param endpoint SPARQL endpoint of this resource
+     * @param ontModel sitemap ontology model
+     * @param request current request
+     * @param servletContext webapp context
+     * @param httpHeaders HTTP headers of the current request
+     * @param resourceContext resource context
      * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
@@ -83,6 +85,11 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	this.mode = mode;
     }
 
+    /**
+     * Returns SPARQL endpoint resource.
+     * 
+     * @return endpoint resource
+     */
     @Path("sparql")
     @Override
     public Object getSPARQLResource()
@@ -102,8 +109,12 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         return this;
     }
     
+    /**
+     * Adds metadata to the description of the current resource.
+     * 
+     * @return resource description
+     */
     @Override
-    
     public Model describe()
     {
 	Model description;
@@ -141,11 +152,21 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         return list;
     }
     
+    /**
+     * Returns the layout mode query parameter value.
+     * 
+     * @return mode URI
+     */
     public URI getMode()
     {
 	return mode;
     }
 
+    /**
+     * Returns page URI builder.
+     * 
+     * @return URI builder
+     */
     @Override
     public UriBuilder getPageUriBuilder()
     {
@@ -154,6 +175,11 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	return super.getPageUriBuilder();
     }
 
+    /**
+     * Returns previous page URI builder.
+     * 
+     * @return URI builder
+     */
     @Override
     public UriBuilder getPreviousUriBuilder()
     {
@@ -162,6 +188,11 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	return super.getPreviousUriBuilder();
     }
 
+    /**
+     * Returns next page URI builder.
+     * 
+     * @return URI builder
+     */
     @Override
     public UriBuilder getNextUriBuilder()
     {

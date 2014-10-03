@@ -1,20 +1,19 @@
-/*
- * Copyright (C) 2013 Martynas
+/**
+ *  Copyright 2013 Martynas Jusevičius <martynas@graphity.org>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
-
 package org.graphity.client.provider;
 
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -46,8 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author Martynas
+ * JAX-RS provider for XSLT builder
+ * 
+ * @author Martynas Jusevičius <martynas@graphity.org>
+ * @see org.graphity.client.util.XSLTBuilder
  */
 @Provider
 public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Context, XSLTBuilder> implements ContextResolver<XSLTBuilder>
@@ -108,6 +109,12 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         return getXSLTBuilder();
     }
 
+    /**
+     * Returns configured XSLT stylesheet resourcec
+     * 
+     * @return stylesheet resource
+     * @throws ConfigurationException 
+     */
     public Resource getStylesheet() throws ConfigurationException
     {
         Object stylesheet = getServletContext().getInitParameter(GC.stylesheet.getURI());
@@ -116,6 +123,11 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         return ResourceFactory.createResource(stylesheet.toString());
     }
     
+    /**
+     * Constructs XSLT builder from configuration.
+     * 
+     * @return XSLT builder object
+     */
     public XSLTBuilder getXSLTBuilder()
     {
         try
@@ -145,6 +157,17 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         }
     }
     
+    /**
+     * Converts stylesheet resource into XML source.
+     * 
+     * @param stylesheet stylesheet RDF resource
+     * @param baseURI application base URI
+     * @return stylesheet XML source
+     * @throws ConfigurationException
+     * @throws FileNotFoundException
+     * @throws URISyntaxException
+     * @throws MalformedURLException 
+     */
     public Source getSource(Resource stylesheet, URI baseURI) throws ConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
     {
         URI stylesheetUri = URI.create(stylesheet.getURI());
@@ -159,7 +182,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     /**
      * Provides XML source from filename
      * 
-     * @param filename
+     * @param filename stylesheet filename
      * @return XML source
      * @throws FileNotFoundException
      * @throws URISyntaxException 

@@ -18,6 +18,7 @@
 package org.graphity.processor.util;
 
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.NotFoundException;
@@ -25,16 +26,19 @@ import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.graphity.processor.locator.LocatorLinkedData;
 import org.graphity.processor.locator.PrefixMapper;
-import static org.graphity.client.util.DataManager.parseQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,5 +196,57 @@ public class DataManager extends org.graphity.server.util.DataManager
 	    remove(locURL);
 	}
     }
-    
+ 
+    /**
+     * Parses query from URI, if it is a SPARQL Protocol URI.
+     * 
+     * @param uri URI string
+     * @return parsed query
+     */
+    public Query parseQuery(String uri)
+    {
+	if (uri.indexOf("?") > 0)
+	{
+	    String queryString = uri.substring(uri.indexOf("?") + 1);
+	    MultivaluedMap<String, String> paramMap = getParamMap(queryString);
+	    if (paramMap.containsKey("query"))
+	    {
+		String sparqlString = paramMap.getFirst("query");
+		if (log.isDebugEnabled()) log.debug("Query string: {} from URI: {}", sparqlString, uri);
+
+		return QueryFactory.create(sparqlString);
+	    }
+	}
+	
+	return null;
+    }
+
+    /**
+     * Parses parameter key/value map from HTTP query string.
+     * 
+     * @param query query string
+     * @return parameter map
+     */
+    public MultivaluedMap<String, String> getParamMap(String query)  
+    {  
+	String[] params = query.split("&");
+	MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+	
+	for (String param : params)  
+	{
+	    try
+	    {
+		String name = URLDecoder.decode(param.split("=")[0], "UTF-8");
+		String value = URLDecoder.decode(param.split("=")[1], "UTF-8");
+		map.add(name, value);
+	    }
+	    catch (UnsupportedEncodingException ex)
+	    {
+		if (log.isWarnEnabled()) log.warn("Could not URL-decode query string component", ex);
+	    }
+	}
+
+	return map;
+    }
+
 }
