@@ -45,7 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JAX-RS provider for XSLT builder
+ * JAX-RS provider for XSLT builder.
+ * Needs to be registered in the application.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see org.graphity.client.util.XSLTBuilder
@@ -110,7 +111,8 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     }
 
     /**
-     * Returns configured XSLT stylesheet resourcec
+     * Returns configured XSLT stylesheet resource.
+     * Uses <code>gc:stylesheet</code> context parameter value from web.xml as stylesheet location.
      * 
      * @return stylesheet resource
      * @throws ConfigurationException 

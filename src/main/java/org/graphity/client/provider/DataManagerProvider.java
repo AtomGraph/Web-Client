@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JAX-RS provider for data manager subclass.
+ * Needs to be registered in the application.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see org.graphity.client.util.DataManager
