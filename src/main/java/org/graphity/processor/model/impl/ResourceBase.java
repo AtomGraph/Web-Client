@@ -66,7 +66,6 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see ContainerResource
  * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/OntResource.html">OntResource</a>
- * @see <a href="http://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/core/ResourceConfig.html">ResourceConfig</a>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
@@ -165,6 +164,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         this.desc = desc;
     }
 
+    /**
+     * Post-constructor initialization of class members.
+     * super.init() needs to be called first in subclasses (just like super() constructor).
+     */
     @PostConstruct
     public void init()
     {
@@ -240,12 +243,23 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         return null;
     }
 
+    /**
+     * Returns sub-resource instance.
+     * By default matches any path.
+     * 
+     * @return resource object
+     */
     @Path("{path: .+}")
     public Object getSubResource()
     {
         return this;
     }
 
+    /**
+     * Returns SPARQL endpoint instance.
+     * 
+     * @return resource object
+     */
     @Path("sparql")
     public Object getSPARQLResource()
     {
@@ -570,7 +584,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
 
     /**
-     * Sets <code>SELECT</code> on a supplied builder.
+     * Sets <code>SELECT</code> solution modifiers on a supplied builder.
      * This method is used to build queries for page resources. It sets <code>LIMIT</code> and <code>OFFSET</code>
      * modifiers as well as <code>ORDER BY</code>/<code>DESC</code> clauses on <code>SELECT</code> sub-queries.
      * Currently only one <code>ORDER BY</code> condition is supported.
@@ -649,11 +663,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
     
     /**
-     * Given a SPIN template call and an RDF resource, returns a SPARQL query that can be used to retrieve
-     * resource's description.
+     * Given a SPARQL query string and variable bindings, returns a SPARQL query.
+     * 
      * Following the convention of SPIN API, variable name <code>?this</code> has a special meaning and
      * is assigned to the value of the resource (which is usually this resource).
-     * If this resource is a page resource, the SELECT sub-query modifiers (<code>LIMIT</code> and
      * <code>OFFSET</code>) will be set to implement pagination.
      * 
      * @param queryString SPARQL query string

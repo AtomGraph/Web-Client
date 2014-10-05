@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
  * The remote datasources can either be native-RDF Linked Data, or formats supported by Locators
  * (for example, Atom XML transformed to RDF/XML using GRDDL XSLT stylesheet). The ability to load remote
  * RDF data is crucial for generic Linked Data browser functionality.
- * Supports pagination on containers (implemented using SPARQL query solution modifiers).
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see LinkedDataResourceBase
@@ -121,6 +120,8 @@ public class GlobalResourceBase extends ResourceBase
 
     /**
      * Returns a list of supported RDF representation variants.
+     * If media type is specified in query string,that type is used to serialize RDF representation.
+     * Otherwise, normal content negotiation is used.
      * 
      * @return variant list
      */
@@ -139,10 +140,8 @@ public class GlobalResourceBase extends ResourceBase
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
      * If "uri" query string parameter is present, resource is loaded from the specified remote URI and
      * its RDF representation is returned. Otherwise, local resource with request URI is used.
-     * If "accept" query string parameter is present, the specified media type is used to serialize RDF
-     * representation. Otherwise, normal content negotiation is used.
      * 
-     * @return 
+     * @return response
      */
     @Override
     public Response get()

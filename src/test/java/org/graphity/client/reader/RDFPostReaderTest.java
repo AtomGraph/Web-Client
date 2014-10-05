@@ -113,6 +113,7 @@ public class RDFPostReaderTest
 
     /**
      * Test of readFrom method, of class RDFPostReader.
+     * @throws java.lang.Exception
      */
     @Test
     @Ignore
