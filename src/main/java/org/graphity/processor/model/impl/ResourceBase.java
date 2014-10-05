@@ -173,7 +173,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     {
         if (log.isDebugEnabled()) log.debug("@PostConstruct initializtion");
 
-	matchedOntClass = matchOntClass(getOntModel(), getRealURI(), uriInfo.getBaseUri());
+	matchedOntClass = matchOntClass(getOntModel(), getRealURI(), getUriInfo().getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
         QuerySolutionMap qsm = getQuerySolutionMap(this);
