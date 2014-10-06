@@ -32,7 +32,7 @@
      gp:limit 20 ;
      gc:defaultMode gc:ListMode ;
      gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-     rdfs:label "Space template" ;
+     rdfs:label "Space" ;
      rdfs:isDefinedBy <#> .
 
 <#OntologyContainer> a owl:Class, gp:Template ;
@@ -42,7 +42,7 @@
     gp:limit 20 ;
     gc:defaultMode gc:ListMode ;
     gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-    rdfs:label "Ontology container template" ;
+    rdfs:label "Ontology container" ;
     rdfs:isDefinedBy <#> .
 
 # templates
@@ -54,16 +54,16 @@
     gp:limit 20 ;
     gc:defaultMode gc:ListMode ;
     gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-    rdfs:label "Template container template" ;
+    rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
 
 <#TemplateDocument> a owl:Class, gp:Template ;
-     rdfs:subClassOf gp:Resource, foaf:Document ;
-     gp:uriTemplate "/templates/{uuid}" ;
-     spin:query <#DescribeFromGraphWithChildren> ;
-     gc:mode gc:ReadMode, gc:EditMode ;
-     rdfs:label "Template template" ;
-     rdfs:isDefinedBy <#> .
+    rdfs:subClassOf gp:Resource, foaf:Document ;
+    gp:uriTemplate "/templates/{uuid}" ;
+    spin:query <#DescribeFromGraphWithTopic> ;
+    gc:mode gc:ReadMode, gc:EditMode ;
+    rdfs:label "Template document" ;
+    rdfs:isDefinedBy <#> .
 
 # queries
 
@@ -74,14 +74,24 @@
     gp:limit 20 ;
     gc:defaultMode gc:ListMode ;
     gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-    rdfs:label "Query container template" ;
+    rdfs:label "Query container" ;
     rdfs:isDefinedBy <#> .
+
+<#QueryDocument> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document ;
+    gp:uriTemplate "/queries/{uuid}" ;
+    spin:query <#DescribeFromGraphWithTopic> ;
+    gc:mode gc:ReadMode, gc:EditMode ;
+    rdfs:label "Query document" ;
+    rdfs:isDefinedBy <#> .
+
+# ontology
 
 <#OntologyDocument> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, gp:Resource ;
     gp:uriTemplate "/ontology" ;
     spin:query <#DescribeFromGraphWithChildren> ;
-    rdfs:label "Ontology document resource" ;
+    rdfs:label "Ontology document" ;
     rdfs:isDefinedBy <#> .
 
 # datasets
@@ -93,14 +103,15 @@
     gp:limit 20 ;
     gc:defaultMode gc:ListMode ;
     gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode, gc:CreateMode ;
-    rdfs:label "Dataset container template" ;
+    rdfs:label "Dataset container" ;
     rdfs:isDefinedBy <#> .
 
-<#DatasetDocument> a owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, gp:Resource ;
-    gp:uriTemplate "/dataset" ;
-    spin:query <#DescribeFromGraphWithChildren> ;
-    rdfs:label "Dataset document resource" ;
+<#TemplateDocument> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document ;
+    gp:uriTemplate "/datasets/{uuid}" ;
+    spin:query <#DescribeFromGraphWithTopic> ;
+    gc:mode gc:ReadMode, gc:EditMode ;
+    rdfs:label "Dataset document" ;
     rdfs:isDefinedBy <#> .
 
 # lookup
@@ -125,73 +136,6 @@
 
 # QUERY TEMPLATES
 
-<#DescribeInstancesTemplate> a spin:Template ;
-    spin:body <#DescribeInstances> ;
-    spin:constraint [ a       spl:Argument ;
-		spl:predicate <#type> ;
-		spl:valueType rdfs:Resource
-	] ;
-    rdfs:isDefinedBy <#> .
-
-<#DescribeInstances>    a       sp:Describe, sp:Query ;
-      sp:resultNodes (spin:_this _:instanceVar) ;
-      sp:text """DESCRIBE ?this ?instance WHERE {
-    {
-        SELECT ?instance
-        WHERE {
-            ?instance a ?type .
-        }
-    } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:instanceVar) ;
-                            sp:where ([ sp:object
-                                                [ sp:varName "type"^^xsd:string
-                                                ] ;
-                                        sp:predicate rdf:type ;
-                                        sp:subject _:instanceVar
-                                      ])
-                          ]
-                ]) .
-
-_:instanceVar  sp:varName "instance"^^xsd:string .
-
-# ====
-
-<#DescribeProperties>    a       sp:Dscribe, sp:Query ;
-      sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-DESCRIBE ?this ?property WHERE {
-    {
-        SELECT ?property
-        WHERE {
-            {
-                ?property a rdf:Property .
-            }
-            UNION
-            {
-                ?property a owl:ObjectProperty .
-            }
-            UNION
-            {
-                ?property a owl:DatatypeProperty .
-            } .
-        }
-    } .
-}"""^^xsd:string .
-
-# ====
-
-<#DescribeTopic>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-DESCRIBE ?topic WHERE {
-    ?topic foaf:isPrimaryTopicOf ?this .
-}"""^^xsd:string .
-
-# ====
-
 <#DescribeWithTopic>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
@@ -200,33 +144,13 @@ DESCRIBE ?this ?topic WHERE {
 
 # ====
 
-<#DescribeFromGraphWithTopicTemplate> a spin:Template ;
-    spin:body <#DescribeFromGraphWithTopic> ;
-    spin:constraint [ a       spl:Argument ;
-		spl:predicate <#graph> ;
-		spl:valueType rdfs:Resource
-	] ;
-    rdfs:isDefinedBy <#> .
-
 <#DescribeFromGraphWithTopic>    a       sp:Describe ;
-      sp:resultNodes (spin:_this _:topicVar) ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
     GRAPH ?graph {
         ?topic foaf:isPrimaryTopicOf ?this .
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:NamedGraph ;
-                  sp:elements ([ sp:object spin:_this ;
-                              sp:predicate foaf:isPrimaryTopicOf ;
-                              sp:subject _:topicVar
-                            ]) ;
-                  sp:graphNameNode
-                          [ sp:varName "graph"^^xsd:string
-                          ]
-                ]) .
-
-_:topicVar  sp:varName "topic"^^xsd:string .
+}"""^^xsd:string .
 
 # ====
 
@@ -311,103 +235,6 @@ WHERE {
 WHERE {
     ?subject ?property ?object .
 }"""^^xsd:string .
-
-# ====
-
-<#DescribeNamedGraphs>    a       sp:Describe, sp:Query ;
-      sp:text """DESCRIBE ?graph WHERE {
-    {
-        SELECT ?graph
-        WHERE {
-            GRAPH ?graph {
-                ?subject ?property ?object .
-            } .
-        }
-    } .
-}"""^^xsd:string .
-
-# ====
-
-<#ConstructGraphResourcesTemplate> a spin:Template ;
-    spin:body <#ConstructGraphResources> ;
-    spin:constraint [ a       spl:Argument ;
-		spl:predicate <#graph> ;
-		spl:valueType rdfs:Resource
-	] ;
-    rdfs:isDefinedBy <#> .
-
-<#ConstructGraphResources>    a       sp:Construct, sp:Query ;
-      sp:templates ([ sp:object _:objectVar ;
-                  sp:predicate _:propertyVar ;
-                  sp:subject _:subjectVar
-                ]) ;
-      sp:text """CONSTRUCT {
-    ?subject ?property ?object .
-}
-WHERE {
-    GRAPH ?this {
-        ?subject ?property ?object .
-    } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:NamedGraph ;
-                  sp:elements ([ sp:object _:objectVar ;
-                              sp:predicate _:propertyVar ;
-                              sp:subject _:subjectVar
-                            ]) ;
-                  sp:graphNameNode
-                          [ sp:varName "graph"^^xsd:string
-                          ]
-                ]) .
-
-_:subjectVar  sp:varName "subject"^^xsd:string .
-_:propertyVar  sp:varName "property"^^xsd:string .
-_:objectVar  sp:varName "object"^^xsd:string .
-
-# ====
-
-<#DescribeGraphInstancesTemplate> a spin:Template ;
-    spin:body <#DescribeGraphInstances> ;
-    spin:constraint [ a       spl:Argument ;
-		spl:predicate <#type> ;
-		spl:valueType rdfs:Resource
-	] ,
-	[ a       spl:Argument ;
-		spl:predicate <#graph> ;
-		spl:valueType rdfs:Resource
-	] ;
-    rdfs:isDefinedBy <#> .
-
-<#DescribeGraphInstances>    a       sp:Describe, sp:Query ;
-      sp:resultNodes (spin:_this _:instanceVar) ;
-      sp:text """DESCRIBE ?this ?instance WHERE {
-    {
-        SELECT ?instance
-        WHERE {
-            GRAPH ?graph {
-                ?instance a ?type .
-            } .
-        }
-    } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:SubQuery ;
-                  sp:query
-                          [ a       sp:Select ;
-                            sp:resultVariables (_:instanceVar) ;
-                            sp:where ([ a       sp:NamedGraph ;
-                                        sp:elements ([ sp:object
-                                                            [ sp:varName "type"^^xsd:string
-                                                            ] ;
-                                                    sp:predicate rdf:type ;
-                                                    sp:subject _:instanceVar
-                                                  ]) ;
-                                        sp:graphNameNode
-                                                [ sp:varName "graph"^^xsd:string
-                                                ]
-                                      ])
-                          ]
-                ]) .
-
-_:instanceVar  sp:varName "instance"^^xsd:string .
 
 # ====
 
@@ -527,35 +354,12 @@ DESCRIBE ?this ?property WHERE {
 
 # ====
 
-<#DeleteFromGraphTemplate> a spin:Template ;
-    spin:body <#DeleteFromGraph> ;
-    spin:constraint [ a       spl:Argument ;
-		spl:predicate <#graph> ;
-		spl:valueType rdfs:Resource
-	] ;
-    rdfs:isDefinedBy <#> .
-
 <#DeleteFromGraph>    a       sp:DeleteWhere ;
       sp:text """DELETE WHERE {
     GRAPH ?g {
         ?this ?p ?o .
     } .
-}"""^^xsd:string ;
-      sp:where ([ a       sp:NamedGraph ;
-                  sp:elements ([ sp:object
-                                      [ sp:varName "o"^^xsd:string
-                                      ] ;
-                              sp:predicate
-                                      [ sp:varName "p"^^xsd:string
-                                      ] ;
-                              sp:subject
-                                      [ sp:varName "this"^^xsd:string
-                                      ]
-                            ]) ;
-                  sp:graphNameNode
-                          [ sp:varName "g"^^xsd:string
-                          ]
-                ]) .
+}"""^^xsd:string .
 
 # ====
 
@@ -564,25 +368,7 @@ DESCRIBE ?this ?property WHERE {
     ?this ?p ?o .
     ?primaryTopic foaf:isPrimaryTopicOf ?this .
     ?primaryTopic ?x ?y .
-}"""^^xsd:string ;
-      sp:where ([ sp:object
-                          [ sp:varName "o"^^xsd:string
-                          ] ;
-                  sp:predicate
-                          [ sp:varName "p"^^xsd:string
-                          ] ;
-                  sp:subject spin:_this
-                ] [ sp:object spin:_this ;
-                  sp:predicate foaf:isPrimaryTopicOf ;
-                  sp:subject _:primaryTopicVar
-                ] [ sp:object
-                          [ sp:varName "y"^^xsd:string
-                          ] ;
-                  sp:predicate
-                          [ sp:varName "x"^^xsd:string
-                          ] ;
-                  sp:subject _:primaryTopicVar
-                ]) .
+}"""^^xsd:string .
 
 # ====
 

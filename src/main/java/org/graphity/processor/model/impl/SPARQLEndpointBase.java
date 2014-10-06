@@ -58,10 +58,8 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
             @Context Dataset dataset, @Context DataManager dataManager)
     {
 	super(request, servletContext);
-	//if (endpoint == null) throw new IllegalArgumentException("Resource cannot be null");
         if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
         if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
-        //this.resource = endpoint;
         this.dataset = dataset;
         this.dataManager = dataManager;
     }

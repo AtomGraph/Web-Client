@@ -49,30 +49,7 @@ public class GraphStoreBase extends org.graphity.server.model.impl.GraphStoreBas
         if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataset = dataset;
         this.dataManager = dataManager;
-
-        /*
-        if (graphStore.isURIResource() && !dataManager.hasServiceContext(graphStore))
-        {
-            if (log.isDebugEnabled()) log.debug("Adding service Context for local Graph Store with URI: {}", graphStore.getURI());
-            dataManager.addServiceContext(graphStore);
-        }
-        */    
     }
-
-    /**
-     * Builds a list of acceptable response variants
-     * 
-     * @return supported variants
-     */
-    /*
-    @Override
-    public List<Variant> getVariants()
-    {        
-        List<Variant> list = super.getVariants();
-        list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null)); // TO-DO: move this out to Client!
-        return list;
-    }
-    */
 
     @Override
     public Model getModel()

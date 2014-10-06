@@ -24,11 +24,86 @@
         dct:description "Generic Linked Data browser and end-user-oriented platform" ;
         foaf:logo <static/img/graphity-logo.svg> ;
         foaf:maker <http://graphityhq.com/#company> ;
-        void:inDataset <graphs/#this> ;
         rdfs:seeAlso gpt: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }
 
 # RESOURCES
+
+<graphs/sparql>
+{
+
+    <sparql> a foaf:Document ;
+        sioc:has_space <> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
+        dct:title "SPARQL endpoint" .
+
+}
+
+<graphs/service>
+{
+
+    <service> a foaf:Document ;
+        sioc:has_container <> ;
+        dct:title "Graph Store Protocol endpoint" .
+
+}
+
+# containers
+
+<graphs/ontologies>
+{
+
+    <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <> ;
+        dct:title "Ontologies" .
+
+}
+
+<graphs/datasets>
+{
+
+    <datasets> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <> ;
+        dct:title "Datasets" .
+
+}
+
+<graphs/templates>
+{
+
+    <templates> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <> ;
+        dct:title "Templates" .
+
+}
+
+<graphs/queries>
+{
+
+    <queries> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <> ;
+        dct:title "Queries" .
+
+}
+
+<graphs/resources/labelled>
+{
+
+    <resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <resources> ;
+        dct:title "Labelled resources" .
+
+}
+
+<graphs/properties/labelled>
+{
+
+    <properties/labelled> a ldp:Container, sioc:Container, foaf:Document ;
+        sioc:has_space <properties> ;
+        dct:title "Labelled properties" .
+
+}
+
+# ontologies 
 
 <graphs/ontologies/graphity-processor>
 {
@@ -36,8 +111,7 @@
     <ontologies/graphity-processor> a foaf:Document, sioc:Item ;
         sioc:has_container <ontologies> ;
         dct:title "Graphity Processor ontology document" ;
-        foaf:primaryTopic gp: ;
-        void:inDataset <graphs/ontologies/graphity-processor#this> .
+        foaf:primaryTopic gp: .
 
 }
 
@@ -47,10 +121,10 @@
     <ontologies/graphity-client> a foaf:Document, sioc:Item ;
         sioc:has_container <ontologies> ;
         dct:title "Graphity Client ontology document" ;
-        foaf:primaryTopic gc: ;
-        void:inDataset <graphs/ontologies/graphity-client#this> .
+        foaf:primaryTopic gc: .
 
 }
+
 
 <graphs/ontologies/linked-data-api>
 {
@@ -58,8 +132,7 @@
     <ontologies/linked-data-api> a foaf:Document, sioc:Item ;
         sioc:has_container <ontologies> ;
         dct:title "Linked Data API ontology document" ;
-        foaf:primaryTopic lda: ;
-        void:inDataset <graphs/ontologies/linked-data-api#this> .
+        foaf:primaryTopic lda: .
 
 }
 
@@ -69,8 +142,7 @@
     <ontologies/foaf> a foaf:Document, sioc:Item ;
         sioc:has_container <ontologies> ;
         dct:title "FOAF ontology document" ;
-        foaf:primaryTopic foaf: ;
-        void:inDataset <graphs/ontologies/foaf#this> .
+        foaf:primaryTopic foaf: .
 
 }
 
@@ -80,98 +152,18 @@
     <ontologies/void> a foaf:Document, sioc:Item ;
         sioc:has_container <ontologies> ;
         dct:title "VoID ontology document" ;
-        foaf:primaryTopic void: ;
-        void:inDataset <graphs/ontologies/void#this> .
+        foaf:primaryTopic void: .
 
 }
 
-<graphs/service>
-{
-
-    <service> a foaf:Document ;
-        sioc:has_container <> ;
-        dct:title "Graph Store Protocol endpoint" ;
-        void:inDataset <graphs/service#this> .
-
-}
-
-<graphs/ontologies>
-{
-
-    <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <> ;
-        dct:title "Ontologies" ;
-        void:inDataset <graphs/ontologies#this> .
-
-}
-
-<graphs/datasets>
-{
-
-    <datasets> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <> ;
-        dct:title "Datasets" ;
-        void:inDataset <graphs/datasets#this> .
-
-}
-
-<graphs/templates>
-{
-
-    <templates> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <> ;
-        dct:title "Templates" ;
-        void:inDataset <graphs/templates#this> .
-
-}
-
-<graphs/queries>
-{
-
-    <queries> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <> ;
-        dct:title "Queries" ;
-        void:inDataset <graphs/queries#this> .
-
-}
-
-<graphs/resources/labelled>
-{
-
-    <resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <resources> ;
-        dct:title "Labelled resources" ;
-        void:inDataset <graphs/resources/labelled#this> .
-
-}
-
-<graphs/properties/labelled>
-{
-
-    <properties/labelled> a ldp:Container, sioc:Container, foaf:Document ;
-        sioc:has_space <properties> ;
-        dct:title "Labelled properties" ;
-        void:inDataset <graphs/properties/labelled#this> .
-
-}
-
-<graphs/sparql>
-{
-
-    <sparql> a foaf:Document ;
-        sioc:has_space <> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
-        dct:title "SPARQL endpoint" ;
-        void:inDataset <graphs/sparql#this> .
-
-}
+# templates
 
 <graphs/templates/resource>
 {
 
     <templates/resource> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gp:Resource ;
-        void:inDataset <graphs/templates/resource#this> .
+        foaf:primaryTopic gp:Resource .
 
 }
 
@@ -180,8 +172,7 @@
 
     <templates/ontology-doc> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:OntologyTemplate ;
-        void:inDataset <graphs/templates/ontology-doc#this> .
+        foaf:primaryTopic gpt:OntologyTemplate .
 
 }
 
@@ -190,8 +181,7 @@
 
     <templates/resources-labelled> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:LabelResourcesTemplate ;
-        void:inDataset <graphs/templates/resources-labelled#this> .
+        foaf:primaryTopic gpt:LabelResourcesTemplate .
 
 }
 
@@ -200,8 +190,7 @@
 
     <templates/properties-labelled> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:LabelPropertiesTemplate ;
-        void:inDataset <graphs/templates/properties-labelled#this> .
+        foaf:primaryTopic gpt:LabelPropertiesTemplate .
 
 }
 
@@ -210,20 +199,56 @@
 
     <templates/space> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:SpaceTemplate ;
-        void:inDataset <graphs/templates/space#this> .
+        foaf:primaryTopic gpt:SpaceTemplate .
 
 }
 
-# DATASETS & SERVICES
+# queries
+
+<graphs/queries/describe-from-graph-with-children>
+{
+
+    <queries/describe-from-graph-with-children> a foaf:Document, sioc:Item ;
+        sioc:has_container <queries> ;
+        foaf:primaryTopic gpt:DescribeFromGraphWithChildren .
+
+}
+
+<graphs/queries/describe-from-graph-with-topic>
+{
+
+    <queries/describe-from-graph-with-topic> a foaf:Document, sioc:Item ;
+        sioc:has_container <queries> ;
+        foaf:primaryTopic gpt:DescribeFromGraphWithTopic .
+
+}
+
+<graphs/queries/describe-graph-label-resources>
+{
+
+    <queries/describe-graph-label-resources> a foaf:Document, sioc:Item ;
+        sioc:has_container <queries> ;
+        foaf:primaryTopic gpt:DescribeGraphLabelResources .
+
+}
+
+<graphs/queries/describe-graph-label-properties>
+{
+
+    <queries/describe-graph-label-properties> a foaf:Document, sioc:Item ;
+        sioc:has_container <queries> ;
+        foaf:primaryTopic gpt:DescribeGraphLabelProperties .
+
+}
+
+# datasets
 
 <graphs/datasets/DBPedia>
 {
 
     <datasets/DBPedia> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/DBPedia#this> ;
-        void:inDataset <graphs/datasets/DBPedia#this> .
+        foaf:primaryTopic <datasets/DBPedia#this> .
 
     <datasets/DBPedia#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/DBPedia> ;
@@ -245,8 +270,7 @@
 
     <datasets/Enipedia> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/Enipedia#this> ;
-        void:inDataset <graphs/datasets/Enipedia#this> .
+        foaf:primaryTopic <datasets/Enipedia#this> .
 
     <datasets/Enipedia#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/Enipedia> ;
@@ -264,8 +288,7 @@
 
     <datasets/OpenEI> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/OpenEI#this> ;
-        void:inDataset <graphs/datasets/OpenEI#this> .
+        foaf:primaryTopic <datasets/OpenEI#this> .
 
     <datasets/OpenEI#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/OpenEI> ;
@@ -284,8 +307,7 @@
 
     <datasets/LinkedGeoData> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/LinkedGeoData#this> ;
-        void:inDataset <graphs/datasets/LinkedGeoData#this> .
+        foaf:primaryTopic <datasets/LinkedGeoData#this> .
 
     <datasets/LinkedGeoData#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/LinkedGeoData> ;
@@ -304,8 +326,7 @@
 
     <datasets/OrdnanceSurvey> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/OrdnanceSurvey#this> ;
-        void:inDataset <graphs/datasets/OrdnanceSurvey#this> .
+        foaf:primaryTopic <datasets/OrdnanceSurvey#this> .
 
     <datasets/OrdnanceSurvey#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/OrdnanceSurvey> ;
@@ -325,8 +346,7 @@
 
     <datasets/CodePoint> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/CodePoint#this> ;
-        void:inDataset <graphs/datasets/CodePoint#this> .
+        foaf:primaryTopic <datasets/CodePoint#this> .
 
     <datasets/CodePoint#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/CodePoint> ;
@@ -346,8 +366,7 @@
 
     <datasets/Eurostat> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/Eurostat#this> ;
-        void:inDataset <graphs/datasets/Eurostat#this> .
+        foaf:primaryTopic <datasets/Eurostat#this> .
 
     <datasets/Eurostat#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/Eurostat> ;
@@ -367,8 +386,7 @@
 
     <datasets/UKStatistics> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/UKStatistics#this> ;    
-        void:inDataset <graphs/datasets/UKStatistics#this> .
+        foaf:primaryTopic <datasets/UKStatistics#this> .
 
     <datasets/UKStatistics#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/UKStatistics> ;
@@ -387,8 +405,7 @@
 
     <datasets/Nature> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/Nature#this> ;
-        void:inDataset <graphs/datasets/Nature#this> .
+        foaf:primaryTopic <datasets/Nature#this> .
 
     <datasets/Nature#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/Nature> ;
@@ -408,8 +425,7 @@
 
     <datasets/BBC> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/BBC#this> ;
-        void:inDataset <graphs/datasets/BBC#this> .
+        foaf:primaryTopic <datasets/BBC#this> .
 
     <datasets/BBC#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/BBC> ;
@@ -424,8 +440,7 @@
 
     <datasets/EEA> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/EEA#this> ;
-        void:inDataset <graphs/datasets/EEA#this> .
+        foaf:primaryTopic <datasets/EEA#this> .
 
     <datasets/EEA#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/EEA> ;
@@ -442,8 +457,7 @@
 
     <datasets/SWDogFood> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/SWDogFood#this> ;
-        void:inDataset <graphs/datasets/SWDogFood#this> .
+        foaf:primaryTopic <datasets/SWDogFood#this> .
 
     <datasets/SWDogFood#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/SWDogFood> ;
@@ -464,8 +478,7 @@
 
     <datasets/LinkedMDB> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/LinkedMDB#this> ;
-        void:inDataset <graphs/datasets/LinkedMDB#this> .
+        foaf:primaryTopic <datasets/LinkedMDB#this> .
 
     <datasets/LinkedMDB#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/LinkedMDB> ;
@@ -483,8 +496,7 @@
 
     <datasets/Health> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/Health#this> ;    
-        void:inDataset <graphs/datasets/Health#this> .
+        foaf:primaryTopic <datasets/Health#this> .
 
     <datasets/Health#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/Health> ;
@@ -501,8 +513,7 @@
 
     <datasets/Commerce> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/Commerce#this> ;    
-        void:inDataset <graphs/datasets/Commerce#this> .
+        foaf:primaryTopic <datasets/Commerce#this> .
 
     <datasets/Commerce#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/Commerce> ;
@@ -520,8 +531,7 @@
 
     <datasets/WorldBank> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/WorldBank#this> ;    
-        void:inDataset <dataset#this> .
+        foaf:primaryTopic <datasets/WorldBank#this> .
 
     <datasets/WorldBank#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/WorldBank> ;
@@ -540,8 +550,7 @@
 
     <datasets/OpenDataCommunities> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/OpenDataCommunities#this> ;    
-        void:inDataset <dataset#this> .
+        foaf:primaryTopic <datasets/OpenDataCommunities#this> .
 
     <datasets/OpenDataCommunities#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/OpenDataCommunities> ;
@@ -558,8 +567,7 @@
 
     <datasets/Reegle> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/Reegle#this> ;    
-        void:inDataset <graphs/datasets/Reegle#this> .
+        foaf:primaryTopic <datasets/Reegle#this> .
 
     <datasets/Reegle#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/Reegle> ;
@@ -578,8 +586,7 @@
 
     <datasets/LinkedLifeData> a foaf:Document, sioc:Item ;
         sioc:has_container <datasets> ;
-        foaf:primaryTopic <datasets/LinkedLifeData#this> ;    
-        void:inDataset <graphs/datasets/LinkedLifeData#this> .
+        foaf:primaryTopic <datasets/LinkedLifeData#this> .
 
     <datasets/LinkedLifeData#this> a void:Dataset ;
         foaf:isPrimaryTopicOf <datasets/LinkedLifeData> ;
