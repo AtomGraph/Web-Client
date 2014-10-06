@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2012 Martynas Jusevičius <martynas@graphity.org>
+Copyright 2012 Martynas Jusevičius <martynas@graphity.org>
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   http://www.apache.org/licenses/LICENSE-2.0
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java           "http://xml.apache.org/xalan/java/">
@@ -78,6 +77,8 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
+
+    <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ReadMode')) else (if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
@@ -176,12 +177,23 @@ exclude-result-prefixes="#all">
 	    </div>
 	</div>
     </xsl:template>
-    
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:HeaderMode">
-	<xsl:apply-templates select="key('resources', $uri)" mode="#current"/>
-    </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:ReadMode"/>
+    <xsl:template match="rdf:RDF[$uri]" mode="gc:ReadMode" priority="1">
+        <xsl:variable name="this" select="key('resources', $uri)" as="element()?"/>
+        
+        <xsl:apply-templates select="$this" mode="#current"/>
+        <xsl:apply-templates select="*[not(. is $this)]" mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
+    <!--
+    <xsl:template match="rdf:RDF[$uri]" mode="gc:HeaderMode">
+	XXX<xsl:apply-templates select="key('resources', $uri)" mode="#current"/>/XXX
+    </xsl:template>
+    -->
+
+    <!-- <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:ReadMode"/> -->
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:choose>
@@ -209,14 +221,11 @@ exclude-result-prefixes="#all">
 	<p class="form-inline">
 	    <label for="endpoint-select">SPARQL endpoint</label>
 	    <xsl:text> </xsl:text>
-            <!--
 	    <select id="endpoint-select" name="endpoint-uri" class="span6">
-		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', $ont-model)[void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
+		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', document(resolve-uri('datasets?limit=100', $base-uri)))[void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
 		    <xsl:sort select="gc:label(.)" order="ascending"/>
 		</xsl:apply-templates>
 	    </select>
-            -->
-            <input name="endpoint-uri" class="span6" value="XXX"/>
 	</p>
 	
 	<xsl:apply-imports/>
