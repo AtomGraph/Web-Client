@@ -158,48 +158,103 @@
 
 # templates
 
-<graphs/templates/resource>
+<graphs/templates/container-container>
 {
 
-    <templates/resource> a foaf:Document, sioc:Item ;
+    <templates/container-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gp:Resource .
+        foaf:primaryTopic gpt:ContainerContainer .
 
 }
 
-<graphs/templates/ontology-doc>
+<graphs/templates/ontology-container>
 {
 
-    <templates/ontology-doc> a foaf:Document, sioc:Item ;
+    <templates/ontology-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:OntologyTemplate .
+        foaf:primaryTopic gpt:OntologyContainer .
 
 }
 
-<graphs/templates/resources-labelled>
+<graphs/templates/ontology-document>
 {
 
-    <templates/resources-labelled> a foaf:Document, sioc:Item ;
+    <templates/ontology-document> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:LabelResourcesTemplate .
+        foaf:primaryTopic gpt:OntologyDocument .
 
 }
 
-<graphs/templates/properties-labelled>
+<graphs/templates/template-container>
 {
 
-    <templates/properties-labelled> a foaf:Document, sioc:Item ;
+    <templates/template-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:LabelPropertiesTemplate .
+        foaf:primaryTopic gpt:TemplateContainer .
 
 }
 
-<graphs/templates/space>
+<graphs/templates/template-document>
 {
 
-    <templates/space> a foaf:Document, sioc:Item ;
+    <templates/template-document> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:SpaceTemplate .
+        foaf:primaryTopic gpt:TemplateDocument .
+
+}
+
+<graphs/templates/query-container>
+{
+
+    <templates/query-container> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic gpt:QueryContainer .
+
+}
+
+<graphs/templates/query-document>
+{
+
+    <templates/query-document> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic gpt:QueryDocument .
+
+}
+
+<graphs/templates/dataset-container>
+{
+
+    <templates/dataset-container> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic gpt:DatasetContainer .
+
+}
+
+<graphs/templates/dataset-document>
+{
+
+    <templates/dataset-document> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic gpt:DatasetDocument .
+
+}
+
+
+<graphs/templates/label-resources-container>
+{
+
+    <templates/label-resources-container> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic gpt:LabelResourcesContainer .
+
+}
+
+<graphs/templates/label-properties-container>
+{
+
+    <templates/label-properties-container> a foaf:Document, sioc:Item ;
+        sioc:has_container <templates> ;
+        foaf:primaryTopic gpt:LabelPropertiesContainer .
 
 }
 

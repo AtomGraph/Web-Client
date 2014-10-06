@@ -45,6 +45,13 @@
     rdfs:label "Ontology container" ;
     rdfs:isDefinedBy <#> .
 
+<#OntologyDocument> a owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document, gp:Resource ;
+    gp:uriTemplate "/ontology" ;
+    spin:query <#DescribeFromGraphWithChildren> ;
+    rdfs:label "Ontology document" ;
+    rdfs:isDefinedBy <#> .
+
 # templates
 
 <#TemplateContainer> a owl:Class, gp:Template ;
@@ -85,15 +92,6 @@
     rdfs:label "Query document" ;
     rdfs:isDefinedBy <#> .
 
-# ontology
-
-<#OntologyDocument> a owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, gp:Resource ;
-    gp:uriTemplate "/ontology" ;
-    spin:query <#DescribeFromGraphWithChildren> ;
-    rdfs:label "Ontology document" ;
-    rdfs:isDefinedBy <#> .
-
 # datasets
 
 <#DatasetContainer> a owl:Class, gp:Template ;
@@ -106,7 +104,7 @@
     rdfs:label "Dataset container" ;
     rdfs:isDefinedBy <#> .
 
-<#TemplateDocument> a owl:Class, gp:Template ;
+<#DatasetDocument> a owl:Class, gp:Template ;
     rdfs:subClassOf gp:Resource, foaf:Document ;
     gp:uriTemplate "/datasets/{uuid}" ;
     spin:query <#DescribeFromGraphWithTopic> ;
