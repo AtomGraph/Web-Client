@@ -326,6 +326,7 @@
             <http://dbpedia.org/resource/Physics>,
             <http://dbpedia.org/resource/Ludwig_van_Beethoven> ;
         void:uriSpace "http://dbpedia.org/resource/" ;
+        void:uriRegexPattern "^http://dbpedia\\.org/resource/" ;
         void:triples "550000000"^^xsd:integer .
 
 }

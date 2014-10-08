@@ -117,31 +117,35 @@ exclude-result-prefixes="#all">
                         <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8"
                               onsubmit="if ($(this).find('input[name=uri]').val().indexOf('http://') == -1) {{ $(this).attr('action', 'resources/labelled'); $(this).find('input[name=uri]').attr('name', 'label'); return true; }}">
                             <div class="input-append">
-                                <xsl:choose>
-                                    <xsl:when test="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
-                                        <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
-                                        <span class="add-on">
-                                            <xsl:for-each select="key('resources-by-type', '&void;Dataset', $ont-model)[void:uriSpace[starts-with($uri, .)]]">
-                                                <xsl:choose>
-                                                    <xsl:when test="foaf:homepage/@rdf:resource">
-                                                        <xsl:apply-templates select="foaf:homepage/@rdf:resource" mode="gc:InlineMode"/>
-                                                    </xsl:when>
-                                                    <xsl:otherwise>
-                                                        <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
-                                                    </xsl:otherwise>
-                                                </xsl:choose>
-                                            </xsl:for-each>
-                                        </span>
-                                    </xsl:when>
-                                    <xsl:when test="key('resources', $absolute-path)/void:inDataset/@rdf:resource">
-                                        <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
-                                        <span class="add-on">
-                                            <xsl:for-each select="key('resources', key('resources', $absolute-path)/void:inDataset/@rdf:resource, $ont-model)">
-                                                <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
-                                            </xsl:for-each>
-                                        </span>
-                                    </xsl:when>
-                                </xsl:choose>
+                                <xsl:if test="$uri">
+                                    <xsl:variable name="uri-dataset-query"><![CDATA[
+    PREFIX  void: <http://rdfs.org/ns/void#>
+
+    DESCRIBE ?dataset
+    WHERE
+      { { SELECT  ?dataset
+          WHERE
+            { GRAPH ?g
+                {   { ?dataset void:uriSpace ?uriSpace }
+                  UNION
+                    { ?dataset void:uriRegexPattern ?uriRegexPattern }
+                  FILTER ( strstarts("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriSpace) || regex("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriRegexPattern) )
+                }
+            }
+        }
+      }
+    ]]>
+                                    </xsl:variable>
+                                    <xsl:variable name="query-uri" select="concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri($uri-dataset-query))" as="xs:string"/>
+                                    <xsl:if test="doc-available($query-uri)">
+                                        <xsl:if test="key('resources-by-type', '&void;Dataset', document($query-uri))">
+                                            <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
+                                            <span class="add-on">
+                                                <xsl:apply-templates select="key('resources-by-type', '&void;Dataset', document($query-uri))[1]/@rdf:about" mode="gc:InlineMode"/>
+                                            </span>
+                                        </xsl:if>
+                                    </xsl:if>
+                                </xsl:if>
 
                                 <input type="text" name="uri" class="input-xxlarge">
                                     <xsl:if test="not(starts-with($uri, $base-uri))">
@@ -183,14 +187,6 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
     
-    <!--
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:HeaderMode">
-	XXX<xsl:apply-templates select="key('resources', $uri)" mode="#current"/>/XXX
-    </xsl:template>
-    -->
-
-    <!-- <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:ReadMode"/> -->
-
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:choose>
 	    <xsl:when test="$uri">
