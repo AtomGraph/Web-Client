@@ -52,13 +52,12 @@ public class Container extends ResourceBase
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode,
             @QueryParam("label") String searchString)
     {
 	super(uriInfo, endpoint, ontModel,
                 request, servletContext, httpHeaders, resourceContext,
-		limit, offset, orderBy, desc, graphURI, mode);
+		limit, offset, orderBy, desc, mode);
 	this.searchString = searchString;	
     }
 

@@ -77,7 +77,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
-    private final URI graphURI;
     private String orderBy;
     private Boolean desc;
     private Long limit, offset;
@@ -99,19 +98,17 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @QueryParam("limit") Long limit,
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("graph") URI graphURI)
+	    @QueryParam("desc") Boolean desc)
     {
 	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
                 request, servletContext, uriInfo, httpHeaders, resourceContext,
-		limit, offset, orderBy, desc, graphURI);
+		limit, offset, orderBy, desc);
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
     }
 
@@ -137,13 +134,12 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
     protected ResourceBase(OntResource resource, SPARQLEndpoint endpoint,
             Request request, ServletContext servletContext,
             UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext,
-	    Long limit, Long offset, String orderBy, Boolean desc, URI graphURI)
+	    Long limit, Long offset, String orderBy, Boolean desc)
     {
 	super(resource.getURI(), endpoint);
 
@@ -156,8 +152,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
-	if (graphURI != null && graphURI.isAbsolute()) this.graphURI = graphURI;
-	else this.graphURI = null;
         this.offset = offset;
         this.limit = limit;
         this.orderBy = orderBy;
@@ -318,7 +312,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      */
     public Response post(Model model, SPARQLEndpoint endpoint)
     {
-	return post(model, getGraphURI(), endpoint);
+	return post(model, null, endpoint);
     }
     
     /**
@@ -412,7 +406,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      */
     public Response put(Model model, SPARQLEndpoint endpoint)
     {
-	return put(model, getGraphURI(), endpoint);
+	return put(model, null, endpoint);
     }
     
     /**
@@ -902,11 +896,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public Boolean getDesc()
     {
 	return desc;
-    }
-
-    public URI getGraphURI()
-    {
-	return graphURI;
     }
 
     /**

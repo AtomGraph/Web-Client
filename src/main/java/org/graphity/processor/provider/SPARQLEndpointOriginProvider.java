@@ -36,13 +36,13 @@ public class SPARQLEndpointOriginProvider extends org.graphity.server.provider.S
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointOriginProvider.class);
 
      /**
-     * Returns Graph Store for supplied webapp context configuration.
+     * Returns SPARQL endpoint for supplied webapp context configuration.
      * Sets <code>srv:queryAuthUser</code>/<code>srv:queryAuthPwd</code> 
      * context parameter values from web.xml as HTTP Basic authentication credentials.
      * 
      * @param servletContext webapp context
      * @param property config property indicating the graph store URI
-     * @return graph store resource
+     * @return endpoint resource
      */
     @Override
     public SPARQLEndpointOrigin getSPARQLEndpointOrigin(ServletContext servletContext, String property)

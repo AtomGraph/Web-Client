@@ -21,6 +21,7 @@
 <#> a owl:Ontology, gp:Sitemap ;
     owl:imports gc:, sp:, spin:, spl:, lda:, foaf:, sioc: ;
     owl:versionInfo "1.0.14" ;
+    rdfs:label "Graphity Processor sitemap" ;
     rdfs:comment "Library of reusable Graphity Processor templates" .
 
 # RESOURCE TEMPLATES

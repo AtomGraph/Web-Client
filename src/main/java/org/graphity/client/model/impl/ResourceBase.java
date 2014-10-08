@@ -67,7 +67,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
      * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
      * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param graphURI target <code>GRAPH</code> name (<samp>graph</samp> query string param)
      * @param mode <samp>mode</samp> query string param
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
@@ -76,17 +75,17 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	    @QueryParam("offset") Long offset,
 	    @QueryParam("order-by") String orderBy,
 	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("graph") URI graphURI,
 	    @QueryParam("mode") URI mode)
     {
 	super(uriInfo, endpoint, ontModel,
                 request, servletContext, httpHeaders, resourceContext,
-		limit, offset, orderBy, desc, graphURI);
+		limit, offset, orderBy, desc);
 	this.mode = mode;
     }
 
     /**
      * Returns SPARQL endpoint resource.
+     * If (X)HTML is requested, Linked Data resource is returned. Otherwise, SPARQL endpoint resource is returned.
      * 
      * @return endpoint resource
      */
@@ -94,17 +93,13 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public Object getSPARQLResource()
     {
-        // refactor with selectVariant()?
-	MediaType mostAcceptable = getHttpHeaders().getAcceptableMediaTypes().get(0);
+        List<Variant> variants = getVariants();
+        variants.addAll(SPARQLEndpoint.RESULT_SET_VARIANTS);
+        Variant variant = getRequest().selectVariant(variants);
 
-	// check formats supported by Jena instead
-        // getUserQuery() != null && 
-	if (mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_RDF_XML_TYPE) ||
-	    mostAcceptable.isCompatible(org.graphity.server.MediaType.TEXT_TURTLE_TYPE) ||
-	    mostAcceptable.isCompatible(org.graphity.server.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE))
-	{
+        if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&
+                !variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
             return super.getSPARQLResource();
-        }
         
         return this;
     }

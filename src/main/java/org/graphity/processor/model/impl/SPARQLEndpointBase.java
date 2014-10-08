@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
  */
-//@Path("/meta/sparql")
 public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEndpointBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);

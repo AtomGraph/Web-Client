@@ -174,24 +174,22 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
+                        <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                        
                         <ul class="nav">
                             <!-- make menu links for all resources in the ontology, except base URI -->
-                            <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))" mode="gc:NavBarMode">
-                                <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+                            <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[not(@rdf:about = resolve-uri('sparql', $base-uri))][not(@rdf:about = resolve-uri('ontology', $base-uri))]" mode="gc:NavBarMode">
+                                <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
+                                <xsl:with-param name="space" select="$space"/>
                             </xsl:apply-templates>
                         </ul>
 
-                        <xsl:if test="key('resources', $base-uri, document($base-uri))/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, document($base-uri))/void:inDataset/@rdf:resource, document($base-uri))/void:sparqlEndpoint/@rdf:resource">
+                        <xsl:if test="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]">
                             <ul class="nav pull-right">
-                                <xsl:for-each select="key('resources', $base-uri, document($base-uri))/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, document($base-uri))/void:inDataset/@rdf:resource, document($base-uri))/void:sparqlEndpoint/@rdf:resource">
-                                    <!-- <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/> -->
-                                    <li>
-                                        <xsl:if test="gc:document-uri(.) = $absolute-path">
-                                            <xsl:attribute name="class">active</xsl:attribute>
-                                        </xsl:if>
-                                        <xsl:apply-templates select="." mode="gc:InlineMode"/>
-                                    </li>
-                                </xsl:for-each>
+                                <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]" mode="gc:NavBarMode">
+                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
+                                    <xsl:with-param name="space" select="$space"/>
+                                </xsl:apply-templates>
                             </ul>
                         </xsl:if>
                     </div>
@@ -200,9 +198,10 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about]" mode="gc:NavBarMode"> <!-- [@rdf:about[not(. = $base-uri)]] -->
+    <xsl:template match="*[@rdf:about]" mode="gc:NavBarMode">
+        <xsl:param name="space" as="xs:anyURI*"/>
         <li>
-            <xsl:if test="@rdf:about = $absolute-path">
+            <xsl:if test="@rdf:about = $space">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="@rdf:about" mode="gc:InlineMode"/>
@@ -1028,6 +1027,17 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
         </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
+        <xsl:param name="selected" as="xs:string*"/>
+
+        <option value="{@rdf:about | @rdf:nodeID}">
+            <xsl:if test="(@rdf:about, @rdf:nodeID) = $selected">
+                <xsl:attribute name="selected">selected</xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="." mode="gc:LabelMode"/>
+        </option>
     </xsl:template>
     
 </xsl:stylesheet>

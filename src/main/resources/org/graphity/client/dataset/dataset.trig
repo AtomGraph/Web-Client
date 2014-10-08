@@ -47,6 +47,16 @@
 
 }
 
+<graphs/ontology>
+{
+
+    <ontology> a foaf:Document ;
+        sioc:has_space <> ;
+        dct:title "Sitemap" ;
+        foaf:primaryTopic gpt: .
+
+}
+
 # containers
 
 <graphs/ontologies>

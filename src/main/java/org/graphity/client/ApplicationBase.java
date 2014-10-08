@@ -83,8 +83,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     public ApplicationBase()
     {
 	classes.add(GlobalResourceBase.class); // handles all
-        //classes.add(ResourceBase.class);
-        //classes.add(GraphStoreBase.class); // handles /service requests
 	classes.add(Container.class); // handles /{path}/labelled
 
 	//singletons.addAll(super.getSingletons());
@@ -94,6 +92,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new UpdateRequestReader());
         
         singletons.add(new DataManagerProvider());
+        singletons.add(new org.graphity.processor.provider.DataManagerProvider());
         singletons.add(new org.graphity.server.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());

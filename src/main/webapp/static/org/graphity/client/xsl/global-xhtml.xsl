@@ -159,17 +159,13 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="key('resources', $base-uri, document($base-uri))/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, document($base-uri))/void:inDataset/@rdf:resource, document($base-uri))/void:sparqlEndpoint/@rdf:resource">
+                        <xsl:if test="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]">
+                            <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                             <ul class="nav pull-right">
-                                <xsl:for-each select="key('resources', $base-uri, document($base-uri))/rdfs:isDefinedBy/@rdf:resource | key('resources', key('resources', $base-uri, document($base-uri))/void:inDataset/@rdf:resource, document($base-uri))/void:sparqlEndpoint/@rdf:resource">
-                                    <!-- <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/> -->
-                                    <li>
-                                        <xsl:if test="gc:document-uri(.) = $absolute-path">
-                                            <xsl:attribute name="class">active</xsl:attribute>
-                                        </xsl:if>
-                                        <xsl:apply-templates select="." mode="gc:InlineMode"/>
-                                    </li>
-                                </xsl:for-each>
+                                <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]" mode="gc:NavBarMode">
+                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
+                                    <xsl:with-param name="space" select="$space"/>
+                                </xsl:apply-templates>
                             </ul>
                         </xsl:if>
                     </div>
@@ -222,8 +218,9 @@ exclude-result-prefixes="#all">
 	    <label for="endpoint-select">SPARQL endpoint</label>
 	    <xsl:text> </xsl:text>
 	    <select id="endpoint-select" name="endpoint-uri" class="span6">
-		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', document(resolve-uri('datasets?limit=100', $base-uri)))[void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
-		    <xsl:sort select="gc:label(.)" order="ascending"/>
+                <xsl:apply-templates select="key('resources', resolve-uri('sparql', $base-uri), document($base-uri))" mode="gc:OptionMode"/>
+		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', document(resolve-uri('datasets?limit=100', $base-uri)))[void:sparqlEndpoint/@rdf:resource]" mode="gc:OptionMode">
+                    <xsl:sort select="gc:label(.)" order="ascending"/>
 		</xsl:apply-templates>
 	    </select>
 	</p>
@@ -231,7 +228,7 @@ exclude-result-prefixes="#all">
 	<xsl:apply-imports/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about | @rdf:nodeID][void:sparqlEndpoint/@rdf:resource]" mode="gc:QueryFormMode">
+    <xsl:template match="*[@rdf:about | @rdf:nodeID][void:sparqlEndpoint/@rdf:resource]" mode="gc:OptionMode">
 	<option value="{void:sparqlEndpoint/@rdf:resource}">
 	    <xsl:if test="$endpoint-uri = void:sparqlEndpoint/@rdf:resource">
 		<xsl:attribute name="selected">selected</xsl:attribute>
@@ -241,16 +238,16 @@ exclude-result-prefixes="#all">
 	    [<xsl:value-of select="void:sparqlEndpoint/@rdf:resource"/>]
 	</option>	
     </xsl:template>
-
-    <xsl:template match="*[@rdf:about | @rdf:nodeID][void:sparqlEndpoint/@rdf:resource = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode" priority="1">
-	<option value="{void:sparqlEndpoint/@rdf:resource}">
-	    <xsl:if test="not($endpoint-uri) or $endpoint-uri = void:sparqlEndpoint/@rdf:resource">
+    
+    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:OptionMode" priority="1">
+	<option value="{@rdf:about}">
+	    <xsl:if test="not($endpoint-uri) or $endpoint-uri = @rdf:about">
 		<xsl:attribute name="selected">selected</xsl:attribute>
 	    </xsl:if>
 
 	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	    [<xsl:value-of select="void:sparqlEndpoint/@rdf:resource"/>]
+	    [<xsl:value-of select="@rdf:about"/>]
 	</option>
     </xsl:template>
-
+    
 </xsl:stylesheet>
