@@ -14,7 +14,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 @prefix gc:     <http://graphity.org/gc#> .
 @prefix gp:	<http://graphity.org/gp#> .
-@prefix gpt:	<http://processor.graphity.org/templates#> .
+@prefix gpt:	<http://graphity.org/gcs#> .
 
 <graphs/>
 {
