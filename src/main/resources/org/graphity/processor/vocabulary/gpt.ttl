@@ -1,8 +1,8 @@
 @base           <http://processor.graphity.org/templates> .
 
 # @prefix :	<#> .
-@prefix gc:     <http://client.graphity.org/ontology#> .
-@prefix gp:	<http://processor.graphity.org/ontology#> .
+@prefix gc:     <http://graphity.org/gc#> .
+@prefix gp:	<http://graphity.org/gp#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
@@ -20,7 +20,7 @@
 
 <#> a owl:Ontology, gp:Sitemap ;
     owl:imports gc:, sp:, spin:, spl:, lda:, foaf:, sioc: ;
-    owl:versionInfo "1.0.14" ;
+    owl:versionInfo "1.1.0" ;
     rdfs:label "Graphity Processor sitemap" ;
     rdfs:comment "Library of reusable Graphity Processor templates" .
 

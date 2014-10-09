@@ -35,7 +35,7 @@ public class GP
     private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
     
     /** <p>The namespace of the vocabulary as a string</p> */
-    public static final String NS = "http://processor.graphity.org/ontology#";
+    public static final String NS = "http://graphity.org/gp#";
     
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */

@@ -12,7 +12,7 @@
         <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
     </context-param>
     <context-param>
-        <param-name>http://server.graphity.org/ontology#graphStore</param-name>
+        <param-name>http://graphity.org/gs#graphStore</param-name>
         <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
     </context-param>
     -->
@@ -27,19 +27,19 @@
     </context-param>
     -->
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#datasetLocation</param-name>
+        <param-name>http://graphity.org/gp#datasetLocation</param-name>
         <param-value>org/graphity/client/dataset/dataset.trig</param-value>
     </context-param>
     <context-param>
-        <param-name>http://processor.graphity.org/ontology#ontology</param-name>
+        <param-name>http://graphity.org/gp#ontology</param-name>
         <param-value>http://processor.graphity.org/templates#</param-value>
     </context-param>
     <context-param>
-        <param-name>http://client.graphity.org/ontology#stylesheet</param-name>
+        <param-name>http://graphity.org/gc#stylesheet</param-name>
         <param-value>static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
     </context-param>
     <context-param>
-        <param-name>http://server.graphity.org/ontology#resultLimit</param-name>
+        <param-name>http://graphity.org/gs#resultLimit</param-name>
         <param-value>100</param-value>
     </context-param>
     <filter>

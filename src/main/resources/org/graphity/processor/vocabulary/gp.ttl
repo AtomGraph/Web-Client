@@ -1,4 +1,4 @@
-@base           <http://processor.graphity.org/ontology> .
+@base           <http://graphity.org/gp> .
 
 # @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -18,13 +18,13 @@
 
 <#> a owl:Ontology ;
     owl:imports sp:, spin:, dqc: ;
-    owl:versionInfo "1.0.14" ;
+    owl:versionInfo "1.1.0" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
     dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
     dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
     dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime, "2014-08-24T02:04:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://processor.graphity.org/ontology#" ;
+    vann:preferredNamespaceUri "http://graphity.org/gp#" ;
     vann:preferredNamespacePrefix "gp";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
     dct:creator <http://semantic-web.dk/#martynas> .

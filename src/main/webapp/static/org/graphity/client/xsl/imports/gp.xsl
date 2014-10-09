@@ -15,9 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc     "http://client.graphity.org/ontology#">
+    <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY gp     "http://processor.graphity.org/ontology#">
+    <!ENTITY gp     "http://graphity.org/gp#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"

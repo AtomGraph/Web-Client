@@ -1,10 +1,12 @@
+@base           <http://graphity.org/gc> .
+
 # @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
-@prefix gp:     <http://processor.graphity.org/ontology#> .
+@prefix gp:     <http://graphity.org/gp#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 # ONTOLOGY

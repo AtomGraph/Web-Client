@@ -12,8 +12,8 @@
 @prefix void:	<http://rdfs.org/ns/void#> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
-@prefix gc:     <http://client.graphity.org/ontology#> .
-@prefix gp:	<http://processor.graphity.org/ontology#> .
+@prefix gc:     <http://graphity.org/gc#> .
+@prefix gp:	<http://graphity.org/gp#> .
 @prefix gpt:	<http://processor.graphity.org/templates#> .
 
 <graphs/>

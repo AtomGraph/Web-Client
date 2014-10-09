@@ -18,7 +18,7 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-xmlns:gc="http://client.graphity.org/ontology#"
+xmlns:gc="http://graphity.org/gc#"
 exclude-result-prefixes="xsl rdf gc">
 
     <!-- groups and sorts triples in RDF/XML to ease further XSLT processing -->
