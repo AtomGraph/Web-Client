@@ -144,6 +144,13 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     {
         List<Variant> list = super.getVariants();
         list.add(0, new Variant(MediaType.APPLICATION_XHTML_XML_TYPE, null, null));
+
+        if (getMode() != null && getMode().equals(URI.create(GC.MapMode.getURI())))
+	{
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Google Maps workaround", getMode());
+            list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null));
+	}
+
         return list;
     }
     

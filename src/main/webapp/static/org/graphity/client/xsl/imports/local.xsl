@@ -491,13 +491,15 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
             <label class="control-label" for="{$id}">
-                <xsl:apply-templates select="." mode="gc:InlineMode"/>
+                <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
             </label>
+            <!--
             <xsl:if test="not($required)">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
                 </div>
             </xsl:if>
+            -->
 
             <div class="controls">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">

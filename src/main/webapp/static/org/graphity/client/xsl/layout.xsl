@@ -107,7 +107,11 @@ exclude-result-prefixes="#all">
     <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
     <rdf:Description rdf:about="">
-	<dct:creator rdf:resource="http://semantic-web.dk/#martynas"/>
+	<foaf:maker rdf:resource="http://graphityhq.com/#company"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://graphityhq.com/#company">
+        <dct:title>Graphity</dct:title>
     </rdf:Description>
 
     <rdf:Description rdf:about="&xhv;prev">
@@ -209,9 +213,12 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="/" mode="gc:FooterMode">
-        <div class="footer">
+        <div class="footer text-center">
             <p>
-                <xsl:value-of select="format-date(current-date(), '[Y]', $lang, (), ())"/>
+                <hr/>
+                <xsl:value-of select="format-date(current-date(), '[Y]', $lang, (), ())"/>.
+                Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="gc:InlineMode"/>.
+                <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>
         </div>
     </xsl:template>
@@ -511,6 +518,7 @@ exclude-result-prefixes="#all">
                 </a>                        
             </div>
         </xsl:if>
+        <!--
         <xsl:if test="not($mode = '&gc;CreateMode') and rdf:type/@rdf:resource = '&sioc;Container'">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
@@ -518,6 +526,7 @@ exclude-result-prefixes="#all">
                 </a>
             </div>
         </xsl:if>
+        -->
     </xsl:template>
     
     <!-- IMAGE MODE -->
@@ -1014,12 +1023,14 @@ exclude-result-prefixes="#all">
                 <xsl:sort select="gc:property-label(.)"/>
                 <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
             </xsl:apply-templates>
-
+            
+            <!--
             <xsl:if test="$add-statements">
                 <div class="control-group">
                     <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
                 </div>
             </xsl:if>
+            -->
 	</fieldset>
     </xsl:template>
 

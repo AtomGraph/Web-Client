@@ -12,4 +12,3 @@ textarea#query-string { font-family: monospace; }
 ul.typeahead { max-height: 20em; overflow: auto; }
 label.typeahead input { display: block; max-width: 160px; }
 label.typeahead { float: left; width: 160px; }
-.footer { padding-left: 20px; padding-right: 20px; }
