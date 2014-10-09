@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.graphity</groupId>
-    <version>1.0.13-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <name>Graphity Client</name>
     <description>Generic Linked Data client</description>
@@ -34,11 +34,11 @@
 	<netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
  
-<scm>
-    <url>https://github.com/Graphity/graphity-browser</url>
-    <connection>scm:git:git://github.com/Graphity/graphity-browser.git</connection>
-    <developerConnection>scm:git:git@github.com:pumba-lt/graphity-browser.git</developerConnection>
-</scm>
+    <scm>
+        <url>https://github.com/Graphity/graphity-browser</url>
+        <connection>scm:git:git://github.com/Graphity/graphity-browser.git</connection>
+        <developerConnection>scm:git:git@github.com:pumba-lt/graphity-browser.git</developerConnection>
+    </scm>
   
     <repositories>
 	<repository>
