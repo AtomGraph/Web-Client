@@ -140,7 +140,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     /**
      * Reads ontology model from a file.
      * 
-     * @param uri ontology location
+     * @param ontologyURI ontology location
      * @return ontology model
      * @throws javax.naming.ConfigurationException
      */
