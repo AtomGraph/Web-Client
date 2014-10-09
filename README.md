@@ -32,14 +32,14 @@ Getting started
 * [installing Graphity](../../wiki/Installation)
 * [extending Graphity](../../wiki/Extending-Graphity)
 * [configuring Graphity](../../wiki/Cofiguration)
-* [JavaDoc](http://graphity.github.io/graphity-browser/apidocs)
+* [JavaDoc](http://graphity.github.io/graphity-client/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
 
 Demonstration
 =============
 
-![Graphity screenshot](https://raw.github.com/Graphity/graphity-browser/master/screenshot.jpg)
+![Graphity screenshot](https://raw.github.com/Graphity/graphity-client/master/screenshot.jpg)
 
 An instance of Graphity Client runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
 See the DBPedia Linked Data description of Sir [Tim Berners-Lee](http://semanticreports.com/?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FTim_Berners-Lee).

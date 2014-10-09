@@ -15,17 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
-    <!ENTITY atom "http://www.w3.org/2005/Atom">
-    <!ENTITY atom-owl "http://bblfish.net/work/atom-owl/2006-06-06/#">
-    <!ENTITY media "http://search.yahoo.com/mrss/">
-    <!ENTITY dct "http://purl.org/dc/terms/">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
-    <!ENTITY dbpedia "http://dbpedia.org/resource/">
-    <!ENTITY dbpedia-owl "http://dbpedia.org/ontology/">
+    <!ENTITY rdf            "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs           "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY xsd            "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY atom           "http://www.w3.org/2005/Atom">
+    <!ENTITY atom-owl       "http://bblfish.net/work/atom-owl/2006-06-06/#">
+    <!ENTITY media          "http://search.yahoo.com/mrss/">
+    <!ENTITY dct            "http://purl.org/dc/terms/">
+    <!ENTITY foaf           "http://xmlns.com/foaf/0.1/">
+    <!ENTITY sioc           "http://rdfs.org/sioc/ns#">
+    <!ENTITY dbpedia        "http://dbpedia.org/resource/">
+    <!ENTITY dbpedia-owl    "http://dbpedia.org/ontology/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 

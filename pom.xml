@@ -35,9 +35,9 @@
     </properties>
  
     <scm>
-        <url>https://github.com/Graphity/graphity-browser</url>
-        <connection>scm:git:git://github.com/Graphity/graphity-browser.git</connection>
-        <developerConnection>scm:git:git@github.com:pumba-lt/graphity-browser.git</developerConnection>
+        <url>https://github.com/Graphity/graphity-client</url>
+        <connection>scm:git:git://github.com/Graphity/graphity-client.git</connection>
+        <developerConnection>scm:git:git@github.com:pumba-lt/graphity-client.git</developerConnection>
     </scm>
   
     <repositories>
