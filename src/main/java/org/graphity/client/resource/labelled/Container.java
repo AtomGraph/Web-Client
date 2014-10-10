@@ -19,10 +19,8 @@ package org.graphity.client.resource.labelled;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
-import java.net.URI;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -47,18 +45,11 @@ public class Container extends ResourceBase
     private final String searchString;
     
     public Container(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
-            @QueryParam("limit") Long limit,
-	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("mode") URI mode,
-            @QueryParam("label") String searchString)
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
 	super(uriInfo, endpoint, ontModel,
-                request, servletContext, httpHeaders, resourceContext,
-		limit, offset, orderBy, desc, mode);
-	this.searchString = searchString;	
+                request, servletContext, httpHeaders, resourceContext);
+	this.searchString = getUriInfo().getQueryParameters().getFirst("label");
     }
 
     @Override

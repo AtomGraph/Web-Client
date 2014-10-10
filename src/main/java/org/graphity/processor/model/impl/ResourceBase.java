@@ -36,7 +36,6 @@ import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import org.graphity.processor.model.ContainerResource;
@@ -94,21 +93,12 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param servletContext webapp context
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
-     * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
-            @QueryParam("limit") Long limit,
-	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc)
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
 	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-                request, servletContext, uriInfo, httpHeaders, resourceContext,
-		limit, offset, orderBy, desc);
+                request, servletContext, uriInfo, httpHeaders, resourceContext);
 	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
     }
 
@@ -130,16 +120,11 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * @param uriInfo URI information of the current request
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
-     * @param limit pagination <code>LIMIT</code (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
      * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
     protected ResourceBase(OntResource resource, SPARQLEndpoint endpoint,
             Request request, ServletContext servletContext,
-            UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext,
-	    Long limit, Long offset, String orderBy, Boolean desc)
+            UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext)
     {
 	super(resource.getURI(), endpoint);
 
@@ -152,10 +137,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
-        this.offset = offset;
-        this.limit = limit;
-        this.orderBy = orderBy;
-        this.desc = desc;
     }
 
     /**
@@ -174,29 +155,33 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         
         if (matchedOntClass.hasSuperClass(LDP.Container))
         {
-            if (offset == null)
+            if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
             {
                 Long defaultOffset = getLongValue(matchedOntClass, GP.offset);
-                if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is always 0 by default
+                if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
                 this.offset = defaultOffset;
             }
-            
-            if (limit == null)
+            else this.offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+                
+            if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
             {
                 Long defaultLimit = getLongValue(matchedOntClass, GP.limit);
                 if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + matchedOntClass.getURI() + "' must have gp:limit if it is used as container");
                 this.limit = defaultLimit;
             }
+            else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
+                
+            if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(matchedOntClass, GP.orderBy);
+            else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
             
-            if (orderBy == null) this.orderBy = getStringValue(matchedOntClass, GP.orderBy);
-            
-            if (desc == null)
+            if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
             {
                 Boolean defaultDesc = getBooleanValue(matchedOntClass, GP.desc);
-                if (defaultDesc == null) defaultDesc = false; // ORDERY BY is always ASC() by default
+                if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
                 this.desc = defaultDesc;
             }
-
+            else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
+                
             queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, qsm), getModel()),
                     this.offset, this.limit, this.orderBy, this.desc);
         }
@@ -867,7 +852,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
 
     /**
-     * Returns value of <samp>order-by</samp> query string parameter, which indicates the name of the variable after
+     * Returns value of <samp>orderBy</samp> query string parameter, which indicates the name of the variable after
      * which the container (and the page) is sorted.
      * This value is set as <code>ORDER BY</code> query modifier when this resource is a page (therefore
      * pagination is used).
@@ -945,10 +930,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public UriBuilder getPageUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam("offset", getOffset()).
-	    queryParam("limit", getLimit());
-	if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
+	    queryParam(GP.offset.getLocalName(), getOffset()).
+	    queryParam(GP.limit.getLocalName(), getLimit());
+	if (getOrderBy() != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), getOrderBy());
+	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
     
 	return uriBuilder;
     }
@@ -961,10 +946,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public UriBuilder getPreviousUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam("offset", getOffset() - getLimit()).
-	    queryParam("limit", getLimit());
-        if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
+	    queryParam(GP.offset.getLocalName(), getOffset() - getLimit()).
+	    queryParam(GP.limit.getLocalName(), getLimit());
+        if (getOrderBy() != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), getOrderBy());
+	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
 	
 	return uriBuilder;
     }
@@ -977,10 +962,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public UriBuilder getNextUriBuilder()
     {
 	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam("offset", getOffset() + getLimit()).
-	    queryParam("limit", getLimit());
-        if (getOrderBy() != null) uriBuilder.queryParam("order-by", getOrderBy());
-	if (getDesc()) uriBuilder.queryParam("desc", getDesc());
+	    queryParam(GP.offset.getLocalName(), getOffset() + getLimit()).
+	    queryParam(GP.limit.getLocalName(), getLimit());
+        if (getOrderBy() != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), getOrderBy());
+	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
 	
 	return uriBuilder;
     }

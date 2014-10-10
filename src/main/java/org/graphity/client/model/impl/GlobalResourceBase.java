@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -56,8 +55,8 @@ public class GlobalResourceBase extends ResourceBase
     private static final Logger log = LoggerFactory.getLogger(GlobalResourceBase.class);
 
     private final DataManager dataManager;
-    private final MediaType mediaType;
-    private final URI topicURI, endpointURI;
+    private MediaType mediaType;
+    private URI topicURI, endpointURI;
 
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -69,39 +68,39 @@ public class GlobalResourceBase extends ResourceBase
      * @param servletContext webapp context
      * @param httpHeaders HTTP headers of current request
      * @param resourceContext resource context
-     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param mode <samp>mode</samp> query string param
      * @param dataManager data manager for this resource
-     * @param topicURI remote URI to be loaded
-     * @param mediaType media type of the representation
-     * @param endpointURI remote SPARQL endpoint URI
      */
     public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
-	    @QueryParam("limit") Long limit,
-	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("mode") URI mode,
-            @Context DataManager dataManager,
-	    @QueryParam("uri") URI topicURI,
-	    @QueryParam("accept") MediaType mediaType,
-            @QueryParam("endpoint-uri") URI endpointURI)
+            @Context DataManager dataManager)
     {
 	super(uriInfo, endpoint, ontModel,
-                request, servletContext, httpHeaders, resourceContext,
-                limit, offset, orderBy, desc, mode);
+                request, servletContext, httpHeaders, resourceContext);
 	if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataManager = dataManager;
-	this.mediaType = mediaType;
-	this.topicURI = topicURI;
-        this.endpointURI = endpointURI;
-	if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
     }
 
+    /**
+     * Post-constructor initialization of class members.
+     * super.init() needs to be called first in subclasses (just like super() constructor).
+     */
+    @Override
+    public void init()
+    {
+        super.init();
+        
+	if (getUriInfo().getQueryParameters().containsKey("accept"))
+            mediaType = MediaType.valueOf(getUriInfo().getQueryParameters().getFirst("accept"));
+        else mediaType = null;
+        if (getUriInfo().getQueryParameters().containsKey("uri"))
+            topicURI = URI.create(getUriInfo().getQueryParameters().getFirst("uri"));
+        else topicURI = null;
+        if (getUriInfo().getQueryParameters().containsKey("endpoint-uri"))
+            endpointURI = URI.create(getUriInfo().getQueryParameters().getFirst("endpoint-uri"));
+        else endpointURI = null;
+	if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
+    }
+    
     public DataManager getDataManager()
     {
         return dataManager;

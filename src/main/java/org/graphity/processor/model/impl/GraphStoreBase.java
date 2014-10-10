@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-http-rdf-update/">SPARQL 1.1 Graph Store HTTP Protocol</a>
  */
-//@Path("/meta/service") // not standard
 public class GraphStoreBase extends org.graphity.server.model.impl.GraphStoreBase
 {
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);

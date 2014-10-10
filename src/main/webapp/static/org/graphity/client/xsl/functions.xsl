@@ -192,7 +192,7 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="query-string">
 	    <xsl:if test="not(empty($offset))">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
 	    <xsl:if test="not(empty($limit))">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($order-by))">order-by=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($order-by))">orderBy=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
 	    <xsl:if test="$desc">desc=true&amp;</xsl:if>
 	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	</xsl:variable>

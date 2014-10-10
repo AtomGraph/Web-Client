@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -51,7 +50,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
-    private final URI mode;
+    private URI mode;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -63,26 +62,28 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param servletContext webapp context
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
-     * @param limit pagination <code>LIMIT</code> (<samp>limit</samp> query string param)
-     * @param offset pagination <code>OFFSET</code> (<samp>offset</samp> query string param)
-     * @param orderBy pagination <code>ORDER BY</code> variable name (<samp>order-by</samp> query string param)
-     * @param desc pagination <code>DESC</code> value (<samp>desc</samp> query string param)
-     * @param mode <samp>mode</samp> query string param
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
-            @QueryParam("limit") Long limit,
-	    @QueryParam("offset") Long offset,
-	    @QueryParam("order-by") String orderBy,
-	    @QueryParam("desc") Boolean desc,
-	    @QueryParam("mode") URI mode)
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
 	super(uriInfo, endpoint, ontModel,
-                request, servletContext, httpHeaders, resourceContext,
-		limit, offset, orderBy, desc);
-	this.mode = mode;
+                request, servletContext, httpHeaders, resourceContext);
     }
 
+    /**
+     * Post-constructor initialization of class members.
+     * super.init() needs to be called first in subclasses (just like super() constructor).
+     */
+    @Override
+    public void init()
+    {
+        super.init();
+
+	if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
+            this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
+        else mode = null;
+    }
+    
     /**
      * Returns SPARQL endpoint resource.
      * If (X)HTML is requested, Linked Data resource is returned. Otherwise, SPARQL endpoint resource is returned.

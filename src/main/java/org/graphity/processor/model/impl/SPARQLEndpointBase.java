@@ -44,9 +44,6 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
-     * Uses <code>void:sparqlEndpoint</code> parameter value from web.xml as endpoint URI, if present.
-     * Otherwise, uses <code>@Path</code> annotation value for this class (usually <code>/sparql</code> to
-     * build local endpoint URI.
      * 
      * @param dataset ontology of this webapp
      * @param dataManager RDF data manager for this endpoint
@@ -77,7 +74,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
     }
 
     /**
-     * Loads RDF model by querying either local or remote SPARQL endpoint (depends on its URI).
+     * Loads RDF model by querying dataset..
      * 
      * @param query query object
      * @return loaded model
@@ -90,7 +87,7 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
     }
 
     /**
-     * Asks for boolean result by querying either local or remote SPARQL endpoint (depends on its URI).
+     * Asks for boolean result by querying dataset.
      * 
      * @param query query object
      * @return boolean result
@@ -102,6 +99,11 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
         return getDataManager().ask(getDataset(), query);
     }
 
+    /**
+     * Executes update on dataset.
+     * 
+     * @param updateRequest update request
+     */
     @Override
     public void update(UpdateRequest updateRequest)
     {

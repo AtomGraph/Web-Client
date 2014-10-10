@@ -122,7 +122,7 @@ exclude-result-prefixes="#all">
 	    <xsl:if test="$uri">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
 	    <xsl:if test="$offset">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
 	    <xsl:if test="$limit">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
-	    <xsl:if test="$order-by">order-by=<xsl:value-of select="$order-by"/>&amp;</xsl:if>
+	    <xsl:if test="$order-by">orderBy=<xsl:value-of select="$order-by"/>&amp;</xsl:if>
 	    <xsl:if test="$desc">desc&amp;</xsl:if>
 	    <xsl:if test="$mode">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	</xsl:variable>

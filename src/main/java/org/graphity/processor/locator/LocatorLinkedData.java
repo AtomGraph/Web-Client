@@ -200,7 +200,7 @@ public class LocatorLinkedData implements Locator
 	String contentType;
 	String x = conn.getContentType(); 
 
-	if ( x.contains(";") )
+	if (x != null && x.contains(";") )
 	{
 	    String[] xx = x.split("\\s*;\\s*") ;
 	    contentType = xx[0] ;
