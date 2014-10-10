@@ -46,13 +46,6 @@
     rdfs:label "Ontology container" ;
     rdfs:isDefinedBy <#> .
 
-#<#OntologyDocument> a owl:Class, gp:Template ;
-#    rdfs:subClassOf foaf:Document, gp:Resource ;
-#    gp:uriTemplate "/ontology" ;
-#    spin:query <#DescribeFromGraphWithChildren> ;
-#    rdfs:label "Ontology document" ;
-#    rdfs:isDefinedBy <#> .
-
 # templates
 
 <#TemplateContainer> a owl:Class, gp:Template ;

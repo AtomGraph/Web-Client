@@ -1,20 +1,17 @@
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
-@prefix owl:	<http://www.w3.org/2002/07/owl#> .
 @prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix dc:	<http://purl.org/dc/elements/1.1/> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix lda:	<http://purl.org/linked-data/api/vocab#> .
-@prefix sp:	<http://spinrdf.org/sp#> .
-@prefix spin:	<http://spinrdf.org/spin#> .
 @prefix void:	<http://rdfs.org/ns/void#> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 @prefix gc:     <http://graphity.org/gc#> .
 @prefix gp:	<http://graphity.org/gp#> .
-@prefix gpt:	<http://graphity.org/gcs#> .
+@prefix gcs:	<http://graphity.org/gcs#> .
 
 <graphs/>
 {
@@ -24,7 +21,7 @@
         dct:description "Generic Linked Data browser and end-user-oriented platform" ;
         foaf:logo <static/img/graphity-logo.svg> ;
         foaf:maker <http://graphityhq.com/#company> ;
-        rdfs:seeAlso gpt: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
+        rdfs:seeAlso gcs: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }
 
 # RESOURCES
@@ -53,7 +50,7 @@
     <ontology> a foaf:Document ;
         sioc:has_space <> ;
         dct:title "Sitemap" ;
-        foaf:primaryTopic gpt: .
+        foaf:primaryTopic gcs: .
 
 }
 
@@ -173,7 +170,7 @@
 
     <templates/container-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:ContainerContainer .
+        foaf:primaryTopic gcs:ContainerContainer .
 
 }
 
@@ -182,7 +179,7 @@
 
     <templates/ontology-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:OntologyContainer .
+        foaf:primaryTopic gcs:OntologyContainer .
 
 }
 
@@ -191,7 +188,7 @@
 
     <templates/ontology-document> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:OntologyDocument .
+        foaf:primaryTopic gcs:OntologyDocument .
 
 }
 
@@ -200,7 +197,7 @@
 
     <templates/template-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:TemplateContainer .
+        foaf:primaryTopic gcs:TemplateContainer .
 
 }
 
@@ -209,7 +206,7 @@
 
     <templates/template-document> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:TemplateDocument .
+        foaf:primaryTopic gcs:TemplateDocument .
 
 }
 
@@ -218,7 +215,7 @@
 
     <templates/query-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:QueryContainer .
+        foaf:primaryTopic gcs:QueryContainer .
 
 }
 
@@ -227,7 +224,7 @@
 
     <templates/query-document> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:QueryDocument .
+        foaf:primaryTopic gcs:QueryDocument .
 
 }
 
@@ -236,7 +233,7 @@
 
     <templates/dataset-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:DatasetContainer .
+        foaf:primaryTopic gcs:DatasetContainer .
 
 }
 
@@ -245,7 +242,7 @@
 
     <templates/dataset-document> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:DatasetDocument .
+        foaf:primaryTopic gcs:DatasetDocument .
 
 }
 
@@ -255,7 +252,7 @@
 
     <templates/label-resources-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:LabelResourcesContainer .
+        foaf:primaryTopic gcs:LabelResourcesContainer .
 
 }
 
@@ -264,7 +261,7 @@
 
     <templates/label-properties-container> a foaf:Document, sioc:Item ;
         sioc:has_container <templates> ;
-        foaf:primaryTopic gpt:LabelPropertiesContainer .
+        foaf:primaryTopic gcs:LabelPropertiesContainer .
 
 }
 
@@ -275,7 +272,7 @@
 
     <queries/describe-from-graph-with-children> a foaf:Document, sioc:Item ;
         sioc:has_container <queries> ;
-        foaf:primaryTopic gpt:DescribeFromGraphWithChildren .
+        foaf:primaryTopic gcs:DescribeFromGraphWithChildren .
 
 }
 
@@ -284,7 +281,7 @@
 
     <queries/describe-from-graph-with-topic> a foaf:Document, sioc:Item ;
         sioc:has_container <queries> ;
-        foaf:primaryTopic gpt:DescribeFromGraphWithTopic .
+        foaf:primaryTopic gcs:DescribeFromGraphWithTopic .
 
 }
 
@@ -293,7 +290,7 @@
 
     <queries/describe-graph-label-resources> a foaf:Document, sioc:Item ;
         sioc:has_container <queries> ;
-        foaf:primaryTopic gpt:DescribeGraphLabelResources .
+        foaf:primaryTopic gcs:DescribeGraphLabelResources .
 
 }
 
@@ -302,7 +299,7 @@
 
     <queries/describe-graph-label-properties> a foaf:Document, sioc:Item ;
         sioc:has_container <queries> ;
-        foaf:primaryTopic gpt:DescribeGraphLabelProperties .
+        foaf:primaryTopic gcs:DescribeGraphLabelProperties .
 
 }
 
