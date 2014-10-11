@@ -57,15 +57,7 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <!--
-    <xsl:template match="void:sparqlEndpoint/@rdf:resource[. = resolve-uri('sparql', $base-uri)]">
-	<a href="{resolve-uri('sparql', $base-uri)}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
-    -->
-    
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:ReadMode" priority="2">
+    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:ReadMode" priority="2">
 	<form action="" method="get" id="query-form">
 	    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 	</form>
@@ -75,7 +67,7 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
+    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
 	<fieldset>
 	    <textarea id="query-string" name="query" class="span12" rows="15">
 		<xsl:choose>
@@ -94,7 +86,7 @@ LIMIT 100</xsl:param>
 	</fieldset>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryResultMode">
+    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryResultMode">
 	<xsl:variable name="result-doc" select="document(concat($absolute-path, gc:query-string($endpoint-uri, $query, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
@@ -109,7 +101,7 @@ LIMIT 100</xsl:param>
 		</div>
 	    </div>
 
-	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:ReadMode"/>
+	    <xsl:apply-templates select="$result-doc/rdf:RDF/*" mode="gc:ListReadMode"/>
 	</xsl:if>
 	<!-- result of SELECT or ASK -->
 	<xsl:if test="$result-doc/sparql:sparql">
@@ -125,6 +117,12 @@ LIMIT 100</xsl:param>
 
 	    <xsl:apply-templates select="$result-doc/sparql:sparql" mode="gc:TableMode"/>
 	</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about][$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:ListReadMode" priority="2">
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+        <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
     </xsl:template>
 
 </xsl:stylesheet>
