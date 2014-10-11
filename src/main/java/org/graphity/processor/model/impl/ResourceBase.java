@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
+import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -151,8 +152,14 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	matchedOntClass = matchOntClass(getOntModel(), getRealURI(), getUriInfo().getBaseUri());
 	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
-        QuerySolutionMap qsm = getQuerySolutionMap(this);
-        
+
+        Query query = getQuery(matchedOntClass, SPIN.query, getQuerySolutionMap(this));
+        if (query == null)
+        {
+            if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", matchedOntClass.getURI());
+            throw new WebApplicationException(new ConfigurationException("Query not defined for template '" + matchedOntClass.getURI() +"'"));
+        }
+
         if (matchedOntClass.hasSuperClass(LDP.Container))
         {
             if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
@@ -181,8 +188,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                 this.desc = defaultDesc;
             }
             else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
-                
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, qsm), getModel()),
+            
+            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()),
                     this.offset, this.limit, this.orderBy, this.desc);
         }
         else
@@ -191,7 +198,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
             this.orderBy = null;
             this.desc = null;
             
-            queryBuilder = QueryBuilder.fromQuery(getQuery(matchedOntClass, SPIN.query, qsm), getModel());
+            queryBuilder = QueryBuilder.fromQuery(query, getModel());
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
