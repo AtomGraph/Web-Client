@@ -68,6 +68,14 @@
     rdfs:seeAlso sp:orderBy ;
     rdfs:isDefinedBy <#> .
 
+<#slug> a owl:DatatypeProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range xsd:string ;
+    rdfs:label "URI slug" ;
+    rdfs:comment "A string that will be used to build URI from template such as {slug}" ;
+    rdfs:seeAlso sp:orderBy ;
+    rdfs:isDefinedBy <#> .
+
 # CLASSES
 
 <#Template> a owl:Class ;

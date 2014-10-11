@@ -370,41 +370,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ReadMode"/>
-    
-    <xsl:template match="*[*][@rdf:about = $absolute-path][not(key('resources', foaf:primaryTopic/@rdf:resource))]" mode="gc:ReadMode" priority="1">
-        <xsl:param name="nested" as="xs:boolean?"/>
         
-        <!-- show root blank nodes or nested blank nodes -->
-        <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
-            <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
-        </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))]" mode="gc:ReadMode" priority="1">
-        <xsl:param name="nested" as="xs:boolean?"/>
-        
-        <!-- show root blank nodes or nested blank nodes -->
-        <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
-            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-            <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
-        </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ListReadMode" priority="2">
-        <div class="well">
-            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-            
-            <xsl:for-each select="key('resources', foaf:primaryTopic/@rdf:resource)">
-                <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-                <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
-            </xsl:for-each>
-        </div>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:ListReadMode" priority="2"/>
-    
     <!-- HEADER MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:PageHeaderMode">
@@ -799,13 +765,39 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListReadMode"/>
     
-    <xsl:template match="*[*][@rdf:about = $absolute-path][not(key('resources', foaf:primaryTopic/@rdf:resource))]" mode="gc:ListReadMode" priority="1">
-        <xsl:apply-templates select="." mode="gc:ReadMode"/>
+    <xsl:template match="*[*][@rdf:about = $absolute-path][not(key('resources', foaf:primaryTopic/@rdf:resource))]" mode="gc:ReadMode" priority="1">
+        <xsl:param name="nested" as="xs:boolean?"/>
+        
+        <!-- show root blank nodes or nested blank nodes -->
+        <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
+            <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+        </xsl:if>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))]" mode="gc:ListReadMode" priority="1">
-        <xsl:apply-templates select="." mode="gc:ReadMode"/>
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))]" mode="gc:ReadMode" priority="1">
+        <xsl:param name="nested" as="xs:boolean?"/>
+        
+        <!-- show root blank nodes or nested blank nodes -->
+        <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
+            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+            <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+        </xsl:if>
     </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ListReadMode" priority="2">
+        <div class="well">
+            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+            
+            <xsl:for-each select="key('resources', foaf:primaryTopic/@rdf:resource)">
+                <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+                <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+            </xsl:for-each>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:ListReadMode" priority="2"/>
 
     <!-- TABLE MODE -->
 
