@@ -67,6 +67,12 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)][not($mode)]" mode="gc:StyleMode" priority="1">
+        <xsl:next-match/>
+        
+        <link href="static/css/yasqe.css" rel="stylesheet" type="text/css"/>
+    </xsl:template>
+    
     <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
 	<fieldset>
 	    <textarea id="query-string" name="query" class="span12" rows="15">
@@ -79,7 +85,15 @@ LIMIT 100</xsl:param>
 		    </xsl:otherwise>
 		</xsl:choose>
 	    </textarea>
-	    <div class="form-actions">
+
+            <script src="static/js/yasqe.js" type="text/javascript"></script>
+            <script type="text/javascript">
+                <![CDATA[
+                var yasqe = YASQE.fromTextArea(document.getElementById("query-string"));
+                ]]>
+            </script>
+
+            <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Query</button>
 		<span class="help-inline">For all queries, the maximum number of results is set to <xsl:value-of select="key('init-param-by-name', '&gs;resultLimit', $config)/javaee:param-value"/>.</span>
 	    </div>
