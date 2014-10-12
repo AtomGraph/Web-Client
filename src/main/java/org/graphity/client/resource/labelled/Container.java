@@ -50,24 +50,18 @@ public class Container extends ResourceBase
 	super(uriInfo, endpoint, ontClass,
                 request, servletContext, httpHeaders, resourceContext);
 	this.searchString = getUriInfo().getQueryParameters().getFirst("label");
-    }
 
-    @Override
-    public void init()
-    {
-        super.init();
-        
-	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
+	if (!(searchString == null || searchString.isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)
 	    {
-                selectBuilder.filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(getSearchString())); // escape special regex() characters!
-		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", getSearchString(), getQueryBuilder());
+                selectBuilder.filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(searchString)); // escape special regex() characters!
+		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", searchString, getQueryBuilder());
 	    }
-	}	
+	}
     }
-    
+
     public String getSearchString()
     {
 	return searchString;

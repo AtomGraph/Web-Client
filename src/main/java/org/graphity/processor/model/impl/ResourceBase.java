@@ -74,11 +74,11 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
-    private String orderBy;
-    private Boolean desc;
-    private Long limit, offset;
-    private QueryBuilder queryBuilder;
-    private CacheControl cacheControl;
+    private final String orderBy;
+    private final Boolean desc;
+    private final Long limit, offset;
+    private final QueryBuilder queryBuilder;
+    private final CacheControl cacheControl;
     
     /**
      * Public JAX-RS constructor. Suitable for subclassing.
@@ -113,18 +113,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
-
-        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
-    }
-
-    /**
-     * Post-constructor initialization of class members.
-     * super.init() needs to be called first in subclasses (just like super() constructor).
-     */
-    @PostConstruct
-    public void init()
-    {
-        if (log.isDebugEnabled()) log.debug("@PostConstruct initializtion");
 
         Query query = getQuery(matchedOntClass, SPIN.query, getQuerySolutionMap(this));
         if (query == null)
@@ -176,6 +164,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
         cacheControl = getCacheControl(matchedOntClass);
+
+        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }
     
     public Long getLongValue(OntClass ontClass, DatatypeProperty property)

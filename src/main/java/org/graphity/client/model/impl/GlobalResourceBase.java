@@ -55,8 +55,8 @@ public class GlobalResourceBase extends ResourceBase
     private static final Logger log = LoggerFactory.getLogger(GlobalResourceBase.class);
 
     private final DataManager dataManager;
-    private MediaType mediaType;
-    private URI topicURI, endpointURI;
+    private final MediaType mediaType;
+    private final URI topicURI, endpointURI;
 
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -78,17 +78,7 @@ public class GlobalResourceBase extends ResourceBase
                 request, servletContext, httpHeaders, resourceContext);
 	if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataManager = dataManager;
-    }
 
-    /**
-     * Post-constructor initialization of class members.
-     * super.init() needs to be called first in subclasses (just like super() constructor).
-     */
-    @Override
-    public void init()
-    {
-        super.init();
-        
 	if (getUriInfo().getQueryParameters().containsKey("accept"))
             mediaType = MediaType.valueOf(getUriInfo().getQueryParameters().getFirst("accept"));
         else mediaType = null;
@@ -98,9 +88,10 @@ public class GlobalResourceBase extends ResourceBase
         if (getUriInfo().getQueryParameters().containsKey("endpoint-uri"))
             endpointURI = URI.create(getUriInfo().getQueryParameters().getFirst("endpoint-uri"));
         else endpointURI = null;
-	if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
+
+        if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
     }
-    
+
     public DataManager getDataManager()
     {
         return dataManager;

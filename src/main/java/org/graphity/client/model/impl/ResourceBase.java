@@ -50,7 +50,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
-    private URI mode;
+    private final URI mode;
 
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
@@ -68,18 +68,8 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     {
 	super(uriInfo, endpoint, ontClass,
                 request, servletContext, httpHeaders, resourceContext);
-    }
 
-    /**
-     * Post-constructor initialization of class members.
-     * super.init() needs to be called first in subclasses (just like super() constructor).
-     */
-    @Override
-    public void init()
-    {
-        super.init();
-
-	if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
+        if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
             this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
         else mode = null;
     }
