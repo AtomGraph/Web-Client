@@ -27,12 +27,8 @@ import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.api.uri.UriTemplate;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
@@ -73,6 +69,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
+    private final OntClass matchedOntClass;
     private final OntResource ontResource;
     private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
@@ -81,63 +78,46 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     private Boolean desc;
     private Long limit, offset;
     private QueryBuilder queryBuilder;
-    private OntClass matchedOntClass;
     private CacheControl cacheControl;
     
     /**
-     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
-     * 
-     * @param uriInfo URI information of the current request
-     * @param endpoint SPARQL endpoint of this resource
-     * @param ontModel sitemap ontology model
-     * @param request current request
-     * @param servletContext webapp context
-     * @param httpHeaders HTTP headers of the current request
-     * @param resourceContext resource context
-     */
-    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
-    {
-	this(ontModel.createOntResource(uriInfo.getAbsolutePath().toString()), endpoint,
-                request, servletContext, uriInfo, httpHeaders, resourceContext);
-	if (log.isDebugEnabled()) log.debug("Constructing Graphity processor ResourceBase");
-    }
-
-    /**
-     * Protected constructor. Not suitable for JAX-RS but can be used when subclassing.
+     * Public JAX-RS constructor. Suitable for subclassing.
      * If the request URI does not match any URI template in the sitemap ontology, 404 Not Found is returned.
      * 
      * If the matching ontology class is a subclass of LDP Page, this resource becomes a page resource and
      * HATEOS metadata is added (relations to the container and previous/next page resources).
      * 
-     * If the matching ontology class has a value restriction on <code>void:inDataset</code> property, and
-     * that dataset in turn has a SPARQL endpoint defined using <code>void:sparqlEndpoint</code>, that
-     * endpoint resource overrides the default value supplied as constructor argument.
-     * 
-     * @param resource this resource as OWL resource
+     * @param uriInfo URI information of the current request
      * @param endpoint SPARQL endpoint of this resource
+     * @param ontClass matched ontology class
      * @param request current request
      * @param servletContext webapp context
-     * @param uriInfo URI information of the current request
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
-     * @see <a href="http://en.wikipedia.org/wiki/HATEOAS">HATEOS</a>
      */
-    protected ResourceBase(OntResource resource, SPARQLEndpoint endpoint,
-            Request request, ServletContext servletContext,
-            UriInfo uriInfo, HttpHeaders httpHeaders, ResourceContext resourceContext)
+    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
+            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(resource.getURI(), endpoint);
+	super(uriInfo, endpoint);
 
-	if (resource == null) throw new IllegalArgumentException("OntResource cannot be null");
+        if (ontClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+        
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
 
-        this.ontResource = resource;
+        //OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, ontClass.getModel());
+        //this.ontResource = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, ontClass.getModel()).
+        //        createOntResource(uriInfo.getAbsolutePath().toString());
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        model.add(ontClass.getModel());
+        this.ontResource = model.createOntResource(uriInfo.getAbsolutePath().toString());
+        this.matchedOntClass = ontClass;
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
+
+        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }
 
     /**
@@ -148,10 +128,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     public void init()
     {
         if (log.isDebugEnabled()) log.debug("@PostConstruct initializtion");
-
-	matchedOntClass = matchOntClass(getOntModel(), getRealURI(), getUriInfo().getBaseUri());
-	if (matchedOntClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-	if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
 
         Query query = getQuery(matchedOntClass, SPIN.query, getQuerySolutionMap(this));
         if (query == null)
@@ -698,135 +674,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
 	return new ParameterizedSparqlString(queryString, qsm).asUpdate();
-    }
-
-    /**
-     * Given an absolute URI and a base URI, returns ontology class with a matching URI template, if any.
-     * 
-     * @param ontModel sitemap ontology model
-     * @param uri absolute URI being matched
-     * @param base base URI
-     * @return matching ontology class or null, if none
-     */
-    public OntClass matchOntClass(OntModel ontModel, URI uri, URI base)
-    {
-	if (uri == null) throw new IllegalArgumentException("URI being matched cannot be null");
-	if (base == null) throw new IllegalArgumentException("Base URI cannot be null");
-	if (!uri.isAbsolute()) throw new IllegalArgumentException("URI being matched \"" + uri + "\" is not absolute");
-	if (base.relativize(uri).equals(uri)) throw new IllegalArgumentException("URI being matched \"" + uri + "\" is not relative to the base URI \"" + base + "\"");
-	    
-	StringBuilder path = new StringBuilder();
-	// instead of path, include query string by relativizing request URI against base URI
-	path.append("/").append(base.relativize(uri));
-	return matchOntClass(ontModel, path);
-    }
-
-    /**
-     * Given a relative URI, returns ontology class with a matching URI template, if any.
-     * By default, <code>lda:uriTemplate</code> property (from Linked Data API) is used for the <code>owl:HasValue</code>
-     * restrictions, with URI template string as the object literal.
-     * 
-     * @param ontModel sitemap ontology model
-     * @param path absolute path (relative URI)
-     * @return matching ontology class or null, if none
-     * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
-     */
-    public OntClass matchOntClass(OntModel ontModel, CharSequence path)
-    {
-        return matchOntClass(ontModel, path, GP.uriTemplate);
-    }
-
-    /**
-     * Given a relative URI and URI template property, returns ontology class with a matching URI template, if any.
-     * URIs are matched against the URI templates specified in resource templates (sitemap ontology classes).
-     * Templates in the base ontology model have priority (are matched first) against templates in imported ontologies.
-     * 
-     * @param ontModel sitemap ontology model
-     * @param path absolute path (relative URI)
-     * @param property restriction property holding the URI template value
-     * @return matching ontology class or null, if none
-     * @see <a href="https://jsr311.java.net/nonav/releases/1.1/spec/spec3.html#x3-340003.7">3.7 Matching Requests to Resource Methods (JAX-RS 1.1)</a>
-     * @see <a href="https://jersey.java.net/nonav/apidocs/1.16/jersey/com/sun/jersey/api/uri/UriTemplate.html">Jersey UriTemplate</a>
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/HasValueRestriction.html">Jena HasValueRestriction</a>
-     */
-    public OntClass matchOntClass(OntModel ontModel, CharSequence path, Property property)
-    {
-	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
-        
-        TreeMap<UriTemplate, OntClass> matchedClasses = new TreeMap<>(UriTemplate.COMPARATOR);
-
-        // the main sitemap has precedence
-        matchedClasses.putAll(matchOntClasses(ontModel, path, property, true));
-        if (!matchedClasses.isEmpty())
-        {
-            if (log.isDebugEnabled()) log.debug("Matched UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
-            return matchedClasses.firstEntry().getValue();
-        }
-
-        // gp:Templates from imported ontologies have lower precedence
-        matchedClasses.putAll(matchOntClasses(ontModel, path, property, false));
-        if (!matchedClasses.isEmpty())
-        {
-            if (log.isDebugEnabled()) log.debug("Matched imported UriTemplate: {} OntClass: {}", matchedClasses.firstKey(), matchedClasses.firstEntry().getValue());
-            return matchedClasses.firstEntry().getValue();
-        }
-        
-        if (log.isDebugEnabled()) log.debug("Path {} has no OntClass match in this OntModel", path);
-        return null;
-    }
-
-    /**
-     * Matches path (relative URI) against URI templates in sitemap ontology.
-     * This method uses Jersey implementation of the JAX-RS URI matching algorithm.
-     * 
-     * @param ontModel sitemap ontology model
-     * @param path URI path
-     * @param property property attaching URI templates to ontology class
-     * @param inBaseModel whether to only use base model statements
-     * @return URI template/ontology class map
-     */
-    public Map<UriTemplate, OntClass> matchOntClasses(OntModel ontModel, CharSequence path, Property property, boolean inBaseModel)
-    {
-	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
-        if (path == null) throw new IllegalArgumentException("Path being matched cannot be null");
- 	if (property == null) throw new IllegalArgumentException("URI template property cannot be null");
-
-        Map<UriTemplate, OntClass> matchedClasses = new HashMap<>();
-        StmtIterator it = ontModel.listStatements(null, property, (RDFNode)null);
-
-        try
-	{
-	    while (it.hasNext())
-	    {
-                Statement stmt = it.next();
-                if (((ontModel.isInBaseModel(stmt) && inBaseModel) || (!ontModel.isInBaseModel(stmt) && !inBaseModel)) &&
-                        stmt.getSubject().canAs(OntClass.class))
-                {
-                    OntClass ontClass = stmt.getSubject().as(OntClass.class);
-                    if (ontClass.hasSuperClass(FOAF.Document) && 
-                            ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
-                    {
-                        UriTemplate uriTemplate = new UriTemplate(ontClass.getPropertyValue(property).asLiteral().getString());
-                        HashMap<String, String> map = new HashMap<>();
-
-                        if (uriTemplate.match(path, map))
-                        {
-                            if (log.isDebugEnabled()) log.debug("Path {} matched UriTemplate {}", path, uriTemplate);
-                            if (log.isDebugEnabled()) log.debug("Path {} matched OntClass {}", path, ontClass);
-                            matchedClasses.put(uriTemplate, ontClass);
-                        }
-                        else
-                            if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
-                    }
-                }
-            }
-        }
-        finally
-        {
-            it.close();
-        }
-        
-        return matchedClasses;
     }
 
     /**

@@ -43,7 +43,6 @@ import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
-import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.server.provider.ModelProvider;
 import org.graphity.server.provider.QueryParamProvider;
 import org.graphity.server.provider.ResultSetWriter;
@@ -51,6 +50,8 @@ import org.graphity.server.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
+import org.graphity.processor.provider.MatchedOntClassProvider;
+import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.slf4j.Logger;
@@ -96,6 +97,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         singletons.add(new org.graphity.server.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
+        singletons.add(new MatchedOntClassProvider());
 	singletons.add(new SPARQLEndpointProvider());
 	singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new GraphStoreProvider());
@@ -139,7 +141,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
 
         OntDocumentManager.getInstance().setFileManager(FileManager.get());
-        OntDocumentManager.getInstance().setCacheModels(false);
+        OntDocumentManager.getInstance().setCacheModels(true); // lets cahce the ontologies FTW!!
 	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
         
         /*

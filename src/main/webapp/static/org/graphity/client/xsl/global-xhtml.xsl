@@ -209,7 +209,7 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
+    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
 	<p class="form-inline">
 	    <label for="endpoint-select">SPARQL endpoint</label>
 	    <xsl:text> </xsl:text>
@@ -245,5 +245,8 @@ exclude-result-prefixes="#all">
 	    [<xsl:value-of select="@rdf:about"/>]
 	</option>
     </xsl:template>
+
+    <!-- only show edit mode for the main resource -->
+    <xsl:template match="*[@rdf:about][$uri][not(@rdf:about = $uri)]" mode="gc:EditMode"/>
     
 </xsl:stylesheet>

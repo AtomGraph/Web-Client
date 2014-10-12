@@ -16,7 +16,7 @@
  */
 package org.graphity.client.resource.labelled;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
 import javax.servlet.ServletContext;
@@ -44,10 +44,10 @@ public class Container extends ResourceBase
 
     private final String searchString;
     
-    public Container(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
+    public Container(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, endpoint, ontModel,
+	super(uriInfo, endpoint, ontClass,
                 request, servletContext, httpHeaders, resourceContext);
 	this.searchString = getUriInfo().getQueryParameters().getFirst("label");
     }

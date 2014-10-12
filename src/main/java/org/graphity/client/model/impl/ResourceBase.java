@@ -16,7 +16,7 @@
  */
 package org.graphity.client.model.impl;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
@@ -57,16 +57,16 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * 
      * @param uriInfo URI information of the current request
      * @param endpoint SPARQL endpoint of this resource
-     * @param ontModel sitemap ontology model
+     * @param ontClass sitemap ontology model
      * @param request current request
      * @param servletContext webapp context
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
+    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, endpoint, ontModel,
+	super(uriInfo, endpoint, ontClass,
                 request, servletContext, httpHeaders, resourceContext);
     }
 

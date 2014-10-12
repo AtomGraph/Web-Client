@@ -16,7 +16,7 @@
  */
 package org.graphity.client.model.impl;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
@@ -63,18 +63,18 @@ public class GlobalResourceBase extends ResourceBase
      * 
      * @param uriInfo URI information of the request
      * @param endpoint SPARQL endpoint of this resource
-     * @param ontModel sitemap ontology model
+     * @param ontClass sitemap ontology model
      * @param request current request
      * @param servletContext webapp context
      * @param httpHeaders HTTP headers of current request
      * @param resourceContext resource context
      * @param dataManager data manager for this resource
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntModel ontModel,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
             @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @Context DataManager dataManager)
     {
-	super(uriInfo, endpoint, ontModel,
+	super(uriInfo, endpoint, ontClass,
                 request, servletContext, httpHeaders, resourceContext);
 	if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataManager = dataManager;
