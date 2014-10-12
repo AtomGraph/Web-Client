@@ -178,10 +178,11 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
+                        <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:LabelMode"/>
+                        <!--
                         <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                         
                         <ul class="nav">
-                            <!-- make menu links for all resources in the ontology, except base URI -->
                             <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[not(@rdf:about = resolve-uri('sparql', $base-uri))][not(@rdf:about = resolve-uri('ontology', $base-uri))]" mode="gc:NavBarMode">
                                 <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
                                 <xsl:with-param name="space" select="$space"/>
@@ -196,6 +197,7 @@ exclude-result-prefixes="#all">
                                 </xsl:apply-templates>
                             </ul>
                         </xsl:if>
+                        -->
                     </div>
 		</div>
 	    </div>
@@ -233,6 +235,8 @@ exclude-result-prefixes="#all">
 	<link href="static/css/bootstrap.css" rel="stylesheet" type="text/css"/>
 	<link href="static/css/bootstrap-responsive.css" rel="stylesheet" type="text/css"/>
 	<link href="static/org/graphity/client/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+	<link href="static/org/graphity/client/css/material.css" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/css?family=RobotoDraft:400,500,700,400italic" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
@@ -248,11 +252,31 @@ exclude-result-prefixes="#all">
         <!-- *[not(@rdf:about = $absolute-path)] -->
         <xsl:param name="selected-resources" select="*[not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
 
+        <xsl:apply-templates select="." mode="gc:PageHeaderMode"/>
+
 	<div class="container-fluid">
 	    <div class="row-fluid">
-		<div class="span8">
-                    <xsl:apply-templates select="." mode="gc:PageHeaderMode"/>
+                <div class="span2" id="left-nav">
+                    <ul class="nav nav-list">
+                        <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)"/>
+                        <xsl:for-each select="key('resources-by-space', $base-uri, document($base-uri))[rdf:type/@rdf:resource = '&sioc;Container']">
+                            <xsl:sort select="gc:label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+                            <li>
+                                <xsl:if test="@rdf:about = $space">
+                                    <xsl:attribute name="class">active</xsl:attribute>
+                                </xsl:if>
+                                <xsl:apply-templates select="@rdf:about" mode="gc:InlineMode"/>
+                            </li>
+                        </xsl:for-each>
+                    </ul>
+                    <ul class="nav nav-list">
+                        <li>Fuck</li>
+                        <li>Shit</li>
+                        <li>Stack</li>
+                    </ul>
+                </div>
 
+                <div class="span7">
                     <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
                     <!-- page resource -->
@@ -269,7 +293,7 @@ exclude-result-prefixes="#all">
                     </xsl:apply-templates>
                 </div>
 
-		<div class="span4">
+		<div class="span3">
 		    <xsl:apply-templates select="." mode="gc:SidebarNavMode"/>
 		</div>
 	    </div>

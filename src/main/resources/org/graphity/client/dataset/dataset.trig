@@ -17,7 +17,7 @@
     <> a sioc:Space, ldp:Container, foaf:Document ;
         dct:title "Graphity Client" ;
         dct:description "Generic Linked Data browser and end-user-oriented platform" ;
-        foaf:logo <static/img/graphity-logo.svg> ;
+        foaf:logo <static/img/graphity-logo-white.svg> ;
         foaf:maker <http://graphityhq.com/#company> ;
         rdfs:seeAlso gcs: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }
@@ -39,16 +39,6 @@
     <service> a foaf:Document ;
         sioc:has_container <> ;
         dct:title "Graph Store Protocol endpoint" .
-
-}
-
-<graphs/ontology>
-{
-
-    <ontology> a foaf:Document ;
-        sioc:has_space <> ;
-        dct:title "Sitemap" ;
-        foaf:primaryTopic gcs: .
 
 }
 

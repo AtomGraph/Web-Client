@@ -81,4 +81,12 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/void.xsl"/>
     <xsl:import href="layout.xsl"/>
 
+    <xsl:template match="*[*][@rdf:about = $absolute-path]" mode="gc:PageHeaderMode" priority="1">
+	<div>
+            <!-- <xsl:apply-templates select="." mode="gc:ModeToggleMode"/> -->
+
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+        </div>
+    </xsl:template>
+
 </xsl:stylesheet>
