@@ -82,8 +82,8 @@
     rdfs:label "Full list" ;
     rdfs:isDefinedBy <#> .
 
-<#ThumbnailMode> a <#Mode>, <#ContainerMode> ;
-    rdfs:label "Gallery" ;
+<#GridMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "Grid" ;
     rdfs:isDefinedBy <#> .
 
 <#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;

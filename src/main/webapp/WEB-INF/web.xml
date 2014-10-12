@@ -36,7 +36,7 @@
     </context-param>
     <context-param>
         <param-name>http://graphity.org/gc#stylesheet</param-name>
-        <param-value>static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
+        <param-value>static/org/graphity/client/xsl/local-xhtml.xsl</param-value>
     </context-param>
     <context-param>
         <param-name>http://graphity.org/gs#resultLimit</param-name>
