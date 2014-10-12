@@ -51,8 +51,8 @@ WHERE
     { ?s ?p ?o }
     UNION
     {
-	GRAPH ?g
-	{ ?s ?p ?o }
+        GRAPH ?g
+        { ?s ?p ?o }
     }
 }
 LIMIT 100</xsl:param>
@@ -89,7 +89,7 @@ LIMIT 100</xsl:param>
             <script src="static/js/yasqe.js" type="text/javascript"></script>
             <script type="text/javascript">
                 <![CDATA[
-                var yasqe = YASQE.fromTextArea(document.getElementById("query-string"));
+                var yasqe = YASQE.fromTextArea(document.getElementById("query-string"), {persistent: null});
                 ]]>
             </script>
 
