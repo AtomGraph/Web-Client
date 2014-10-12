@@ -106,11 +106,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
 
-        //OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, ontClass.getModel());
-        //this.ontResource = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, ontClass.getModel()).
-        //        createOntResource(uriInfo.getAbsolutePath().toString());
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        model.add(ontClass.getModel());
+        model.add(ontClass.getModel()); // we don't want to make permanent changes to base ontology which is cached
         this.ontResource = model.createOntResource(uriInfo.getAbsolutePath().toString());
         this.matchedOntClass = ontClass;
 	this.uriInfo = uriInfo;

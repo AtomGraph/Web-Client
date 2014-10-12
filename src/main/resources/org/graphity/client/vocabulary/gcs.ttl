@@ -156,14 +156,20 @@ DESCRIBE ?this ?doc ?thing WHERE {
         }
         UNION
         {
-            ?doc sioc:has_space ?this .
-        }
-        UNION
-        {
             {
                 SELECT ?doc ?thing
                 WHERE {
-                    ?doc sioc:has_container ?this .
+                    {
+                        ?doc sioc:has_space ?this
+                    }
+                    UNION
+                    {
+                        ?doc sioc:has_parent ?this
+                    }
+                    UNION
+                    {
+                        ?doc sioc:has_container ?this
+                    }
                     OPTIONAL {
                         ?doc foaf:primaryTopic ?thing .
                     } .
@@ -187,17 +193,21 @@ DESCRIBE ?this ?doc ?thing WHERE {
         }
         UNION
         {
-            GRAPH ?docGraph {
-                ?doc sioc:has_space ?this . # sioc:has_parent ?!
-            } .
-        }
-        UNION
-        {
             {
                 SELECT ?doc ?thing
                 WHERE {
                     GRAPH ?childGraph {
-                        ?doc sioc:has_container ?this .
+                        {
+                            ?doc sioc:has_space ?this
+                        }
+                        UNION
+                        {
+                            ?doc sioc:has_parent ?this
+                        }
+                        UNION
+                        {
+                            ?doc sioc:has_container ?this
+                        }
                         OPTIONAL {
                             ?doc foaf:primaryTopic ?thing .
                         } .
