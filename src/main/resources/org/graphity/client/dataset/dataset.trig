@@ -17,7 +17,7 @@
     <> a sioc:Space, ldp:Container, foaf:Document ;
         dct:title "Graphity Client" ;
         dct:description "Generic Linked Data browser and end-user-oriented platform" ;
-        foaf:logo <static/img/graphity-logo-white.svg> ;
+        foaf:logo <static/img/graphity-logo.svg> ;
         foaf:maker <http://graphityhq.com/#company> ;
         rdfs:seeAlso gcs: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }

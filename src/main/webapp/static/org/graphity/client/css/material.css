@@ -1,8 +1,0 @@
-body { font-family: "RobotoDraft", sans-serif; padding-top: 74px; }
-.navbar { font-size: 20px; line-height: 56px; font-weight: 400; color: white; } /* letter-spacing: 5px;*/
-.navbar .brand { padding-top: 0; padding-bottom: 0; }
-.navbar-inner { min-height: 56px; background-color: #3f51b5; background-image: none; }
-.navbar-inner .nav > li > a { min-height: 56px; padding-top: 0; padding-bottom: 0; line-height: 56px; color: inherit; text-shadow: none; }
-h1.page-header { font-size: 34px; line-height: 40px; font-weight: 400; margin-bottom: 30px; border-bottom: none; }
-.nav-list { font-size: 16px; }
-.nav-list li { padding: 16px; }
