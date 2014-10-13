@@ -74,11 +74,11 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
-    private final String orderBy;
-    private final Boolean desc;
-    private final Long limit, offset;
-    private final QueryBuilder queryBuilder;
-    private final CacheControl cacheControl;
+    private String orderBy;
+    private Boolean desc;
+    private Long limit, offset;
+    private QueryBuilder queryBuilder;
+    private CacheControl cacheControl;
     
     /**
      * Public JAX-RS constructor. Suitable for subclassing.
@@ -114,6 +114,15 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
 
+        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
+    }
+
+    /**
+     * Post-construct initialization. Subclasses need to call super.init() first, just like with super() constructor.
+     */
+    @PostConstruct
+    public void init()
+    {
         Query query = getQuery(matchedOntClass, SPIN.query, getQuerySolutionMap(this));
         if (query == null)
         {
@@ -164,8 +173,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
         cacheControl = getCacheControl(matchedOntClass);
-
-        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }
     
     public Long getLongValue(OntClass ontClass, DatatypeProperty property)
@@ -231,7 +238,24 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	    return Response.seeOther(getPageUriBuilder().build()).build();
 	}
 
-	return super.get();
+	Model description = describe();
+
+	if (description.isEmpty())
+	{
+	    if (log.isDebugEnabled()) log.debug("DESCRIBE Model is empty; returning 404 Not Found");
+	    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
+
+	if (getMatchedOntClass().hasSuperClass(LDP.Container)) // && !description.isEmpty()
+	{
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+            createPageResource(description);
+        }
+
+        if (log.isDebugEnabled()) log.debug("Returning @GET Response with {} statements in Model", description.size());
+	return getResponse(description);
+
+	//return super.get();
     }
     
     /**
@@ -459,32 +483,34 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	Model description = super.describe();
 	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
-	if (getMatchedOntClass().hasSuperClass(LDP.Container)) // && !description.isEmpty()
-	{
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-	    Resource page = description.createResource(getPageUriBuilder().build().toString()).
-		addProperty(RDF.type, LDP.Page).
-                addProperty(LDP.pageOf, this);
-
-	    if (getOffset() >= getLimit())
-	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
-		page.addProperty(XHV.prev, description.createResource(getPreviousUriBuilder().build().toString()));
-	    }
-
-	    // no way to know if there's a next page without counting results (either total or in current page)
-	    //int subjectCount = describe().listSubjects().toList().size();
-	    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
-	    //if (subjectCount >= getLimit())
-	    {
-		if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
-		page.addProperty(XHV.next, description.createResource(getNextUriBuilder().build().toString()));
-	    }
-	}
-
 	return description;
     }
 
+    public Resource createPageResource(Model description)
+    {
+        if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+        Resource page = description.createResource(getPageUriBuilder().build().toString()).
+            addProperty(RDF.type, LDP.Page).
+            addProperty(LDP.pageOf, this);
+
+        if (getOffset() >= getLimit())
+        {
+            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
+            page.addProperty(XHV.prev, description.createResource(getPreviousUriBuilder().build().toString()));
+        }
+
+        // no way to know if there's a next page without counting results (either total or in current page)
+        //int subjectCount = describe().listSubjects().toList().size();
+        //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
+        //if (subjectCount >= getLimit())
+        {
+            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
+            page.addProperty(XHV.next, description.createResource(getNextUriBuilder().build().toString()));
+        }
+        
+        return page;
+    }
+    
     /**
      * Returns <samp>Cache-Control</samp> HTTP header value, specified on an ontology class.
      * 

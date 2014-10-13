@@ -22,8 +22,6 @@
         rdfs:seeAlso gcs: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 }
 
-# RESOURCES
-
 <graphs/sparql>
 {
 
@@ -233,7 +231,6 @@
         foaf:primaryTopic gcs:DatasetDocument .
 
 }
-
 
 <graphs/templates/label-resources-container>
 {
