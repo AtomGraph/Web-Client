@@ -40,7 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * JAX-RS provider for resource template class in the sitemap ontology that matches the current request.
+ * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 public class MatchedOntClassProvider extends PerRequestTypeInjectableProvider<Context, OntClass> implements ContextResolver<OntClass>

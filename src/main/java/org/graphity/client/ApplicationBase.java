@@ -102,7 +102,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new GraphStoreProvider());
         singletons.add(new GraphStoreOriginProvider());
-	//singletons.add(new RDFPostReader());
         singletons.add(new SkolemizingRDFPostReader());
         singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());
