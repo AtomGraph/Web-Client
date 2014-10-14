@@ -35,8 +35,17 @@
     rdfs:domain owl:Class ; # rdfs:domain <#Template> ;
     rdfs:range rdfs:Literal ;
     rdfs:label "URI template" ;
-    rdfs:comment "URI template for resource matching and skolemization (JAX-RS syntax)" ;
+    rdfs:comment "URI template for resource matching (JAX-RS syntax)" ;
     rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html> ;
+    rdfs:isDefinedBy <#> .
+
+<#skolemTemplate> a owl:DatatypeProperty ;
+    rdfs:domain owl:Class ;
+    rdfs:range rdfs:Literal ;
+    rdfs:label "Skolemization template" ;
+    rdfs:comment "Container-relative URI template for blank node skolemization (JAX-RS syntax)" ;
+    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html>,
+        <http://www.w3.org/TR/rdf11-concepts/#section-skolemization> ;
     rdfs:isDefinedBy <#> .
 
 <#cacheControl> a owl:DatatypeProperty ;
