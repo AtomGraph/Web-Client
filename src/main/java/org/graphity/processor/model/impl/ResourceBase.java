@@ -223,6 +223,25 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
     
     /**
+     * Returns RDF description of this resource.
+     * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
+     * @return 
+     */
+    @Override
+    public Model describe()
+    {
+	Model description = super.describe();
+
+	if (getMatchedOntClass().hasSuperClass(LDP.Container) && !description.isEmpty())
+	{
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+            createPageResource(description);
+        }
+
+        return description;
+    }
+    
+    /**
      * Handles GET request and returns response with RDF description of this resource.
      * In case this resource is a container, a redirect to its first page is returned.
      * 
@@ -239,19 +258,11 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	}
 
 	Model description = describe();
-
 	if (description.isEmpty())
 	{
 	    if (log.isDebugEnabled()) log.debug("DESCRIBE Model is empty; returning 404 Not Found");
 	    throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
-	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
-
-	if (getMatchedOntClass().hasSuperClass(LDP.Container)) // && !description.isEmpty()
-	{
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-            createPageResource(description);
-        }
 
         if (log.isDebugEnabled()) log.debug("Returning @GET Response with {} statements in Model", description.size());
 	return getResponse(description);
