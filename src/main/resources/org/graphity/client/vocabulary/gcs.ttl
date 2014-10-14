@@ -7,26 +7,24 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix skos:	<http://www.w3.org/2004/02/skos/core#> .
 @prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix dc:	<http://purl.org/dc/elements/1.1/> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix lda:	<http://purl.org/linked-data/api/vocab#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
-@prefix spl:	<http://spinrdf.org/spl#> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology, gp:Sitemap ;
-    owl:imports gc:, sp:, spin:, spl:, lda:, foaf:, sioc: ;
+    owl:imports gc:, sp:, spin:, lda:, foaf:, sioc: ;
     owl:versionInfo "1.1.0" ;
     rdfs:label "Graphity Processor sitemap" ;
     rdfs:comment "Library of reusable Graphity Processor templates" .
 
 # RESOURCE TEMPLATES
 
-<#ContainerContainer> a owl:Class, gp:Template ;
+<#Space> a owl:Class, gp:Template ;
      rdfs:subClassOf gp:Resource, foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ;
      gp:uriTemplate "/" ;
      spin:query <#DescribeFromGraphWithChildren> ;
@@ -36,74 +34,32 @@
      rdfs:label "Space" ;
      rdfs:isDefinedBy <#> .
 
-<#OntologyContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
-    gp:uriTemplate "/ontologies" ;
+<#Container> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_space ;
+            owl:allValuesFrom <#Space>
+        ] ;
+    gp:uriTemplate "/{slug}" ;
+    gp:skolemTemplate "/{slug}" ;
     spin:query <#DescribeFromGraphWithChildren> ;
     gp:limit 20 ;
     gc:defaultMode gc:ListMode ;
-    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode ;
-    rdfs:label "Ontology container" ;
+    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:CreateMode ;
+    rdfs:label "Container document" ;
     rdfs:isDefinedBy <#> .
 
-# templates
-
-<#TemplateContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
-    gp:uriTemplate "/templates" ;
-    spin:query <#DescribeFromGraphWithChildren> ;
-    gp:limit 20 ;
-    gc:defaultMode gc:ListMode ;
-    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode ;
-    rdfs:label "Template container" ;
-    rdfs:isDefinedBy <#> .
-
-<#TemplateDocument> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document ;
-    gp:uriTemplate "/templates/{uuid}" ;
+<#Item> a owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Resource, foaf:Document,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_container ;
+            owl:allValuesFrom <#Container>
+        ] ;
+    gp:uriTemplate "/{has_container.slug}/{slug}" ;
+    gp:skolemTemplate "/{slug}" ;
     spin:query <#DescribeFromGraphWithTopic> ;
     gc:mode gc:ReadMode, gc:EditMode ;
-    rdfs:label "Template document" ;
-    rdfs:isDefinedBy <#> .
-
-# queries
-
-<#QueryContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
-    gp:uriTemplate "/queries" ;
-    spin:query <#DescribeFromGraphWithChildren> ;
-    gp:limit 20 ;
-    gc:defaultMode gc:ListMode ;
-    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode ;
-    rdfs:label "Query container" ;
-    rdfs:isDefinedBy <#> .
-
-<#QueryDocument> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document ;
-    gp:uriTemplate "/queries/{uuid}" ;
-    spin:query <#DescribeFromGraphWithTopic> ;
-    gc:mode gc:ReadMode, gc:EditMode ;
-    rdfs:label "Query document" ;
-    rdfs:isDefinedBy <#> .
-
-# datasets
-
-<#DatasetContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ;
-    gp:uriTemplate "/datasets" ;
-    spin:query <#DescribeFromGraphWithChildren> ;
-    gp:limit 20 ;
-    gc:defaultMode gc:ListMode ;
-    gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode ;
-    rdfs:label "Dataset container" ;
-    rdfs:isDefinedBy <#> .
-
-<#DatasetDocument> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document ;
-    gp:uriTemplate "/datasets/{uuid}" ;
-    spin:query <#DescribeFromGraphWithTopic> ;
-    gc:mode gc:ReadMode, gc:EditMode ;
-    rdfs:label "Dataset document" ;
+    rdfs:label "Item document" ;
     rdfs:isDefinedBy <#> .
 
 # lookup
@@ -246,13 +202,12 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dct:  <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 DESCRIBE ?this ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
-            ?resource ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+            ?resource rdfs:label|dct:title ?label .
             FILTER isURI(?resource) .
         }
     } .
@@ -263,18 +218,14 @@ DESCRIBE ?this ?resource WHERE {
 <#DescribeGraphLabelResources>    a       sp:Describe ;
       sp:text """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dct:  <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 DESCRIBE ?this ?resource WHERE {
     {
         SELECT ?resource
         WHERE {
             GRAPH ?graph {
-                ?resource ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+                ?resource rdfs:label|dct:title ?label .
                 FILTER isURI(?resource) .
             } .
         }
@@ -287,11 +238,6 @@ DESCRIBE ?this ?resource WHERE {
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dct:  <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 DESCRIBE ?this ?property WHERE {
     {
@@ -308,7 +254,7 @@ DESCRIBE ?this ?property WHERE {
             {
                 ?property a owl:DatatypeProperty .
             } .
-            ?property ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+            ?property rdfs:label ?label .
         }
     } .
 }"""^^xsd:string .
@@ -319,11 +265,6 @@ DESCRIBE ?this ?property WHERE {
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dct:  <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 DESCRIBE ?this ?property WHERE {
     {
@@ -341,7 +282,7 @@ DESCRIBE ?this ?property WHERE {
                 {
                     ?property a owl:DatatypeProperty .
                 } .
-                ?property ((((((rdfs:label|dc:title)|dct:title)|foaf:name)|foaf:givenName)|foaf:familyName)|sioc:name)|skos:prefLabel ?label .
+                ?property rdfs:label ?label .
             }
         }
     } .

@@ -57,6 +57,8 @@ public class GP
 
     public static final DatatypeProperty uriTemplate = m_model.createDatatypeProperty( NS + "uriTemplate" );
 
+    public static final DatatypeProperty skolemTemplate = m_model.createDatatypeProperty( NS + "skolemTemplate" );
+
     public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );

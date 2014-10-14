@@ -66,8 +66,6 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
-    <xsl:preserve-space elements="pre"/>
-
     <xsl:param name="base-uri" as="xs:anyURI"/>
     <xsl:param name="absolute-path" as="xs:anyURI"/>
     <xsl:param name="request-uri" as="xs:anyURI"/>
@@ -105,6 +103,8 @@ exclude-result-prefixes="#all">
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
+
+    <xsl:preserve-space elements="rdfs:label dct:title gp:slug"/>
 
     <rdf:Description rdf:about="">
 	<foaf:maker rdf:resource="http://graphityhq.com/#company"/>
@@ -484,15 +484,13 @@ exclude-result-prefixes="#all">
                 </a>                        
             </div>
         </xsl:if>
-        <!--
-        <xsl:if test="not($mode = '&gc;CreateMode') and rdf:type/@rdf:resource = '&sioc;Container'">
+        <xsl:if test="not($mode = '&gc;CreateMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;CreateMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>
             </div>
         </xsl:if>
-        -->
     </xsl:template>
     
     <!-- IMAGE MODE -->
@@ -944,36 +942,43 @@ exclude-result-prefixes="#all">
     <!-- CREATE MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
-        <xsl:param name="add-statements" select="true()" as="xs:boolean?" tunnel="yes"/>
-
-	<form class="form-horizontal" method="post" action="{$absolute-path}?mode={encode-for-uri($mode)}" accept-charset="UTF-8">
+        <form class="form-horizontal" method="post" action="{$absolute-path}?mode={encode-for-uri($mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
-
-	    <fieldset id="fieldset-{generate-id()}">
-		<legend>Add item</legend>
-
-                <!-- can this be made improved? -->
-		<xsl:call-template name="gc:InputTemplate">
-		    <xsl:with-param name="type" select="'hidden'"/>
-		    <xsl:with-param name="name" select="'sb'"/>
-		    <xsl:with-param name="value" select="'bnode'"/>
-		</xsl:call-template>
-
-                <xsl:if test="$add-statements">
-                    <div class="control-group">
-                        <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
-                    </div>
-                </xsl:if>
-	    </fieldset>
-
+            
+            <xsl:apply-templates mode="#current"/>
+            
 	    <div class="form-actions">
-		<button type="submit" class="btn btn-primary create-mode">Save</button>
+		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>
 	</form>
+    </xsl:template>
+
+    <xsl:template match="*" mode="gc:CreateMode"/>
+
+    <xsl:template match="*[rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
+        <xsl:variable name="path" select="substring-after($absolute-path, $base-uri)" as="xs:string"/>
+        <xsl:variable name="template-uri" select="if (rdf:type/@rdf:resource = '&sioc;Container') then concat($path, '/', 'template.rdf') else 'template.rdf'" as="xs:string"/>
+
+        <xsl:if test="doc-available($template-uri)">
+            <xsl:variable name="result-doc" select="/"/>
+            <xsl:for-each select="key('resources', ('this', 'thing'), document($template-uri))">
+                <xsl:variable name="instance" select="$result-doc/rdf:RDF/*[every $type in current()/rdf:type/@rdf:resource satisfies $type = rdf:type/@rdf:resource][not(@rdf:about = $absolute-path)]"/>
+                <xsl:choose>
+                    <xsl:when test="$instance">
+                        <xsl:apply-templates select="." mode="gc:EditMode">
+                            <xsl:with-param name="instance" select="$instance"/>
+                        </xsl:apply-templates>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="." mode="gc:EditMode"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+        </xsl:if>
     </xsl:template>
     
     <!-- EDIT MODE -->
@@ -1026,6 +1031,23 @@ exclude-result-prefixes="#all">
             </xsl:if>
             -->
 	</fieldset>
+    </xsl:template>
+
+    <!-- remove spaces -->
+    <xsl:template match="text()" mode="gc:InputMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'ol'"/>
+	    <xsl:with-param name="type" select="$type"/>
+	    <xsl:with-param name="id" select="$id"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="value" select="normalize-space(.)"/>
+	</xsl:call-template>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:InlinePropertyListMode">

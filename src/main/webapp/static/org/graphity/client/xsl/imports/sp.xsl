@@ -33,4 +33,25 @@ exclude-result-prefixes="#all">
         </pre>
     </xsl:template>
 
+    <xsl:template match="sp:text/text()" mode="gc:EditMode">
+        <textarea name="ol" id="{generate-id(..)}" class="sp:text" rows="10" style="font-family: monospace;">
+            <xsl:value-of select="."/>
+        </textarea>
+
+        <xsl:choose>
+            <xsl:when test="../@rdf:datatype">
+                <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <span class="help-inline">Literal</span>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="sp:text/@rdf:datatype" mode="gc:EditMode">
+        <xsl:next-match>
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:next-match>
+    </xsl:template>
+
 </xsl:stylesheet>

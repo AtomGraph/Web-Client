@@ -33,4 +33,10 @@ exclude-result-prefixes="#all">
         </pre>
     </xsl:template>
 
+    <xsl:template match="gp:slug/@rdf:datatype" mode="gc:EditMode">
+        <xsl:next-match>
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:next-match>
+    </xsl:template>
+
 </xsl:stylesheet>

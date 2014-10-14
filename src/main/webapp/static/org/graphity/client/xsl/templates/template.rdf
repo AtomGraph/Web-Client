@@ -1,0 +1,41 @@
+<!DOCTYPE rdf:RDF [
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
+    <!ENTITY gp     "http://graphity.org/gp#">
+    <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY sp     "http://spinrdf.org/sp#">
+    <!ENTITY spin   "http://spinrdf.org/spin#">
+    <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
+    <!ENTITY lda    "http://purl.org/linked-data/api/vocab#">
+]>
+<rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:lda="&lda;" xmlns:gp="&gp;" xmlns:gc="&gc;" xmlns:sp="&sp;" xmlns:spin="&spin;">
+    <rdf:Description rdf:nodeID="this">
+        <rdf:type rdf:resource="&foaf;Document"/>
+        <foaf:primaryTopic rdf:nodeID="thing"/>
+        <gp:slug rdf:datatype="&xsd;string"> </gp:slug>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="thing">
+        <rdf:type rdf:resource="&owl;Class"/>
+        <rdf:type rdf:resource="&gp;Template"/>
+        <rdfs:subClassOf rdf:resource="&foaf;Document"/>
+        <rdfs:subClassOf rdf:resource="&owl;ItemEndpoint"/>
+        <!-- <rdfs:subClassOf rdf:nodeID="item-restriction"/> -->
+        <foaf:isPrimaryTopicOf rdf:nodeID="this"/>
+        <rdfs:label> </rdfs:label>
+        <gp:uriTemplate> </gp:uriTemplate>
+        <gp:cacheControl>no-cache</gp:cacheControl>
+        <spin:query rdf:nodeID="typeahead"/>
+        <gc:mode rdf:resource="&gc;ReadMode"/>
+    </rdf:Description>
+<!--
+    <rdf:Description rdf:nodeID="item-restriction">
+        <rdf:type rdf:resource="&owl;Restriction"/>
+        <owl:onProperty rdf:resource="&lda;itemTemplate"/>
+        <owl:hasValue rdf:nodeID="typeahead"/>
+    </rdf:Description>
+-->
+
+</rdf:RDF>

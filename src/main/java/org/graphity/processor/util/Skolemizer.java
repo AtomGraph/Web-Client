@@ -162,15 +162,16 @@ public class Skolemizer
 
     public URI build(Resource resource, OntClass ontClass)
     {
-        return build(resource, getItemTemplate(ontClass, GP.uriTemplate)); // ontClass has URI template at this point
+        // build URI relative to absolute path
+        return build(resource, getUriInfo().getAbsolutePathBuilder(), getSkolemTemplate(ontClass, GP.skolemTemplate));
     }
     
-    public URI build(Resource resource, String itemTemplate)
+    public URI build(Resource resource, UriBuilder baseBuilder, String itemTemplate)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 	if (itemTemplate == null) throw new IllegalArgumentException("URI template cannot be null");
         if (log.isDebugEnabled()) log.debug("Building URI for resource {} with template: {}", resource, itemTemplate);
-        UriBuilder builder = getUriInfo().getBaseUriBuilder().path(itemTemplate);
+        UriBuilder builder = baseBuilder.path(itemTemplate);
         // add fragment identifier for non-information resources
         if (!resource.hasProperty(RDF.type, FOAF.Document)) builder.fragment("this");
 
@@ -264,7 +265,7 @@ public class Skolemizer
 	return null;
     }
 
-    protected String getItemTemplate(OntClass ontClass, Property property)
+    protected String getSkolemTemplate(OntClass ontClass, Property property)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (property == null) throw new IllegalArgumentException("Property cannot be null");
@@ -327,12 +328,12 @@ public class Skolemizer
 
         if (resource.hasProperty(RDF.type, SIOC.CONTAINER))
         {
-            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of requested container {}", resource, this);
+            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of requested container {}", resource, getUriInfo().getAbsolutePath());
             return matchOntClass(SIOC.HAS_SPACE, getOntClass());
         }
         if (resource.hasProperty(RDF.type, FOAF.Document))
         {
-            if (log.isDebugEnabled()) log.debug("Document {} will be stored as a child of requested container {}", resource, this);
+            if (log.isDebugEnabled()) log.debug("Document {} will be stored as a child of requested container {}", resource, getUriInfo().getAbsolutePath());
             return matchOntClass(SIOC.HAS_CONTAINER, getOntClass());
         }
 

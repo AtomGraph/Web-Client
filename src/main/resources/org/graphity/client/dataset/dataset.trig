@@ -46,6 +46,7 @@
 {
 
     <ontologies> a ldp:Container, sioc:Container, foaf:Document ;
+        gp:slug "ontologies"^^xsd:string ;
         sioc:has_space <> ;
         dct:title "Ontologies" .
 
@@ -55,6 +56,7 @@
 {
 
     <datasets> a ldp:Container, sioc:Container, foaf:Document ;
+        gp:slug "datasets"^^xsd:string ;
         sioc:has_space <> ;
         dct:title "Datasets" .
 
@@ -64,6 +66,7 @@
 {
 
     <templates> a ldp:Container, sioc:Container, foaf:Document ;
+        gp:slug "templates"^^xsd:string ;
         sioc:has_space <> ;
         dct:title "Templates" .
 
@@ -73,6 +76,7 @@
 {
 
     <queries> a ldp:Container, sioc:Container, foaf:Document ;
+        gp:slug "queries"^^xsd:string ;
         sioc:has_space <> ;
         dct:title "Queries" .
 

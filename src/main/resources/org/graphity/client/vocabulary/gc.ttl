@@ -14,7 +14,7 @@
 <#> a owl:Ontology ;
     owl:imports gp: ;
     rdfs:label "Graphity Client vocabulary" ;
-    owl:versionInfo "1.0.14" .
+    owl:versionInfo "1.1.0" .
 
 # PROPERTIES
 
@@ -91,15 +91,5 @@
     rdfs:isDefinedBy <#> .
 
 # RESOURCE TEMPLATES
-
-#<#Resource> a owl:Class, gp:Template ;
-#    rdfs:subClassOf foaf:Document, gp:Resource ;
-#    gp:uriTemplate "/{path: .*}" ;
-#    spin:query gp:Describe ;
-#    gp:limit 20 ;
-#    <#mode> <#ReadMode>, <#ListReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> ;
-#    rdfs:label "Resource" ;
-#    rdfs:comment "Linked Data resource backed by DESCRIBE query with XSLT layout" ;
-#    rdfs:isDefinedBy <#> .
 
 gp:Resource <#mode> <#ReadMode>, <#ListReadMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .

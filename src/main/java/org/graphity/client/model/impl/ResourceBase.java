@@ -163,7 +163,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public UriBuilder getPageUriBuilder()
     {
-	if (getMode() != null) return super.getPageUriBuilder().queryParam("mode", getMode());
+	if (getMode() != null) return super.getPageUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
 	
 	return super.getPageUriBuilder();
     }
@@ -176,7 +176,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public UriBuilder getPreviousUriBuilder()
     {
-	if (getMode() != null) return super.getPreviousUriBuilder().queryParam("mode", getMode());
+	if (getMode() != null) return super.getPreviousUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
 	
 	return super.getPreviousUriBuilder();
     }
@@ -189,7 +189,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public UriBuilder getNextUriBuilder()
     {
-	if (getMode() != null) return super.getNextUriBuilder().queryParam("mode", getMode());
+	if (getMode() != null) return super.getNextUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
 	
 	return super.getNextUriBuilder();
     }

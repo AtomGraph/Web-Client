@@ -245,6 +245,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	    if (log.isDebugEnabled()) log.debug("DESCRIBE Model is empty; returning 404 Not Found");
 	    throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
+	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
 
 	if (getMatchedOntClass().hasSuperClass(LDP.Container)) // && !description.isEmpty()
 	{
@@ -472,31 +473,23 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
 
     /**
-     * Returns RDF description of this resource.
+     * Creates a page resource for the current container. Includes HATEOS previous/next links.
      * 
-     * @return RDF description
-     * @see getQuery()
+     * @param model target RDF model
+     * @return page resource
+     * @see <a href="http://www.w3.org/1999/xhtml/vocab">XHTML Vocabulary</a>
      */
-    @Override
-    public Model describe()
-    {	
-	Model description = super.describe();
-	if (log.isDebugEnabled()) log.debug("Generating Response from description Model with {} triples", description.size());
-
-	return description;
-    }
-
-    public Resource createPageResource(Model description)
+    public Resource createPageResource(Model model)
     {
         if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-        Resource page = description.createResource(getPageUriBuilder().build().toString()).
+        Resource page = model.createResource(getPageUriBuilder().build().toString()).
             addProperty(RDF.type, LDP.Page).
             addProperty(LDP.pageOf, this);
 
         if (getOffset() >= getLimit())
         {
             if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
-            page.addProperty(XHV.prev, description.createResource(getPreviousUriBuilder().build().toString()));
+            page.addProperty(XHV.prev, model.createResource(getPreviousUriBuilder().build().toString()));
         }
 
         // no way to know if there's a next page without counting results (either total or in current page)
@@ -505,7 +498,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         //if (subjectCount >= getLimit())
         {
             if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
-            page.addProperty(XHV.next, description.createResource(getNextUriBuilder().build().toString()));
+            page.addProperty(XHV.next, model.createResource(getNextUriBuilder().build().toString()));
         }
         
         return page;
