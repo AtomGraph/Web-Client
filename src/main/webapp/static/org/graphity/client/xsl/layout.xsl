@@ -358,16 +358,6 @@ exclude-result-prefixes="#all">
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
-
-    <!-- READ MODE -->
-
-    <xsl:template match="rdf:RDF" mode="gc:ReadMode">
-        <xsl:apply-templates mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-        </xsl:apply-templates>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ReadMode"/>
         
     <!-- HEADER MODE -->
 
@@ -397,7 +387,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode" priority="1">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode">
 	<div class="well header">
             <xsl:apply-templates select="." mode="gc:ImageMode"/>
             
@@ -732,14 +722,18 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- READ MODE -->
+
+    <xsl:template match="rdf:RDF" mode="gc:ReadMode">
+        <xsl:apply-templates mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+    </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ReadMode" priority="1">
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ReadMode">
         <xsl:param name="nested" as="xs:boolean?"/>
         
         <!-- show root blank nodes or nested blank nodes -->
         <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
-            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
             <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
         </xsl:if>
     </xsl:template>
@@ -774,7 +768,7 @@ exclude-result-prefixes="#all">
 	</table>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode">
 	<xsl:param name="predicates" as="element()*"/>
 
 	<tr>
@@ -825,7 +819,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>	    
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="gc:ThumbnailMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="gc:ThumbnailMode">
 	<xsl:param name="thumbnails-per-row" as="xs:integer"/>
 	
 	<li class="span{12 div $thumbnails-per-row}">
