@@ -33,6 +33,7 @@ exclude-result-prefixes="#all">
         <select name="ou" id="{generate-id(..)}">
             <xsl:apply-templates select="key('resources-by-type', '&sp;Query', $ont-model)" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" order="ascending"/>
+                <xsl:with-param name="selected" select="../@rdf:resource"/>
             </xsl:apply-templates>
         </select>
     </xsl:template>
