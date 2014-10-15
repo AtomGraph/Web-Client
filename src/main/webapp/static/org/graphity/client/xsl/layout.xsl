@@ -98,8 +98,6 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="ldp:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-topic" match="*[@rdf:about] | *[@rdf:nodeID]" use="foaf:primaryTopic/@rdf:resource"/>
-    <xsl:key name="resources-by-topic-of" match="*[@rdf:about] | *[@rdf:nodeID]" use="foaf:isPrimaryTopicOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
@@ -245,8 +243,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-        <!-- *[not(@rdf:about = $absolute-path)] -->
-        <xsl:param name="selected-resources" select="*[not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/>
+        <!-- <xsl:param name="selected-resources" select="*[not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/> -->
+        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $absolute-path)]" as="element()*"/>
 
 	<div class="container-fluid">
 	    <div class="row-fluid">
@@ -346,7 +344,7 @@ exclude-result-prefixes="#all">
 	    <xsl:when test=". = $default-mode">
 		<a href="{$absolute-path}">
 		    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-		</a>		
+		</a>
 	    </xsl:when>
 	    <xsl:when test="not(empty($offset)) and not(empty($limit))">
 		<a href="{$absolute-path}{gc:query-string($offset, $limit, $order-by, $desc, .)}">
@@ -398,22 +396,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:PageHeaderMode">
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
     </xsl:template>
-
-    <xsl:template match="*[@rdf:about = $absolute-path][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:PageHeaderMode" priority="2">
-        <div class="well well-small clearfix">
-            <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
-            
-            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
-        </div>
-    </xsl:template>
-
-    <!--
-    <xsl:template match="rdf:RDF" mode="gc:HeaderMode">
-        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
-
-        <xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
-    </xsl:template>
-    -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode" priority="1">
 	<div class="well header">
@@ -430,15 +412,7 @@ exclude-result-prefixes="#all">
 	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>
 	</div>
     </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:HeaderMode" priority="2">
-        <div class="well well-small clearfix">
-            <xsl:apply-templates select="." mode="gc:InlinePropertyListMode"/>
-            
-            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
-        </div>
-    </xsl:template>
-
+    
     <xsl:template match="@rdf:about[. = $absolute-path]" mode="gc:HeaderMode">
 	<h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
@@ -710,16 +684,14 @@ exclude-result-prefixes="#all">
     <!-- LIST MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:ListMode">
-        <!-- <xsl:param name="selected-resources" as="element()*" tunnel="yes"/> -->
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
-        <xsl:apply-templates mode="#current">
+        <xsl:apply-templates select="$selected-resources" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
         </xsl:apply-templates>
     </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListMode"/>
     
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="gc:ListMode" priority="1">
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ListMode" priority="1">
 	<div class="well">
             <xsl:apply-templates select="." mode="gc:ImageMode"/>
             
@@ -742,53 +714,26 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InlineMode"/>
         </h2>
     </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ListMode" priority="2">
-        <div class="well">
-            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-            
-            <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:resource)" mode="gc:HeaderMode"/>
-        </div>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:ListMode" priority="2"/>
-
+    
     <!-- LIST READ MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ListReadMode">
-        <xsl:apply-templates mode="#current">
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
+        
+        <xsl:apply-templates select="$selected-resources" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListReadMode"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListReadMode">
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
-    <xsl:template match="*[@rdf:about][key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ListReadMode" priority="2">
-        <div class="well">
-            <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-            
-            <xsl:for-each select="key('resources', foaf:primaryTopic/@rdf:resource)">
-                <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-                <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
-            </xsl:for-each>
-        </div>
+        <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
     </xsl:template>
-
-    <xsl:template match="*[@rdf:about][key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:ListReadMode" priority="2"/>
-
+    
     <!-- READ MODE -->
-        
-    <xsl:template match="*[*][@rdf:about = $absolute-path][not(key('resources', foaf:primaryTopic/@rdf:resource))]" mode="gc:ReadMode" priority="1">
-        <xsl:param name="nested" as="xs:boolean?"/>
-        
-        <!-- show root blank nodes or nested blank nodes -->
-        <xsl:if test="not(key('predicates-by-object', @rdf:nodeID)) or $nested">
-            <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
-        </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))]" mode="gc:ReadMode" priority="1">
+    
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ReadMode" priority="1">
         <xsl:param name="nested" as="xs:boolean?"/>
         
         <!-- show root blank nodes or nested blank nodes -->
@@ -829,9 +774,7 @@ exclude-result-prefixes="#all">
 	</table>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:TableMode"/>
-    
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode" priority="1">
 	<xsl:param name="predicates" as="element()*"/>
 
 	<tr>
@@ -867,7 +810,7 @@ exclude-result-prefixes="#all">
 
         <xsl:variable name="thumbnail-items" as="element()*">	    
             <!-- all resources that are not recursive blank nodes, except page -->
-            <xsl:apply-templates mode="#current">
+            <xsl:apply-templates select="$selected-resources" mode="#current">
                 <xsl:sort select="gc:label(.)" lang="{$lang}"/>
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
             </xsl:apply-templates>
@@ -882,9 +825,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>	    
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ThumbnailMode"/>
-        
-    <xsl:template match="*[@rdf:about or @rdf:nodeID][not(@rdf:about = $absolute-path)][not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" mode="gc:ThumbnailMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="gc:ThumbnailMode" priority="1">
 	<xsl:param name="thumbnails-per-row" as="xs:integer"/>
 	
 	<li class="span{12 div $thumbnails-per-row}">
@@ -909,10 +850,11 @@ exclude-result-prefixes="#all">
     <!-- MAP MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:MapMode">
+        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
         <div id="map-canvas"/>
 
         <!-- apply all other URI resources -->
-        <xsl:apply-templates mode="#current">
+        <xsl:apply-templates select="$selected-resources" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
         </xsl:apply-templates>
     </xsl:template>
@@ -984,8 +926,6 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
-        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
-
         <form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT&amp;mode={encode-for-uri($mode)}" accept-charset="UTF-8"> <!-- enctype="multipart/form-data" -->
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
@@ -993,8 +933,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <!-- <xsl:variable name="selected-resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]"/> -->
-	    <xsl:apply-templates select="$selected-resources" mode="#current">
+	    <xsl:apply-templates mode="#current">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
 
@@ -1006,7 +945,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="instance" select="." as="element()"/>
-        <xsl:param name="constraint-violations" select="key('violations-by-root', $instance/(@rdf:about, @rdf:nodeID), root($instance))" as="element()*"/>
         <xsl:param name="add-statements" select="true()" as="xs:boolean?" tunnel="yes"/>
         
 	<fieldset id="fieldset-{generate-id()}">
@@ -1020,7 +958,6 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="$instance/* | *[not(concat(namespace-uri(), local-name()) = $instance/*/concat(namespace-uri(), local-name()))]" mode="#current">
                 <xsl:sort select="gc:property-label(.)"/>
-                <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
             </xsl:apply-templates>
             
             <!--

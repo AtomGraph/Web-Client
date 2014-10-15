@@ -50,7 +50,7 @@ public class SkolemizingRDFPostReader extends RDFPostReader
     private static final Logger log = LoggerFactory.getLogger(SkolemizingRDFPostReader.class);
 
     @Context private UriInfo uriInfo;
-    @Context Providers providers;
+    @Context private Providers providers;
     
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
