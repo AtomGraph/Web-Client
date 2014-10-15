@@ -35,6 +35,13 @@
     rdfs:label "Layout mode" ;
     rdfs:isDefinedBy <#> .
 
+<#lang> a owl:DatatypeProperty ;
+    rdfs:domain gp:Template ;
+    rdfs:range xsd:string ;
+    rdfs:label "Language" ;
+    rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
+    rdfs:isDefinedBy <#> .
+
 # CLASSES
 
 <#Application> a owl:Class ;

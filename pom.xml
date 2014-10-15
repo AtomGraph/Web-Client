@@ -138,8 +138,8 @@
             </plugin>
         </plugins>
     </build>
-    <!-- <packaging>${packaging.type}</packaging> -->
-    <packaging>war</packaging>
+    <packaging>${packaging.type}</packaging>
+    <!-- <packaging>war</packaging> -->
     <artifactId>client</artifactId>
 
     <distributionManagement>

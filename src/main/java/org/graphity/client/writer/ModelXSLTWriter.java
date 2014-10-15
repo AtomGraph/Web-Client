@@ -42,6 +42,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.provider.ModelProvider;
@@ -64,7 +65,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
     public static List<String> RESERVED_PARAMS = Arrays.asList("base-uri", "absolute-path", "request-uri", "http-headers",
-            "ont-model", GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(), "lang", "mode", "uri", "endpoint-uri");
+            "ont-model", GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(), "lang", GC.mode.getLocalName(), "uri", "endpoint-uri");
 
     private final XSLTBuilder builder;
  

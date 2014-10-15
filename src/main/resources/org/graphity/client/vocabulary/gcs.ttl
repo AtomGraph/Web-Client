@@ -40,7 +40,7 @@
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom <#Space>
         ] ;
-    gp:uriTemplate "/{slug}" ;
+    gp:uriTemplate "/{container}" ;
     gp:skolemTemplate "/{slug}" ;
     spin:query <#DescribeFromGraphWithChildren> ;
     gp:limit 20 ;
@@ -55,11 +55,18 @@
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#Container>
         ] ;
-    gp:uriTemplate "/{has_container.slug}/{slug}" ;
+    gp:uriTemplate "/{container}/{item}" ;
     gp:skolemTemplate "/{slug}" ;
     spin:query <#DescribeFromGraphWithTopic> ;
     gc:mode gc:ReadMode, gc:EditMode ;
     rdfs:label "Item document" ;
+    rdfs:isDefinedBy <#> .
+
+<#SPARQLEndpoint> a owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document ;
+    gp:uriTemplate "/sparql" ;
+    spin:query gp:Describe ;
+    rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
 # lookup
