@@ -1,17 +1,17 @@
 <!DOCTYPE rdf:RDF [
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
+    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
     <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
-    <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
-    <!ENTITY lda    "http://purl.org/linked-data/api/vocab#">
 ]>
-<rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:lda="&lda;" xmlns:gp="&gp;" xmlns:gc="&gc;" xmlns:sp="&sp;" xmlns:spin="&spin;">
+<rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:sioc="&sioc;" xmlns:gp="&gp;" xmlns:gc="&gc;" xmlns:sp="&sp;" xmlns:spin="&spin;">
     <rdf:Description rdf:nodeID="this">
         <rdf:type rdf:resource="&foaf;Document"/>
         <foaf:primaryTopic rdf:nodeID="thing"/>
@@ -21,13 +21,18 @@
         <rdf:type rdf:resource="&owl;Class"/>
         <rdf:type rdf:resource="&gp;Template"/>
         <rdfs:subClassOf rdf:resource="&foaf;Document"/>
-        <rdfs:subClassOf rdf:resource="&owl;ItemEndpoint"/>
+        <rdfs:subClassOf rdf:resource="&sioc;Item"/>
         <!-- <rdfs:subClassOf rdf:nodeID="item-restriction"/> -->
         <foaf:isPrimaryTopicOf rdf:nodeID="this"/>
         <rdfs:label> </rdfs:label>
         <gp:uriTemplate> </gp:uriTemplate>
+        <gp:skolemTemplate>/{slug}</gp:skolemTemplate>
+        <gp:limit rdf:datatype="&xsd;long">20</gp:limit>
+        <gp:offset rdf:datatype="&xsd;long">0</gp:offset>
+        <gp:orderBy rdf:datatype="&xsd;string"> </gp:orderBy>
         <gp:cacheControl>no-cache</gp:cacheControl>
-        <spin:query rdf:nodeID="typeahead"/>
+        <spin:query rdf:resource="&gp;Describe"/>
+        <gc:defaultMode rdf:resource="&gc;ReadMode"/>
         <gc:mode rdf:resource="&gc;ReadMode"/>
     </rdf:Description>
 <!--

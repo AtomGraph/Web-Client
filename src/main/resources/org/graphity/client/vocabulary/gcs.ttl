@@ -99,7 +99,7 @@ DESCRIBE ?this ?topic WHERE {
 
 # ====
 
-<#DescribeFromGraphWithTopic>    a       sp:Describe ;
+<#DescribeFromGraphWithTopic>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
     GRAPH ?graph {
@@ -109,7 +109,7 @@ DESCRIBE ?this ?topic WHERE {
 
 # ====
 
-<#DescribeWithChildren>    a       sp:Describe ;
+<#DescribeWithChildren>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 DESCRIBE ?this ?doc ?thing WHERE {
@@ -144,7 +144,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
 
 # ====
 
-<#DescribeFromGraphWithChildren>    a       sp:Describe ;
+<#DescribeFromGraphWithChildren>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 DESCRIBE ?this ?doc ?thing WHERE {
@@ -203,7 +203,7 @@ WHERE {
 
 # ====
 
-<#DescribeLabelResources>    a       sp:Describe ;
+<#DescribeLabelResources>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
@@ -222,7 +222,7 @@ DESCRIBE ?this ?resource WHERE {
 
 # ===
 
-<#DescribeGraphLabelResources>    a       sp:Describe ;
+<#DescribeGraphLabelResources>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX dct:  <http://purl.org/dc/terms/>
@@ -241,7 +241,7 @@ DESCRIBE ?this ?resource WHERE {
 
 # ===
 
-<#DescribeLabelProperties>    a       sp:Describe ;
+<#DescribeLabelProperties>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -268,7 +268,7 @@ DESCRIBE ?this ?property WHERE {
 
 # ===
 
-<#DescribeGraphLabelProperties>    a       sp:Describe ;
+<#DescribeGraphLabelProperties>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

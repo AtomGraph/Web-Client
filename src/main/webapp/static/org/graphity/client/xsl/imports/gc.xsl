@@ -28,16 +28,24 @@ xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="gp:uriTemplate/text()" mode="gc:InlineMode">
-        <pre>
-            <xsl:next-match/>
-        </pre>
+    <xsl:template match="gc:mode/@rdf:resource" mode="gc:EditMode">
+        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $ont-model)" as="element()*"/>
+        <select name="ou" id="{generate-id(..)}" multiple="multiple" size="{count($modes)}">
+            <xsl:apply-templates select="$modes" mode="gc:OptionMode">
+                <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                <xsl:with-param name="selected" select="../@rdf:resource"/>
+            </xsl:apply-templates>
+        </select>
     </xsl:template>
 
-    <xsl:template match="gp:slug/@rdf:datatype | gp:limit/@rdf:datatype | gp:offset/@rdf:datatype | gp:orderBy/@rdf:datatype " mode="gc:EditMode">
-        <xsl:next-match>
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:next-match>
+    <xsl:template match="gc:defaultMode/@rdf:resource" mode="gc:EditMode">
+        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $ont-model)" as="element()*"/>
+        <select name="ou" id="{generate-id(..)}">
+            <xsl:apply-templates select="$modes" mode="gc:OptionMode">
+                <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                <xsl:with-param name="selected" select="../@rdf:resource"/>
+            </xsl:apply-templates>
+        </select>
     </xsl:template>
 
 </xsl:stylesheet>

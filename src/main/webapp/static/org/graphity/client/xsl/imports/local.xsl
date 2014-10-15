@@ -490,7 +490,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
-            <label class="control-label" for="{$id}">
+            <label class="control-label" for="{$id}" title="{$this}">
                 <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
             </label>
             <!--

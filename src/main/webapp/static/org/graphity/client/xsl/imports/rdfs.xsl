@@ -18,6 +18,8 @@ limitations under the License.
     <!ENTITY gc "http://graphity.org/gc#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -61,4 +63,24 @@ exclude-result-prefixes="#all">
 	</li>
     </xsl:template>
 
+    <xsl:template match="rdfs:subClassOf[@rdf:resource = '&foaf;Document']" mode="gc:EditMode">
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>        
+    </xsl:template>
+
+    <xsl:template match="rdfs:subClassOf/@rdf:resource[. = '&sioc;Item']" mode="gc:EditMode">
+        <select name="ou" id="{generate-id(..)}">
+            <xsl:apply-templates select="key('resources-by-subclass', '&sioc;Container', $ont-model)" mode="gc:OptionMode">
+                <xsl:sort select="gc:label(.)" order="ascending"/>
+            </xsl:apply-templates>
+        </select>
+    </xsl:template>
+    
 </xsl:stylesheet>

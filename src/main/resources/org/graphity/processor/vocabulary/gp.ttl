@@ -50,13 +50,13 @@
 
 <#cacheControl> a owl:DatatypeProperty ;
     rdfs:subPropertyOf http:fieldValue ;
-    rdfs:label "Cache control header value" ;
+    rdfs:label "Cache control" ;
     rdfs:isDefinedBy <#> .
 
 <#limit> a owl:DatatypeProperty ;
     # rdfs:domain ldp:Container ; # rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
-    rdfs:label "LIMIT solution modifier" ;
+    rdfs:label "LIMIT modifier" ;
     rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
     rdfs:seeAlso sp:limit ;
     rdfs:isDefinedBy <#> .
@@ -64,7 +64,7 @@
 <#offset> a owl:DatatypeProperty ;
     # rdfs:domain ldp:Container ; # rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
-    rdfs:label "OFFSET solution modifier" ;
+    rdfs:label "OFFSET modifier" ;
     rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
     rdfs:seeAlso sp:offset ;
     rdfs:isDefinedBy <#> .
@@ -72,8 +72,8 @@
 <#orderBy> a owl:DatatypeProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:string ;
-    rdfs:label "ORDER BY variable name" ;
-    rdfs:comment "SPIN expects an rdf:List of OrderByConditions instead" ;
+    rdfs:label "ORDER BY ?varName" ;
+    rdfs:comment "SPIN expects an rdf:List of OrderByConditions for sp:orderBy" ;
     rdfs:seeAlso sp:orderBy ;
     rdfs:isDefinedBy <#> .
 
