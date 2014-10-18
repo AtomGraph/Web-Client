@@ -17,7 +17,9 @@
 package org.graphity.client.reader;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -60,9 +62,10 @@ public class ValidatingRDFPostReader extends RDFPostReader
     {
         Model model = super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
 
-	getOntModel().add(model);
-	SPINModuleRegistry.get().registerAll(getOntModel(), null);
-	List<ConstraintViolation> cvs = SPINConstraints.check(getOntModel(), null);
+        OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        ontModel.add(getOntModel()).add(model);
+	SPINModuleRegistry.get().registerAll(ontModel, null);
+	List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null);
 	if (!cvs.isEmpty())
         {
             if (log.isDebugEnabled()) log.debug("SPIN constraint violations: {}", cvs);
