@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 Martynas Jusevičius <martynas@graphity.org>
+ *  Copyright 2014 Martynas Jusevičius <martynas@graphity.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  *  limitations under the License.
  *
  */
-package org.graphity.client.provider;
+package org.graphity.client.mapper;
 
-import com.hp.hpl.jena.shared.NotFoundException;
+import com.hp.hpl.jena.shared.DoesNotExistException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -27,11 +27,11 @@ import javax.ws.rs.ext.Provider;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException>
+public class DoesNotExistExceptionMapper implements ExceptionMapper<DoesNotExistException>
 {
-    
+
     @Override
-    public Response toResponse(NotFoundException ae)
+    public Response toResponse(DoesNotExistException ae)
     {
 	return Response.
 		status(Response.Status.NOT_FOUND).

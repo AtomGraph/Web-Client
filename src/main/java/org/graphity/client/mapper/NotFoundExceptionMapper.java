@@ -14,28 +14,27 @@
  *  limitations under the License.
  *
  */
-package org.graphity.client.provider;
+package org.graphity.client.mapper;
 
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.shared.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Maps (tunnels) Jena's remote query execution exception.
+ * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class QueryExceptionHTTPMapper implements ExceptionMapper<QueryExceptionHTTP>
+public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException>
 {
-
+    
     @Override
-    public Response toResponse(QueryExceptionHTTP qe)
+    public Response toResponse(NotFoundException ae)
     {
 	return Response.
-		status(qe.getResponseCode()).
-		//entity(qe.getResponseMessage()). // setting entity disables default Tomcat error page
+		status(Response.Status.NOT_FOUND).
 		build();
     }
 

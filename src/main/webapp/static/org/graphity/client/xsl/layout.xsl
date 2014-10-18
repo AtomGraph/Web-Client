@@ -893,15 +893,16 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*" mode="gc:CreateMode"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
-        <xsl:variable name="path" select="substring-after($absolute-path, $base-uri)" as="xs:string"/>
-        <xsl:variable name="template-uri" select="if (rdf:type/@rdf:resource = '&sioc;Container') then concat($path, '/', 'template.rdf') else 'template.rdf'" as="xs:string"/>
-
-        <xsl:if test="doc-available($template-uri)">
+        <xsl:param name="path" select="substring-after($absolute-path, $base-uri)" as="xs:string"/>
+        <xsl:param name="template-uri" select="if (rdf:type/@rdf:resource = '&sioc;Container') then concat($path, '/', 'template.rdf') else 'template.rdf'" as="xs:string"/>
+        <xsl:param name="template" select="document($template-uri)" as="document-node()"/>
+        
+        <!-- <xsl:if test="doc-available($template-uri)"> -->
             <xsl:variable name="result-doc" select="/"/>
-            <xsl:for-each select="key('resources', ('this', 'thing'), document($template-uri))">
+            <xsl:for-each select="key('resources', ('this', 'thing'), $template)">
                 <xsl:variable name="instance" select="$result-doc/rdf:RDF/*[every $type in current()/rdf:type/@rdf:resource satisfies $type = rdf:type/@rdf:resource][not(@rdf:about = $absolute-path)]"/>
                 <xsl:choose>
                     <xsl:when test="$instance">
@@ -914,9 +915,9 @@ exclude-result-prefixes="#all">
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-        </xsl:if>
+        <!-- </xsl:if> -->
     </xsl:template>
-    
+   
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
@@ -939,9 +940,9 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="instance" select="." as="element()"/>
-        <xsl:param name="add-statements" select="true()" as="xs:boolean?" tunnel="yes"/>
-        
-	<fieldset id="fieldset-{generate-id()}">
+        <xsl:param name="constraint-violations" select="key('violations-by-root', $instance/(@rdf:about, @rdf:nodeID), root($instance))" as="element()*"/>
+
+        <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="$instance/@rdf:about or not(key('predicates-by-object', $instance/@rdf:nodeID))">
                 <legend>
                     <xsl:apply-templates select="$instance/@rdf:about | $instance/@rdf:nodeID" mode="gc:InlineMode"/>
@@ -952,16 +953,9 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="$instance/* | *[not(concat(namespace-uri(), local-name()) = $instance/*/concat(namespace-uri(), local-name()))]" mode="#current">
                 <xsl:sort select="gc:property-label(.)"/>
+                <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
             </xsl:apply-templates>
-            
-            <!--
-            <xsl:if test="$add-statements">
-                <div class="control-group">
-                    <button type="button" class="btn add-statement" title="Add new statement">&#x271A;</button>
-                </div>
-            </xsl:if>
-            -->
-	</fieldset>
+        </fieldset>
     </xsl:template>
 
     <!-- remove spaces -->

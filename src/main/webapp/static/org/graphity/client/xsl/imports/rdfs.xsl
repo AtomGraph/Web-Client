@@ -77,9 +77,13 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdfs:subClassOf/@rdf:resource[. = '&sioc;Item']" mode="gc:EditMode">
         <select name="ou" id="{generate-id(..)}">
+            <!--
             <xsl:apply-templates select="key('resources-by-subclass', '&sioc;Container', $ont-model)" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" order="ascending"/>
             </xsl:apply-templates>
+            -->
+            <xsl:apply-templates select="key('resources', '&sioc;Item', $ont-model)" mode="gc:OptionMode"/>
+            <xsl:apply-templates select="key('resources', '&sioc;Container', $ont-model)" mode="gc:OptionMode"/>
         </select>
     </xsl:template>
     

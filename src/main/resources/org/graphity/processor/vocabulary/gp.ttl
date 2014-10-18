@@ -1,11 +1,13 @@
 @base           <http://graphity.org/gp> .
 
 # @prefix :	<#> .
+@prefix gs:     <http://graphity.org/gs#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
 @prefix http:   <http://www.w3.org/2011/http#> .
+@prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
@@ -17,7 +19,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin:, dqc: ;
+    owl:imports sp:, spin:, dqc: ; # gs:
     owl:versionInfo "1.1.0" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
@@ -54,7 +56,7 @@
     rdfs:isDefinedBy <#> .
 
 <#limit> a owl:DatatypeProperty ;
-    # rdfs:domain ldp:Container ; # rdfs:domain <#Template> ;
+    rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
     rdfs:label "LIMIT modifier" ;
     rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
@@ -62,7 +64,7 @@
     rdfs:isDefinedBy <#> .
 
 <#offset> a owl:DatatypeProperty ;
-    # rdfs:domain ldp:Container ; # rdfs:domain <#Template> ;
+    rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
     rdfs:label "OFFSET modifier" ;
     rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
@@ -86,7 +88,7 @@
 
 # CLASSES
 
-<#Template> a owl:Class ;
+<#Template> a rdfs:Class, owl:Class ;
     <#uriTemplate> "/templates/{isPrimaryTopicOf.uuid}" ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Template> ;
@@ -105,18 +107,196 @@
 
 # RESOURCE TEMPLATES
 
-<#Resource> a owl:Class, <#Template> ;
+<#Space> a rdfs:Class, owl:Class, <#Template> ;
+     rdfs:subClassOf foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ; # gs:Resource
+     <#uriTemplate> "/" ;
+     spin:query <#DescribeWithChildren> ;
+     <#limit> 20 ;
+     # gc:defaultMode gc:ListMode ;
+     # gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode ;
+     rdfs:label "Space" ;
+     rdfs:isDefinedBy <#> .
+
+<#Container> a rdfs:Class, owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint , # gs:Resource, 
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_space ;
+            owl:allValuesFrom <#Space>
+        ] ;
+    <#uriTemplate> "/{container}" ;
+    <#skolemTemplate> "/{slug}" ;
+    spin:query <#DescribeWithChildren> ;
+    <#limit> 20 ;
+    rdfs:label "Container document" ;
+    rdfs:isDefinedBy <#> .
+
+<#Item> a rdfs:Class, owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_container ;
+            owl:allValuesFrom <#Container>
+        ] ;
+    <#uriTemplate> "/{container}/{item}" ;
+    <#skolemTemplate> "/{slug}" ;
+    spin:query <#DescribeWithTopic> ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Item> ;
+	    sp:arg2 <#slug>
+	] ;
+    rdfs:label "Item document" ;
+    rdfs:isDefinedBy <#> .
+
+<#SPARQLEndpoint> a owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
-    <#uriTemplate> "/{path: .*}" ;
-    spin:query <#Describe> ;
-    <#limit> 20 ; # necessary?
-    rdfs:label "Resource" ;
-    rdfs:comment "Linked Data resource backed by DESCRIBE query" ;
+    <#uriTemplate> "/sparql" ;
+    spin:query gs:Describe ;
+    rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES
 
-<#Describe>    a       sp:Describe, sp:Query ;
-    sp:resultNodes (spin:_this) ;
-    sp:text """DESCRIBE ?this"""^^xsd:string ;
-    rdfs:isDefinedBy <#> .
+<#DescribeWithTopic>    a       sp:Describe, sp:Query ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DESCRIBE ?this ?topic WHERE {
+    ?topic foaf:isPrimaryTopicOf ?this .
+}"""^^xsd:string .
+
+# ====
+
+<#DescribeFromGraphWithTopic>    a       sp:Describe, sp:Query ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DESCRIBE ?this ?topic WHERE {
+    GRAPH ?graph {
+        ?topic foaf:isPrimaryTopicOf ?this .
+    } .
+}"""^^xsd:string .
+
+# ====
+
+<#DescribeWithChildren>    a       sp:Describe, sp:Query ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+DESCRIBE ?this ?doc ?thing WHERE {
+    OPTIONAL {
+        {
+            ?this foaf:primaryTopic ?thing .
+        }
+        UNION
+        {
+            {
+                SELECT ?doc ?thing
+                WHERE {
+                    {
+                        ?doc sioc:has_space ?this
+                    }
+                    UNION
+                    {
+                        ?doc sioc:has_parent ?this
+                    }
+                    UNION
+                    {
+                        ?doc sioc:has_container ?this
+                    }
+                    OPTIONAL {
+                        ?doc foaf:primaryTopic ?thing .
+                    } .
+                }
+            } .
+        } .
+    } .
+}"""^^xsd:string .
+
+# ====
+
+<#DescribeFromGraphWithChildren>    a       sp:Describe, sp:Query ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+DESCRIBE ?this ?doc ?thing WHERE {
+    OPTIONAL {
+        {
+            GRAPH ?graph {
+                ?this foaf:primaryTopic ?thing .
+            } .
+        }
+        UNION
+        {
+            {
+                SELECT ?doc ?thing
+                WHERE {
+                    GRAPH ?childGraph {
+                        {
+                            ?doc sioc:has_space ?this
+                        }
+                        UNION
+                        {
+                            ?doc sioc:has_parent ?this
+                        }
+                        UNION
+                        {
+                            ?doc sioc:has_container ?this
+                        }
+                        OPTIONAL {
+                            ?doc foaf:primaryTopic ?thing .
+                        } .
+                    } .
+                }
+            } .
+        } .
+    } .
+}"""^^xsd:string .
+
+# ====
+
+<#Construct>    a       sp:Construct, sp:Query ;
+      sp:text """CONSTRUCT {
+    ?this ?property ?object .
+}
+WHERE {
+    ?this ?property ?object .
+}"""^^xsd:string .
+
+# ====
+
+<#ConstructResources>    a       sp:Construct, sp:Query ;
+      sp:text """CONSTRUCT {
+    ?subject ?property ?object .
+}
+WHERE {
+    ?subject ?property ?object .
+}"""^^xsd:string .
+
+# ====
+
+<#Delete>    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    ?this ?p ?o .
+}"""^^xsd:string .
+
+# ====
+
+<#DeleteFromGraph>    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    GRAPH ?g {
+        ?this ?p ?o .
+    } .
+}"""^^xsd:string .
+
+# ====
+
+<#DeleteWithTopic>    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    ?this ?p ?o .
+    ?primaryTopic foaf:isPrimaryTopicOf ?this .
+    ?primaryTopic ?x ?y .
+}"""^^xsd:string .
+
+# ====
+
+<#DeleteFromGraphWithTopic>    a       sp:DeleteWhere ;
+      sp:text """DELETE WHERE {
+    GRAPH ?g {
+        ?this ?p ?o .
+        ?primaryTopic foaf:isPrimaryTopicOf ?this .
+        ?primaryTopic ?x ?y .
+    } .
+}"""^^xsd:string .

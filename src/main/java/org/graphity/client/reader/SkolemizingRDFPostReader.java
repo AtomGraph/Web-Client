@@ -17,7 +17,6 @@
 package org.graphity.client.reader;
 
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,10 +27,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 import org.graphity.processor.util.Skolemizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,40 +45,49 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public class SkolemizingRDFPostReader extends RDFPostReader
+public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
 {
     private static final Logger log = LoggerFactory.getLogger(SkolemizingRDFPostReader.class);
 
+    @Context private Request request;
     @Context private UriInfo uriInfo;
-    @Context private Providers providers;
     
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-        Skolemizer skolemizer = Skolemizer.fromOntModel(getOntModel()).uriInfo(getUriInfo()).ontClass(getOntClass());
-        return skolemizer.build(super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream));
+        Model model = super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
+        
+        if (getRequest().getMethod().equalsIgnoreCase("POST"))
+        {
+            Skolemizer skolemizer = Skolemizer.fromOntModel(getOntModel()).uriInfo(getUriInfo()).ontClass(getOntClass());
+            try
+            {
+                return skolemizer.build(model);
+            }
+            catch (IllegalArgumentException ex)
+            {
+                if (log.isErrorEnabled()) log.error("Blank node skolemization failed for model: {}", model);
+                throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
+            }
+        }
+        else return model;
     }
-    
-    public OntModel getOntModel()
-    {
-	ContextResolver<OntModel> cr = getProviders().getContextResolver(OntModel.class, null);
-	return cr.getContext(OntModel.class);
-    }
-    
+        
     public OntClass getOntClass()
     {
 	ContextResolver<OntClass> cr = getProviders().getContextResolver(OntClass.class, null);
 	return cr.getContext(OntClass.class);
     }
     
+    @Override
     public UriInfo getUriInfo()
     {
         return uriInfo;
     }
 
-    public Providers getProviders()
+    public Request getRequest()
     {
-        return providers;
+        return request;
     }
-
+    
 }

@@ -11,6 +11,7 @@
 <rdf:RDF xmlns:gp="&gp;" xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:sp="&sp;">
     <rdf:Description rdf:nodeID="this">
         <rdf:type rdf:resource="&foaf;Document"/>
+        <rdf:type rdf:resource="&gp;Item"/>
         <foaf:primaryTopic rdf:nodeID="thing"/>
         <gp:slug rdf:datatype="&xsd;string"> </gp:slug>
     </rdf:Description>

@@ -14,6 +14,7 @@
 <rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:sioc="&sioc;" xmlns:gp="&gp;" xmlns:gc="&gc;" xmlns:sp="&sp;" xmlns:spin="&spin;">
     <rdf:Description rdf:nodeID="this">
         <rdf:type rdf:resource="&foaf;Document"/>
+        <rdf:type rdf:resource="&gp;Item"/>
         <foaf:primaryTopic rdf:nodeID="thing"/>
         <gp:slug rdf:datatype="&xsd;string"> </gp:slug>
     </rdf:Description>
@@ -22,11 +23,11 @@
         <rdf:type rdf:resource="&gp;Template"/>
         <rdfs:subClassOf rdf:resource="&foaf;Document"/>
         <rdfs:subClassOf rdf:resource="&sioc;Item"/>
-        <!-- <rdfs:subClassOf rdf:nodeID="item-restriction"/> -->
+        <rdfs:subClassOf rdf:nodeID="container-restriction"/>
         <foaf:isPrimaryTopicOf rdf:nodeID="this"/>
         <rdfs:label> </rdfs:label>
         <gp:uriTemplate> </gp:uriTemplate>
-        <gp:skolemTemplate>/{slug}</gp:skolemTemplate>
+        <gp:skolemTemplate> </gp:skolemTemplate>
         <gp:limit rdf:datatype="&xsd;long">20</gp:limit>
         <gp:offset rdf:datatype="&xsd;long">0</gp:offset>
         <gp:orderBy rdf:datatype="&xsd;string"> </gp:orderBy>
@@ -35,12 +36,9 @@
         <gc:defaultMode rdf:resource="&gc;ReadMode"/>
         <gc:mode rdf:resource="&gc;ReadMode"/>
     </rdf:Description>
-<!--
-    <rdf:Description rdf:nodeID="item-restriction">
+    <rdf:Description rdf:nodeID="container-restriction">
         <rdf:type rdf:resource="&owl;Restriction"/>
-        <owl:onProperty rdf:resource="&lda;itemTemplate"/>
+        <owl:onProperty rdf:resource="&sioc;has_container"/>
         <owl:hasValue rdf:nodeID="typeahead"/>
     </rdf:Description>
--->
-
 </rdf:RDF>

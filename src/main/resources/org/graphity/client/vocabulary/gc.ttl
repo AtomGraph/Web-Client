@@ -99,4 +99,12 @@
 
 # RESOURCE TEMPLATES
 
-gp:Resource <#mode> <#ReadMode>, <#ListReadMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .
+# gp:Resource <#mode> <#ReadMode>, <#ListReadMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .
+
+# TO-DO: refactor with rdfs:subClassOf inheritance instead
+
+gp:Container <#defaultMode> <#ListMode> ;
+    <#mode> <#ReadMode>, <#ListReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#CreateMode> .
+
+gp:Item <#defaultMode> <#ReadMode> ;
+    <#mode> <#ReadMode>, <#EditMode> .
