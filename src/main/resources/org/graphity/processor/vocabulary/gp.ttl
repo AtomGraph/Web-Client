@@ -89,7 +89,7 @@
 # CLASSES
 
 <#Template> a rdfs:Class, owl:Class ;
-    <#uriTemplate> "/templates/{isPrimaryTopicOf.uuid}" ;
+    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Template> ;
 	    sp:arg2 <#uriTemplate>
@@ -136,6 +136,10 @@
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#Container>
         ] ;
+        #[ a owl:Restriction ;
+        #    owl:onProperty foaf:primaryTopic ;
+        #    owl:allValuesFrom <#Topic>
+	#] ;
     <#uriTemplate> "/{container}/{item}" ;
     <#skolemTemplate> "/{slug}" ;
     spin:query <#DescribeWithTopic> ;
@@ -144,6 +148,16 @@
 	    sp:arg2 <#slug>
 	] ;
     rdfs:label "Item document" ;
+    rdfs:isDefinedBy <#> .
+
+<#Topic> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf owl:Class,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom <#Item>
+	] ;
+    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
+    rdfs:label "Topic" ;
     rdfs:isDefinedBy <#> .
 
 <#SPARQLEndpoint> a owl:Class, <#Template> ;

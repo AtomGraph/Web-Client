@@ -147,12 +147,8 @@ public class Skolemizer
                 OntClass docClass = matchOntClass(doc);
                 if (docClass != null)
                 {
-                    Resource allValuesFrom = getRestrictionAllValuesFrom(docClass, FOAF.primaryTopic);
-                    if (allValuesFrom != null && allValuesFrom.canAs(OntClass.class))
-                    {
-                        if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class of its document {}", resource, matchingClass);
-                        return build(resource, allValuesFrom.as(OntClass.class));
-                    }
+                    OntClass topicClass = matchOntClass(FOAF.isPrimaryTopicOf, docClass);
+                    return build(resource, topicClass);
                 }
             }
         }
@@ -275,35 +271,7 @@ public class Skolemizer
         
         return null;
     }
-
-    protected Resource getRestrictionAllValuesFrom(OntClass ontClass, Property property)
-    {
-	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (property == null) throw new IllegalArgumentException("OntProperty cannot be null");
-	
-	ExtendedIterator<OntClass> it = ontClass.listSuperClasses(true);
-	
-	try
-	{
-	    while (it.hasNext())
-	    {
-		OntClass superClass = it.next();
-		if (superClass.canAs(AllValuesFromRestriction.class))
-		{
-		    AllValuesFromRestriction restriction = superClass.asRestriction().asAllValuesFromRestriction();
-		    if (restriction.getOnProperty().equals(property))
-			return restriction.getAllValuesFrom();
-		}
-	    }
-	    
-	    return null;
-	}
-	finally
-	{
-	    it.close();
-	}
-    }
-
+    
     protected OntClass matchOntClass(Resource resource)
     {
         MatchedOntClassProvider ontClassProvider = new MatchedOntClassProvider();
@@ -340,9 +308,9 @@ public class Skolemizer
         return null;
     }
 
-    protected OntClass matchOntClass(Property property, OntClass containerClass)
+    protected OntClass matchOntClass(Property property, OntClass ontClass)
     {
-	if (containerClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (property == null) throw new IllegalArgumentException("Property cannot be null");
         
         ExtendedIterator<Restriction> it = getOntModel().listRestrictions();        
@@ -354,16 +322,27 @@ public class Skolemizer
                 if (restriction.canAs(AllValuesFromRestriction.class))
                 {
                     AllValuesFromRestriction avfr = restriction.asAllValuesFromRestriction();
-                    if (avfr.getOnProperty().equals(property) && avfr.hasAllValuesFrom(containerClass))
+                    if (avfr.getOnProperty().equals(property) && avfr.hasAllValuesFrom(ontClass))
                     {
-                        OntClass matchingClass = avfr.listSubClasses(true).next();
-                        if (log.isDebugEnabled()) log.debug("Value {} matched endpoint OntClass {}", containerClass, matchingClass);
-                        return matchingClass;
+                        ExtendedIterator<OntClass> classIt = avfr.listSubClasses(true);
+                        try
+                        {
+                            if (classIt.hasNext())
+                            {
+                                OntClass matchingClass = classIt.next();
+                                if (log.isDebugEnabled()) log.debug("Value {} matched endpoint OntClass {}", ontClass, matchingClass);
+                                return matchingClass;
+                            }
+                        }
+                        finally
+                        {
+                            classIt.close();
+                        }
                     }
                 }
             }
 
-            if (log.isWarnEnabled()) log.warn("Container {} has no OntClass match in this OntModel", containerClass);
+            if (log.isWarnEnabled()) log.warn("Container {} has no OntClass match in this OntModel", ontClass);
             return null;
         }
         finally
