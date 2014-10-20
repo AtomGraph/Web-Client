@@ -25,18 +25,18 @@
 # RESOURCE TEMPLATES
 
 <#LabelResourcesContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
+    rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     gp:uriTemplate "/resources/labelled" ;
-    spin:query <#DescribeGraphLabelResources> ;
+    spin:query <#DescribeLabelResources> ;
     gp:limit 20 ;
     gp:orderBy "label"^^xsd:string ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .
 
 <#LabelPropertiesContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf gp:Resource, foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
+    rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
     gp:uriTemplate "/properties/labelled" ;
-    spin:query <#DescribeGraphLabelProperties> ;
+    spin:query <#DescribeLabelProperties> ;
     gp:limit 20 ;
     gp:orderBy "label"^^xsd:string ;
     rdfs:label "Labelled properties container" ;
@@ -65,25 +65,6 @@ DESCRIBE ?this ?resource WHERE {
 
 # ===
 
-<#DescribeGraphLabelResources>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX dct:  <http://purl.org/dc/terms/>
-
-DESCRIBE ?this ?resource WHERE {
-    {
-        SELECT ?resource
-        WHERE {
-            GRAPH ?graph {
-                ?resource rdfs:label|dct:title ?label .
-                FILTER isURI(?resource) .
-            } .
-        }
-    } .
-}"""^^xsd:string .
-
-# ===
-
 <#DescribeLabelProperties>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -105,35 +86,6 @@ DESCRIBE ?this ?property WHERE {
                 ?property a owl:DatatypeProperty .
             } .
             ?property rdfs:label ?label .
-        }
-    } .
-}"""^^xsd:string .
-
-# ===
-
-<#DescribeGraphLabelProperties>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-DESCRIBE ?this ?property WHERE {
-    {
-        SELECT ?property
-        WHERE {
-            GRAPH ?graph {
-                {
-                    ?property a rdf:Property .
-                }
-                UNION
-                {
-                    ?property a owl:ObjectProperty .
-                }
-                UNION
-                {
-                    ?property a owl:DatatypeProperty .
-                } .
-                ?property rdfs:label ?label .
-            }
         }
     } .
 }"""^^xsd:string .

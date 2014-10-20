@@ -112,8 +112,6 @@
      <#uriTemplate> "/" ;
      spin:query <#DescribeWithChildren> ;
      <#limit> 20 ;
-     # gc:defaultMode gc:ListMode ;
-     # gc:mode gc:ReadMode, gc:ListReadMode, gc:ListMode, gc:TableMode, gc:ThumbnailMode, gc:MapMode, gc:EditMode ;
      rdfs:label "Space" ;
      rdfs:isDefinedBy <#> .
 
@@ -125,8 +123,12 @@
         ] ;
     <#uriTemplate> "/{container}" ;
     <#skolemTemplate> "/{slug}" ;
-    spin:query <#DescribeWithChildren> ;
     <#limit> 20 ;
+    spin:query <#DescribeWithChildren> ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Container> ;
+	    sp:arg2 <#slug>
+	] ;
     rdfs:label "Container document" ;
     rdfs:isDefinedBy <#> .
 
@@ -136,10 +138,6 @@
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#Container>
         ] ;
-        #[ a owl:Restriction ;
-        #    owl:onProperty foaf:primaryTopic ;
-        #    owl:allValuesFrom <#Topic>
-	#] ;
     <#uriTemplate> "/{container}/{item}" ;
     <#skolemTemplate> "/{slug}" ;
     spin:query <#DescribeWithTopic> ;
@@ -163,26 +161,21 @@
 <#SPARQLEndpoint> a owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
     <#uriTemplate> "/sparql" ;
-    spin:query gs:Describe ;
+    spin:query <#Describe> ;
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES
 
+<#Describe>    a       sp:Describe, sp:Query ; # redefined to avoid importing gs: vocab with {path: *}
+    sp:text """DESCRIBE ?this"""^^xsd:string .
+
+# ====
+
 <#DescribeWithTopic>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
     ?topic foaf:isPrimaryTopicOf ?this .
-}"""^^xsd:string .
-
-# ====
-
-<#DescribeFromGraphWithTopic>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-DESCRIBE ?this ?topic WHERE {
-    GRAPH ?graph {
-        ?topic foaf:isPrimaryTopicOf ?this .
-    } .
 }"""^^xsd:string .
 
 # ====
@@ -193,7 +186,7 @@ PREFIX sioc: <http://rdfs.org/sioc/ns#>
 DESCRIBE ?this ?doc ?thing WHERE {
     OPTIONAL {
         {
-            ?this foaf:primaryTopic ?thing .
+            ?thing foaf:isPrimaryTopicOf ?this .
         }
         UNION
         {
@@ -212,46 +205,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
                         ?doc sioc:has_container ?this
                     }
                     OPTIONAL {
-                        ?doc foaf:primaryTopic ?thing .
-                    } .
-                }
-            } .
-        } .
-    } .
-}"""^^xsd:string .
-
-# ====
-
-<#DescribeFromGraphWithChildren>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-DESCRIBE ?this ?doc ?thing WHERE {
-    OPTIONAL {
-        {
-            GRAPH ?graph {
-                ?this foaf:primaryTopic ?thing .
-            } .
-        }
-        UNION
-        {
-            {
-                SELECT ?doc ?thing
-                WHERE {
-                    GRAPH ?childGraph {
-                        {
-                            ?doc sioc:has_space ?this
-                        }
-                        UNION
-                        {
-                            ?doc sioc:has_parent ?this
-                        }
-                        UNION
-                        {
-                            ?doc sioc:has_container ?this
-                        }
-                        OPTIONAL {
-                            ?doc foaf:primaryTopic ?thing .
-                        } .
+                        ?thing foaf:isPrimaryTopicOf ?doc
                     } .
                 }
             } .
@@ -288,29 +242,9 @@ WHERE {
 
 # ====
 
-<#DeleteFromGraph>    a       sp:DeleteWhere ;
-      sp:text """DELETE WHERE {
-    GRAPH ?g {
-        ?this ?p ?o .
-    } .
-}"""^^xsd:string .
-
-# ====
-
 <#DeleteWithTopic>    a       sp:DeleteWhere ;
       sp:text """DELETE WHERE {
     ?this ?p ?o .
     ?primaryTopic foaf:isPrimaryTopicOf ?this .
     ?primaryTopic ?x ?y .
-}"""^^xsd:string .
-
-# ====
-
-<#DeleteFromGraphWithTopic>    a       sp:DeleteWhere ;
-      sp:text """DELETE WHERE {
-    GRAPH ?g {
-        ?this ?p ?o .
-        ?primaryTopic foaf:isPrimaryTopicOf ?this .
-        ?primaryTopic ?x ?y .
-    } .
 }"""^^xsd:string .

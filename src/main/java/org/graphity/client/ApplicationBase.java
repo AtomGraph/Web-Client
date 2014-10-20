@@ -143,7 +143,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
 
         OntDocumentManager.getInstance().setFileManager(FileManager.get());
-        OntDocumentManager.getInstance().setCacheModels(true); // lets cahce the ontologies FTW!!
+        OntDocumentManager.getInstance().setCacheModels(true); // lets cache the ontologies FTW!!
 	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
         
         /*

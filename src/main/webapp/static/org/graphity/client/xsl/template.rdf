@@ -11,6 +11,7 @@
 <rdf:RDF xmlns:rdf="&rdf;" xmlns:gp="&gp;" xmlns:dct="&dct;">
     <rdf:Description rdf:nodeID="this">
         <rdf:type rdf:resource="&foaf;Document"/>
+        <rdf:type rdf:resource="&gp;Container"/>
         <rdf:type rdf:resource="&ldp;Container"/>
         <rdf:type rdf:resource="&sioc;Container"/>
         <dct:title> </dct:title>

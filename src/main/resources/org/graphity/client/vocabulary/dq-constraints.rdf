@@ -1,0 +1,4069 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:fn="http://www.w3.org/2005/xpath-functions#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:afn="http://jena.hpl.hp.com/ARQ/function#"
+    xmlns:spin="http://spinrdf.org/spin#"
+    xmlns:sp="http://spinrdf.org/sp#"
+    xmlns:smf="http://topbraid.org/sparqlmotionfunctions#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:dqc="http://semwebquality.org/ontologies/dq-constraints#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:spl="http://spinrdf.org/spl#"
+  xml:base="http://semwebquality.org/ontologies/dq-constraints">
+  <owl:Ontology rdf:about="">
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >2011-03-28</dc:date>
+    <dc:subject xml:lang="en">Semantic Data Quality Management</dc:subject>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >V 1.1 Release 2011-03-28</owl:versionInfo>
+    <dc:creator xml:lang="en">Christian Fuerber, Martin Hepp, and Markus Wischnewski</dc:creator>
+    <dcterms:license rdf:resource="http://www.gnu.org/licenses/lgpl.html"/>
+    <rdfs:label xml:lang="en">The Data Quality Constraints Library</rdfs:label>
+    <dc:title xml:lang="en">The Data Quality Constraints Library</dc:title>
+    <owl:imports rdf:resource="http://spinrdf.org/spin"/>
+    <rdfs:comment xml:lang="en">This RDF document contains a library of data quality constraints represented as SPARQL query templates based on the SPARQL Inferencing Framework (SPIN). The data quality constraint templates are especially useful for the identification of data quality problems during data entry and for periodic quality checks during data usage.</rdfs:comment>
+  </owl:Ontology>
+  <rdf:Property rdf:about="http://spinrdf.org/sp#arg7">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >arg7</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#arg"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The seventh argument of a function call.</rdfs:comment>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://spinrdf.org/sp#arg6">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The sixth argument of a function call.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#arg"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >arg6</rdfs:label>
+  </rdf:Property>
+  <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/creator">
+    <rdfs:label xml:lang="en">Creator</rdfs:label>
+  </owl:AnnotationProperty>
+  <spin:Template rdf:ID="MissingLiteralsAndProperties">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?this .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    {
+        ?this a ?arg1 .
+        ?this ?arg2 "" .
+    }
+    UNION
+    {
+        ?this a ?arg1 .
+        NOT EXISTS {
+            ?this ?arg2 ?value .
+        } 
+    } 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_this"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <sp:Union>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <rdf:rest rdf:parseType="Collection">
+                  <rdf:Description>
+                    <sp:object></sp:object>
+                    <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                    <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
+                  </rdf:Description>
+                </rdf:rest>
+                <rdf:first rdf:parseType="Resource">
+                  <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+                  <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                  <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
+                </rdf:first>
+              </rdf:Description>
+              <rdf:Description>
+                <rdf:rest rdf:parseType="Collection">
+                  <sp:NotExists>
+                    <sp:elements rdf:parseType="Collection">
+                      <rdf:Description>
+                        <sp:object rdf:parseType="Resource">
+                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >value</sp:varName>
+                        </sp:object>
+                        <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                        <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
+                      </rdf:Description>
+                    </sp:elements>
+                  </sp:NotExists>
+                </rdf:rest>
+                <rdf:first rdf:parseType="Resource">
+                  <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+                  <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                  <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
+                </rdf:first>
+              </rdf:Description>
+            </sp:elements>
+          </sp:Union>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Property {?arg2} is mandatory and must not contain empty literals for instances of class {?arg1}!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query returns all instances of class ?arg1 where the literal for ?arg2 is empty or the whole property ?arg2 is missing.</rdfs:comment>
+    <rdfs:label xml:lang="en">Mandatory literal value and property check in instances of a class</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that contains intances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf>
+      <spin:Template rdf:ID="MissingElementConstraints">
+        <rdfs:subClassOf>
+          <spin:Template rdf:ID="ConstraintTemplates">
+            <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spin:abstract>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >data quality constraint templates</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Templates"/>
+            <rdfs:comment xml:lang="en">Constraint templates are generalized SPARQL query templates based on the SPARQL Inferencing Framework (SPIN). The query templates represent generic data quality rules that may be used to identify data quality problems, i.e. violations of previously defined constraints.</rdfs:comment>
+          </spin:Template>
+        </rdfs:subClassOf>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:comment xml:lang="en">Missing element constraints identify elements in the data set that are missing but required.</rdfs:comment>
+        <rdfs:label xml:lang="en">missing element constraints</rdfs:label>
+      </spin:Template>
+    </rdfs:subClassOf>
+  </spin:Template>
+  <spin:Template rdf:ID="FiveDigitNumericAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?s ?arg1 ?value .
+    FILTER (!regex(str(?value), "^[0-9]{5}$"^^xsd:string)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A2">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A3">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A2"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:regex>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >^[0-9]{5}$</sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A3"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:regex>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Syntax rule: {?arg1} must contain 5-digit numeric value in all instances!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select the property that contains the US zip codes!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query flags all instances that do not have a five digit numeric value for property ?arg1.</rdfs:comment>
+    <rdfs:label xml:lang="en">syntax check in all instances:  5 digit numeric values</rdfs:label>
+    <rdfs:subClassOf>
+      <spin:Template rdf:ID="SyntaxConstraints">
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Syntax constraints identify values that do not adhere to syntactical rules. {@en} </rdfs:comment>
+        <rdfs:label xml:lang="en">syntax constraints</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#ConstraintTemplates"/>
+      </spin:Template>
+    </rdfs:subClassOf>
+  </spin:Template>
+  <spin:Template rdf:ID="ListedIllegalValueAll">
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Property {?arg1} cannot have the same values as property {?arg3} in class {?arg2}!</spin:labelTemplate>
+    <rdfs:subClassOf>
+      <spin:Template rdf:ID="LegalValueConstraints">
+        <rdfs:subClassOf rdf:resource="#ConstraintTemplates"/>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:label xml:lang="en">legal value constraints</rdfs:label>
+        <rdfs:comment xml:lang="en">Legal value constraints identify values that are either not explicitly allowed or explicitly illegal.</rdfs:comment>
+      </spin:Template>
+    </rdfs:subClassOf>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class with instances holding the illegal values!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property holding the illegal values!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label xml:lang="en">Illegal value check in all instances</rdfs:label>
+    <rdfs:comment xml:lang="en">This query flags all instances with property ?arg1 that have values which are contained in property ?arg3 of instances of class ?arg2. The query tolerates chaotic assignments of language tags.</rdfs:comment>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A4">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A5">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A6">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:subject rdf:nodeID="A6"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A7">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+              </rdf:Description>
+              <sp:Filter>
+                <sp:expression>
+                  <sp:eq>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A7"/>
+                      </sp:str>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A5"/>
+                      </sp:str>
+                    </sp:arg2>
+                  </sp:eq>
+                </sp:expression>
+              </sp:Filter>
+            </sp:elements>
+          </sp:Optional>
+          <sp:Filter>
+            <sp:expression>
+              <sp:bound>
+                <sp:arg1 rdf:nodeID="A7"/>
+              </sp:bound>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A8"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A8"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A4"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A8"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?s .
+    _:c0 spin:violationPath ?arg1 .}
+WHERE
+  { ?s ?arg1 ?value
+    OPTIONAL
+      { ?s2 rdf:type ?arg2 .
+        ?s2 ?arg3 ?value1
+        FILTER ( str(?value1) = str(?value) )
+      }
+    FILTER bound(?value1)
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+  </spin:Template>
+  <spin:Template rdf:ID="UniqueValueAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?a .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?a ?arg1 ?uniqueValue1 .
+    ?b ?arg1 ?uniqueValue2 .
+    FILTER ((str(?uniqueValue1) = str(?uniqueValue2)) &amp;&amp; (?a != ?b)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A9"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A10">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >a</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A9"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A9"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A11">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >uniqueValue1</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A10"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A12">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >uniqueValue2</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A13">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >b</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:and>
+                <sp:arg2>
+                  <sp:ne>
+                    <sp:arg2 rdf:nodeID="A13"/>
+                    <sp:arg1 rdf:nodeID="A10"/>
+                  </sp:ne>
+                </sp:arg2>
+                <sp:arg1>
+                  <sp:eq>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A12"/>
+                      </sp:str>
+                    </sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A11"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:eq>
+                </sp:arg1>
+              </sp:and>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:subClassOf>
+      <spin:Template rdf:ID="UniquenessConstraints">
+        <rdfs:subClassOf rdf:resource="#ConstraintTemplates"/>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:comment xml:lang="en">Uniqueness constraints identify values that shall be unique, but are redundant within a certain data set.</rdfs:comment>
+        <rdfs:label xml:lang="en">uniqueness constraints</rdfs:label>
+      </spin:Template>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">Uniqueness check for all values in a property</rdfs:label>
+    <rdfs:comment xml:lang="en">This query returns all instances where the value for property ?arg1 is not unique in the tested data set. The query tolerates chaotic language tag assignments.</rdfs:comment>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Values in {?arg1} must be unique!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Template>
+  <spin:Template rdf:ID="UpperLimitClass">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    ?s a ?arg1 .
+    ?s ?arg2 ?value .
+    FILTER (smf:cast(?value, xsd:decimal) &gt; ?arg3) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A14"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A15">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A14"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A14"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A15"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A16">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:subject rdf:nodeID="A15"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:gt>
+                <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                <sp:arg1>
+                  <smf:cast>
+                    <sp:arg2 rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <sp:arg1 rdf:nodeID="A16"/>
+                  </smf:cast>
+                </sp:arg1>
+              </sp:gt>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment xml:lang="en">Enter upper limit!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Values in {?arg2} for instances of class {?arg1} must be lower than {?arg3}!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query returns all instances of class ?arg1 that have a value for property ?arg2 above the user defined limit ?arg3. The query tolerates chaotic datatype assignments.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <rdfs:comment xml:lang="en">Select class that contains instances to be tested!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label xml:lang="en">Upper limit check in all instances of a class</rdfs:label>
+    <rdfs:subClassOf>
+      <spin:Template rdf:ID="ValueRangeConstraints">
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:label xml:lang="en">value range constraints</rdfs:label>
+        <rdfs:comment xml:lang="en">Value range constraints allow the identification of values that do not obey a certain upper and/or lower limit.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ConstraintTemplates"/>
+      </spin:Template>
+    </rdfs:subClassOf>
+  </spin:Template>
+  <spin:Template rdf:ID="FunctionalDependencyTrustedReferenceAll">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 1 of functional dependency!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Value combinations of properties {?arg1} and {?arg2} must always be identical with value combinations of properties {?arg4} and {?arg5} in class {?arg3} for all instances!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg5"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select second property of trusted reference that holds legal values for property 2!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class of trusted reference that holds instances with legal value combinations!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 2 of functional dependency!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    OPTIONAL {
+        ?s ?arg1 ?value1 .
+        OPTIONAL {
+            ?s ?arg2 ?value2 .
+        } 
+    } 
+    NOT EXISTS {
+        ?s2 a ?arg3 .
+        ?s2 ?arg4 ?value1 .
+        ?s2 ?arg5 ?value2 .
+    } 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A17"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A18">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A17"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A17"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A17"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A19">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+                <sp:subject rdf:nodeID="A18"/>
+              </rdf:Description>
+              <sp:Optional>
+                <sp:elements rdf:parseType="Collection">
+                  <rdf:Description>
+                    <sp:object>
+                      <rdf:Description rdf:nodeID="A20">
+                        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        >value2</sp:varName>
+                      </rdf:Description>
+                    </sp:object>
+                    <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                    <sp:subject rdf:nodeID="A18"/>
+                  </rdf:Description>
+                </sp:elements>
+              </sp:Optional>
+            </sp:elements>
+          </sp:Optional>
+          <sp:NotExists>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A21">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:nodeID="A19"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                <sp:subject rdf:nodeID="A21"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:nodeID="A20"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg5"/>
+                <sp:subject rdf:nodeID="A21"/>
+              </rdf:Description>
+            </sp:elements>
+          </sp:NotExists>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select first property of trusted reference that holds legal values for property 1!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query flags instances with properties ?arg1 and ?arg2 that do not have a corresponding value combination in instances of the trusted reference in class ?arg3. The semantics of property ?arg1 should be equal with property ?arg4, and the semantics of property ?arg2 should be equal with ?arg5. The query tolerates homonymous values, i.e. the same value may be assigned to different dependent values by using different instances in the trusted reference. Value combinations that cannot be found in the trusted reference will also be flagged as incorrect. The query will also test the existence of a single value in the trusted reference when one property of the tested data is missing.</rdfs:comment>
+    <rdfs:label xml:lang="en">Functional dependency check in all instances with trusted reference</rdfs:label>
+    <rdfs:subClassOf>
+      <spin:Template rdf:ID="FunctionalDependencyConstraints">
+        <rdfs:subClassOf rdf:resource="#ConstraintTemplates"/>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:comment xml:lang="en">Functional dependencies are dependencies between the values of two or more different properties. Functional dependency constraints check the abidance of functional dependencies.</rdfs:comment>
+        <rdfs:label xml:lang="en">functional dependency constraints</rdfs:label>
+      </spin:Template>
+    </rdfs:subClassOf>
+  </spin:Template>
+  <spin:Template rdf:ID="FunctionalDependencyTrustedReference_ClassOverBlankNode">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT { 
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg3 .
+    _:b0 spin:violationPath ?arg4 .
+}
+WHERE {
+    ?s a ?arg1 .
+    OPTIONAL {
+        ?s ?arg2 ?node .
+        OPTIONAL {
+            ?node ?arg3 ?value1 .
+        } 
+        OPTIONAL {
+            ?s ?arg4 ?value2 .
+        } 
+    } 
+    NOT EXISTS {
+        ?s2 a ?arg5 .
+        ?s2 ?arg6 ?value1 .
+        ?s2 ?arg7 ?value2 .
+    } 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A22"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A23">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A22"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A22"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg4"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A22"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A23"/>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A24">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >node</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                <sp:subject rdf:nodeID="A23"/>
+              </rdf:Description>
+              <sp:Optional>
+                <sp:elements rdf:parseType="Collection">
+                  <rdf:Description>
+                    <sp:object>
+                      <rdf:Description rdf:nodeID="A25">
+                        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        >value1</sp:varName>
+                      </rdf:Description>
+                    </sp:object>
+                    <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                    <sp:subject rdf:nodeID="A24"/>
+                  </rdf:Description>
+                </sp:elements>
+              </sp:Optional>
+              <sp:Optional>
+                <sp:elements rdf:parseType="Collection">
+                  <rdf:Description>
+                    <sp:object>
+                      <rdf:Description rdf:nodeID="A26">
+                        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        >value2</sp:varName>
+                      </rdf:Description>
+                    </sp:object>
+                    <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                    <sp:subject rdf:nodeID="A23"/>
+                  </rdf:Description>
+                </sp:elements>
+              </sp:Optional>
+            </sp:elements>
+          </sp:Optional>
+          <sp:NotExists>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg5"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A27">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:nodeID="A25"/>
+                <sp:predicate rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >arg6</sp:varName>
+                </sp:predicate>
+                <sp:subject rdf:nodeID="A27"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:nodeID="A26"/>
+                <sp:predicate rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >arg7</sp:varName>
+                </sp:predicate>
+                <sp:subject rdf:nodeID="A27"/>
+              </rdf:Description>
+            </sp:elements>
+          </sp:NotExists>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class of trusted reference that holds instances with legal value combinations!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg5"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 1 of functional dependency!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select first property of trusted reference that holds legal values for property 1!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg6"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Value combinations of properties {?arg3} and {?arg4} must always be identical with value combinations of properties {?arg6} and {?arg7} of class {?arg5}  for all instances of class {?arg1}!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query is designed to test (blank node) instances of the property-and-node element (rdf:parseType="Resource") ?arg2 that are part of the instances of class ?arg 1. The query flags instances of property ?arg2 with properties ?arg3 and ?arg4 that do not have the exact value combination in instances of the trusted reference in class ?arg5. The semantics of property ?arg3 should be equal with property ?arg6, and the semantics of property ?arg4 should be equal with ?arg7. The query tolerates homonymous values, i.e. the same value may be assigned to different dependent values. Value combinations that cannot be found in the trusted reference will also be flagged. The query will also test the existence of a single value in the trusted reference when one property of the tested data is missing.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#FunctionalDependencyConstraints"/>
+    <rdfs:label xml:lang="en">Functional dependency check in blank node instances of a class with trusted reference</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 2 of functional dependency!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select second property of trusted reference that holds legal values for property 2!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg7"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances to be tested!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that holds blank nodes!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Template>
+  <spin:Template rdf:ID="FunctionalDependentEmptyValueAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg3 .
+}
+WHERE {
+    ?s ?arg1 ?arg2 .
+    FILTER (!spl:hasValue(?s, ?arg3, ""^^xsd:string)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A28"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A29">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A28"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A28"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A29"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <spl:hasValue>
+                    <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    ></sp:arg3>
+                    <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                    <sp:arg1 rdf:nodeID="A29"/>
+                  </spl:hasValue>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >When {?arg1} has value {?arg2}, then {?arg3} has to be empty!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 1 of functional dependency!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Enter functionally dependent value 1 of property 1!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that must contain empty literal!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query returns all instances with value ?arg2 for property ?arg1 that do not have an empty literal string for property ?arg3.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#FunctionalDependencyConstraints"/>
+  </spin:Template>
+  <spin:Template rdf:ID="ListedLegalValueClass">
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Instances of class {?arg1} can only contain the same values for property {?arg2} as property {?arg4} in instances of class {?arg3}!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query flags all instances of class ?arg1 with property ?arg2 that have values which are not contained in property ?arg4 of instances of class ?arg3. The query tolerates chaotic assignments of language tags.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#LegalValueConstraints"/>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A30">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A30"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A31">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A32">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:subject rdf:nodeID="A32"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A33">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+              </rdf:Description>
+              <sp:Filter>
+                <sp:expression>
+                  <sp:eq>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A33"/>
+                      </sp:str>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A31"/>
+                      </sp:str>
+                    </sp:arg2>
+                  </sp:eq>
+                </sp:expression>
+              </sp:Filter>
+            </sp:elements>
+          </sp:Optional>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:bound>
+                    <sp:arg1 rdf:nodeID="A33"/>
+                  </sp:bound>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A34"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A34"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A30"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A34"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?s .
+    _:c0 spin:violationPath ?arg2 .}
+WHERE
+  { ?s rdf:type ?arg1 .
+    ?s ?arg2 ?value
+    OPTIONAL
+      { ?s2 rdf:type ?arg3 .
+        ?s2 ?arg4 ?value1
+        FILTER ( str(?value1) = str(?value) )
+      }
+    FILTER ( ! bound(?value1) )
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:label xml:lang="en">Legal value check in class instances</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances with legal values!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class with instances to be tested!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that holds legal values!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Template>
+  <spin:Template rdf:ID="EAN-13Class">
+    <rdfs:subClassOf rdf:resource="#SyntaxConstraints"/>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Incorrect EAN-13 in {?arg2} of {?arg1} class instances!</spin:labelTemplate>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >EAN-13 Class</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Please enter the property holding the EAN-13!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Please enter the class holding the instances that shall be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query flags wrong EAN-13 values in instances of a specified class.</rdfs:comment>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A35">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >instance</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A35"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A36">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >ean</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A37">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >1</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >0</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >1</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A38">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >2</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >1</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >2</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A39">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >3</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >2</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >3</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A40">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >4</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >3</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >4</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A41">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >5</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >4</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >5</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A42">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >6</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >5</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >6</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A43">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >7</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >6</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >7</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A44">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >8</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >7</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >8</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A45">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >9</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >8</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >9</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A46">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >10</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >9</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >10</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A47">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >11</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >10</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >11</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A48">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >12</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >11</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >12</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A49">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >13</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A36"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >12</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >13</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A50">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <sp:add>
+                <sp:arg1>
+                  <sp:mul>
+                    <sp:arg1>
+                      <sp:add>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <sp:add>
+                                <sp:arg1>
+                                  <sp:add>
+                                    <sp:arg1>
+                                      <sp:add>
+                                        <sp:arg1>
+                                          <xsd:int>
+                                            <sp:arg1 rdf:nodeID="A38"/>
+                                          </xsd:int>
+                                        </sp:arg1>
+                                        <sp:arg2>
+                                          <xsd:int>
+                                            <sp:arg1 rdf:nodeID="A40"/>
+                                          </xsd:int>
+                                        </sp:arg2>
+                                      </sp:add>
+                                    </sp:arg1>
+                                    <sp:arg2>
+                                      <xsd:int>
+                                        <sp:arg1 rdf:nodeID="A42"/>
+                                      </xsd:int>
+                                    </sp:arg2>
+                                  </sp:add>
+                                </sp:arg1>
+                                <sp:arg2>
+                                  <xsd:int>
+                                    <sp:arg1 rdf:nodeID="A44"/>
+                                  </xsd:int>
+                                </sp:arg2>
+                              </sp:add>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A46"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2>
+                          <xsd:int>
+                            <sp:arg1 rdf:nodeID="A48"/>
+                          </xsd:int>
+                        </sp:arg2>
+                      </sp:add>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >3</sp:arg2>
+                  </sp:mul>
+                </sp:arg1>
+                <sp:arg2>
+                  <sp:add>
+                    <sp:arg1>
+                      <sp:add>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <sp:add>
+                                <sp:arg1>
+                                  <sp:add>
+                                    <sp:arg1>
+                                      <xsd:int>
+                                        <sp:arg1 rdf:nodeID="A37"/>
+                                      </xsd:int>
+                                    </sp:arg1>
+                                    <sp:arg2>
+                                      <xsd:int>
+                                        <sp:arg1 rdf:nodeID="A39"/>
+                                      </xsd:int>
+                                    </sp:arg2>
+                                  </sp:add>
+                                </sp:arg1>
+                                <sp:arg2>
+                                  <xsd:int>
+                                    <sp:arg1 rdf:nodeID="A41"/>
+                                  </xsd:int>
+                                </sp:arg2>
+                              </sp:add>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A43"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2>
+                          <xsd:int>
+                            <sp:arg1 rdf:nodeID="A45"/>
+                          </xsd:int>
+                        </sp:arg2>
+                      </sp:add>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <xsd:int>
+                        <sp:arg1 rdf:nodeID="A47"/>
+                      </xsd:int>
+                    </sp:arg2>
+                  </sp:add>
+                </sp:arg2>
+              </sp:add>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A51">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >check</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A50"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2>
+                  <sp:sub>
+                    <sp:arg1>
+                      <fn:string-length>
+                        <sp:arg1>
+                          <sp:str>
+                            <sp:arg1 rdf:nodeID="A50"/>
+                          </sp:str>
+                        </sp:arg1>
+                      </fn:string-length>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >1</sp:arg2>
+                  </sp:sub>
+                </sp:arg2>
+                <sp:arg3>
+                  <fn:string-length>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A50"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </fn:string-length>
+                </sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Filter>
+            <sp:expression>
+              <sp:or>
+                <sp:arg1>
+                  <sp:and>
+                    <sp:arg1>
+                      <sp:ne>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A51"/>
+                              </xsd:int>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A49"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >0</sp:arg2>
+                      </sp:ne>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:ne>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A51"/>
+                              </xsd:int>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A49"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >10</sp:arg2>
+                      </sp:ne>
+                    </sp:arg2>
+                  </sp:and>
+                </sp:arg1>
+                <sp:arg2>
+                  <sp:not>
+                    <sp:arg1>
+                      <sp:regex>
+                        <sp:arg1>
+                          <sp:str>
+                            <sp:arg1 rdf:nodeID="A36"/>
+                          </sp:str>
+                        </sp:arg1>
+                        <sp:arg2>^[0-9]{13}$</sp:arg2>
+                      </sp:regex>
+                    </sp:arg1>
+                  </sp:not>
+                </sp:arg2>
+              </sp:or>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A52"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A52"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A35"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A52"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?instance .
+    _:c0 spin:violationPath ?arg2 .}
+WHERE
+  { ?instance rdf:type ?arg1 .
+    ?instance ?arg2 ?ean
+    LET (?1 := afn:substr(str(?ean), 0, 1))
+    LET (?2 := afn:substr(str(?ean), 1, 2))
+    LET (?3 := afn:substr(str(?ean), 2, 3))
+    LET (?4 := afn:substr(str(?ean), 3, 4))
+    LET (?5 := afn:substr(str(?ean), 4, 5))
+    LET (?6 := afn:substr(str(?ean), 5, 6))
+    LET (?7 := afn:substr(str(?ean), 6, 7))
+    LET (?8 := afn:substr(str(?ean), 7, 8))
+    LET (?9 := afn:substr(str(?ean), 8, 9))
+    LET (?10 := afn:substr(str(?ean), 9, 10))
+    LET (?11 := afn:substr(str(?ean), 10, 11))
+    LET (?12 := afn:substr(str(?ean), 11, 12))
+    LET (?13 := afn:substr(str(?ean), 12, 13))
+    LET (?value := ( ( ( ( ( ( ( xsd:int(?2) + xsd:int(?4) ) + xsd:int(?6) ) + xsd:int(?8) ) + xsd:int(?10) ) + xsd:int(?12) ) * 3 ) + ( ( ( ( ( xsd:int(?1) + xsd:int(?3) ) + xsd:int(?5) ) + xsd:int(?7) ) + xsd:int(?9) ) + xsd:int(?11) ) ))
+    LET (?check := afn:substr(str(?value), ( fn:string-length(str(?value)) - 1 ), fn:string-length(str(?value))))
+    FILTER ( ( ( ( xsd:int(?check) + xsd:int(?13) ) != 0 ) &amp;&amp; ( ( xsd:int(?check) + xsd:int(?13) ) != 10 ) ) || ( ! regex(str(?ean), "^[0-9]{13}$") ) )
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+  </spin:Template>
+  <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/title">
+    <rdfs:label xml:lang="en">Title</rdfs:label>
+  </owl:AnnotationProperty>
+  <spin:Template rdf:ID="LowerLimitClass">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    ?s a ?arg1 .
+    ?s ?arg2 ?value .
+    FILTER (smf:cast(?value, xsd:decimal) &lt; ?arg3) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A53"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A54">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A53"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A53"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A54"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A55">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:subject rdf:nodeID="A54"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:lt>
+                <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                <sp:arg1>
+                  <smf:cast>
+                    <sp:arg2 rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <sp:arg1 rdf:nodeID="A55"/>
+                  </smf:cast>
+                </sp:arg1>
+              </sp:lt>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:subClassOf rdf:resource="#ValueRangeConstraints"/>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Values in {?arg2} for instances of class {?arg1} must be greater than {?arg3}!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter lower limit! {@en}</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select class that contains instances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label xml:lang="en">Lower limit check in all instances of a class</rdfs:label>
+    <rdfs:comment xml:lang="en">This query returns all instances of class ?arg1 that have a value for property ?arg2 below the user defined limit ?arg3. The query tolerates chaotic datatype assignments.</rdfs:comment>
+  </spin:Template>
+  <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/subject">
+    <rdfs:label xml:lang="en">Subject</rdfs:label>
+  </owl:AnnotationProperty>
+  <spin:Template rdf:ID="ListedIllegalValueClass">
+    <rdfs:subClassOf rdf:resource="#LegalValueConstraints"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that holds illegal values!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A56">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A56"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A57">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A58">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:subject rdf:nodeID="A58"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A59">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+              </rdf:Description>
+              <sp:Filter>
+                <sp:expression>
+                  <sp:eq>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A59"/>
+                      </sp:str>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A57"/>
+                      </sp:str>
+                    </sp:arg2>
+                  </sp:eq>
+                </sp:expression>
+              </sp:Filter>
+            </sp:elements>
+          </sp:Optional>
+          <sp:Filter>
+            <sp:expression>
+              <sp:bound>
+                <sp:arg1 rdf:nodeID="A59"/>
+              </sp:bound>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A60"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A60"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A56"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A60"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT&#xD;
+{   _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?s .
+    _:c0 spin:violationPath ?arg2 .&#xD;
+}
+WHERE
+  { ?s rdf:type ?arg1 .
+    ?s ?arg2 ?value
+    OPTIONAL
+      { ?s2 rdf:type ?arg3 .
+        ?s2 ?arg4 ?value1
+        FILTER ( str(?value1) = str(?value) )
+      }
+    FILTER bound(?value1)
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:label xml:lang="en">Illegal value check in class instances</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class with instances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances with illegal values!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query flags all instances of class ?arg1 with property ?arg2 that have values which are contained in property ?arg4 of instances of class ?arg3. The query tolerates chaotic assignments of language tags.</rdfs:comment>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Instances of class {?arg1} cannot have the same values for property {?arg2} as property {?arg4} in class {?arg3}!</spin:labelTemplate>
+  </spin:Template>
+  <spin:Template rdf:ID="ListedLegalValueAll">
+    <rdfs:subClassOf rdf:resource="#LegalValueConstraints"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that holds legal values!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query flags all instances with property ?arg1 that have values which are not contained in  property ?arg3 of instances of class ?arg2. The query tolerates chaotic assignments of language tags.</rdfs:comment>
+    <rdfs:label xml:lang="en">Legal value check in all instances</rdfs:label>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Property {?arg1} can only contain the same values as property {?arg3} in instances of class {?arg2}!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances with legal values!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A61">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A62">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A63">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:subject rdf:nodeID="A63"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A64">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+              </rdf:Description>
+              <sp:Filter>
+                <sp:expression>
+                  <sp:eq>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A64"/>
+                      </sp:str>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A62"/>
+                      </sp:str>
+                    </sp:arg2>
+                  </sp:eq>
+                </sp:expression>
+              </sp:Filter>
+            </sp:elements>
+          </sp:Optional>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:bound>
+                    <sp:arg1 rdf:nodeID="A64"/>
+                  </sp:bound>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A65"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A65"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A61"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A65"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?s .
+    _:c0 spin:violationPath ?arg1 .}
+WHERE
+  { ?s ?arg1 ?value
+    OPTIONAL
+      { ?s2 rdf:type ?arg2 .
+        ?s2 ?arg3 ?value1
+        FILTER ( str(?value1) = str(?value) )
+      }
+    FILTER ( ! bound(?value1) )
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+  </spin:Template>
+  <spin:Template rdf:ID="InconsistentValueRangeAll">
+    <rdfs:comment xml:lang="en">This query flags all instances with inconsistant value ranges. Among others it is suitable for value ranges with datatypes xsd:integer, xsd:int, xsd:float, xsd:date, and xsd:dateTime. The literals must be typed.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Please enter the datatype property that shall hold the greater value!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Please enter the datatype property that shall hold the lower value!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Value in {?arg1} cannot be greater than value of {?arg2}!</spin:labelTemplate>
+    <rdfs:subClassOf rdf:resource="#ValueRangeConstraints"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Inconsistent value range all</rdfs:label>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A66">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >instance</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A67">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >from</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A66"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A68">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >through</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:ge>
+                <sp:arg1 rdf:nodeID="A67"/>
+                <sp:arg2 rdf:nodeID="A68"/>
+              </sp:ge>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A69"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A69"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A66"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A69"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A69"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?instance .
+    _:c0 spin:violationPath ?arg1 .
+    _:c0 spin:violationPath ?arg2 .}
+WHERE
+  { ?instance ?arg1 ?from .
+    ?instance ?arg2 ?through
+    FILTER ( ?from &gt;= ?through )
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+  </spin:Template>
+  <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date">
+    <rdfs:label xml:lang="en">Date</rdfs:label>
+  </owl:AnnotationProperty>
+  <spin:Template rdf:ID="LowerLimitAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?s ?arg1 ?value .
+    FILTER (smf:cast(?value, xsd:decimal) &lt; ?arg2) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A70"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A71">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A70"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A70"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A72">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A71"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:lt>
+                <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                <sp:arg1>
+                  <smf:cast>
+                    <sp:arg2 rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <sp:arg1 rdf:nodeID="A72"/>
+                  </smf:cast>
+                </sp:arg1>
+              </sp:lt>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:comment xml:lang="en">This query returns all instances that have a value for property ?arg1 below the user defined limit ?arg2. The query tolerates chaotic datatype assignments.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter lower limit!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Values in {?arg1} must be greater than {?arg2}!</spin:labelTemplate>
+    <rdfs:label xml:lang="en">Lower limit check in all instances</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ValueRangeConstraints"/>
+  </spin:Template>
+  <spin:Template rdf:ID="ExclusiveFunctionalDependencyAll">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter functionally dependent value 1 of property 1!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 2 of functional dependency!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter functionally dependent value 2 of property 2!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg3 .
+}
+WHERE {
+    ?s ?arg1 ?arg2 .
+    FILTER (!spl:hasValue(?s, ?arg3, ?arg4)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A73"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A74">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A73"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A73"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A74"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <spl:hasValue>
+                    <sp:arg3 rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                    <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                    <sp:arg1 rdf:nodeID="A74"/>
+                  </spl:hasValue>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:subClassOf rdf:resource="#FunctionalDependencyConstraints"/>
+    <rdfs:label xml:lang="en">exclusive functional dependency check in all instances</rdfs:label>
+    <rdfs:comment xml:lang="en">This query flags instances with property ?arg1 and value ?arg2 that do not have value ?arg4 with property ?arg3. It is only suitable for value dependencies with one to one cardinality. The query does not tolerate homonyms and is not restricted to a specific class.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 1 of functional dependency!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Value "{?arg2}" of {?arg1} must only have value "{?arg4}" in {?arg3} in all instances!</spin:labelTemplate>
+  </spin:Template>
+  <spin:Template rdf:ID="LettersAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?s ?arg1 ?value .
+    FILTER (!regex(str(?value), "^([A-Za-z])*$"^^xsd:string)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A75"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A76">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A75"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A75"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A77">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A76"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:regex>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >^([A-Za-z])*$</sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A77"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:regex>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Syntax rule: only letters allowed in {?arg1}!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query flags all instances with property ?arg1 that do not have letters as literal values. The query tolerates language tags.</rdfs:comment>
+    <rdfs:label xml:lang="en">syntax check in all instances: only letters allowed</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#SyntaxConstraints"/>
+  </spin:Template>
+  <spin:Template rdf:ID="FunctionalDependencyTrustedReferenceClass">
+    <rdfs:subClassOf rdf:resource="#FunctionalDependencyConstraints"/>
+    <rdfs:comment xml:lang="en">This query flags instances of class ?arg 1 with properties ?arg2 and ?arg3 that do not have the exact value combination in instances of the trusted reference in class ?arg4. The semantics of property ?arg2 should be equal with property ?arg5, and the semantics of property ?arg3 should be equal with ?arg6. The query tolerates homonymous values, i.e. the same value may be assigned to different dependent values. Value combinations that cannot be found in the trusted reference will also be flagged. The query will also test the existence of a single value in the trusted reference when one property of the tested data is missing.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg6"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select second property of trusted reference that holds legal values for property 2!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class of trusted reference that holds instances with legal value combinations!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Value combinations of properties {?arg2} and {?arg3} must always be identical with value combinations of properties {?arg5} and {?arg6} of class {?arg4}  for all instances of class {?arg1}!</spin:labelTemplate>
+    <rdfs:label xml:lang="en">Functional dependency check in class instances with trusted reference</rdfs:label>
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg2 .
+    _:b0 spin:violationPath ?arg3 .
+}
+WHERE {
+    ?s a ?arg1 .
+    OPTIONAL {
+        ?s ?arg2 ?value1 .
+        OPTIONAL {
+            ?s ?arg3 ?value2 .
+        } 
+    } 
+    NOT EXISTS {
+        ?s2 a ?arg4 .
+        ?s2 ?arg5 ?value1 .
+        ?s2 ?arg6 ?value2 .
+    } 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A78"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A79">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A78"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A78"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A78"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A79"/>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A80">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                <sp:subject rdf:nodeID="A79"/>
+              </rdf:Description>
+              <sp:Optional>
+                <sp:elements rdf:parseType="Collection">
+                  <rdf:Description>
+                    <sp:object>
+                      <rdf:Description rdf:nodeID="A81">
+                        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        >value2</sp:varName>
+                      </rdf:Description>
+                    </sp:object>
+                    <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg3"/>
+                    <sp:subject rdf:nodeID="A79"/>
+                  </rdf:Description>
+                </sp:elements>
+              </sp:Optional>
+            </sp:elements>
+          </sp:Optional>
+          <sp:NotExists>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A82">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:nodeID="A80"/>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg5"/>
+                <sp:subject rdf:nodeID="A82"/>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:nodeID="A81"/>
+                <sp:predicate rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >arg6</sp:varName>
+                </sp:predicate>
+                <sp:subject rdf:nodeID="A82"/>
+              </rdf:Description>
+            </sp:elements>
+          </sp:NotExists>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 2 of functional dependency!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 1 of functional dependency!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg5"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select first property of trusted reference that holds legal values for property 1!</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Template>
+  <spin:Template rdf:ID="ListedLegalValueClassOverBlankNode">
+    <rdfs:subClassOf rdf:resource="#LegalValueConstraints"/>
+    <rdfs:comment xml:lang="en">This query flags all instances of property-and-node element ?arg2 (rdf:parseType="Resource") with property ?arg3 in class ?arg1 that have values which are not contained in property ?arg5 of instances of class ?arg3. The query tolerates chaotic assignments of language tags.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that holds legal values!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg5"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property that holds blank nodes!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class with instances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?s .
+    _:c0 spin:violationPath ?arg2 .
+    _:c0 spin:violationPath ?arg3 .}
+WHERE
+  { ?s rdf:type ?arg1 .
+    ?s ?arg2 ?node .
+    ?node ?arg3 ?value
+    OPTIONAL
+      { ?s2 rdf:type ?arg4 .
+        ?s2 ?arg5 ?value1
+        FILTER ( str(?value) = str(?value1) )
+      }
+    FILTER ( ! bound(?value1) )
+  }</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A83"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A84">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A83"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A83"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A83"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A84"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A85">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >node</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:subject rdf:nodeID="A84"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A86">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:subject rdf:nodeID="A85"/>
+          </rdf:Description>
+          <sp:Optional>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:subject>
+                  <rdf:Description rdf:nodeID="A87">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >s2</sp:varName>
+                  </rdf:Description>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object>
+                  <rdf:Description rdf:nodeID="A88">
+                    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >value1</sp:varName>
+                  </rdf:Description>
+                </sp:object>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg5"/>
+                <sp:subject rdf:nodeID="A87"/>
+              </rdf:Description>
+              <sp:Filter>
+                <sp:expression>
+                  <sp:eq>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A88"/>
+                      </sp:str>
+                    </sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A86"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:eq>
+                </sp:expression>
+              </sp:Filter>
+            </sp:elements>
+          </sp:Optional>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:bound>
+                    <sp:arg1 rdf:nodeID="A88"/>
+                  </sp:bound>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:label xml:lang="en">Legal value check in blank node instances of a class</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances with legal values!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Instances of property-and-node element {?arg2} in class {?arg1} can only contain the same values for property {?arg3} as property {?arg5} in instances of class {?arg4}!</spin:labelTemplate>
+  </spin:Template>
+  <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/license">
+    <rdfs:comment xml:lang="en">A legal document giving official permission to do something with the resource.</rdfs:comment>
+    <rdfs:label xml:lang="en">License</rdfs:label>
+  </owl:AnnotationProperty>
+  <spin:Template rdf:ID="EAN-13All">
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Incorrect EAN-13 in {?arg1}!</spin:labelTemplate>
+    <rdfs:subClassOf rdf:resource="#SyntaxConstraints"/>
+    <rdfs:comment xml:lang="en">This query flags wrong EAN-13 values.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Please enter the property holding the EAN-13!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >EAN-13 All</rdfs:label>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A89">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >instance</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A90">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >ean</sp:varName>
+              </rdf:Description>
+            </sp:object>
+          </rdf:Description>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A91">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >1</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >0</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >1</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A92">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >2</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >1</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >2</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A93">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >3</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >2</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >3</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A94">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >4</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >3</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >4</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A95">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >5</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >4</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >5</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A96">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >6</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >5</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >6</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A97">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >7</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >6</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >7</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A98">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >8</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >7</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >8</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A99">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >9</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >8</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >9</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A100">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >10</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >9</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >10</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A101">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >11</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >10</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >11</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A102">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >12</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >11</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >12</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A103">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >13</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A90"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >12</sp:arg2>
+                <sp:arg3 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >13</sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A104">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <sp:add>
+                <sp:arg1>
+                  <sp:mul>
+                    <sp:arg1>
+                      <sp:add>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <sp:add>
+                                <sp:arg1>
+                                  <sp:add>
+                                    <sp:arg1>
+                                      <sp:add>
+                                        <sp:arg1>
+                                          <xsd:int>
+                                            <sp:arg1 rdf:nodeID="A92"/>
+                                          </xsd:int>
+                                        </sp:arg1>
+                                        <sp:arg2>
+                                          <xsd:int>
+                                            <sp:arg1 rdf:nodeID="A94"/>
+                                          </xsd:int>
+                                        </sp:arg2>
+                                      </sp:add>
+                                    </sp:arg1>
+                                    <sp:arg2>
+                                      <xsd:int>
+                                        <sp:arg1 rdf:nodeID="A96"/>
+                                      </xsd:int>
+                                    </sp:arg2>
+                                  </sp:add>
+                                </sp:arg1>
+                                <sp:arg2>
+                                  <xsd:int>
+                                    <sp:arg1 rdf:nodeID="A98"/>
+                                  </xsd:int>
+                                </sp:arg2>
+                              </sp:add>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A100"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2>
+                          <xsd:int>
+                            <sp:arg1 rdf:nodeID="A102"/>
+                          </xsd:int>
+                        </sp:arg2>
+                      </sp:add>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >3</sp:arg2>
+                  </sp:mul>
+                </sp:arg1>
+                <sp:arg2>
+                  <sp:add>
+                    <sp:arg1>
+                      <sp:add>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <sp:add>
+                                <sp:arg1>
+                                  <sp:add>
+                                    <sp:arg1>
+                                      <xsd:int>
+                                        <sp:arg1 rdf:nodeID="A91"/>
+                                      </xsd:int>
+                                    </sp:arg1>
+                                    <sp:arg2>
+                                      <xsd:int>
+                                        <sp:arg1 rdf:nodeID="A93"/>
+                                      </xsd:int>
+                                    </sp:arg2>
+                                  </sp:add>
+                                </sp:arg1>
+                                <sp:arg2>
+                                  <xsd:int>
+                                    <sp:arg1 rdf:nodeID="A95"/>
+                                  </xsd:int>
+                                </sp:arg2>
+                              </sp:add>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A97"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2>
+                          <xsd:int>
+                            <sp:arg1 rdf:nodeID="A99"/>
+                          </xsd:int>
+                        </sp:arg2>
+                      </sp:add>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <xsd:int>
+                        <sp:arg1 rdf:nodeID="A101"/>
+                      </xsd:int>
+                    </sp:arg2>
+                  </sp:add>
+                </sp:arg2>
+              </sp:add>
+            </sp:expression>
+          </sp:Let>
+          <sp:Let>
+            <sp:variable>
+              <rdf:Description rdf:nodeID="A105">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >check</sp:varName>
+              </rdf:Description>
+            </sp:variable>
+            <sp:expression>
+              <afn:substr>
+                <sp:arg1>
+                  <sp:str>
+                    <sp:arg1 rdf:nodeID="A104"/>
+                  </sp:str>
+                </sp:arg1>
+                <sp:arg2>
+                  <sp:sub>
+                    <sp:arg1>
+                      <fn:string-length>
+                        <sp:arg1>
+                          <sp:str>
+                            <sp:arg1 rdf:nodeID="A104"/>
+                          </sp:str>
+                        </sp:arg1>
+                      </fn:string-length>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >1</sp:arg2>
+                  </sp:sub>
+                </sp:arg2>
+                <sp:arg3>
+                  <fn:string-length>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A104"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </fn:string-length>
+                </sp:arg3>
+              </afn:substr>
+            </sp:expression>
+          </sp:Let>
+          <sp:Filter>
+            <sp:expression>
+              <sp:or>
+                <sp:arg1>
+                  <sp:and>
+                    <sp:arg1>
+                      <sp:ne>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A105"/>
+                              </xsd:int>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A103"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >0</sp:arg2>
+                      </sp:ne>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:ne>
+                        <sp:arg1>
+                          <sp:add>
+                            <sp:arg1>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A105"/>
+                              </xsd:int>
+                            </sp:arg1>
+                            <sp:arg2>
+                              <xsd:int>
+                                <sp:arg1 rdf:nodeID="A103"/>
+                              </xsd:int>
+                            </sp:arg2>
+                          </sp:add>
+                        </sp:arg1>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >10</sp:arg2>
+                      </sp:ne>
+                    </sp:arg2>
+                  </sp:and>
+                </sp:arg1>
+                <sp:arg2>
+                  <sp:not>
+                    <sp:arg1>
+                      <sp:regex>
+                        <sp:arg1>
+                          <sp:str>
+                            <sp:arg1 rdf:nodeID="A90"/>
+                          </sp:str>
+                        </sp:arg1>
+                        <sp:arg2>^[0-9]{13}$</sp:arg2>
+                      </sp:regex>
+                    </sp:arg1>
+                  </sp:not>
+                </sp:arg2>
+              </sp:or>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A106"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A106"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A89"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A106"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT 
+  { _:c0 rdf:type spin:ConstraintViolation .
+    _:c0 spin:violationRoot ?instance .
+    _:c0 spin:violationPath ?arg1 .}
+WHERE
+  { ?instance ?arg1 ?ean
+    LET (?1 := afn:substr(str(?ean), 0, 1))
+    LET (?2 := afn:substr(str(?ean), 1, 2))
+    LET (?3 := afn:substr(str(?ean), 2, 3))
+    LET (?4 := afn:substr(str(?ean), 3, 4))
+    LET (?5 := afn:substr(str(?ean), 4, 5))
+    LET (?6 := afn:substr(str(?ean), 5, 6))
+    LET (?7 := afn:substr(str(?ean), 6, 7))
+    LET (?8 := afn:substr(str(?ean), 7, 8))
+    LET (?9 := afn:substr(str(?ean), 8, 9))
+    LET (?10 := afn:substr(str(?ean), 9, 10))
+    LET (?11 := afn:substr(str(?ean), 10, 11))
+    LET (?12 := afn:substr(str(?ean), 11, 12))
+    LET (?13 := afn:substr(str(?ean), 12, 13))
+    LET (?value := ( ( ( ( ( ( ( xsd:int(?2) + xsd:int(?4) ) + xsd:int(?6) ) + xsd:int(?8) ) + xsd:int(?10) ) + xsd:int(?12) ) * 3 ) + ( ( ( ( ( xsd:int(?1) + xsd:int(?3) ) + xsd:int(?5) ) + xsd:int(?7) ) + xsd:int(?9) ) + xsd:int(?11) ) ))
+    LET (?check := afn:substr(str(?value), ( fn:string-length(str(?value)) - 1 ), fn:string-length(str(?value))))
+    FILTER ( ( ( ( xsd:int(?check) + xsd:int(?13) ) != 0 ) &amp;&amp; ( ( xsd:int(?check) + xsd:int(?13) ) != 10 ) ) || ( ! regex(str(?ean), "^[0-9]{13}$") ) )
+  }</sp:text>
+      </sp:Construct>
+    </spin:body>
+  </spin:Template>
+  <spin:Template rdf:ID="MissingLiterals">
+    <rdfs:subClassOf rdf:resource="#MissingElementConstraints"/>
+    <rdfs:label xml:lang="en">mandatory literal value check in instances of a class</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select class to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mandatory literals in {?arg2} of class {?arg1}!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query returns all instances of class ?arg1 where the literal for ?arg2 is empty. It does not return instances where the whole property ?arg2 is missing.</rdfs:comment>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A107">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A107"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:object rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            ></sp:object>
+          </rdf:Description>
+        </sp:where>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A108"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A108"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:object rdf:nodeID="A107"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:subject rdf:nodeID="A108"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    ?s a ?arg1 .
+    ?s ?arg2 ""^^xsd:string .
+}</sp:text>
+      </sp:Construct>
+    </spin:body>
+  </spin:Template>
+  <spin:Template rdf:ID="NumbersAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?s ?arg1 ?value .
+    FILTER (!regex(str(?value), "^([0-9])*$"^^xsd:string)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A109"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A110">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A109"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A109"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A111">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A110"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:regex>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >^([0-9])*$</sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A111"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:regex>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:comment xml:lang="en">This query flags all instances with property ?arg1 that have characters other than numbers as literal values.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Syntax rule: only numbers allowed in {?arg1}!</spin:labelTemplate>
+    <rdfs:label xml:lang="en">syntax check in all instances: only numbers allowed</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#SyntaxConstraints"/>
+  </spin:Template>
+  <spin:Template rdf:ID="UniqueValueClass">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?a .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    ?a a ?arg1 .
+    ?a ?arg2 ?uniqueValue1 .
+    ?b a ?arg1 .
+    ?b ?arg2 ?uniqueValue2 .
+    FILTER ((str(?uniqueValue1) = str(?uniqueValue2)) &amp;&amp; (?a != ?b)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A112"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A113">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >a</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A112"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A112"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A113"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A114">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >uniqueValue1</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:subject rdf:nodeID="A113"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject>
+              <rdf:Description rdf:nodeID="A115">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >b</sp:varName>
+              </rdf:Description>
+            </sp:subject>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A116">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >uniqueValue2</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:subject rdf:nodeID="A115"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:and>
+                <sp:arg2>
+                  <sp:ne>
+                    <sp:arg2 rdf:nodeID="A115"/>
+                    <sp:arg1 rdf:nodeID="A113"/>
+                  </sp:ne>
+                </sp:arg2>
+                <sp:arg1>
+                  <sp:eq>
+                    <sp:arg2>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A116"/>
+                      </sp:str>
+                    </sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A114"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:eq>
+                </sp:arg1>
+              </sp:and>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:subClassOf rdf:resource="#UniquenessConstraints"/>
+    <rdfs:label xml:lang="en">Uniqueness check for all values in instances of a class</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested! {@en}</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?arg2} in {?arg1} must be unique!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query returns all instances of class ?arg1 where the value for property ?arg2 is not unique in the tested data set. The query tolerates chaotic language tag assignments.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select class that contains instances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Template>
+  <spin:Template rdf:ID="ExclusiveFunctionalDependencyClass">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 2 of functional dependency!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg4"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select class that holds instances to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#FunctionalDependencyConstraints"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter functionally dependent value 1 of property 1!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Value "{?arg3}" of {?arg2} must only have value "{?arg5}" in {?arg4} in instances of class {?arg1}!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter functionally dependent value 2 of property 2!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg5"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query flags instances of class ?arg1 with property ?arg2 and value ?arg3 that do not have value ?arg5 with property ?arg4. It is only suitable for value dependencies with one to one cardinality. The query does not tolerate homonyms. Not defined dependencies will not be flagged.</rdfs:comment>
+    <rdfs:label xml:lang="en">exclusive functional dependency check in class instances</rdfs:label>
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?this .
+    _:b0 spin:violationPath ?arg4 .
+}
+WHERE {
+    ?this a ?arg1 .
+    ?this ?arg2 ?arg3 .
+    FILTER (!spl:hasValue(?this, ?arg4, ?arg5)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A117"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_this"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A117"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg4"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A117"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg3"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <spl:hasValue>
+                    <sp:arg3 rdf:resource="http://spinrdf.org/spin#_arg5"/>
+                    <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg4"/>
+                    <sp:arg1 rdf:resource="http://spinrdf.org/spin#_this"/>
+                  </spl:hasValue>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property 1 of functional dependency!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Template>
+  <spin:Template rdf:ID="UpperLimitAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?s ?arg1 ?value .
+    FILTER (smf:cast(?value, xsd:decimal) &gt; ?arg2) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A118"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A119">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A118"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A118"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A120">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A119"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:gt>
+                <sp:arg2 rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                <sp:arg1>
+                  <smf:cast>
+                    <sp:arg2 rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <sp:arg1 rdf:nodeID="A120"/>
+                  </smf:cast>
+                </sp:arg1>
+              </sp:gt>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:label xml:lang="en">Upper limit check in all instances</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Enter upper limit!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Values in {?arg1} must be lower than {?arg2}!</spin:labelTemplate>
+    <rdfs:comment xml:lang="en">This query returns all instances that have a value for property ?arg1 above the user defined limit ?arg2. The query tolerates chaotic datatype assignments.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ValueRangeConstraints"/>
+  </spin:Template>
+  <spin:Template rdf:ID="LettersAndDotsAll">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    ?s ?arg1 ?value .
+    FILTER (!regex(str(?value), "^([A-Za-z\\. ])*$"^^xsd:string)) 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A121"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A122">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A121"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A121"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A123">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >value</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:subject rdf:nodeID="A122"/>
+          </rdf:Description>
+          <sp:Filter>
+            <sp:expression>
+              <sp:not>
+                <sp:arg1>
+                  <sp:regex>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >^([A-Za-z\. ])*$</sp:arg2>
+                    <sp:arg1>
+                      <sp:str>
+                        <sp:arg1 rdf:nodeID="A123"/>
+                      </sp:str>
+                    </sp:arg1>
+                  </sp:regex>
+                </sp:arg1>
+              </sp:not>
+            </sp:expression>
+          </sp:Filter>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:label xml:lang="en">syntax check in all instances: only letters and dots allowed</rdfs:label>
+    <rdfs:comment xml:lang="en">This query flags all instances with property ?arg1 that have characters other than letters or dots in literal values. The query tolerates language tags.</rdfs:comment>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Syntax rule: only letters and dots allowed in {?arg1}!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#SyntaxConstraints"/>
+  </spin:Template>
+  <spin:Template rdf:ID="MissingProperties">
+    <spin:body>
+      <sp:Construct>
+        <sp:text rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?s .
+    _:b0 spin:violationPath ?arg2 .
+}
+WHERE {
+    ?s a ?arg1 .
+    NOT EXISTS {
+        ?s ?arg2 ?value .
+    } 
+}</sp:text>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A124"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object>
+              <rdf:Description rdf:nodeID="A125">
+                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >s</sp:varName>
+              </rdf:Description>
+            </sp:object>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationRoot"/>
+            <sp:subject rdf:nodeID="A124"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg2"/>
+            <sp:predicate rdf:resource="http://spinrdf.org/spin#violationPath"/>
+            <sp:subject rdf:nodeID="A124"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:resource="http://spinrdf.org/spin#_arg1"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A125"/>
+          </rdf:Description>
+          <sp:NotExists>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >value</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://spinrdf.org/spin#_arg2"/>
+                <sp:subject rdf:nodeID="A125"/>
+              </rdf:Description>
+            </sp:elements>
+          </sp:NotExists>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <rdfs:subClassOf rdf:resource="#MissingElementConstraints"/>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Property {?arg2} is mandatory but may contain empty literals for instances of class {?arg1}!</spin:labelTemplate>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select class that contains instances to be tested!</rdfs:comment>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label xml:lang="en">Mandatory property check in instances of a class</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment xml:lang="en">Select property to be tested!</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment xml:lang="en">This query returns all instances of class ?arg1 where property ?arg2 is missing. It explicitly tolerates empty literal values in property ?arg2.</rdfs:comment>
+  </spin:Template>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

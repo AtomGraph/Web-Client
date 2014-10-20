@@ -80,7 +80,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
-    <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ReadMode')) else (if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
+    <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ListReadMode')) else (if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
@@ -180,7 +180,7 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:ReadMode" priority="1">
+    <xsl:template match="rdf:RDF[$uri]" mode="gc:ListReadMode" priority="1">
         <xsl:variable name="this" select="key('resources', $uri)" as="element()?"/>
         
         <xsl:apply-templates select="$this" mode="#current"/>
