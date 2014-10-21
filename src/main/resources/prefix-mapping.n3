@@ -48,7 +48,7 @@
    [ lm:prefix "http://xmlns.com/foaf/0.1/" ;			    lm:altName "org/graphity/client/vocabulary/foaf.owl" ] ,
    [ lm:prefix "http://dbpedia.org/ontology/" ;			    lm:altName "org/graphity/client/vocabulary/dbpedia-owl.owl" ] ,
    [ lm:prefix "http://graph.facebook.com/schema/user" ;	    lm:altName "org/graphity/client/vocabulary/gfb-user.owl" ] ,
-   [ lm:prefix "http://semwebquality.org/ontologies/dq-constraints" ;lm:altName "org/graphity/client/vocabulary/dq-constraints.rdf" ] ,
+   [ lm:prefix "http://semwebquality.org/ontologies/dq-constraints";lm:altName "org/graphity/client/vocabulary/dq-constraints.rdf" ] ,
    [ lm:prefix "http://spinrdf.org/sp" ;                            lm:altName "etc/sp.rdf" ] ,
    [ lm:prefix "http://spinrdf.org/spin" ;                          lm:altName "etc/spin.rdf" ] ,
    [ lm:prefix "http://spinrdf.org/spl" ;                           lm:altName "etc/spl.spin.rdf" ] ,

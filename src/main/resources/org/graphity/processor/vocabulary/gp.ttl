@@ -19,7 +19,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin:, dqc: ; # gs:
+    owl:imports sp:, spin:, dqc:, sioc:, foaf: ; # gs:
     owl:versionInfo "1.1.0" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
