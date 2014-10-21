@@ -182,7 +182,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[$uri]">
         <xsl:apply-imports>
-            <xsl:with-param name="selected-resources" select="*" as="element()*"/>
+            <xsl:with-param name="selected-resources" select="*[not(@rdf:about = $uri)]" as="element()*"/>
         </xsl:apply-imports>
     </xsl:template>
     
@@ -202,14 +202,10 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:ListReadMode" priority="1">
-        <xsl:variable name="this" select="key('resources', $uri)" as="element()?"/>
-
-        <xsl:apply-templates select="$this" mode="#current"/>
-        
-        <xsl:apply-templates select="*[not(. is $this)]" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-        </xsl:apply-templates>
+    <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode">
+	<h1 class="page-header">
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</h1>
     </xsl:template>
     
     <xsl:template match="rdf:RDF[$uri]" mode="gc:ModeSelectMode">
