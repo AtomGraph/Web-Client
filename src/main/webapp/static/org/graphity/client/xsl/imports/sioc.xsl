@@ -78,4 +78,16 @@ exclude-result-prefixes="#all">
         </dl>
     </xsl:template>
 
+    <xsl:template match="sioc:has_container" mode="gc:EditMode">
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>        
+    </xsl:template>
+
 </xsl:stylesheet>
