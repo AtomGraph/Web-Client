@@ -69,6 +69,10 @@
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
+#<#ListReadMode> a <#Mode> ;
+#    rdfs:label "Properties" ;
+#    rdfs:isDefinedBy <#> .
+
 <#EditMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
@@ -85,10 +89,6 @@
     rdfs:label "List" ;
     rdfs:isDefinedBy <#> .
 
-<#ListReadMode> a <#Mode>, <#ContainerMode> ;
-    rdfs:label "Full list" ;
-    rdfs:isDefinedBy <#> .
-
 <#ThumbnailMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Gallery" ;
     rdfs:isDefinedBy <#> .
@@ -103,8 +103,11 @@
 
 # TO-DO: refactor with rdfs:subClassOf inheritance instead
 
+gp:Space <#defaultMode> <#ListMode> ;
+    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#CreateMode> .
+
 gp:Container <#defaultMode> <#ListMode> ;
-    <#mode> <#ReadMode>, <#ListReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#CreateMode> .
+    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#CreateMode> .
 
 gp:Item <#defaultMode> <#ReadMode> ;
     <#mode> <#ReadMode>, <#EditMode> .

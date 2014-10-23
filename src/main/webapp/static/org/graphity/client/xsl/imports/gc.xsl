@@ -27,13 +27,15 @@ xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
+
+    <xsl:template match="gc:mode[position() &gt; 1]" mode="gc:EditMode"/>
     
     <xsl:template match="gc:mode/@rdf:resource" mode="gc:EditMode">
         <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $ont-model)" as="element()*"/>
         <select name="ou" id="{generate-id(..)}" multiple="multiple" size="{count($modes)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" lang="{$lang}"/>
-                <xsl:with-param name="selected" select="../@rdf:resource"/>
+                <xsl:with-param name="selected" select="../../gc:mode/@rdf:resource"/>
             </xsl:apply-templates>
         </select>
     </xsl:template>

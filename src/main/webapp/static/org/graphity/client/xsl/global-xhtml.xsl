@@ -180,28 +180,20 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$uri]">
-        <xsl:apply-imports>
-            <xsl:with-param name="selected-resources" select="*[not(@rdf:about = $uri)]" as="element()*"/>
-        </xsl:apply-imports>
+    <xsl:template match="rdf:RDF[$uri]" mode="gc:ReadMode">
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+
+        <xsl:apply-templates select="key('resources', $uri)" mode="gc:ReadMode"/>
+
+        <xsl:apply-templates select="*[not(@rdf:about = $uri)]" mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF[$uri]" mode="gc:HeaderMode">
+        <xsl:apply-templates select="key('resources', $uri)" mode="#current"/>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:PageHeaderMode" priority="1">
-	<div class="well header">
-            <xsl:apply-templates select="." mode="gc:ImageMode"/>
-            
-            <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
-
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-            
-            <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
-
-            <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
-
-	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>            
-        </div>
-    </xsl:template>
-
     <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode">
 	<h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
