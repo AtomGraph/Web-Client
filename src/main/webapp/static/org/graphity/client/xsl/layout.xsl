@@ -699,14 +699,14 @@ exclude-result-prefixes="#all">
         </h2>
     </xsl:template>
     
-    <!-- LIST READ MODE -->
+    <!-- READ MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ReadMode">
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
         <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:ReadMode"/>
 
-        <xsl:apply-templates select="*[not(@rdf:about = $absolute-path)]" mode="#current">
+        <xsl:apply-templates select="*[not(@rdf:about = $absolute-path)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
         </xsl:apply-templates>
     </xsl:template>

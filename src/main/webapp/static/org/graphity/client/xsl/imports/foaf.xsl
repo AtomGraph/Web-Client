@@ -128,8 +128,18 @@ exclude-result-prefixes="#all">
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
+    <xsl:template match="foaf:lastName[../foaf:firstName]" mode="gc:LabelMode" priority="2">
+	<xsl:variable name="label" select="concat(../foaf:firstName[1], ' ', .)"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
     <xsl:template match="foaf:givenName[../foaf:familyName]" mode="gc:LabelMode" priority="1.5">
 	<xsl:variable name="label" select="concat(., ' ', ../foaf:familyName[1])"/>
+	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+    </xsl:template>
+
+    <xsl:template match="foaf:familyName[../foaf:givenName]" mode="gc:LabelMode" priority="1.5">
+	<xsl:variable name="label" select="concat(../foaf:givenName[1], ' ', .)"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
@@ -160,5 +170,33 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>        
     </xsl:template>
-    
+
+    <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]"  mode="gc:EditMode">
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ol'"/>
+            <xsl:with-param name="type" select="'text'"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
+        </xsl:call-template>
+        <span class="help-inline">Literal</span>
+    </xsl:template>
+
+    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="gc:EditMode">
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ol'"/>
+            <xsl:with-param name="type" select="'text'"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
+        </xsl:call-template>
+        <span class="help-inline">Literal</span>
+    </xsl:template>
+
 </xsl:stylesheet>
