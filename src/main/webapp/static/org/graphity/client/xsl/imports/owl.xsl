@@ -17,7 +17,8 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -54,4 +55,10 @@ exclude-result-prefixes="#all">
 	</li>
     </xsl:template>
 
+    <!--
+    <xsl:template match="owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:resource | owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:nodeID" mode="gc:EditMode">
+SHEET
+    </xsl:template>
+    -->
+    
 </xsl:stylesheet>

@@ -478,10 +478,10 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
+        <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
-        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and key('constraints-by-type', ../rdf:type/@rdf:resource, $ont-model)/sp:arg2/@rdf:resource = $this"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
  
         <div class="control-group">
 	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
@@ -493,13 +493,11 @@ exclude-result-prefixes="#all">
             <label class="control-label" for="{$id}" title="{$this}">
                 <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
             </label>
-            <!--
             <xsl:if test="not($required)">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
                 </div>
             </xsl:if>
-            -->
 
             <div class="controls">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">

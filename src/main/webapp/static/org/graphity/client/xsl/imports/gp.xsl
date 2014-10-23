@@ -40,4 +40,29 @@ exclude-result-prefixes="#all">
         </xsl:next-match>
     </xsl:template>
 
+    <!--
+    <xsl:template match="gp:slug/text()" mode="gc:EditMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$mode = '&gc;EditMode'"/>
+        </xsl:apply-templates>
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:choose>
+                <xsl:when test="../@rdf:datatype">
+                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="help-inline">Literal</span>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
+    </xsl:template>
+    -->
+    
 </xsl:stylesheet>

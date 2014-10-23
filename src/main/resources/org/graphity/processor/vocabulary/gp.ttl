@@ -141,6 +141,7 @@
     <#uriTemplate> "/{container}/{item}" ;
     <#skolemTemplate> "/{slug}" ;
     spin:query <#DescribeWithTopic> ;
+    spin:update <#DeleteWithTopic> ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Item> ;
 	    sp:arg2 <#slug>
@@ -236,15 +237,26 @@ WHERE {
 # ====
 
 <#Delete>    a       sp:DeleteWhere ;
-      sp:text """DELETE WHERE {
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DELETE WHERE {
     ?this ?p ?o .
 }"""^^xsd:string .
 
 # ====
 
 <#DeleteWithTopic>    a       sp:DeleteWhere ;
-      sp:text """DELETE WHERE {
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DELETE {
     ?this ?p ?o .
-    ?primaryTopic foaf:isPrimaryTopicOf ?this .
-    ?primaryTopic ?x ?y .
+    ?primaryTopic ?p ?o .
+}
+WHERE {
+    {
+        ?this ?p ?o .
+    }
+    UNION
+    {
+        ?primaryTopic foaf:isPrimaryTopicOf ?this .
+        ?primaryTopic ?p ?o .
+    }
 }"""^^xsd:string .

@@ -29,6 +29,7 @@ limitations under the License.
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
+    <!ENTITY dqc    "http://semwebquality.org/ontologies/dq-constraints#">
     <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
     <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
@@ -100,6 +101,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="ldp:pageOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
+    <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
     <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
     <xsl:preserve-space elements="rdfs:label dct:title gp:slug gp:uriTemplate gp:skolemTemplate gp:orderBy"/>
@@ -118,6 +120,10 @@ exclude-result-prefixes="#all">
 
     <rdf:Description rdf:about="&xhv;next">
 	<rdfs:label xml:lang="en">Next</rdfs:label>
+    </rdf:Description>
+
+    <rdf:Description rdf:nodeID="delete">
+	<rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
 
     <xsl:template match="/">
@@ -239,6 +245,9 @@ exclude-result-prefixes="#all">
         <xsl:if test="($default-mode, $mode) = '&gc;MapMode'">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
+        </xsl:if>
+        <xsl:if test="($default-mode, $mode) = ('&gc;EditMode', '&gc;CreateMode')">
+            <script type="text/javascript" src="static/org/graphity/client/js/jquery.js"></script>
         </xsl:if>
     </xsl:template>
 
@@ -441,7 +450,16 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="gc:ModeToggleMode"/>
     
     <xsl:template match="*[starts-with(@rdf:about, $base-uri)]" mode="gc:ModeToggleMode" priority="1">
-        <xsl:if test="not($mode = '&gc;EditMode')">
+        <xsl:if test="not(rdf:type/@rdf:resource = '&sioc;Container')">
+            <div class="pull-right">
+                <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
+                    <button class="btn btn-primary" type="submit">
+                        <xsl:apply-templates select="key('resources', 'delete', document(''))" mode="gc:LabelMode"/>
+                    </button>
+                </form>
+            </div>
+        </xsl:if>
+        <xsl:if test="not($mode = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&sioc;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
