@@ -387,8 +387,10 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
+
+    <xsl:template match="*" mode="gc:MediaTypeSelectMode"/>
     
-    <xsl:template match="*[*][@rdf:about]" mode="gc:MediaTypeSelectMode">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:MediaTypeSelectMode" priority="1">
         <div class="btn-group pull-right" onclick="$(this).toggleClass('open');">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
