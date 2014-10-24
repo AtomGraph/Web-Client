@@ -542,51 +542,11 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode">
-	<xsl:variable name="type-containers" as="element()*">
-	    <xsl:for-each-group select="*" group-by="if (not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))) then rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name()))) else key('resources', '&rdfs;Resource', document('&rdfs;'))/@rdf:about">
-		<xsl:sort select="if (rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))) then gc:object-label(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))[1]) else ()"/>
-
-		<xsl:variable name="properties" as="element()*">
-                    <xsl:for-each-group select="current-group()" group-by="concat(namespace-uri(), local-name())">
-			<xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$lang}"/>
-                        
-                        <xsl:variable name="objects" as="element()*">
-                            <xsl:apply-templates select="current-group()" mode="#current">
-                                <xsl:sort select="if (@rdf:resource | @rdf:nodeID) then gc:object-label(@rdf:resource | @rdf:nodeID) else text()" data-type="text" order="ascending" lang="{$lang}"/>
-                            </xsl:apply-templates>
-                        </xsl:variable>
-                        <xsl:if test="$objects">
-                            <dt>
-                                <xsl:apply-templates select="." mode="gc:InlineMode"/>
-                            </dt>
-                            <xsl:copy-of select="$objects"/>
-                        </xsl:if>
-                    </xsl:for-each-group>
-		</xsl:variable>
-		
-		<xsl:if test="$properties">
-		    <div class="well well-small span6">
-                        <xsl:if test="not(empty(rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))))">
-                            <h3>
-                                <span class="btn">
-                                    <xsl:apply-templates select="rdfs:domain(xs:anyURI(concat(namespace-uri(), local-name())))" mode="gc:InlineMode"/>
-                                </span>
-                            </h3>
-                        </xsl:if>
-			<dl>
-			    <xsl:copy-of select="$properties"/>
-			</dl>
-		    </div>
-		</xsl:if>
-	    </xsl:for-each-group>
-	</xsl:variable>
-
-	<!-- group the class/property boxes into rows of 2 (to match fluid Bootstrap layout) -->
-	<xsl:for-each-group select="$type-containers" group-adjacent="(position() - 1) idiv 2">
-	    <div class="row-fluid">
-		<xsl:copy-of select="current-group()"/>
-	    </div>
-	</xsl:for-each-group>
+        <dl>
+            <xsl:apply-templates mode="#current">
+                <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+            </xsl:apply-templates>
+        </dl>
     </xsl:template>
 
     <!-- SIDEBAR NAV MODE -->
@@ -951,7 +911,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-	    <xsl:apply-templates mode="#current">
+	    <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
 

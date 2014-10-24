@@ -203,14 +203,11 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyListMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
-        <!-- <dt> is added in upper layer template <xsl:for-each-group> -->
-        <!--
 	<xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
 	    <dt>
 		<xsl:apply-templates select="." mode="gc:InlineMode"/>
 	    </dt>
 	</xsl:if>
-        -->
 	<dd>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</dd>

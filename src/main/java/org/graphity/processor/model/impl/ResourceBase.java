@@ -103,7 +103,11 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     {
 	super(uriInfo, endpoint);
 
-        if (ontClass == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+        if (ontClass == null)
+        {
+            if (log.isDebugEnabled()) log.debug("Resource {} has not matched any template OntClass, returning 404 Not Found", uriInfo.getAbsolutePath());
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
         
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
