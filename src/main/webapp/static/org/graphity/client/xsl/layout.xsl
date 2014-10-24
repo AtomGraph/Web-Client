@@ -542,7 +542,7 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode">
-        <dl>
+        <dl class="dl-horizontal">
             <xsl:apply-templates mode="#current">
                 <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$lang}"/>
             </xsl:apply-templates>
