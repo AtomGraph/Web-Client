@@ -490,9 +490,12 @@ exclude-result-prefixes="#all">
             <label class="control-label" for="{$id}" title="{$this}">
                 <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
             </label>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-small pull-right btn-add" title="Add another statement">&#x271a;</button>
+            </div>
             <xsl:if test="not($required)">
                 <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-small pull-right remove-statement" title="Remove this statement">&#x2715;</button>
+                    <button type="button" class="btn btn-small pull-right btn-remove" title="Remove this statement">&#x2715;</button>
                 </div>
             </xsl:if>
 

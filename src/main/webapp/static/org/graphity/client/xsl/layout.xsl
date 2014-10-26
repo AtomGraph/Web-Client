@@ -55,7 +55,6 @@ xmlns:void="&void;"
 xmlns:list="&list;"
 xmlns:xhv="&xhv;"
 xmlns:geo="&geo;"
-xmlns:uuid="java:java.util.UUID"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 exclude-result-prefixes="#all">
@@ -248,6 +247,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
         <xsl:if test="($default-mode, $mode) = ('&gc;EditMode', '&gc;CreateMode')">
             <script type="text/javascript" src="static/org/graphity/client/js/jquery.js"></script>
+            <script type="text/javascript" src="static/org/graphity/client/js/UUID.js"></script>
         </xsl:if>
     </xsl:template>
 
@@ -798,9 +798,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:ThumbnailMode">
-        <h3>
+        <h2>
             <xsl:apply-templates select="." mode="gc:InlineMode"/>
-        </h3>
+        </h2>
     </xsl:template>
 
     <!-- MAP MODE -->
