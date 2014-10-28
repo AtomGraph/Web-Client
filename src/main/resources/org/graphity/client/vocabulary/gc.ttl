@@ -65,15 +65,11 @@
 
 # INDIVIDUALS
 
-<#ReadMode> a <#Mode>, <#ItemMode> ;
+<#ReadMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
-#<#ListReadMode> a <#Mode> ;
-#    rdfs:label "Properties" ;
-#    rdfs:isDefinedBy <#> .
-
-<#EditMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#EditMode> a <#Mode>, <#ItemMode> ;
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
@@ -98,8 +94,6 @@
     rdfs:isDefinedBy <#> .
 
 # RESOURCE TEMPLATES
-
-# gp:Resource <#mode> <#ReadMode>, <#ListReadMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#EditMode>, <#CreateMode> .
 
 # TO-DO: refactor with rdfs:subClassOf inheritance instead
 

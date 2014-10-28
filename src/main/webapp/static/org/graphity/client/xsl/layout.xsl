@@ -675,6 +675,12 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
 
+    <!-- hide page resource -->
+    <xsl:template match="*[. is key('resources-by-page-of', $absolute-path)]" mode="gc:ReadMode" priority="1"/>
+
+    <!-- hide document if topic is present -->
+    <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ReadMode" priority="1"/>
+        
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ReadMode">
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
