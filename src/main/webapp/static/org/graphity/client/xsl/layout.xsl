@@ -497,7 +497,11 @@ exclude-result-prefixes="#all">
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-        
+
+    <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:LabelMode" priority="1">
+        <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
     <!-- DESCRIPTION MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:DescriptionMode">

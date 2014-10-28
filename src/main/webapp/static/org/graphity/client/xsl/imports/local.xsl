@@ -37,7 +37,6 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
-xmlns:uuid="java:java.util.UUID"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
@@ -112,13 +111,13 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="gc:InlineMode">
+    <xsl:template match="text()[. castable as xs:date][../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="gc:InlineMode">
 	<span title="{../@rdf:datatype}">
 	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1" mode="gc:InlineMode">
+    <xsl:template match="text()[. castable as xs:dateTime][../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1" mode="gc:InlineMode">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}">

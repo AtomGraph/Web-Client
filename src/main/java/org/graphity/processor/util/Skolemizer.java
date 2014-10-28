@@ -25,6 +25,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
@@ -127,6 +128,14 @@ public class Skolemizer
 	return model;
     }
 
+    public Resource getBaseResource(Resource resource)
+    {
+        if (resource.hasProperty(SIOC.HAS_CONTAINER)) return resource.getPropertyResourceValue(SIOC.HAS_CONTAINER);
+        if (resource.hasProperty(SIOC.HAS_SPACE)) return resource.getPropertyResourceValue(SIOC.HAS_SPACE);
+        
+        return ResourceFactory.createResource(getUriInfo().getAbsolutePath().toString());
+    }
+    
     public URI build(Resource resource)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
@@ -135,20 +144,36 @@ public class Skolemizer
         if (matchingClass != null)
         {
             if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class {}", resource, matchingClass);
-            return build(resource, matchingClass);
+            return build(resource, UriBuilder.fromUri(getBaseResource(resource).getURI()), matchingClass);
         }        
         
         // as a fallback (for real-world resources), try to skolemize using the document class
         if (resource.hasProperty(FOAF.isPrimaryTopicOf))
         {
-            Resource doc = resource.getPropertyResourceValue(FOAF.isPrimaryTopicOf);
+            Resource doc = null;
+            
+            StmtIterator it = resource.listProperties(FOAF.isPrimaryTopicOf);
+            try
+            {
+                // document resource has to be a blank node as well
+                while (it.hasNext() && doc == null)
+                {
+                    Statement stmt = it.next();
+                    if (stmt.getObject().isAnon()) doc = stmt.getObject().asResource();
+                }
+            }
+            finally
+            {
+                it.close();
+            }
+
             if (doc != null)
             {
                 OntClass docClass = matchOntClass(doc);
                 if (docClass != null)
                 {
                     OntClass topicClass = matchOntClass(FOAF.isPrimaryTopicOf, docClass);
-                    return build(resource, topicClass);
+                    return build(resource, UriBuilder.fromUri(getBaseResource(doc).getURI()), topicClass);
                 }
             }
         }
@@ -156,16 +181,18 @@ public class Skolemizer
         return null;
     }
 
-    public URI build(Resource resource, OntClass ontClass)
+    public URI build(Resource resource, UriBuilder baseBuilder, OntClass ontClass)
     {
         // build URI relative to absolute path
-        return build(resource, getUriInfo().getAbsolutePathBuilder(), getSkolemTemplate(ontClass, GP.skolemTemplate));
+        return build(resource, baseBuilder, getSkolemTemplate(ontClass, GP.skolemTemplate));
     }
     
     public URI build(Resource resource, UriBuilder baseBuilder, String itemTemplate)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-	if (itemTemplate == null) throw new IllegalArgumentException("URI template cannot be null");
+	if (baseBuilder == null) throw new IllegalArgumentException("UriBuilder cannot be null");
+        if (itemTemplate == null) throw new IllegalArgumentException("URI template cannot be null");
+        
         if (log.isDebugEnabled()) log.debug("Building URI for resource {} with template: {}", resource, itemTemplate);
         UriBuilder builder = baseBuilder.path(itemTemplate);
         // add fragment identifier for non-information resources
@@ -246,7 +273,7 @@ public class Skolemizer
 	    while (it.hasNext())
 	    {
 		Statement stmt = it.next();
-		if (stmt.getObject().isResource() && stmt.getPredicate().getLocalName().equals(name))
+		if (stmt.getObject().isAnon() && stmt.getPredicate().getLocalName().equals(name))
 		{
 		    if (log.isTraceEnabled()) log.trace("Found Resource {} for property name: {} ", stmt.getResource(), name);
 		    return stmt.getResource();

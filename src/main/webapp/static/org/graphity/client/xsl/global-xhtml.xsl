@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java           "http://xml.apache.org/xalan/java/">
+    <!ENTITY gp             "http://graphity.org/gp#">
     <!ENTITY gc             "http://graphity.org/gc#">
     <!ENTITY rdf            "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs           "http://www.w3.org/2000/01/rdf-schema#">
@@ -53,7 +54,7 @@ xmlns:sp="&sp;"
 xmlns:sd="&sd;"
 xmlns:void="&void;"
 xmlns:list="&list;"
-xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+xmlns:uuid="java:java.util.UUID"
 exclude-result-prefixes="#all">
 
     <xsl:import href="imports/local.xsl"/>
@@ -83,6 +84,10 @@ exclude-result-prefixes="#all">
     <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ReadMode')) else (if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
+
+    <rdf:Description rdf:nodeID="save-as">
+	<rdfs:label xml:lang="en">Save as...</rdfs:label>
+    </rdf:Description>
 
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
 	<xsl:choose>
@@ -230,6 +235,14 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
+    <xsl:template match="*[@rdf:about = $uri]" mode="gc:ModeToggleMode" priority="1">
+        <div class="pull-right">
+            <a class="btn btn-primary" href="{$absolute-path}{gc:query-string(@rdf:about, xs:anyURI('&gc;CreateMode'))}">
+                <xsl:apply-templates select="key('resources', 'save-as', document(''))" mode="gc:LabelMode"/>
+            </a>
+        </div>
+    </xsl:template>
+
     <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
 	<p class="form-inline">
 	    <label for="endpoint-select">SPARQL endpoint</label>
@@ -269,5 +282,176 @@ exclude-result-prefixes="#all">
 
     <!-- only show edit mode for the main resource -->
     <xsl:template match="*[@rdf:about][$uri][not(@rdf:about = $uri)]" mode="gc:EditMode"/>
+    
+    <xsl:template match="rdf:RDF" mode="gc:EditMode">
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+
+        <form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT&amp;mode={encode-for-uri($mode)}" accept-charset="UTF-8"> <!-- enctype="multipart/form-data" -->
+	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
+	    <xsl:call-template name="gc:InputTemplate">
+		<xsl:with-param name="name" select="'rdf'"/>
+		<xsl:with-param name="type" select="'hidden'"/>
+	    </xsl:call-template>
+
+	    <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
+                <xsl:sort select="gc:label(.)"/>
+            </xsl:apply-templates>
+
+            <div class="form-actions">
+		<button type="submit" class="btn btn-primary">Save</button>
+	    </div>
+	</form>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:CreateMode">
+        <xsl:apply-templates select="." mode="gc:EditMode"/>
+    </xsl:template>
+
+    <!-- DOCUMENT -->
+    
+    <xsl:template match="@rdf:about[. = $uri][../rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'sb'"/>
+	    <xsl:with-param name="type" select="'hidden'"/>
+	    <xsl:with-param name="id" select="generate-id()"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="value" select="'this'"/>
+	</xsl:call-template>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about = $uri][rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
+        <xsl:param name="container" select="resolve-uri('saved', $base-uri)" as="xs:anyURI"/>
+        
+        <xsl:apply-imports/>
+
+        <xsl:apply-templates select="@rdf:about" mode="#current"/>
+
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&rdf;type'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ou'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&gp;Item'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&gp;slug'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ol'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="xs:string(uuid:randomUUID())"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&sioc;has_container'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ou'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="$container"/>
+        </xsl:call-template>
+    </xsl:template>
+
+    <!-- THING -->
+        
+    <xsl:template match="@rdf:about[. = $uri]" mode="gc:EditMode">
+	<xsl:param name="type" select="'text'" as="xs:string"/>
+	<xsl:param name="id" as="xs:string?"/>
+	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        
+	<xsl:call-template name="gc:InputTemplate">
+	    <xsl:with-param name="name" select="'sb'"/>
+	    <xsl:with-param name="type" select="'hidden'"/>
+	    <xsl:with-param name="id" select="generate-id()"/>
+	    <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="value" select="'thing'"/>
+	</xsl:call-template>
+    </xsl:template>
+    
+    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:EditMode">
+        <xsl:param name="container" select="resolve-uri('saved', $base-uri)" as="xs:anyURI"/>
+
+        <xsl:apply-imports/>
+        
+        <xsl:apply-templates select="@rdf:about" mode="#current"/>
+        
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&foaf;isPrimaryTopicOf'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ob'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'this'"/>
+        </xsl:call-template>
+
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'sb'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'this'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&rdf;type'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ou'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&foaf;Document'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ou'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&gp;Item'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&gp;slug'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ol'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="xs:string(uuid:randomUUID())"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&foaf;primaryTopic'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ob'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'thing'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&sioc;has_container'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gc:InputTemplate">
+            <xsl:with-param name="name" select="'ou'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="$container"/>
+        </xsl:call-template>
+    </xsl:template>
     
 </xsl:stylesheet>

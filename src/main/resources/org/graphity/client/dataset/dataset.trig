@@ -48,6 +48,11 @@
     sioc:has_space <> ;
     dct:title "Queries" .
 
+<saved> a ldp:Container, sioc:Container, foaf:Document ;
+    gp:slug "saved"^^xsd:string ;
+    sioc:has_space <> ;
+    dct:title "Saved resources" .
+
 <resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <resources> ;
     dct:title "Labelled resources" .
