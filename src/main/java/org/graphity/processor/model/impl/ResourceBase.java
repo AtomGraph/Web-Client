@@ -273,8 +273,6 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
         if (log.isDebugEnabled()) log.debug("Returning @GET Response with {} statements in Model", description.size());
 	return getResponse(description);
-
-	//return super.get();
     }
     
     /**

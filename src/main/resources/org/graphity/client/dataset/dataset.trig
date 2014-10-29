@@ -206,7 +206,7 @@
     dct:title "LinkedGeoData" ;
     dct:description "RDF data extracted from OpenStreetMap.org" ;
     foaf:homepage <http://linkedgeodata.org> ;
-    foaf:depiction <http://linkedgeodata.org/files/lgdlogo.png> ;
+    foaf:logo <http://linkedgeodata.org/files/lgdlogo.png> ;
     void:sparqlEndpoint <http://linkedgeodata.org/sparql> ;
     void:exampleResource <http://linkedgeodata.org/triplify/node264695865> ;
     void:uriSpace "http://linkedgeodata.org/triplify/" .
@@ -279,7 +279,7 @@
     dct:title "Nature" ;
     dct:description "The NPG Linked Data Platform provides access to datasets from NPG published as linked data and made available through SPARQL services" ;
     foaf:homepage <http://data.nature.com> ;
-    foaf:depiction <http://data.nature.com/view/cerberus/images/header.jpg> ;
+    foaf:logo <http://data.nature.com/view/cerberus/images/header.jpg> ;
     void:sparqlEndpoint <http://data.nature.com/sparql> ;
     void:exampleResource <http://data.nature.com/ns/articles/10.1038/111697a0> ;
     void:uriSpace "http://data.nature.com/" ;
@@ -304,7 +304,7 @@
     dct:title "European Environment Agency" ;
     dct:description "Semantic Data Service is an object-oriented search engine where you can search for the content of data in Eionet" ;
     foaf:homepage <http://semantic.eea.europa.eu/> ;
-    foaf:depiction <http://wwws4.eea.europa.eu/about-us/documents/logos/eps_logos/eea_mini.gif> ;
+    foaf:logo <http://wwws4.eea.europa.eu/about-us/documents/logos/eps_logos/eea_mini.gif> ;
     void:sparqlEndpoint <http://semantic.eea.europa.eu/sparql> .
 
 <datasets/SWDogFood> a foaf:Document, sioc:Item ;

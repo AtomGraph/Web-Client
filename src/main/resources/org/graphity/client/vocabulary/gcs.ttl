@@ -13,6 +13,7 @@
 @prefix lda:	<http://purl.org/linked-data/api/vocab#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
+@prefix dqc:	<http://semwebquality.org/ontologies/dq-constraints#> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
@@ -23,6 +24,194 @@
     rdfs:comment "Library of reusable Graphity Processor templates" .
 
 # RESOURCE TEMPLATES
+
+# templates
+
+<#TemplateContainer> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint , # gs:Resource, 
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_space ;
+            owl:allValuesFrom gp:Space
+        ] ;
+    gp:uriTemplate "/{container}" ;
+    gp:skolemTemplate "/{slug}" ;
+    gp:limit 20 ;
+    spin:query gp:DescribeWithChildren ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#TemplateContainer> ;
+	    sp:arg2 gp:slug
+	] ;
+    rdfs:label "Template container" ;
+    rdfs:isDefinedBy <#> .
+
+<#TemplateItem> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_container ;
+            owl:allValuesFrom <#TemplateContainer>
+        ] ;
+    gp:uriTemplate "/templates/{item}" ;
+    gp:skolemTemplate "/{slug}" ;
+    spin:query gp:DescribeWithTopic ;
+    spin:update gp:DeleteWithTopic ;
+    spin:constructor
+              [ a       sp:Construct ;
+                sp:text """
+                    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX owl:     <http://www.w3.org/2002/07/owl#>
+                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+                    PREFIX gp:      <http://graphity.org/gp#>
+                    PREFIX gc:      <http://graphity.org/gc#>
+                    PREFIX gcs:     <http://graphity.org/gcs#>
+                    PREFIX spin:    <http://spinrdf.org/spin#>
+
+                    CONSTRUCT {
+                        ?this a foaf:Document, gp:Item, gcs:TemplateItem ;
+                            foaf:primaryTopic _:template ;
+                            gp:slug " "^^xsd:string .
+                        _:template a owl:Class, gp:Template, gcs:Template ;
+                            rdfs:subClassOf foaf:Document, sioc:Item,
+                                [ a owl:Restriction ;
+                                    owl:onProperty sioc:has_container ;
+                                    owl:hasValue _:typeahead
+                                ] ;
+                            foaf:isPrimaryTopicOf ?this ;
+                            rdfs:label " " ;
+                            gp:uriTemplate " " ;
+                            gp:skolemTemplate " " ;
+                            gp:limit 20 ;
+                            gp:offset 0 ;
+                            gp:orderBy " "^^xsd:string ;
+                            gp:cacheControl "no-cache" ;
+                            spin:query gp:Describe ;
+                            gc:defaultMode gc:ReadMode ;
+                            gc:mode gc:ReadMode .
+                    }
+                    WHERE {}"""
+              ] ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#TemplateItem> ;
+	    sp:arg2 gp:slug
+	] ;
+    rdfs:label "Template document" ;
+    rdfs:isDefinedBy <#> .
+
+<#Template> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf gp:Template,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom <#TemplateItem>
+	] ;
+    gp:skolemTemplate "/{isPrimaryTopicOf.slug}" ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Template> ;
+	    sp:arg2 gp:uriTemplate
+	] ,
+        [ a dqc:MissingProperties ;
+	    sp:arg1 <#Template> ;
+	    sp:arg2 spin:query
+	] ,
+        [ a dqc:MissingProperties ;
+	    sp:arg1 <#Template> ;
+	    sp:arg2 rdfs:label
+	] ;
+    rdfs:label "Template item" ;
+    rdfs:isDefinedBy <#> .
+
+# queries
+
+<#QueryContainer> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_space ;
+            owl:allValuesFrom gp:Space
+        ] ;
+    gp:uriTemplate "/{container}" ;
+    gp:skolemTemplate "/{slug}" ;
+    gp:limit 20 ;
+    spin:query gp:DescribeWithChildren ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#QueryContainer> ;
+	    sp:arg2 gp:slug
+	] ;
+    rdfs:label "Query container" ;
+    rdfs:isDefinedBy <#> .
+
+<#QueryItem> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf foaf:Document,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_container ;
+            owl:allValuesFrom <#QueryContainer>
+        ] ;
+    gp:uriTemplate "/queries/{item}" ;
+    gp:skolemTemplate "/{slug}" ;
+    spin:query gp:DescribeWithTopic ;
+    spin:update gp:DeleteWithTopic ;
+    spin:constructor
+              [ a       sp:Construct ;
+                sp:text """
+                    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX owl:     <http://www.w3.org/2002/07/owl#>
+                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+                    PREFIX gp:      <http://graphity.org/gp#>
+                    PREFIX gc:      <http://graphity.org/gc#>
+                    PREFIX gcs:     <http://graphity.org/gcs#>
+                    PREFIX spin:    <http://spinrdf.org/spin#>
+
+                    CONSTRUCT {
+                        ?this a foaf:Document, gp:Item, gcs:QueryItem ;
+                            foaf:primaryTopic _:template ;
+                            gp:slug " "^^xsd:string .
+                        _:template a owl:Class, gp:Query, gcs:Query ;
+                            rdfs:subClassOf foaf:Document, sioc:Item,
+                                [ a owl:Restriction ;
+                                    owl:onProperty sioc:has_container ;
+                                    owl:hasValue _:typeahead
+                                ] ;
+                            foaf:isPrimaryTopicOf ?this ;
+                            rdfs:label " " ;
+                            gp:uriQuery " " ;
+                            gp:skolemQuery " " ;
+                            gp:limit 20 ;
+                            gp:offset 0 ;
+                            gp:orderBy " "^^xsd:string ;
+                            gp:cacheControl "no-cache" ;
+                            spin:query gp:Describe ;
+                            gc:defaultMode gc:ReadMode ;
+                            gc:mode gc:ReadMode .
+                    }
+                    WHERE {}"""
+              ] ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#QueryItem> ;
+	    sp:arg2 gp:slug
+	] ;
+    rdfs:label "Query document" ;
+    rdfs:isDefinedBy <#> .
+
+<#Query> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf sp:Query,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom <#QueryItem>
+	] ;
+    gp:skolemTemplate "/{isPrimaryTopicOf.slug}" ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Query> ;
+	    sp:arg2 sp:text
+	] ,
+        [ a dqc:MissingProperties ;
+	    sp:arg1 <#Query> ;
+	    sp:arg2 rdfs:label
+	] ;
+    rdfs:label "Query item" ;
+    rdfs:isDefinedBy <#> .
+
+# lookup
 
 <#LabelResourcesContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;

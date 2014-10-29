@@ -89,20 +89,8 @@
 # CLASSES
 
 <#Template> a rdfs:Class, owl:Class ;
-    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#Template> ;
-	    sp:arg2 <#uriTemplate>
-	] ,
-        [ a dqc:MissingProperties ;
-	    sp:arg1 <#Template> ;
-	    sp:arg2 spin:query
-	] ,
-        [ a dqc:MissingProperties ;
-	    sp:arg1 <#Template> ;
-	    sp:arg2 rdfs:label
-	] ;
     rdfs:label "Resource template" ;
+    rdfs:comment "A class of RDF resources that share the same URI template and SPARQL query template" ;
     rdfs:isDefinedBy <#> .
 
 # RESOURCE TEMPLATES

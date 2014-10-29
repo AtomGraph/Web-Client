@@ -3,15 +3,13 @@
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
-    <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
     <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://graphity.org/gc#">
-    <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
-<rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:sioc="&sioc;" xmlns:gp="&gp;" xmlns:gc="&gc;" xmlns:sp="&sp;" xmlns:spin="&spin;">
+<rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:owl="&owl;" xmlns:foaf="&foaf;" xmlns:sioc="&sioc;" xmlns:gp="&gp;" xmlns:gc="&gc;" xmlns:spin="&spin;">
     <rdf:Description rdf:nodeID="this">
         <rdf:type rdf:resource="&foaf;Document"/>
         <rdf:type rdf:resource="&gp;Item"/>

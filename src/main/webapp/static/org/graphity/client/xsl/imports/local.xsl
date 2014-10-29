@@ -224,6 +224,28 @@ exclude-result-prefixes="#all">
 	<a href="{.}?accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
 
+    <!-- TABLE PREDICATE MODE -->
+    
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TablePredicateMode">
+        <xsl:sequence select="."/>
+    </xsl:template>
+
+    <!-- TABLE CELL MODE -->
+    
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableCellMode" priority="1">
+        <xsl:param name="resource" as="element()"/>
+        <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+        <xsl:variable name="predicate" select="$resource/*[concat(namespace-uri(), local-name()) = $this]"/>
+        <xsl:choose>
+            <xsl:when test="$predicate">
+                <xsl:apply-templates select="$predicate" mode="gc:TableMode"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <td></td>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- TABLE HEADER MODE -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableHeaderMode">
