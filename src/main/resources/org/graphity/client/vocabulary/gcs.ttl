@@ -20,21 +20,20 @@
 <#> a owl:Ontology, gp:Sitemap ;
     owl:imports gc:, sp:, spin:, lda:, foaf:, sioc: ;
     owl:versionInfo "1.1.0" ;
-    rdfs:label "Graphity Processor sitemap" ;
-    rdfs:comment "Library of reusable Graphity Processor templates" .
+    rdfs:label "Graphity Client sitemap" ;
+    rdfs:comment "Ontology of Graphity Client domain resource templates" .
 
 # RESOURCE TEMPLATES
 
 # templates
 
 <#TemplateContainer> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint , # gs:Resource, 
+    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container, ldp:Container, lda:ListEndpoint , # gs:Resource, 
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom gp:Space
         ] ;
-    gp:uriTemplate "/{container}" ;
-    gp:skolemTemplate "/{slug}" ;
+    gp:uriTemplate "/templates" ;
     gp:limit 20 ;
     spin:query gp:DescribeWithChildren ;
     spin:constraint [ a dqc:MissingProperties ;
@@ -45,7 +44,7 @@
     rdfs:isDefinedBy <#> .
 
 <#TemplateItem> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document,
+    rdfs:subClassOf foaf:Document, gp:Item,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#TemplateContainer>
@@ -117,19 +116,18 @@
 	    sp:arg1 <#Template> ;
 	    sp:arg2 rdfs:label
 	] ;
-    rdfs:label "Template item" ;
+    rdfs:label "Template" ;
     rdfs:isDefinedBy <#> .
 
 # queries
 
 <#QueryContainer> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ,
+    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container, ldp:Container, lda:ListEndpoint ,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom gp:Space
         ] ;
-    gp:uriTemplate "/{container}" ;
-    gp:skolemTemplate "/{slug}" ;
+    gp:uriTemplate "/queries" ;
     gp:limit 20 ;
     spin:query gp:DescribeWithChildren ;
     spin:constraint [ a dqc:MissingProperties ;
@@ -140,7 +138,7 @@
     rdfs:isDefinedBy <#> .
 
 <#QueryItem> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document,
+    rdfs:subClassOf foaf:Document, gp:Container, 
         [ a owl:Restriction ;
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#QueryContainer>
@@ -160,29 +158,17 @@
                     PREFIX gp:      <http://graphity.org/gp#>
                     PREFIX gc:      <http://graphity.org/gc#>
                     PREFIX gcs:     <http://graphity.org/gcs#>
+                    PREFIX sp:      <http://spinrdf.org/sp#>
                     PREFIX spin:    <http://spinrdf.org/spin#>
 
                     CONSTRUCT {
                         ?this a foaf:Document, gp:Item, gcs:QueryItem ;
-                            foaf:primaryTopic _:template ;
+                            foaf:primaryTopic _:query ;
                             gp:slug " "^^xsd:string .
-                        _:template a owl:Class, gp:Query, gcs:Query ;
-                            rdfs:subClassOf foaf:Document, sioc:Item,
-                                [ a owl:Restriction ;
-                                    owl:onProperty sioc:has_container ;
-                                    owl:hasValue _:typeahead
-                                ] ;
+                        _:query a owl:Class, sp:Query, gcs:Query ;
                             foaf:isPrimaryTopicOf ?this ;
                             rdfs:label " " ;
-                            gp:uriQuery " " ;
-                            gp:skolemQuery " " ;
-                            gp:limit 20 ;
-                            gp:offset 0 ;
-                            gp:orderBy " "^^xsd:string ;
-                            gp:cacheControl "no-cache" ;
-                            spin:query gp:Describe ;
-                            gc:defaultMode gc:ReadMode ;
-                            gc:mode gc:ReadMode .
+                            sp:text "DESCRIBE ?this"^^xsd:string .
                     }
                     WHERE {}"""
               ] ;
@@ -208,7 +194,7 @@
 	    sp:arg1 <#Query> ;
 	    sp:arg2 rdfs:label
 	] ;
-    rdfs:label "Query item" ;
+    rdfs:label "Query" ;
     rdfs:isDefinedBy <#> .
 
 # lookup
