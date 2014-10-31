@@ -1,4 +1,6 @@
 org.graphity.client
+org.graphity.client.filter
+org.graphity.client.mapper
 org.graphity.client.model.impl
 org.graphity.client.provider
 org.graphity.client.reader
@@ -7,8 +9,10 @@ org.graphity.client.util
 org.graphity.client.vocabulary
 org.graphity.client.writer
 org.graphity.client.writer.xslt
+org.graphity.processor.exception
 org.graphity.processor.locator
 org.graphity.processor.locator.grddl
+org.graphity.processor.mapper
 org.graphity.processor.model
 org.graphity.processor.model.impl
 org.graphity.processor.provider
