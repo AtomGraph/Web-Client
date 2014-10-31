@@ -898,21 +898,29 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
         <xsl:param name="class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $ont-model)/@rdf:nodeID, $ont-model)" as="element()"/>
-        <xsl:param name="constructor-query" select="replace(key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text(), '\?this', '_:this')" as="xs:string"/>
-        <xsl:param name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri($constructor-query)))" as="xs:anyURI"/>
-        <xsl:param name="template-doc" select="document($query-uri)" as="document-node()"/>
-        <xsl:param name="this" select="key('resources-by-type', '&foaf;Document', $template-doc)"/>
-        <xsl:param name="templates" select="$this | key('resources', $this/foaf:primaryTopic/@rdf:nodeID, $template-doc)" as="element()*"/>
+        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text()" as="xs:string?"/>
 
-        <xsl:variable name="instances" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource][not(@rdf:about = $absolute-path)]"/>
         <xsl:choose>
-            <xsl:when test="$instances">
-                <xsl:apply-templates select="$instances" mode="gc:EditMode">
-                    <xsl:with-param name="template-doc" select="$template-doc"/>
-                </xsl:apply-templates>
+            <xsl:when test="$constructor-query">
+                <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
+                <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()"/>
+                <xsl:variable name="this" select="key('resources-by-type', '&foaf;Document', $template-doc)"/>
+                <xsl:variable name="templates" select="$this | key('resources', $this/foaf:primaryTopic/@rdf:nodeID, $template-doc)" as="element()*"/>
+
+                <xsl:variable name="instances" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource][not(@rdf:about = $absolute-path)]"/>
+                <xsl:choose>
+                    <xsl:when test="$instances">
+                        <xsl:apply-templates select="$instances" mode="gc:EditMode">
+                            <xsl:with-param name="template-doc" select="$template-doc"/>
+                        </xsl:apply-templates>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="$templates" mode="gc:EditMode"/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:apply-templates select="$templates" mode="gc:EditMode"/>
+                <xsl:message terminate="yes">gc:CreateMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$class/@rdf:about"/>'</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -945,11 +953,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="constructor-query" select="replace(key('resources', $matched-ont-class/spin:constructor/@rdf:resource | $matched-ont-class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text(), '\?this', '_:this')" as="xs:string"/>
-        <xsl:param name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri($constructor-query)))" as="xs:anyURI"/>
-        <xsl:param name="template-doc" select="document($query-uri)" as="document-node()?"/>
-        <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in current()/rdf:type/@rdf:resource satisfies $type = rdf:type/@rdf:resource]" as="element()?"/>
-
+        <xsl:param name="constructor-query" select="key('resources', $matched-ont-class/spin:constructor/@rdf:resource | $matched-ont-class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text()" as="xs:string?"/>
+            
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
                 <legend>
@@ -959,10 +964,25 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
-            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
-                <xsl:sort select="gc:property-label(.)"/>
-                <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
-            </xsl:apply-templates>
+            <xsl:choose>
+                <xsl:when test="$constructor-query">
+                    <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
+                    <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()?"/>
+                    <xsl:variable name="template" select="$template-doc/rdf:RDF/*[every $type in current()/rdf:type/@rdf:resource satisfies $type = rdf:type/@rdf:resource]" as="element()?"/>
+
+                    <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
+                        <xsl:sort select="gc:property-label(.)"/>
+                        <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
+                    </xsl:apply-templates>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:message>gc:EditMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$matched-ont-class/@rdf:about"/>'</xsl:message>
+                    <xsl:apply-templates mode="#current">
+                        <xsl:sort select="gc:property-label(.)"/>
+                        <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
+                    </xsl:apply-templates>
+                </xsl:otherwise>
+            </xsl:choose>
         </fieldset>
     </xsl:template>
 

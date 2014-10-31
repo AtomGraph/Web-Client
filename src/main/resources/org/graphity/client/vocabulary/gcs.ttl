@@ -74,7 +74,7 @@
                             rdfs:subClassOf foaf:Document, sioc:Item,
                                 [ a owl:Restriction ;
                                     owl:onProperty sioc:has_container ;
-                                    owl:hasValue _:typeahead
+                                    owl:hasValue _:container
                                 ] ;
                             foaf:isPrimaryTopicOf ?this ;
                             rdfs:label " " ;
