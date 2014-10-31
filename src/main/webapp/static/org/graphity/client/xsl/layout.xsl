@@ -911,7 +911,7 @@ exclude-result-prefixes="#all">
                 <xsl:choose>
                     <xsl:when test="$instances">
                         <xsl:apply-templates select="$instances" mode="gc:EditMode">
-                            <xsl:with-param name="template-doc" select="$template-doc"/>
+                            <xsl:with-param name="class" select="$class"/>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:otherwise>
@@ -953,7 +953,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="constructor-query" select="key('resources', $matched-ont-class/spin:constructor/@rdf:resource | $matched-ont-class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text()" as="xs:string?"/>
+        <xsl:param name="class" select="$matched-ont-class" as="element()"/>
+        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text()" as="xs:string?"/>
             
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
