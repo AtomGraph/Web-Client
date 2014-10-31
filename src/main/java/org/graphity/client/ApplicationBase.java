@@ -115,8 +115,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     /**
      * Initializes (post construction) DataManager, its LocationMapper and Locators, and Context
      * 
-     * @see org.graphity.util.manager.DataManager
-     * @see org.graphity.util.locator
+     * @see org.graphity.client.util.DataManager
+     * @see org.graphity.processor.locator
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/FileManager.html">FileManager</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/LocationMapper.html">LocationMapper</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html">Locator</a>
@@ -175,7 +175,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      * Provides JAX-RS root resource classes.
      *
      * @return set of root resource classes
-     * @see org.graphity.server.model
      * @see <a
      * href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getClasses()">Application.getClasses()</a>
      */
@@ -189,7 +188,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      * Provides JAX-RS singleton objects (e.g. resources or Providers)
      * 
      * @return set of singleton objects
-     * @see org.graphity.server.provider
      * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getSingletons()">Application.getSingletons()</a>
      */
     @Override

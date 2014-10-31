@@ -232,7 +232,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     /**
      * Returns RDF description of this resource.
      * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
-     * @return 
+     * 
+     * @return description model
      */
     @Override
     public Model describe()
@@ -895,7 +896,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     }
     
     /**
-     * Returns URI of this resource. Uses Java's URI class instead of string as the {@link getURI()} does.
+     * Returns URI of this resource. Uses Java's URI class instead of string as the {@link #getURI()} does.
      * 
      * @return URI object
      */

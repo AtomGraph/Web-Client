@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
  * All rights reserved.
  * 
  * @see com.hp.hpl.jena.util.LocatorURL
- * @see org.openjena.riot.system.ContentNeg
  * {@link http://openjena.org}
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>

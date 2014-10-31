@@ -61,7 +61,7 @@ public interface ContainerResource extends LinkedDataResource
     /**
      * Indicates whether the direction of the ordering is <code>DESC</code>.
      * If this method returns true, <code>DESC</code> order modifier is set on the variable indicated by
-     * {@link getOrderBy()}. Otherwise, no order modifier is set (which equals to <code>ASC</code>).
+     * {@link #getOrderBy()}. Otherwise, no order modifier is set (which equals to <code>ASC</code>).
      * 
      * @return true if the order is descending, false otherwise
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>

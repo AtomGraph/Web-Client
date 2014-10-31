@@ -30,7 +30,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.processor.util.DataManager;
-import org.graphity.server.model.impl.LinkedDataResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpointOrigin;
@@ -45,8 +44,7 @@ import org.slf4j.LoggerFactory;
  * RDF data is crucial for generic Linked Data browser functionality.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see LinkedDataResourceBase
- * @see org.graphity.client.locator.LocatorLinkedData
+ * @see org.graphity.processor.locator.LocatorLinkedData
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
@@ -111,7 +109,7 @@ public class GlobalResourceBase extends ResourceBase
      * Returns media type requested by the client ("accept" query string parameter).
      * This mechanism overrides the normally used content negotiation.
      * 
-     * @return 
+     * @return media type parsed from query param
      */
     public MediaType getMediaType()
     {
@@ -168,7 +166,7 @@ public class GlobalResourceBase extends ResourceBase
 
     /**
      * 
-     * @return 
+     * @return SPARQL endpoint object
      */
     @Override
     public Object getSPARQLResource()
