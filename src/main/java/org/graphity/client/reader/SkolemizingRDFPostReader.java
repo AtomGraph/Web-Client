@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JAX-RS provider that skolemizes blank nodes in a model parsed from RDF/POST request.
+ * JAX-RS reader that skolemizes blank nodes in a model parsed from RDF/POST request.
  * Blank node URIs are built using URI templates from sitemap ontology. Nodes that do not match any resource class are left as is.
  * Note that the instances have already been validated by the superclass, i.e. invalid instances will not get to this point.
  * 

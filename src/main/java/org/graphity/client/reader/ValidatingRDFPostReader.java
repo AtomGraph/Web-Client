@@ -45,7 +45,7 @@ import org.topbraid.spin.constraints.SPINConstraints;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
- * JAX-RS provider that validates instances read from RDF/POST request using SPIN constraints from the sitemap ontology.
+ * JAX-RS reader that validates instances read from RDF/POST request using SPIN constraints from the sitemap ontology.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://spinrdf.org/spin.html#spin-constraints">SPIN - Modeling Vocabulary</a>

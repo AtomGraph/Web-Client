@@ -132,12 +132,10 @@ exclude-result-prefixes="#all">
     WHERE
       { { SELECT  ?dataset
           WHERE
-            { GRAPH ?g
-                {   { ?dataset void:uriSpace ?uriSpace }
-                  UNION
-                    { ?dataset void:uriRegexPattern ?uriRegexPattern }
-                  FILTER ( strstarts("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriSpace) || regex("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriRegexPattern) )
-                }
+            {   { ?dataset void:uriSpace ?uriSpace }
+              UNION
+                { ?dataset void:uriRegexPattern ?uriRegexPattern }
+              FILTER ( strstarts("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriSpace) || regex("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriRegexPattern) )
             }
         }
       }
