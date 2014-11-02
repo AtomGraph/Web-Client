@@ -58,7 +58,11 @@ WHERE
 LIMIT 100</xsl:param>
 
     <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:ReadMode" priority="2">
-	<form action="" method="get" id="query-form">
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
+        <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:HeaderMode"/> 
+
+        <form action="" method="get" id="query-form">
 	    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 	</form>
 
