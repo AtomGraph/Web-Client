@@ -130,6 +130,20 @@
     <#skolemTemplate> "/{slug}" ;
     spin:query <#DescribeWithTopic> ;
     spin:update <#DeleteWithTopic> ;
+    spin:constructor
+              [ a       sp:Construct ;
+                sp:text """
+                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+                    PREFIX gp:      <http://graphity.org/gp#>
+
+                    CONSTRUCT {
+                        ?this a foaf:Document, gp:Item, sioc:Item ;
+                            gp:slug " "^^xsd:string .
+                    }
+                    WHERE {}"""
+              ] ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Item> ;
 	    sp:arg2 <#slug>

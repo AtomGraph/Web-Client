@@ -297,8 +297,8 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="*" mode="gc:ModeSelectMode"/>
-
+    <!-- MODE SELECT MODE -->
+    
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
         <xsl:if test="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))">
             <ul class="nav nav-tabs">
@@ -318,7 +318,9 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeSelectMode"/>
+
+    <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode" priority="1">
 	<li>
 	    <xsl:if test="(not($mode) and $default-mode = @rdf:about) or $mode = @rdf:about">
 		<xsl:attribute name="class">active</xsl:attribute>
@@ -351,6 +353,41 @@ exclude-result-prefixes="#all">
 		</a>		
 	    </xsl:otherwise>
 	</xsl:choose>
+    </xsl:template>
+        
+    <!-- BREADCRUMB MODE -->
+    
+    <xsl:template match="rdf:RDF" mode="gc:BreadCrumbMode">
+        <xsl:if test="not($absolute-path = $base-uri)">
+            <ul class="breadcrumb">
+                <xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
+            </ul>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:BreadCrumbMode">
+        <!-- walk up the parents recursively -->
+        <xsl:choose>
+            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource)">
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource)" mode="#current"/>
+            </xsl:when>
+            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource">
+                <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource)" as="document-node()?"/>
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource, $parent-doc)" mode="#current"/>
+            </xsl:when>
+        </xsl:choose>
+
+        <li>
+            <xsl:if test="@rdf:about = $absolute-path">
+                <xsl:attribute name="class">active</xsl:attribute>
+            </xsl:if>
+            
+            <xsl:apply-templates select="@rdf:about" mode="gc:InlineMode"/>
+            
+            <xsl:if test="not(@rdf:about = $absolute-path)">
+                <span class="divider">/</span>
+            </xsl:if>
+        </li>
     </xsl:template>
         
     <!-- HEADER MODE -->
@@ -408,6 +445,10 @@ exclude-result-prefixes="#all">
                 </xsl:if>
             </ul>
         </div>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:MediaTypeSelectMode" priority="1">
+        <xsl:apply-templates select="key('resources', foaf:isPrimaryTopicOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!-- MODE TOGGLE MODE (Create/Edit buttons) -->
@@ -639,6 +680,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ListMode">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
@@ -683,6 +726,8 @@ exclude-result-prefixes="#all">
     <!-- READ MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ReadMode">
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
         <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:ReadMode"/> <!-- gc:HeaderMode -->
@@ -714,6 +759,8 @@ exclude-result-prefixes="#all">
 		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicateMode"/>
             </xsl:for-each-group>
 	</xsl:param>
+
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
@@ -775,6 +822,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
 
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
@@ -830,6 +879,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:MapMode">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
@@ -875,6 +926,8 @@ exclude-result-prefixes="#all">
     <!-- CREATE MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
@@ -928,11 +981,13 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-        <form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT" accept-charset="UTF-8"> <!-- enctype="multipart/form-data" -->
+        <form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
