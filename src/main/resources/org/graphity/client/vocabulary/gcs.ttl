@@ -208,18 +208,7 @@
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .
 
-<#LabelPropertiesContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container, lda:ListEndpoint ;
-    gp:uriTemplate "/properties/labelled" ;
-    spin:query <#DescribeLabelProperties> ;
-    gp:limit 20 ;
-    gp:orderBy "label"^^xsd:string ;
-    rdfs:label "Labelled properties container" ;
-    rdfs:isDefinedBy <#> .
-
 # QUERIES
-
-# ====
 
 <#DescribeLabelResources>    a       sp:Describe, sp:Query ;
       sp:text """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -228,39 +217,18 @@ PREFIX sioc: <http://rdfs.org/sioc/ns#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dct:  <http://purl.org/dc/terms/>
 
-DESCRIBE ?this ?resource WHERE {
+DESCRIBE ?this ?resource ?thing ?doc WHERE {
     {
-        SELECT ?resource
+        SELECT ?resource ?thing ?doc
         WHERE {
             ?resource rdfs:label|dct:title ?label .
             FILTER isURI(?resource) .
-        }
-    } .
-}"""^^xsd:string .
-
-# ===
-
-<#DescribeLabelProperties>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-DESCRIBE ?this ?property WHERE {
-    {
-        SELECT ?property
-        WHERE {
-            {
-                ?property a rdf:Property .
+            OPTIONAL {
+                ?resource foaf:primaryTopic ?thing # ?resource is a document
             }
-            UNION
-            {
-                ?property a owl:ObjectProperty .
+            OPTIONAL {
+                ?resource foaf:isPrimaryTopicOf ?doc # ?resource is a thing
             }
-            UNION
-            {
-                ?property a owl:DatatypeProperty .
-            } .
-            ?property rdfs:label ?label .
         }
     } .
 }"""^^xsd:string .
