@@ -148,7 +148,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
         if (ontologyURI == null) throw new IllegalArgumentException("URI cannot be null");
 
-        if (log.isDebugEnabled()) log.error("Loading sitemap ontology from URI {}", ontologyURI);
+        if (log.isDebugEnabled()) log.debug("Loading sitemap ontology from URI {}", ontologyURI);
         return OntDocumentManager.getInstance().getOntology(ontologyURI, OntModelSpec.OWL_MEM);
     }
 
