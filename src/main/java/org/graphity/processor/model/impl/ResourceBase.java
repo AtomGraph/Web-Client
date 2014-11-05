@@ -37,6 +37,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
+import org.graphity.processor.exception.NotFoundException;
 import org.graphity.processor.model.ContainerResource;
 import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.processor.query.QueryBuilder;
@@ -105,8 +106,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
         if (ontClass == null)
         {
-            if (log.isDebugEnabled()) log.debug("Resource {} has not matched any template OntClass, returning 404 Not Found", uriInfo.getAbsolutePath());
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            if (log.isDebugEnabled()) log.debug("Resource {} has not matched any template OntClass, returning 404 Not Found", getURI());
+            throw new NotFoundException("Resource has not matched any template");
         }
         
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
@@ -115,7 +116,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         model.add(ontClass.getModel()); // we don't want to make permanent changes to base ontology which is cached
-        this.ontResource = model.createOntResource(uriInfo.getAbsolutePath().toString());
+        this.ontResource = model.createOntResource(getURI());
         this.matchedOntClass = ontClass;
 	this.uriInfo = uriInfo;
 	this.httpHeaders = httpHeaders;
@@ -268,8 +269,8 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	Model description = describe();
 	if (description.isEmpty())
 	{
-	    if (log.isDebugEnabled()) log.debug("DESCRIBE Model is empty; returning 404 Not Found");
-	    throw new WebApplicationException(Response.Status.NOT_FOUND);
+	    if (log.isDebugEnabled()) log.debug("Description Model is empty; returning 404 Not Found");
+	    throw new NotFoundException("Description Model is empty");
 	}
 
         if (log.isDebugEnabled()) log.debug("Returning @GET Response with {} statements in Model", description.size());
@@ -297,7 +298,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      */
     public Response post(Model model, URI graphURI)
     {
-	return post(model, graphURI, getSPARQLEndpoint());
+	return post(model, null, graphURI, getSPARQLEndpoint());
     }
 
     /**
@@ -309,21 +310,22 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      */
     public Response post(Model model, SPARQLEndpoint endpoint)
     {
-	return post(model, null, endpoint);
+	return post(model, null, null, endpoint);
     }
     
     /**
      * Handles POST method, stores the submitted RDF model in the specified named graph of the specified SPARQL endpoint, and returns response.
      * 
      * @param model the RDF payload
+     * @param baseURI base URI for the RDF payload
      * @param graphURI target graph name
      * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response post(Model model, URI graphURI, SPARQLEndpoint endpoint)
+    public Response post(Model model, URI baseURI, URI graphURI, SPARQLEndpoint endpoint)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
-	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
+        if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
 	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
 
@@ -335,10 +337,12 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	}
         model = addProvenance(model);
         
-	UpdateRequest insertDataRequest; 
+	UpdateRequest insertDataRequest;
 	if (graphURI != null) insertDataRequest = InsertDataBuilder.fromData(graphURI, model).build();
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
-	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
+
+        if (baseURI != null) insertDataRequest.setBaseURI(baseURI.toString());
+        if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 
 	endpoint.post(insertDataRequest, null, null);
 	
@@ -664,10 +668,10 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(property);
 	
         org.topbraid.spin.model.Query query = SPINFactory.asQuery(queryOrTemplateCall);
-        if (query != null) return getQuery(query.toString(), qsm);
+        if (query != null) return getQuery(query.toString(), getRealURI(), qsm);
                 
         TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
-        if (templateCall != null) return getQuery(templateCall.getQueryString(), qsm);
+        if (templateCall != null) return getQuery(templateCall.getQueryString(), getRealURI(), qsm);
         
         return null;
     }
@@ -693,15 +697,19 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * <code>OFFSET</code>) will be set to implement pagination.
      * 
      * @param queryString SPARQL query string
+     * @param baseURI <code>BASE</code> URI for the query
      * @param qsm query variable bindings
      * @return query object
      */
-    public Query getQuery(String queryString, QuerySolutionMap qsm)
+    public Query getQuery(String queryString, URI baseURI, QuerySolutionMap qsm)
     {
 	if (queryString == null) throw new IllegalArgumentException("Query string cannot be null");
-	if (qsm == null) throw new IllegalArgumentException("QuerySolutionMap cannot be null");
+	if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
+        if (qsm == null) throw new IllegalArgumentException("QuerySolutionMap cannot be null");
 	
-	return new ParameterizedSparqlString(queryString, qsm).asQuery();
+	Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
+        query.setBaseURI(baseURI.toString());
+        return query;
     }
 
     public UpdateBuilder getUpdateBuilder(Update update)

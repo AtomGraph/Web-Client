@@ -19,21 +19,22 @@ limitations under the License.
     <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY dqc    "http://semwebquality.org/ontologies/dq-constraints#">
     <!ENTITY void   "http://rdfs.org/ns/void#">
+    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
     <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
-    <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
-    <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -83,7 +84,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $ont-model)" as="element()"/>
-    <xsl:variable name="default-mode" select="if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
+    <xsl:variable name="default-mode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
     <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
@@ -318,6 +319,8 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:ModeSelectMode" priority="1"/>
+    
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeSelectMode"/>
 
     <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode" priority="1">
@@ -364,6 +367,8 @@ exclude-result-prefixes="#all">
             </ul>
         </xsl:if>
     </xsl:template>
+
+    <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:BreadCrumbMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:BreadCrumbMode">
         <!-- walk up the parents recursively -->
@@ -412,7 +417,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="@rdf:about[. = $absolute-path] | @rdf:about[../foaf:isPrimaryTopicOf/@rdf:resource = $absolute-path]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[. = $absolute-path] | @rdf:about[../foaf:isPrimaryTopicOf/@rdf:resource = $absolute-path]" mode="gc:HeaderMode" priority="1">
 	<h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
@@ -422,6 +427,14 @@ exclude-result-prefixes="#all">
 	<h1>
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID[../rdf:type/@rdf:resource = '&http;Response']" mode="gc:HeaderMode" priority="1">
+        <div class="alert alert-error">
+            <h1>
+                <xsl:apply-templates select="." mode="gc:InlineMode"/>
+            </h1>
+        </div>
     </xsl:template>
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->

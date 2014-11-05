@@ -1,5 +1,5 @@
 /**
- *  Copyright 2014 Martynas Jusevičius <martynas@graphity.org>
+ *  Copyright 2013 Martynas Jusevičius <martynas@graphity.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  *  limitations under the License.
  *
  */
-package org.graphity.client.mapper;
+package org.graphity.client.mapper.jena;
 
-import com.hp.hpl.jena.shared.DoesNotExistException;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.shared.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.graphity.processor.mapper.ExceptionMapperBase;
 
 /**
  * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.
@@ -27,15 +29,17 @@ import javax.ws.rs.ext.Provider;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class DoesNotExistExceptionMapper implements ExceptionMapper<DoesNotExistException>
+public class NotFoundExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<NotFoundException>
 {
-
+    
     @Override
-    public Response toResponse(DoesNotExistException ae)
+    public Response toResponse(NotFoundException ex)
     {
-	return Response.
-		status(Response.Status.NOT_FOUND).
+	return Response.status(Response.Status.NOT_FOUND).
+                entity(toResource(ex, Response.Status.NOT_FOUND,
+                        ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#NotFound")).
+                    getModel()).
 		build();
     }
-
+    
 }

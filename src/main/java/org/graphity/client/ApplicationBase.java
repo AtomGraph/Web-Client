@@ -36,9 +36,6 @@ import org.graphity.processor.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.resource.labelled.Container;
-import org.graphity.client.mapper.DoesNotExistExceptionMapper;
-import org.graphity.client.mapper.NotFoundExceptionMapper;
-import org.graphity.processor.mapper.QueryExceptionHTTPMapper;
 import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.SkolemizingRDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
@@ -49,6 +46,7 @@ import org.graphity.server.provider.ResultSetWriter;
 import org.graphity.server.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
+import org.graphity.processor.mapper.NotFoundExceptionMapper;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
 import org.graphity.processor.provider.MatchedOntClassProvider;
@@ -104,10 +102,11 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         singletons.add(new GraphStoreProvider());
         singletons.add(new GraphStoreOriginProvider());
         singletons.add(new SkolemizingRDFPostReader());
-        singletons.add(new DoesNotExistExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());
-	singletons.add(new QueryExceptionHTTPMapper());
 	singletons.add(new ConstraintViolationExceptionMapper());	
+        singletons.add(new org.graphity.client.mapper.jena.DoesNotExistExceptionMapper());
+	singletons.add(new org.graphity.client.mapper.jena.NotFoundExceptionMapper());
+	singletons.add(new org.graphity.processor.mapper.jena.QueryExceptionHTTPMapper());
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new XSLTBuilderProvider()); // loads XSLT stylesheet
     }

@@ -20,18 +20,19 @@ limitations under the License.
     <!ENTITY gc             "http://graphity.org/gc#">
     <!ENTITY rdf            "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs           "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl            "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd            "http://www.w3.org/2001/XMLSchema#">
-    <!ENTITY sparql         "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY owl            "http://www.w3.org/2002/07/owl#">
     <!ENTITY geo            "http://www.w3.org/2003/01/geo/wgs84_pos#">
+    <!ENTITY sparql         "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY http           "http://www.w3.org/2011/http#">
+    <!ENTITY sd             "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dbpedia-owl    "http://dbpedia.org/ontology/">
     <!ENTITY dc             "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct            "http://purl.org/dc/terms/">
     <!ENTITY foaf           "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc           "http://rdfs.org/sioc/ns#">
     <!ENTITY sp             "http://spinrdf.org/sp#">
-    <!ENTITY sd             "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY void           "http://rdfs.org/ns/void#">
+    <!ENTITY sioc           "http://rdfs.org/sioc/ns#">
     <!ENTITY list           "http://jena.hpl.hp.com/ARQ/list#">
 ]>
 <xsl:stylesheet version="2.0"
@@ -81,7 +82,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
-    <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ReadMode')) else (if ($matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
+    <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 

@@ -14,12 +14,14 @@
  *  limitations under the License.
  *
  */
-package org.graphity.processor.mapper;
+package org.graphity.processor.mapper.jena;
 
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.graphity.processor.mapper.ExceptionMapperBase;
 
 /**
  * Maps (tunnels) Jena's remote query execution exception.
@@ -27,15 +29,16 @@ import javax.ws.rs.ext.Provider;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class QueryExceptionHTTPMapper implements ExceptionMapper<QueryExceptionHTTP>
+public class QueryExceptionHTTPMapper extends ExceptionMapperBase implements ExceptionMapper<QueryExceptionHTTP>
 {
 
     @Override
-    public Response toResponse(QueryExceptionHTTP qe)
+    public Response toResponse(QueryExceptionHTTP ex)
     {
-	return Response.
-		status(qe.getResponseCode()).
-		//entity(qe.getResponseMessage()). // setting entity disables default Tomcat error page
+	return Response.status(ex.getResponseCode()).
+                entity(toResource(ex, Response.Status.fromStatusCode(ex.getResponseCode()),
+                        null).
+                    getModel()).
 		build();
     }
 

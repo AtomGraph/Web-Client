@@ -176,21 +176,25 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {
-	// injecting Resource to get the final state of its Model. Is there a better way to do this?
-	Resource resource = (Resource)getUriInfo().getMatchedResources().get(0);
-	if (log.isDebugEnabled()) log.debug("Matched Resource: {}", resource);
-	MatchedIndividual match = (MatchedIndividual)resource;
-
         XSLTBuilder bld = getXSLTBuilder().
 	    document(is).
 	    parameter("base-uri", getUriInfo().getBaseUri()).
 	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
 	    parameter("request-uri", getUriInfo().getRequestUri()).
 	    parameter("http-headers", headerMap.toString()).
-	    parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
-            parameter("ont-model", getSource(match.getOntModel(), true)). // $ont-model from the current Resource (with imports)
 	    result(new StreamResult(os));
 
+	// injecting Resource to get the final state of its Model. Is there a better way to do this?
+        if (!getUriInfo().getMatchedResources().isEmpty())
+        {
+            Resource resource = (Resource)getUriInfo().getMatchedResources().get(0);
+            if (log.isDebugEnabled()) log.debug("Matched Resource: {}", resource);
+            MatchedIndividual match = (MatchedIndividual)resource;
+
+	    bld.parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
+            parameter("ont-model", getSource(match.getOntModel(), true)); // $ont-model from the current Resource (with imports)
+        }
+        
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
 	if (contentType != null)
 	{
