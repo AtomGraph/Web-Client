@@ -279,14 +279,36 @@ exclude-result-prefixes="#all">
 	</option>
     </xsl:template>
 
-    <!-- only show edit mode for the main resource -->
-    <xsl:template match="*[@rdf:about][$uri][not(@rdf:about = $uri)]" mode="gc:EditMode"/>
-    
+    <xsl:template match="rdf:RDF" mode="gc:CreateMode">
+        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
+        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+        
+        <form class="form-horizontal" method="post" action="{$absolute-path}{gc:query-string($uri, $mode)}" accept-charset="UTF-8">
+	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
+	    <xsl:call-template name="gc:InputTemplate">
+		<xsl:with-param name="name" select="'rdf'"/>
+		<xsl:with-param name="type" select="'hidden'"/>
+	    </xsl:call-template>
+            
+            <xsl:apply-templates mode="#current"/>
+            
+	    <div class="form-actions">
+		<button type="submit" class="btn btn-primary">Save</button>
+	    </div>
+	</form>
+    </xsl:template>
+
     <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:CreateMode">
         <xsl:apply-templates select="." mode="gc:EditMode"/>
     </xsl:template>
 
     <!-- DOCUMENT -->
+
+    <!-- only show edit mode for the main resource -->
+    <xsl:template match="*[@rdf:about][$uri][not(@rdf:about = $uri)]" mode="gc:EditMode"/>
     
     <xsl:template match="@rdf:about[. = $uri][../rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>

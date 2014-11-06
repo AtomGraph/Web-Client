@@ -43,6 +43,8 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/MarkUp/DTD/xhtml-rdfa-2.dtd" doctype-public="-//W3C//DTD XHTML+RDFa 1.1//EN" media-type="application/xhtml+xml"/>
 
+    <!-- BLOCK LEVEL -->
+    
     <!-- subject -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ReadMode">
         <div about="{@rdf:about}">
@@ -50,10 +52,49 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListReadMode">
-        <div about="{@rdf:about}">WTF???
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListMode">
+	<div class="well" about="{@rdf:about}">
+            <xsl:apply-templates select="." mode="gc:ImageMode"/>
+            
+            <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
+
+	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+	    
+	    <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
+
+	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>            
+
+	    <xsl:if test="@rdf:nodeID">
+		<xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+	    </xsl:if>
+	</div>
+
+        <!--
+        <div about="{@rdf:about}">
             <xsl:next-match/>
         </div>
+        -->
+    </xsl:template>
+
+    <xsl:template match="*[rdf:type/@rdf:resource]" mode="gc:TypeListMode" priority="1">
+        <ul class="inline" rel="&rdf;type">
+            <xsl:apply-templates select="rdf:type" mode="#current">
+                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
+            </xsl:apply-templates>
+        </ul>
+    </xsl:template>
+    
+    <!-- INLINE LEVEL -->
+    
+    <xsl:template match="@rdf:about" mode="gc:InlineMode">
+	<a href="{.}" title="{.}" resource="{.}">
+	    <xsl:if test="substring-after(., concat($request-uri, '#'))">
+		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
+	    </xsl:if>
+            <span property="http://purl.org/dc/terms/title">
+                <xsl:apply-templates select=".." mode="gc:LabelMode"/>
+            </span>
+	</a>
     </xsl:template>
 
     <!-- property -->

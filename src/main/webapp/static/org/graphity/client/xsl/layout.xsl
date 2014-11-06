@@ -75,7 +75,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="graph" as="xs:anyURI?"/>
     <xsl:param name="mode" as="xs:anyURI?"/>
     <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
-    <xsl:param name="matched-ont-class-uri" as="xs:anyURI"/>
+    <xsl:param name="matched-ont-class-uri" as="xs:anyURI?"/>
     <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="order-by" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $ont-model)/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
@@ -83,7 +83,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
-    <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $ont-model)" as="element()"/>
+    <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $ont-model)" as="element()?"/>
     <xsl:variable name="default-mode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
     <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
