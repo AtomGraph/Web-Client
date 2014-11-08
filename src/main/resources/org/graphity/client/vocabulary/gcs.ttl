@@ -165,7 +165,7 @@
                         ?this a foaf:Document, gp:Item, gcs:QueryItem ;
                             foaf:primaryTopic _:query ;
                             gp:slug " "^^xsd:string .
-                        _:query a owl:Class, sp:Query, gcs:Query ;
+                        _:query a sp:Query, gcs:Query ;
                             foaf:isPrimaryTopicOf ?this ;
                             rdfs:label " " ;
                             sp:text "DESCRIBE ?this"^^xsd:string .
