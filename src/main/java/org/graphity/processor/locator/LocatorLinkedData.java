@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,24 @@ public class LocatorLinkedData implements Locator
         for (String type : Lang.RDFXML.getAltContentTypes())
             typeMap.put(type, null);
 	
+        Iterator<Lang> it = RDFLanguages.getRegisteredLanguages().iterator();
+        while (it.hasNext())
+        {
+            Lang lang = it.next();
+            if (!lang.equals(Lang.RDFNULL) && !lang.equals(Lang.RDFXML))
+            {
+                typeMap.put(lang.getContentType().getContentType(), 0.9);
+                
+                Iterator<String> typeIt = lang.getAltContentTypes().iterator();
+                while (typeIt.hasNext())
+                {
+                    String type = typeIt.next();
+                    if (!type.equals(lang.getContentType().getContentType()))
+                        typeMap.put(type, 0.8);
+                }
+            }
+        }
+        
 	QUALIFIED_TYPES = Collections.unmodifiableMap(typeMap);
     }
 

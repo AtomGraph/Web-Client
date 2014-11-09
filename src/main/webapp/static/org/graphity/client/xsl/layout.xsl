@@ -243,12 +243,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
 	<script type="text/javascript" src="static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="static/js/bootstrap.js"></script>
+        <script type="text/javascript" src="static/org/graphity/client/js/jquery.js"></script>
         <xsl:if test="($default-mode, $mode) = '&gc;MapMode'">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
         </xsl:if>
         <xsl:if test="($default-mode, $mode) = ('&gc;EditMode', '&gc;CreateMode')">
-            <script type="text/javascript" src="static/org/graphity/client/js/jquery.js"></script>
             <script type="text/javascript" src="static/org/graphity/client/js/UUID.js"></script>
         </xsl:if>
     </xsl:template>

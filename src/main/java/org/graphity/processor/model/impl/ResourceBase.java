@@ -37,6 +37,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.processor.exception.NotFoundException;
 import org.graphity.processor.model.ContainerResource;
 import org.graphity.processor.model.MatchedIndividual;
@@ -745,6 +746,18 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	return new ParameterizedSparqlString(queryString, qsm).asUpdate();
     }
 
+    /**
+     * Adds matched sitemap class as affordance metadata in Link header.
+     * 
+     * @param model response model
+     * @return response builder
+     */
+    @Override
+    public ResponseBuilder getResponseBuilder(Model model)
+    {
+        return super.getResponseBuilder(model).header("Link", "<" + getMatchedOntClass().getURI() + ">; rel='type'");
+    }
+    
     /**
      * Returns value of <samp>limit</samp> query string parameter, which indicates the number of resources per page.
      * This value is set as <code>LIMIT</code> query modifier when this resource is a page (therefore

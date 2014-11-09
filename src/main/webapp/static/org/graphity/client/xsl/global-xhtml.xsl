@@ -122,8 +122,7 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-navbar" class="nav-collapse collapse">
-                        <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8"
-                              onsubmit="if ($(this).find('input[name=uri]').val().indexOf('http://') == -1) {{ $(this).attr('action', 'resources/labelled'); $(this).find('input[name=uri]').attr('name', 'label'); return true; }}">
+                        <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <xsl:if test="$uri">
                                     <xsl:variable name="uri-dataset-query"><![CDATA[
