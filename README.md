@@ -36,6 +36,14 @@ Getting started
 
 For full documentation, see the [wiki index](../../wiki).
 
+No permanent storage!
+---------------------
+
+Graphity Client does *not* include a permanent RDF storage. Therefore creating/updating data will have no effect.
+
+In order to store data permanently, you need to set up a [triplestore](http://en.wikipedia.org/wiki/Triplestore) and configure the webapp with its SPARQL endpoint.
+For open-source, we recommend trying Jena's [TDB](http://jena.apache.org/documentation/tdb/); for commercial, see [Dydra](http://dydra.com).
+
 Demonstration
 =============
 
