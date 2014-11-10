@@ -16,7 +16,6 @@
  */
 package org.graphity.processor.mapper.jena;
 
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

@@ -60,10 +60,9 @@ public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
         
         if (getRequest().getMethod().equalsIgnoreCase("POST"))
         {
-            Skolemizer skolemizer = Skolemizer.fromOntModel(getOntModel()).uriInfo(getUriInfo()).ontClass(getOntClass());
             try
             {
-                return skolemizer.build(model);
+                return skolemize(model);
             }
             catch (IllegalArgumentException ex)
             {
@@ -71,9 +70,18 @@ public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
                 throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
             }
         }
-        else return model;
-    }
         
+        return model;
+    }
+
+    public Model skolemize(Model model)
+    {
+        return Skolemizer.fromOntModel(getOntModel()).
+                uriInfo(getUriInfo()).
+                ontClass(getOntClass()).
+                build(model);
+    }
+    
     public OntClass getOntClass()
     {
 	ContextResolver<OntClass> cr = getProviders().getContextResolver(OntClass.class, null);

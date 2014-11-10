@@ -62,8 +62,11 @@ public class ValidatingRDFPostReader extends RDFPostReader
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-        Model model = super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
+        return validate(super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream));
+    }
 
+    public Model validate(Model model)
+    {
         OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         ontModel.add(getOntModel()).add(model);
 	SPINModuleRegistry.get().registerAll(ontModel, null);

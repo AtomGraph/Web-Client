@@ -23,7 +23,7 @@
     dct:title "SPARQL endpoint" .
 
 <service> a foaf:Document ;
-    sioc:has_container <> ;
+    sioc:has_space <> ;
     dct:title "Graph Store Protocol endpoint" .
 
 # containers
