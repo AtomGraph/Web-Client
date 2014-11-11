@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc "http://graphity.org/gc#">
+    <!ENTITY gp "http://graphity.org/gp#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
@@ -26,6 +27,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="#all">
@@ -50,7 +52,7 @@ exclude-result-prefixes="#all">
 
 	    <ul class="nav nav-pills nav-stacked">
 		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
-		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
+		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gc:lang}"/>
 		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
 		</xsl:for-each-group>
 	    </ul>
@@ -78,12 +80,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdfs:subClassOf/@rdf:resource[. = '&sioc;Item']" mode="gc:EditMode">
         <select name="ou" id="{generate-id(..)}">
             <!--
-            <xsl:apply-templates select="key('resources-by-subclass', '&sioc;Container', $ont-model)" mode="gc:OptionMode">
+            <xsl:apply-templates select="key('resources-by-subclass', '&sioc;Container', $gp:ontModel)" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" order="ascending"/>
             </xsl:apply-templates>
             -->
-            <xsl:apply-templates select="key('resources', '&sioc;Item', $ont-model)" mode="gc:OptionMode"/>
-            <xsl:apply-templates select="key('resources', '&sioc;Container', $ont-model)" mode="gc:OptionMode"/>
+            <xsl:apply-templates select="key('resources', '&sioc;Item', $gp:ontModel)" mode="gc:OptionMode"/>
+            <xsl:apply-templates select="key('resources', '&sioc;Container', $gp:ontModel)" mode="gc:OptionMode"/>
         </select>
     </xsl:template>
     

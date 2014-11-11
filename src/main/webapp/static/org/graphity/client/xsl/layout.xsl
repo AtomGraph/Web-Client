@@ -67,29 +67,28 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
-    <xsl:param name="base-uri" as="xs:anyURI"/>
-    <xsl:param name="absolute-path" as="xs:anyURI"/>
-    <xsl:param name="request-uri" as="xs:anyURI"/>
-    <xsl:param name="http-headers" as="xs:string"/>
-    <xsl:param name="lang" select="'en'" as="xs:string"/>
-    <xsl:param name="graph" as="xs:anyURI?"/>
-    <xsl:param name="mode" as="xs:anyURI?"/>
-    <xsl:param name="ont-model" select="/" as="document-node()"/> <!-- select="document($base-uri)"  -->
+    <xsl:param name="gp:baseUri" as="xs:anyURI"/>
+    <xsl:param name="gp:absolutePath" as="xs:anyURI"/>
+    <xsl:param name="gp:requestUri" as="xs:anyURI"/>
+    <xsl:param name="gp:httpHeaders" as="xs:string"/>
+    <xsl:param name="gc:lang" select="'en'" as="xs:string"/>
+    <xsl:param name="gc:mode" as="xs:anyURI?"/>
+    <xsl:param name="gp:ontModel" select="/" as="document-node()"/> <!-- select="document($gp:baseUri)"  -->
     <xsl:param name="matched-ont-class-uri" as="xs:anyURI?"/>
-    <xsl:param name="offset" select="$select-res/sp:offset" as="xs:integer?"/>
-    <xsl:param name="limit" select="$select-res/sp:limit" as="xs:integer?"/>
-    <xsl:param name="order-by" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $ont-model)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $ont-model)/sp:*/@rdf:nodeID, $ont-model)/sp:varName" as="xs:string?"/>
-    <xsl:param name="desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
-    <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
+    <xsl:param name="gp:offset" select="$select-res/sp:offset" as="xs:integer?"/>
+    <xsl:param name="gp:limit" select="$select-res/sp:limit" as="xs:integer?"/>
+    <xsl:param name="gp:orderBy" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $gp:ontModel)/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName" as="xs:string?"/>
+    <xsl:param name="gp:desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
+    <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
-    <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $ont-model)" as="element()?"/>
-    <xsl:variable name="default-mode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
-    <xsl:variable name="resource" select="key('resources', $absolute-path, $ont-model)" as="element()?"/>
-    <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $ont-model)" as="element()?"/>
-    <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), $ont-model)"/>
-    <xsl:variable name="select-res" select="if ($matched-ont-class/rdfs:subClassOf/@rdf:resource = '&ldp;Container' and $query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $ont-model), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
-    <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $ont-model), $ont-model) else ()"/>
+    <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $gp:ontModel)" as="element()?"/>
+    <xsl:variable name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
+    <xsl:variable name="resource" select="key('resources', $gp:absolutePath, $gp:ontModel)" as="element()?"/>
+    <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $gp:ontModel)" as="element()?"/>
+    <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), $gp:ontModel)"/>
+    <xsl:variable name="select-res" select="if ($matched-ont-class/rdfs:subClassOf/@rdf:resource = '&ldp;Container' and $query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
+    <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $gp:ontModel), $gp:ontModel) else ()"/>
     <xsl:variable name="config" select="document('../../../../../WEB-INF/web.xml')" as="document-node()"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
@@ -128,7 +127,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:template match="/">
-	<html xml:lang="{$lang}">
+	<html xml:lang="{$gc:lang}">
             <xsl:apply-templates select="." mode="gc:HeadMode"/>
             <xsl:apply-templates select="." mode="gc:BodyMode"/>
 	</html>
@@ -139,9 +138,9 @@ exclude-result-prefixes="#all">
             <title>
                 <xsl:apply-templates mode="gc:TitleMode"/>
             </title>
-            <base href="{$base-uri}" />
+            <base href="{$gp:baseUri}" />
 
-            <xsl:for-each select="key('resources', $base-uri, $ont-model)">
+            <xsl:for-each select="key('resources', $gp:baseUri, $gp:ontModel)">
                 <meta name="author" content="{dct:creator/@rdf:resource}"/>
             </xsl:for-each>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -174,8 +173,8 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="brand" href="{$base-uri}">
-                        <xsl:for-each select="key('resources', $base-uri, document($base-uri))">
+                    <a class="brand" href="{$gp:baseUri}">
+                        <xsl:for-each select="key('resources', $gp:baseUri, document($gp:baseUri))">
                             <img src="{foaf:logo/@rdf:resource}">
                                 <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
                             </img>
@@ -183,20 +182,20 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
-                        <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                        <xsl:variable name="space" select="($gp:absolutePath, key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                         
                         <ul class="nav">
                             <!-- make menu links for all containers in the ontology -->
-                            <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[not(@rdf:about = resolve-uri('sparql', $base-uri))]" mode="gc:NavBarMode">
-                                <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
+                            <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[not(@rdf:about = resolve-uri('sparql', $gp:baseUri))]" mode="gc:NavBarMode">
+                                <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
                                 <xsl:with-param name="space" select="$space"/>
                             </xsl:apply-templates>
                         </ul>
 
-                        <xsl:if test="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]">
+                        <xsl:if test="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]">
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]" mode="gc:NavBarMode">
-                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
+                                <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]" mode="gc:NavBarMode">
+                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
                             </ul>
@@ -221,7 +220,7 @@ exclude-result-prefixes="#all">
         <div class="footer text-center">
             <p>
                 <hr/>
-                <xsl:value-of select="format-date(current-date(), '[Y]', $lang, (), ())"/>.
+                <xsl:value-of select="format-date(current-date(), '[Y]', $gc:lang, (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="gc:InlineMode"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>
@@ -229,9 +228,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
-	<xsl:apply-templates select="key('resources', $base-uri, document($base-uri))" mode="gc:LabelMode"/>
+	<xsl:apply-templates select="key('resources', $gp:baseUri, document($gp:baseUri))" mode="gc:LabelMode"/>
 	<xsl:text> - </xsl:text>
-	<xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:LabelMode"/>
+	<xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="gc:LabelMode"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:StyleMode">
@@ -244,18 +243,18 @@ exclude-result-prefixes="#all">
 	<script type="text/javascript" src="static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="static/js/bootstrap.js"></script>
         <script type="text/javascript" src="static/org/graphity/client/js/jquery.js"></script>
-        <xsl:if test="($default-mode, $mode) = '&gc;MapMode'">
+        <xsl:if test="($gc:defaultMode, $gc:mode) = '&gc;MapMode'">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
         </xsl:if>
-        <xsl:if test="($default-mode, $mode) = ('&gc;EditMode', '&gc;CreateMode')">
+        <xsl:if test="($gc:defaultMode, $gc:mode) = ('&gc;EditMode', '&gc;CreateMode')">
             <script type="text/javascript" src="static/org/graphity/client/js/UUID.js"></script>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-        <!-- <xsl:param name="selected-resources" select="*[not(. is key('resources-by-page-of', $absolute-path))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/> -->
-        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $absolute-path)]" as="element()*"/>
+        <!-- <xsl:param name="selected-resources" select="*[not(. is key('resources-by-page-of', $gp:absolutePath))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/> -->
+        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gp:absolutePath)]" as="element()*"/>
 
 	<div class="container-fluid">
 	    <div class="row-fluid">
@@ -274,22 +273,22 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="gc:ModeChoiceMode">
         <xsl:choose>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;ListMode') or $mode = '&gc;ListMode'">
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;ListMode') or $gc:mode = '&gc;ListMode'">
                 <xsl:apply-templates select="." mode="gc:ListMode"/>
             </xsl:when>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;TableMode') or $mode = '&gc;TableMode'">
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;TableMode') or $gc:mode = '&gc;TableMode'">
                 <xsl:apply-templates select="." mode="gc:TableMode"/>
             </xsl:when>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;ThumbnailMode') or $mode = '&gc;ThumbnailMode'">
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;ThumbnailMode') or $gc:mode = '&gc;ThumbnailMode'">
                 <xsl:apply-templates select="." mode="gc:ThumbnailMode"/>
             </xsl:when>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;MapMode') or $mode = '&gc;MapMode'">
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;MapMode') or $gc:mode = '&gc;MapMode'">
                 <xsl:apply-templates select="." mode="gc:MapMode"/>
             </xsl:when>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;EditMode') or $mode = '&gc;EditMode'">
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;EditMode') or $gc:mode = '&gc;EditMode'">
                 <xsl:apply-templates select="." mode="gc:EditMode"/>
             </xsl:when>
-            <xsl:when test="(not($mode) and $default-mode = '&gc;CreateMode') or $mode = '&gc;CreateMode'">
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;CreateMode') or $gc:mode = '&gc;CreateMode'">
                 <xsl:apply-templates select="." mode="gc:CreateMode"/>
             </xsl:when>
             <xsl:otherwise>
@@ -304,7 +303,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))">
             <ul class="nav nav-tabs">
                 <xsl:choose>
-                    <xsl:when test="key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
+                    <xsl:when test="key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
                         <xsl:apply-templates select="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))[rdf:type/@rdf:resource = '&gc;ContainerMode']" mode="#current">
                             <xsl:sort select="gc:label(.)"/>
                         </xsl:apply-templates>
@@ -325,7 +324,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode" priority="1">
 	<li>
-	    <xsl:if test="(not($mode) and $default-mode = @rdf:about) or $mode = @rdf:about">
+	    <xsl:if test="(not($gc:mode) and $gc:defaultMode = @rdf:about) or $gc:mode = @rdf:about">
 		<xsl:attribute name="class">active</xsl:attribute>
 	    </xsl:if>
 
@@ -335,23 +334,23 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:choose>
-	    <xsl:when test="not(empty($offset)) and not(empty($limit)) and . = $default-mode">
-		<a href="{$absolute-path}{gc:query-string($offset, $limit, $order-by, $desc, ())}">
+	    <xsl:when test="not(empty($gp:offset)) and not(empty($gp:limit)) and . = $gc:defaultMode">
+		<a href="{$gp:absolutePath}{gc:query-string($gp:offset, $gp:limit, $gp:orderBy, $gp:desc, ())}">
 		    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 		</a>
 	    </xsl:when>
-	    <xsl:when test=". = $default-mode">
-		<a href="{$absolute-path}">
+	    <xsl:when test=". = $gc:defaultMode">
+		<a href="{$gp:absolutePath}">
 		    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 		</a>
 	    </xsl:when>
-	    <xsl:when test="not(empty($offset)) and not(empty($limit))">
-		<a href="{$absolute-path}{gc:query-string($offset, $limit, $order-by, $desc, .)}">
+	    <xsl:when test="not(empty($gp:offset)) and not(empty($gp:limit))">
+		<a href="{$gp:absolutePath}{gc:query-string($gp:offset, $gp:limit, $gp:orderBy, $gp:desc, .)}">
 		    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 		</a>
 	    </xsl:when>
 	    <xsl:otherwise>
-		<a href="{$absolute-path}{gc:query-string((), .)}">
+		<a href="{$gp:absolutePath}{gc:query-string((), .)}">
 		    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 		</a>		
 	    </xsl:otherwise>
@@ -361,9 +360,9 @@ exclude-result-prefixes="#all">
     <!-- BREADCRUMB MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:BreadCrumbMode">
-        <xsl:if test="not($absolute-path = $base-uri)">
+        <xsl:if test="not($gp:absolutePath = $gp:baseUri)">
             <ul class="breadcrumb">
-                <xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
+                <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="#current"/>
             </ul>
         </xsl:if>
     </xsl:template>
@@ -383,13 +382,13 @@ exclude-result-prefixes="#all">
         </xsl:choose>
 
         <li>
-            <xsl:if test="@rdf:about = $absolute-path">
+            <xsl:if test="@rdf:about = $gp:absolutePath">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="@rdf:about" mode="gc:InlineMode"/>
             
-            <xsl:if test="not(@rdf:about = $absolute-path)">
+            <xsl:if test="not(@rdf:about = $gp:absolutePath)">
                 <span class="divider">/</span>
             </xsl:if>
         </li>
@@ -398,7 +397,7 @@ exclude-result-prefixes="#all">
     <!-- HEADER MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:HeaderMode">
-        <xsl:apply-templates select="key('resources', $absolute-path)" mode="#current"/>
+        <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="#current"/>
     </xsl:template>
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode">
@@ -417,7 +416,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="@rdf:about[. = $absolute-path] | @rdf:about[../foaf:isPrimaryTopicOf/@rdf:resource = $absolute-path]" mode="gc:HeaderMode" priority="1">
+    <xsl:template match="@rdf:about[. = $gp:absolutePath] | @rdf:about[../foaf:isPrimaryTopicOf/@rdf:resource = $gp:absolutePath]" mode="gc:HeaderMode" priority="1">
 	<h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
@@ -451,9 +450,9 @@ exclude-result-prefixes="#all">
                 <li>
                     <a href="{@rdf:about}?accept={encode-for-uri('text/turtle')}">Turtle</a>
                 </li>
-                <xsl:if test="@rdf:about = $absolute-path and $query-res/sp:text">
+                <xsl:if test="@rdf:about = $gp:absolutePath and $query-res/sp:text">
                     <li>
-                        <a href="{resolve-uri('sparql', $base-uri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
+                        <a href="{resolve-uri('sparql', $gp:baseUri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
                     </li>
                 </xsl:if>
             </ul>
@@ -468,7 +467,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*" mode="gc:ModeToggleMode"/>
     
-    <xsl:template match="*[starts-with(@rdf:about, $base-uri)]" mode="gc:ModeToggleMode" priority="1">
+    <xsl:template match="*[starts-with(@rdf:about, $gp:baseUri)]" mode="gc:ModeToggleMode" priority="1">
         <xsl:if test="not(rdf:type/@rdf:resource = '&sioc;Container')">
             <div class="pull-right">
                 <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
@@ -478,14 +477,14 @@ exclude-result-prefixes="#all">
                 </form>
             </div>
         </xsl:if>
-        <xsl:if test="not($mode = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&sioc;Container')">
+        <xsl:if test="not($gc:mode = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&sioc;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>                        
             </div>
         </xsl:if>
-        <xsl:if test="not($mode = '&gc;CreateMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
+        <xsl:if test="not($gc:mode = '&gc;CreateMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;CreateMode', document('&gc;'))" mode="gc:LabelMode"/>
@@ -527,7 +526,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:LabelMode">
         <xsl:variable name="labels" as="xs:string*">
             <xsl:variable name="lang-labels" as="xs:string*">
-                <xsl:apply-templates select="*[lang($lang)]" mode="#current"/>
+                <xsl:apply-templates select="*[lang($gc:lang)]" mode="#current"/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="not(empty($lang-labels))">
@@ -566,7 +565,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:DescriptionMode">
         <xsl:variable name="descriptions" as="xs:string*">
             <xsl:variable name="lang-descriptions" as="xs:string*">
-                <xsl:apply-templates select="*[lang($lang)]" mode="#current"/>
+                <xsl:apply-templates select="*[lang($gc:lang)]" mode="#current"/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="not(empty($lang-descriptions))">
@@ -595,7 +594,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource]" mode="gc:TypeListMode" priority="1">
         <ul class="inline">
             <xsl:apply-templates select="rdf:type" mode="#current">
-                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
+                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gc:lang}"/>
             </xsl:apply-templates>
         </ul>
     </xsl:template>
@@ -615,7 +614,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode">
         <dl class="dl-horizontal">
             <xsl:apply-templates mode="#current">
-                <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+                <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gc:lang}"/>
             </xsl:apply-templates>
         </dl>
     </xsl:template>
@@ -628,7 +627,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gc:SidebarNavMode">
 	<xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-	    <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$lang}"/>
+	    <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gc:lang}"/>
 	    <xsl:apply-templates select="current-group()[1]" mode="#current">
                 <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending"/>
             </xsl:apply-templates>
@@ -638,7 +637,7 @@ exclude-result-prefixes="#all">
     <!-- PAGINATION MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:PaginationMode" priority="1">
-        <xsl:apply-templates select="key('resources-by-page-of', $absolute-path)" mode="#current"/>
+        <xsl:apply-templates select="key('resources-by-page-of', $gp:absolutePath)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*" mode="gc:PaginationMode"/>
@@ -662,7 +661,7 @@ exclude-result-prefixes="#all">
             </li>
             <li class="next">
                 <xsl:choose>
-                    <xsl:when test="xhv:next and $count &gt;= $limit">
+                    <xsl:when test="xhv:next and $count &gt;= $gp:limit">
                         <xsl:apply-templates select="xhv:next" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
@@ -704,7 +703,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
 
         <xsl:apply-templates select="$selected-resources" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
         </xsl:apply-templates>
 
         <xsl:apply-templates select="." mode="gc:PaginationMode">
@@ -743,15 +742,15 @@ exclude-result-prefixes="#all">
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-        <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:ReadMode"/> <!-- gc:HeaderMode -->
+        <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="gc:ReadMode"/> <!-- gc:HeaderMode -->
 
-        <xsl:apply-templates select="*[not(@rdf:about = $absolute-path)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        <xsl:apply-templates select="*[not(@rdf:about = $gp:absolutePath)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
     <!-- hide page resource -->
-    <xsl:template match="*[ldp:pageOf/@rdf:resource = $absolute-path]" mode="gc:ReadMode" priority="1"/>
+    <xsl:template match="*[ldp:pageOf/@rdf:resource = $gp:absolutePath]" mode="gc:ReadMode" priority="1"/>
 
     <!-- hide document if topic is present -->
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ReadMode" priority="1"/>
@@ -768,7 +767,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 	<xsl:param name="predicates" as="element()*">
 	    <xsl:for-each-group select="$selected-resources/* | key('resources', $selected-resources/foaf:primaryTopic/@rdf:resource)/*" group-by="concat(namespace-uri(), local-name())"> <!-- $selected-resources/* -->
-		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$lang}"/>
+		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gc:lang}"/>
 		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicateMode"/>
             </xsl:for-each-group>
 	</xsl:param>
@@ -795,7 +794,7 @@ exclude-result-prefixes="#all">
 	    <tbody>
 		<xsl:apply-templates select="$selected-resources" mode="#current">
 		    <xsl:with-param name="predicates" select="$predicates" tunnel="yes"/>
-                    <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                    <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
                 </xsl:apply-templates>
 	    </tbody>
 	</table>
@@ -848,7 +847,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="thumbnail-items" as="element()*">	    
             <!-- all resources that are not recursive blank nodes, except page -->
             <xsl:apply-templates select="$selected-resources" mode="#current">
-                <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+                <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
             </xsl:apply-templates>
         </xsl:variable>
@@ -906,7 +905,7 @@ exclude-result-prefixes="#all">
 
         <!-- apply all other URI resources -->
         <xsl:apply-templates mode="#current"> <!-- select="$selected-resources" -->
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
         </xsl:apply-templates>
         
         <xsl:apply-templates select="." mode="gc:PaginationMode">
@@ -945,7 +944,7 @@ exclude-result-prefixes="#all">
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
         
-        <form class="form-horizontal" method="post" action="{$absolute-path}?mode={encode-for-uri($mode)}" accept-charset="UTF-8">
+        <form class="form-horizontal" method="post" action="{$gp:absolutePath}?mode={encode-for-uri($gc:mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
@@ -963,17 +962,17 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode"/>
 
     <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
-        <xsl:param name="class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $ont-model)/@rdf:nodeID, $ont-model)" as="element()"/>
-        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text()" as="xs:string?"/>
+        <xsl:param name="class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
+        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
 
         <xsl:choose>
             <xsl:when test="$constructor-query">
-                <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
+                <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
                 <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()"/>
                 <xsl:variable name="this" select="key('resources-by-type', '&foaf;Document', $template-doc)"/>
                 <xsl:variable name="templates" select="$this | key('resources', $this/foaf:primaryTopic/@rdf:nodeID, $template-doc)" as="element()*"/>
 
-                <xsl:variable name="instances" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource][not(@rdf:about = $absolute-path)]"/>
+                <xsl:variable name="instances" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource][not(@rdf:about = $gp:absolutePath)]"/>
                 <xsl:choose>
                     <xsl:when test="$instances">
                         <xsl:apply-templates select="$instances" mode="gc:EditMode">
@@ -1000,7 +999,7 @@ exclude-result-prefixes="#all">
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-        <form class="form-horizontal" method="post" action="{$absolute-path}?_method=PUT" accept-charset="UTF-8">
+        <form class="form-horizontal" method="post" action="{$gp:absolutePath}?_method=PUT" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
@@ -1022,7 +1021,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="class" select="$matched-ont-class" as="element()"/>
-        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $ont-model)/sp:text/text()" as="xs:string?"/>
+        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
             
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
@@ -1035,7 +1034,7 @@ exclude-result-prefixes="#all">
 
             <xsl:choose>
                 <xsl:when test="$constructor-query">
-                    <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
+                    <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
                     <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()?"/>
                     <xsl:variable name="template" select="$template-doc/rdf:RDF/*[every $type in current()/rdf:type/@rdf:resource satisfies $type = rdf:type/@rdf:resource]" as="element()?"/>
 
@@ -1074,7 +1073,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:InlinePropertyListMode">
         <xsl:apply-templates mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 

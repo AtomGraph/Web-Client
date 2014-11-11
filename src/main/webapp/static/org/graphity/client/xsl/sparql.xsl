@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gs     "http://graphity.org/gs#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -31,6 +32,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -57,10 +59,10 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:ReadMode" priority="2">
+    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:ReadMode" priority="2">
         <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
-        <xsl:apply-templates select="key('resources', $absolute-path)" mode="gc:HeaderMode"/> 
+        <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="gc:HeaderMode"/> 
 
         <form action="" method="get" id="query-form">
 	    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
@@ -71,13 +73,13 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)][not($mode)]" mode="gc:StyleMode" priority="1">
+    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)][not($gc:mode)]" mode="gc:StyleMode" priority="1">
         <xsl:next-match/>
         
         <link href="static/css/yasqe.css" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
+    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryFormMode">
 	<fieldset>
 	    <textarea id="query-string" name="query" class="span12" rows="15">
 		<xsl:choose>
@@ -104,17 +106,17 @@ LIMIT 100</xsl:param>
 	</fieldset>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryResultMode">
-	<xsl:variable name="result-doc" select="document(concat($absolute-path, gc:query-string($endpoint-uri, $query, ())))"/>
+    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryResultMode">
+	<xsl:variable name="result-doc" select="document(concat($gp:absolutePath, gc:query-string($gc:endpointUri, $query, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
 	    <div class="nav row-fluid">
 		<div class="btn-group pull-right">
-		    <a href="{$endpoint-uri}?query={encode-for-uri($query)}" class="btn">Source</a>
+		    <a href="{$gc:endpointUri}?query={encode-for-uri($query)}" class="btn">Source</a>
 		    <!--
-		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'application/rdf+xml')}" class="btn">RDF/XML</a>
-		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'text/turtle')}" class="btn">Turtle</a>
+		    <a href="{@rdf:about}{gc:query-string($gc:endpointUri, $query, 'application/rdf+xml')}" class="btn">RDF/XML</a>
+		    <a href="{@rdf:about}{gc:query-string($gc:endpointUri, $query, 'text/turtle')}" class="btn">Turtle</a>
 		    -->
 		</div>
 	    </div>
@@ -125,10 +127,10 @@ LIMIT 100</xsl:param>
 	<xsl:if test="$result-doc/sparql:sparql">
 	    <div class="nav row-fluid">
 		<div class="btn-group pull-right">
-		    <a href="{$endpoint-uri}?query={encode-for-uri($query)}" class="btn">Source</a>
+		    <a href="{$gc:endpointUri}?query={encode-for-uri($query)}" class="btn">Source</a>
 		    <!--
-		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'application/sparql-results+xml')}" class="btn">XML</a>
-		    <a href="{@rdf:about}{gc:query-string($endpoint-uri, $query, 'application/sparql-results+json')}" class="btn">JSON</a>
+		    <a href="{@rdf:about}{gc:query-string($gc:endpointUri, $query, 'application/sparql-results+xml')}" class="btn">XML</a>
+		    <a href="{@rdf:about}{gc:query-string($gc:endpointUri, $query, 'application/sparql-results+json')}" class="btn">JSON</a>
 		    -->
 		</div>
 	    </div>
@@ -137,7 +139,7 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:ListReadMode" priority="2">
+    <xsl:template match="*[@rdf:about][$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:ListReadMode" priority="2">
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:PropertyListMode"/>

@@ -62,19 +62,21 @@ public class ValidatingRDFPostReader extends RDFPostReader
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-        return validate(super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream));
+        return validate(getOntModel(),
+                super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream),
+                getMode());
     }
 
-    public Model validate(Model model)
+    public Model validate(OntModel ontModel, Model model, URI mode)
     {
-        OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        ontModel.add(getOntModel()).add(model);
-	SPINModuleRegistry.get().registerAll(ontModel, null);
-	List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null);
+        OntModel tempModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        tempModel.add(ontModel).add(model);
+	SPINModuleRegistry.get().registerAll(tempModel, null);
+	List<ConstraintViolation> cvs = SPINConstraints.check(tempModel, null);
 	if (!cvs.isEmpty())
         {
             if (log.isDebugEnabled()) log.debug("SPIN constraint violations: {}", cvs);
-            if (getMode() != null && getMode().equals(URI.create(GC.EditMode.getURI())))
+            if (mode != null && mode.equals(URI.create(GC.EditMode.getURI()))) // check by HTTP request method?
             {
                 throw new ConstraintViolationException(cvs, model);
             }

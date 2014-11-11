@@ -40,7 +40,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.model.MatchedIndividual;
@@ -64,8 +63,11 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
-    public static List<String> RESERVED_PARAMS = Arrays.asList("base-uri", "absolute-path", "request-uri", "http-headers",
-            "ont-model", GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(), "lang", GC.mode.getLocalName(), "uri", "endpoint-uri");
+    public static List<String> RESERVED_PARAMS = Arrays.asList(GP.baseUri.getLocalName(), GP.absolutePath.getLocalName(),
+            GP.requestUri.getLocalName(), GP.httpHeaders.getLocalName(), GP.ontModel.getLocalName(),
+            GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(),
+            GC.lang.getLocalName(), GC.mode.getLocalName(),
+            GC.uri.getLocalName(), GC.endpointUri.getLocalName());
 
     private final XSLTBuilder builder;
  
@@ -124,7 +126,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	model.write(stream, null, WebContent.langRDFXML);
+	model.write(stream, null, RDFLanguages.RDFXML.getName());
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
@@ -178,10 +180,10 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     {
         XSLTBuilder bld = getXSLTBuilder().
 	    document(is).
-	    parameter("base-uri", getUriInfo().getBaseUri()).
-	    parameter("absolute-path", getUriInfo().getAbsolutePath()).
-	    parameter("request-uri", getUriInfo().getRequestUri()).
-	    parameter("http-headers", headerMap.toString()).
+	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
+	    parameter("{" + GP.absolutePath.getNameSpace() + "}" + GP.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+	    parameter("{" + GP.requestUri.getNameSpace() + "}" + GP.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
 	    result(new StreamResult(os));
 
 	// injecting Resource to get the final state of its Model. Is there a better way to do this?
@@ -192,7 +194,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
             MatchedIndividual match = (MatchedIndividual)resource;
 
 	    bld.parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
-            parameter("ont-model", getSource(match.getOntModel(), true)); // $ont-model from the current Resource (with imports)
+            parameter("{" + GP.ontModel.getNameSpace() + "}" + GP.ontModel.getLocalName(), getSource(match.getOntModel(), true)); // $ont-model from the current Resource (with imports)
         }
         
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
@@ -205,7 +207,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (contentLanguage != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
-	    bld.parameter("lang", contentLanguage.toString());
+	    bld.parameter("{" + GC.lang.getNameSpace() + "}" + GC.lang.getLocalName(), contentLanguage.toString());
 	}
 
         // pass HTTP query parameters into XSLT, ignore reserved param names (as params cannot be unset)
@@ -223,12 +225,15 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         }
 
         // override the reserved parameters that need special types
-	if (getUriInfo().getQueryParameters().getFirst("mode") != null)
-	    bld.parameter("mode", URI.create(getUriInfo().getQueryParameters().getFirst("mode")));
-	if (getUriInfo().getQueryParameters().getFirst("uri") != null)
-	    bld.parameter("uri", URI.create(getUriInfo().getQueryParameters().getFirst("uri")));
-	if (getUriInfo().getQueryParameters().getFirst("endpoint-uri") != null)
-	    bld.parameter("endpoint-uri", URI.create(getUriInfo().getQueryParameters().getFirst("endpoint-uri")));
+	if (getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
+	    bld.parameter("{" + GC.mode.getNameSpace() + "}" + GC.mode.getLocalName(),
+                    URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName())));
+	if (getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
+	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
+                URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName())));
+	if (getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
+	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
+                    URI.create(getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
 
 	return bld;
     }

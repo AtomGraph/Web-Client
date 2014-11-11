@@ -17,12 +17,14 @@
 
 package org.graphity.client.vocabulary;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import static org.graphity.processor.vocabulary.GP.NS;
 
 /**
  * Graphity Client vocabulary.
@@ -62,11 +64,15 @@ public class GC
     public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
     
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
-
-    //public static final DatatypeProperty ontologyLocation = m_model.createDatatypeProperty( NS + "ontologyLocation" );
     
     public static final ObjectProperty defaultMode = m_model.createObjectProperty( NS + "defaultMode" );
 
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+
+    public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
+
+    public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
+
+    public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );
 
 }

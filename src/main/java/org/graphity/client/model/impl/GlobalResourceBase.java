@@ -30,6 +30,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.DataManager;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.model.SPARQLEndpointFactory;
@@ -81,11 +82,11 @@ public class GlobalResourceBase extends ResourceBase
 	if (getUriInfo().getQueryParameters().containsKey("accept"))
             mediaType = MediaType.valueOf(getUriInfo().getQueryParameters().getFirst("accept"));
         else mediaType = null;
-        if (getUriInfo().getQueryParameters().containsKey("uri"))
-            topicURI = URI.create(getUriInfo().getQueryParameters().getFirst("uri"));
+        if (getUriInfo().getQueryParameters().containsKey(GC.uri.getLocalName()))
+            topicURI = URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()));
         else topicURI = null;
-        if (getUriInfo().getQueryParameters().containsKey("endpoint-uri"))
-            endpointURI = URI.create(getUriInfo().getQueryParameters().getFirst("endpoint-uri"));
+        if (getUriInfo().getQueryParameters().containsKey(GC.endpointUri.getLocalName()))
+            endpointURI = URI.create(getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
         else endpointURI = null;
 
         if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);

@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc "http://graphity.org/gc#">
+    <!ENTITY gp "http://graphity.org/gp#">
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY void "http://rdfs.org/ns/void#">
 ]>
@@ -23,12 +24,13 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:void="&void;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="void:sparqlEndpoint/@rdf:resource" mode="gc:InlineMode">
-	<a href="{resolve-uri('sparql', $base-uri)}?endpoint-uri={encode-for-uri(.)}">
+	<a href="{resolve-uri('sparql', $gp:baseUri)}?endpointUri={encode-for-uri(.)}">
 	    <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
 	</a>
     </xsl:template>

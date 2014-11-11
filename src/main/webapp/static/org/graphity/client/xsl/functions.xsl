@@ -222,7 +222,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="accept" as="xs:string?"/>
 
 	<xsl:variable name="query-string">
-	    <xsl:if test="not(empty($endpoint-uri))">endpoint-uri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($endpoint-uri))">endpointUri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
 	    <xsl:if test="not(empty($query))">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
 	    <xsl:if test="not(empty($accept))">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
 	</xsl:variable>

@@ -49,9 +49,17 @@ public class GP
 
     public static final OntClass Template = m_model.createClass( NS + "Template" );
 
-    public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
+    public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
 
-    //public static final ObjectProperty datasetEndpoint = m_model.createObjectProperty( NS + "datasetEndpoint" );
+    public static final ObjectProperty absolutePath = m_model.createObjectProperty( NS + "absolutePath" );
+
+    public static final ObjectProperty requestUri = m_model.createObjectProperty( NS + "requestUri" );
+
+    public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
+
+    public static final ObjectProperty ontModel = m_model.createObjectProperty( NS + "ontModel" );
+
+    public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
     public static final DatatypeProperty ontology = m_model.createDatatypeProperty( NS + "ontology" );
 
@@ -68,7 +76,5 @@ public class GP
     public static final DatatypeProperty orderBy = m_model.createDatatypeProperty( NS + "orderBy" );
 
     public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
-    
-    public static final DatatypeProperty language = m_model.createDatatypeProperty( NS + "language" );
 
 }

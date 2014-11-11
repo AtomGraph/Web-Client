@@ -17,6 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java       "http://xml.apache.org/xalan/java/">
     <!ENTITY gc         "http://graphity.org/gc#">
+    <!ENTITY gp         "http://graphity.org/gp#">
     <!ENTITY rdf        "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs       "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl        "http://www.w3.org/2002/07/owl#">    
@@ -34,6 +35,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -48,9 +50,9 @@ xmlns:dbpedia-owl="&dbpedia-owl;"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="base-uri" as="xs:anyURI"/>
+    <xsl:param name="gp:baseUri" as="xs:anyURI"/>
     
-    <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode" priority="1">
+    <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:HeaderMode" priority="1">
 	<!--
         <div class="btn-group pull-right">
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
@@ -62,7 +64,7 @@ exclude-result-prefixes="#all">
 	</h1>
     </xsl:template>
 
-    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[not(starts-with(., $gp:baseUri))]" mode="gc:HeaderMode">
 	<div class="btn-group pull-right">
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
 	</div>
@@ -73,37 +75,37 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
-	<xsl:if test="not(starts-with(., $base-uri))">
+	<xsl:if test="not(starts-with(., $gp:baseUri))">
 	    <a href="{.}" class="btn">Source</a>
 	</xsl:if>
-	<a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-	<a href="{$base-uri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
+	<a href="{$gp:baseUri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
+	<a href="{$gp:baseUri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
 	    
     <!-- subject resource -->
-    <xsl:template match="@rdf:about[not(starts-with(., $base-uri))]" mode="gc:InlineMode">
-	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
+    <xsl:template match="@rdf:about[not(starts-with(., $gp:baseUri))]" mode="gc:InlineMode">
+	<a href="{$gp:baseUri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
 	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(starts-with(concat(namespace-uri(), local-name()), $base-uri))]" mode="gc:InlineMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(starts-with(concat(namespace-uri(), local-name()), $gp:baseUri))]" mode="gc:InlineMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-	<a href="{$base-uri}{gc:query-string($this, (), (), (), (), ())}" title="{$this}">
+	<a href="{$gp:baseUri}{gc:query-string($this, (), (), (), (), ())}" title="{$this}">
 	    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
 	</a>
     </xsl:template>
 
     <!-- object -->
-    <xsl:template match="@rdf:resource[not(starts-with(., $base-uri))] | sparql:uri[not(starts-with(., $base-uri))]" mode="gc:InlineMode">
-	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
+    <xsl:template match="@rdf:resource[not(starts-with(., $gp:baseUri))] | sparql:uri[not(starts-with(., $gp:baseUri))]" mode="gc:InlineMode">
+	<a href="{$gp:baseUri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
 	    <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
 	</a>
     </xsl:template>
 
-    <xsl:template match="sparql:uri[not(starts-with(., $base-uri))]" mode="gc:TableMode">
-	<a href="{$base-uri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
+    <xsl:template match="sparql:uri[not(starts-with(., $gp:baseUri))]" mode="gc:TableMode">
+	<a href="{$gp:baseUri}{gc:query-string(., (), (), (), (), ())}" title="{.}">
 	    <xsl:value-of select="."/>
 	</a>
     </xsl:template>

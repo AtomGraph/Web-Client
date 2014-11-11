@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
+    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -30,6 +31,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -47,8 +49,8 @@ exclude-result-prefixes="#all">
     <!-- subject resource -->
     <xsl:template match="@rdf:about" mode="gc:InlineMode">
 	<a href="{.}" title="{.}">
-	    <xsl:if test="substring-after(., concat($request-uri, '#'))">
-		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
+	    <xsl:if test="substring-after(., concat($gp:requestUri, '#'))">
+		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($gp:requestUri, '#'))"/></xsl:attribute>
 	    </xsl:if>	
 	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 	</a>
@@ -113,7 +115,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="text()[. castable as xs:date][../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="gc:InlineMode">
 	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
+	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $gc:lang, (), ())"/>
 	</span>
     </xsl:template>
 
@@ -121,7 +123,7 @@ exclude-result-prefixes="#all">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $lang, (), ())"/>
+	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $gc:lang, (), ())"/>
 	</span>
     </xsl:template>
 
@@ -259,14 +261,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableMode"/>
 
     <!-- apply properties that match lang() -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($lang)]" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($gc:lang)]" mode="gc:TableMode" priority="1">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($gc:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="gc:TableMode" priority="1">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>
@@ -498,7 +500,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
-        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and key('constraints-by-type', ../rdf:type/@rdf:resource, $ont-model)/sp:arg2/@rdf:resource = $this"/>
+        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:ontModel)/sp:arg2/@rdf:resource = $this"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
  
         <div class="control-group">

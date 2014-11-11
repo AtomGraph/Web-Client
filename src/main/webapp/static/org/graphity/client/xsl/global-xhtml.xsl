@@ -16,8 +16,8 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java           "http://xml.apache.org/xalan/java/">
-    <!ENTITY gp             "http://graphity.org/gp#">
     <!ENTITY gc             "http://graphity.org/gc#">
+    <!ENTITY gp             "http://graphity.org/gp#">
     <!ENTITY rdf            "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs           "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd            "http://www.w3.org/2001/XMLSchema#">
@@ -41,6 +41,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -79,10 +80,10 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/void.xsl"/>
     <xsl:import href="layout.xsl"/>
 
-    <xsl:param name="uri" as="xs:anyURI?"/>
+    <xsl:param name="gc:uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
-    <xsl:variable name="default-mode" select="if ($uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
+    <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
@@ -92,10 +93,10 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
 	<xsl:choose>
-	    <xsl:when test="$uri">
-		<xsl:apply-templates select="key('resources', $base-uri, document($base-uri))" mode="gc:LabelMode"/>
+	    <xsl:when test="$gc:uri">
+		<xsl:apply-templates select="key('resources', $gp:baseUri, document($gp:baseUri))" mode="gc:LabelMode"/>
 		<xsl:text> - </xsl:text>
-		<xsl:apply-templates select="key('resources', $uri)" mode="gc:LabelMode"/>
+		<xsl:apply-templates select="key('resources', $gc:uri)" mode="gc:LabelMode"/>
 	    </xsl:when>
 	    <xsl:otherwise>
 		<xsl:apply-imports/>
@@ -113,8 +114,8 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="brand" href="{$base-uri}">
-                        <xsl:for-each select="key('resources', $base-uri, document($base-uri))">
+                    <a class="brand" href="{$gp:baseUri}">
+                        <xsl:for-each select="key('resources', $gp:baseUri, document($gp:baseUri))">
                             <img src="{foaf:logo/@rdf:resource}">
                                 <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
                             </img>
@@ -122,40 +123,12 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-navbar" class="nav-collapse collapse">
-                        <form action="{$base-uri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
+                        <form action="{$gp:baseUri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
-                                <xsl:if test="$uri">
-                                    <xsl:variable name="uri-dataset-query"><![CDATA[
-    PREFIX  void: <http://rdfs.org/ns/void#>
-
-    DESCRIBE ?dataset
-    WHERE
-      { { SELECT  ?dataset
-          WHERE
-            {   { ?dataset void:uriSpace ?uriSpace }
-              UNION
-                { ?dataset void:uriRegexPattern ?uriRegexPattern }
-              FILTER ( strstarts("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriSpace) || regex("]]><xsl:value-of select="$uri"/><![CDATA[", ?uriRegexPattern) )
-            }
-        }
-      }
-    ]]>
-                                    </xsl:variable>
-                                    <xsl:variable name="query-uri" select="concat(resolve-uri('sparql', $base-uri), '?query=', encode-for-uri($uri-dataset-query))" as="xs:string"/>
-                                    <xsl:if test="doc-available($query-uri)">
-                                        <xsl:if test="key('resources-by-type', '&void;Dataset', document($query-uri))">
-                                            <xsl:attribute name="class">input-prepend input-append</xsl:attribute>
-                                            <span class="add-on">
-                                                <xsl:apply-templates select="key('resources-by-type', '&void;Dataset', document($query-uri))[1]/@rdf:about" mode="gc:InlineMode"/>
-                                            </span>
-                                        </xsl:if>
-                                    </xsl:if>
-                                </xsl:if>
-
                                 <input type="text" name="uri" class="input-xxlarge">
-                                    <xsl:if test="not(starts-with($uri, $base-uri))">
+                                    <xsl:if test="not(starts-with($gc:uri, $gp:baseUri))">
                                         <xsl:attribute name="value">
-                                            <xsl:value-of select="$uri"/>
+                                            <xsl:value-of select="$gc:uri"/>
                                         </xsl:attribute>
                                     </xsl:if>
                                     <xsl:if test="$label">
@@ -168,11 +141,11 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]">
-                            <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                        <xsl:if test="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]">
+                            <xsl:variable name="space" select="($gp:absolutePath, key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]" mode="gc:NavBarMode">
-                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
+                                <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]" mode="gc:NavBarMode">
+                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
                             </ul>
@@ -183,27 +156,27 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:ReadMode">
+    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ReadMode">
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-        <xsl:apply-templates select="key('resources', $uri)" mode="gc:ReadMode"/>
+        <xsl:apply-templates select="key('resources', $gc:uri)" mode="gc:ReadMode"/>
 
-        <xsl:apply-templates select="*[not(@rdf:about = $uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$lang}"/>
+        <xsl:apply-templates select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
+            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:HeaderMode">
-        <xsl:apply-templates select="key('resources', $uri)" mode="#current"/>
+    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:HeaderMode">
+        <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current"/>
     </xsl:template>
     
-    <xsl:template match="@rdf:about[. = $uri]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:HeaderMode">
 	<h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[$uri]" mode="gc:ModeSelectMode">
+    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ModeSelectMode">
         <ul class="nav nav-tabs">
             <xsl:apply-templates select="key('resources-by-type', '&gc;Mode', document('&gc;'))[rdf:type/@rdf:resource = '&gc;ItemMode']" mode="#current">
                 <xsl:sort select="gc:label(.)"/>                    
@@ -213,15 +186,15 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:choose>
-	    <xsl:when test="$uri">
+	    <xsl:when test="$gc:uri">
 		<xsl:choose>
-		    <xsl:when test=". = $default-mode">
-			<a href="{$absolute-path}{gc:query-string($uri, ())}">
+		    <xsl:when test=". = $gc:defaultMode">
+			<a href="{$gp:absolutePath}{gc:query-string($gc:uri, ())}">
 			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 			</a>		
 		    </xsl:when>
 		    <xsl:otherwise>
-			<a href="{$absolute-path}{gc:query-string($uri, .)}">
+			<a href="{$gp:absolutePath}{gc:query-string($gc:uri, .)}">
 			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 			</a>		
 		    </xsl:otherwise>
@@ -233,49 +206,12 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $uri]" mode="gc:ModeToggleMode" priority="1">
+    <xsl:template match="*[@rdf:about = $gc:uri]" mode="gc:ModeToggleMode" priority="1">
         <div class="pull-right">
-            <a class="btn btn-primary" href="{$absolute-path}{gc:query-string(@rdf:about, xs:anyURI('&gc;CreateMode'))}">
+            <a class="btn btn-primary" href="{$gp:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gc;CreateMode'))}">
                 <xsl:apply-templates select="key('resources', 'save-as', document(''))" mode="gc:LabelMode"/>
             </a>
         </div>
-    </xsl:template>
-
-    <xsl:template match="rdf:RDF[$absolute-path = resolve-uri('sparql', $base-uri)]" mode="gc:QueryFormMode">
-	<p class="form-inline">
-	    <label for="endpoint-select">SPARQL endpoint</label>
-	    <xsl:text> </xsl:text>
-	    <select id="endpoint-select" name="endpoint-uri" class="span6">
-                <xsl:apply-templates select="key('resources', resolve-uri('sparql', $base-uri), document($base-uri))" mode="gc:OptionMode"/>
-		<xsl:apply-templates select="key('resources-by-type', '&void;Dataset', document(resolve-uri('datasets?limit=100', $base-uri)))[void:sparqlEndpoint/@rdf:resource]" mode="gc:OptionMode">
-                    <xsl:sort select="gc:label(.)" order="ascending"/>
-		</xsl:apply-templates>
-	    </select>
-	</p>
-	
-	<xsl:apply-imports/>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about | @rdf:nodeID][void:sparqlEndpoint/@rdf:resource]" mode="gc:OptionMode">
-	<option value="{void:sparqlEndpoint/@rdf:resource}">
-	    <xsl:if test="$endpoint-uri = void:sparqlEndpoint/@rdf:resource">
-		<xsl:attribute name="selected">selected</xsl:attribute>
-	    </xsl:if>
-
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	    [<xsl:value-of select="void:sparqlEndpoint/@rdf:resource"/>]
-	</option>	
-    </xsl:template>
-    
-    <xsl:template match="*[@rdf:about = resolve-uri('sparql', $base-uri)]" mode="gc:OptionMode" priority="1">
-	<option value="{@rdf:about}">
-	    <xsl:if test="not($endpoint-uri) or $endpoint-uri = @rdf:about">
-		<xsl:attribute name="selected">selected</xsl:attribute>
-	    </xsl:if>
-
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	    [<xsl:value-of select="@rdf:about"/>]
-	</option>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
@@ -285,7 +221,7 @@ exclude-result-prefixes="#all">
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
         
-        <form class="form-horizontal" method="post" action="{$absolute-path}{gc:query-string($uri, $mode)}" accept-charset="UTF-8">
+        <form class="form-horizontal" method="post" action="{$gp:absolutePath}{gc:query-string($gc:uri, $gc:mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
@@ -300,16 +236,16 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:CreateMode">
+    <xsl:template match="*[*][@rdf:about = $gc:uri]" mode="gc:CreateMode">
         <xsl:apply-templates select="." mode="gc:EditMode"/>
     </xsl:template>
 
     <!-- DOCUMENT -->
 
     <!-- only show edit mode for the main resource -->
-    <xsl:template match="*[@rdf:about][$uri][not(@rdf:about = $uri)]" mode="gc:EditMode"/>
+    <xsl:template match="*[@rdf:about][$gc:uri][not(@rdf:about = $gc:uri)]" mode="gc:EditMode"/>
     
-    <xsl:template match="@rdf:about[. = $uri][../rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
+    <xsl:template match="@rdf:about[. = $gc:uri][../rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -325,8 +261,8 @@ exclude-result-prefixes="#all">
 	</xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about = $uri][rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
-        <xsl:param name="container" select="resolve-uri('saved', $base-uri)" as="xs:anyURI"/>
+    <xsl:template match="*[*][@rdf:about = $gc:uri][rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
+        <xsl:param name="container" select="resolve-uri('saved', $gp:baseUri)" as="xs:anyURI"/>
         
         <xsl:apply-imports/>
 
@@ -366,7 +302,7 @@ exclude-result-prefixes="#all">
 
     <!-- THING -->
         
-    <xsl:template match="@rdf:about[. = $uri]" mode="gc:EditMode">
+    <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -382,8 +318,8 @@ exclude-result-prefixes="#all">
 	</xsl:call-template>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about = $uri]" mode="gc:EditMode">
-        <xsl:param name="container" select="resolve-uri('saved', $base-uri)" as="xs:anyURI"/>
+    <xsl:template match="*[*][@rdf:about = $gc:uri]" mode="gc:EditMode">
+        <xsl:param name="container" select="resolve-uri('saved', $gp:baseUri)" as="xs:anyURI"/>
 
         <xsl:apply-imports/>
         

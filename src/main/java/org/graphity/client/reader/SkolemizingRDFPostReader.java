@@ -17,6 +17,7 @@
 package org.graphity.client.reader;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +63,7 @@ public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
         {
             try
             {
-                return skolemize(model);
+                return skolemize(getUriInfo(), getOntModel(), getOntClass(), model);
             }
             catch (IllegalArgumentException ex)
             {
@@ -74,11 +75,11 @@ public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
         return model;
     }
 
-    public Model skolemize(Model model)
+    public Model skolemize(UriInfo uriInfo, OntModel ontModel, OntClass ontClass, Model model)
     {
-        return Skolemizer.fromOntModel(getOntModel()).
-                uriInfo(getUriInfo()).
-                ontClass(getOntClass()).
+        return Skolemizer.fromOntModel(ontModel).
+                uriInfo(uriInfo).
+                ontClass(ontClass).
                 build(model);
     }
     
