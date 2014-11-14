@@ -16,13 +16,18 @@
 
 package org.graphity.processor.provider;
 
+import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.uri.UriTemplate;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
@@ -36,6 +41,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 import org.graphity.processor.vocabulary.GP;
+import org.graphity.processor.vocabulary.SIOC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,14 +50,14 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class MatchedOntClassProvider extends PerRequestTypeInjectableProvider<Context, OntClass> implements ContextResolver<OntClass>
+public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, OntClass> implements ContextResolver<OntClass>
 {
-    private static final Logger log = LoggerFactory.getLogger(MatchedOntClassProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(OntClassMatcher.class);
 
     @Context UriInfo uriInfo;
     @Context Providers providers;
     
-    public MatchedOntClassProvider()
+    public OntClassMatcher()
     {
 	super(OntClass.class);
     }
@@ -200,6 +206,127 @@ public class MatchedOntClassProvider extends PerRequestTypeInjectableProvider<Co
                     }
                 }
             }
+        }
+        finally
+        {
+            it.close();
+        }
+        
+        return matchedClasses;
+    }
+
+    public OntClass matchOntClass(Resource resource, OntModel ontModel, OntClass parentClass)
+    {
+	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
+        if (parentClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+
+        Map<Property, OntClass> matchedClasses = new HashMap<>();
+
+        if (resource.hasProperty(SIOC.HAS_CONTAINER))
+        {
+            Resource container = resource.getPropertyResourceValue(SIOC.HAS_CONTAINER);
+            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
+            URI containerURI = URI.create(container.getURI());
+
+            OntClass containerClass = matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
+            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_CONTAINER, containerClass));
+        }
+        else
+        {
+            if (log.isDebugEnabled()) log.debug("Item {} will be stored as a child of requested OntClass {}", resource, parentClass);
+            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_CONTAINER, parentClass));
+        }
+        
+        if (resource.hasProperty(SIOC.HAS_PARENT))
+        {
+            Resource container = resource.getPropertyResourceValue(SIOC.HAS_PARENT);
+            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
+            URI containerURI = URI.create(container.getURI());
+
+            OntClass containerClass = matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
+            matchedClasses = matchOntClasses(ontModel, SIOC.HAS_PARENT, containerClass);
+        }
+        else
+        {
+            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of requested OntClass {}", resource, parentClass);
+            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_PARENT, parentClass));
+        }
+        
+        if (resource.hasProperty(SIOC.HAS_SPACE))
+        {
+            Resource space = resource.getPropertyResourceValue(SIOC.HAS_SPACE);
+            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of specified space {}", resource, space);
+            URI containerURI = URI.create(space.getURI());
+            OntClass spaceClass = matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
+            matchedClasses = matchOntClasses(ontModel, SIOC.HAS_SPACE, spaceClass);
+        }
+        else
+        {
+            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of requested OntClass {}", resource, parentClass);
+            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_SPACE, parentClass));
+        }
+
+        if (!matchedClasses.isEmpty())
+        {
+            // finally check by resource types
+            StmtIterator it = resource.listProperties(RDF.type);
+            while (it.hasNext())
+            {
+                Statement stmt = it.next();
+                if (stmt.getObject().canAs(OntClass.class))
+                {
+                    OntClass typeClass = stmt.getObject().as(OntClass.class);
+                    if (matchedClasses.containsValue(typeClass))
+                        return typeClass;
+                }
+            }
+
+            return matchedClasses.values().iterator().next(); // return the first one
+        }
+        
+        return null;
+    }
+
+    public Map<Property, OntClass> matchOntClasses(OntModel ontModel, Property property, OntClass ontClass)
+    {
+	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
+        if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        
+        Map<Property, OntClass> matchedClasses = new HashMap<>();        
+        ExtendedIterator<Restriction> it = ontModel.listRestrictions();        
+        try
+        {
+            while (it.hasNext())
+            {
+                Restriction restriction = it.next();	    
+                if (restriction.canAs(AllValuesFromRestriction.class))
+                {
+                    AllValuesFromRestriction avfr = restriction.asAllValuesFromRestriction();
+                    if (avfr.getOnProperty().equals(property) && avfr.hasAllValuesFrom(ontClass))
+                    {
+                        ExtendedIterator<OntClass> classIt = avfr.listSubClasses(true);
+                        try
+                        {
+                            if (classIt.hasNext())
+                            {
+                                OntClass matchingClass = classIt.next();
+                                if (log.isDebugEnabled()) log.debug("Value {} matched endpoint OntClass {}", ontClass, matchingClass);
+                                //return matchingClass;
+                                matchedClasses.put(property, matchingClass);
+                            }
+                        }
+                        finally
+                        {
+                            classIt.close();
+                        }
+                    }
+                }
+            }
+
+            //if (log.isWarnEnabled()) log.warn("Container {} has no OntClass match in this OntModel", ontClass);
+            //return null;
         }
         finally
         {

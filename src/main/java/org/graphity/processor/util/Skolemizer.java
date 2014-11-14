@@ -16,10 +16,8 @@
 
 package org.graphity.processor.util;
 
-import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -30,7 +28,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.ResourceUtils;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.uri.UriTemplateParser;
 import java.net.URI;
@@ -40,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import org.graphity.processor.provider.MatchedOntClassProvider;
+import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SIOC;
 import org.slf4j.Logger;
@@ -59,6 +56,7 @@ public class Skolemizer
     private UriInfo uriInfo;
     private OntClass ontClass;
     private OntModel ontModel;
+    private OntClassMatcher ontClassMatcher;
     
     protected Skolemizer()
     {
@@ -89,6 +87,14 @@ public class Skolemizer
         this.ontModel = ontModel;
         return this;
     }
+
+    public Skolemizer ontClassMatcher(OntClassMatcher ontClassMatcher)
+    {
+	if (ontClassMatcher == null) throw new IllegalArgumentException("OntModel cannot be null");
+        this.ontClassMatcher = ontClassMatcher;
+        return this;
+    }
+
 
     public static Skolemizer fromOntModel(OntModel ontModel)
     {
@@ -131,6 +137,7 @@ public class Skolemizer
     public Resource getBaseResource(Resource resource)
     {
         if (resource.hasProperty(SIOC.HAS_CONTAINER)) return resource.getPropertyResourceValue(SIOC.HAS_CONTAINER);
+        if (resource.hasProperty(SIOC.HAS_PARENT)) return resource.getPropertyResourceValue(SIOC.HAS_PARENT);
         if (resource.hasProperty(SIOC.HAS_SPACE)) return resource.getPropertyResourceValue(SIOC.HAS_SPACE);
         
         return ResourceFactory.createResource(getUriInfo().getAbsolutePath().toString());
@@ -139,15 +146,9 @@ public class Skolemizer
     public URI build(Resource resource)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-
-        OntClass matchingClass = matchOntClass(resource);
-        if (matchingClass != null)
-        {
-            if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class {}", resource, matchingClass);
-            return build(resource, UriBuilder.fromUri(getBaseResource(resource).getURI()), matchingClass);
-        }        
         
         // as a fallback (for real-world resources), try to skolemize using the document class
+        // inverse functional property
         if (resource.hasProperty(FOAF.isPrimaryTopicOf))
         {
             Resource doc = null;
@@ -169,15 +170,26 @@ public class Skolemizer
 
             if (doc != null)
             {
-                OntClass docClass = matchOntClass(doc);
+                OntClass docClass = getOntClassMatcher().matchOntClass(doc, getOntModel(), getOntClass());
                 if (docClass != null)
                 {
-                    OntClass topicClass = matchOntClass(FOAF.isPrimaryTopicOf, docClass);
-                    return build(resource, UriBuilder.fromUri(getBaseResource(doc).getURI()), topicClass);
+                    Map<Property, OntClass> matchingClasses = getOntClassMatcher().matchOntClasses(getOntModel(), FOAF.isPrimaryTopicOf, docClass);
+                    if (!matchingClasses.isEmpty())
+                    {
+                        OntClass topicClass = matchingClasses.values().iterator().next();
+                        return build(resource, UriBuilder.fromUri(getBaseResource(doc).getURI()), topicClass);
+                    }
                 }
             }
         }
-        
+
+        OntClass matchingClass = getOntClassMatcher().matchOntClass(resource, getOntModel(), getOntClass());
+        if (matchingClass != null)
+        {
+            if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class {}", resource, matchingClass);
+            return build(resource, UriBuilder.fromUri(getBaseResource(resource).getURI()), matchingClass);
+        }        
+
         return null;
     }
 
@@ -196,7 +208,7 @@ public class Skolemizer
         if (log.isDebugEnabled()) log.debug("Building URI for resource {} with template: {}", resource, itemTemplate);
         UriBuilder builder = baseBuilder.path(itemTemplate);
         // add fragment identifier for non-information resources
-        if (!resource.hasProperty(RDF.type, FOAF.Document)) builder.fragment("this");
+        if (!resource.hasProperty(RDF.type, FOAF.Document)) builder.fragment("this"); // FOAF.isPrimaryTopicOf?
 
         try
         {
@@ -298,85 +310,6 @@ public class Skolemizer
         
         return null;
     }
-    
-    protected OntClass matchOntClass(Resource resource)
-    {
-        MatchedOntClassProvider ontClassProvider = new MatchedOntClassProvider();
-        
-        if (resource.hasProperty(SIOC.HAS_CONTAINER))
-        {
-            Resource container = resource.getPropertyResourceValue(SIOC.HAS_CONTAINER);
-            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
-            URI containerURI = URI.create(container.getURI());
-
-            OntClass containerClass = ontClassProvider.matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
-            return matchOntClass(SIOC.HAS_CONTAINER, containerClass);
-        }
-        if (resource.hasProperty(SIOC.HAS_SPACE))
-        {
-            Resource space = resource.getPropertyResourceValue(SIOC.HAS_SPACE);
-            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of specified space {}", resource, space);
-            URI containerURI = URI.create(space.getURI());
-            OntClass spaceClass = ontClassProvider.matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
-            return matchOntClass(SIOC.HAS_SPACE, spaceClass);
-        }
-
-        if (resource.hasProperty(RDF.type, SIOC.CONTAINER))
-        {
-            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of requested container {}", resource, getUriInfo().getAbsolutePath());
-            return matchOntClass(SIOC.HAS_SPACE, getOntClass());
-        }
-        if (resource.hasProperty(RDF.type, FOAF.Document))
-        {
-            if (log.isDebugEnabled()) log.debug("Document {} will be stored as a child of requested container {}", resource, getUriInfo().getAbsolutePath());
-            return matchOntClass(SIOC.HAS_CONTAINER, getOntClass());
-        }
-
-        return null;
-    }
-
-    protected OntClass matchOntClass(Property property, OntClass ontClass)
-    {
-	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        
-        ExtendedIterator<Restriction> it = getOntModel().listRestrictions();        
-        try
-        {
-            while (it.hasNext())
-            {
-                Restriction restriction = it.next();	    
-                if (restriction.canAs(AllValuesFromRestriction.class))
-                {
-                    AllValuesFromRestriction avfr = restriction.asAllValuesFromRestriction();
-                    if (avfr.getOnProperty().equals(property) && avfr.hasAllValuesFrom(ontClass))
-                    {
-                        ExtendedIterator<OntClass> classIt = avfr.listSubClasses(true);
-                        try
-                        {
-                            if (classIt.hasNext())
-                            {
-                                OntClass matchingClass = classIt.next();
-                                if (log.isDebugEnabled()) log.debug("Value {} matched endpoint OntClass {}", ontClass, matchingClass);
-                                return matchingClass;
-                            }
-                        }
-                        finally
-                        {
-                            classIt.close();
-                        }
-                    }
-                }
-            }
-
-            if (log.isWarnEnabled()) log.warn("Container {} has no OntClass match in this OntModel", ontClass);
-            return null;
-        }
-        finally
-        {
-            it.close();
-        }	
-    }
 
     public UriInfo getUriInfo()
     {
@@ -391,6 +324,11 @@ public class Skolemizer
     public OntModel getOntModel()
     {
         return ontModel;
+    }
+
+    public OntClassMatcher getOntClassMatcher()
+    {
+        return ontClassMatcher;
     }
 
 }

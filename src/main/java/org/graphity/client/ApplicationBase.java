@@ -49,7 +49,7 @@ import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
 import org.graphity.processor.mapper.NotFoundExceptionMapper;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
 import org.graphity.processor.provider.GraphStoreProvider;
-import org.graphity.processor.provider.MatchedOntClassProvider;
+import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
@@ -96,7 +96,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         singletons.add(new org.graphity.server.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
-        singletons.add(new MatchedOntClassProvider());
+        singletons.add(new OntClassMatcher());
 	singletons.add(new SPARQLEndpointProvider());
 	singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new GraphStoreProvider());

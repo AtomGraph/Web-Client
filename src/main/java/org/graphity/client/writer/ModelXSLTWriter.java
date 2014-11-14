@@ -193,7 +193,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
             if (log.isDebugEnabled()) log.debug("Matched Resource: {}", resource);
             MatchedIndividual match = (MatchedIndividual)resource;
 
-	    bld.parameter("matched-ont-class-uri", URI.create(match.getMatchedOntClass().getURI())).
+	    bld.parameter("{" + GP.matchedOntClass.getNameSpace() + "}" + GP.matchedOntClass.getLocalName(), URI.create(match.getMatchedOntClass().getURI())).
             parameter("{" + GP.ontModel.getNameSpace() + "}" + GP.ontModel.getLocalName(), getSource(match.getOntModel(), true)); // $ont-model from the current Resource (with imports)
         }
         

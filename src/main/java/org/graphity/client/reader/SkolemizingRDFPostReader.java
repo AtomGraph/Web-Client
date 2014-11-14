@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.util.Skolemizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
         {
             try
             {
-                return skolemize(getUriInfo(), getOntModel(), getOntClass(), model);
+                return skolemize(getUriInfo(), getOntModel(), getOntClass(), new OntClassMatcher(), model);
             }
             catch (IllegalArgumentException ex)
             {
@@ -75,11 +76,12 @@ public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
         return model;
     }
 
-    public Model skolemize(UriInfo uriInfo, OntModel ontModel, OntClass ontClass, Model model)
+    public Model skolemize(UriInfo uriInfo, OntModel ontModel, OntClass ontClass, OntClassMatcher ontClassMatcher, Model model)
     {
         return Skolemizer.fromOntModel(ontModel).
                 uriInfo(uriInfo).
                 ontClass(ontClass).
+                ontClassMatcher(ontClassMatcher).
                 build(model);
     }
     

@@ -74,7 +74,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:lang" select="'en'" as="xs:string"/>
     <xsl:param name="gc:mode" as="xs:anyURI?"/>
     <xsl:param name="gp:ontModel" select="/" as="document-node()"/> <!-- select="document($gp:baseUri)"  -->
-    <xsl:param name="matched-ont-class-uri" as="xs:anyURI?"/>
+    <xsl:param name="gp:matchedOntClass" as="xs:anyURI?"/>
     <xsl:param name="gp:offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="gp:limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="gp:orderBy" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $gp:ontModel)/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName" as="xs:string?"/>
@@ -82,7 +82,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
-    <xsl:variable name="matched-ont-class" select="key('resources', $matched-ont-class-uri, $gp:ontModel)" as="element()?"/>
+    <xsl:variable name="matched-ont-class" select="key('resources', $gp:matchedOntClass, $gp:ontModel)" as="element()?"/>
     <xsl:variable name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
     <xsl:variable name="resource" select="key('resources', $gp:absolutePath, $gp:ontModel)" as="element()?"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $gp:ontModel)" as="element()?"/>
@@ -938,14 +938,30 @@ exclude-result-prefixes="#all">
     <!-- CREATE MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
+        <xsl:param name="method" select="'post'" as="xs:string"/>
+        <xsl:param name="action" select="concat($gp:absolutePath, '?mode=', encode-for-uri($gc:mode))" as="xs:string"/>
+        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
+        <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
+        <xsl:param name="enctype" as="xs:string?"/>
+        
         <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
         
-        <form class="form-horizontal" method="post" action="{$gp:absolutePath}?mode={encode-for-uri($gc:mode)}" accept-charset="UTF-8">
-	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
+        <form method="{$method}" action="{$action}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$accept-charset">
+                <xsl:attribute name="accept-charset"><xsl:value-of select="$accept-charset"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$enctype">
+                <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
+            </xsl:if>
+
+            <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
@@ -961,6 +977,14 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode"/>
 
+    <!--
+    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&sioc;Space']" mode="gc:CreateMode" priority="2">
+        <xsl:next-match>
+            <xsl:with-param name="class" select="key('resources', '&gp;Container', $gp:ontModel)"/>
+        </xsl:next-match>
+    </xsl:template>
+    -->
+    
     <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
         <xsl:param name="class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
         <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
@@ -993,14 +1017,30 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
+        <xsl:param name="method" select="'post'" as="xs:string"/>
+        <xsl:param name="action" select="concat($gp:absolutePath, '?_method=PUT')" as="xs:string"/>
+        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
+        <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
+        <xsl:param name="enctype" as="xs:string?"/>
+
         <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
-        <form class="form-horizontal" method="post" action="{$gp:absolutePath}?_method=PUT" accept-charset="UTF-8">
-	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
+        <form method="{$method}" action="{$action}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$accept-charset">
+                <xsl:attribute name="accept-charset"><xsl:value-of select="$accept-charset"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$enctype">
+                <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
+            </xsl:if>
+
+            <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>

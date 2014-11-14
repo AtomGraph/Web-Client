@@ -97,7 +97,7 @@
 # RESOURCE TEMPLATES
 
 <#Space> a rdfs:Class, owl:Class, <#Template> ;
-     rdfs:subClassOf foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ; # gs:Resource
+     rdfs:subClassOf foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ;
      <#uriTemplate> "/" ;
      spin:query <#DescribeWithChildren> ;
      <#limit> 20 ;
@@ -105,7 +105,7 @@
      rdfs:isDefinedBy <#> .
 
 <#Container> a rdfs:Class, owl:Class, <#Template> ;
-    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint , # gs:Resource, 
+    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom <#Space>
@@ -114,6 +114,22 @@
     <#skolemTemplate> "/{slug}" ;
     <#limit> 20 ;
     spin:query <#DescribeWithChildren> ;
+    spin:constructor
+              [ a       sp:Construct ;
+                sp:text """
+                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+                    PREFIX gp:      <http://graphity.org/gp#>
+                    PREFIX dct:     <http://purl.org/dc/terms/>
+
+                    CONSTRUCT {
+                        ?this a foaf:Document, gp:Container, sioc:Container ;
+                            gp:slug " "^^xsd:string ;
+                            dct:title " " .
+                    }
+                    WHERE {}"""
+              ] ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Container> ;
 	    sp:arg2 <#slug>

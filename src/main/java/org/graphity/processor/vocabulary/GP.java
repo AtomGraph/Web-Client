@@ -57,6 +57,8 @@ public class GP
 
     public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
 
+    public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
+
     public static final ObjectProperty ontModel = m_model.createObjectProperty( NS + "ontModel" );
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
