@@ -64,10 +64,11 @@ public class ValidatingRDFPostReader extends RDFPostReader
     {
         return validate(getOntModel(),
                 super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream),
-                getMode());
+                getMode(),
+                (QueriedResource)getUriInfo().getMatchedResources().get(0));
     }
 
-    public Model validate(OntModel ontModel, Model model, URI mode)
+    public Model validate(OntModel ontModel, Model model, URI mode, QueriedResource match)
     {
         OntModel tempModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         tempModel.add(ontModel).add(model);
@@ -82,7 +83,6 @@ public class ValidatingRDFPostReader extends RDFPostReader
             }
             else // gc:CreateMode
             {
-                QueriedResource match = (QueriedResource)getUriInfo().getMatchedResources().get(0);
                 throw new ConstraintViolationException(cvs, match.describe().add(model));
             }
         }
