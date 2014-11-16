@@ -215,9 +215,10 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
         return matchedClasses;
     }
 
-    public OntClass matchOntClass(Resource resource, OntModel ontModel, OntClass parentClass)
+    public OntClass matchOntClass(Resource resource, UriInfo uriInfo, OntModel ontModel, OntClass parentClass)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
         if (parentClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 
@@ -229,7 +230,7 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
             if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
             URI containerURI = URI.create(container.getURI());
 
-            OntClass containerClass = matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
+            OntClass containerClass = matchOntClass(ontModel, containerURI, uriInfo.getBaseUri());
             matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_CONTAINER, containerClass));
         }
         else
@@ -244,7 +245,7 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
             if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
             URI containerURI = URI.create(container.getURI());
 
-            OntClass containerClass = matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
+            OntClass containerClass = matchOntClass(ontModel, containerURI, uriInfo.getBaseUri());
             matchedClasses = matchOntClasses(ontModel, SIOC.HAS_PARENT, containerClass);
         }
         else
@@ -258,7 +259,7 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
             Resource space = resource.getPropertyResourceValue(SIOC.HAS_SPACE);
             if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of specified space {}", resource, space);
             URI containerURI = URI.create(space.getURI());
-            OntClass spaceClass = matchOntClass(getOntModel(), containerURI, getUriInfo().getBaseUri());
+            OntClass spaceClass = matchOntClass(ontModel, containerURI, uriInfo.getBaseUri());
             matchedClasses = matchOntClasses(ontModel, SIOC.HAS_SPACE, spaceClass);
         }
         else

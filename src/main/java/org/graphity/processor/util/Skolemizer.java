@@ -170,7 +170,7 @@ public class Skolemizer
 
             if (doc != null)
             {
-                OntClass docClass = getOntClassMatcher().matchOntClass(doc, getOntModel(), getOntClass());
+                OntClass docClass = getOntClassMatcher().matchOntClass(doc, getUriInfo(), getOntModel(), getOntClass());
                 if (docClass != null)
                 {
                     Map<Property, OntClass> matchingClasses = getOntClassMatcher().matchOntClasses(getOntModel(), FOAF.isPrimaryTopicOf, docClass);
@@ -183,7 +183,7 @@ public class Skolemizer
             }
         }
 
-        OntClass matchingClass = getOntClassMatcher().matchOntClass(resource, getOntModel(), getOntClass());
+        OntClass matchingClass = getOntClassMatcher().matchOntClass(resource, getUriInfo(), getOntModel(), getOntClass());
         if (matchingClass != null)
         {
             if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class {}", resource, matchingClass);
