@@ -107,6 +107,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         singletons.add(new org.graphity.client.mapper.jena.DoesNotExistExceptionMapper());
 	singletons.add(new org.graphity.client.mapper.jena.NotFoundExceptionMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.QueryExceptionHTTPMapper());
+	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
 	singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new XSLTBuilderProvider()); // loads XSLT stylesheet
     }
