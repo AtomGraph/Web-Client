@@ -147,7 +147,18 @@ public class Skolemizer
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
         
-        // as a fallback (for real-world resources), try to skolemize using the document class
+        // first try skolemizing the resource as document
+        if (resource.hasProperty(RDF.type, FOAF.Document))
+        {
+            OntClass matchingClass = getOntClassMatcher().matchOntClass(resource, getUriInfo(), getOntModel(), getOntClass());
+            if (matchingClass != null)
+            {
+                if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class {}", resource, matchingClass);
+                return build(resource, UriBuilder.fromUri(getBaseResource(resource).getURI()), matchingClass);
+            }        
+        }
+        
+        // as a fallback for topic resource, try to skolemize using its document class
         // inverse functional property
         if (resource.hasProperty(FOAF.isPrimaryTopicOf))
         {
@@ -182,13 +193,6 @@ public class Skolemizer
                 }
             }
         }
-
-        OntClass matchingClass = getOntClassMatcher().matchOntClass(resource, getUriInfo(), getOntModel(), getOntClass());
-        if (matchingClass != null)
-        {
-            if (log.isDebugEnabled()) log.debug("Skolemizing resource {} using ontology class {}", resource, matchingClass);
-            return build(resource, UriBuilder.fromUri(getBaseResource(resource).getURI()), matchingClass);
-        }        
 
         return null;
     }

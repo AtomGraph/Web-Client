@@ -79,4 +79,6 @@ public class GP
 
     public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
 
+    public static final DatatypeProperty slug = m_model.createDatatypeProperty( NS + "slug" );
+
 }
