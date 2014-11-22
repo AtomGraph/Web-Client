@@ -16,22 +16,20 @@
 
 package org.graphity.processor.mapper.jena;
 
-import com.hp.hpl.jena.query.QueryParseException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import org.apache.jena.atlas.web.HttpException;
 import org.graphity.processor.mapper.ExceptionMapperBase;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Provider
-public class QueryParseExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<QueryParseException>
+public class HttpExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<HttpException>
 {
     
     @Override
-    public Response toResponse(QueryParseException ex)
+    public Response toResponse(HttpException ex)
     {
 	return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
                 entity(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR,
