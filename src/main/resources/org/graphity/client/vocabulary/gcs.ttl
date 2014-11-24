@@ -35,6 +35,8 @@
         ] ;
     gp:uriTemplate "/templates" ;
     gp:limit 20 ;
+    gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
+    gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#TemplateContainer> ;
@@ -129,6 +131,8 @@
         ] ;
     gp:uriTemplate "/queries" ;
     gp:limit 20 ;
+    gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
+    gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#QueryContainer> ;

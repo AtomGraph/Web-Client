@@ -708,7 +708,7 @@ exclude-result-prefixes="#all">
 
         <xsl:apply-templates select="." mode="gc:PaginationMode">
             <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>        
+        </xsl:apply-templates>
     </xsl:template>
         
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ListMode">
@@ -980,14 +980,14 @@ exclude-result-prefixes="#all">
     <!--
     <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&sioc;Space']" mode="gc:CreateMode" priority="2">
         <xsl:next-match>
-            <xsl:with-param name="class" select="key('resources', '&gp;Container', $gp:ontModel)"/>
+            <xsl:with-param name="ont-class" select="key('resources', '&gp;Container', $gp:ontModel)"/>
         </xsl:next-match>
     </xsl:template>
     -->
     
     <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
-        <xsl:param name="class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
-        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
+        <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
+        <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
 
         <xsl:choose>
             <xsl:when test="$constructor-query">
@@ -1000,7 +1000,7 @@ exclude-result-prefixes="#all">
                 <xsl:choose>
                     <xsl:when test="$instances">
                         <xsl:apply-templates select="$instances" mode="gc:EditMode">
-                            <xsl:with-param name="class" select="$class"/>
+                            <xsl:with-param name="ont-class" select="$ont-class"/>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:otherwise>
@@ -1009,7 +1009,7 @@ exclude-result-prefixes="#all">
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message terminate="yes">gc:CreateMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$class/@rdf:about"/>'</xsl:message>
+                <xsl:message terminate="yes">gc:CreateMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -1060,8 +1060,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="class" select="$matched-ont-class" as="element()"/>
-        <xsl:param name="constructor-query" select="key('resources', $class/spin:constructor/@rdf:resource | $class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
+        <xsl:param name="ont-class" select="$matched-ont-class" as="element()"/>
+        <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
             
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="@rdf:about or not(key('predicates-by-object', @rdf:nodeID))">
@@ -1084,7 +1084,7 @@ exclude-result-prefixes="#all">
                     </xsl:apply-templates>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:message>gc:EditMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$matched-ont-class/@rdf:about"/>'</xsl:message>
+                    <xsl:message>gc:EditMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
                     <xsl:apply-templates mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
