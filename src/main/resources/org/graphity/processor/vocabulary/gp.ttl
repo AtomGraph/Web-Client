@@ -13,7 +13,6 @@
 @prefix spin:	<http://spinrdf.org/spin#> .
 @prefix dqc:	<http://semwebquality.org/ontologies/dq-constraints#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
-@prefix lda:	<http://purl.org/linked-data/api/vocab#> .
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
@@ -97,7 +96,7 @@
 # RESOURCE TEMPLATES
 
 <#Space> a rdfs:Class, owl:Class, <#Template> ;
-     rdfs:subClassOf foaf:Document, sioc:Space, ldp:Container, lda:ListEndpoint ;
+     rdfs:subClassOf foaf:Document, sioc:Space, ldp:Container ;
      <#uriTemplate> "/" ;
      spin:query <#DescribeWithChildren> ;
      <#limit> 20 ;
@@ -105,7 +104,7 @@
      rdfs:isDefinedBy <#> .
 
 <#Container> a rdfs:Class, owl:Class, <#Template> ;
-    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container, lda:ListEndpoint ,
+    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container ,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom <#Space>
@@ -138,7 +137,7 @@
     rdfs:isDefinedBy <#> .
 
 <#Item> a rdfs:Class, owl:Class, <#Template> ;
-    rdfs:subClassOf foaf:Document,
+    rdfs:subClassOf foaf:Document, sioc:Item,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#Container>

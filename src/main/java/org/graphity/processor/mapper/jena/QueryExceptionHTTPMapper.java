@@ -34,11 +34,18 @@ public class QueryExceptionHTTPMapper extends ExceptionMapperBase implements Exc
     @Override
     public Response toResponse(QueryExceptionHTTP ex)
     {
-	return Response.status(ex.getResponseCode()).
-                entity(toResource(ex, Response.Status.fromStatusCode(ex.getResponseCode()),
-                        null).
-                    getModel()).
-		build();
+        if (ex.getResponseCode() > 0)
+            return Response.status(ex.getResponseCode()).
+                    entity(toResource(ex, Response.Status.fromStatusCode(ex.getResponseCode()),
+                            null).
+                        getModel()).
+                    build();
+        else
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
+                    entity(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR,
+                            null).
+                        getModel()).
+                    build();
     }
 
 }

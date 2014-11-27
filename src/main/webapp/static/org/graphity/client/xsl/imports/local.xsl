@@ -505,7 +505,7 @@ exclude-result-prefixes="#all">
  
         <div class="control-group">
 	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
-		<xsl:attribute name="class">control-group warning</xsl:attribute>
+		<xsl:attribute name="class">control-group error</xsl:attribute>
 	    </xsl:if>
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>

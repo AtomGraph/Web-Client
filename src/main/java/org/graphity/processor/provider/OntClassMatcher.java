@@ -109,13 +109,11 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
 
     /**
      * Given a relative URI, returns ontology class with a matching URI template, if any.
-     * By default, <code>lda:uriTemplate</code> property (from Linked Data API) is used for the <code>owl:HasValue</code>
-     * restrictions, with URI template string as the object literal.
+     * <code>gp:uriTemplate</code> property is used with URI template string as the object literal.
      * 
      * @param ontModel sitemap ontology model
      * @param path absolute path (relative URI)
      * @return matching ontology class or null, if none
-     * @see <a href="https://code.google.com/p/linked-data-api/wiki/API_Vocabulary">Linked Data API Vocabulary</a>
      */
     public OntClass matchOntClass(OntModel ontModel, CharSequence path)
     {
