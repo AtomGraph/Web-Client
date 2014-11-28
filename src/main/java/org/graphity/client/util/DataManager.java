@@ -70,6 +70,7 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
     public DataManager(LocationMapper mapper, Context context, ServletContext servletContext, UriInfo uriInfo)
     {
 	super(mapper, context, servletContext);
+	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         this.uriInfo = uriInfo;
     }
 
