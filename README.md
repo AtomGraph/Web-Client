@@ -31,7 +31,7 @@ Getting started
 * [how Graphity works](../../wiki/How-Graphity-works)
 * [installing Graphity](../../wiki/Installation)
 * [extending Graphity](../../wiki/Extending-Graphity)
-* [configuring Graphity](../../wiki/Cofiguration)
+* [configuring Graphity](../../wiki/Configuration)
 * [JavaDoc](http://graphity.github.io/graphity-client/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
