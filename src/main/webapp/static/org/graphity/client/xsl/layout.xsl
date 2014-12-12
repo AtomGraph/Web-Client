@@ -262,7 +262,9 @@ exclude-result-prefixes="#all">
 		<div class="span8">
                     <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
-                    <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+                    <xsl:if test="not((not($gc:mode) and $gc:defaultMode = '&gc;ReadMode') or $gc:mode = '&gc;ReadMode')">
+                        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+                    </xsl:if>
 
                     <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 

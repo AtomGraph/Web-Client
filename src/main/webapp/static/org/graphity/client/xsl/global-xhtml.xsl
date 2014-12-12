@@ -155,11 +155,9 @@ exclude-result-prefixes="#all">
 	    </div>
 	</div>
     </xsl:template>
-
+    
     <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ReadMode">
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <xsl:apply-templates select="key('resources', $gc:uri)" mode="gc:ReadMode"/>
+        <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current"/>
 
         <xsl:apply-templates select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
