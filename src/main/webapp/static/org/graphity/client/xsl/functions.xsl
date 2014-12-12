@@ -219,13 +219,15 @@ exclude-result-prefixes="#all">
     <xsl:function name="gc:query-string" as="xs:string?">
 	<xsl:param name="endpoint-uri" as="xs:anyURI?"/>
 	<xsl:param name="query" as="xs:string?"/>
-	<xsl:param name="accept" as="xs:string?"/>
+	<xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="accept" as="xs:string?"/>
 
 	<xsl:variable name="query-string">
 	    <xsl:if test="not(empty($endpoint-uri))">endpointUri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
 	    <xsl:if test="not(empty($query))">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
+	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
 	    <xsl:if test="not(empty($accept))">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
-	</xsl:variable>
+        </xsl:variable>
 	
 	<xsl:if test="string-length($query-string) &gt; 1">
 	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>

@@ -215,12 +215,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-        
         <form class="form-horizontal" method="post" action="{$gp:absolutePath}{gc:query-string($gc:uri, $gc:mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
@@ -238,6 +232,22 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about = $gc:uri]" mode="gc:CreateMode">
         <xsl:apply-templates select="." mode="gc:EditMode"/>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)][$gc:endpointUri]" mode="gc:QueryResultMode">
+        <div class="btn-group pull-right">
+            <a href="{$gc:endpointUri}?query={encode-for-uri($query)}" class="btn">Source</a>
+        </div>
+
+        <xsl:apply-imports>
+            <xsl:with-param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string($gc:endpointUri, $query, $gc:mode, ())))"/>
+        </xsl:apply-imports>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:about[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)][$gc:endpointUri]" mode="gc:ModeSelectMode" priority="1">
+        <a href="{$gp:absolutePath}{gc:query-string($gc:endpointUri, $query, ., ())}">
+            <xsl:apply-templates select=".." mode="gc:LabelMode"/>
+        </a>
     </xsl:template>
 
     <!-- DOCUMENT -->

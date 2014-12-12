@@ -260,8 +260,22 @@ exclude-result-prefixes="#all">
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
+                    <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+
+                    <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+
+                    <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+
+                    <xsl:apply-templates select="." mode="gc:PaginationMode">
+                        <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
+                    </xsl:apply-templates>
+
                     <xsl:apply-templates select="." mode="gc:ModeChoiceMode">
                         <xsl:with-param name="selected-resources" select="$selected-resources" tunnel="yes"/>
+                    </xsl:apply-templates>
+                    
+                    <xsl:apply-templates select="." mode="gc:PaginationMode">
+                        <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
                     </xsl:apply-templates>
                 </div>
 
@@ -357,7 +371,7 @@ exclude-result-prefixes="#all">
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
-        
+
     <!-- BREADCRUMB MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:BreadCrumbMode">
@@ -693,22 +707,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ListMode">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-
         <xsl:apply-templates select="$selected-resources" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
-        </xsl:apply-templates>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
         
@@ -739,10 +739,6 @@ exclude-result-prefixes="#all">
     <!-- READ MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ReadMode">
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
         <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="gc:ReadMode"/> <!-- gc:HeaderMode -->
 
         <xsl:apply-templates select="*[not(@rdf:about = $gp:absolutePath)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
@@ -773,16 +769,6 @@ exclude-result-prefixes="#all">
             </xsl:for-each-group>
 	</xsl:param>
 
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-
 	<table class="table table-bordered table-striped">
 	    <thead>
 		<tr>
@@ -799,10 +785,6 @@ exclude-result-prefixes="#all">
                 </xsl:apply-templates>
 	    </tbody>
 	</table>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode">
@@ -835,16 +817,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
 
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-        
         <xsl:variable name="thumbnail-items" as="element()*">	    
             <!-- all resources that are not recursive blank nodes, except page -->
             <xsl:apply-templates select="$selected-resources" mode="#current">
@@ -859,10 +831,6 @@ exclude-result-prefixes="#all">
                 </ul>
             </div>
         </xsl:for-each-group>
-        
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="gc:ThumbnailMode">
@@ -892,31 +860,17 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:MapMode">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
-
         <div id="map-canvas"/>
 
         <!-- apply all other URI resources -->
         <xsl:apply-templates mode="#current"> <!-- select="$selected-resources" -->
             <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
         </xsl:apply-templates>
-        
-        <xsl:apply-templates select="." mode="gc:PaginationMode">
-            <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-        </xsl:apply-templates>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:MapMode"/>
 
-    <xsl:template match="*[geo:lat][geo:long]" mode="gc:MapMode" priority="1">
+    <xsl:template match="*[geo:lat castable as xs:double][geo:long castable as xs:double]" mode="gc:MapMode" priority="1">
         <xsl:param name="nested" as="xs:boolean?"/>
 
         <script type="text/javascript">
@@ -944,13 +898,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
-        
+                
         <form method="{$method}" action="{$action}">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
@@ -977,14 +925,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode"/>
-
-    <!--
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&sioc;Space']" mode="gc:CreateMode" priority="2">
-        <xsl:next-match>
-            <xsl:with-param name="ont-class" select="key('resources', '&gp;Container', $gp:ontModel)"/>
-        </xsl:next-match>
-    </xsl:template>
-    -->
     
     <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
@@ -1023,12 +963,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-
-        <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
-
-        <xsl:apply-templates select="." mode="gc:HeaderMode"/>
-
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$class">
