@@ -377,12 +377,12 @@ exclude-result-prefixes="#all">
     <!-- BREADCRUMB MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:BreadCrumbMode">
-        <xsl:if test="not($gp:absolutePath = $gp:baseUri)">
-            <ul class="breadcrumb">
-                <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="#current"/>
-            </ul>
-        </xsl:if>
+        <ul class="breadcrumb">
+            <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="#current"/>
+        </ul>
     </xsl:template>
+
+    <xsl:template match="rdf:RDF[$gp:absolutePath = $gp:baseUri]" mode="gc:BreadCrumbMode" priority="1"/>
 
     <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:BreadCrumbMode" priority="1"/>
 
