@@ -17,8 +17,6 @@
 package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
@@ -36,7 +34,6 @@ import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  * Base class of generic read-write Graphity Client resources.
@@ -71,7 +68,22 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 
         if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
             this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
-        else mode = null;
+        else mode = null;        
+    }
+    
+    @Override
+    public void init()
+    {
+        super.init();
+       
+        if (getMode() != null && getMatchedOntClass().hasSuperClass(LDP.Container) &&
+            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))) &&
+            getQueryBuilder().getSubSelectBuilder() != null)
+	{
+            if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
+            getQueryBuilder().getSubSelectBuilder().replaceLimit(Long.valueOf(0));
+            getQueryBuilder().build();
+        }
     }
     
     /**
@@ -93,36 +105,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
             return super.getSPARQLResource();
         
         return this;
-    }
-    
-    /**
-     * Adds metadata to the description of the current resource.
-     * 
-     * @return resource description
-     */
-    @Override
-    public Model describe()
-    {
-	Model description;
-        
-        if (getMode() != null && getMatchedOntClass().hasSuperClass(LDP.Container) &&
-            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
-	{
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning default DESCRIBE Model", getMode());
-	    description = getSPARQLEndpoint().loadModel(getQuery(getURI()));
-	}
-        else
-            description = super.describe();
-
-	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
-	addProperty(RDF.type, getMatchedOntClass()); // getOntModel().add(description); ?
-	
-	// set metadata properties after description query is executed
-	getQueryBuilder().build(); // sets sp:text value
-	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, getQueryBuilder());
-	addProperty(SPIN.query, getQueryBuilder());
-
-	return description;
     }
 
     /**
