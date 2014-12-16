@@ -20,6 +20,7 @@ import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -303,7 +304,9 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
                 if (restriction.canAs(AllValuesFromRestriction.class))
                 {
                     AllValuesFromRestriction avfr = restriction.asAllValuesFromRestriction();
-                    if (avfr.getOnProperty().equals(property) && avfr.hasAllValuesFrom(ontClass))
+                    if (avfr.getOnProperty().equals(property) &&
+                            (avfr.hasAllValuesFrom(ontClass) ||
+                                (avfr.getAllValuesFrom().canAs(UnionClass.class) && avfr.getAllValuesFrom().as(UnionClass.class).listOperands().toList().contains(ontClass))))
                     {
                         ExtendedIterator<OntClass> classIt = avfr.listSubClasses(true);
                         try
@@ -319,7 +322,7 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
                         finally
                         {
                             classIt.close();
-                        }
+                        }    
                     }
                 }
             }
