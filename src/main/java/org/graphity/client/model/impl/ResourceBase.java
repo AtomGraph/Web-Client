@@ -72,7 +72,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 
         if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
             this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
-        else mode = null;        
+        else mode = null;
     }
     
     @Override
