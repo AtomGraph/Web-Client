@@ -132,18 +132,18 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
     @PostConstruct
     public void init()
     {
-        Query query = getQuery(matchedOntClass, SPIN.query, getQuerySolutionMap(this));
+        Query query = getQuery(getMatchedOntClass(), SPIN.query, getQuerySolutionMap(this));
         if (query == null)
         {
-            if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", matchedOntClass.getURI());
-            throw new WebApplicationException(new ConfigurationException("Query not defined for template '" + matchedOntClass.getURI() +"'"));
+            if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
+            throw new WebApplicationException(new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'"));
         }
 
-        if (matchedOntClass.hasSuperClass(LDP.Container))
+        if (getMatchedOntClass().hasSuperClass(LDP.Container))
         {
             if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
             {
-                Long defaultOffset = getLongValue(matchedOntClass, GP.offset);
+                Long defaultOffset = getLongValue(getMatchedOntClass(), GP.offset);
                 if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
                 this.offset = defaultOffset;
             }
@@ -151,18 +151,18 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
                 
             if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
             {
-                Long defaultLimit = getLongValue(matchedOntClass, GP.limit);
-                if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + matchedOntClass.getURI() + "' must have gp:limit if it is used as container");
+                Long defaultLimit = getLongValue(getMatchedOntClass(), GP.limit);
+                if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:limit if it is used as container");
                 this.limit = defaultLimit;
             }
             else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
                 
-            if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(matchedOntClass, GP.orderBy);
+            if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(getMatchedOntClass(), GP.orderBy);
             else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
             
             if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
             {
-                Boolean defaultDesc = getBooleanValue(matchedOntClass, GP.desc);
+                Boolean defaultDesc = getBooleanValue(getMatchedOntClass(), GP.desc);
                 if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
                 this.desc = defaultDesc;
             }
@@ -181,7 +181,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
         }
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
-        cacheControl = getCacheControl(matchedOntClass);
+        cacheControl = getCacheControl(getMatchedOntClass());
     }
     
     public Long getLongValue(OntClass ontClass, DatatypeProperty property)
