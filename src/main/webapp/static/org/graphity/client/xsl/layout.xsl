@@ -961,7 +961,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="action" select="concat($gp:absolutePath, '?_method=PUT')" as="xs:string"/>
+        <xsl:param name="action" select="concat($gp:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri($gc:mode))" as="xs:string"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>

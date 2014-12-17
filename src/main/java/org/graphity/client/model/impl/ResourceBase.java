@@ -17,6 +17,9 @@
 package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
@@ -26,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
@@ -125,6 +129,28 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	}
 
         return list;
+    }
+    
+    /**
+     * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
+     * Redirects to document URI in <pre>gc:EditMode</pre>.
+     * 
+     * @param model RDF payload
+     * @return response
+     */
+    @Override
+    public Response put(Model model)
+    {
+        if (getMode() != null && getMode().equals(URI.create(GC.EditMode.getURI())))
+        {
+            super.put(model);
+            
+            Resource document = getURIResource(model, FOAF.Document);
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
+            return Response.seeOther(URI.create(document.getURI())).build();
+        }
+        
+        return super.put(model);
     }
     
     /**
