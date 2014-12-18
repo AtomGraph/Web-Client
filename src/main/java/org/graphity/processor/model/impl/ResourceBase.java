@@ -393,8 +393,15 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
 	    {
                 Resource res = resIt.next();
 
-                if (!res.hasProperty(SIOC.HAS_CONTAINER))
-                    res.addProperty(SIOC.HAS_CONTAINER, this);
+                ObjectProperty memberProperty = SIOC.HAS_CONTAINER;
+                // use actual this resource types instead?
+                if (getMatchedOntClass().hasSuperClass(SIOC.CONTAINER) && res.hasProperty(RDF.type, SIOC.CONTAINER))
+                    memberProperty = SIOC.HAS_PARENT;
+                if (getMatchedOntClass().hasSuperClass(SIOC.SPACE))
+                    memberProperty = SIOC.HAS_SPACE;
+
+                if (!res.hasProperty(memberProperty))
+                    res.addProperty(memberProperty, this);
                 
                 if (!res.hasProperty(DCTerms.created))
                     res.addLiteral(DCTerms.created, model.createTypedLiteral(GregorianCalendar.getInstance()));

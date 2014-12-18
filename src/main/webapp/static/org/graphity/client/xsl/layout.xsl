@@ -939,7 +939,7 @@ exclude-result-prefixes="#all">
                 <xsl:variable name="this" select="key('resources-by-type', '&foaf;Document', $template-doc)"/>
                 <xsl:variable name="templates" select="$this | key('resources', $this/foaf:primaryTopic/@rdf:nodeID, $template-doc)" as="element()*"/>
 
-                <xsl:variable name="instances" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource][not(@rdf:about = $gp:absolutePath)]"/>
+                <xsl:variable name="instances" select="/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource]"/>
                 <xsl:choose>
                     <xsl:when test="$instances">
                         <xsl:apply-templates select="$instances" mode="gc:EditMode">
