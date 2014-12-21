@@ -34,7 +34,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.vocabulary.LDP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +79,9 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     {
         super.init();
        
-        if (getMode() != null && getMatchedOntClass().hasSuperClass(LDP.Container) &&
+        if (getMode() != null &&
             (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))) &&
-            getQueryBuilder().getSubSelectBuilder() != null)
+            getQueryBuilder().getSubSelectBuilder() != null) // && getMatchedOntClass().hasSuperClass(LDP.Container)
 	{
             if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
             getQueryBuilder().getSubSelectBuilder().replaceLimit(Long.valueOf(0));

@@ -40,7 +40,6 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.processor.exception.NotFoundException;
 import org.graphity.processor.model.ContainerResource;
-import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
@@ -70,7 +69,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
-public class ResourceBase extends QueriedResourceBase implements OntResource, ContainerResource, MatchedIndividual
+public class ResourceBase extends QueriedResourceBase implements org.graphity.processor.model.Resource, ContainerResource
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
@@ -984,6 +983,7 @@ public class ResourceBase extends QueriedResourceBase implements OntResource, Co
      * 
      * @return query builder
      */
+    @Override
     public QueryBuilder getQueryBuilder()
     {
 	return queryBuilder;
