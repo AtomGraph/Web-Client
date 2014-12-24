@@ -103,14 +103,8 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
         try
         {
-            String ontologyURI = getOntologyURI(getServletContext(), GP.ontology.getURI());
-            if (ontologyURI == null)
-            {
-                if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured in web.xml");
-                throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured in web.xml");
-            }
+            OntModel ontModel = getOntModel(getOntologyURI());
 
-            OntModel ontModel = getOntModel(ontologyURI);
             if (ontModel.isEmpty())
             {
                 if (log.isErrorEnabled()) log.error("Sitemap ontology is empty; processing aborted");
@@ -126,15 +120,24 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         }
     }
 
-    public String getOntologyURI(ServletContext servletContext, String property)
+    public String getOntologyURI(ServletContext servletContext, String property) throws ConfigurationException
     {
         if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
         Object ontology = servletContext.getInitParameter(property);
-        if (ontology != null) return ontology.toString();
-        
-        return null;
+        if (ontology == null)
+        {
+            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured in web.xml");
+            throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured in web.xml");
+        }
+
+        return ontology.toString();
+    }
+    
+    public String getOntologyURI() throws ConfigurationException
+    {
+        return getOntologyURI(getServletContext(), GP.ontology.getURI());
     }
     
     /**
@@ -142,9 +145,8 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
      * 
      * @param ontologyURI ontology location
      * @return ontology model
-     * @throws javax.naming.ConfigurationException
      */
-    public OntModel getOntModel(String ontologyURI) throws ConfigurationException
+    public OntModel getOntModel(String ontologyURI)
     {
         if (ontologyURI == null) throw new IllegalArgumentException("URI cannot be null");
 
