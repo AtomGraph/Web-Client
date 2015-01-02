@@ -291,8 +291,8 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
     public Map<Property, OntClass> matchOntClasses(OntModel ontModel, Property property, OntClass ontClass)
     {
 	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
-        if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
         
         Map<Property, OntClass> matchedClasses = new HashMap<>();        
         ExtendedIterator<Restriction> it = ontModel.listRestrictions();        
@@ -326,9 +326,6 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
                     }
                 }
             }
-
-            //if (log.isWarnEnabled()) log.warn("Container {} has no OntClass match in this OntModel", ontClass);
-            //return null;
         }
         finally
         {

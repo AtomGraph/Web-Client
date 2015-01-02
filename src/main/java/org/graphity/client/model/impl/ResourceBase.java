@@ -111,6 +111,48 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     }
 
     /**
+     * Adds run-time metadata to RDF description.
+     * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
+     * 
+     * @param model target RDF model
+     * @return description model with metadata
+     */
+    @Override
+    public Model addMetadata(Model model)
+    {
+        if (getMode() != null &&
+            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
+	{
+            return model;
+        }
+
+        return super.addMetadata(model);
+    }
+
+    /**
+     * Returns RDF description of this resource.
+     * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
+     * 
+     * @return description model
+     */
+    /*
+    @Override
+    public Model describe()
+    {
+	Model description = super.describe();
+
+	if ((getMode() == null || !getMode().equals(URI.create(GC.CreateMode.getURI())) || !getMode().equals(URI.create(GC.EditMode.getURI())))
+                && getMatchedOntClass().hasSuperClass(LDP.Container) && !description.isEmpty())
+	{
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+            createPageResource(description);
+        }
+
+        return description;
+    }
+    */
+    
+    /**
      * Builds a list of acceptable response variants
      * 
      * @return supported variants

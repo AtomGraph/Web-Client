@@ -231,26 +231,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
     
     /**
-     * Returns RDF description of this resource.
-     * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
-     * 
-     * @return description model
-     */
-    @Override
-    public Model describe()
-    {
-	Model description = super.describe();
-
-	if (getMatchedOntClass().hasSuperClass(LDP.Container) && !description.isEmpty())
-	{
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-            createPageResource(description);
-        }
-
-        return description;
-    }
-    
-    /**
      * Handles GET request and returns response with RDF description of this resource.
      * In case this resource is a container, a redirect to its first page is returned.
      * 
@@ -273,6 +253,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	    throw new NotFoundException("Description Model is empty");
 	}
 
+        description = addMetadata(description);
         if (log.isDebugEnabled()) log.debug("Returning @GET Response with {} statements in Model", description.size());
 	return getResponse(description);
     }
@@ -538,6 +519,24 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	return Response.noContent().build();
     }
 
+    /**
+     * Adds run-time metadata to RDF description.
+     * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
+     * 
+     * @param model target RDF model
+     * @return description model with metadata
+     */
+    public Model addMetadata(Model model)
+    {
+	if (getMatchedOntClass().hasSuperClass(LDP.Container))
+	{
+	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+            createPageResource(model);
+        }
+
+        return model;
+    }
+    
     /**
      * Creates a page resource for the current container. Includes HATEOS previous/next links.
      * 

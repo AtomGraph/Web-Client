@@ -384,7 +384,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[$gp:absolutePath = $gp:baseUri]" mode="gc:BreadCrumbMode" priority="1"/>
 
-    <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:BreadCrumbMode" priority="1"/>
+    <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:BreadCrumbMode" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:BreadCrumbMode">
         <!-- walk up the parents recursively -->
