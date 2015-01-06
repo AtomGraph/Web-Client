@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
@@ -54,6 +58,7 @@ public class RDFPostReader implements MessageBodyReader<Model>
 {
     private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class);
     
+    @Context private UriInfo uriInfo;
     @Context private HttpContext httpContext;
     private List<String> keys = null, values = null;
 
@@ -98,17 +103,30 @@ public class RDFPostReader implements MessageBodyReader<Model>
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-	// getHttpContext().getRequest().getFormParameters() returns same info, but ordering is lost	
-	return parse(getHttpContext().getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name());
+	// getHttpContext().getRequest().getFormParameters() returns same info, but ordering is lost
+        try
+        {
+            return parse(getHttpContext().getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name());
+        }
+        catch (URISyntaxException ex)
+        {
+            if (log.isErrorEnabled()) log.error("URI '{}' has syntax error in request with media type '{}'", ex.getInput(), mediaType);
+            throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
+        }
     }
 
-    public Model parse(String request, String encoding)
+    public Model parse(String request, String encoding) throws URISyntaxException
     {
 	initKeysValues(request, encoding);
 	return parse(getKeys(), getValues());
     }
+
+    public Model parse(List<String> k, List<String> v) throws URISyntaxException
+    {
+        return parse(getKeys(), getValues(), getUriInfo().getBaseUri());
+    }
     
-    public Model parse(List<String> k, List<String> v)
+    public Model parse(List<String> k, List<String> v, URI baseURI) throws URISyntaxException
     {
 	Model model = ModelFactory.createDefaultModel();
 
@@ -137,7 +155,9 @@ public class RDFPostReader implements MessageBodyReader<Model>
 		    object = null;
 		    break;
 		case "su":
-		    subject = model.createResource(v.get(i)); // full URI
+                    URI subjectURI = new URI(v.get(i));
+                    if (!subjectURI.isAbsolute()) subjectURI = baseURI.resolve(subjectURI);
+		    subject = model.createResource(subjectURI.toString()); // full URI
 		    property = null;
 		    object = null;
 		    break;
@@ -157,7 +177,9 @@ public class RDFPostReader implements MessageBodyReader<Model>
 		    break;
 
 		case "pu":
-		    property = model.createProperty(v.get(i));
+                    URI propertyURI = new URI(v.get(i));
+                    if (!propertyURI.isAbsolute()) propertyURI = baseURI.resolve(propertyURI);
+                    property = model.createProperty(propertyURI.toString());
 		    object = null;
 		    break;
 		case "pv":
@@ -177,7 +199,9 @@ public class RDFPostReader implements MessageBodyReader<Model>
 		    object = model.createResource(new AnonId(v.get(i))); // blank node
 		    break;
 		case "ou":
-		    object = model.createResource(v.get(i)); // full URI
+                    URI objectURI = new URI(v.get(i));
+                    if (!objectURI.isAbsolute()) objectURI = baseURI.resolve(objectURI);
+                    object = model.createResource(objectURI.toString()); // full URI
 		    break;
 		case "ov":
 		    object = model.createResource(model.getNsPrefixURI("") + v.get(i)); // default namespace
@@ -234,6 +258,11 @@ public class RDFPostReader implements MessageBodyReader<Model>
     public HttpContext getHttpContext()
     {
 	return httpContext;
+    }
+
+    public UriInfo getUriInfo()
+    {
+	return uriInfo;
     }
 
     public List<String> getKeys()

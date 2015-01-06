@@ -139,7 +139,7 @@ public class RDFPostReaderTest
      */
     @Test
     @Ignore
-    public void testParse()
+    public void testParse() throws Exception
     {
 	RDFPostReader instance = new RDFPostReader();
 	Model expected = ModelFactory.createDefaultModel();

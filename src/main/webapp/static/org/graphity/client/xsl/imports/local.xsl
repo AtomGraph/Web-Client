@@ -152,7 +152,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', $this)">
                 <xsl:apply-templates select="key('resources', $this)" mode="gc:LabelMode"/>
             </xsl:when>
-            <xsl:when test="key('resources', $this, document(namespace-uri()))">
+            <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
                 <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="gc:LabelMode"/>
             </xsl:when>
             <xsl:when test="contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))">
@@ -175,7 +175,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', .)">
                 <xsl:apply-templates select="key('resources', .)" mode="gc:LabelMode"/>
             </xsl:when>
-            <xsl:when test="key('resources', ., document(gc:document-uri(.)))">
+            <xsl:when test="doc-available(gc:document-uri(.)) and key('resources', ., document(gc:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'" >
                 <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="gc:LabelMode"/>
             </xsl:when>
             <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
@@ -500,7 +500,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
-        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:ontModel)/sp:arg2/@rdf:resource = $this"/>
+        <xsl:param name="required" select="false()"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
  
         <div class="control-group">
@@ -532,7 +532,7 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current"/>
                 </div>
             </xsl:if>
-        </div>        
+        </div>
     </xsl:template>
 
     <xsl:template match="text()" mode="gc:EditMode">
