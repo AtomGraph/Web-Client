@@ -30,7 +30,7 @@
     -->
     <context-param>
         <param-name>http://graphity.org/gp#datasetLocation</param-name>
-        <param-value>org/graphity/client/dataset/dataset.trig</param-value>
+        <param-value>/org/graphity/client/dataset/dataset.trig</param-value>
     </context-param>
     <context-param>
         <param-name>http://graphity.org/gp#ontology</param-name>
