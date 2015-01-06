@@ -195,6 +195,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
 	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
 	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
+	if (!filename.startsWith("/")) { filename = "/" + filename; }
         URL xsltUrl = getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
