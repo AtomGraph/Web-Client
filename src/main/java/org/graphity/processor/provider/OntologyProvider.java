@@ -19,6 +19,7 @@ package org.graphity.processor.provider;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -120,24 +121,27 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
         }
     }
 
-    public String getOntologyURI(ServletContext servletContext, String property) throws ConfigurationException
+    public String getOntologyURI(Property property)
     {
-        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
-        Object ontology = servletContext.getInitParameter(property);
-        if (ontology == null)
-        {
-            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured in web.xml");
-            throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured in web.xml");
-        }
+        Object ontology = getServletContext().getInitParameter(property.getURI());
+        if (ontology != null) return ontology.toString();
 
-        return ontology.toString();
+        return null;
     }
     
     public String getOntologyURI() throws ConfigurationException
     {
-        return getOntologyURI(getServletContext(), GP.ontology.getURI());
+        String ontologyURI = getOntologyURI(GP.ontology);
+        
+        if (ontologyURI == null)
+        {
+            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured");
+            throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured");
+        }
+
+        return ontologyURI;
     }
     
     /**

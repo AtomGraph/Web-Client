@@ -16,10 +16,8 @@
  */
 package org.graphity.processor.provider;
 
-import com.hp.hpl.jena.sparql.engine.http.Service;
-import javax.servlet.ServletContext;
 import org.graphity.server.model.SPARQLEndpointOrigin;
-import org.graphity.server.model.impl.SPARQLEndpointOriginBase;
+import org.graphity.server.vocabulary.SD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,33 +33,16 @@ public class SPARQLEndpointOriginProvider extends org.graphity.server.provider.S
 
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointOriginProvider.class);
 
-     /**
-     * Returns SPARQL endpoint for supplied webapp context configuration.
-     * Sets <code>srv:queryAuthUser</code>/<code>srv:queryAuthPwd</code> 
-     * context parameter values from web.xml as HTTP Basic authentication credentials.
+    /**
+     * Returns configured SPARQL endpoint origin.
+     * Uses <code>sd:endpoint</code> context parameter value as endpoint URI.
      * 
-     * @param servletContext webapp context
-     * @param property config property indicating the graph store URI
-     * @return endpoint resource
+     * @return configured origin
      */
     @Override
-    public SPARQLEndpointOrigin getSPARQLEndpointOrigin(ServletContext servletContext, String property)
+    public SPARQLEndpointOrigin getSPARQLEndpointOrigin()
     {
-        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
-
-        Object endpointUri = servletContext.getInitParameter(property);
-        if (endpointUri != null)
-        {
-            String authUser = (String)servletContext.getInitParameter(Service.queryAuthUser.getSymbol());
-            String authPwd = (String)servletContext.getInitParameter(Service.queryAuthPwd.getSymbol());
-            if (authUser != null && authPwd != null)
-                getDataManager().putAuthContext(endpointUri.toString(), authUser, authPwd);
-
-            return new SPARQLEndpointOriginBase(endpointUri.toString());
-        }
-
-        return null;
+        return getSPARQLEndpointOrigin(SD.endpoint); // do not throw WebApplicationException is origin is not configured
     }
 
 }

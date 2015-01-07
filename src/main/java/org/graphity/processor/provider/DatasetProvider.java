@@ -18,6 +18,7 @@ package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.DatasetFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -76,14 +77,14 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     {
         try
         {
-            String datasetLocation = getDatasetLocation(getServletContext(), GP.datasetLocation.getURI());
+            String datasetLocation = getDatasetLocation(GP.datasetLocation);
             if (datasetLocation == null)
             {
-                if (log.isErrorEnabled()) log.error("Application dataset (gp:datasetLocation) is not configured in web.");
+                if (log.isErrorEnabled()) log.error("Application dataset (gp:datasetLocation) is not configured in web.xml");
                 throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured in web.xml");
             }
             
-            return getDataset(datasetLocation, getUriInfo());
+            return getDataset(datasetLocation);
         }
         catch (ConfigurationException ex)
         {
@@ -91,21 +92,22 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
         }
     }
     
-    public String getDatasetLocation(ServletContext servletContext, String property)
+    public String getDatasetLocation(Property property)
     {
-        Object datasetLocation = servletContext.getInitParameter(property);
+        if (property == null) throw new IllegalArgumentException("Property cannot be null");
+
+        Object datasetLocation = getServletContext().getInitParameter(property.getURI());
         if (datasetLocation != null) return datasetLocation.toString();
         
         return null;
     }
     
-    public Dataset getDataset(String datasetLocation, UriInfo uriInfo) throws ConfigurationException
+    public Dataset getDataset(String datasetLocation) throws ConfigurationException
     {
         if (datasetLocation == null) throw new IllegalArgumentException("Location String cannot be null");
-        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
 	
         Dataset dataset = DatasetFactory.createMem();
-        RDFDataMgr.read(dataset, datasetLocation.toString(), uriInfo.getBaseUri().toString(), null); // Lang.TURTLE
+        RDFDataMgr.read(dataset, datasetLocation.toString(), getUriInfo().getBaseUri().toString(), null); // Lang.TURTLE
         return dataset;
     }
 

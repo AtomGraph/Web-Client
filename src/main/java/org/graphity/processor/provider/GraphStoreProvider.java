@@ -20,7 +20,6 @@ import com.hp.hpl.jena.query.Dataset;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.GraphStoreFactory;
 import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.GraphStoreOrigin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +49,10 @@ public class GraphStoreProvider extends org.graphity.server.provider.GraphStoreP
     @Override
     public GraphStore getGraphStore()
     {
-        GraphStoreOrigin origin = getGraphStoreOrigin();
-        if (origin != null) // use proxy for remote store
-        {
-            return super.getGraphStore();
-        }
-        else // use local store
-        {
+        if (getGraphStoreOrigin() == null) // use local graph store
             return GraphStoreFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
-        }
-    }
+        
+        return super.getGraphStore();
+   }
     
 }

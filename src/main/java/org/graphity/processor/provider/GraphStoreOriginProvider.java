@@ -16,11 +16,9 @@
  */
 package org.graphity.processor.provider;
 
-import com.hp.hpl.jena.sparql.engine.http.Service;
-import javax.servlet.ServletContext;
 import javax.ws.rs.ext.Provider;
 import org.graphity.server.model.GraphStoreOrigin;
-import org.graphity.server.model.impl.GraphStoreOriginBase;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,33 +35,16 @@ public class GraphStoreOriginProvider extends org.graphity.server.provider.Graph
 
     private static final Logger log = LoggerFactory.getLogger(GraphStoreOriginProvider.class);
 
-     /**
-     * Returns Graph Store for supplied webapp context configuration.
-     * Sets <code>srv:queryAuthUser</code>/<code>srv:queryAuthPwd</code> 
-     * context parameter values from web.xml as HTTP Basic authentication credentials.
+    /**
+     * Returns configured Graph Store origin.
+     * Uses <code>gs:graphStore</code> context parameter value from web.xml as graph store URI.
      * 
-     * @param servletContext webapp context
-     * @param property config property indicating the graph store URI
-     * @return graph store resource
+     * @return graph store origin
      */
     @Override
-    public GraphStoreOrigin getGraphStoreOrigin(ServletContext servletContext, String property)
+    public GraphStoreOrigin getGraphStoreOrigin()
     {
-        if (servletContext == null) throw new IllegalArgumentException("ServletContext cannot be null");
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
-
-        Object storeUri = servletContext.getInitParameter(property);
-        if (storeUri != null)
-        {
-            String authUser = (String)servletContext.getInitParameter(Service.queryAuthUser.getSymbol());
-            String authPwd = (String)servletContext.getInitParameter(Service.queryAuthPwd.getSymbol());
-            if (authUser != null && authPwd != null)
-                getDataManager().putAuthContext(storeUri.toString(), authUser, authPwd);
-
-            return new GraphStoreOriginBase(storeUri.toString());
-        }
-
-        return null;
+        return getGraphStoreOrigin(GS.graphStore); // do not throw WebApplicationException is origin is not configured
     }
-    
+
 }

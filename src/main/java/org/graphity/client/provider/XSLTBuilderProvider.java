@@ -16,8 +16,7 @@
  */
 package org.graphity.client.provider;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -114,15 +113,29 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
      * Returns configured XSLT stylesheet resource.
      * Uses <code>gc:stylesheet</code> context parameter value from web.xml as stylesheet location.
      * 
-     * @return stylesheet resource
-     * @throws ConfigurationException 
+     * @param property
+     * @return stylesheet URI
+     * @throws URISyntaxException 
      */
-    public Resource getStylesheet() throws ConfigurationException
+    public URI getStylesheetURI(Property property) throws URISyntaxException
     {
-        Object stylesheet = getServletContext().getInitParameter(GC.stylesheet.getURI());
-        if (stylesheet == null) throw new ConfigurationException("XSLT stylesheet (gp:stylesheet) not configured");
-
-        return ResourceFactory.createResource(stylesheet.toString());
+        Object stylesheetURI = getServletContext().getInitParameter(property.getURI());
+        if (stylesheetURI != null) return new URI(stylesheetURI.toString());
+        
+        return null;
+    }
+    
+    public URI getStylesheetURI() throws ConfigurationException, URISyntaxException
+    {
+        URI stylesheetURI = getStylesheetURI(GC.stylesheet);
+        
+        if (stylesheetURI == null)
+        {
+            if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
+            throw new ConfigurationException("XSLT stylesheet (gc:stylesheet) not configured");
+        }
+        
+        return stylesheetURI;
     }
     
     /**
@@ -133,8 +146,8 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     public XSLTBuilder getXSLTBuilder()
     {
         try
-        {
-            return XSLTBuilder.fromStylesheet(getSource(getStylesheet(), getUriInfo().getBaseUri())).
+        {            
+            return XSLTBuilder.fromStylesheet(getSource(getStylesheetURI(), getUriInfo().getBaseUri())).
                     resolver(getDataManager());
         }
         catch (ConfigurationException ex)
@@ -162,7 +175,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     /**
      * Converts stylesheet resource into XML source.
      * 
-     * @param stylesheet stylesheet RDF resource
+     * @param stylesheetURI stylesheet URI
      * @param baseURI application base URI
      * @return stylesheet XML source
      * @throws ConfigurationException
@@ -170,15 +183,14 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
      * @throws URISyntaxException
      * @throws MalformedURLException 
      */
-    public Source getSource(Resource stylesheet, URI baseURI) throws ConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
+    public Source getSource(URI stylesheetURI, URI baseURI) throws ConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
     {
-        URI stylesheetUri = URI.create(stylesheet.getURI());
-        if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetUri);            
+        if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetURI);            
         // TO-DO: handle cases with remote URIs (not starting with base URI)
-        stylesheetUri = baseURI.relativize(stylesheetUri);
-        if (stylesheetUri == null) throw new ConfigurationException("Remote XSLT stylesheets not supported");
+        stylesheetURI = baseURI.relativize(stylesheetURI);
+        if (stylesheetURI == null) throw new ConfigurationException("Remote XSLT stylesheets not supported");
 
-        return getSource(stylesheetUri.toString());
+        return getSource(stylesheetURI.toString());
     }
     
     /**

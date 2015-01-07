@@ -20,7 +20,6 @@ import com.hp.hpl.jena.query.Dataset;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLEndpointOrigin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +49,10 @@ public class SPARQLEndpointProvider extends org.graphity.server.provider.SPARQLE
     @Override
     public SPARQLEndpoint getSPARQLEndpoint()
     {
-        SPARQLEndpointOrigin origin = getSPARQLEndpointOrigin();
-        if (origin != null) // use proxy for remote endpoint
-        {
-            return super.getSPARQLEndpoint();
-        }
-        else // use local endpoint
-        {
+        if (getSPARQLEndpointOrigin() == null) // use local endpoint
             return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
-        }
+
+        return super.getSPARQLEndpoint();
     }
 
 }
