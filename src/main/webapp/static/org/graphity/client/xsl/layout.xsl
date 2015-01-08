@@ -79,6 +79,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gp:limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="gp:orderBy" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $gp:ontModel)/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName" as="xs:string?"/>
     <xsl:param name="gp:desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
+    <xsl:param name="gc:contextBaseUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
@@ -235,21 +236,21 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:StyleMode">
-	<link href="static/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-	<link href="static/css/bootstrap-responsive.css" rel="stylesheet" type="text/css"/>
-	<link href="static/org/graphity/client/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/org/graphity/client/css/bootstrap.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
-	<script type="text/javascript" src="static/js/jquery.min.js"></script>
-	<script type="text/javascript" src="static/js/bootstrap.js"></script>
-        <script type="text/javascript" src="static/org/graphity/client/js/jquery.js"></script>
+	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextBaseUri)}"></script>
+	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextBaseUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextBaseUri)}"></script>
         <xsl:if test="($gc:defaultMode, $gc:mode) = '&gc;MapMode'">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
-            <script type="text/javascript" src="static/org/graphity/client/js/google-maps.js"></script>
+            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextBaseUri)}"></script>
         </xsl:if>
         <xsl:if test="($gc:defaultMode, $gc:mode) = ('&gc;EditMode', '&gc;CreateMode')">
-            <script type="text/javascript" src="static/org/graphity/client/js/UUID.js"></script>
+            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextBaseUri)}"></script>
         </xsl:if>
     </xsl:template>
 

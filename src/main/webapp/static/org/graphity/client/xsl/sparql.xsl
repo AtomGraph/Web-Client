@@ -87,7 +87,7 @@ LIMIT 100</xsl:param>
     <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:StyleMode" priority="1">
         <xsl:next-match/>
         
-        <link href="static/css/yasqe.css" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/css/yasqe.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
     <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryFormMode">
@@ -104,7 +104,7 @@ LIMIT 100</xsl:param>
                     </xsl:choose>
                 </textarea>
 
-                <script src="static/js/yasqe.js" type="text/javascript"></script>
+                <script src="{resolve-uri('static/js/yasqe.js', $gc:contextBaseUri)}" type="text/javascript"></script>
                 <script type="text/javascript">
                     <![CDATA[
                     var yasqe = YASQE.fromTextArea(document.getElementById("query-string"), {persistent: null});

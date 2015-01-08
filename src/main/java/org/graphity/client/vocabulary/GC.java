@@ -24,7 +24,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import static org.graphity.processor.vocabulary.GP.NS;
 
 /**
  * Graphity Client vocabulary.
@@ -74,5 +73,7 @@ public class GC
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 
     public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );
+
+    public static final ObjectProperty contextBaseUri = m_model.createObjectProperty( NS + "contextBaseUri" );
 
 }

@@ -176,14 +176,20 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         }
     }
     
+    public URI getBaseUri()
+    {
+        return getUriInfo().getBaseUri();
+    }
+    
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {
         XSLTBuilder bld = getXSLTBuilder().
 	    document(is).
-	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
+	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getBaseUri()).
 	    parameter("{" + GP.absolutePath.getNameSpace() + "}" + GP.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
 	    parameter("{" + GP.requestUri.getNameSpace() + "}" + GP.requestUri.getLocalName(), getUriInfo().getRequestUri()).
 	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
+	    parameter("{" + GC.contextBaseUri.getNameSpace() + "}" + GC.contextBaseUri.getLocalName(), getUriInfo().getBaseUri()).
 	    result(new StreamResult(os));
 
 	// injecting Resource to get the final state of its Model. Is there a better way to do this?
