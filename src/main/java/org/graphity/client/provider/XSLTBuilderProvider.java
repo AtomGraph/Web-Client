@@ -59,6 +59,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
     @Context private ServletContext servletContext;
+    private final XSLTBuilder builder = XSLTBuilder.newInstance();
 
     /**
      * 
@@ -146,9 +147,9 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     public XSLTBuilder getXSLTBuilder()
     {
         try
-        {            
-            return XSLTBuilder.fromStylesheet(getSource(getStylesheetURI(), getUriInfo().getBaseUri())).
-                    resolver(getDataManager());
+        {
+            //return XSLTBuilder.fromStylesheet(getSource(getStylesheetURI())).resolver(getDataManager());
+            return builder.stylesheet(getSource(getStylesheetURI())).resolver(getDataManager());
         }
         catch (ConfigurationException ex)
         {
@@ -176,23 +177,19 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
      * Converts stylesheet resource into XML source.
      * 
      * @param stylesheetURI stylesheet URI
-     * @param baseURI application base URI
      * @return stylesheet XML source
-     * @throws ConfigurationException
      * @throws FileNotFoundException
      * @throws URISyntaxException
      * @throws MalformedURLException 
      */
-    public Source getSource(URI stylesheetURI, URI baseURI) throws ConfigurationException, FileNotFoundException, URISyntaxException, MalformedURLException
+    public Source getSource(URI stylesheetURI) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
-        if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetURI);            
-        // TO-DO: handle cases with remote URIs (not starting with base URI)
-        stylesheetURI = baseURI.relativize(stylesheetURI);
-        if (stylesheetURI == null) throw new ConfigurationException("Remote XSLT stylesheets not supported");
+	if (stylesheetURI == null) throw new IllegalArgumentException("Stylesheet URI name cannot be null");	
 
+        if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetURI);            
         return getSource(stylesheetURI.toString());
     }
-    
+
     /**
      * Provides XML source from filename
      * 
@@ -206,12 +203,13 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
 	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
-	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
+
+        if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
         URL xsltUrl = getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
 	return new StreamSource(xsltUri);
     }
-
+       
 }

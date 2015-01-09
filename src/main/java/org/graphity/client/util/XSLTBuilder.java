@@ -20,6 +20,8 @@ package org.graphity.client.util;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
@@ -46,11 +48,13 @@ public class XSLTBuilder
     private Transformer transformer = null;
     private Result result = null; 
 
+    private final Map<String, Templates> templatesCache = new ConcurrentHashMap<>();
+    
     protected XSLTBuilder()
     {
     }
     
-    protected static XSLTBuilder newInstance()
+    public static XSLTBuilder newInstance()
     {
 	return new XSLTBuilder();
     }
@@ -155,10 +159,34 @@ public class XSLTBuilder
 	return this;
     }
 
+    public XSLTBuilder stylesheet(File stylesheet) throws TransformerConfigurationException
+    {
+        //long lastModified = stylesheet.lastModified();        
+        // return Templates if they are already compiled and cached for this File
+        if (templatesCache.containsKey(stylesheet.toURI().toString()))
+            return stylesheet(templatesCache.get(stylesheet.toURI().toString()));
+
+        Templates templates = factory.newTemplates(new StreamSource(stylesheet));
+        templatesCache.put(stylesheet.toURI().toString(), templates);
+        return stylesheet(templates);
+    }
+    
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
     {
 	if (log.isTraceEnabled()) log.trace("Loading stylesheet Source with system ID: {}", stylesheet.getSystemId());
-	handler = factory.newTransformerHandler(stylesheet);
+
+        // return Templates if they are already compiled and cached for this Source
+        if (templatesCache.containsKey(stylesheet.getSystemId()))
+            return stylesheet(templatesCache.get(stylesheet.getSystemId()));
+
+        Templates templates = factory.newTemplates(stylesheet);
+        templatesCache.put(stylesheet.getSystemId(), templates);
+        return stylesheet(templates);
+    }
+
+    public XSLTBuilder stylesheet(Templates stylesheet) throws TransformerConfigurationException            
+    {
+        handler = factory.newTransformerHandler(stylesheet);
 	transformer = handler.getTransformer();
 	return this;
     }
