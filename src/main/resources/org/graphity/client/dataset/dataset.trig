@@ -17,11 +17,11 @@
     foaf:maker <http://graphityhq.com/#company> ;
     rdfs:seeAlso gcs: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 
-<sparql> a foaf:Document ;
+<sparql> a foaf:Document, gp:SPARQLEndpoint ;
     sioc:has_space <> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
     dct:title "SPARQL endpoint" .
 
-<service> a foaf:Document ;
+<service> a foaf:Document, gp:GraphStore ;
     sioc:has_space <> ;
     dct:title "Graph Store Protocol endpoint" .
 
@@ -109,6 +109,8 @@
 <templates/label-properties-container> a foaf:Document, sioc:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:LabelPropertiesContainer .
+
+# queries
 
 <queries/describe-from-graph-with-children> a foaf:Document, sioc:Item ;
     sioc:has_container <queries> ;

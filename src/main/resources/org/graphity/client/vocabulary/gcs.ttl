@@ -208,6 +208,7 @@
     spin:query <#DescribeLabelResources> ;
     gp:limit 20 ;
     gp:orderBy "label"^^xsd:string ;
+    gp:loadClass <java:org.graphity.client.resource.labelled.Container> ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .
 

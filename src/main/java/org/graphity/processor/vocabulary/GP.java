@@ -49,6 +49,10 @@ public class GP
 
     public static final OntClass Template = m_model.createClass( NS + "Template" );
 
+    public static final OntClass SPARQLEndpoint = m_model.createClass( NS + "SPARQLEndpoint" );
+
+    public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
+    
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
 
     public static final ObjectProperty absolutePath = m_model.createObjectProperty( NS + "absolutePath" );

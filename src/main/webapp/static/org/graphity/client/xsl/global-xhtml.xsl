@@ -108,7 +108,7 @@ exclude-result-prefixes="#all">
 	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
 		<div class="container-fluid">
-                    <button class="btn btn-navbar" onclick="if ($('#collapsing-navbar').hasClass('in')) $('#collapsing-navbar').removeClass('collapse in').height(0); else $('#collapsing-navbar').addClass('collapse in').height('auto');">
+                    <button class="btn btn-navbar" onclick="if ($('#collapsing-top-navbar').hasClass('in')) $('#collapsing-top-navbar').removeClass('collapse in').height(0); else $('#collapsing-top-navbar').addClass('collapse in').height('auto');">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -122,7 +122,7 @@ exclude-result-prefixes="#all">
                         </xsl:for-each>
                     </a>
 
-                    <div id="collapsing-navbar" class="nav-collapse collapse">
+                    <div id="collapsing-top-navbar" class="nav-collapse collapse">
                         <form action="{$gp:baseUri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <input type="text" name="uri" class="input-xxlarge">
@@ -141,10 +141,10 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]">
-                            <xsl:variable name="space" select="($gp:absolutePath, key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                        <xsl:variable name="space" select="($gp:absolutePath, key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]" mode="gc:NavBarMode">
+                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
                                     <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>

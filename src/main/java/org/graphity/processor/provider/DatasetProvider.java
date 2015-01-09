@@ -22,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import java.net.URI;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletContext;
 import javax.ws.rs.WebApplicationException;
@@ -84,12 +85,17 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
                 throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured in web.xml");
             }
             
-            return getDataset(datasetLocation);
+            return getDataset(datasetLocation, getBaseUri());
         }
         catch (ConfigurationException ex)
         {
             throw new WebApplicationException(ex);
         }
+    }
+    
+    public URI getBaseUri()
+    {
+        return getUriInfo().getBaseUri();
     }
     
     public String getDatasetLocation(Property property)
@@ -102,12 +108,13 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
         return null;
     }
     
-    public Dataset getDataset(String datasetLocation) throws ConfigurationException
+    public Dataset getDataset(String location, URI baseURI)
     {
-        if (datasetLocation == null) throw new IllegalArgumentException("Location String cannot be null");
+        if (location == null) throw new IllegalArgumentException("Location String cannot be null");
+        if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
 	
         Dataset dataset = DatasetFactory.createMem();
-        RDFDataMgr.read(dataset, datasetLocation.toString(), getUriInfo().getBaseUri().toString(), null); // Lang.TURTLE
+        RDFDataMgr.read(dataset, location.toString(), baseURI.toString(), null); // Lang.TURTLE
         return dataset;
     }
 

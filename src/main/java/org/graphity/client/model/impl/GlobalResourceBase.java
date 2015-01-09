@@ -167,11 +167,14 @@ public class GlobalResourceBase extends ResourceBase
     }
 
     /**
+     * Returns sub-resource instance.
+     * By default matches any path.
      * 
-     * @return SPARQL endpoint object
+     * @return resource object
      */
+    @Path("{path: .+}")
     @Override
-    public Object getSPARQLResource()
+    public Object getSubResource()
     {
         if (getEndpointURI() != null)
         {
@@ -188,9 +191,9 @@ public class GlobalResourceBase extends ResourceBase
             }
         }
         
-        return super.getSPARQLResource();
+        return super.getSubResource();
     }
-
+    
     @Override
     public Response post(Model model, SPARQLEndpoint endpoint)
     {

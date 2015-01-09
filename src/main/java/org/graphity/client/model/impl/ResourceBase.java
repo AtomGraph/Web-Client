@@ -34,6 +34,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,26 +91,29 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     }
     
     /**
-     * Returns SPARQL endpoint resource.
-     * If (X)HTML is requested, Linked Data resource is returned. Otherwise, SPARQL endpoint resource is returned.
+     * Returns sub-resource instance.
+     * By default matches any path.
      * 
-     * @return endpoint resource
+     * @return resource object
      */
-    @Path("sparql")
+    @Path("{path: .+}")
     @Override
-    public Object getSPARQLResource()
+    public Object getSubResource()
     {
-        List<Variant> variants = getVariants();
-        variants.addAll(SPARQLEndpoint.RESULT_SET_VARIANTS);
-        Variant variant = getRequest().selectVariant(variants);
+        if (getMatchedOntClass().equals(GP.SPARQLEndpoint))
+        {
+            List<Variant> variants = getVariants();
+            variants.addAll(SPARQLEndpoint.RESULT_SET_VARIANTS);
+            Variant variant = getRequest().selectVariant(variants);
 
-        if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&
-                !variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
-            return super.getSPARQLResource();
+            if (variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) ||
+                    variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
+                return this;
+        }
         
-        return this;
+        return super.getSubResource();
     }
-
+    
     /**
      * Adds run-time metadata to RDF description.
      * In case a container is requested, page resource with HATEOS previous/next links is added to the model.

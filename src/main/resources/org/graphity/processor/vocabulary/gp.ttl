@@ -184,6 +184,13 @@
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
+<#GraphStore> a owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document ;
+    <#uriTemplate> "/service" ;
+    spin:query <#Describe> ;
+    rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy <#> .
+
 # QUERIES
 
 <#Describe>    a       sp:Describe, sp:Query ; # redefined to avoid importing gs: vocab with {path: *}

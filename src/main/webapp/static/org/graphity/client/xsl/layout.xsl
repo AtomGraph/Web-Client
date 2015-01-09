@@ -188,15 +188,15 @@ exclude-result-prefixes="#all">
                         
                         <ul class="nav">
                             <!-- make menu links for all containers in the ontology -->
-                            <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[not(@rdf:about = resolve-uri('sparql', $gp:baseUri))]" mode="gc:NavBarMode">
+                            <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="gc:NavBarMode">
                                 <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
                                 <xsl:with-param name="space" select="$space"/>
                             </xsl:apply-templates>
                         </ul>
 
-                        <xsl:if test="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]">
+                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[@rdf:about = resolve-uri('sparql', $gp:baseUri) or @rdf:about = resolve-uri('ontology', $gp:baseUri)]" mode="gc:NavBarMode">
+                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
                                     <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
