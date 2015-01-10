@@ -35,7 +35,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.graphity.processor.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
-import org.graphity.client.resource.labelled.Container;
 import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.SkolemizingRDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
@@ -82,10 +81,8 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      */
     public ApplicationBase()
     {
-	classes.add(GlobalResourceBase.class); // handles all
-	classes.add(Container.class); // handles /{path}/labelled
+	classes.add(GlobalResourceBase.class); // handles /
 
-	//singletons.addAll(super.getSingletons());
 	singletons.add(new ModelProvider());
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
