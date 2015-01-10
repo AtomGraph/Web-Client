@@ -47,23 +47,13 @@ public class Item extends ResourceBase
     
     private static final Logger log = LoggerFactory.getLogger(Item.class);
 
-    private final GraphStore graphStore;
-
-    public Item(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass matchedOntClass,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
-            @Context GraphStore graphStore)
+    public Item(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context OntClass matchedOntClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, endpoint, matchedOntClass,
-                request, servletContext, httpHeaders, resourceContext);
-	if (graphStore == null) throw new IllegalArgumentException("GraphStore cannot be null");
-
+	super(uriInfo, request, servletContext, endpoint, graphStore,
+                matchedOntClass, httpHeaders, resourceContext);
 	if (log.isDebugEnabled()) log.debug("Constructing {} as direct indication of GRAPH {}", getClass(), uriInfo.getAbsolutePath());
-        this.graphStore = graphStore;
-    }
-
-    public GraphStore getGraphStore()
-    {
-        return graphStore;
     }
     
     @Override

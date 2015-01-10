@@ -28,6 +28,7 @@ import javax.ws.rs.core.UriInfo;
 import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.LDP;
+import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,13 @@ public class Container extends ResourceBase
 
     private final String searchString;
     
-    public Container(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
+    public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, endpoint, ontClass,
-                request, servletContext, httpHeaders, resourceContext);
+	super(uriInfo, request, servletContext,
+                endpoint, graphStore,
+                ontClass, httpHeaders, resourceContext);
 	this.searchString = getUriInfo().getQueryParameters().getFirst("label");
     }
 

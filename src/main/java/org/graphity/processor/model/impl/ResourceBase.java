@@ -49,6 +49,7 @@ import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.processor.vocabulary.XHV;
+import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.impl.QueriedResourceBase;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.util.ModelUtils;
@@ -74,9 +75,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
+    private final GraphStore graphStore;
     private final OntClass matchedOntClass;
     private final OntResource ontResource;
-    private final UriInfo uriInfo;
     private final ResourceContext resourceContext;
     private final HttpHeaders httpHeaders;
     private String orderBy;
@@ -93,17 +94,19 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * HATEOS metadata is added (relations to the container and previous/next page resources).
      * 
      * @param uriInfo URI information of the current request
-     * @param endpoint SPARQL endpoint of this resource
-     * @param ontClass matched ontology class
      * @param request current request
      * @param servletContext webapp context
+     * @param endpoint SPARQL endpoint of this resource
+     * @param graphStore Graph Store of this resource
+     * @param ontClass matched ontology class
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, endpoint);
+	super(uriInfo, request, servletContext, endpoint);
 
         if (ontClass == null)
         {
@@ -111,7 +114,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             throw new NotFoundException("Resource has not matched any template");
         }
         
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+	if (graphStore == null) throw new IllegalArgumentException("GraphStore cannot be null");
         if (httpHeaders == null) throw new IllegalArgumentException("HttpHeaders cannot be null");
 	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
 
@@ -119,7 +122,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         model.add(ontClass.getModel()); // we don't want to make permanent changes to base ontology which is cached
         this.ontResource = model.createOntResource(getURI());
         this.matchedOntClass = ontClass;
-	this.uriInfo = uriInfo;
+	this.graphStore = graphStore;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
 
@@ -942,7 +945,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @return cache control object or null, if not specified
      */
-    @Override
     public CacheControl getCacheControl()
     {
 	return cacheControl;
@@ -960,6 +962,16 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
 
     /**
+     * Returns Graph Store of this resource.
+     * 
+     * @return graph store object
+     */
+    public GraphStore getGraphStore()
+    {
+        return graphStore;
+    }
+
+    /**
      * Returns query builder, which is used to build SPARQL query to retrieve RDF description of this resource.
      * 
      * @return query builder
@@ -968,16 +980,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public QueryBuilder getQueryBuilder()
     {
 	return queryBuilder;
-    }
-
-    /**
-     * Returns URI information of current request.
-     * 
-     * @return URI information
-     */
-    public UriInfo getUriInfo()
-    {
-	return uriInfo;
     }
 
     /**

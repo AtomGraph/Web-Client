@@ -32,6 +32,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.DataManager;
+import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.graphity.server.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpointOrigin;
@@ -62,20 +63,23 @@ public class GlobalResourceBase extends ResourceBase
      * JAX-RS compatible resource constructor with injected initialization objects.
      * 
      * @param uriInfo URI information of the request
-     * @param endpoint SPARQL endpoint of this resource
-     * @param ontClass sitemap ontology model
      * @param request current request
      * @param servletContext webapp context
+     * @param endpoint SPARQL endpoint of this resource
+     * @param graphStore Graph Store of this resource
+     * @param ontClass sitemap ontology model
      * @param httpHeaders HTTP headers of current request
      * @param resourceContext resource context
      * @param dataManager data manager for this resource
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @Context DataManager dataManager)
     {
-	super(uriInfo, endpoint, ontClass,
-                request, servletContext, httpHeaders, resourceContext);
+	super(uriInfo, request, servletContext, 
+                endpoint, graphStore,
+                ontClass, httpHeaders, resourceContext);
 	if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataManager = dataManager;
 

@@ -35,6 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.GP;
+import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,18 +58,21 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * JAX-RS-compatible resource constructor with injected initialization objects.
      * 
      * @param uriInfo URI information of the current request
-     * @param endpoint SPARQL endpoint of this resource
-     * @param ontClass sitemap ontology model
      * @param request current request
      * @param servletContext webapp context
+     * @param endpoint SPARQL endpoint of this resource
+     * @param graphStore Graph Store of this resource
+     * @param ontClass sitemap ontology model
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context SPARQLEndpoint endpoint, @Context OntClass ontClass,
-            @Context Request request, @Context ServletContext servletContext, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, endpoint, ontClass,
-                request, servletContext, httpHeaders, resourceContext);
+	super(uriInfo, request, servletContext,
+                endpoint, graphStore,
+                ontClass, httpHeaders, resourceContext);
 
         if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
             this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
