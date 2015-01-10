@@ -152,7 +152,7 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
                             return getSource(loadResultSet(UriBuilder.fromUri(uri).
                                     replaceQuery(null).
                                     build().toString(),
-                                query, parseParamMap(uri.toString())));
+                                query, parseParamMap(uri.toString())), uri.toString());
                         }
                         if (query.isConstructType() || query.isDescribeType())
                         {
@@ -160,12 +160,12 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
                             return getSource(loadModel(UriBuilder.fromUri(uri).
                                     replaceQuery(null).
                                     build().toString(),
-                                query, parseParamMap(uri.toString())));
+                                query, parseParamMap(uri.toString())), uri.toString());
                         }
                     }
 
                     if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
-                    return getSource(loadModel(uri.toString()));
+                    return getSource(loadModel(uri.toString()), uri.toString());
                 }
                 catch (IllegalArgumentException | UriBuilderException | NotFoundException ex)
                 {
@@ -181,22 +181,23 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
         else
         {
             if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
-            return getSource(model);
+            return getSource(model, uri.toString());
         }
     }
     
     protected Source getDefaultSource()
     {
-	return getSource(ModelFactory.createDefaultModel());
+	return getSource(ModelFactory.createDefaultModel(), null);
     }
     
     /**
      * Serializes RDF model to XML source.
      * 
-     * @param model RDF Model
+     * @param model RDF model
+     * @param systemId system ID (usually origin URI) of the source
      * @return XML source
      */
-    protected Source getSource(Model model)
+    protected Source getSource(Model model, String systemId)
     {
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 	
@@ -205,16 +206,17 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
     }
 
     /**
      * Serializes SPARQL XML results to XML source.
      * 
      * @param results SPARQL XML results
+     * @param systemId system ID (usually origin URI) of the source
      * @return XML source
      */
-    protected Source getSource(ResultSet results)
+    protected Source getSource(ResultSet results, String systemId)
     {
 	if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());
 	
@@ -223,7 +225,7 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
 	
 	if (log.isDebugEnabled()) log.debug("SPARQL XML result bytes written: {}", stream.toByteArray().length);
 	
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
     }
  
     /**

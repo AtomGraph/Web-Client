@@ -91,7 +91,6 @@ exclude-result-prefixes="#all">
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), $gp:ontModel)"/>
     <xsl:variable name="select-res" select="if ($matched-ont-class/rdfs:subClassOf/@rdf:resource = '&ldp;Container' and $query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $gp:ontModel), $gp:ontModel) else ()"/>
-    <xsl:variable name="config" select="document('../../../../../WEB-INF/web.xml')" as="document-node()"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>

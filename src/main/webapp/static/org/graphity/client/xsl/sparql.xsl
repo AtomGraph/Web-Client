@@ -116,7 +116,7 @@ LIMIT 100</xsl:param>
                         <input type="hidden" name="mode" value="{$gc:mode}"/>
                     </xsl:if>
                     <button type="submit" class="btn btn-primary">Query</button>
-                    <span class="help-inline">For all queries, the maximum number of results is set to <xsl:value-of select="key('init-param-by-name', '&gs;resultLimit', $config)/javaee:param-value"/>.</span>
+                    <!-- <span class="help-inline">For all queries, the maximum number of results is set to <xsl:value-of select="$gs:resultLimit"/>.</span> -->
                 </div>
             </fieldset>
 	</form>            
