@@ -20,7 +20,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
 import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -37,7 +36,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Path("/{path}/labelled")
 public class Container extends ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(Container.class);

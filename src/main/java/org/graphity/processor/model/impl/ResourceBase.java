@@ -21,6 +21,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.sparql.util.Loader;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
@@ -217,6 +218,35 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public Object getSubResource()
     {
         if (getMatchedOntClass().equals(GP.SPARQLEndpoint)) return getSPARQLEndpoint();
+        if (getMatchedOntClass().getPropertyResourceValue(GP.loadClass) != null)
+        {
+            try
+            {
+                Resource javaClass = getMatchedOntClass().getPropertyResourceValue(GP.loadClass);
+                if (!javaClass.isURIResource())
+                {
+                    if (log.isErrorEnabled()) log.debug("gp:loadClass value of class '{}' is not a URI resource", getMatchedOntClass().getURI());
+                    throw new ConfigurationException("gp:loadClass value of class '" + getMatchedOntClass().getURI() + "' is not a URI resource");
+                }
+
+                Class clazz = Loader.loadClass(javaClass.getURI());
+                if (clazz == null)
+                {
+                    if (log.isErrorEnabled()) log.debug("Java class with URI '{}' could not be loaded", javaClass.getURI());
+                    throw new ConfigurationException("Java class with URI '" + javaClass.getURI() + "' not found");
+                }
+
+                if (!Resource.class.isAssignableFrom(clazz))
+                    if (log.isWarnEnabled()) log.warn("Java class with URI: {} is not a subclass of Graphity Resource", javaClass.getURI());
+                
+                if (log.isDebugEnabled()) log.debug("Loading Java class with URI: {}", javaClass.getURI());
+                return getResourceContext().getResource(clazz);
+            }
+            catch (ConfigurationException ex)
+            {
+                throw new WebApplicationException(ex);
+            }
+        }
 
         return this;
     }

@@ -47,8 +47,6 @@ public final class GP
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
 
-    public static final OntClass Template = m_model.createClass( NS + "Template" );
-
     public static final OntClass SPARQLEndpoint = m_model.createClass( NS + "SPARQLEndpoint" );
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
@@ -84,5 +82,7 @@ public final class GP
     public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
 
     public static final DatatypeProperty slug = m_model.createDatatypeProperty( NS + "slug" );
+
+    public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
 
 }

@@ -204,7 +204,7 @@
 
 <#LabelResourcesContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container ;
-    gp:uriTemplate "/resources/labelled" ;
+    gp:uriTemplate "/resources/labelled" ; # "/{path}/labelled" ?
     spin:query <#DescribeLabelResources> ;
     gp:limit 20 ;
     gp:orderBy "label"^^xsd:string ;

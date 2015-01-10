@@ -161,14 +161,8 @@ public class XSLTBuilder
 
     public XSLTBuilder stylesheet(File stylesheet) throws TransformerConfigurationException
     {
-        //long lastModified = stylesheet.lastModified();        
-        // return Templates if they are already compiled and cached for this File
-        if (templatesCache.containsKey(stylesheet.toURI().toString()))
-            return stylesheet(templatesCache.get(stylesheet.toURI().toString()));
-
-        Templates templates = factory.newTemplates(new StreamSource(stylesheet));
-        templatesCache.put(stylesheet.toURI().toString(), templates);
-        return stylesheet(templates);
+        //long lastModified = stylesheet.lastModified();
+        return stylesheet(new StreamSource(stylesheet));
     }
     
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
