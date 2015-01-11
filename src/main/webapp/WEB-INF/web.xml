@@ -33,7 +33,7 @@
         <param-value>/org/graphity/client/dataset/dataset.trig</param-value>
     </context-param>
     <context-param>
-        <param-name>http://graphity.org/gp#ontology</param-name>
+        <param-name>http://graphity.org/gp#sitemap</param-name>
         <param-value>http://graphity.org/gcs#</param-value>
     </context-param>
     <context-param>

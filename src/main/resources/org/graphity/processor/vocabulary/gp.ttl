@@ -32,8 +32,35 @@
 
 # PROPERTIES
 
+<#sitemap> a owl:ObjectProperty ;
+    rdfs:label "Application sitemap" ;
+    rdfs:domain <#Application> ;
+    rdfs:range <#Sitemap> ;
+    rdfs:comment "OWL ontology with resource classes (templates)" ;
+    rdfs:isDefinedBy <#> .
+
+<#baseUri> a owl:ObjectProperty ;
+    rdfs:label "Base URI" ;
+    rdfs:domain <#Application> ;
+    rdfs:comment "Base URI of the application" ;
+    rdfs:isDefinedBy <#> .
+
+<#absolutePath> a owl:ObjectProperty ;
+    rdfs:label "Absolute path URI" ;
+    rdfs:domain http:Request ;
+    rdfs:comment "Absolute path of the request" ;
+    rdfs:seeAlso http:absoluteURI ;
+    rdfs:isDefinedBy <#> .
+
+<#requestUri> a owl:ObjectProperty ;
+    rdfs:label "Request URI" ;
+    rdfs:domain http:Request ;
+    rdfs:comment "Absolute path of the request" ;
+    rdfs:seeAlso http:requestURI ;
+    rdfs:isDefinedBy <#> .
+
 <#uriTemplate> a owl:DatatypeProperty ;
-    rdfs:domain owl:Class ; # rdfs:domain <#Template> ;
+    rdfs:domain <#Template> ;
     rdfs:range rdfs:Literal ;
     rdfs:label "URI template" ;
     rdfs:comment "URI template for resource matching (JAX-RS syntax)" ;
@@ -86,7 +113,25 @@
     rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
     rdfs:isDefinedBy <#> .
 
+<#loadClass> a owl:ObjectProperty ;
+    rdfs:subPropertyOf <http://jena.hpl.hp.com/2005/11/Assembler#loadClass> ;
+    rdfs:domain <#Template> ;
+    rdfs:label "Load class";
+    rdfs:comment "Indicates the Java class that will handle requests matched by this template. Needs to start with 'java:' URI scheme." ;
+    rdfs:isDefinedBy <#> .
+
 # CLASSES
+
+<#Application> a rdfs:Class, owl:Class ;
+    rdfs:label "Graphity Processor application" ;
+    rdfs:comment "Declarative Linked Data application" ;
+    rdfs:isDefinedBy <#> .
+
+<#Sitemap> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf owl:Ontology ;
+    rdfs:label "Sitemap ontology" ;
+    rdfs:comment "A class of sitemap ontologies" ;
+    rdfs:isDefinedBy <#> .
 
 <#Template> a rdfs:Class, owl:Class ;
     rdfs:label "Resource template" ;

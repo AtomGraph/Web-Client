@@ -18,7 +18,7 @@
 
 <#> a owl:Ontology, gp:Sitemap ;
     owl:imports gc:, sp:, spin:, foaf:, sioc: ;
-    owl:versionInfo "1.1.0" ;
+    owl:versionInfo "1.1.1" ;
     rdfs:label "Graphity Client sitemap" ;
     rdfs:comment "Ontology of Graphity Client domain resource templates" .
 
@@ -37,10 +37,6 @@
     gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
     gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#TemplateContainer> ;
-	    sp:arg2 gp:slug
-	] ;
     rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
 
@@ -85,6 +81,7 @@
                             gp:offset 0 ;
                             gp:orderBy " "^^xsd:string ;
                             gp:cacheControl "no-cache" ;
+                            gp:loadClass _:javaClass ;
                             spin:query gp:Describe ;
                             gc:defaultMode gc:ReadMode ;
                             gc:mode gc:ReadMode .
@@ -133,10 +130,6 @@
     gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
     gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#QueryContainer> ;
-	    sp:arg2 gp:slug
-	] ;
     rdfs:label "Query container" ;
     rdfs:isDefinedBy <#> .
 

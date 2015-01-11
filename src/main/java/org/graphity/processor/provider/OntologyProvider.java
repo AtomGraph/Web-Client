@@ -96,7 +96,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     /**
      * Returns configured ontology model.
-     * Uses <code>gp:ontology</code> context parameter value from web.xml as dataset location.
+     * Uses <code>gp:sitemap</code> context parameter value from web.xml as dataset location.
      * 
      * @return ontology model
      */
@@ -133,12 +133,12 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     
     public String getOntologyURI() throws ConfigurationException
     {
-        String ontologyURI = getOntologyURI(GP.ontology);
+        String ontologyURI = getOntologyURI(GP.sitemap);
         
         if (ontologyURI == null)
         {
-            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:ontology) not configured");
-            throw new ConfigurationException("Sitemap ontology URI (gp:ontology) not configured");
+            if (log.isErrorEnabled()) log.error("Sitemap ontology URI (gp:sitemap) not configured");
+            throw new ConfigurationException("Sitemap ontology URI (gp:sitemap) not configured");
         }
 
         return ontologyURI;

@@ -13,14 +13,14 @@
 
 <#> a owl:Ontology ;
     owl:imports gp: ;
-    rdfs:label "Graphity Client vocabulary" ;
-    owl:versionInfo "1.1.0" .
+    rdfs:label "Graphity Client ontology" ;
+    owl:versionInfo "1.1.1" .
 
 # PROPERTIES
 
 <#stylesheet> a owl:ObjectProperty ;
     rdfs:domain <#Application> ;
-    rdfs:label "Master XSLT stylesheet" ;
+    rdfs:label "XSLT stylesheet" ;
     rdfs:isDefinedBy <#> .
 
 <#defaultMode> a owl:ObjectProperty ;
