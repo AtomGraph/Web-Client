@@ -17,6 +17,8 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.Dataset;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.SPARQLEndpointFactory;
 import org.graphity.server.model.SPARQLEndpoint;
@@ -50,9 +52,14 @@ public class SPARQLEndpointProvider extends org.graphity.server.provider.SPARQLE
     public SPARQLEndpoint getSPARQLEndpoint()
     {
         if (getSPARQLEndpointOrigin() == null) // use local endpoint
-            return SPARQLEndpointFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
+            return getSPARQLEndpoint(getRequest(), getServletContext(), getDataset(), getDataManager());
 
         return super.getSPARQLEndpoint();
+    }
+    
+    public SPARQLEndpoint getSPARQLEndpoint(Request request, ServletContext servletContext, Dataset dataset, org.graphity.server.util.DataManager dataManager)
+    {
+        return SPARQLEndpointFactory.create(request, servletContext, dataset, dataManager);
     }
 
 }

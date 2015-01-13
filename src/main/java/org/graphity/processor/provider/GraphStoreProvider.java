@@ -17,8 +17,11 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.Dataset;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.GraphStoreFactory;
+import org.graphity.processor.util.DataManager;
 import org.graphity.server.model.GraphStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,5 +57,10 @@ public class GraphStoreProvider extends org.graphity.server.provider.GraphStoreP
         
         return super.getGraphStore();
    }
+
+    public GraphStore getGraphStore(Request request, ServletContext servletContext, Dataset dataset, DataManager dataManager)
+    {
+        return GraphStoreFactory.create(request, servletContext, dataset, dataManager);        
+    }
     
 }
