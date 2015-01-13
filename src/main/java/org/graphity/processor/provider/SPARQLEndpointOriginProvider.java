@@ -42,7 +42,7 @@ public class SPARQLEndpointOriginProvider extends org.graphity.server.provider.S
     @Override
     public SPARQLEndpointOrigin getSPARQLEndpointOrigin()
     {
-        return getSPARQLEndpointOrigin(SD.endpoint); // do not throw WebApplicationException is origin is not configured
+        return getSPARQLEndpointOrigin(SD.endpoint, getDataManager()); // do not throw WebApplicationException is origin is not configured
     }
 
 }
