@@ -24,7 +24,7 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import java.net.URI;
 import javax.naming.ConfigurationException;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -48,7 +48,7 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
     private static final Logger log = LoggerFactory.getLogger(DatasetProvider.class);
 
     @Context UriInfo uriInfo;
-    @Context ServletContext servletContext;
+    @Context ServletConfig servletConfig;
 
     public DatasetProvider()
     {
@@ -85,7 +85,7 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
                 throw new ConfigurationException("Application dataset (gp:datasetLocation) is not configured in web.xml");
             }
             
-            return getDataset(datasetLocation, getBaseUri());
+            return getDataset(datasetLocation, getUriInfo().getBaseUri());
         }
         catch (ConfigurationException ex)
         {
@@ -93,16 +93,11 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
         }
     }
     
-    public URI getBaseUri()
-    {
-        return getUriInfo().getBaseUri();
-    }
-    
     public String getDatasetLocation(Property property)
     {
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
-        Object datasetLocation = getServletContext().getInitParameter(property.getURI());
+        Object datasetLocation = getServletConfig().getInitParameter(property.getURI());
         if (datasetLocation != null) return datasetLocation.toString();
         
         return null;
@@ -123,9 +118,9 @@ public class DatasetProvider extends PerRequestTypeInjectableProvider<Context, D
         return uriInfo;
     }
 
-    public ServletContext getServletContext()
+    public ServletConfig getServletConfig()
     {
-        return servletContext;
+        return servletConfig;
     }
 
     @Override

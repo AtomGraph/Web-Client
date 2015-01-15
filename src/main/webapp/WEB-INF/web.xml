@@ -6,62 +6,62 @@
     id="graphity-client" version="3.0">
     <display-name>Graphity Client</display-name>
     <description>Generic Linked Data client</description>
-    <!--
-    <context-param>
-        <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
-        <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://graphity.org/gs#graphStore</param-name>
-        <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://jena.hpl.hp.com/Service#queryAuthUser</param-name>
-        <param-value>username</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://jena.hpl.hp.com/Service#queryAuthPwd</param-name>
-        <param-value>password</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://graphity.org/gs#preemptiveAuth</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    -->
-    <context-param>
-        <param-name>http://graphity.org/gp#datasetLocation</param-name>
-        <param-value>/org/graphity/client/dataset/dataset.trig</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://graphity.org/gp#sitemap</param-name>
-        <param-value>http://graphity.org/gcs#</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://graphity.org/gc#stylesheet</param-name>
-        <param-value>/static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
-    </context-param>
-    <context-param>
-        <param-name>http://graphity.org/gs#resultLimit</param-name>
-        <param-value>100</param-value>
-    </context-param>
-    <filter>
-        <filter-name>index</filter-name>
-        <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
+    <servlet>
+        <servlet-name>index</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>org.graphity.client.ApplicationBase</param-value>
         </init-param>
         <init-param>
-            <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-            <param-value>(/static/.*)|(/robots\.txt)</param-value>
-        </init-param>
-        <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
 	    <param-value>org.graphity.client.filter.PostReplaceFilter</param-value>
-	</init-param>	
-    </filter>
-    <filter-mapping>
-        <filter-name>index</filter-name>
+	</init-param>
+        <!--
+        <init-param>
+            <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
+            <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gs#graphStore</param-name>
+            <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://jena.hpl.hp.com/Service#queryAuthUser</param-name>
+            <param-value>username</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://jena.hpl.hp.com/Service#queryAuthPwd</param-name>
+            <param-value>password</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gs#preemptiveAuth</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        -->
+        <init-param>
+            <param-name>http://graphity.org/gp#datasetLocation</param-name>
+            <param-value>/org/graphity/client/dataset/dataset.trig</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gp#sitemap</param-name>
+            <param-value>http://graphity.org/gcs#</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gc#stylesheet</param-name>
+            <param-value>/static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
+        </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gs#resultLimit</param-name>
+            <param-value>100</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>    
+    <servlet-mapping>
+        <servlet-name>index</servlet-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </servlet-mapping>
 </web-app>

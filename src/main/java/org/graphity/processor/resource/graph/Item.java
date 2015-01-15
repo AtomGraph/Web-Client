@@ -19,7 +19,7 @@ package org.graphity.processor.resource.graph;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceContext;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
@@ -47,11 +47,11 @@ public class Item extends ResourceBase
     
     private static final Logger log = LoggerFactory.getLogger(Item.class);
 
-    public Item(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+    public Item(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
             @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
             @Context OntClass matchedOntClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, request, servletContext, endpoint, graphStore,
+	super(uriInfo, request, servletConfig, endpoint, graphStore,
                 matchedOntClass, httpHeaders, resourceContext);
 	if (log.isDebugEnabled()) log.debug("Constructing {} as direct indication of GRAPH {}", getClass(), uriInfo.getAbsolutePath());
     }

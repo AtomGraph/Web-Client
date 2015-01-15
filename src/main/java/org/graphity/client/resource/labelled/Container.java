@@ -19,7 +19,7 @@ package org.graphity.client.resource.labelled;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -43,11 +43,11 @@ public class Container extends ResourceBase
 
     private final String searchString;
     
-    public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+    public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
             @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, request, servletContext,
+	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
 	this.searchString = getUriInfo().getQueryParameters().getFirst("label");

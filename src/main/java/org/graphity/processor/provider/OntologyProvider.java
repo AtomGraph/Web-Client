@@ -24,7 +24,7 @@ import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import javax.naming.ConfigurationException;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
@@ -50,7 +50,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 
     @Context UriInfo uriInfo;
     @Context Request request;
-    @Context ServletContext servletContext;
+    @Context ServletConfig servletConfig;
     @Context Providers providers;
 
     public OntologyProvider()
@@ -58,9 +58,9 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
 	super(OntModel.class);
     }
 
-    public ServletContext getServletContext()
+    public ServletConfig getServletConfig()
     {
-	return servletContext;
+	return servletConfig;
     }
 
     public UriInfo getUriInfo()
@@ -125,7 +125,7 @@ public class OntologyProvider extends PerRequestTypeInjectableProvider<Context, 
     {
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
-        Object ontology = getServletContext().getInitParameter(property.getURI());
+        Object ontology = getServletConfig().getInitParameter(property.getURI());
         if (ontology != null) return ontology.toString();
 
         return null;

@@ -26,7 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.naming.ConfigurationException;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -58,7 +58,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
-    @Context private ServletContext servletContext;
+    @Context private ServletConfig servletConfig;
     private final XSLTBuilder builder = XSLTBuilder.newInstance();
 
     /**
@@ -80,9 +80,9 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
         return providers;
     }
 
-    public ServletContext getServletContext()
+    public ServletConfig getServletConfig()
     {
-        return servletContext;
+        return servletConfig;
     }
     
     public DataManager getDataManager()
@@ -120,7 +120,7 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
      */
     public URI getStylesheetURI(Property property) throws URISyntaxException
     {
-        Object stylesheetURI = getServletContext().getInitParameter(property.getURI());
+        Object stylesheetURI = getServletConfig().getInitParameter(property.getURI());
         if (stylesheetURI != null) return new URI(stylesheetURI.toString());
         
         return null;
@@ -204,8 +204,8 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
 	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
 
-        if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
-        URL xsltUrl = getServletContext().getResource(filename);
+        if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletConfig().getServletContext().getResourcePaths("/"), filename);
+        URL xsltUrl = getServletConfig().getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);

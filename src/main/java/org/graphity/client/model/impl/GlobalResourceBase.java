@@ -21,7 +21,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -64,7 +64,7 @@ public class GlobalResourceBase extends ResourceBase
      * 
      * @param uriInfo URI information of the request
      * @param request current request
-     * @param servletContext webapp context
+     * @param servletConfig servlet config
      * @param endpoint SPARQL endpoint of this resource
      * @param graphStore Graph Store of this resource
      * @param ontClass sitemap ontology model
@@ -72,12 +72,12 @@ public class GlobalResourceBase extends ResourceBase
      * @param resourceContext resource context
      * @param dataManager data manager for this resource
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
             @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
             @Context DataManager dataManager)
     {
-	super(uriInfo, request, servletContext, 
+	super(uriInfo, request, servletConfig, 
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
 	if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
@@ -131,7 +131,6 @@ public class GlobalResourceBase extends ResourceBase
     {
         return endpointURI;
     }
-
     
     /**
      * Returns a list of supported RDF representation variants.
@@ -191,7 +190,7 @@ public class GlobalResourceBase extends ResourceBase
             {
                 if (log.isDebugEnabled()) log.debug("Using remote SPARQL endpoint URI: {}", getEndpointURI());
                 SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(getEndpointURI().toString());
-                return SPARQLEndpointFactory.createProxy(getRequest(), getServletContext(), origin, getDataManager());
+                return SPARQLEndpointFactory.createProxy(getRequest(), getServletConfig(), origin, getDataManager());
             }
         }
         

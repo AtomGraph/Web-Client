@@ -17,7 +17,7 @@
 package org.graphity.processor.provider;
 
 import com.hp.hpl.jena.query.Dataset;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.GraphStoreFactory;
@@ -53,14 +53,14 @@ public class GraphStoreProvider extends org.graphity.server.provider.GraphStoreP
     public GraphStore getGraphStore()
     {
         if (getGraphStoreOrigin() == null) // use local graph store
-            return GraphStoreFactory.create(getRequest(), getServletContext(), getDataset(), getDataManager());
+            return GraphStoreFactory.create(getRequest(), getServletConfig(), getDataset(), getDataManager());
         
         return super.getGraphStore();
    }
 
-    public GraphStore getGraphStore(Request request, ServletContext servletContext, Dataset dataset, DataManager dataManager)
+    public GraphStore getGraphStore(Request request, ServletConfig servletConfig, Dataset dataset, DataManager dataManager)
     {
-        return GraphStoreFactory.create(request, servletContext, dataset, dataManager);        
+        return GraphStoreFactory.create(request, servletConfig, dataset, dataManager);        
     }
     
 }

@@ -28,7 +28,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -73,8 +74,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
  
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
-    @Context private ServletContext servletContext;
+    @Context private ServletConfig servletConfig;
     @Context private Providers providers;
+    @Context private HttpServletRequest httpServletRequest;
     
     /**
      * Constructs from XSLT builder.
@@ -156,9 +158,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	return httpHeaders;
     }
 
-    public ServletContext getServletContext()
+    public ServletConfig getServletConfig()
     {
-        return servletContext;
+        return servletConfig;
     }
     
     public Providers getProviders()
@@ -166,6 +168,17 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         return providers;
     }
 
+    public HttpServletRequest getHttpServletRequest()
+    {
+        return httpServletRequest;
+    }
+    
+    public URI getContextURI()
+    {
+        return URI.create(getHttpServletRequest().getRequestURL().toString()).
+                resolve(getHttpServletRequest().getContextPath() + "/");
+    }
+    
     public XSLTBuilder getXSLTBuilder()
     {
         if (builder != null) return builder;
@@ -176,20 +189,15 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         }
     }
     
-    public URI getBaseUri()
-    {
-        return getUriInfo().getBaseUri();
-    }
-    
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
-    {
+    {        
         XSLTBuilder bld = getXSLTBuilder().
 	    document(is).
-	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getBaseUri()).
+	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
 	    parameter("{" + GP.absolutePath.getNameSpace() + "}" + GP.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
 	    parameter("{" + GP.requestUri.getNameSpace() + "}" + GP.requestUri.getLocalName(), getUriInfo().getRequestUri()).
 	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
-	    parameter("{" + GC.contextBaseUri.getNameSpace() + "}" + GC.contextBaseUri.getLocalName(), getUriInfo().getBaseUri()).
+	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI()).
 	    result(new StreamResult(os));
 
 	// injecting Resource to get the final state of its Model. Is there a better way to do this?

@@ -20,18 +20,12 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import org.graphity.processor.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
@@ -73,14 +67,17 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     private final Set<Class<?>> classes = new HashSet<>();
     private final Set<Object> singletons = new HashSet<>();
 
-    private @Context ServletContext servletContext;
+    //private @Context ServletConfig servletConfig;
     private @Context UriInfo uriInfo;
     
     /**
      * Initializes root resource classes and provider singletons
+     * @param servletConfig
      */
-    public ApplicationBase()
+    public ApplicationBase(@Context ServletConfig servletConfig)
     {
+        super(servletConfig);
+        
 	classes.add(GlobalResourceBase.class); // handles /
 
 	singletons.add(new ModelProvider());
@@ -133,7 +130,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(), getServletContext(), getUriInfo());
+        DataManager manager = new DataManager(mapper, ARQ.getContext(), getServletConfig(), getUriInfo());
         FileManager.setStdLocators(manager);
 	manager.addLocatorLinkedData();
 	manager.removeLocatorURL();
@@ -204,26 +201,18 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
      * @throws java.net.MalformedURLException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      */
+    /*
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
-	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletContext().getResourcePaths("/"), filename);
-	URL xsltUrl = getServletContext().getResource(filename);
+	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletConfig().getResourcePaths("/"), filename);
+	URL xsltUrl = getServletConfig().getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
 	return new StreamSource(xsltUri);
     }
-
-    /**
-     * Returns servlet context
-     * 
-     * @return injected ServletContext
-     */
-    public ServletContext getServletContext()
-    {
-	return servletContext;
-    }
-
+    */
+    
     /**
      * Returns URI information
      * 

@@ -79,7 +79,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gp:limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="gp:orderBy" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $gp:ontModel)/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName" as="xs:string?"/>
     <xsl:param name="gp:desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
-    <xsl:param name="gc:contextBaseUri" as="xs:anyURI?"/>
+    <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
 
@@ -103,7 +103,6 @@ exclude-result-prefixes="#all">
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
     <xsl:key name="restrictions-by-container" match="*[rdf:type/@rdf:resource = '&owl;Restriction'][owl:onProperty/@rdf:resource = ('&sioc;has_space', '&sioc;has_parent', '&sioc;has_container')]" use="owl:allValuesFrom/@rdf:resource"/>
-    <xsl:key name="init-param-by-name" match="javaee:init-param" use="javaee:param-name"/>
 
     <xsl:preserve-space elements="rdfs:label dct:title gp:slug gp:uriTemplate gp:skolemTemplate gp:orderBy"/>
 
@@ -235,21 +234,21 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:StyleMode">
-	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
-	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
-	<link href="{resolve-uri('static/org/graphity/client/css/bootstrap.css', $gc:contextBaseUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/org/graphity/client/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:ScriptMode">
-	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextBaseUri)}"></script>
-	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextBaseUri)}"></script>
-        <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextBaseUri)}"></script>
+	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
+	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
         <xsl:if test="($gc:defaultMode, $gc:mode) = '&gc;MapMode'">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
-            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextBaseUri)}"></script>
+            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
         <xsl:if test="($gc:defaultMode, $gc:mode) = ('&gc;EditMode', '&gc;CreateMode')">
-            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextBaseUri)}"></script>
+            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
 

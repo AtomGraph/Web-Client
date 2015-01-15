@@ -74,6 +74,6 @@ public final class GC
 
     public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );
 
-    public static final ObjectProperty contextBaseUri = m_model.createObjectProperty( NS + "contextBaseUri" );
+    public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
 
 }

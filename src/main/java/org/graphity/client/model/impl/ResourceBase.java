@@ -23,7 +23,7 @@ import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -59,18 +59,18 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * 
      * @param uriInfo URI information of the current request
      * @param request current request
-     * @param servletContext webapp context
+     * @param servletConfig webapp context
      * @param endpoint SPARQL endpoint of this resource
      * @param graphStore Graph Store of this resource
      * @param ontClass sitemap ontology model
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
             @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, request, servletContext,
+	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
 

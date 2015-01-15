@@ -22,7 +22,7 @@ import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
@@ -43,7 +43,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
 
-    @Context ServletContext servletContext;
+    @Context ServletConfig servletConfig;
     @Context UriInfo uriInfo;
     
     public DataManagerProvider()
@@ -56,9 +56,9 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 	return uriInfo;
     }
 
-    public ServletContext getServletContext()
+    public ServletConfig getServletConfig()
     {
-        return servletContext;
+        return servletConfig;
     }
 
     @Override
@@ -82,18 +82,18 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getServletContext(), getUriInfo());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getServletConfig(), getUriInfo());
     }
     
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
-            ServletContext servletContext, UriInfo uriInfo)
+            ServletConfig servletConfig, UriInfo uriInfo)
     {
-        DataManager dataManager = new DataManager(mapper, context, servletContext, uriInfo);
+        DataManager dataManager = new DataManager(mapper, context, servletConfig, uriInfo);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();
 
-        if (log.isDebugEnabled()) log.debug("DataManager LocationMapper: {}", dataManager.getLocationMapper());
+        if (log.isTraceEnabled()) log.trace("DataManager LocationMapper: {}", dataManager.getLocationMapper());
 
         return dataManager;
     }

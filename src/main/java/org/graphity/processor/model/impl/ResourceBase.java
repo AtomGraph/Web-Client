@@ -34,7 +34,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -95,18 +95,18 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @param uriInfo URI information of the current request
      * @param request current request
-     * @param servletContext webapp context
+     * @param servletConfig webapp context
      * @param endpoint SPARQL endpoint of this resource
      * @param graphStore Graph Store of this resource
      * @param ontClass matched ontology class
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletContext servletContext,
+    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
             @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, request, servletContext, endpoint);
+	super(uriInfo, request, servletConfig, endpoint);
 
         if (ontClass == null)
         {

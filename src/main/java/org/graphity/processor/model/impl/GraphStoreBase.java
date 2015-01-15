@@ -19,7 +19,7 @@ package org.graphity.processor.model.impl;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import org.graphity.server.util.DataManager;
@@ -40,10 +40,10 @@ public class GraphStoreBase extends org.graphity.server.model.impl.GraphStoreBas
     private final Dataset dataset;
     private final DataManager dataManager;
         
-    public GraphStoreBase(@Context Request request, @Context ServletContext servletContext,
+    public GraphStoreBase(@Context Request request, @Context ServletConfig servletConfig,
             @Context Dataset dataset, @Context DataManager dataManager)
     {
-        super(request, servletContext);
+        super(request, servletConfig);
 	if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
         if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataset = dataset;

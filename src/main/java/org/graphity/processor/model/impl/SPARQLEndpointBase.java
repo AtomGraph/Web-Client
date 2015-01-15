@@ -21,7 +21,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.update.UpdateRequest;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import org.graphity.server.util.DataManager;
@@ -48,12 +48,12 @@ public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEnd
      * @param dataset ontology of this webapp
      * @param dataManager RDF data manager for this endpoint
      * @param request current request
-     * @param servletContext webapp context
+     * @param servletConfig webapp context
      */
-    public SPARQLEndpointBase(@Context Request request, @Context ServletContext servletContext,
+    public SPARQLEndpointBase(@Context Request request, @Context ServletConfig servletConfig,
             @Context Dataset dataset, @Context DataManager dataManager)
     {
-	super(request, servletContext);
+	super(request, servletConfig);
         if (dataset == null) throw new IllegalArgumentException("Dataset cannot be null");
         if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.dataset = dataset;

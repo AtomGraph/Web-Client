@@ -18,7 +18,7 @@ package org.graphity.processor.model;
 
 import org.graphity.processor.model.impl.SPARQLEndpointBase;
 import com.hp.hpl.jena.query.Dataset;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Request;
 import org.graphity.server.util.DataManager;
 import org.graphity.server.model.SPARQLEndpoint;
@@ -35,15 +35,15 @@ public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpo
      * Creates new SPARQL endpoint instance backed by dataset.
      * 
      * @param request current request
-     * @param servletContext webapp context
+     * @param servletConfig webapp context
      * @param dataset dataset of the store
      * @param dataManager RDF data manager for this endpoint
      * @return new endpoint
      */
-    public static SPARQLEndpoint create(Request request, ServletContext servletContext,
+    public static SPARQLEndpoint create(Request request, ServletConfig servletConfig,
             Dataset dataset, DataManager dataManager)
     {
-	return new SPARQLEndpointBase(request, servletContext, dataset, dataManager);
+	return new SPARQLEndpointBase(request, servletConfig, dataset, dataManager);
     }
     
 }

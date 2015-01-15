@@ -19,7 +19,7 @@ package org.graphity.processor.model;
 
 import org.graphity.processor.model.impl.GraphStoreBase;
 import com.hp.hpl.jena.query.Dataset;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Request;
 import org.graphity.server.util.DataManager;
 import org.graphity.server.model.GraphStore;
@@ -36,15 +36,15 @@ public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFacto
      * Creates new Graph Store instance backed by dataset.
      * 
      * @param request current request
-     * @param servletContext webapp context
+     * @param servletConfig webapp context
      * @param dataset dataset of the store
      * @param dataManager RDF data manager for this graph store
      * @return graph store instance
      */
-    public static GraphStore create(Request request, ServletContext servletContext,
+    public static GraphStore create(Request request, ServletConfig servletConfig,
             Dataset dataset, DataManager dataManager)
     {
-	return new GraphStoreBase(request, servletContext, dataset, dataManager);
+	return new GraphStoreBase(request, servletConfig, dataset, dataManager);
     }
 
 }

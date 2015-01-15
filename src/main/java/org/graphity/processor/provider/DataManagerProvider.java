@@ -22,7 +22,7 @@ import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -42,16 +42,16 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
 
-    @Context ServletContext servletContext;
+    @Context ServletConfig servletConfig;
 
     public DataManagerProvider()
     {
         super(DataManager.class);
     }
 
-    public ServletContext getServletContext()
+    public ServletConfig getServletConfig()
     {
-        return servletContext;
+        return servletConfig;
     }
 
     @Override
@@ -75,13 +75,13 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getServletContext());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getServletConfig());
     }
     
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
-            ServletContext servletContext)
+            ServletConfig servletConfig)
     {
-        DataManager dataManager = new DataManager(mapper, context, servletContext);
+        DataManager dataManager = new DataManager(mapper, context, servletConfig);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();
