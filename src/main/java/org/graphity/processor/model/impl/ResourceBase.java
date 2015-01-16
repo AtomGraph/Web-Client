@@ -135,6 +135,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @PostConstruct
     public void init()
     {
+	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
+	addProperty(RDF.type, getMatchedOntClass()); // getOntModel().add(description); ?
+        
         Query query = getQuery(getMatchedOntClass(), SPIN.query, getQuerySolutionMap(this));
         if (query == null)
         {
@@ -182,9 +185,13 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             
             queryBuilder = QueryBuilder.fromQuery(query, getModel());
         }
-        if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
         
-        cacheControl = getCacheControl(getMatchedOntClass());
+        //if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
+	//getQueryBuilder().build(); // sets sp:text value
+	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
+	addProperty(SPIN.query, getQueryBuilder());
+        
+        cacheControl = getCacheControl(getMatchedOntClass());        
     }
     
     public Long getLongValue(OntClass ontClass, DatatypeProperty property)
