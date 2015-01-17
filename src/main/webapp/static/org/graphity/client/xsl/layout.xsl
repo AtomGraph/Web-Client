@@ -842,6 +842,8 @@ exclude-result-prefixes="#all">
 		<xsl:apply-templates select="." mode="gc:ImageMode"/>
 		
 		<div class="caption">
+                    <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
+                                
                     <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
 		    <xsl:apply-templates select="." mode="gc:DescriptionMode"/>

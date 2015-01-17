@@ -39,7 +39,7 @@ For full documentation, see the [wiki index](../../wiki).
 No permanent storage!
 ---------------------
 
-Graphity Client does *not* include a permanent RDF storage. Therefore creating/updating data will have no effect.
+Graphity Client does *not* include permanent RDF storage. By default it is configured to read the dataset from a file, therefore creating/updating data will have no effect.
 
 In order to store data permanently, you need to set up a [triplestore](http://en.wikipedia.org/wiki/Triplestore) and configure the webapp with its SPARQL endpoint.
 For open-source, we recommend trying Jena's [TDB](http://jena.apache.org/documentation/tdb/); for commercial, see [Dydra](http://dydra.com).
@@ -49,8 +49,8 @@ Demonstration
 
 ![Graphity screenshot](https://raw.github.com/Graphity/graphity-client/master/screenshot.jpg)
 
-An instance of Graphity Client runs for demonstration purposes on [semanticreports.com](http://semanticreports.com).
-See the DBPedia Linked Data description of Sir [Tim Berners-Lee](http://semanticreports.com/?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FTim_Berners-Lee).
+An instance of Graphity Client runs for demonstration purposes on [Linked Data Hub](http://linkeddatahub.com).
+See the DBPedia Linked Data description of Sir [Tim Berners-Lee](http://linkeddatahub.com/?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FTim_Berners-Lee).
 
 _Note: the server is not production-grade and DBPedia is often unstable._
 

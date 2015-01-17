@@ -186,8 +186,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             queryBuilder = QueryBuilder.fromQuery(query, getModel());
         }
         
-        //if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with QueryBuilder: {}", queryBuilder);
-	//getQueryBuilder().build(); // sets sp:text value
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
 	addProperty(SPIN.query, getQueryBuilder());
         
