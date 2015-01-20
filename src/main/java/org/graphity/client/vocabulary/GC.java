@@ -68,8 +68,6 @@ public final class GC
 
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
-    public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
-
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 
     public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );

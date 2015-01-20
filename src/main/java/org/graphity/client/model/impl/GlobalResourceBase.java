@@ -20,6 +20,8 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
@@ -133,21 +135,23 @@ public class GlobalResourceBase extends ResourceBase
     }
     
     /**
-     * Returns a list of supported RDF representation variants.
+     * Returns a list of supported RDF media types.
      * If media type is specified in query string,that type is used to serialize RDF representation.
      * Otherwise, normal content negotiation is used.
      * 
      * @return variant list
      */
     @Override
-    public List<Variant> getVariants()
+    public List<MediaType> getMediaTypes()
     {
 	if (getMediaType() != null)
-	    return Variant.VariantListBuilder.newInstance().
-		    mediaTypes(getMediaType()).
-		    add().build();
-
-	return super.getVariants();
+        {
+            List<MediaType> list = new ArrayList<>();
+            list.add(getMediaType());
+            return list;
+        }
+        
+	return super.getMediaTypes();
     }
 
     /**
@@ -181,8 +185,9 @@ public class GlobalResourceBase extends ResourceBase
     {
         if (getEndpointURI() != null)
         {
-            List<Variant> variants = getVariants();
-            variants.addAll(SPARQLEndpoint.RESULT_SET_VARIANTS);
+            List<MediaType> mediaTypes = getMediaTypes();
+            mediaTypes.addAll(Arrays.asList(SPARQLEndpoint.RESULT_SET_MEDIA_TYPES));
+            List<Variant> variants = getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
 
             if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&

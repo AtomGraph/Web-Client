@@ -22,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
@@ -106,10 +107,11 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     {
         if (getMatchedOntClass().equals(GP.SPARQLEndpoint))
         {
-            List<Variant> variants = getVariants();
-            variants.addAll(SPARQLEndpoint.RESULT_SET_VARIANTS);
+            List<MediaType> mediaTypes = getMediaTypes();
+            mediaTypes.addAll(Arrays.asList(SPARQLEndpoint.RESULT_SET_MEDIA_TYPES));
+            List<Variant> variants = getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
-
+            
             if (variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) ||
                     variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
                 return this;
@@ -143,15 +145,15 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @return supported variants
      */
     @Override
-    public List<Variant> getVariants()
+    public List<MediaType> getMediaTypes()
     {
-        List<Variant> list = super.getVariants();
-        list.add(0, new Variant(MediaType.APPLICATION_XHTML_XML_TYPE, null, null));
+        List<MediaType> list = super.getMediaTypes();
+        list.add(0, MediaType.APPLICATION_XHTML_XML_TYPE);
 
         if (getMode() != null && getMode().equals(URI.create(GC.MapMode.getURI())))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Google Maps workaround", getMode());
-            list.add(0, new Variant(MediaType.TEXT_HTML_TYPE, null, null));
+            list.add(0, MediaType.TEXT_HTML_TYPE);
 	}
 
         return list;

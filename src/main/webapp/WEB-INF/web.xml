@@ -17,6 +17,7 @@
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
 	    <param-value>org.graphity.client.filter.PostReplaceFilter</param-value>
 	</init-param>
+        <!--
         <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
@@ -37,6 +38,7 @@
             <param-name>http://graphity.org/gs#preemptiveAuth</param-name>
             <param-value>true</param-value>
         </init-param>
+        -->
         <init-param>
             <param-name>http://graphity.org/gp#datasetLocation</param-name>
             <param-value>/org/graphity/client/dataset/dataset.trig</param-value>

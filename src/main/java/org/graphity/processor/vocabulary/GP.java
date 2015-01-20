@@ -83,6 +83,8 @@ public final class GP
 
     public static final DatatypeProperty slug = m_model.createDatatypeProperty( NS + "slug" );
 
+    public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
+    
     public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
 
 }

@@ -30,8 +30,11 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletConfig;
@@ -790,6 +793,35 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public ResponseBuilder getResponseBuilder(Model model)
     {
         return super.getResponseBuilder(model).header("Link", "<" + getMatchedOntClass().getURI() + ">; rel='type'");
+    }
+
+    public List<Locale> getLanguages(Property property)
+    {
+        if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        
+        List<Locale> languages = new ArrayList<>();
+        StmtIterator it = getMatchedOntClass().listProperties(property);
+        
+        try
+        {
+            while (it.hasNext())
+            {
+                Statement stmt = it.next();
+                if (stmt.getObject().isLiteral()) languages.add(new Locale(stmt.getString()));
+            }
+        }
+        finally
+        {
+            it.close();
+        }
+        
+        return languages;
+    }
+    
+    @Override
+    public List<Locale> getLanguages()
+    {
+        return getLanguages(GP.lang);
     }
     
     /**

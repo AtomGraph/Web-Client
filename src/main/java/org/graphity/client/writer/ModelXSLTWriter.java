@@ -67,7 +67,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     public static List<String> RESERVED_PARAMS = Arrays.asList(GP.baseUri.getLocalName(), GP.absolutePath.getLocalName(),
             GP.requestUri.getLocalName(), GP.httpHeaders.getLocalName(), GP.ontModel.getLocalName(),
             GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(),
-            GC.lang.getLocalName(), GC.mode.getLocalName(),
+            GP.lang.getLocalName(), GC.mode.getLocalName(),
             GC.uri.getLocalName(), GC.endpointUri.getLocalName());
 
     private final XSLTBuilder builder;
@@ -221,7 +221,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (contentLanguage != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
-	    bld.parameter("{" + GC.lang.getNameSpace() + "}" + GC.lang.getLocalName(), contentLanguage.toString());
+	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(), contentLanguage.toString());
 	}
 
         // pass HTTP query parameters into XSLT, ignore reserved param names (as params cannot be unset)
