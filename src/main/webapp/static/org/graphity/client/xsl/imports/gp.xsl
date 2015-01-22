@@ -28,7 +28,7 @@ xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="gp:uriTemplate/text()" mode="gc:InlineMode">
+    <xsl:template match="gp:uriTemplate/text() | gp:skolemTemplate/text()" mode="gc:InlineMode">
         <pre>
             <xsl:next-match/>
         </pre>

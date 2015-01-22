@@ -927,12 +927,11 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode"/>
-    
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')]" mode="gc:CreateMode" priority="1">
+    <!-- by default, apply CreateMode on $ont-class spin:constructor result -->
+    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gc:CreateMode" priority="1">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
         <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
-
+container wtf???
         <xsl:choose>
             <xsl:when test="$constructor-query">
                 <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
@@ -940,22 +939,27 @@ exclude-result-prefixes="#all">
                 <xsl:variable name="this" select="key('resources-by-type', '&foaf;Document', $template-doc)"/>
                 <xsl:variable name="templates" select="$this | key('resources', $this/foaf:primaryTopic/@rdf:nodeID, $template-doc)" as="element()*"/>
 
-                <xsl:variable name="instances" select="/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies $type = $templates/rdf:type/@rdf:resource]"/>
-                <xsl:choose>
-                    <xsl:when test="$instances">
-                        <xsl:apply-templates select="$instances" mode="gc:EditMode">
-                            <xsl:with-param name="ont-class" select="$ont-class"/>
-                        </xsl:apply-templates>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:apply-templates select="$templates" mode="gc:EditMode"/>
-                    </xsl:otherwise>
-                </xsl:choose>
+                <xsl:apply-templates select="$templates" mode="#current">
+                    <xsl:with-param name="ont-class" select="$ont-class"/>
+                </xsl:apply-templates>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:message terminate="yes">gc:CreateMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+
+    <!-- hide container if there already ConstraintViolations RDF model -->
+    <xsl:template match="*[@rdf:about = $gp:absolutePath][key('resources-by-type', '&spin;ConstraintViolation')]" mode="gc:CreateMode" priority="2">hide container because of constraints</xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
+        <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
+resource level
+        this: <xsl:copy-of select="."/>
+        $ont-class: <xsl:copy-of select="$ont-class"/>
+        <xsl:apply-templates select="." mode="gc:EditMode">
+            <xsl:with-param name="ont-class" select="$ont-class"/>
+        </xsl:apply-templates>
     </xsl:template>
    
     <!-- EDIT MODE -->
@@ -1001,7 +1005,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="ont-class" select="$matched-ont-class" as="element()"/>
         <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
-            
+
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">
                 <legend>
@@ -1015,7 +1019,7 @@ exclude-result-prefixes="#all">
                 <xsl:when test="$constructor-query">
                     <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
                     <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()?"/>
-                    <xsl:variable name="template" select="$template-doc/rdf:RDF/*[every $type in current()/rdf:type/@rdf:resource satisfies $type = rdf:type/@rdf:resource]" as="element()?"/>
+                    <xsl:variable name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
 
                     <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>

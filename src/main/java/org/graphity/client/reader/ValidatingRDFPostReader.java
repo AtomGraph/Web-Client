@@ -101,6 +101,7 @@ public class ValidatingRDFPostReader extends RDFPostReader
         return providers;
     }
 
+    @Override
     public UriInfo getUriInfo()
     {
         return uriInfo;

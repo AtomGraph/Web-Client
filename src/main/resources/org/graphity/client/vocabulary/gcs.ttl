@@ -64,7 +64,7 @@
                     PREFIX spin:    <http://spinrdf.org/spin#>
 
                     CONSTRUCT {
-                        ?this a foaf:Document, gp:Item, gcs:TemplateItem ;
+                        ?this a foaf:Document, sioc:Item, gcs:TemplateItem ;
                             foaf:primaryTopic _:template ;
                             gp:slug " "^^xsd:string .
                         _:template a owl:Class, gp:Template, gcs:Template ;
@@ -158,7 +158,7 @@
                     PREFIX spin:    <http://spinrdf.org/spin#>
 
                     CONSTRUCT {
-                        ?this a foaf:Document, gp:Item, gcs:QueryItem ;
+                        ?this a foaf:Document, sioc:Item, gcs:QueryItem ;
                             foaf:primaryTopic _:query ;
                             gp:slug " "^^xsd:string .
                         _:query a sp:Query, gcs:Query ;
