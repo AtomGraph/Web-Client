@@ -931,7 +931,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gc:CreateMode" priority="1">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
         <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
-container wtf???
+
         <xsl:choose>
             <xsl:when test="$constructor-query">
                 <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
@@ -950,13 +950,11 @@ container wtf???
     </xsl:template>
 
     <!-- hide container if there already ConstraintViolations RDF model -->
-    <xsl:template match="*[@rdf:about = $gp:absolutePath][key('resources-by-type', '&spin;ConstraintViolation')]" mode="gc:CreateMode" priority="2">hide container because of constraints</xsl:template>
+    <xsl:template match="*[@rdf:about = $gp:absolutePath][key('resources-by-type', '&spin;ConstraintViolation')]" mode="gc:CreateMode" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
-resource level
-        this: <xsl:copy-of select="."/>
-        $ont-class: <xsl:copy-of select="$ont-class"/>
+
         <xsl:apply-templates select="." mode="gc:EditMode">
             <xsl:with-param name="ont-class" select="$ont-class"/>
         </xsl:apply-templates>
