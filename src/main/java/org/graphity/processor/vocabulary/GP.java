@@ -50,6 +50,8 @@ public final class GP
     public static final OntClass SPARQLEndpoint = m_model.createClass( NS + "SPARQLEndpoint" );
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
+
+    public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
     
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
 
@@ -86,5 +88,7 @@ public final class GP
     public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
     
     public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
+
+    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
 }

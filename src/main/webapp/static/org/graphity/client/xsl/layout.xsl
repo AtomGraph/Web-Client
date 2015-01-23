@@ -247,7 +247,7 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="($gc:defaultMode, $gc:mode) = ('&gc;EditMode', '&gc;CreateMode')">
+        <xsl:if test="($gc:defaultMode, $gc:mode) = ('&gc;EditMode', '&gp;ConstructMode')">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
@@ -304,8 +304,8 @@ exclude-result-prefixes="#all">
             <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;EditMode') or $gc:mode = '&gc;EditMode'">
                 <xsl:apply-templates select="." mode="gc:EditMode"/>
             </xsl:when>
-            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gc;CreateMode') or $gc:mode = '&gc;CreateMode'">
-                <xsl:apply-templates select="." mode="gc:CreateMode"/>
+            <xsl:when test="(not($gc:mode) and $gc:defaultMode = '&gp;ConstructMode') or $gc:mode = '&gp;ConstructMode'">
+                <xsl:apply-templates select="." mode="gp:ConstructMode"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="gc:ReadMode"/>
@@ -500,10 +500,10 @@ exclude-result-prefixes="#all">
                 </a>                        
             </div>
         </xsl:if>
-        <xsl:if test="not($gc:mode = '&gc;CreateMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
+        <xsl:if test="not($gc:mode = '&gp;ConstructMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
             <div class="pull-right">
-                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gc;CreateMode', document('&gc;'))" mode="gc:LabelMode"/>
+                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gp;ConstructMode'))}">
+                    <xsl:apply-templates select="key('resources', '&gp;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>
             </div>
         </xsl:if>
@@ -895,14 +895,18 @@ exclude-result-prefixes="#all">
 
     <!-- CREATE MODE -->
     
-    <xsl:template match="rdf:RDF" mode="gc:CreateMode">
+    <xsl:template match="rdf:RDF" mode="gp:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="concat($gp:absolutePath, '?mode=', encode-for-uri($gc:mode))" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
                 
         <form method="{$method}" action="{$action}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -928,7 +932,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- by default, apply CreateMode on $ont-class spin:constructor result -->
-    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gc:CreateMode" priority="1">
+    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructMode" priority="1">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
         <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
 
@@ -944,15 +948,15 @@ exclude-result-prefixes="#all">
                 </xsl:apply-templates>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message terminate="yes">gc:CreateMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
+                <xsl:message terminate="yes">gp:ConstructMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
     <!-- hide container if there already ConstraintViolations RDF model -->
-    <xsl:template match="*[@rdf:about = $gp:absolutePath][key('resources-by-type', '&spin;ConstraintViolation')]" mode="gc:CreateMode" priority="2"/>
+    <xsl:template match="*[@rdf:about = $gp:absolutePath][key('resources-by-type', '&spin;ConstraintViolation')]" mode="gp:ConstructMode" priority="2"/>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructMode">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
 
         <xsl:apply-templates select="." mode="gc:EditMode">
@@ -965,11 +969,15 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="concat($gp:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri($gc:mode))" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
 
         <form method="{$method}" action="{$action}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>

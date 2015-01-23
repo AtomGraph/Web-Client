@@ -17,7 +17,6 @@
 package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.ArrayList;
@@ -201,11 +200,5 @@ public class GlobalResourceBase extends ResourceBase
         
         return super.getSubResource();
     }
-    
-    @Override
-    public Response post(Model model, SPARQLEndpoint endpoint)
-    {
-	return post(model, getTopicURI(), null, endpoint);
-    }
-    
+
 }

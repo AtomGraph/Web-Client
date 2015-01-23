@@ -112,18 +112,14 @@
 
 # queries
 
-<queries/describe-from-graph-with-children> a foaf:Document, sioc:Item ;
+<queries/describe-graph-label-resources> a foaf:Document, sioc:Item, gcs:QueryItem ;
     sioc:has_container <queries> ;
-    foaf:primaryTopic gcs:DescribeFromGraphWithChildren .
+    foaf:primaryTopic gcs:DescribeLabelResources .
 
-<queries/describe-from-graph-with-topic> a foaf:Document, sioc:Item ;
+<queries/temp> a foaf:Document, sioc:Item, gcs:QueryItem ;
     sioc:has_container <queries> ;
-    foaf:primaryTopic gcs:DescribeFromGraphWithTopic .
+    foaf:primaryTopic <queries/temp#this> .
 
-<queries/describe-graph-label-resources> a foaf:Document, sioc:Item ;
-    sioc:has_container <queries> ;
-    foaf:primaryTopic gcs:DescribeGraphLabelResources .
-
-<queries/describe-graph-label-properties> a foaf:Document, sioc:Item ;
-    sioc:has_container <queries> ;
-    foaf:primaryTopic gcs:DescribeGraphLabelProperties .
+<queries/temp#this>    a       <http://spinrdf.org/sp#Describe>, <http://spinrdf.org/sp#Query>, gcs:Query ; # redefined to avoid importing gs: vocab with {path: *}
+    foaf:isPrimaryTopicOf <queries/temp> ;
+    <http://spinrdf.org/sp#text> """DESCRIBE ?this"""^^xsd:string .

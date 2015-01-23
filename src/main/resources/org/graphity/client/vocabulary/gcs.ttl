@@ -158,11 +158,11 @@
                     PREFIX spin:    <http://spinrdf.org/spin#>
 
                     CONSTRUCT {
-                        ?this a foaf:Document, sioc:Item, gcs:QueryItem ;
+                        _:this a foaf:Document, sioc:Item, gcs:QueryItem ;
                             foaf:primaryTopic _:query ;
                             gp:slug " "^^xsd:string .
                         _:query a sp:Query, gcs:Query ;
-                            foaf:isPrimaryTopicOf ?this ;
+                            foaf:isPrimaryTopicOf _:this ;
                             rdfs:label " " ;
                             sp:text "DESCRIBE ?this"^^xsd:string .
                     }

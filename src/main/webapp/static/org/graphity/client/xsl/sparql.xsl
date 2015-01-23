@@ -43,12 +43,7 @@ xmlns:void="&void;"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="default-query" as="xs:string">PREFIX rdf: &lt;&rdf;&gt;
-PREFIX rdfs: &lt;&rdfs;&gt;
-PREFIX owl: &lt;&owl;&gt;
-PREFIX xsd: &lt;&xsd;&gt;
-
-SELECT DISTINCT *
+    <xsl:param name="default-query" as="xs:string">SELECT DISTINCT *
 WHERE
 {
     { ?s ?p ?o }
@@ -91,7 +86,28 @@ LIMIT 100</xsl:param>
     </xsl:template>
     
     <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryFormMode">
-        <form action="" method="get" id="query-form">
+        <xsl:param name="method" select="'get'" as="xs:string"/>
+        <xsl:param name="action" select="''" as="xs:string"/>
+        <xsl:param name="id" select="'query-form'" as="xs:string?"/>
+        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
+        <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
+        <xsl:param name="enctype" as="xs:string?"/>
+        <!-- <xsl:param name="query-string" as="xs:string?"/> -->
+        
+        <form method="{$method}" action="{$action}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$accept-charset">
+                <xsl:attribute name="accept-charset"><xsl:value-of select="$accept-charset"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$enctype">
+                <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
+            </xsl:if>
+        
             <fieldset>
                 <textarea id="query-string" name="query" class="span12" rows="15">
                     <xsl:choose>
@@ -107,7 +123,7 @@ LIMIT 100</xsl:param>
                 <script src="{resolve-uri('static/js/yasqe.js', $gc:contextUri)}" type="text/javascript"></script>
                 <script type="text/javascript">
                     <![CDATA[
-                    var yasqe = YASQE.fromTextArea(document.getElementById("query-string"), {persistent: null});
+                    var yasqe = YASQE.fromTextArea(document.getElementById("query-string"), { persistent: null });
                     ]]>
                 </script>
 
@@ -116,7 +132,6 @@ LIMIT 100</xsl:param>
                         <input type="hidden" name="mode" value="{$gc:mode}"/>
                     </xsl:if>
                     <button type="submit" class="btn btn-primary">Query</button>
-                    <!-- <span class="help-inline">For all queries, the maximum number of results is set to <xsl:value-of select="$gs:resultLimit"/>.</span> -->
                 </div>
             </fieldset>
 	</form>            

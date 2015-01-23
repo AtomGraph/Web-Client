@@ -35,6 +35,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletConfig;
@@ -44,10 +45,10 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.graphity.processor.exception.NotFoundException;
 import org.graphity.processor.model.ContainerResource;
+import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
-import org.graphity.processor.update.UpdateBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.SIOC;
@@ -87,8 +88,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     private Boolean desc;
     private Long limit, offset;
     private QueryBuilder queryBuilder;
+    private Query query;
+    private QuerySolutionMap querySolutionMap;
     private CacheControl cacheControl;
-    
+    private final URI mode;
+
     /**
      * Public JAX-RS constructor. Suitable for subclassing.
      * If the request URI does not match any URI template in the sitemap ontology, 404 Not Found is returned.
@@ -125,9 +129,15 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         model.add(ontClass.getModel()); // we don't want to make permanent changes to base ontology which is cached
         this.ontResource = model.createOntResource(getURI());
         this.matchedOntClass = ontClass;
-	this.graphStore = graphStore;
+        this.querySolutionMap = new QuerySolutionMap();
+        this.graphStore = graphStore;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
+
+	querySolutionMap.add(SPIN.THIS_VAR_NAME, ontResource);        
+        if (uriInfo.getQueryParameters().containsKey(GP.mode.getLocalName()))
+            this.mode = URI.create(uriInfo.getQueryParameters().getFirst(GP.mode.getLocalName()));
+        else mode = null;
 
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }
@@ -139,58 +149,75 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public void init()
     {
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
-	addProperty(RDF.type, getMatchedOntClass()); // getOntModel().add(description); ?
+	addProperty(RDF.type, getMatchedOntClass());
         
-        Query query = getQuery(getMatchedOntClass(), SPIN.query, getQuerySolutionMap(this));
-        if (query == null)
+        try
         {
-            if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
-            throw new WebApplicationException(new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'"));
-        }
+            query = getQuery(getMatchedOntClass(), SPIN.query);
+            if (query == null)
+            {
+                if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
+                throw new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'");
+            }
 
-        if (getMatchedOntClass().hasSuperClass(LDP.Container))
-        {
-            if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+            if (getMatchedOntClass().hasSuperClass(LDP.Container))
             {
-                Long defaultOffset = getLongValue(getMatchedOntClass(), GP.offset);
-                if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
-                this.offset = defaultOffset;
-            }
-            else this.offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+                if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+                {
+                    Long defaultOffset = getLongValue(getMatchedOntClass(), GP.offset);
+                    if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
+                    this.offset = defaultOffset;
+                }
+                else this.offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+
+                if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+                {
+                    Long defaultLimit = getLongValue(getMatchedOntClass(), GP.limit);
+                    if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:limit if it is used as container");
+                    this.limit = defaultLimit;
+                }
+                else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
+
+                if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(getMatchedOntClass(), GP.orderBy);
+                else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
+
+                if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
+                {
+                    Boolean defaultDesc = getBooleanValue(getMatchedOntClass(), GP.desc);
+                    if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
+                    this.desc = defaultDesc;
+                }
+                else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
+
+                queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()),
+                        this.offset, this.limit, this.orderBy, this.desc);
                 
-            if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
-            {
-                Long defaultLimit = getLongValue(getMatchedOntClass(), GP.limit);
-                if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:limit if it is used as container");
-                this.limit = defaultLimit;
+                if (getMode() != null && (getMode().equals(URI.create(GP.ConstructMode.getURI())))
+                        && queryBuilder.getSubSelectBuilder() != null)
+                {
+                    if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
+                    queryBuilder.getSubSelectBuilder().replaceLimit(Long.valueOf(0));
+                }
             }
-            else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
-                
-            if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(getMatchedOntClass(), GP.orderBy);
-            else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
-            
-            if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
+            else
             {
-                Boolean defaultDesc = getBooleanValue(getMatchedOntClass(), GP.desc);
-                if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
-                this.desc = defaultDesc;
+                this.offset = this.limit = null;
+                this.orderBy = null;
+                this.desc = null;
+
+                queryBuilder = QueryBuilder.fromQuery(query, getModel());
             }
-            else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
-            
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()),
-                    this.offset, this.limit, this.orderBy, this.desc);
+
+            query = queryBuilder.build(getQuerySolutionMap());
+            if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
+            addProperty(SPIN.query, getQueryBuilder());                
+
+            query.setBaseURI(getUriInfo().getBaseUri().toString());            
         }
-        else
+        catch (ConfigurationException ex)
         {
-            this.offset = this.limit = null;
-            this.orderBy = null;
-            this.desc = null;
-            
-            queryBuilder = QueryBuilder.fromQuery(query, getModel());
+            throw new WebApplicationException(ex);
         }
-        
-	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
-	addProperty(SPIN.query, getQueryBuilder());
         
         cacheControl = getCacheControl(getMatchedOntClass());        
     }
@@ -299,11 +326,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Response post(Model model)
     {
-	return post(model, getSPARQLEndpoint());
+	return post(model, null);
     }
-
+    
     /**
-     * Handles POST method, stores the submitted RDF model in the specified named graph on the default SPARQL endpoint, and returns response.
+     * Handles POST method, stores the submitted RDF model in the specified named graph of the specified SPARQL endpoint, and returns response.
      * 
      * @param model the RDF payload
      * @param graphURI target graph name
@@ -311,36 +338,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      */
     public Response post(Model model, URI graphURI)
     {
-	return post(model, null, graphURI, getSPARQLEndpoint());
-    }
-
-    /**
-     * Handles POST method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
-     * 
-     * @param model the RDF payload
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */
-    public Response post(Model model, SPARQLEndpoint endpoint)
-    {
-	return post(model, null, null, endpoint);
-    }
-    
-    /**
-     * Handles POST method, stores the submitted RDF model in the specified named graph of the specified SPARQL endpoint, and returns response.
-     * 
-     * @param model the RDF payload
-     * @param baseURI base URI for the RDF payload
-     * @param graphURI target graph name
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */
-    public Response post(Model model, URI baseURI, URI graphURI, SPARQLEndpoint endpoint)
-    {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLEndpoint: {}", graphURI, endpoint);
-	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
+	if (log.isDebugEnabled()) log.debug("POSTed Model: {} to GRAPH URI: {}", model, graphURI);
 
 	Resource created = getURIResource(model, FOAF.Document);
 	if (created == null)
@@ -354,10 +353,10 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	if (graphURI != null) insertDataRequest = InsertDataBuilder.fromData(graphURI, model).build();
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
 
-        if (baseURI != null) insertDataRequest.setBaseURI(baseURI.toString());
+        insertDataRequest.setBaseURI(getUriInfo().getBaseUri().toString());
         if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 
-	endpoint.post(insertDataRequest, null, null);
+	getSPARQLEndpoint().post(insertDataRequest, null, null);
 	
 	URI createdURI = UriBuilder.fromUri(created.getURI()).build();
 	if (log.isDebugEnabled()) log.debug("Redirecting to POSTed Resource URI: {}", createdURI);
@@ -441,31 +440,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Response put(Model model)
     {
-	return put(model, getSPARQLEndpoint());
-    }
-
-    /**
-     * Handles PUT method, stores the submitted RDF model in the specified named graph of default SPARQL endpoint, and returns response.
-     * 
-     * @param model RDF payload
-     * @param graphURI target graph name
-     * @return response
-     */
-    public Response put(Model model, URI graphURI)
-    {
-	return put(model, graphURI, getSPARQLEndpoint());
-    }
-
-    /**
-     * Handles PUT method, stores the submitted RDF model in the default graph of the specified SPARQL endpoint, and returns response.
-     * 
-     * @param model RDF payload
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */
-    public Response put(Model model, SPARQLEndpoint endpoint)
-    {
-	return put(model, null, endpoint);
+	return put(model, null);
     }
     
     /**
@@ -473,15 +448,12 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @param model RDF payload
      * @param graphURI target graph name
-     * @param endpoint target SPARQL endpoint
      * @return response
      */
-    public Response put(Model model, URI graphURI, SPARQLEndpoint endpoint)
+    public Response put(Model model, URI graphURI)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");
-	if (endpoint == null) throw new IllegalArgumentException("SPARQL update endpoint cannot be null");
-	if (log.isDebugEnabled()) log.debug("PUT GRAPH URI: {} SPARQLEndpoint: {}", graphURI, endpoint);
-	if (log.isDebugEnabled()) log.debug("PUT Model: {}", model);
+	if (log.isDebugEnabled()) log.debug("PUT Model: {} GRAPH URI: {}", model, graphURI);
 
 	if (!model.containsResource(this))
 	{
@@ -516,7 +488,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	while (it.hasNext()) updateRequest.add(it.next());
 	
 	if (log.isDebugEnabled()) log.debug("Combined DELETE/INSERT DATA request: {}", updateRequest);
-	endpoint.post(updateRequest, null, null);
+	getSPARQLEndpoint().post(updateRequest, null, null);
 	
 	if (description.isEmpty()) return Response.created(getRealURI()).build();
 	else return getResponse(model);
@@ -531,22 +503,10 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Response delete()
     {
-	return delete(getSPARQLEndpoint());
-    }
-    
-    /**
-     * Handles DELETE method, deletes the RDF representation of this resource from the specified SPARQL endpoint, and
-     * returns response.
-     * 
-     * @param endpoint target SPARQL endpoint
-     * @return response
-     */    
-    public Response delete(SPARQLEndpoint endpoint)
-    {
 	if (log.isDebugEnabled()) log.debug("DELETEing resource: {} matched OntClass: {}", this, getMatchedOntClass());
 	UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
 	if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
-	endpoint.post(deleteRequest, null, null);
+	getSPARQLEndpoint().post(deleteRequest, null, null);
 	
 	return Response.noContent().build();
     }
@@ -562,8 +522,33 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     {
 	if (getMatchedOntClass().hasSuperClass(LDP.Container))
 	{
-	    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-            createPageResource(model);
+            if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
+            {
+                try
+                {
+                    Map<Property, OntClass> itemClasses = new OntClassMatcher().matchOntClasses(getOntModel(), SIOC.HAS_CONTAINER, getMatchedOntClass());
+                    if (itemClasses.isEmpty())
+                    {
+                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but Item template not attached Container template '{}' (owl:Restriction missing)", getMatchedOntClass().getURI());
+                        throw new ConfigurationException("Item template not attached to '" + getMatchedOntClass().getURI() +"'");                    
+                    }
+                    query = getQuery(itemClasses.values().iterator().next(), SPIN.constructor);
+                    if (query == null)
+                    {
+                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but constructor not defined for template '{}' (spin:constructor missing)", getMatchedOntClass().getURI());
+                        throw new ConfigurationException("Constructor not defined for template '" + getMatchedOntClass().getURI() +"'");
+                    }
+                }
+                catch (ConfigurationException ex)
+                {
+                    throw new WebApplicationException(ex);
+                }
+            }
+            else
+            {
+                if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+                createPageResource(model);            
+            }
         }
 
         return model;
@@ -602,6 +587,16 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
     
     /**
+     * Returns the layout mode query parameter value.
+     * 
+     * @return mode URI
+     */
+    public URI getMode()
+    {
+	return mode;
+    }
+
+    /**
      * Returns <samp>Cache-Control</samp> HTTP header value, specified on an ontology class.
      * 
      * @param ontClass the ontology class with the restriction
@@ -613,7 +608,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
 
     /**
-     * Returns `Cache-Control` HTTP header value, specified on an ontology class with given property.
+     * Returns <code>Cache-Control</code> HTTP header value, specified on an ontology class with given property.
      * 
      * @param ontClass the ontology class with the restriction
      * @param property the property holding the literal value
@@ -693,23 +688,22 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @param ontClass ontology class of the resource
      * @param property property for the query object
-     * @param qsm query variable bindings
      * @return query object
      * @see org.topbraid.spin.model.TemplateCall
      */
-    public Query getQuery(OntClass ontClass, Property property, QuerySolutionMap qsm)
+    public Query getQuery(OntClass ontClass, Property property)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (ontClass.getPropertyResourceValue(property) == null)
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (spin:query)");
+	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (" + property + ")");
 
 	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(property);
-	
-        org.topbraid.spin.model.Query query = SPINFactory.asQuery(queryOrTemplateCall);
-        if (query != null) return getQuery(query.toString(), getRealURI(), qsm);
+        
+        org.topbraid.spin.model.Query spinQuery = SPINFactory.asQuery(queryOrTemplateCall);
+        if (spinQuery != null) return new ParameterizedSparqlString(spinQuery.toString()).asQuery();
                 
         TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
-        if (templateCall != null) return getQuery(templateCall.getQueryString(), getRealURI(), qsm);
+        if (templateCall != null) return new ParameterizedSparqlString(templateCall.getQueryString()).asQuery();
         
         return null;
     }
@@ -717,44 +711,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     /**
      * Returns variable bindings for description query.
      * 
-     * @param resource this resource
      * @return map with variable bindings
      */
-    public QuerySolutionMap getQuerySolutionMap(Resource resource)
+    public QuerySolutionMap getQuerySolutionMap()
     {
-	QuerySolutionMap qsm = new QuerySolutionMap();
-	qsm.add("this", resource);
-        return qsm;
-    }
-    
-    /**
-     * Given a SPARQL query string and variable bindings, returns a SPARQL query.
-     * 
-     * Following the convention of SPIN API, variable name <code>?this</code> has a special meaning and
-     * is assigned to the value of the resource (which is usually this resource).
-     * <code>OFFSET</code>) will be set to implement pagination.
-     * 
-     * @param queryString SPARQL query string
-     * @param baseURI <code>BASE</code> URI for the query
-     * @param qsm query variable bindings
-     * @return query object
-     */
-    public Query getQuery(String queryString, URI baseURI, QuerySolutionMap qsm)
-    {
-	if (queryString == null) throw new IllegalArgumentException("Query string cannot be null");
-	if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
-        if (qsm == null) throw new IllegalArgumentException("QuerySolutionMap cannot be null");
-	
-	Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
-        query.setBaseURI(baseURI.toString());
-        return query;
-    }
-
-    public UpdateBuilder getUpdateBuilder(Update update)
-    {
-	UpdateBuilder ub = UpdateBuilder.fromUpdate(update);
-	
-	return ub;
+        return querySolutionMap;
     }
     
     public UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
@@ -995,7 +956,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Query getQuery()
     {
-	return getQueryBuilder().build();
+	return query; // return getQueryBuilder().build();
     }
 
     /**

@@ -53,8 +53,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
-    private final URI mode;
-
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
      * 
@@ -74,12 +72,9 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
-
-        if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
-            this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
-        else mode = null;
     }
-    
+
+    /*
     @Override
     public void init()
     {
@@ -94,6 +89,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
             getQueryBuilder().build();
         }
     }
+    */
     
     /**
      * Returns sub-resource instance.
@@ -181,16 +177,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         return super.put(model);
     }
     
-    /**
-     * Returns the layout mode query parameter value.
-     * 
-     * @return mode URI
-     */
-    public URI getMode()
-    {
-	return mode;
-    }
-
     /**
      * Returns page URI builder.
      * 
