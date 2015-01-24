@@ -930,31 +930,8 @@ exclude-result-prefixes="#all">
 	    </div>
 	</form>
     </xsl:template>
-
-    <!-- by default, apply CreateMode on $ont-class spin:constructor result -->
-    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructMode" priority="1">
-        <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
-        <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
-
-        <xsl:choose>
-            <xsl:when test="$constructor-query">
-                <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
-                <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()"/>
-                <xsl:variable name="this" select="key('resources-by-type', '&foaf;Document', $template-doc)"/>
-                <xsl:variable name="templates" select="$this | key('resources', $this/foaf:primaryTopic/@rdf:nodeID, $template-doc)" as="element()*"/>
-
-                <xsl:apply-templates select="$templates" mode="#current">
-                    <xsl:with-param name="ont-class" select="$ont-class"/>
-                </xsl:apply-templates>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:message terminate="yes">gp:ConstructMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
-    <!-- hide container if there already ConstraintViolations RDF model -->
-    <xsl:template match="*[@rdf:about = $gp:absolutePath][key('resources-by-type', '&spin;ConstraintViolation')]" mode="gp:ConstructMode" priority="2"/>
+    
+    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructMode">
         <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>

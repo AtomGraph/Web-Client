@@ -532,12 +532,14 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but Item template not attached Container template '{}' (owl:Restriction missing)", getMatchedOntClass().getURI());
                         throw new ConfigurationException("Item template not attached to '" + getMatchedOntClass().getURI() +"'");                    
                     }
-                    query = getQuery(itemClasses.values().iterator().next(), SPIN.constructor);
-                    if (query == null)
+                    Query constructorQuery = getQuery(itemClasses.values().iterator().next(), SPIN.constructor);
+                    if (constructorQuery == null)
                     {
                         if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but constructor not defined for template '{}' (spin:constructor missing)", getMatchedOntClass().getURI());
                         throw new ConfigurationException("Constructor not defined for template '" + getMatchedOntClass().getURI() +"'");
                     }
+                    
+                    model.add(getSPARQLEndpoint().loadModel(constructorQuery)); // adds constructor Model
                 }
                 catch (ConfigurationException ex)
                 {

@@ -64,7 +64,7 @@
                     PREFIX spin:    <http://spinrdf.org/spin#>
 
                     CONSTRUCT {
-                        ?this a foaf:Document, sioc:Item, gcs:TemplateItem ;
+                        _:this a foaf:Document, sioc:Item, gcs:TemplateItem ;
                             foaf:primaryTopic _:template ;
                             gp:slug " "^^xsd:string .
                         _:template a owl:Class, gp:Template, gcs:Template ;
@@ -73,7 +73,7 @@
                                     owl:onProperty sioc:has_container ;
                                     owl:hasValue _:container
                                 ] ;
-                            foaf:isPrimaryTopicOf ?this ;
+                            foaf:isPrimaryTopicOf _:this ;
                             rdfs:label " " ;
                             gp:uriTemplate " " ;
                             gp:skolemTemplate " " ;
