@@ -18,6 +18,7 @@ package org.graphity.client;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -67,7 +69,6 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
     private final Set<Class<?>> classes = new HashSet<>();
     private final Set<Object> singletons = new HashSet<>();
 
-    //private @Context ServletConfig servletConfig;
     private @Context UriInfo uriInfo;
     
     /**
@@ -104,7 +105,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.HttpExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-	singletons.add(new XSLTBuilderProvider()); // loads XSLT stylesheet
+	singletons.add(new XSLTBuilderProvider(servletConfig)); // loads XSLT stylesheet
     }
 
     /**
@@ -130,7 +131,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(), getServletConfig(), getUriInfo());
+        DataManager manager = new DataManager(mapper, ARQ.getContext(), getPreemptiveAuth(getServletConfig(), GS.preemptiveAuth), getUriInfo());
         FileManager.setStdLocators(manager);
 	manager.addLocatorLinkedData();
 	manager.removeLocatorURL();
@@ -191,6 +192,17 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	return singletons;
     }
 
+    public boolean getPreemptiveAuth(ServletConfig servletConfig, Property property)
+    {
+	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
+
+        boolean preemptiveAuth = false;
+        if (servletConfig.getInitParameter(property.getURI()) != null)
+            preemptiveAuth = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()).toString());
+        return preemptiveAuth;
+    }
+    
     /**
      * Provides XML source from filename
      * 

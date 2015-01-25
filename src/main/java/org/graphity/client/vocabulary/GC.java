@@ -74,4 +74,6 @@ public final class GC
 
     public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
 
+    public static final DatatypeProperty cacheXSLT = m_model.createDatatypeProperty( NS + "cacheXSLT" );
+
 }

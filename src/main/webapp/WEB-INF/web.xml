@@ -55,6 +55,10 @@
             <param-name>http://graphity.org/gs#resultLimit</param-name>
             <param-value>100</param-value>
         </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gc#cacheXSLT</param-name>
+            <param-value>true</param-value>
+        </init-param>        
     </servlet>
     <servlet-mapping>
         <servlet-name>default</servlet-name>

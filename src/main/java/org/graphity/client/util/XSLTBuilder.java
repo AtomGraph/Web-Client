@@ -47,16 +47,22 @@ public class XSLTBuilder
     private TransformerHandler handler = null;
     private Transformer transformer = null;
     private Result result = null; 
-
+    private final boolean cachingTemplates;
     private final Map<String, Templates> templatesCache = new ConcurrentHashMap<>();
     
-    protected XSLTBuilder()
+    protected XSLTBuilder(boolean cachingTemplates)
     {
+        this.cachingTemplates = cachingTemplates;
     }
     
+    public static XSLTBuilder newInstance(boolean cachingTemplates)
+    {
+	return new XSLTBuilder(cachingTemplates);
+    }
+
     public static XSLTBuilder newInstance()
     {
-	return new XSLTBuilder();
+	return new XSLTBuilder(true); // cache by default
     }
 
     public static XSLTBuilder fromStylesheet(Source xslt) throws TransformerConfigurationException
@@ -170,11 +176,11 @@ public class XSLTBuilder
 	if (log.isTraceEnabled()) log.trace("Loading stylesheet Source with system ID: {}", stylesheet.getSystemId());
 
         // return Templates if they are already compiled and cached for this Source
-        if (templatesCache.containsKey(stylesheet.getSystemId()))
+        if (isCachingTemplates() && templatesCache.containsKey(stylesheet.getSystemId()))
             return stylesheet(templatesCache.get(stylesheet.getSystemId()));
 
         Templates templates = factory.newTemplates(stylesheet);
-        templatesCache.put(stylesheet.getSystemId(), templates);
+        if (isCachingTemplates()) templatesCache.put(stylesheet.getSystemId(), templates);
         return stylesheet(templates);
     }
 
@@ -250,7 +256,11 @@ public class XSLTBuilder
     {
         return result;
     }
-    
+ 
+    public boolean isCachingTemplates()
+    {
+        return cachingTemplates;
+    }
     // http://xml.apache.org/xalan-j/usagepatterns.html#outasin
     public XSLTBuilder result(XSLTBuilder next) throws TransformerException // for chaining stylesheets
     {

@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY gp     "http://graphity.org/gp#">    
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
@@ -25,6 +26,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:owl="&owl;"
 exclude-result-prefixes="#all">
@@ -42,7 +44,7 @@ exclude-result-prefixes="#all">
 	    <!-- TO-DO: fix for a single resource! -->
 	    <ul class="nav nav-pills nav-stacked">
 		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
-		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gc:lang}"/>
+		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
 		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
 		</xsl:for-each-group>
 	    </ul>

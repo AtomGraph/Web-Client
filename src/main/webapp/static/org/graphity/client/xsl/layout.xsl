@@ -71,7 +71,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gp:absolutePath" as="xs:anyURI"/>
     <xsl:param name="gp:requestUri" as="xs:anyURI"/>
     <xsl:param name="gp:httpHeaders" as="xs:string"/>
-    <xsl:param name="gc:lang" select="'en'" as="xs:string"/>
+    <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
     <xsl:param name="gc:mode" as="xs:anyURI?"/>
     <xsl:param name="gp:ontModel" select="/" as="document-node()"/> <!-- select="document($gp:baseUri)"  -->
     <xsl:param name="gp:matchedOntClass" as="xs:anyURI?"/>
@@ -127,7 +127,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:template match="/">
-	<html xml:lang="{$gc:lang}">
+	<html xml:lang="{$gp:lang}">
             <xsl:apply-templates select="." mode="gc:HeadMode"/>
             <xsl:apply-templates select="." mode="gc:BodyMode"/>
 	</html>
@@ -187,7 +187,7 @@ exclude-result-prefixes="#all">
                         <ul class="nav">
                             <!-- make menu links for all containers in the ontology -->
                             <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="gc:NavBarMode">
-                                <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
+                                <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                 <xsl:with-param name="space" select="$space"/>
                             </xsl:apply-templates>
                         </ul>
@@ -195,7 +195,7 @@ exclude-result-prefixes="#all">
                         <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
                             <ul class="nav pull-right">
                                 <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
-                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
+                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
                             </ul>
@@ -220,7 +220,7 @@ exclude-result-prefixes="#all">
         <div class="footer text-center">
             <p>
                 <hr/>
-                <xsl:value-of select="format-date(current-date(), '[Y]', $gc:lang, (), ())"/>.
+                <xsl:value-of select="format-date(current-date(), '[Y]', $gp:lang, (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="gc:InlineMode"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>
@@ -542,7 +542,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:LabelMode">
         <xsl:variable name="labels" as="xs:string*">
             <xsl:variable name="lang-labels" as="xs:string*">
-                <xsl:apply-templates select="*[lang($gc:lang)]" mode="#current"/>
+                <xsl:apply-templates select="*[lang($gp:lang)]" mode="#current"/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="not(empty($lang-labels))">
@@ -581,7 +581,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:DescriptionMode">
         <xsl:variable name="descriptions" as="xs:string*">
             <xsl:variable name="lang-descriptions" as="xs:string*">
-                <xsl:apply-templates select="*[lang($gc:lang)]" mode="#current"/>
+                <xsl:apply-templates select="*[lang($gp:lang)]" mode="#current"/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="not(empty($lang-descriptions))">
@@ -610,7 +610,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource]" mode="gc:TypeListMode" priority="1">
         <ul class="inline">
             <xsl:apply-templates select="rdf:type" mode="#current">
-                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gc:lang}"/>
+                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
             </xsl:apply-templates>
         </ul>
     </xsl:template>
@@ -630,7 +630,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode">
         <dl class="dl-horizontal">
             <xsl:apply-templates mode="#current">
-                <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gc:lang}"/>
+                <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gp:lang}"/>
             </xsl:apply-templates>
         </dl>
     </xsl:template>
@@ -643,7 +643,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gc:SidebarNavMode">
 	<xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-	    <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gc:lang}"/>
+	    <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gp:lang}"/>
 	    <xsl:apply-templates select="current-group()[1]" mode="#current">
                 <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending"/>
             </xsl:apply-templates>
@@ -709,7 +709,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 
         <xsl:apply-templates select="$selected-resources" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
         
@@ -743,7 +743,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="gc:ReadMode"/> <!-- gc:HeaderMode -->
 
         <xsl:apply-templates select="*[not(@rdf:about = $gp:absolutePath)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -765,7 +765,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
 	<xsl:param name="predicates" as="element()*">
 	    <xsl:for-each-group select="$selected-resources/* | key('resources', $selected-resources/foaf:primaryTopic/@rdf:resource)/*" group-by="concat(namespace-uri(), local-name())"> <!-- $selected-resources/* -->
-		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gc:lang}"/>
+		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gp:lang}"/>
 		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicateMode"/>
             </xsl:for-each-group>
 	</xsl:param>
@@ -782,7 +782,7 @@ exclude-result-prefixes="#all">
 	    <tbody>
 		<xsl:apply-templates select="$selected-resources" mode="#current">
 		    <xsl:with-param name="predicates" select="$predicates" tunnel="yes"/>
-                    <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+                    <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
                 </xsl:apply-templates>
 	    </tbody>
 	</table>
@@ -821,7 +821,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="thumbnail-items" as="element()*">	    
             <!-- all resources that are not recursive blank nodes, except page -->
             <xsl:apply-templates select="$selected-resources" mode="#current">
-                <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+                <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
             </xsl:apply-templates>
         </xsl:variable>
@@ -867,7 +867,7 @@ exclude-result-prefixes="#all">
 
         <!-- apply all other URI resources -->
         <xsl:apply-templates mode="#current"> <!-- select="$selected-resources" -->
-            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -1061,7 +1061,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:InlinePropertyListMode">
         <xsl:apply-templates mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
