@@ -115,7 +115,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="text()[. castable as xs:date][../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="gc:InlineMode">
 	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $gc:lang, (), ())"/>
+	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $gp:lang, (), ())"/>
 	</span>
     </xsl:template>
 
@@ -123,7 +123,7 @@ exclude-result-prefixes="#all">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $gc:lang, (), ())"/>
+	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $gp:lang, (), ())"/>
 	</span>
     </xsl:template>
 
@@ -261,14 +261,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableMode"/>
 
     <!-- apply properties that match lang() -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($gc:lang)]" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($gp:lang)]" mode="gc:TableMode" priority="1">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($gc:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($gp:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="gc:TableMode" priority="1">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
 	</td>

@@ -145,7 +145,7 @@ exclude-result-prefixes="#all">
                         <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
                             <ul class="nav pull-right">
                                 <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
-                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gc:lang}"/>
+                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
                             </ul>
@@ -160,7 +160,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current"/>
 
         <xsl:apply-templates select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+            <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 

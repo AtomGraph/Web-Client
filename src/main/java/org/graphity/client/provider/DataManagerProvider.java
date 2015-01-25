@@ -17,6 +17,7 @@
 package org.graphity.client.provider;
 
 import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.util.DataManager;
+import org.graphity.server.vocabulary.GS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,13 +84,24 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getServletConfig(), getUriInfo());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getPreemptiveAuth(getServletConfig(), GS.preemptiveAuth), getUriInfo());
+    }
+    
+    public boolean getPreemptiveAuth(ServletConfig servletConfig, Property property)
+    {
+	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
+
+        boolean preemptiveAuth = false;
+        if (servletConfig.getInitParameter(property.getURI()) != null)
+            preemptiveAuth = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()).toString());
+        return preemptiveAuth;
     }
     
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
-            ServletConfig servletConfig, UriInfo uriInfo)
+            boolean preemptiveAuth, UriInfo uriInfo)
     {
-        DataManager dataManager = new DataManager(mapper, context, servletConfig, uriInfo);
+        DataManager dataManager = new DataManager(mapper, context, preemptiveAuth, uriInfo);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();

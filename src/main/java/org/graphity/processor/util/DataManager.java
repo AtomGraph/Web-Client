@@ -31,7 +31,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.Map;
-import javax.servlet.ServletConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.jena.riot.Lang;
@@ -52,9 +51,9 @@ public class DataManager extends org.graphity.server.util.DataManager
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    public DataManager(LocationMapper mapper, Context context, ServletConfig servletConfig)
+    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth)
     {
-        super(mapper, context, servletConfig);
+        super(mapper, context, preemptiveAuth);
     }
 
     @Override

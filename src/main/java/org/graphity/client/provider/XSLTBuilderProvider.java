@@ -58,16 +58,24 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
-    @Context private ServletConfig servletConfig;
-    private final XSLTBuilder builder = XSLTBuilder.newInstance();
+    private final ServletConfig servletConfig;
+    private final XSLTBuilder builder;
 
     /**
      * 
+     * @param servletConfig
      * @see <a href="http://docs.oracle.com/javase/7/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
      */
-    public XSLTBuilderProvider()
+    public XSLTBuilderProvider(@Context ServletConfig servletConfig)
     {
 	super(XSLTBuilder.class);
+        this.servletConfig = servletConfig;
+        
+        boolean cacheXSLT = false;
+        if (servletConfig.getInitParameter(GC.cacheXSLT.getURI()) != null)
+            cacheXSLT = Boolean.parseBoolean(servletConfig.getInitParameter(GC.cacheXSLT.getURI()).toString());
+
+        builder = XSLTBuilder.newInstance(cacheXSLT);
     }
     
     public UriInfo getUriInfo()

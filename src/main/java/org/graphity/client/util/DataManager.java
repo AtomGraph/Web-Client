@@ -27,7 +27,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.*;
-import javax.servlet.ServletConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
@@ -67,9 +66,9 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
     
     private final UriInfo uriInfo;
         
-    public DataManager(LocationMapper mapper, Context context, ServletConfig servletConfig, UriInfo uriInfo)
+    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth, UriInfo uriInfo)
     {
-	super(mapper, context, servletConfig);
+	super(mapper, context, preemptiveAuth);
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         this.uriInfo = uriInfo;
     }

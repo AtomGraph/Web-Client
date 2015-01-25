@@ -34,7 +34,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gp:ontModel)" as="element()*"/>
         <select name="ou" id="{generate-id(..)}" multiple="multiple" size="{count($modes)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">
-                <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+                <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
                 <xsl:with-param name="selected" select="../../gc:mode/@rdf:resource"/>
             </xsl:apply-templates>
         </select>
@@ -44,7 +44,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gp:ontModel)" as="element()*"/>
         <select name="ou" id="{generate-id(..)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">
-                <xsl:sort select="gc:label(.)" lang="{$gc:lang}"/>
+                <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
                 <xsl:with-param name="selected" select="../@rdf:resource"/>
             </xsl:apply-templates>
         </select>
