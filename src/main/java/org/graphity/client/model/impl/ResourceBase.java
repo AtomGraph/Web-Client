@@ -19,7 +19,6 @@ package org.graphity.client.model.impl;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.Arrays;
