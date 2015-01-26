@@ -24,20 +24,18 @@
     rdfs:isDefinedBy <#> .
 
 <#defaultMode> a owl:ObjectProperty ;
-    rdfs:domain gp:Template ;
     rdfs:range <#Mode> ;
     rdfs:label "Default layout mode" ;
     rdfs:isDefinedBy <#> .
 
 <#mode> a owl:ObjectProperty ;
-    rdfs:domain gp:Template ;
     rdfs:range <#Mode> ;
     rdfs:label "Layout mode" ;
     rdfs:isDefinedBy <#> .
 
 <#lang> a owl:DatatypeProperty ;
     rdfs:domain gp:Template ;
-    rdfs:range xsd:string ;
+    rdfs:range rdf:langString ;
     rdfs:label "Language" ;
     rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
     rdfs:isDefinedBy <#> .
@@ -73,10 +71,6 @@
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
-<#CreateMode> a <#Mode>, <#ContainerMode> ;
-    rdfs:label "Create" ;
-    rdfs:isDefinedBy <#> .
-
 <#TableMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .
@@ -98,10 +92,10 @@
 # TO-DO: refactor with rdfs:subClassOf inheritance instead
 
 gp:Space <#defaultMode> <#ListMode> ;
-    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#CreateMode> .
+    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
 
 gp:Container <#defaultMode> <#ListMode> ;
-    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode>, <#CreateMode> .
+    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
 
 gp:Item <#defaultMode> <#ReadMode> ;
     <#mode> <#ReadMode>, <#EditMode> .

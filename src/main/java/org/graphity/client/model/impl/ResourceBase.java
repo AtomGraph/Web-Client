@@ -16,10 +16,14 @@
  */
 package org.graphity.client.model.impl;
 
+import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
+import com.hp.hpl.jena.ontology.EnumeratedClass;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.Arrays;
@@ -73,23 +77,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
     }
-
-    /*
-    @Override
-    public void init()
-    {
-        super.init();
-       
-        if (getMode() != null &&
-            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))) &&
-            getQueryBuilder().getSubSelectBuilder() != null) // && getMatchedOntClass().hasSuperClass(LDP.Container)
-	{
-            if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
-            getQueryBuilder().getSubSelectBuilder().replaceLimit(Long.valueOf(0));
-            getQueryBuilder().build();
-        }
-    }
-    */
     
     /**
      * Returns sub-resource instance.
@@ -126,12 +113,55 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public Model addMetadata(Model model)
     {
-        if (getMode() != null &&
-            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
+        if (getMode() != null && getMode().equals(URI.create(GC.EditMode.getURI()))) // getMode().equals(URI.create(GC.EditMode.getURI()))))
 	{
             return model;
         }
 
+	if (getMatchedOntClass().hasSuperClass(GP.Container))
+	{
+            ExtendedIterator<OntClass> it = getMatchedOntClass().listSuperClasses(true);
+            try
+            {
+                while (it.hasNext())
+                {
+                    OntClass superClass = it.next();
+                    if (superClass.canAs(AllValuesFromRestriction.class))
+                    {
+                        AllValuesFromRestriction avfr = superClass.as(AllValuesFromRestriction.class);
+                        if (avfr.getOnProperty().equals(GC.mode))
+                        {
+                            if (avfr.getAllValuesFrom().canAs(EnumeratedClass.class))
+                            {                                
+                                ExtendedIterator<? extends OntResource> unionIt = avfr.getAllValuesFrom().as(EnumeratedClass.class).listOneOf();
+                                try
+                                {
+                                    while (unionIt.hasNext())
+                                    {
+                                        Resource modeLink = model.createResource(getModeUriBuilder(unionIt.next()).build().toString());
+                                        model.add(this, GC.mode, modeLink);
+                                    }
+                                }
+                                finally
+                                {
+                                    unionIt.close();
+                                }
+                            }
+                            else
+                            {
+                                Resource modeLink = model.createResource(getModeUriBuilder(avfr.getAllValuesFrom()).build().toString());                                
+                                model.add(this, GC.mode, modeLink);
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                it.close();
+            }
+        }
+        
         return super.addMetadata(model);
     }
     

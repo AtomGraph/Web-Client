@@ -50,7 +50,6 @@ import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.processor.vocabulary.LDP;
 import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.processor.vocabulary.XHV;
 import org.graphity.server.model.GraphStore;
@@ -160,7 +159,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 throw new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'");
             }
 
-            if (getMatchedOntClass().hasSuperClass(LDP.Container))
+            if (getMatchedOntClass().hasSuperClass(GP.Container))
             {
                 if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
                 {
@@ -299,7 +298,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public Response get()
     {
         // ldp:Container always redirects to first ldp:Page
-	if (getMatchedOntClass().hasSuperClass(LDP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
+	if (getMatchedOntClass().hasSuperClass(GP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
 	    return Response.seeOther(getPageUriBuilder().build()).build();
@@ -520,7 +519,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      */
     public Model addMetadata(Model model)
     {
-	if (getMatchedOntClass().hasSuperClass(LDP.Container))
+	if (getMatchedOntClass().hasSuperClass(GP.Container))
 	{
             if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
             {
@@ -549,10 +548,12 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             else
             {
                 if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-                createPageResource(model);            
+                createPageResource(model);
             }
+            
+            model.add(this, GP.construct, model.createResource(getModeUriBuilder(GP.ConstructMode).build().toString()));
         }
-
+        
         return model;
     }
     
@@ -567,8 +568,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     {
         if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
         Resource page = model.createResource(getPageUriBuilder().build().toString()).
-            addProperty(RDF.type, LDP.Page).
-            addProperty(LDP.pageOf, this);
+            addProperty(RDF.type, GP.Page).
+            addProperty(GP.pageOf, this);
 
         if (getOffset() >= getLimit())
         {
@@ -894,6 +895,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
 	
 	return uriBuilder;
+    }
+
+    public UriBuilder getModeUriBuilder(Resource modeClass)
+    {
+	return getUriBuilder().queryParam(GP.mode.getLocalName(), modeClass.getURI());
     }
 
     /**

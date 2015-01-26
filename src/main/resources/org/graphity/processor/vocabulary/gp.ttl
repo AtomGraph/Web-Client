@@ -7,7 +7,6 @@
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
 @prefix http:   <http://www.w3.org/2011/http#> .
-@prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
@@ -120,6 +119,19 @@
     rdfs:comment "Indicates the Java class that will handle requests matched by this template. Needs to start with 'java:' URI scheme." ;
     rdfs:isDefinedBy <#> .
 
+<#construct> a owl:ObjectProperty ;
+    rdfs:label "CONSTRUCT template" ;
+    rdfs:domain <#Container> ;
+    rdfs:comment "Links to the item template for this container" ;
+    rdfs:seeAlso <#ConstructMode> ;
+    rdfs:isDefinedBy <#> .
+
+<#mode> a owl:ObjectProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range <#Mode> ;
+    rdfs:label "RDF description mode" ;
+    rdfs:isDefinedBy <#> .
+
 # CLASSES
 
 <#Application> a rdfs:Class, owl:Class ;
@@ -141,7 +153,7 @@
 # RESOURCE TEMPLATES
 
 <#Space> a rdfs:Class, owl:Class, <#Template> ;
-     rdfs:subClassOf foaf:Document, sioc:Space, ldp:Container ;
+     rdfs:subClassOf foaf:Document, sioc:Space ;
      <#uriTemplate> "/" ;
      spin:query <#DescribeWithChildren> ;
      <#limit> 20 ;
@@ -149,7 +161,7 @@
      rdfs:isDefinedBy <#> .
 
 <#Container> a rdfs:Class, owl:Class, <#Template> ;
-    rdfs:subClassOf foaf:Document, sioc:Container, ldp:Container ,
+    rdfs:subClassOf foaf:Document, sioc:Container ,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom <#Space>
@@ -234,6 +246,17 @@
     <#uriTemplate> "/service" ;
     spin:query <#Describe> ;
     rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy <#> .
+
+<#Mode> a owl:Class ;
+    rdfs:label "Class of modes" ;
+    rdfs:isDefinedBy <#> .
+
+# MODES
+
+<#ConstructMode> a <#Mode> ; # <#ContainerMode>
+    rdfs:label "Create new" ;
+    rdfs:comment "Container responds with the CONSTRUCTed template of its Item class" ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES

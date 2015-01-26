@@ -51,7 +51,13 @@ public final class GP
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
 
+    public static final OntClass Container = m_model.createClass( NS + "Container" );
+    
     public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
+    
+    public static final OntClass Page = m_model.createClass( NS + "Page" );
+
+    public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
     
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
 
@@ -90,5 +96,7 @@ public final class GP
     public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
 
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+
+    public static final ObjectProperty construct = m_model.createObjectProperty( NS + "construct" );
 
 }

@@ -316,6 +316,8 @@ exclude-result-prefixes="#all">
     <!-- MODE SELECT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
+        <xsl:apply-templates select="key('resources', $gp:absolutePath)" mode="#current"/>
+        <!--
         <xsl:if test="key('resources', $matched-ont-class/gc:mode/@rdf:resource, document('&gc;'))">
             <ul class="nav nav-tabs">
                 <xsl:choose>
@@ -332,12 +334,44 @@ exclude-result-prefixes="#all">
                 </xsl:choose>
             </ul>
         </xsl:if>
+        -->
     </xsl:template>
 
     <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:ModeSelectMode" priority="1"/>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeSelectMode"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeSelectMode">
+        <ul class="nav nav-tabs">        
+            <xsl:apply-templates mode="#current"/>
+        </ul>
+    </xsl:template>
 
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:ModeSelectMode"/>
+
+    <xsl:template match="gc:mode[@rdf:resource]" mode="gc:ModeSelectMode" priority="1">
+	<li>
+	    <xsl:if test="(not($gc:mode) and $gc:defaultMode = '&gp;ConstructMode') or $gc:mode = '&gp;ConstructMode'">
+		<xsl:attribute name="class">active</xsl:attribute>
+	    </xsl:if>
+
+	    <xsl:apply-templates select="@rdf:resource" mode="#current"/>
+	</li>	        
+    </xsl:template>
+
+    <!--
+    <xsl:template match="gp:construct/@rdf:resource" mode="gc:ModeSelectMode" priority="1">
+        <a href="{.}">
+            <xsl:apply-templates select="key('resources', '&gp;ConstructMode', document('&gp;'))" mode="gc:LabelMode"/>
+        </a>
+    </xsl:template>
+    -->
+    
+    <xsl:template match="@rdf:resource" mode="gc:ModeSelectMode">
+        <a href="{.}">
+            XXX<xsl:apply-templates select="key('resources', @rdf:resource, document('&gc;'))" mode="gc:LabelMode"/>
+        </a>
+    </xsl:template>
+
+    <!--
     <xsl:template match="gc:Mode | *[rdf:type/@rdf:resource = '&gc;Mode']" mode="gc:ModeSelectMode" priority="1">
 	<li>
 	    <xsl:if test="(not($gc:mode) and $gc:defaultMode = @rdf:about) or $gc:mode = @rdf:about">
@@ -372,7 +406,8 @@ exclude-result-prefixes="#all">
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
-
+    -->
+    
     <!-- BREADCRUMB MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:BreadCrumbMode">
@@ -483,7 +518,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*" mode="gc:ModeToggleMode"/>
     
-    <xsl:template match="*[starts-with(@rdf:about, $gp:baseUri)]" mode="gc:ModeToggleMode" priority="1">
+    <xsl:template match="*[@rdf:about]" mode="gc:ModeToggleMode" priority="1">
         <xsl:if test="not(rdf:type/@rdf:resource = '&sioc;Container')">
             <div class="pull-right">
                 <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
@@ -934,10 +969,10 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructMode">
-        <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/>
+        <!-- <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/> -->
 
         <xsl:apply-templates select="." mode="gc:EditMode">
-            <xsl:with-param name="ont-class" select="$ont-class"/>
+            <!-- <xsl:with-param name="ont-class" select="$ont-class"/> -->
         </xsl:apply-templates>
     </xsl:template>
    

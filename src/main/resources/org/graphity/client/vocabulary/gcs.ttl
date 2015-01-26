@@ -27,15 +27,21 @@
 # templates
 
 <#TemplateContainer> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container, ldp:Container,
+    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom gp:Space
+        ] ,
+        [ a owl:Restriction ;
+            owl:onProperty gc:mode ;
+            owl:allValuesFrom [ a owl:Class ;
+                owl:oneOf (gp:ConstructMode gc:ListMode gc:TableMode)
+            ]
         ] ;
     gp:uriTemplate "/templates" ;
     gp:limit 20 ;
-    gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
-    gc:defaultMode gc:ListMode ;
+    #gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
+    #gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
@@ -120,15 +126,21 @@
 # queries
 
 <#QueryContainer> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container, ldp:Container,
+    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom gp:Space
+        ] ,
+        [ a owl:Restriction ;
+            owl:onProperty gc:mode ;
+            owl:allValuesFrom [ a owl:Class ;
+                owl:oneOf (gp:ConstructMode gc:ListMode gc:TableMode)
+            ]
         ] ;
     gp:uriTemplate "/queries" ;
     gp:limit 20 ;
-    gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
-    gc:defaultMode gc:ListMode ;
+    # gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
+    # gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
     rdfs:isDefinedBy <#> .
@@ -196,7 +208,7 @@
 # lookup
 
 <#LabelResourcesContainer> a owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, ldp:Container, sioc:Container ;
+    rdfs:subClassOf foaf:Document, gp:Container, sioc:Container ;
     gp:uriTemplate "/resources/labelled" ; # "/{path}/labelled" ?
     spin:query <#DescribeLabelResources> ;
     gp:limit 20 ;

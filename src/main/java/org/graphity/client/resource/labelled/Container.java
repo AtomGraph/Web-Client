@@ -27,7 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.processor.query.SelectBuilder;
-import org.graphity.processor.vocabulary.LDP;
+import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class Container extends ResourceBase
     {
         super.init();
 
-	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
+	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(GP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)
