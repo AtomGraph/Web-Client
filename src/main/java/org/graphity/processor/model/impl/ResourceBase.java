@@ -342,7 +342,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	if (log.isDebugEnabled()) log.debug("POST GRAPH URI: {} SPARQLEndpoint: {}", graphURI, endpoint);
 	if (log.isDebugEnabled()) log.debug("POSTed Model: {}", model);
 
-	Resource created = getURIResource(model, FOAF.Document);
+	Resource created = getURIResource(model);
 	if (created == null)
 	{
 	    if (log.isDebugEnabled()) log.debug("POSTed Model does not contain statements with URI as subject and type '{}'", FOAF.Document.getURI());
@@ -367,6 +367,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	return Response.seeOther(createdURI).build();
     }
 
+    public Resource getURIResource(Model model)
+    {
+        return getURIResource(model, FOAF.Document);
+    }
+    
     public Resource getURIResource(Model model, Resource type)
     {
 	ResIterator it = model.listSubjectsWithProperty(RDF.type, type);

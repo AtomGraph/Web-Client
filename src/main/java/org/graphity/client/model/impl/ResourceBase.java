@@ -173,7 +173,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         {
             super.put(model);
             
-            Resource document = getURIResource(model, FOAF.Document);
+            Resource document = getURIResource(model);
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
             return Response.seeOther(URI.create(document.getURI())).build();
         }
