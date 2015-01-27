@@ -807,4 +807,5 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
     {
         return getQuery().getValues();
     }
+    
 }

@@ -87,6 +87,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     private Boolean desc;
     private Long limit, offset;
     private QueryBuilder queryBuilder;
+    private Query query;
+    private QuerySolutionMap querySolutionMap;
     private CacheControl cacheControl;
     
     /**
@@ -125,10 +127,12 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         model.add(ontClass.getModel()); // we don't want to make permanent changes to base ontology which is cached
         this.ontResource = model.createOntResource(getURI());
         this.matchedOntClass = ontClass;
+        this.querySolutionMap = new QuerySolutionMap();
 	this.graphStore = graphStore;
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
 
+	querySolutionMap.add(SPIN.THIS_VAR_NAME, ontResource);
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }
 
@@ -139,58 +143,68 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public void init()
     {
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
-	addProperty(RDF.type, getMatchedOntClass()); // getOntModel().add(description); ?
+	addProperty(RDF.type, getMatchedOntClass());
         
-        Query query = getQuery(getMatchedOntClass(), SPIN.query, getQuerySolutionMap(this));
-        if (query == null)
+        try
         {
-            if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
-            throw new WebApplicationException(new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'"));
-        }
+            query = getQuery(getMatchedOntClass(), SPIN.query);
+            if (query == null)
+            {
+                if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
+                throw new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'");
+            }
 
-        if (getMatchedOntClass().hasSuperClass(LDP.Container))
-        {
-            if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+            if (getMatchedOntClass().hasSuperClass(LDP.Container))
             {
-                Long defaultOffset = getLongValue(getMatchedOntClass(), GP.offset);
-                if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
-                this.offset = defaultOffset;
+                if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+                {
+                    Long defaultOffset = getLongValue(getMatchedOntClass(), GP.offset);
+                    if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
+                    this.offset = defaultOffset;
+                }
+                else this.offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+
+                if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+                {
+                    Long defaultLimit = getLongValue(getMatchedOntClass(), GP.limit);
+                    if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:limit if it is used as container");
+                    this.limit = defaultLimit;
+                }
+                else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
+
+                if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(getMatchedOntClass(), GP.orderBy);
+                else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
+
+                if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
+                {
+                    Boolean defaultDesc = getBooleanValue(getMatchedOntClass(), GP.desc);
+                    if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
+                    this.desc = defaultDesc;
+                }
+                else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
+
+                queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()),
+                        this.offset, this.limit, this.orderBy, this.desc);
             }
-            else this.offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
-                
-            if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+            else
             {
-                Long defaultLimit = getLongValue(getMatchedOntClass(), GP.limit);
-                if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:limit if it is used as container");
-                this.limit = defaultLimit;
+                this.offset = this.limit = null;
+                this.orderBy = null;
+                this.desc = null;
+
+                queryBuilder = QueryBuilder.fromQuery(query, getModel());
             }
-            else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
-                
-            if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(getMatchedOntClass(), GP.orderBy);
-            else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
-            
-            if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
-            {
-                Boolean defaultDesc = getBooleanValue(getMatchedOntClass(), GP.desc);
-                if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
-                this.desc = defaultDesc;
-            }
-            else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
-            
-            queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()),
-                    this.offset, this.limit, this.orderBy, this.desc);
+
+            query = queryBuilder.build();
+            if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
+            addProperty(SPIN.query, getQueryBuilder());                
+
+            query.setBaseURI(getUriInfo().getBaseUri().toString());            
         }
-        else
+        catch (ConfigurationException ex)
         {
-            this.offset = this.limit = null;
-            this.orderBy = null;
-            this.desc = null;
-            
-            queryBuilder = QueryBuilder.fromQuery(query, getModel());
+            throw new WebApplicationException(ex);
         }
-        
-	if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
-	addProperty(SPIN.query, getQueryBuilder());
         
         cacheControl = getCacheControl(getMatchedOntClass());        
     }
@@ -557,6 +571,21 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
 
     /**
+     * Returns RDF description of this resource.
+     * The description is the result of a query executed on the SPARQL endpoint of this resource.
+     * By default, the query is <code>DESCRIBE</code> with URI of this resource.
+     * 
+     * @return RDF description
+     * @see getQuery()
+     */
+    @Override
+    public Model describe()
+    {
+	return getSPARQLEndpoint().loadModel(new ParameterizedSparqlString(getQuery().toString(),
+                getQuerySolutionMap()).asQuery());
+    }
+
+    /**
      * Adds run-time metadata to RDF description.
      * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
      * 
@@ -698,61 +727,34 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @param ontClass ontology class of the resource
      * @param property property for the query object
-     * @param qsm query variable bindings
      * @return query object
      * @see org.topbraid.spin.model.TemplateCall
      */
-    public Query getQuery(OntClass ontClass, Property property, QuerySolutionMap qsm)
+    public Query getQuery(OntClass ontClass, Property property)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 	if (ontClass.getPropertyResourceValue(property) == null)
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (spin:query)");
+	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (" + property + ")");
 
 	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(property);
-	
-        org.topbraid.spin.model.Query query = SPINFactory.asQuery(queryOrTemplateCall);
-        if (query != null) return getQuery(query.toString(), getRealURI(), qsm);
+        
+        org.topbraid.spin.model.Query spinQuery = SPINFactory.asQuery(queryOrTemplateCall);
+        if (spinQuery != null) return new ParameterizedSparqlString(spinQuery.toString()).asQuery();
                 
         TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
-        if (templateCall != null) return getQuery(templateCall.getQueryString(), getRealURI(), qsm);
+        if (templateCall != null) return new ParameterizedSparqlString(templateCall.getQueryString()).asQuery();
         
         return null;
     }
-
+    
     /**
      * Returns variable bindings for description query.
      * 
-     * @param resource this resource
      * @return map with variable bindings
      */
-    public QuerySolutionMap getQuerySolutionMap(Resource resource)
+    public QuerySolutionMap getQuerySolutionMap()
     {
-	QuerySolutionMap qsm = new QuerySolutionMap();
-	qsm.add("this", resource);
-        return qsm;
-    }
-    
-    /**
-     * Given a SPARQL query string and variable bindings, returns a SPARQL query.
-     * 
-     * Following the convention of SPIN API, variable name <code>?this</code> has a special meaning and
-     * is assigned to the value of the resource (which is usually this resource).
-     * <code>OFFSET</code>) will be set to implement pagination.
-     * 
-     * @param queryString SPARQL query string
-     * @param baseURI <code>BASE</code> URI for the query
-     * @param qsm query variable bindings
-     * @return query object
-     */
-    public Query getQuery(String queryString, URI baseURI, QuerySolutionMap qsm)
-    {
-	if (queryString == null) throw new IllegalArgumentException("Query string cannot be null");
-	if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
-        if (qsm == null) throw new IllegalArgumentException("QuerySolutionMap cannot be null");
-	
-	Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
-        query.setBaseURI(baseURI.toString());
-        return query;
+        return querySolutionMap;
     }
 
     public UpdateBuilder getUpdateBuilder(Update update)
@@ -1000,7 +1002,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Query getQuery()
     {
-	return getQueryBuilder().build();
+	return query; // return getQueryBuilder().build();
     }
 
     /**
