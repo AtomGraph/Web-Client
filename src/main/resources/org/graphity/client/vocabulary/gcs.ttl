@@ -145,7 +145,7 @@
     rdfs:isDefinedBy <#> .
 
 <#QueryItem> a rdfs:Class, owl:Class, gp:Template ;
-    rdfs:subClassOf foaf:Document, gp:Container, 
+    rdfs:subClassOf foaf:Document, gp:Item, 
         [ a owl:Restriction ;
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#QueryContainer>
