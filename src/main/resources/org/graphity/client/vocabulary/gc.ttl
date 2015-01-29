@@ -16,16 +16,18 @@
     rdfs:label "Graphity Client ontology" ;
     owl:versionInfo "1.1.1" .
 
+# ANNOTATION PROPERTIES
+
+<#defaultMode> a owl:AnnotationProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Default layout mode" ;
+    rdfs:isDefinedBy <#> .
+
 # PROPERTIES
 
 <#stylesheet> a owl:ObjectProperty ;
     rdfs:domain <#Application> ;
     rdfs:label "XSLT stylesheet" ;
-    rdfs:isDefinedBy <#> .
-
-<#defaultMode> a owl:ObjectProperty ;
-    rdfs:range <#Mode> ;
-    rdfs:label "Default layout mode" ;
     rdfs:isDefinedBy <#> .
 
 <#mode> a owl:ObjectProperty ;
