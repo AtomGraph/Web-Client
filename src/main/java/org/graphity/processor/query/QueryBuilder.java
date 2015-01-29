@@ -425,11 +425,6 @@ public class QueryBuilder implements org.topbraid.spin.model.Query
 	    it.close();
 	}
     }
-
-    public Query build(QuerySolutionMap qsm)
-    {	
-	return new ParameterizedSparqlString(build().toString(), qsm).asQuery();
-    }
     
     public Query build()
     {

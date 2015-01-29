@@ -210,40 +210,16 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     /**
      * Returns page URI builder.
      * 
+     * @param offset
+     * @param limit
      * @return URI builder
      */
     @Override
-    public UriBuilder getPageUriBuilder()
+    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc)
     {
-	if (getMode() != null) return super.getPageUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
+	if (getMode() != null) return super.getPageUriBuilder(offset, limit, orderBy, desc).queryParam(GC.mode.getLocalName(), getMode());
 	
-	return super.getPageUriBuilder();
-    }
-
-    /**
-     * Returns previous page URI builder.
-     * 
-     * @return URI builder
-     */
-    @Override
-    public UriBuilder getPreviousUriBuilder()
-    {
-	if (getMode() != null) return super.getPreviousUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
-	
-	return super.getPreviousUriBuilder();
-    }
-
-    /**
-     * Returns next page URI builder.
-     * 
-     * @return URI builder
-     */
-    @Override
-    public UriBuilder getNextUriBuilder()
-    {
-	if (getMode() != null) return super.getNextUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
-	
-	return super.getNextUriBuilder();
+	return super.getPageUriBuilder(offset, limit, orderBy, desc);
     }
     
 }

@@ -43,11 +43,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 import org.graphity.processor.exception.NotFoundException;
-import org.graphity.processor.model.ContainerResource;
 import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.query.QueryBuilder;
-import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SIOC;
@@ -74,7 +73,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
-public class ResourceBase extends QueriedResourceBase implements org.graphity.processor.model.Resource, ContainerResource
+public class ResourceBase extends QueriedResourceBase implements org.graphity.processor.model.Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
@@ -90,7 +89,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     private Query query;
     private QuerySolutionMap querySolutionMap;
     private CacheControl cacheControl;
-    private final URI mode;
+    private URI mode;
 
     /**
      * Public JAX-RS constructor. Suitable for subclassing.
@@ -134,9 +133,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         this.resourceContext = resourceContext;
 
 	querySolutionMap.add(SPIN.THIS_VAR_NAME, ontResource);        
-        if (uriInfo.getQueryParameters().containsKey(GP.mode.getLocalName()))
-            this.mode = URI.create(uriInfo.getQueryParameters().getFirst(GP.mode.getLocalName()));
-        else mode = null;
 
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }
@@ -149,7 +145,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     {
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
 	addProperty(RDF.type, getMatchedOntClass());
-        
+
+        if (getUriInfo().getQueryParameters().containsKey(GP.mode.getLocalName()))
+            this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()));
+        else mode = null;
+
         try
         {
             query = getQuery(getMatchedOntClass(), SPIN.query);
@@ -158,56 +158,71 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
                 throw new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'");
             }
-
-            if (getMatchedOntClass().hasSuperClass(GP.Container))
+            queryBuilder = QueryBuilder.fromQuery(query, getModel());
+            
+            if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
+                    getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
             {
-                if (!getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+                if (queryBuilder.getSubSelectBuilder() == null)
                 {
-                    Long defaultOffset = getLongValue(getMatchedOntClass(), GP.offset);
-                    if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
-                    this.offset = defaultOffset;
+                    if (log.isErrorEnabled()) log.error("Container query for template '{}' does not contain a sub-SELECT '{}'", getMatchedOntClass().getURI());
+                    throw new ConfigurationException("Sub-SELECT missing in the query of container template '" + getMatchedOntClass().getURI() +"'");
                 }
-                else this.offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
 
-                if (!getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+                try
                 {
-                    Long defaultLimit = getLongValue(getMatchedOntClass(), GP.limit);
-                    if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:limit if it is used as container");
-                    this.limit = defaultLimit;
+                    if (getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+                        offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+                    else
+                    {
+                        Long defaultOffset = getLongValue(getMatchedOntClass(), GP.defaultOffset);
+                        if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
+                        this.offset = defaultOffset;
+                    }
+                    if (log.isErrorEnabled()) log.error("Setting OFFSET on container sub-SELECT: {}", offset);
+                    queryBuilder.getSubSelectBuilder().replaceOffset(offset);
+
+                    if (getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+                        limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
+                    else
+                    {
+                        Long defaultLimit =  getLongValue(getMatchedOntClass(), GP.defaultLimit);
+                        //if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:defaultLimit annotation if it is used as container");
+                        this.limit = defaultLimit;                        
+                    }
+                    if (log.isErrorEnabled()) log.error("Setting LIMIT on container sub-SELECT: {}", limit);
+                    queryBuilder.getSubSelectBuilder().replaceLimit(limit);
+
+                    if (getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName()))
+                    {
+                         if (getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName()))
+                            orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
+                         else
+                             orderBy = getStringValue(getMatchedOntClass(), GP.defaultOrderByVarName);
+                        if (getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
+                            desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));                    
+                        else
+                            desc = getBooleanValue(getMatchedOntClass(), GP.defaultDesc);
+                        if (desc == null) desc = false; // ORDERY BY is ASC() by default
+                        
+                        queryBuilder.getSubSelectBuilder().replaceOrderBy(null). // any existing ORDER BY condition is removed first
+                            orderBy(orderBy, desc);
+                    }
+
+                    if (getMode() != null && (getMode().equals(URI.create(GP.ConstructMode.getURI())))
+                            && queryBuilder.getSubSelectBuilder() != null)
+                    {
+                        if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
+                        queryBuilder.getSubSelectBuilder().replaceLimit(Long.valueOf(0));
+                    }
                 }
-                else this.limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
-
-                if (!getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName())) this.orderBy = getStringValue(getMatchedOntClass(), GP.orderBy);
-                else this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
-
-                if (!getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
+                catch (NumberFormatException ex)
                 {
-                    Boolean defaultDesc = getBooleanValue(getMatchedOntClass(), GP.desc);
-                    if (defaultDesc == null) defaultDesc = false; // ORDERY BY is ASC() by default
-                    this.desc = defaultDesc;
-                }
-                else this.desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
-
-                queryBuilder = setSelectModifiers(QueryBuilder.fromQuery(query, getModel()),
-                        this.offset, this.limit, this.orderBy, this.desc);
-                
-                if (getMode() != null && (getMode().equals(URI.create(GP.ConstructMode.getURI())))
-                        && queryBuilder.getSubSelectBuilder() != null)
-                {
-                    if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
-                    queryBuilder.getSubSelectBuilder().replaceLimit(Long.valueOf(0));
+                    throw new WebApplicationException(ex);
                 }
             }
-            else
-            {
-                this.offset = this.limit = null;
-                this.orderBy = null;
-                this.desc = null;
 
-                queryBuilder = QueryBuilder.fromQuery(query, getModel());
-            }
-
-            query = queryBuilder.build(getQuerySolutionMap());
+            query = queryBuilder.build();
             if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
             addProperty(SPIN.query, getQueryBuilder());                
 
@@ -215,13 +230,13 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         }
         catch (ConfigurationException ex)
         {
-            throw new WebApplicationException(ex);
+            throw new WebApplicationException(ex, Status.BAD_REQUEST);
         }
         
-        cacheControl = getCacheControl(getMatchedOntClass());        
+        cacheControl = getCacheControl(getMatchedOntClass(), GP.cacheControl);        
     }
-    
-    public Long getLongValue(OntClass ontClass, DatatypeProperty property)
+
+    public Long getLongValue(OntClass ontClass, AnnotationProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return ontClass.getPropertyValue(property).asLiteral().getLong();
@@ -229,7 +244,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         return null;
     }
 
-    public Boolean getBooleanValue(OntClass ontClass, DatatypeProperty property)
+    public Boolean getBooleanValue(OntClass ontClass, AnnotationProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return ontClass.getPropertyValue(property).asLiteral().getBoolean();
@@ -237,14 +252,14 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         return null;
     }
 
-    public String getStringValue(OntClass ontClass, DatatypeProperty property)
+    public String getStringValue(OntClass ontClass, AnnotationProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return ontClass.getPropertyValue(property).asLiteral().getString();
         
         return null;
     }
-
+    
     /**
      * Returns sub-resource instance.
      * By default matches any path.
@@ -297,11 +312,13 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Response get()
     {
-        // ldp:Container always redirects to first ldp:Page
-	if (getMatchedOntClass().hasSuperClass(GP.Container) && getRealURI().equals(getUriInfo().getRequestUri()))
+        // gp:Space/gp:Container always redirect to first ldp:Page
+	if ((getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
+                getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
+            && getRealURI().equals(getUriInfo().getRequestUri()) && getOffset() != null && getLimit() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
-	    return Response.seeOther(getPageUriBuilder().build()).build();
+	    return Response.seeOther(getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc()).build()).build();
 	}
 
 	Model description = describe();
@@ -511,6 +528,21 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
 
     /**
+     * Returns RDF description of this resource.
+     * The description is the result of a query executed on the SPARQL endpoint of this resource.
+     * By default, the query is <code>DESCRIBE</code> with URI of this resource.
+     * 
+     * @return RDF description
+     * @see getQuery()
+     */
+    @Override
+    public Model describe()
+    {
+	return getSPARQLEndpoint().loadModel(new ParameterizedSparqlString(getQuery().toString(),
+                getQuerySolutionMap()).asQuery());
+    }
+
+    /**
      * Adds run-time metadata to RDF description.
      * In case a container is requested, page resource with HATEOS previous/next links is added to the model.
      * 
@@ -519,7 +551,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      */
     public Model addMetadata(Model model)
     {
-	if (getMatchedOntClass().hasSuperClass(GP.Container))
+	if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
+                getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
 	{
             if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
             {
@@ -547,8 +580,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             }
             else
             {
-                if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-                createPageResource(model);
+                if (getOffset() != null && getLimit() != null)
+                {
+                    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
+                    createPageResource(model, getOffset(), getLimit(), getOrderBy(), getDesc());
+                }
             }
             
             model.add(this, GP.construct, model.createResource(getModeUriBuilder(GP.ConstructMode).build().toString()));
@@ -557,24 +593,45 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         return model;
     }
     
+    public Resource createConstructResource(Model model)
+    {
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+
+        return model.createResource(getModeUriBuilder(GP.ConstructMode).build().toString()).
+                addProperty(GP.mode, GP.ConstructMode);
+    }
+    
     /**
      * Creates a page resource for the current container. Includes HATEOS previous/next links.
      * 
      * @param model target RDF model
+     * @param offset
+     * @param limit
+     * @param orderBy
+     * @param desc
      * @return page resource
      * @see <a href="http://www.w3.org/1999/xhtml/vocab">XHTML Vocabulary</a>
      */
-    public Resource createPageResource(Model model)
+    public Resource createPageResource(Model model, Long offset, Long limit, String orderBy, Boolean desc)
     {
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        if (offset == null) throw new IllegalArgumentException("OFFSET cannot be null");
+        if (limit == null) throw new IllegalArgumentException("LIMIT cannot be null");
+        
         if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-        Resource page = model.createResource(getPageUriBuilder().build().toString()).
+        Resource page = model.createResource(getPageUriBuilder(offset, limit, orderBy, desc).build().toString()).
             addProperty(RDF.type, GP.Page).
-            addProperty(GP.pageOf, this);
+            addProperty(GP.pageOf, this).
+            addLiteral(GP.offset, offset).
+            addLiteral(GP.limit, limit);
+        if (orderBy != null) page.addLiteral(GP.orderBy, orderBy);
+        if (desc != null) page.addLiteral(GP.desc, desc);
 
-        if (getOffset() >= getLimit())
+        if (offset >= limit)
         {
-            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), getPreviousUriBuilder().build().toString());
-            page.addProperty(XHV.prev, model.createResource(getPreviousUriBuilder().build().toString()));
+            String prevURI = getPageUriBuilder(offset - limit, limit, orderBy, desc).build().toString();
+            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), prevURI);
+            page.addProperty(XHV.prev, model.createResource(prevURI));
         }
 
         // no way to know if there's a next page without counting results (either total or in current page)
@@ -582,8 +639,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
         //if (subjectCount >= getLimit())
         {
-            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), getNextUriBuilder().build().toString());
-            page.addProperty(XHV.next, model.createResource(getNextUriBuilder().build().toString()));
+            String nextURI = getPageUriBuilder(offset + limit, limit, orderBy, desc).build().toString();
+            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), nextURI);
+            page.addProperty(XHV.next, model.createResource(nextURI));
         }
         
         return page;
@@ -600,88 +658,18 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
 
     /**
-     * Returns <samp>Cache-Control</samp> HTTP header value, specified on an ontology class.
-     * 
-     * @param ontClass the ontology class with the restriction
-     * @return CacheControl instance or null, if no dataset restriction was found
-     */
-    public CacheControl getCacheControl(OntClass ontClass)
-    {
-       return getCacheControl(ontClass, GP.cacheControl);
-    }
-
-    /**
      * Returns <code>Cache-Control</code> HTTP header value, specified on an ontology class with given property.
      * 
      * @param ontClass the ontology class with the restriction
      * @param property the property holding the literal value
      * @return CacheControl instance or null, if no dataset restriction was found
      */
-    public CacheControl getCacheControl(OntClass ontClass, DatatypeProperty property)
+    public CacheControl getCacheControl(OntClass ontClass, AnnotationProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isLiteral())
             return CacheControl.valueOf(ontClass.getPropertyValue(property).asLiteral().getString()); // will fail on bad config
 
 	return null;
-    }
-
-    /**
-     * Sets <code>SELECT</code> on a supplied query builder, if it contains such sub-query
-     * 
-     * @param queryBuilder query builder
-     * @param offset <code>OFFSET</code> value
-     * @param limit <code>LIMIT</code> value
-     * @param orderBy <code>ORDER BY</code> variable name
-     * @param desc ordering direction (true for <code>DESC()</code>
-     * @return query builder with set modifiers
-     * @see org.graphity.processor.query.QueryBuilder
-     */
-    public QueryBuilder setSelectModifiers(QueryBuilder queryBuilder, Long offset, Long limit, String orderBy, Boolean desc)
-    {
-        if (queryBuilder == null) throw new IllegalArgumentException("QueryBuilder cannot be null");
-        
-        SelectBuilder selectBuilder = queryBuilder.getSubSelectBuilder();
-        if (selectBuilder != null) setSelectModifiers(selectBuilder, offset, limit, orderBy, desc);
-        
-        return queryBuilder;
-    }
-
-    /**
-     * Sets <code>SELECT</code> solution modifiers on a supplied builder.
-     * This method is used to build queries for page resources. It sets <code>LIMIT</code> and <code>OFFSET</code>
-     * modifiers as well as <code>ORDER BY</code>/<code>DESC</code> clauses on <code>SELECT</code> sub-queries.
-     * Currently only one <code>ORDER BY</code> condition is supported.
-     * 
-     * @param selectBuilder <code>SELECT</code> builder
-     * @param offset <code>OFFSET</code> value
-     * @param limit <code>LIMIT</code> value
-     * @param orderBy <code>ORDER BY</code> variable name
-     * @param desc ordering direction (true for <code>DESC()</code>
-     * @return SELECT builder with set modifiers
-     * @see org.graphity.processor.query.SelectBuilder
-     */
-    public SelectBuilder setSelectModifiers(SelectBuilder selectBuilder, Long offset, Long limit, String orderBy, Boolean desc)
-    {	
-        if (selectBuilder == null) throw new IllegalArgumentException("SelectBuilder cannot be null");
-        if (offset == null) throw new IllegalArgumentException("Offset cannot be null");
-        if (limit == null) throw new IllegalArgumentException("Limit cannot be null");
-        
-        selectBuilder.replaceOffset(offset).replaceLimit(limit);
-
-        if (orderBy != null)
-        {
-            try
-            {
-                selectBuilder.replaceOrderBy(null). // any existing ORDER BY condition is removed first
-                    orderBy(orderBy, desc);
-            }
-            catch (IllegalArgumentException ex)
-            {
-                if (log.isWarnEnabled()) log.warn("Tried to use ORDER BY variable ?{} which is not present in the WHERE pattern", getOrderBy());
-            }
-        }
-        
-	return selectBuilder;
     }
 
     /**
@@ -796,7 +784,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @return limit value
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modResultLimit">15.5 LIMIT</a>
      */
-    @Override
+    //@Override
     public Long getLimit()
     {
 	return limit;
@@ -811,7 +799,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @return offset value
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOffset">15.4 OFFSET</a>
      */
-    @Override
+    //@Override
     public Long getOffset()
     {
 	return offset;
@@ -828,7 +816,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @return name of ordering variable or null, if not specified
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
      */
-    @Override
+    //@Override
     public String getOrderBy()
     {
 	return orderBy;
@@ -843,60 +831,35 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @return true if the order is descending, false otherwise
      * @see <a href="http://www.w3.org/TR/sparql11-query/#modOrderBy">15.1 ORDER BY</a>
      */
-    @Override
+    //@Override
     public Boolean getDesc()
     {
 	return desc;
     }
-
+    
     /**
      * Returns URI builder instantiated with pagination parameters for the current page.
      * 
+     * @param offset
+     * @param limit
+     * @param orderBy
+     * @param desc
      * @return URI builder
      */
-    public UriBuilder getPageUriBuilder()
+    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc)
     {
-	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam(GP.offset.getLocalName(), getOffset()).
-	    queryParam(GP.limit.getLocalName(), getLimit());
-	if (getOrderBy() != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), getOrderBy());
-	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
+        if (offset == null) throw new IllegalArgumentException("OFFSET cannot be null");
+        if (limit == null) throw new IllegalArgumentException("LIMIT cannot be null");
+
+        UriBuilder uriBuilder = getUriBuilder().
+                queryParam(GP.offset.getLocalName(), offset).
+                queryParam(GP.limit.getLocalName(), limit);
+	if (orderBy != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), orderBy);
+	if (desc != null) uriBuilder.queryParam(GP.desc.getLocalName(), desc);
     
 	return uriBuilder;
     }
-
-    /**
-     * Returns URI builder instantiated with pagination parameters for the previous page.
-     * 
-     * @return URI builder
-     */
-    public UriBuilder getPreviousUriBuilder()
-    {
-	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam(GP.offset.getLocalName(), getOffset() - getLimit()).
-	    queryParam(GP.limit.getLocalName(), getLimit());
-        if (getOrderBy() != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), getOrderBy());
-	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
-	
-	return uriBuilder;
-    }
-
-    /**
-     * Returns URI builder instantiated with pagination parameters for the next page.
-     * 
-     * @return URI builder
-     */
-    public UriBuilder getNextUriBuilder()
-    {
-	UriBuilder uriBuilder = getUriBuilder().
-	    queryParam(GP.offset.getLocalName(), getOffset() + getLimit()).
-	    queryParam(GP.limit.getLocalName(), getLimit());
-        if (getOrderBy() != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), getOrderBy());
-	if (getDesc()) uriBuilder.queryParam(GP.desc.getLocalName(), getDesc());
-	
-	return uriBuilder;
-    }
-
+    
     public UriBuilder getModeUriBuilder(Resource modeClass)
     {
 	return getUriBuilder().queryParam(GP.mode.getLocalName(), modeClass.getURI());

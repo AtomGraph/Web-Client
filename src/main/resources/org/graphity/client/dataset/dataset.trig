@@ -1,7 +1,6 @@
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
-@prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix void:	<http://rdfs.org/ns/void#> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
@@ -10,7 +9,7 @@
 @prefix gp:	<http://graphity.org/gp#> .
 @prefix gcs:	<http://graphity.org/gcs#> .
 
-<> a sioc:Space, ldp:Container, foaf:Document ;
+<> a sioc:Space, gp:Space, foaf:Document ;
     dct:title "Graphity Client" ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;
@@ -27,26 +26,26 @@
 
 # containers
 
-<ontologies> a ldp:Container, sioc:Container, foaf:Document ;
+<ontologies> a gp:Container, sioc:Container, foaf:Document ;
     gp:slug "ontologies"^^xsd:string ;
     sioc:has_space <> ;
     dct:title "Ontologies" .
 
-<templates> a ldp:Container, sioc:Container, foaf:Document ;
+<templates> a gp:Container, sioc:Container, foaf:Document ;
     gp:slug "templates"^^xsd:string ;
     sioc:has_space <> ;
     dct:title "Templates" .
 
-<queries> a ldp:Container, sioc:Container, foaf:Document ;
+<queries> a gp:Container, sioc:Container, foaf:Document ;
     gp:slug "queries"^^xsd:string ;
     sioc:has_space <> ;
     dct:title "Queries" .
 
-<resources/labelled> a ldp:Container, sioc:Container, foaf:Document ;
+<resources/labelled> a gp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <resources> ;
     dct:title "Labelled resources" .
 
-<properties/labelled> a ldp:Container, sioc:Container, foaf:Document ;
+<properties/labelled> a gp:Container, sioc:Container, foaf:Document ;
     sioc:has_space <properties> ;
     dct:title "Labelled properties" .
 

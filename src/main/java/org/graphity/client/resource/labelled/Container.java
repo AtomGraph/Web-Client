@@ -50,7 +50,7 @@ public class Container extends ResourceBase
 	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
-	this.searchString = getUriInfo().getQueryParameters().getFirst("label");
+	this.searchString = getUriInfo().getQueryParameters().getFirst(RDFS.label.getLocalName());
     }
 
     @Override
@@ -75,27 +75,12 @@ public class Container extends ResourceBase
     }
 
     @Override
-    public UriBuilder getPageUriBuilder()
+    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc)
     {
-	if (getSearchString() != null) return super.getPageUriBuilder().queryParam("label", getSearchString());
+	if (getSearchString() != null) return super.getPageUriBuilder(offset, limit, orderBy, desc).
+                queryParam(RDFS.label.getLocalName(), getSearchString());
 	
-	return super.getPageUriBuilder();
-    }
-
-    @Override
-    public UriBuilder getPreviousUriBuilder()
-    {
-	if (getSearchString() != null) return super.getPreviousUriBuilder().queryParam("label", getSearchString());
-	
-	return super.getPreviousUriBuilder();
-    }
-
-    @Override
-    public UriBuilder getNextUriBuilder()
-    {
-	if (getSearchString() != null) return super.getNextUriBuilder().queryParam("label", getSearchString());
-	
-	return super.getNextUriBuilder();
+	return super.getPageUriBuilder(offset, limit, orderBy, desc);
     }
 
 }

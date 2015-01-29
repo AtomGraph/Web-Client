@@ -26,7 +26,6 @@ limitations under the License.
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
-    <!ENTITY ldp    "http://www.w3.org/ns/ldp#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
     <!ENTITY sp     "http://spinrdf.org/sp#">
@@ -46,7 +45,6 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
-xmlns:ldp="&ldp;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
@@ -75,10 +73,12 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:mode" as="xs:anyURI?"/>
     <xsl:param name="gp:ontModel" select="/" as="document-node()"/> <!-- select="document($gp:baseUri)"  -->
     <xsl:param name="gp:matchedOntClass" as="xs:anyURI?"/>
+    <!--
     <xsl:param name="gp:offset" select="$select-res/sp:offset" as="xs:integer?"/>
     <xsl:param name="gp:limit" select="$select-res/sp:limit" as="xs:integer?"/>
     <xsl:param name="gp:orderBy" select="$orderBy/sp:varName | key('resources', $orderBy/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName | key('resources', key('resources', $orderBy/sp:expression/@rdf:nodeID, $gp:ontModel)/sp:*/@rdf:nodeID, $gp:ontModel)/sp:varName" as="xs:string?"/>
     <xsl:param name="gp:desc" select="$orderBy[1]/rdf:type/@rdf:resource = '&sp;Desc'" as="xs:boolean"/>
+    -->
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="query" as="xs:string?"/>
@@ -89,7 +89,7 @@ exclude-result-prefixes="#all">
     <xsl:variable name="resource" select="key('resources', $gp:absolutePath, $gp:ontModel)" as="element()?"/>
     <xsl:variable name="query-res" select="key('resources', $resource/spin:query/@rdf:resource | $resource/spin:query/@rdf:nodeID, $gp:ontModel)" as="element()?"/>
     <xsl:variable name="where-res" select="list:member(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), $gp:ontModel)"/>
-    <xsl:variable name="select-res" select="if ($matched-ont-class/rdfs:subClassOf/@rdf:resource = '&ldp;Container' and $query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
+    <xsl:variable name="select-res" select="if ($matched-ont-class/rdfs:subClassOf/@rdf:resource = '&gp;Container' and $query-res/sp:where/@rdf:nodeID) then gc:visit-elements(key('resources', $query-res/sp:where/@rdf:nodeID, $gp:ontModel), '&sp;SubQuery')[rdf:type/@rdf:resource = '&sp;Select'] else ()" as="element()?"/>
     <xsl:variable name="orderBy" select="if ($select-res/sp:orderBy) then list:member(key('resources', $select-res/sp:orderBy/@rdf:nodeID, $gp:ontModel), $gp:ontModel) else ()"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
@@ -98,7 +98,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
-    <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="ldp:pageOf/@rdf:resource"/>
+    <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
@@ -712,7 +712,7 @@ exclude-result-prefixes="#all">
             </li>
             <li class="next">
                 <xsl:choose>
-                    <xsl:when test="xhv:next and $count &gt;= $gp:limit">
+                    <xsl:when test="xhv:next and $count &gt;= gp:limit">
                         <xsl:apply-templates select="xhv:next" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
@@ -783,7 +783,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- hide page resource -->
-    <xsl:template match="*[ldp:pageOf/@rdf:resource = $gp:absolutePath]" mode="gc:ReadMode" priority="1"/>
+    <xsl:template match="*[gp:pageOf/@rdf:resource = $gp:absolutePath]" mode="gc:ReadMode" priority="1"/>
 
     <!-- hide document if topic is present -->
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ReadMode" priority="1"/>
@@ -1021,9 +1021,11 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
+        <!--
         <xsl:param name="ont-class" select="$matched-ont-class" as="element()"/>
         <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
-
+        -->
+        
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">
                 <legend>
@@ -1033,10 +1035,11 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
+            <xsl:variable name="template-uri" select="key('resources', sioc:has_container/@rdf:resource, document(sioc:has_container/@rdf:resource))" as="xs:anyURI"/>
+$template-uri: <xsl:value-of select="$template-uri"/>
+            <xsl:variable name="template-doc" select="document($template-uri)" as="document-node()?"/>
             <xsl:choose>
-                <xsl:when test="$constructor-query">
-                    <xsl:variable name="query-uri" select="xs:anyURI(concat(resolve-uri('sparql', $gp:baseUri), '?query=', encode-for-uri(replace($constructor-query, '\?this', '_:this'))))" as="xs:anyURI"/>
-                    <xsl:variable name="template-doc" select="document($query-uri)" as="document-node()?"/>
+                <xsl:when test="$template-doc">
                     <xsl:variable name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
 
                     <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
@@ -1045,7 +1048,7 @@ exclude-result-prefixes="#all">
                     </xsl:apply-templates>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:message>gc:EditMode is active but spin:constructor query is not defined for class '<xsl:value-of select="$ont-class/@rdf:about"/>'</xsl:message>
+                    <xsl:message>gc:EditMode is active but spin:constructor query is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
                     <xsl:apply-templates mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>

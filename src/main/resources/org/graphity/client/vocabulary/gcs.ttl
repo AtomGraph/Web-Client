@@ -7,7 +7,6 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix ldp:	<http://www.w3.org/ns/ldp#> .
 @prefix dc:	<http://purl.org/dc/elements/1.1/> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix sp:	<http://spinrdf.org/sp#> .
@@ -39,7 +38,7 @@
             ]
         ] ;
     gp:uriTemplate "/templates" ;
-    gp:limit 20 ;
+    gp:defaultLimit 20 ;
     #gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
     #gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
@@ -83,9 +82,9 @@
                             rdfs:label " " ;
                             gp:uriTemplate " " ;
                             gp:skolemTemplate " " ;
-                            gp:limit 20 ;
-                            gp:offset 0 ;
-                            gp:orderBy " "^^xsd:string ;
+                            gp:defaultLimit 20 ;
+                            gp:defaultOffset 0 ;
+                            gp:defaultOrderByVarName " "^^xsd:string ;
                             gp:cacheControl "no-cache" ;
                             gp:loadClass _:javaClass ;
                             spin:query gp:Describe ;
@@ -138,7 +137,7 @@
             ]
         ] ;
     gp:uriTemplate "/queries" ;
-    gp:limit 20 ;
+    gp:defaultLimit 20 ;
     # gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
     # gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
@@ -211,8 +210,8 @@
     rdfs:subClassOf foaf:Document, gp:Container, sioc:Container ;
     gp:uriTemplate "/resources/labelled" ; # "/{path}/labelled" ?
     spin:query <#DescribeLabelResources> ;
-    gp:limit 20 ;
-    gp:orderBy "label"^^xsd:string ;
+    gp:defaultLimit 20 ;
+    gp:defaultOrderBy "label"^^xsd:string ;
     gp:loadClass <java:org.graphity.client.resource.labelled.Container> ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .

@@ -25,7 +25,6 @@ limitations under the License.
     <!ENTITY geo            "http://www.w3.org/2003/01/geo/wgs84_pos#">    
     <!ENTITY skos           "http://www.w3.org/2004/02/skos/core#">
     <!ENTITY sparql         "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldp            "http://www.w3.org/ns/ldp#">
     <!ENTITY sd             "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dc             "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct            "http://purl.org/dc/terms/">
@@ -46,7 +45,6 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
-xmlns:ldp="&ldp;"
 xmlns:geo="&geo;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 xmlns:dc="&dc;"

@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.vocabulary;
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -51,12 +52,30 @@ public final class GP
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
 
+    public static final OntClass Space = m_model.createClass( NS + "Space" );
+    
     public static final OntClass Container = m_model.createClass( NS + "Container" );
     
     public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
     
     public static final OntClass Page = m_model.createClass( NS + "Page" );
 
+    public static final AnnotationProperty defaultOffset = m_model.createAnnotationProperty( NS + "defaultOffset" );
+    
+    public static final AnnotationProperty defaultLimit = m_model.createAnnotationProperty( NS + "defaultLimit" );
+
+    public static final AnnotationProperty defaultOrderByVarName = m_model.createAnnotationProperty( NS + "defaultOrderByVarName" );
+
+    public static final AnnotationProperty defaultDesc = m_model.createAnnotationProperty( NS + "defaultDesc" );
+
+    public static final AnnotationProperty uriTemplate = m_model.createAnnotationProperty( NS + "uriTemplate" );
+
+    public static final AnnotationProperty skolemTemplate = m_model.createAnnotationProperty( NS + "skolemTemplate" );
+
+    public static final AnnotationProperty loadClass = m_model.createAnnotationProperty( NS + "loadClass" );
+
+    public static final AnnotationProperty cacheControl = m_model.createAnnotationProperty( NS + "cacheControl" );
+    
     public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
     
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
@@ -74,12 +93,6 @@ public final class GP
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
     public static final DatatypeProperty sitemap = m_model.createDatatypeProperty( NS + "sitemap" );
-
-    public static final DatatypeProperty uriTemplate = m_model.createDatatypeProperty( NS + "uriTemplate" );
-
-    public static final DatatypeProperty skolemTemplate = m_model.createDatatypeProperty( NS + "skolemTemplate" );
-
-    public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
     
@@ -93,8 +106,6 @@ public final class GP
 
     public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
     
-    public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
-
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
     public static final ObjectProperty construct = m_model.createObjectProperty( NS + "construct" );
