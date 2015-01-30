@@ -72,6 +72,10 @@
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
+<#CreateMode> a <#Mode>, <#ContainerMode> ;
+    rdfs:label "Create" ;
+    rdfs:isDefinedBy <#> .
+
 <#TableMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .

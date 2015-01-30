@@ -212,6 +212,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!--
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
         <form class="form-horizontal" method="post" action="{$gp:absolutePath}{gc:query-string($gc:uri, $gp:mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
@@ -227,7 +228,8 @@ exclude-result-prefixes="#all">
 	    </div>
 	</form>
     </xsl:template>
-
+    -->
+    
     <xsl:template match="*[*][@rdf:about = $gc:uri]" mode="gc:CreateMode">
         <xsl:apply-templates select="." mode="gc:EditMode"/>
     </xsl:template>

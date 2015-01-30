@@ -76,12 +76,12 @@ public class Container extends ResourceBase
     }
 
     @Override
-    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
-	if (getSearchString() != null) return super.getPageUriBuilder(offset, limit, orderBy, desc, mode).
+	if (getSearchString() != null) return super.getStateUriBuilder(offset, limit, orderBy, desc, mode).
                 queryParam(RDFS.label.getLocalName(), getSearchString());
 	
-	return super.getPageUriBuilder(offset, limit, orderBy, desc, mode);
+	return super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
     }
 
 }

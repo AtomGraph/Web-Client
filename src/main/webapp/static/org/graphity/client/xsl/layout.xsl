@@ -85,7 +85,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-mode-of" match="*[@rdf:about]" use="gp:modeOf/@rdf:resource"/>    
+    <xsl:key name="resources-by-construct-mode-of" match="*[@rdf:about]" use="gp:constructModeOf/@rdf:resource"/>    
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
@@ -231,7 +231,7 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="($gc:defaultMode, $gp:mode) = ('&gc;EditMode', '&gc;CreateMode')">
+        <xsl:if test="($gc:defaultMode, $gp:mode) = ('&gc;EditMode', '&gp;ConstructItemMode')">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
@@ -288,8 +288,8 @@ exclude-result-prefixes="#all">
             <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gc;EditMode') or $gp:mode = '&gc;EditMode'">
                 <xsl:apply-templates select="." mode="gc:EditMode"/>
             </xsl:when>
-            <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gc;CreateMode') or $gp:mode = '&gc;CreateMode'">
-                <xsl:apply-templates select="." mode="gc:CreateMode"/>
+            <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gp;ConstructItemMode') or $gp:mode = '&gp;ConstructItemMode'">
+                <xsl:apply-templates select="." mode="gp:ConstructItemMode"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="gc:ReadMode"/>
@@ -450,10 +450,10 @@ exclude-result-prefixes="#all">
                 </a>                        
             </div>
         </xsl:if>
-        <xsl:if test="not($gp:mode = '&gc;CreateMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
+        <xsl:if test="not($gp:mode = '&gp;ConstructItemMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
             <div class="pull-right">
-                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;CreateMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gc;CreateMode', document('&gc;'))" mode="gc:LabelMode"/>
+                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gp;ConstructItemMode'))}">
+                    <xsl:apply-templates select="key('resources', '&gp;ConstructItemMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>
             </div>
         </xsl:if>
@@ -845,7 +845,7 @@ exclude-result-prefixes="#all">
 
     <!-- CREATE MODE -->
     
-    <xsl:template match="rdf:RDF" mode="gc:CreateMode">
+    <xsl:template match="rdf:RDF" mode="gp:ConstructItemMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="concat($gp:absolutePath, '?mode=', encode-for-uri($gp:mode))" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
@@ -872,9 +872,8 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
-            
-??<xsl:copy-of select="."/>??
-            XX<xsl:apply-templates mode="#current"/>XX
+
+            <xsl:apply-templates mode="#current"/>
             
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
@@ -882,13 +881,13 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gc:CreateMode" priority="1"/>
+    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructItemMode" priority="1"/>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:CreateMode">
-        <!-- <xsl:param name="ont-class" select="key('resources-by-subclass', key('restrictions-by-container', $matched-ont-class/@rdf:about, $gp:ontModel)/@rdf:nodeID, $gp:ontModel)" as="element()"/> -->
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructItemMode">
+        <xsl:param name="template" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
 
         <xsl:apply-templates select="." mode="gc:EditMode">
-            <!-- <xsl:with-param name="ont-class" select="$ont-class"/> -->
+            <xsl:with-param name="template" select="$template"/>
         </xsl:apply-templates>
     </xsl:template>
    
@@ -922,10 +921,19 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-	    <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-                <xsl:sort select="gc:label(.)"/>
-            </xsl:apply-templates>
+            <xsl:variable name="parent-uri" select="key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource" as="xs:anyURI"/>
+            <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
+            <xsl:variable name="construct-uri" select="key('resources-by-construct-mode-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
+            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()?"/>
 
+	    <xsl:for-each select="*[not(key('predicates-by-object', @rdf:nodeID))]">
+                <xsl:apply-templates select="." mode="#current">                
+                    <xsl:with-param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>
+                    <xsl:with-param name="current" select="current()"/>
+                    <xsl:sort select="gc:label(.)"/>
+                </xsl:apply-templates>
+            </xsl:for-each>
+            
             <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>
@@ -937,11 +945,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <!--
-        <xsl:param name="ont-class" select="$matched-ont-class" as="element()"/>
-        <xsl:param name="constructor-query" select="key('resources', $ont-class/spin:constructor/@rdf:resource | $ont-class/spin:constructor/@rdf:nodeID, $gp:ontModel)/sp:text/text()" as="xs:string?"/>
-        -->
-        
+        <xsl:param name="template" as="element()?"/>
+        <xsl:param name="current" as="element()?"/>
+                
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">
                 <legend>
@@ -950,28 +956,16 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-            <xsl:variable name="parent-uri" select="if (key('resources', foaf:isPrimaryTopicOf/@rdf:resource)) then key('resources', foaf:isPrimaryTopicOf/@rdf:resource)/sioc:has_container/@rdf:resource else sioc:has_container/@rdf:resource" as="xs:anyURI"/>
-            <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
-            <xsl:variable name="construct-uri" select="key('resources', $parent-uri, $parent-doc)/gp:construct/@rdf:resource" as="xs:anyURI"/>
-            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()?"/>
-<!--
-$template-doc: <xsl:copy-of select="$template-doc"/>
-current()/rdf:type/@rdf:resource: <xsl:value-of select="current()/rdf:type/@rdf:resource"/>
--->
 
             <xsl:choose>
-                <xsl:when test="$template-doc">
-                    <xsl:variable name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
-$template: <xsl:copy-of select="$template"/>
-                    <!--
+                <xsl:when test="$template">
                     <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
                     </xsl:apply-templates>
-                    -->
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:message>gc:EditMode is active but spin:constructor query is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
+                    <xsl:message>gc:EditMode is active but gp:ConstructItemMode is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
                     <xsl:apply-templates mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>

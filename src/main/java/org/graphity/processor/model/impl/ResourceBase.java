@@ -209,7 +209,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                             orderBy(orderBy, desc);
                     }
 
-                    if (getMode() != null && (getMode().equals(URI.create(GP.ConstructMode.getURI())))
+                    if (getMode() != null && (getMode().equals(URI.create(GP.ConstructItemMode.getURI())))
                             && queryBuilder.getSubSelectBuilder() != null)
                     {
                         if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
@@ -318,7 +318,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             && getRealURI().equals(getUriInfo().getRequestUri()) && getOffset() != null && getLimit() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
-	    return Response.seeOther(getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build()).build();
+	    return Response.seeOther(getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build()).build();
 	}
 
 	Model description = describe();
@@ -554,7 +554,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
                 getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
 	{
-            if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
+            if (getMode() != null && getMode().equals(URI.create(GP.ConstructItemMode.getURI())))
             {
                 try
                 {
@@ -580,11 +580,16 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             }
             else
             {
-                if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);
-                String pageURI = getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
                 Resource modeResource = null;
                 if (getMode() != null) modeResource = model.createResource(getMode().toString());
-                Resource page = createPageResource(model, model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), modeResource).
+
+                String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructItemMode.getURI())).build().toString();
+                Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
+                        addProperty(GP.constructModeOf, this);
+                    
+                if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);
+                String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                Resource page = createState(model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), modeResource).
                         addProperty(RDF.type, GP.Page).
                         addProperty(GP.pageOf, this);
 
@@ -592,7 +597,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 {
                     if (getOffset() >= getLimit())
                     {
-                        String prevURI = getPageUriBuilder(getOffset() - getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                        String prevURI = getStateUriBuilder(getOffset() - getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
                         if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), prevURI);
                         page.addProperty(XHV.prev, model.createResource(prevURI));
                     }
@@ -602,7 +607,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                     //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
                     //if (subjectCount >= getLimit())
                     {
-                        String nextURI = getPageUriBuilder(getOffset() + getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                        String nextURI = getStateUriBuilder(getOffset() + getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
                         if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), nextURI);
                         page.addProperty(XHV.next, model.createResource(nextURI));
                     }
@@ -621,8 +626,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         }
                         else
                         {
-                            String pageModeURI = getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
-                            createPageResource(model, model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                            String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                            createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
                                 addProperty(RDF.type, GP.Page).
                                 addProperty(GP.pageOf, this);                                    
                         }
@@ -641,28 +646,25 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     /**
      * Creates a page resource for the current container. Includes HATEOS previous/next links.
      * 
-     * @param model target RDF model
-     * @param page
+     * @param state
      * @param offset
      * @param limit
      * @param orderBy
      * @param desc
      * @param mode
      * @return page resource
-     * @see <a href="http://www.w3.org/1999/xhtml/vocab">XHTML Vocabulary</a>
      */
-    public Resource createPageResource(Model model, Resource page, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
-        if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        if (page == null) throw new IllegalArgumentException("Resource subject cannot be null");        
+        if (state == null) throw new IllegalArgumentException("Resource subject cannot be null");        
 
-        if (offset != null) page.addLiteral(GP.offset, offset);
-        if (limit != null) page.addLiteral(GP.limit, limit);
-        if (orderBy != null) page.addLiteral(GP.orderBy, orderBy);
-        if (desc != null) page.addLiteral(GP.desc, desc);
-        if (mode != null) page.addProperty(GP.mode, mode);
+        if (offset != null) state.addLiteral(GP.offset, offset);
+        if (limit != null) state.addLiteral(GP.limit, limit);
+        if (orderBy != null) state.addLiteral(GP.orderBy, orderBy);
+        if (desc != null) state.addLiteral(GP.desc, desc);
+        if (mode != null) state.addProperty(GP.mode, mode);
         
-        return page;
+        return state;
     }
     
     /**
@@ -865,7 +867,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @param mode
      * @return URI builder
      */
-    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
         UriBuilder uriBuilder = UriBuilder.fromUri(getURI());
         
