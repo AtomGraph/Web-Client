@@ -83,7 +83,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
-    <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
+    <!-- <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/> -->
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
@@ -213,7 +213,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:CreateMode">
-        <form class="form-horizontal" method="post" action="{$gp:absolutePath}{gc:query-string($gc:uri, $gc:mode)}" accept-charset="UTF-8">
+        <form class="form-horizontal" method="post" action="{$gp:absolutePath}{gc:query-string($gc:uri, $gp:mode)}" accept-charset="UTF-8">
 	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="gc:InputTemplate">
 		<xsl:with-param name="name" select="'rdf'"/>
@@ -238,7 +238,7 @@ exclude-result-prefixes="#all">
         </div>
 
         <xsl:apply-imports>
-            <xsl:with-param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string($gc:endpointUri, $query, $gc:mode, ())))"/>
+            <xsl:with-param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string($gc:endpointUri, $query, $gp:mode, ())))"/>
         </xsl:apply-imports>
     </xsl:template>
     

@@ -23,7 +23,7 @@ import org.graphity.server.model.LinkedDataResource;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public interface Resource extends LinkedDataResource, QueriedResource, MatchedIndividual, OntResource // ContainerResource?
+public interface Resource extends LinkedDataResource, QueriedResource, OntResource
 {
     
 }

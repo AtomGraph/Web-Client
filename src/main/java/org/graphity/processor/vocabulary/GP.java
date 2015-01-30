@@ -76,6 +76,8 @@ public final class GP
 
     public static final AnnotationProperty cacheControl = m_model.createAnnotationProperty( NS + "cacheControl" );
     
+    public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
+        
     public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
     
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
@@ -88,7 +90,7 @@ public final class GP
 
     public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
 
-    public static final ObjectProperty ontModel = m_model.createObjectProperty( NS + "ontModel" );
+    //public static final ObjectProperty ontModel = m_model.createObjectProperty( NS + "ontModel" );
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
@@ -108,6 +110,8 @@ public final class GP
     
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
-    public static final ObjectProperty construct = m_model.createObjectProperty( NS + "construct" );
+    public static final ObjectProperty modeOf = m_model.createObjectProperty( NS + "modeOf" );
+    
+    //public static final ObjectProperty construct = m_model.createObjectProperty( NS + "construct" );
 
 }

@@ -30,7 +30,8 @@ xmlns:rdf="&rdf;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
 exclude-result-prefixes="#all">
-    
+
+    <!--    
     <xsl:template match="spin:query/@rdf:resource | spin:query/@rdf:nodeID" mode="gc:EditMode">
         <select name="ou" id="{generate-id(..)}">
             <xsl:apply-templates select="key('resources-by-type', '&sp;Query', $gp:ontModel)" mode="gc:OptionMode">
@@ -39,5 +40,6 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
         </select>
     </xsl:template>
-
+    -->
+    
 </xsl:stylesheet>

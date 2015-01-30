@@ -128,8 +128,8 @@ LIMIT 100</xsl:param>
                 </script>
 
                 <div class="form-actions">
-                    <xsl:if test="$gc:mode">
-                        <input type="hidden" name="mode" value="{$gc:mode}"/>
+                    <xsl:if test="$gp:mode">
+                        <input type="hidden" name="mode" value="{$gp:mode}"/>
                     </xsl:if>
                     <button type="submit" class="btn btn-primary">Query</button>
                 </div>
@@ -138,7 +138,7 @@ LIMIT 100</xsl:param>
     </xsl:template>
 
     <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryResultMode">
-	<xsl:param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string((), $query, $gc:mode, ())))"/>
+	<xsl:param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string((), $query, $gp:mode, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
@@ -146,32 +146,32 @@ LIMIT 100</xsl:param>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
-                    <xsl:when test="$gc:mode = '&gc;ListMode'">
+                    <xsl:when test="$gp:mode = '&gc;ListMode'">
                         <xsl:apply-templates select="*" mode="gc:ListMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;TableMode'">
+                    <xsl:when test="$gp:mode = '&gc;TableMode'">
                         <xsl:apply-templates select="." mode="gc:TableMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;ThumbnailMode'">
+                    <xsl:when test="$gp:mode = '&gc;ThumbnailMode'">
                         <xsl:apply-templates select="." mode="gc:ThumbnailMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;MapMode'">
+                    <xsl:when test="$gp:mode = '&gc;MapMode'">
                         <xsl:apply-templates select="." mode="gc:MapMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;EditMode'">
+                    <xsl:when test="$gp:mode = '&gc;EditMode'">
                         <xsl:apply-templates select="." mode="gc:EditMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>                            
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;CreateMode'">
+                    <xsl:when test="$gp:mode = '&gc;CreateMode'">
                         <xsl:apply-templates select="." mode="gc:CreateMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>

@@ -18,7 +18,6 @@ package org.graphity.client.writer;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -43,7 +42,6 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.model.MatchedIndividual;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.provider.ModelProvider;
 import org.slf4j.Logger;
@@ -65,9 +63,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
     public static List<String> RESERVED_PARAMS = Arrays.asList(GP.baseUri.getLocalName(), GP.absolutePath.getLocalName(),
-            GP.requestUri.getLocalName(), GP.httpHeaders.getLocalName(), GP.ontModel.getLocalName(),
+            GP.requestUri.getLocalName(), GP.httpHeaders.getLocalName(), //GP.ontModel.getLocalName(),
             GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(),
-            GP.lang.getLocalName(), GC.mode.getLocalName(),
+            GP.lang.getLocalName(), GP.mode.getLocalName(),
             GC.uri.getLocalName(), GC.endpointUri.getLocalName());
 
     private final XSLTBuilder builder;
@@ -199,17 +197,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
 	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI()).
 	    result(new StreamResult(os));
-
-	// injecting Resource to get the final state of its Model. Is there a better way to do this?
-        if (!getUriInfo().getMatchedResources().isEmpty())
-        {
-            Resource resource = (Resource)getUriInfo().getMatchedResources().get(0);
-            if (log.isDebugEnabled()) log.debug("Matched Resource: {}", resource);
-            MatchedIndividual match = (MatchedIndividual)resource;
-
-	    bld.parameter("{" + GP.matchedOntClass.getNameSpace() + "}" + GP.matchedOntClass.getLocalName(), URI.create(match.getMatchedOntClass().getURI())).
-            parameter("{" + GP.ontModel.getNameSpace() + "}" + GP.ontModel.getLocalName(), getSource(match.getOntModel(), true)); // $ont-model from the current Resource (with imports)
-        }
         
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
 	if (contentType != null)
@@ -239,9 +226,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         }
 
         // override the reserved parameters that need special types
-	if (getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
-	    bld.parameter("{" + GC.mode.getNameSpace() + "}" + GC.mode.getLocalName(),
-                    URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName())));
+	if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
+	    bld.parameter("{" + GP.mode.getNameSpace() + "}" + GP.mode.getLocalName(),
+                    URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName())));
 	if (getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
 	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
                 URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName())));

@@ -16,7 +16,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology, gp:Sitemap ;
-    owl:imports gc:, sp:, spin:, foaf:, sioc: ;
+    owl:imports gc:, gp:, sp:, spin:, foaf:, sioc: ;
     owl:versionInfo "1.1.1" ;
     rdfs:label "Graphity Client sitemap" ;
     rdfs:comment "Ontology of Graphity Client domain resource templates" .
@@ -30,17 +30,11 @@
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom gp:Space
-        ] ,
-        [ a owl:Restriction ;
-            owl:onProperty gc:mode ;
-            owl:allValuesFrom [ a owl:Class ;
-                owl:oneOf (gp:ConstructMode gc:ListMode gc:TableMode)
-            ]
         ] ;
     gp:uriTemplate "/templates" ;
     gp:defaultLimit 20 ;
-    #gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
-    #gc:defaultMode gc:ListMode ;
+    gp:supportedMode gc:ListMode, gc:TableMode ; # gc:CreateMode
+    # gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
@@ -88,8 +82,8 @@
                             gp:cacheControl "no-cache" ;
                             gp:loadClass _:javaClass ;
                             spin:query gp:Describe ;
-                            gc:defaultMode gc:ReadMode ;
-                            gc:mode gc:ReadMode .
+                            # gc:defaultMode gc:ReadMode ;
+                            gp:supportedMode gc:ReadMode .
                     }
                     WHERE {}"""
               ] ;
@@ -129,16 +123,10 @@
         [ a owl:Restriction ;
             owl:onProperty sioc:has_space ;
             owl:allValuesFrom gp:Space
-        ] ,
-        [ a owl:Restriction ;
-            owl:onProperty gc:mode ;
-            owl:allValuesFrom [ a owl:Class ;
-                owl:oneOf (gp:ConstructMode gc:ListMode gc:TableMode)
-            ]
         ] ;
     gp:uriTemplate "/queries" ;
     gp:defaultLimit 20 ;
-    # gc:mode gc:ListMode, gc:TableMode, gc:CreateMode ;
+    gp:supportedMode gc:ListMode, gc:TableMode ; # gc:CreateMode ;
     # gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
@@ -211,7 +199,7 @@
     gp:uriTemplate "/resources/labelled" ; # "/{path}/labelled" ?
     spin:query <#DescribeLabelResources> ;
     gp:defaultLimit 20 ;
-    gp:defaultOrderBy "label"^^xsd:string ;
+    gp:defaultOrderByVarName "label"^^xsd:string ;
     gp:loadClass <java:org.graphity.client.resource.labelled.Container> ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .

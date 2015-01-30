@@ -37,6 +37,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.processor.exception.ConstraintViolationException;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.model.QueriedResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,8 +110,8 @@ public class ValidatingRDFPostReader extends RDFPostReader
     
     public URI getMode()
     {
-        if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
-            return URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
+        if (getUriInfo().getQueryParameters().containsKey(GP.mode.getLocalName()))
+            return URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()));
                     
         return null;
     }

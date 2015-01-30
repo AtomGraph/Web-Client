@@ -19,6 +19,7 @@ package org.graphity.client.resource.labelled;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
+import java.net.URI;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -75,12 +76,12 @@ public class Container extends ResourceBase
     }
 
     @Override
-    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc)
+    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
-	if (getSearchString() != null) return super.getPageUriBuilder(offset, limit, orderBy, desc).
+	if (getSearchString() != null) return super.getPageUriBuilder(offset, limit, orderBy, desc, mode).
                 queryParam(RDFS.label.getLocalName(), getSearchString());
 	
-	return super.getPageUriBuilder(offset, limit, orderBy, desc);
+	return super.getPageUriBuilder(offset, limit, orderBy, desc, mode);
     }
 
 }

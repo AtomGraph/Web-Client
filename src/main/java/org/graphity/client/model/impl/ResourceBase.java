@@ -16,14 +16,10 @@
  */
 package org.graphity.client.model.impl;
 
-import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
-import com.hp.hpl.jena.ontology.EnumeratedClass;
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.Arrays;
@@ -35,7 +31,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
@@ -110,6 +105,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param model target RDF model
      * @return description model with metadata
      */
+    /*    
     @Override
     public Model addMetadata(Model model)
     {
@@ -120,50 +116,44 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 
 	if (getMatchedOntClass().hasSuperClass(GP.Container))
 	{
-            ExtendedIterator<OntClass> it = getMatchedOntClass().listSuperClasses(true);
-            try
+            if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
             {
-                while (it.hasNext())
+                NodeIterator it = getMatchedOntClass().listPropertyValues(GC.supportedMode);
+                try
                 {
-                    OntClass superClass = it.next();
-                    if (superClass.canAs(AllValuesFromRestriction.class))
+                    while (it.hasNext())
                     {
-                        AllValuesFromRestriction avfr = superClass.as(AllValuesFromRestriction.class);
-                        if (avfr.getOnProperty().equals(GC.mode))
+                        RDFNode mode = it.next();
+                        if (!mode.canAs(Individual.class))
                         {
-                            if (avfr.getAllValuesFrom().canAs(EnumeratedClass.class))
-                            {                                
-                                ExtendedIterator<? extends OntResource> unionIt = avfr.getAllValuesFrom().as(EnumeratedClass.class).listOneOf();
-                                try
-                                {
-                                    while (unionIt.hasNext())
-                                    {
-                                        Resource modeLink = model.createResource(getModeUriBuilder(unionIt.next()).build().toString());
-                                        model.add(this, GC.mode, modeLink);
-                                    }
-                                }
-                                finally
-                                {
-                                    unionIt.close();
-                                }
-                            }
-                            else
-                            {
-                                Resource modeLink = model.createResource(getModeUriBuilder(avfr.getAllValuesFrom()).build().toString());                                
-                                model.add(this, GC.mode, modeLink);
-                            }
+                            if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", getMatchedOntClass().getURI());
+                            //throw new ConfigurationException("Invalid Mode defined for template '" + getMatchedOntClass().getURI() +"'");
                         }
+                        else createModeResource(model, getOffset(), getLimit(), getOrderBy(), getDesc(), mode.as(Individual.class));
                     }
                 }
-            }
-            finally
-            {
-                it.close();
+                finally
+                {
+                    it.close();
+                }
             }
         }
         
         return super.addMetadata(model);
     }
+    */
+    
+    /*
+    public Resource createModeResource(Model model, Long offset, Long limit, String orderBy, Boolean desc, Individual mode)
+    {
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        if (mode == null) throw new IllegalArgumentException("OntClass cannot be null");
+
+        return model.createResource(getPageUriBuilder(offset, limit, orderBy, desc, mode).build().toString()).
+                addProperty(GC.mode, mode).
+                addProperty(GC.modeOf, this);
+    }
+    */
     
     /**
      * Builds a list of acceptable response variants
@@ -212,14 +202,18 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * 
      * @param offset
      * @param limit
+     * @param orderBy
+     * @param desc
+     * @param mode
      * @return URI builder
      */
-    @Override
-    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc)
+    /*
+    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
-	if (getMode() != null) return super.getPageUriBuilder(offset, limit, orderBy, desc).queryParam(GC.mode.getLocalName(), getMode());
+	if (mode != null) return super.getPageUriBuilder(offset, limit, orderBy, desc).
+                queryParam(GC.mode.getLocalName(), mode);
 	
 	return super.getPageUriBuilder(offset, limit, orderBy, desc);
     }
-    
+    */
 }

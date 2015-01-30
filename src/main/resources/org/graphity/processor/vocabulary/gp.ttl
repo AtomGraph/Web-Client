@@ -120,6 +120,23 @@
 
 # RESOURCE PROPERTIES
 
+<#pageOf> a owl:ObjectProperty ;
+    rdfs:label "Page of container" ;
+    rdfs:domain <#Page> ;
+    rdfs:range <#Container> ;
+    rdfs:comment "Links page resource to its container resource" ;
+    rdfs:isDefinedBy <#> .
+
+<#modeOf> a owl:ObjectProperty ;
+    rdfs:subPropertyOf dct:isVersionOf ;
+    rdfs:label "Processor mode" ;
+    rdfs:isDefinedBy <#> .
+
+<#mode> a owl:ObjectProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Layout mode" ;
+    rdfs:isDefinedBy <#> .
+
 <#limit> a owl:DatatypeProperty ;
     rdfs:domain <#Page> ;
     rdfs:range xsd:long ;
@@ -160,7 +177,7 @@
     rdfs:isDefinedBy <#> .
 
 <#mode> a owl:ObjectProperty ;
-    rdfs:domain <#Template> ;
+    rdfs:domain <#Template> ; # ?
     rdfs:range <#Mode> ;
     rdfs:label "RDF description mode" ;
     rdfs:isDefinedBy <#> .
@@ -233,7 +250,7 @@
 	    sp:arg1 <#Container> ;
 	    sp:arg2 <#slug>
 	] ;
-    rdfs:label "Container document" ;
+    rdfs:label "Container" ;
     rdfs:isDefinedBy <#> .
 
 <#Item> a rdfs:Class, owl:Class, <#Template> ;
@@ -264,7 +281,7 @@
 	    sp:arg1 <#Item> ;
 	    sp:arg2 <#slug>
 	] ;
-    rdfs:label "Item document" ;
+    rdfs:label "Item" ;
     rdfs:isDefinedBy <#> .
 
 <#Topic> a rdfs:Class, owl:Class ;

@@ -318,7 +318,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             && getRealURI().equals(getUriInfo().getRequestUri()) && getOffset() != null && getLimit() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
-	    return Response.seeOther(getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc()).build()).build();
+	    return Response.seeOther(getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build()).build();
 	}
 
 	Model description = describe();
@@ -580,69 +580,87 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             }
             else
             {
+                if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);
+                String pageURI = getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                Resource modeResource = null;
+                if (getMode() != null) modeResource = model.createResource(getMode().toString());
+                Resource page = createPageResource(model, model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), modeResource).
+                        addProperty(RDF.type, GP.Page).
+                        addProperty(GP.pageOf, this);
+
                 if (getOffset() != null && getLimit() != null)
                 {
-                    if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-                    createPageResource(model, getOffset(), getLimit(), getOrderBy(), getDesc());
+                    if (getOffset() >= getLimit())
+                    {
+                        String prevURI = getPageUriBuilder(getOffset() - getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                        if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), prevURI);
+                        page.addProperty(XHV.prev, model.createResource(prevURI));
+                    }
+
+                    // no way to know if there's a next page without counting results (either total or in current page)
+                    //int subjectCount = describe().listSubjects().toList().size();
+                    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
+                    //if (subjectCount >= getLimit())
+                    {
+                        String nextURI = getPageUriBuilder(getOffset() + getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                        if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), nextURI);
+                        page.addProperty(XHV.next, model.createResource(nextURI));
+                    }
                 }
-            }
-            
-            model.add(this, GP.construct, model.createResource(getModeUriBuilder(GP.ConstructMode).build().toString()));
+                
+                NodeIterator it = getMatchedOntClass().listPropertyValues(GP.supportedMode);
+                try
+                {
+                    while (it.hasNext())
+                    {
+                        RDFNode supportedMode = it.next();
+                        if (!supportedMode.isURIResource())
+                        {
+                            if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", getMatchedOntClass().getURI());
+                            //throw new ConfigurationException("Invalid Mode defined for template '" + getMatchedOntClass().getURI() +"'");
+                        }
+                        else
+                        {
+                            String pageModeURI = getPageUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                            createPageResource(model, model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                                addProperty(RDF.type, GP.Page).
+                                addProperty(GP.pageOf, this);                                    
+                        }
+                    }
+                }
+                finally
+                {
+                    it.close();
+                }
+            }            
         }
         
         return model;
-    }
-    
-    public Resource createConstructResource(Model model)
-    {
-        if (model == null) throw new IllegalArgumentException("Model cannot be null");
-
-        return model.createResource(getModeUriBuilder(GP.ConstructMode).build().toString()).
-                addProperty(GP.mode, GP.ConstructMode);
     }
     
     /**
      * Creates a page resource for the current container. Includes HATEOS previous/next links.
      * 
      * @param model target RDF model
+     * @param page
      * @param offset
      * @param limit
      * @param orderBy
      * @param desc
+     * @param mode
      * @return page resource
      * @see <a href="http://www.w3.org/1999/xhtml/vocab">XHTML Vocabulary</a>
      */
-    public Resource createPageResource(Model model, Long offset, Long limit, String orderBy, Boolean desc)
+    public Resource createPageResource(Model model, Resource page, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        if (offset == null) throw new IllegalArgumentException("OFFSET cannot be null");
-        if (limit == null) throw new IllegalArgumentException("LIMIT cannot be null");
-        
-        if (log.isDebugEnabled()) log.debug("Adding PageResource metadata: ldp:pageOf {}", this);
-        Resource page = model.createResource(getPageUriBuilder(offset, limit, orderBy, desc).build().toString()).
-            addProperty(RDF.type, GP.Page).
-            addProperty(GP.pageOf, this).
-            addLiteral(GP.offset, offset).
-            addLiteral(GP.limit, limit);
+        if (page == null) throw new IllegalArgumentException("Resource subject cannot be null");        
+
+        if (offset != null) page.addLiteral(GP.offset, offset);
+        if (limit != null) page.addLiteral(GP.limit, limit);
         if (orderBy != null) page.addLiteral(GP.orderBy, orderBy);
         if (desc != null) page.addLiteral(GP.desc, desc);
-
-        if (offset >= limit)
-        {
-            String prevURI = getPageUriBuilder(offset - limit, limit, orderBy, desc).build().toString();
-            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), prevURI);
-            page.addProperty(XHV.prev, model.createResource(prevURI));
-        }
-
-        // no way to know if there's a next page without counting results (either total or in current page)
-        //int subjectCount = describe().listSubjects().toList().size();
-        //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
-        //if (subjectCount >= getLimit())
-        {
-            String nextURI = getPageUriBuilder(offset + limit, limit, orderBy, desc).build().toString();
-            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), nextURI);
-            page.addProperty(XHV.next, model.createResource(nextURI));
-        }
+        if (mode != null) page.addProperty(GP.mode, mode);
         
         return page;
     }
@@ -844,35 +862,20 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @param limit
      * @param orderBy
      * @param desc
+     * @param mode
      * @return URI builder
      */
-    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc)
+    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
-        if (offset == null) throw new IllegalArgumentException("OFFSET cannot be null");
-        if (limit == null) throw new IllegalArgumentException("LIMIT cannot be null");
-
-        UriBuilder uriBuilder = getUriBuilder().
-                queryParam(GP.offset.getLocalName(), offset).
-                queryParam(GP.limit.getLocalName(), limit);
+        UriBuilder uriBuilder = UriBuilder.fromUri(getURI());
+        
+        if (offset != null) uriBuilder.queryParam(GP.offset.getLocalName(), offset);
+        if (limit != null) uriBuilder.queryParam(GP.limit.getLocalName(), limit);
 	if (orderBy != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), orderBy);
 	if (desc != null) uriBuilder.queryParam(GP.desc.getLocalName(), desc);
-    
+        if (mode != null) uriBuilder.queryParam(GP.mode.getLocalName(), mode);
+        
 	return uriBuilder;
-    }
-    
-    public UriBuilder getModeUriBuilder(Resource modeClass)
-    {
-	return getUriBuilder().queryParam(GP.mode.getLocalName(), modeClass.getURI());
-    }
-
-    /**
-     * Returns URI builder, initialized with the URI of this resource.
-     * 
-     * @return URI builder
-     */
-    public UriBuilder getUriBuilder()
-    {
-	return UriBuilder.fromUri(getURI());
     }
     
     /**
@@ -882,7 +885,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      */
     public URI getRealURI()
     {
-	return getUriBuilder().build();
+	return URI.create(getURI()); // getUriBuilder().build();
     }
     
     /**
@@ -901,7 +904,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @return ontology class
      */
-    @Override
     public OntClass getMatchedOntClass()
     {
 	return matchedOntClass;

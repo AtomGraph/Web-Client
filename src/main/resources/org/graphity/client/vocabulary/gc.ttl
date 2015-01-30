@@ -12,7 +12,6 @@
 # ONTOLOGY
 
 <#> a owl:Ontology ;
-    owl:imports gp: ;
     rdfs:label "Graphity Client ontology" ;
     owl:versionInfo "1.1.1" .
 
@@ -91,13 +90,11 @@
 
 # RESOURCE TEMPLATES
 
-# TO-DO: refactor with rdfs:subClassOf inheritance instead
+#gp:Space <#defaultMode> <#ListMode> ;
+#    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
 
-gp:Space <#defaultMode> <#ListMode> ;
-    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
+#gp:Container <#defaultMode> <#ListMode> ;
+#    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
 
-gp:Container <#defaultMode> <#ListMode> ;
-    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
-
-gp:Item <#defaultMode> <#ReadMode> ;
-    <#mode> <#ReadMode>, <#EditMode> .
+#gp:Item <#defaultMode> <#ReadMode> ;
+#    <#mode> <#ReadMode>, <#EditMode> .
