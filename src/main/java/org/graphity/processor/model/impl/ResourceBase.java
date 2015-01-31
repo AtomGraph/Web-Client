@@ -626,10 +626,13 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         }
                         else
                         {
-                            String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
-                            createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
-                                addProperty(RDF.type, GP.Page).
-                                addProperty(GP.pageOf, this);                                    
+                            if (!supportedMode.equals(GP.ConstructItemMode))
+                            {
+                                String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                                createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                                    addProperty(RDF.type, GP.Page).
+                                    addProperty(GP.pageOf, this);
+                            }
                         }
                     }
                 }

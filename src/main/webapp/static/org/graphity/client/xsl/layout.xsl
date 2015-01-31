@@ -300,9 +300,9 @@ exclude-result-prefixes="#all">
     <!-- MODE SELECT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
-        <xsl:if test="key('resources-by-page-of', $gp:absolutePath)">
+        <xsl:if test="key('resources-by-construct-mode-of', $gp:absolutePath) | key('resources-by-page-of', $gp:absolutePath)">
             <ul class="nav nav-tabs">
-                <xsl:apply-templates select="key('resources-by-page-of', $gp:absolutePath)" mode="#current"/>
+                <xsl:apply-templates select="key('resources-by-construct-mode-of', $gp:absolutePath) | key('resources-by-page-of', $gp:absolutePath)" mode="#current"/>
             </ul>
         </xsl:if>
     </xsl:template>
