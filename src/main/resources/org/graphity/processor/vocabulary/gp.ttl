@@ -276,7 +276,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
                         ?doc sioc:has_container ?this
                     }
                     OPTIONAL {
-                        ?thing foaf:isPrimaryTopicOf ?doc
+                        ?doc foaf:primaryTopic ?thing .
                     } .
                 }
             } .
