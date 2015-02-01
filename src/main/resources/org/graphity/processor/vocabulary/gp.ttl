@@ -309,12 +309,12 @@
     rdfs:isDefinedBy <#> .
 
 <#Mode> a owl:Class ;
-    rdfs:label "Class of modes" ;
+    rdfs:label "Class of RDF modes" ;
     rdfs:isDefinedBy <#> .
 
 # MODES
 
-<#ConstructMode> a <#Mode> ; # <#ContainerMode>
+<#ConstructItemMode> a <#Mode> ; # <#ContainerMode>
     rdfs:label "Create new" ;
     rdfs:comment "Container responds with the CONSTRUCTed template of its Item class" ;
     rdfs:isDefinedBy <#> .

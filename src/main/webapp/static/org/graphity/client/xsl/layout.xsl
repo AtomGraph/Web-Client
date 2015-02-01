@@ -302,14 +302,17 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
         <xsl:if test="key('resources-by-construct-mode-of', $gp:absolutePath) | key('resources-by-page-of', $gp:absolutePath)">
             <ul class="nav nav-tabs">
-                <xsl:apply-templates select="key('resources-by-construct-mode-of', $gp:absolutePath) | key('resources-by-page-of', $gp:absolutePath)" mode="#current"/>
+                <xsl:apply-templates select="key('resources-by-construct-mode-of', $gp:absolutePath)" mode="#current"/>
+                <xsl:apply-templates select="key('resources-by-page-of', $gp:absolutePath)" mode="#current">
+                    <xsl:sort select="gp:mode/@rdf:resource/gc:object-label(.)"/>
+                </xsl:apply-templates>
             </ul>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:ModeSelectMode" priority="1"/>
     
-    <xsl:template match="*[*][@rdf:about]" mode="gc:ModeSelectMode">
+    <xsl:template match="*[*][@rdf:about][gp:mode/@rdf:resource]" mode="gc:ModeSelectMode" priority="1">
 	<li>
 	    <xsl:if test="(not($gp:mode) and $gc:defaultMode = gp:mode/@rdf:resource) or $gp:mode = gp:mode/@rdf:resource">
 		<xsl:attribute name="class">active</xsl:attribute>
@@ -320,7 +323,9 @@ exclude-result-prefixes="#all">
             </a>
 	</li>	
     </xsl:template>
-    
+
+    <xsl:template match="*" mode="gc:ModeSelectMode"/>
+        
     <!-- BREADCRUMB MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:BreadCrumbMode">
@@ -873,9 +878,18 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates mode="#current"/>
-            
-	    <div class="form-actions">
+            <xsl:variable name="parent-doc" select="document($gp:absolutePath)" as="document-node()"/>
+            <xsl:variable name="construct-uri" select="key('resources-by-construct-mode-of', $gp:absolutePath, $parent-doc)/@rdf:about" as="xs:anyURI"/>
+            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()?"/>
+
+	    <xsl:for-each select="*">
+                <xsl:sort select="gc:label(.)"/>
+                <xsl:apply-templates select="." mode="#current">                
+                    <xsl:with-param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>
+                </xsl:apply-templates>
+            </xsl:for-each>
+
+            <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>
 	</form>
@@ -884,7 +898,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructItemMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructItemMode">
-        <xsl:param name="template" select="/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
+        <xsl:param name="template" as="element()?"/>
 
         <xsl:apply-templates select="." mode="gc:EditMode">
             <xsl:with-param name="template" select="$template"/>
@@ -927,10 +941,9 @@ exclude-result-prefixes="#all">
             <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()?"/>
 
 	    <xsl:for-each select="*[not(key('predicates-by-object', @rdf:nodeID))]">
+                <xsl:sort select="gc:label(.)"/>
                 <xsl:apply-templates select="." mode="#current">                
                     <xsl:with-param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>
-                    <xsl:with-param name="current" select="current()"/>
-                    <xsl:sort select="gc:label(.)"/>
                 </xsl:apply-templates>
             </xsl:for-each>
             
@@ -946,7 +959,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="template" as="element()?"/>
-        <xsl:param name="current" as="element()?"/>
                 
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">

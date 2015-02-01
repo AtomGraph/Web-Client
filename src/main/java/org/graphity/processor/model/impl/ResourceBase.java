@@ -176,7 +176,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                     else
                     {
                         Long defaultOffset = getLongValue(getMatchedOntClass(), GP.defaultOffset);
-                        if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
+                        //if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
                         this.offset = defaultOffset;
                     }
                     if (log.isErrorEnabled()) log.error("Setting OFFSET on container sub-SELECT: {}", offset);
@@ -315,7 +315,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         // gp:Space/gp:Container always redirect to first ldp:Page
 	if ((getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
                 getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
-            && getRealURI().equals(getUriInfo().getRequestUri()) && getOffset() != null && getLimit() != null)
+            && getRealURI().equals(getUriInfo().getRequestUri()) && getLimit() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
 	    return Response.seeOther(getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build()).build();
@@ -587,58 +587,33 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
                         addProperty(GP.constructModeOf, this);
                     
-                if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);
-                String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
-                Resource page = createState(model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), modeResource).
-                        addProperty(RDF.type, GP.Page).
-                        addProperty(GP.pageOf, this);
-
-                if (getOffset() != null && getLimit() != null)
+                if (getLimit() != null)
                 {
-                    if (getOffset() >= getLimit())
-                    {
-                        String prevURI = getStateUriBuilder(getOffset() - getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
-                        if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), prevURI);
-                        page.addProperty(XHV.prev, model.createResource(prevURI));
-                    }
+                    if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);
+                    String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                    Resource page = createState(model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), modeResource).
+                            addProperty(RDF.type, GP.Page).
+                            addProperty(GP.pageOf, this);
 
-                    // no way to know if there's a next page without counting results (either total or in current page)
-                    //int subjectCount = describe().listSubjects().toList().size();
-                    //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
-                    //if (subjectCount >= getLimit())
+                    if (getOffset() != null && getLimit() != null)
                     {
-                        String nextURI = getStateUriBuilder(getOffset() + getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
-                        if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), nextURI);
-                        page.addProperty(XHV.next, model.createResource(nextURI));
-                    }
-                }
-                
-                NodeIterator it = getMatchedOntClass().listPropertyValues(GP.supportedMode);
-                try
-                {
-                    while (it.hasNext())
-                    {
-                        RDFNode supportedMode = it.next();
-                        if (!supportedMode.isURIResource())
+                        if (getOffset() >= getLimit())
                         {
-                            if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", getMatchedOntClass().getURI());
-                            //throw new ConfigurationException("Invalid Mode defined for template '" + getMatchedOntClass().getURI() +"'");
+                            String prevURI = getStateUriBuilder(getOffset() - getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:previous {}", getURI(), prevURI);
+                            page.addProperty(XHV.prev, model.createResource(prevURI));
                         }
-                        else
+
+                        // no way to know if there's a next page without counting results (either total or in current page)
+                        //int subjectCount = describe().listSubjects().toList().size();
+                        //log.debug("describe().listSubjects().toList().size(): {}", subjectCount);
+                        //if (subjectCount >= getLimit())
                         {
-                            if (!supportedMode.equals(GP.ConstructItemMode))
-                            {
-                                String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
-                                createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
-                                    addProperty(RDF.type, GP.Page).
-                                    addProperty(GP.pageOf, this);
-                            }
+                            String nextURI = getStateUriBuilder(getOffset() + getLimit(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
+                            if (log.isDebugEnabled()) log.debug("Adding page metadata: {} xhv:next {}", getURI(), nextURI);
+                            page.addProperty(XHV.next, model.createResource(nextURI));
                         }
                     }
-                }
-                finally
-                {
-                    it.close();
                 }
             }            
         }

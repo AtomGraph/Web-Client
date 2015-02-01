@@ -78,7 +78,7 @@ public final class GP
 
     public static final AnnotationProperty cacheControl = m_model.createAnnotationProperty( NS + "cacheControl" );
     
-    public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
+    //public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
         
     public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
     

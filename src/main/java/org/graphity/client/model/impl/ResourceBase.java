@@ -18,8 +18,11 @@ package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.Arrays;
@@ -105,56 +108,40 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param model target RDF model
      * @return description model with metadata
      */
-    /*    
     @Override
     public Model addMetadata(Model model)
     {
-        if (getMode() != null && getMode().equals(URI.create(GC.EditMode.getURI()))) // getMode().equals(URI.create(GC.EditMode.getURI()))))
-	{
-            return model;
-        }
-
-	if (getMatchedOntClass().hasSuperClass(GP.Container))
-	{
-            if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
+        NodeIterator it = getMatchedOntClass().listPropertyValues(GC.supportedMode);
+        try
+        {
+            while (it.hasNext())
             {
-                NodeIterator it = getMatchedOntClass().listPropertyValues(GC.supportedMode);
-                try
+                RDFNode supportedMode = it.next();
+                if (!supportedMode.isURIResource())
                 {
-                    while (it.hasNext())
+                    if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", getMatchedOntClass().getURI());
+                    //throw new ConfigurationException("Invalid Mode defined for template '" + getMatchedOntClass().getURI() +"'");
+                }
+                else
+                {
+                    if (!supportedMode.equals(GP.ConstructItemMode))
                     {
-                        RDFNode mode = it.next();
-                        if (!mode.canAs(Individual.class))
-                        {
-                            if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", getMatchedOntClass().getURI());
-                            //throw new ConfigurationException("Invalid Mode defined for template '" + getMatchedOntClass().getURI() +"'");
-                        }
-                        else createModeResource(model, getOffset(), getLimit(), getOrderBy(), getDesc(), mode.as(Individual.class));
+                        String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                        createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                            addProperty(RDF.type, GP.Page).
+                            addProperty(GP.pageOf, this);
                     }
                 }
-                finally
-                {
-                    it.close();
-                }
             }
+        }
+        finally
+        {
+            it.close();
         }
         
         return super.addMetadata(model);
     }
-    */
-    
-    /*
-    public Resource createModeResource(Model model, Long offset, Long limit, String orderBy, Boolean desc, Individual mode)
-    {
-        if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        if (mode == null) throw new IllegalArgumentException("OntClass cannot be null");
-
-        return model.createResource(getPageUriBuilder(offset, limit, orderBy, desc, mode).build().toString()).
-                addProperty(GC.mode, mode).
-                addProperty(GC.modeOf, this);
-    }
-    */
-    
+        
     /**
      * Builds a list of acceptable response variants
      * 
@@ -196,24 +183,5 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         
         return super.put(model);
     }
-    
-    /**
-     * Returns page URI builder.
-     * 
-     * @param offset
-     * @param limit
-     * @param orderBy
-     * @param desc
-     * @param mode
-     * @return URI builder
-     */
-    /*
-    public UriBuilder getPageUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
-    {
-	if (mode != null) return super.getPageUriBuilder(offset, limit, orderBy, desc).
-                queryParam(GC.mode.getLocalName(), mode);
-	
-	return super.getPageUriBuilder(offset, limit, orderBy, desc);
-    }
-    */
+
 }

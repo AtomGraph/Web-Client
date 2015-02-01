@@ -33,7 +33,7 @@
         ] ;
     gp:uriTemplate "/templates" ;
     gp:defaultLimit 20 ;
-    gp:supportedMode gc:ListMode, gc:TableMode, gp:ConstructItemMode ; # gc:CreateMode ;
+    gc:supportedMode gc:ListMode, gc:TableMode, gp:ConstructItemMode ; # gc:CreateMode ;
     # gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
@@ -83,7 +83,7 @@
                             gp:loadClass _:javaClass ;
                             spin:query gp:Describe ;
                             # gc:defaultMode gc:ReadMode ;
-                            gp:supportedMode gc:ReadMode .
+                            gc:supportedMode gc:ReadMode .
                     }
                     WHERE {}"""
               ] ;
@@ -91,7 +91,7 @@
 	    sp:arg1 <#TemplateItem> ;
 	    sp:arg2 gp:slug
 	] ;
-    rdfs:label "Template document" ;
+    rdfs:label "Template item" ;
     rdfs:isDefinedBy <#> .
 
 <#Template> a rdfs:Class, owl:Class ;
@@ -126,7 +126,7 @@
         ] ;
     gp:uriTemplate "/queries" ;
     gp:defaultLimit 20 ;
-    gp:supportedMode gc:ListMode, gc:TableMode, gp:ConstructItemMode ; # gc:CreateMode ;
+    gc:supportedMode gc:ListMode, gc:TableMode, gp:ConstructItemMode ; # gc:CreateMode ;
     # gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
@@ -171,7 +171,7 @@
 	    sp:arg1 <#QueryItem> ;
 	    sp:arg2 gp:slug
 	] ;
-    rdfs:label "Query document" ;
+    rdfs:label "Query item" ;
     rdfs:isDefinedBy <#> .
 
 <#Query> a rdfs:Class, owl:Class ;
