@@ -74,6 +74,8 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="gc:defaultMode" select="if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')" as="xs:anyURI"/>
+    <xsl:param name="rdf:type" as="xs:anyURI?"/>
+    <xsl:param name="gp:sitemap" select="key('resources', rdf:type, document(gc:document-uri(rdf:type)))" as="document-node()?"/>
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
@@ -240,7 +242,7 @@ exclude-result-prefixes="#all">
         <!-- <xsl:param name="selected-resources" select="*[not(. is key('resources-by-page-of', $gp:absolutePath))][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*"/> -->
         <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gp:absolutePath)]" as="element()*"/>
 
-	<div class="container-fluid">
+        <div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
                     <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
@@ -458,7 +460,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="not($gp:mode = '&gp;ConstructItemMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gp;ConstructItemMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gp;ConstructItemMode', document('&gc;'))" mode="gc:LabelMode"/>
+                    <xsl:apply-templates select="key('resources', '&gp;ConstructItemMode', document('&gp;'))" mode="gc:LabelMode"/>
                 </a>
             </div>
         </xsl:if>
@@ -884,9 +886,12 @@ exclude-result-prefixes="#all">
 
 	    <xsl:for-each select="*">
                 <xsl:sort select="gc:label(.)"/>
+                <!--
                 <xsl:apply-templates select="." mode="#current">                
                     <xsl:with-param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>
                 </xsl:apply-templates>
+                -->
+??<xsl:copy-of select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>??
             </xsl:for-each>
 
             <div class="form-actions">

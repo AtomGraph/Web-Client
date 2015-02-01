@@ -16,8 +16,11 @@
  */
 package org.graphity.client.writer;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -42,6 +45,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.processor.util.Link;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.server.provider.ModelProvider;
 import org.slf4j.Logger;
@@ -186,7 +190,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
             return cr.getContext(XSLTBuilder.class);
         }
     }
-    
+
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {        
         XSLTBuilder bld = getXSLTBuilder().
@@ -197,6 +201,14 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
 	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI()).
 	    result(new StreamResult(os));
+     
+        if (headerMap.containsKey("Link"))
+        {
+            Link classLink = Link.valueOf(headerMap.getFirst("Link").toString());
+	    bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), classLink.getHref());
+            OntModel sitemap = OntDocumentManager.getInstance().getOntology(classLink.getHref().toString(), OntModelSpec.OWL_MEM);
+            bld.parameter("{" + GP.sitemap.getNameSpace() + "}" + GP.sitemap.getLocalName(), getSource(sitemap, true)); // $ont-model from the current Resource (with imports)
+        }
         
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
 	if (contentType != null)

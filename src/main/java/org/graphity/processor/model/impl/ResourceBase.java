@@ -48,6 +48,7 @@ import org.graphity.processor.exception.NotFoundException;
 import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.query.QueryBuilder;
 import org.graphity.processor.update.InsertDataBuilder;
+import org.graphity.processor.util.Link;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.processor.vocabulary.XHV;
@@ -68,7 +69,6 @@ import org.topbraid.spin.vocabulary.SPIN;
  * Supports pagination on containers (implemented using SPARQL query solution modifiers).
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see ContainerResource
  * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/ontology/OntResource.html">OntResource</a>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
@@ -86,7 +86,6 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     private Boolean desc;
     private Long limit, offset;
     private QueryBuilder queryBuilder;
-    private Query query;
     private QuerySolutionMap querySolutionMap;
     private CacheControl cacheControl;
     private URI mode;
@@ -152,7 +151,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 
         try
         {
-            query = getQuery(getMatchedOntClass(), SPIN.query);
+            Query query = getQuery(getMatchedOntClass(), SPIN.query);
             if (query == null)
             {
                 if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
@@ -222,11 +221,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 }
             }
 
-            query = queryBuilder.build();
             if (log.isDebugEnabled()) log.debug("OntResource {} gets explicit spin:query value {}", this, queryBuilder);
-            addProperty(SPIN.query, getQueryBuilder());                
-
-            query.setBaseURI(getUriInfo().getBaseUri().toString());            
+            addProperty(SPIN.query, getQueryBuilder());
         }
         catch (ConfigurationException ex)
         {
@@ -742,7 +738,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public ResponseBuilder getResponseBuilder(Model model)
     {
-        return super.getResponseBuilder(model).header("Link", "<" + getMatchedOntClass().getURI() + ">; rel='type'");
+        Link classLink = new Link(URI.create(getMatchedOntClass().getURI()), "type", null);
+        return super.getResponseBuilder(model).header("Link", classLink.toString());
     }
 
     public List<Locale> getLanguages(Property property)
@@ -909,7 +906,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Query getQuery()
     {
-	return query; // return getQueryBuilder().build();
+        Query query = queryBuilder.build();            
+        query.setBaseURI(getUriInfo().getBaseUri().toString());            
+	return query;
     }
 
     /**

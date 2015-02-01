@@ -315,7 +315,7 @@
 # MODES
 
 <#ConstructItemMode> a <#Mode> ; # <#ContainerMode>
-    rdfs:label "Create new" ;
+    rdfs:label "Create" ;
     rdfs:comment "Container responds with the CONSTRUCTed template of its Item class" ;
     rdfs:isDefinedBy <#> .
 
