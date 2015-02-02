@@ -34,6 +34,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
@@ -42,6 +43,8 @@ import org.graphity.server.model.GraphStore;
 import org.graphity.server.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.vocabulary.SP;
+import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  * Base class of generic read-write Graphity Client resources.
@@ -55,6 +58,8 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
+    private final String queryString;
+    
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
      * 
@@ -74,6 +79,10 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
+        
+	if (getUriInfo().getQueryParameters().containsKey("query"))
+            queryString = getUriInfo().getQueryParameters().getFirst("query");
+        else queryString = null;
     }
     
     /**
@@ -124,13 +133,10 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
                 }
                 else
                 {
-                    if (!supportedMode.equals(GP.ConstructItemMode))
-                    {
-                        String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
-                        createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
-                            addProperty(RDF.type, GP.Page).
-                            addProperty(GP.pageOf, this);
-                    }
+                    String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                    createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                        addProperty(RDF.type, GP.Page).
+                        addProperty(GP.pageOf, this);
                 }
             }
         }
@@ -184,4 +190,27 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         return super.put(model);
     }
 
+    @Override
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
+    {
+	if (getQueryString() != null) return super.createState(state, offset, limit, orderBy, desc, mode).
+                addProperty(SPIN.query, state.getModel().createResource().addLiteral(SP.text, getQueryString()));
+        
+        return super.createState(state, offset, limit, orderBy, desc, mode);
+    }
+
+    @Override
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    {
+	if (getQueryString() != null) return super.getStateUriBuilder(offset, limit, orderBy, desc, mode).
+                queryParam(SPIN.query.getLocalName(), getQueryString());
+	
+	return super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
+    }
+    
+    public String getQueryString()
+    {
+        return queryString;
+    }
+    
 }

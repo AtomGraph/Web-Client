@@ -882,17 +882,11 @@ exclude-result-prefixes="#all">
 
             <xsl:variable name="parent-doc" select="document($gp:absolutePath)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-construct-mode-of', $gp:absolutePath, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()?"/>
 
-	    <xsl:for-each select="*">
+            <xsl:apply-templates mode="#current">                
+                <xsl:with-param name="template-doc" select="document($construct-uri)"/>
                 <xsl:sort select="gc:label(.)"/>
-                <!--
-                <xsl:apply-templates select="." mode="#current">                
-                    <xsl:with-param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>
-                </xsl:apply-templates>
-                -->
-??<xsl:copy-of select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>??
-            </xsl:for-each>
+            </xsl:apply-templates>
 
             <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
@@ -900,13 +894,13 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about = $gp:absolutePath]" mode="gp:ConstructItemMode" priority="1"/>
+    <xsl:template match="*[@rdf:about = $gp:absolutePath] | *[gp:pageOf/@rdf:resource = $gp:absolutePath]" mode="gp:ConstructItemMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructItemMode">
-        <xsl:param name="template" as="element()?"/>
+        <xsl:param name="template-doc" as="document-node()?"/>
 
         <xsl:apply-templates select="." mode="gc:EditMode">
-            <xsl:with-param name="template" select="$template"/>
+            <xsl:with-param name="template-doc" select="$template-doc"/>
         </xsl:apply-templates>
     </xsl:template>
    
@@ -943,14 +937,11 @@ exclude-result-prefixes="#all">
             <xsl:variable name="parent-uri" select="key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource" as="xs:anyURI"/>
             <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-construct-mode-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()?"/>
 
-	    <xsl:for-each select="*[not(key('predicates-by-object', @rdf:nodeID))]">
+            <xsl:apply-templates mode="#current">                
+                <xsl:with-param name="template-doc" select="document($construct-uri)"/>
                 <xsl:sort select="gc:label(.)"/>
-                <xsl:apply-templates select="." mode="#current">                
-                    <xsl:with-param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>
-                </xsl:apply-templates>
-            </xsl:for-each>
+            </xsl:apply-templates>
             
             <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
@@ -963,8 +954,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="template" as="element()?"/>
-                
+        <xsl:param name="template-doc" as="document-node()?"/>
+        <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
+
         <fieldset id="fieldset-{generate-id()}">
             <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">
                 <legend>
@@ -995,7 +987,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
         <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:next-match>
-            <!--  and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:ontModel)/sp:arg2/@rdf:resource = $this -->
+            <!--  and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:sitemap)/sp:arg2/@rdf:resource = $this -->
             <xsl:with-param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])"/>
         </xsl:next-match>
     </xsl:template>

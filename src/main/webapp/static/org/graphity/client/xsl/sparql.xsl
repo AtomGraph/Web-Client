@@ -171,11 +171,6 @@ LIMIT 100</xsl:param>
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>                            
                     </xsl:when>
-                    <xsl:when test="$gp:mode = '&gc;CreateMode'">
-                        <xsl:apply-templates select="." mode="gc:CreateMode">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
-                        </xsl:apply-templates>
-                    </xsl:when>
                     <xsl:otherwise>
                         <xsl:apply-templates select="." mode="gc:ReadMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
@@ -191,6 +186,7 @@ LIMIT 100</xsl:param>
 	</xsl:if>
     </xsl:template>
 
+    <!--
     <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:ModeSelectMode" priority="1">
         <ul class="nav nav-tabs">
             <xsl:apply-templates select="key('resources-by-type', '&gc;ContainerMode', document('&gc;'))[not(@rdf:about = '&gc;CreateMode')]" mode="#current">
@@ -198,11 +194,12 @@ LIMIT 100</xsl:param>
             </xsl:apply-templates>
         </ul>
     </xsl:template>
-
+    
     <xsl:template match="@rdf:about[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:ModeSelectMode" priority="1">
         <a href="{$gp:absolutePath}{gc:query-string((), $query, ., ())}">
             <xsl:apply-templates select=".." mode="gc:LabelMode"/>
         </a>
     </xsl:template>
+    -->
     
 </xsl:stylesheet>

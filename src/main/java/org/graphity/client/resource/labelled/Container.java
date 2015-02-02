@@ -17,6 +17,7 @@
 package org.graphity.client.resource.labelled;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
@@ -75,6 +76,15 @@ public class Container extends ResourceBase
 	return searchString;
     }
 
+    @Override
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
+    {
+	if (getSearchString() != null) return super.createState(state, offset, limit, orderBy, desc, mode).
+                addLiteral(RDFS.label, getSearchString());
+        
+        return super.createState(state, offset, limit, orderBy, desc, mode);
+    }
+    
     @Override
     public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
