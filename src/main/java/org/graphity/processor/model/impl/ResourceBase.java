@@ -550,6 +550,13 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
                 getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
 	{
+            Resource modeResource = null;
+            if (getMode() != null) modeResource = model.createResource(getMode().toString());
+            String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructItemMode.getURI())).build().toString();
+            Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
+                    addProperty(RDF.type, GP.Constructor).
+                    addProperty(GP.constructModeOf, this);
+            
             if (getMode() != null && getMode().equals(URI.create(GP.ConstructItemMode.getURI())))
             {
                 try
@@ -575,14 +582,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 }
             }
             else
-            {
-                Resource modeResource = null;
-                if (getMode() != null) modeResource = model.createResource(getMode().toString());
-
-                String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructItemMode.getURI())).build().toString();
-                Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
-                        addProperty(GP.constructModeOf, this);
-                    
+            {                    
                 if (getLimit() != null)
                 {
                     if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);

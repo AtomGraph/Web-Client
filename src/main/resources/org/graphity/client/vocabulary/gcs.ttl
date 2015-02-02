@@ -84,7 +84,6 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
                             gp:cacheControl "no-cache" ;
                             gp:loadClass _:javaClass ;
                             spin:query gp:Describe ;
-                            # gc:defaultMode gc:ReadMode ;
                             gc:supportedMode gc:ReadMode .
                     }
                     WHERE {}"""

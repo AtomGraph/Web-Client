@@ -185,21 +185,5 @@ LIMIT 100</xsl:param>
 	    <xsl:apply-templates select="$result-doc/sparql:sparql" mode="gc:TableMode"/>
 	</xsl:if>
     </xsl:template>
-
-    <!--
-    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:ModeSelectMode" priority="1">
-        <ul class="nav nav-tabs">
-            <xsl:apply-templates select="key('resources-by-type', '&gc;ContainerMode', document('&gc;'))[not(@rdf:about = '&gc;CreateMode')]" mode="#current">
-                <xsl:sort select="gc:label(.)"/>
-            </xsl:apply-templates>
-        </ul>
-    </xsl:template>
-    
-    <xsl:template match="@rdf:about[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:ModeSelectMode" priority="1">
-        <a href="{$gp:absolutePath}{gc:query-string((), $query, ., ())}">
-            <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-        </a>
-    </xsl:template>
-    -->
     
 </xsl:stylesheet>

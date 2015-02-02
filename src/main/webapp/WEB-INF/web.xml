@@ -58,7 +58,7 @@
         <init-param>
             <param-name>http://graphity.org/gc#cacheXSLT</param-name>
             <param-value>false</param-value>
-        </init-param>        
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>default</servlet-name>

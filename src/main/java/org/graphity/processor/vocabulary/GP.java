@@ -55,6 +55,8 @@ public final class GP
     public static final OntClass Space = m_model.createClass( NS + "Space" );
     
     public static final OntClass Container = m_model.createClass( NS + "Container" );
+
+    public static final OntClass Constructor = m_model.createClass( NS + "Constructor" );
     
     public static final OntClass ConstructItemMode = m_model.createClass( NS + "ConstructItemMode" );
 
