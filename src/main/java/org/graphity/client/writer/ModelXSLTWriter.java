@@ -66,9 +66,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
-    public static List<String> RESERVED_PARAMS = Arrays.asList(GP.baseUri.getLocalName(), GP.absolutePath.getLocalName(),
-            GP.requestUri.getLocalName(), GP.httpHeaders.getLocalName(), //GP.ontModel.getLocalName(),
-            GP.offset.getLocalName(), GP.limit.getLocalName(), GP.orderBy.getLocalName(), GP.desc.getLocalName(),
+    public static List<String> RESERVED_PARAMS = Arrays.asList(GP.offset.getLocalName(), GP.limit.getLocalName(),
+            GP.orderBy.getLocalName(), GP.desc.getLocalName(),
             GP.lang.getLocalName(), GP.mode.getLocalName(),
             GC.uri.getLocalName(), GC.endpointUri.getLocalName());
 

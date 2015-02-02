@@ -80,30 +80,14 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/void.xsl"/>
     <xsl:import href="layout.xsl"/>
 
-    <xsl:param name="gc:uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
-
-    <!-- <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $gp:absolutePath)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/> -->
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
     <rdf:Description rdf:nodeID="save-as">
 	<rdfs:label xml:lang="en">Save as...</rdfs:label>
     </rdf:Description>
-
-    <xsl:template match="rdf:RDF" mode="gc:TitleMode">
-	<xsl:choose>
-	    <xsl:when test="$gc:uri">
-		<xsl:apply-templates select="key('resources', $gp:baseUri, document($gp:baseUri))" mode="gc:LabelMode"/>
-		<xsl:text> - </xsl:text>
-		<xsl:apply-templates select="key('resources', $gc:uri)" mode="gc:LabelMode"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:apply-imports/>
-	    </xsl:otherwise>
-	</xsl:choose>
-    </xsl:template>
-
+    
     <xsl:template match="/" mode="gc:NavBarMode">
 	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
@@ -141,7 +125,7 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:variable name="space" select="($gp:absolutePath, key('resources', $gp:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                        <xsl:variable name="space" select="($gc:uri, key('resources', $gc:uri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                         <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
                             <ul class="nav pull-right">
                                 <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
@@ -156,54 +140,7 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ReadMode">
-        <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current"/>
-
-        <xsl:apply-templates select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
-        </xsl:apply-templates>
-    </xsl:template>
-
-    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:HeaderMode">
-        <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current"/>
-    </xsl:template>
-    
-    <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:HeaderMode">
-	<h1 class="page-header">
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</h1>
-    </xsl:template>
-    
-    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ModeSelectMode">
-        <ul class="nav nav-tabs">
-            <xsl:apply-templates select="key('resources-by-type', '&gc;Mode', document('&gc;'))[rdf:type/@rdf:resource = '&gc;ItemMode']" mode="#current">
-                <xsl:sort select="gc:label(.)"/>                    
-            </xsl:apply-templates>
-        </ul>
-    </xsl:template>
-
-    <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
-	<xsl:choose>
-	    <xsl:when test="$gc:uri">
-		<xsl:choose>
-		    <xsl:when test=". = $gc:defaultMode">
-			<a href="{$gp:absolutePath}{gc:query-string($gc:uri, ())}">
-			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-			</a>		
-		    </xsl:when>
-		    <xsl:otherwise>
-			<a href="{$gp:absolutePath}{gc:query-string($gc:uri, .)}">
-			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-			</a>		
-		    </xsl:otherwise>
-		</xsl:choose>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:apply-imports/>
-	    </xsl:otherwise>
-	</xsl:choose>
-    </xsl:template>
-
+    <!--    
     <xsl:template match="*[@rdf:about = $gc:uri]" mode="gc:ModeToggleMode" priority="1">
         <div class="pull-right">
             <a class="btn btn-primary" href="{$gp:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gc;CreateMode'))}">
@@ -211,30 +148,9 @@ exclude-result-prefixes="#all">
             </a>
         </div>
     </xsl:template>
-
-    <!--
-    <xsl:template match="rdf:RDF" mode="gc:CreateMode">
-        <form class="form-horizontal" method="post" action="{$gp:absolutePath}{gc:query-string($gc:uri, $gp:mode)}" accept-charset="UTF-8">
-	    <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
-	    <xsl:call-template name="gc:InputTemplate">
-		<xsl:with-param name="name" select="'rdf'"/>
-		<xsl:with-param name="type" select="'hidden'"/>
-	    </xsl:call-template>
-            
-            <xsl:apply-templates mode="#current"/>
-            
-	    <div class="form-actions">
-		<button type="submit" class="btn btn-primary">Save</button>
-	    </div>
-	</form>
-    </xsl:template>
     -->
     
-    <xsl:template match="*[*][@rdf:about = $gc:uri]" mode="gc:CreateMode">
-        <xsl:apply-templates select="." mode="gc:EditMode"/>
-    </xsl:template>
-
-    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)][$gc:endpointUri]" mode="gc:QueryResultMode">
+    <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint'][$gc:endpointUri]" mode="gc:QueryResultMode">
         <div class="btn-group pull-right">
             <a href="{$gc:endpointUri}?query={encode-for-uri($query)}" class="btn">Source</a>
         </div>
@@ -244,12 +160,14 @@ exclude-result-prefixes="#all">
         </xsl:apply-imports>
     </xsl:template>
     
-    <xsl:template match="@rdf:about[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)][$gc:endpointUri]" mode="gc:ModeSelectMode" priority="1">
+    <!--
+    <xsl:template match="@rdf:about[../rdf:type/@rdf:resource = '&gp;SPARQLEndpoint'][$gc:endpointUri]" mode="gc:ModeSelectMode" priority="1">
         <a href="{$gp:absolutePath}{gc:query-string($gc:endpointUri, $query, ., ())}">
             <xsl:apply-templates select=".." mode="gc:LabelMode"/>
         </a>
     </xsl:template>
-
+    -->
+    
     <!-- DOCUMENT -->
 
     <!-- only show edit mode for the main resource -->

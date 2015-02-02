@@ -55,8 +55,8 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" priority="2">
-        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gp:absolutePath)]" as="element()*"/>
+    <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" priority="2">
+        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gc:uri)]" as="element()*"/>
 
 	<div class="container-fluid">
 	    <div class="row-fluid">
@@ -79,13 +79,13 @@ LIMIT 100</xsl:param>
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:StyleMode" priority="1">
+    <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:StyleMode" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryFormMode">
+    <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="''" as="xs:string"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -137,8 +137,8 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$gp:absolutePath = resolve-uri('sparql', $gp:baseUri)]" mode="gc:QueryResultMode">
-	<xsl:param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string((), $query, $gp:mode, ())))"/>
+    <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
+	<xsl:param name="result-doc" select="document(concat($gc:uri, gc:query-string((), $query, $gp:mode, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">

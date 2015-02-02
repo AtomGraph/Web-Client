@@ -28,9 +28,9 @@ xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gc:mode[position() &gt; 1]" mode="gc:EditMode"/>
+    <xsl:template match="gc:supportedMode[position() &gt; 1]" mode="gc:EditMode"/>
     
-    <xsl:template match="gc:mode/@rdf:resource" mode="gc:EditMode">
+    <xsl:template match="gc:supportedMode/@rdf:resource" mode="gc:EditMode">
         <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gp:sitemap)" as="element()*"/>
         <select name="ou" id="{generate-id(..)}" multiple="multiple" size="{count($modes)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">

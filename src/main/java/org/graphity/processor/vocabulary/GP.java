@@ -92,7 +92,7 @@ public final class GP
 
     public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
 
-    public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
+    //public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
@@ -112,8 +112,8 @@ public final class GP
     
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
-    public static final ObjectProperty modeOf = m_model.createObjectProperty( NS + "modeOf" );
+    //public static final ObjectProperty modeOf = m_model.createObjectProperty( NS + "modeOf" );
     
-    public static final ObjectProperty constructModeOf = m_model.createObjectProperty( NS + "constructModeOf" );
+    public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
 
 }

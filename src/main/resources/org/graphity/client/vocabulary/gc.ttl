@@ -17,6 +17,11 @@
 
 # ANNOTATION PROPERTIES
 
+<#supportedMode> a owl:AnnotationProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Layout mode" ;
+    rdfs:isDefinedBy <#> .
+
 <#defaultMode> a owl:AnnotationProperty ;
     rdfs:range <#Mode> ;
     rdfs:label "Default layout mode" ;
@@ -27,11 +32,6 @@
 <#stylesheet> a owl:ObjectProperty ;
     rdfs:domain <#Application> ;
     rdfs:label "XSLT stylesheet" ;
-    rdfs:isDefinedBy <#> .
-
-<#mode> a owl:ObjectProperty ;
-    rdfs:range <#Mode> ;
-    rdfs:label "Layout mode" ;
     rdfs:isDefinedBy <#> .
 
 <#lang> a owl:DatatypeProperty ;

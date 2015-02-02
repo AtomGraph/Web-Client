@@ -196,19 +196,22 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
-	if (getQueryString() != null) return super.createState(state, offset, limit, orderBy, desc, mode).
-                addProperty(SPIN.query, state.getModel().createResource().addLiteral(SP.text, getQueryString()));
+        Resource superState = super.createState(state, offset, limit, orderBy, desc, mode);
         
-        return super.createState(state, offset, limit, orderBy, desc, mode);
+	if (getQueryString() != null) superState.addProperty(SPIN.query,
+                superState.getModel().createResource().addLiteral(SP.text, getQueryString()));
+        
+        return superState;
     }
 
     @Override
     public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
-	if (getQueryString() != null) return super.getStateUriBuilder(offset, limit, orderBy, desc, mode).
-                queryParam(SPIN.query.getLocalName(), getQueryString());
-	
-	return super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
+	UriBuilder builder = super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
+        
+	if (getQueryString() != null) builder.queryParam(SPIN.query.getLocalName(), getQueryString());
+        
+        return builder;
     }
     
     public String getQueryString()

@@ -127,9 +127,10 @@
     rdfs:comment "Links page resource to its container resource" ;
     rdfs:isDefinedBy <#> .
 
-<#modeOf> a owl:ObjectProperty ;
-    rdfs:subPropertyOf dct:isVersionOf ;
-    rdfs:label "Processor mode" ;
+<#constructorOf> a owl:ObjectProperty ;
+    rdfs:domain <#Constructor> ;
+    rdfs:range <#Container> ;
+    rdfs:label "Constructor resource" ;
     rdfs:isDefinedBy <#> .
 
 <#mode> a owl:ObjectProperty ;

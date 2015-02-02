@@ -175,7 +175,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                     else
                     {
                         Long defaultOffset = getLongValue(getMatchedOntClass(), GP.defaultOffset);
-                        //if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
+                        if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
                         this.offset = defaultOffset;
                     }
                     if (log.isErrorEnabled()) log.error("Setting OFFSET on container sub-SELECT: {}", offset);
@@ -555,7 +555,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructItemMode.getURI())).build().toString();
             Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
                     addProperty(RDF.type, GP.Constructor).
-                    addProperty(GP.constructModeOf, this);
+                    addProperty(GP.constructorOf, this);
             
             if (getMode() != null && getMode().equals(URI.create(GP.ConstructItemMode.getURI())))
             {
@@ -611,7 +611,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         }
                     }
                 }
-            }            
+            }
         }
         
         return model;

@@ -17,6 +17,7 @@
 package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
@@ -201,4 +203,26 @@ public class GlobalResourceBase extends ResourceBase
         return super.getSubResource();
     }
 
+    @Override
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
+    {
+        Resource superState = super.createState(state, offset, limit, orderBy, desc, mode);
+
+	if (getTopicURI() != null) superState.addProperty(GC.uri, state.getModel().createResource(getTopicURI().toString()));
+	if (getEndpointURI() != null) superState.addProperty(GC.endpointUri, state.getModel().createResource(getEndpointURI().toString()));
+        
+        return state;
+    }
+
+    @Override
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    {
+        UriBuilder builder = super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
+        
+	if (getTopicURI() != null) builder.queryParam(GC.uri.getLocalName(), getTopicURI().toString());
+	if (getEndpointURI() != null) builder.queryParam(GC.endpointUri.getLocalName(), getEndpointURI().toString());
+	
+	return builder;
+    }
+    
 }
