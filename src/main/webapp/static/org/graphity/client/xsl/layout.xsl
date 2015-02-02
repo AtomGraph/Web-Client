@@ -986,14 +986,20 @@ exclude-result-prefixes="#all">
         </fieldset>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[$gp:sitemap]" mode="gc:EditMode">
         <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:next-match>
-            <!--  and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:sitemap)/sp:arg2/@rdf:resource = $this -->
+            <xsl:with-param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:sitemap)/sp:arg2/@rdf:resource = $this"/>
+        </xsl:next-match>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not($gp:sitemap)]" mode="gc:EditMode">
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:next-match>
             <xsl:with-param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])"/>
         </xsl:next-match>
     </xsl:template>
-    
+        
     <!-- remove spaces -->
     <xsl:template match="text()" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
