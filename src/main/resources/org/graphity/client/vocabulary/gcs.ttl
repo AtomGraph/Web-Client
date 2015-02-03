@@ -36,7 +36,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:uriTemplate "/templates" ;
     gp:defaultLimit 20 ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
-    gc:defaultMode gc:TableMode ;
+    gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
@@ -128,7 +128,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:uriTemplate "/queries" ;
     gp:defaultLimit 20 ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
-    gc:defaultMode gp:ConstructItemMode ;
+    gc:defaultMode gc:ListMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
     rdfs:isDefinedBy <#> .

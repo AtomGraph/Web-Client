@@ -1,4 +1,4 @@
-@base           <http://graphity.org/gs> .
+@base           <http://graphity.org/g> .
 
 # @prefix :	<#> .
 @prefix gp:     <http://graphity.org/gp#> .
@@ -13,8 +13,8 @@
 
 <#> a owl:Ontology ;
     owl:imports gp:, sp: ;
-    rdfs:label "Graphity Server vocabulary" ;
-    owl:versionInfo "1.1.0" .
+    rdfs:label "Graphity Core vocabulary" ;
+    owl:versionInfo "1.1.1" .
 
 # RESOURCE TEMPLATES
 

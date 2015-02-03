@@ -23,7 +23,7 @@
             <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gs#graphStore</param-name>
+            <param-name>http://graphity.org/g#graphStore</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
         </init-param>
         <init-param>
@@ -35,7 +35,7 @@
             <param-value>password</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gs#preemptiveAuth</param-name>
+            <param-name>http://graphity.org/g#preemptiveAuth</param-name>
             <param-value>true</param-value>
         </init-param>
         -->
@@ -52,7 +52,7 @@
             <param-value>/static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gs#resultLimit</param-name>
+            <param-name>http://graphity.org/g#resultLimit</param-name>
             <param-value>100</param-value>
         </init-param>
         <init-param>
