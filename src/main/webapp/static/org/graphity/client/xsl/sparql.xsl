@@ -17,7 +17,6 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY gp     "http://graphity.org/gp#">
-    <!ENTITY gs     "http://graphity.org/gs#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
