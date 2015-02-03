@@ -159,20 +159,13 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string($gc:endpointUri, $query, $gp:mode, ())))"/>
         </xsl:apply-imports>
     </xsl:template>
-    
-    <!--
-    <xsl:template match="@rdf:about[../rdf:type/@rdf:resource = '&gp;SPARQLEndpoint'][$gc:endpointUri]" mode="gc:ModeSelectMode" priority="1">
-        <a href="{$gp:absolutePath}{gc:query-string($gc:endpointUri, $query, ., ())}">
-            <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-        </a>
-    </xsl:template>
-    -->
-    
+        
     <!-- DOCUMENT -->
 
     <!-- only show edit mode for the main resource -->
-    <xsl:template match="*[@rdf:about][$gc:uri][not(@rdf:about = $gc:uri)]" mode="gc:EditMode"/>
+    <!-- <xsl:template match="*[@rdf:about][$gc:uri][not(@rdf:about = $gc:uri)]" mode="gc:EditMode"/> -->
     
+    <!--
     <xsl:template match="@rdf:about[. = $gc:uri][../rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
@@ -227,9 +220,11 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="value" select="$container"/>
         </xsl:call-template>
     </xsl:template>
-
+    -->
+    
     <!-- THING -->
         
+    <!--
     <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
@@ -315,5 +310,6 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="value" select="$container"/>
         </xsl:call-template>
     </xsl:template>
+    -->
     
 </xsl:stylesheet>

@@ -16,6 +16,7 @@
 
 package org.graphity.client.reader;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -80,15 +81,21 @@ public class ValidatingRDFPostReader extends RDFPostReader
             if (log.isDebugEnabled()) log.debug("SPIN constraint violations: {}", cvs);
             if (mode != null && mode.equals(URI.create(GC.EditMode.getURI()))) // check by HTTP request method?
             {
-                throw new ConstraintViolationException(cvs, model);
+                throw new ConstraintViolationException(cvs, model, getMatchedOntClass());
             }
             else // gc:CreateMode
             {
-                throw new ConstraintViolationException(cvs, match.describe().add(model));
+                throw new ConstraintViolationException(cvs, match.describe().add(model), getMatchedOntClass());
             }
         }
         
         return model;
+    }
+
+    public OntClass getMatchedOntClass()
+    {
+	ContextResolver<OntClass> cr = getProviders().getContextResolver(OntClass.class, null);
+	return cr.getContext(OntClass.class);
     }
     
     public OntModel getOntModel()
