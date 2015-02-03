@@ -28,9 +28,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.processor.model.impl.ResourceBase;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.util.ModelUtils;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.core.util.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

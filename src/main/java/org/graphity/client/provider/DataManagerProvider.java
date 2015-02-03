@@ -29,7 +29,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.util.DataManager;
-import org.graphity.server.vocabulary.GS;
+import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getPreemptiveAuth(getServletConfig(), GS.preemptiveAuth), getUriInfo());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth), getUriInfo());
     }
     
     public boolean getPreemptiveAuth(ServletConfig servletConfig, Property property)

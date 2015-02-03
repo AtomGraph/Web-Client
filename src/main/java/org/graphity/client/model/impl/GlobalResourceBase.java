@@ -35,11 +35,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.DataManager;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLEndpointFactory;
-import org.graphity.server.model.SPARQLEndpointOrigin;
-import org.graphity.server.model.impl.SPARQLEndpointOriginBase;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.core.model.SPARQLEndpointFactory;
+import org.graphity.core.model.SPARQLEndpointOrigin;
+import org.graphity.core.model.impl.SPARQLEndpointOriginBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

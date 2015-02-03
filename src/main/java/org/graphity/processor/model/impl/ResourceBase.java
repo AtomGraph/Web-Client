@@ -52,10 +52,11 @@ import org.graphity.processor.util.Link;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.processor.vocabulary.SIOC;
 import org.graphity.processor.vocabulary.XHV;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.impl.QueriedResourceBase;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.util.ModelUtils;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.impl.QueriedResourceBase;
+import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.core.util.ModelUtils;
+import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.SPINFactory;
@@ -197,7 +198,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                          if (getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName()))
                             orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
                          else
-                             orderBy = getStringValue(getMatchedOntClass(), GP.defaultOrderByVarName);
+                             orderBy = getStringValue(getMatchedOntClass(), GP.defaultOrderBy);
                         if (getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
                             desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));                    
                         else

@@ -36,7 +36,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:uriTemplate "/templates" ;
     gp:defaultLimit 20 ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
-    gc:defaultMode gc:ListMode ;
+    gc:defaultMode gc:TableMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
@@ -80,7 +80,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
                             gp:skolemTemplate " " ;
                             gp:defaultLimit 20 ;
                             gp:defaultOffset 0 ;
-                            gp:defaultOrderByVarName " "^^xsd:string ;
+                            gp:defaultOrderBy " "^^xsd:string ;
                             gp:cacheControl "no-cache" ;
                             gp:loadClass _:javaClass ;
                             spin:query gp:Describe ;
@@ -128,7 +128,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:uriTemplate "/queries" ;
     gp:defaultLimit 20 ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
-    gc:defaultMode gc:ListMode ;
+    gc:defaultMode gp:ConstructItemMode ;
     spin:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
     rdfs:isDefinedBy <#> .
@@ -200,7 +200,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:uriTemplate "/resources/labelled" ; # "/{path}/labelled" ?
     spin:query <#DescribeLabelResources> ;
     gp:defaultLimit 20 ;
-    gp:defaultOrderByVarName "label"^^xsd:string ;
+    gp:defaultOrderBy "label"^^xsd:string ;
     gp:loadClass <java:org.graphity.client.resource.labelled.Container> ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
     rdfs:label "Labelled resource container" ;

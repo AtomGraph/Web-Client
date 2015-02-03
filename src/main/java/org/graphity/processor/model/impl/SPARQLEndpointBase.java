@@ -24,7 +24,7 @@ import com.hp.hpl.jena.update.UpdateRequest;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
-import org.graphity.server.util.DataManager;
+import org.graphity.core.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-protocol/">SPARQL Protocol for RDF</a>
  */
-public class SPARQLEndpointBase extends org.graphity.server.model.impl.SPARQLEndpointBase
+public class SPARQLEndpointBase extends org.graphity.core.model.impl.SPARQLEndpointBase
 {
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointBase.class);
 

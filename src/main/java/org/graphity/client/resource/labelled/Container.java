@@ -30,8 +30,8 @@ import javax.ws.rs.core.UriInfo;
 import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

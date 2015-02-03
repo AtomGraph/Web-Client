@@ -1,7 +1,6 @@
 @base           <http://graphity.org/gp> .
 
 # @prefix :	<#> .
-@prefix gs:     <http://graphity.org/gs#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
@@ -17,7 +16,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin:, dqc:, sioc:, foaf: ; # gs:
+    owl:imports sp:, spin:, dqc:, sioc:, foaf: ;
     owl:versionInfo "1.1.1" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
@@ -97,7 +96,7 @@
     rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
     rdfs:isDefinedBy <#> .
 
-<#defaultOrderByVarName> a owl:AnnotationProperty ;
+<#defaultOrderBy> a owl:AnnotationProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:string ;
     rdfs:label "ORDER BY ?varName" ;
@@ -322,7 +321,7 @@
 
 # QUERIES
 
-<#Describe>    a       sp:Describe, sp:Query ; # redefined to avoid importing gs: vocab with {path: *}
+<#Describe>    a       sp:Describe, sp:Query ;
     sp:text """DESCRIBE ?this"""^^xsd:string .
 
 # ====

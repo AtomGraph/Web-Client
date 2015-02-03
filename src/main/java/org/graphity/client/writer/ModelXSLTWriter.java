@@ -47,7 +47,7 @@ import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.Link;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.server.provider.ModelProvider;
+import org.graphity.core.provider.ModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

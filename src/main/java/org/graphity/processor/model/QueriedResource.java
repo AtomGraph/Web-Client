@@ -24,7 +24,7 @@ import org.graphity.processor.query.QueryBuilder;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see org.graphity.processor.query.QueryBuilder
  */
-public interface QueriedResource extends org.graphity.server.model.QueriedResource
+public interface QueriedResource extends org.graphity.core.model.QueriedResource
 {
     
     /**

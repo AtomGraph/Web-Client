@@ -17,8 +17,8 @@
 package org.graphity.processor.provider;
 
 import javax.ws.rs.ext.Provider;
-import org.graphity.server.model.GraphStoreOrigin;
-import org.graphity.server.vocabulary.GS;
+import org.graphity.core.model.GraphStoreOrigin;
+import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @see org.graphity.server.model.GraphStoreOrigin
  */
 @Provider
-public class GraphStoreOriginProvider extends org.graphity.server.provider.GraphStoreOriginProvider
+public class GraphStoreOriginProvider extends org.graphity.core.provider.GraphStoreOriginProvider
 {
 
     private static final Logger log = LoggerFactory.getLogger(GraphStoreOriginProvider.class);
@@ -44,7 +44,7 @@ public class GraphStoreOriginProvider extends org.graphity.server.provider.Graph
     @Override
     public GraphStoreOrigin getGraphStoreOrigin()
     {
-        return getGraphStoreOrigin(GS.graphStore, getDataManager()); // do not throw WebApplicationException is origin is not configured
+        return getGraphStoreOrigin(G.graphStore, getDataManager()); // do not throw WebApplicationException is origin is not configured
     }
 
 }

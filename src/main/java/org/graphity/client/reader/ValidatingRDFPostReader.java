@@ -38,7 +38,7 @@ import javax.ws.rs.ext.Providers;
 import org.graphity.processor.exception.ConstraintViolationException;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.server.model.QueriedResource;
+import org.graphity.core.model.QueriedResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.constraints.ConstraintViolation;

@@ -16,8 +16,8 @@
  */
 package org.graphity.processor.provider;
 
-import org.graphity.server.model.SPARQLEndpointOrigin;
-import org.graphity.server.vocabulary.SD;
+import org.graphity.core.model.SPARQLEndpointOrigin;
+import org.graphity.core.vocabulary.SD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see org.graphity.server.model.SPARQLEndpointOrigin
  */
-public class SPARQLEndpointOriginProvider extends org.graphity.server.provider.SPARQLEndpointOriginProvider
+public class SPARQLEndpointOriginProvider extends org.graphity.core.provider.SPARQLEndpointOriginProvider
 {
 
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointOriginProvider.class);

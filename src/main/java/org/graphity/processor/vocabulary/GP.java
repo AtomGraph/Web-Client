@@ -51,7 +51,7 @@ public final class GP
     public static final OntClass SPARQLEndpoint = m_model.createClass( NS + "SPARQLEndpoint" );
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
-
+    
     public static final OntClass Space = m_model.createClass( NS + "Space" );
     
     public static final OntClass Container = m_model.createClass( NS + "Container" );
@@ -68,7 +68,7 @@ public final class GP
     
     public static final AnnotationProperty defaultLimit = m_model.createAnnotationProperty( NS + "defaultLimit" );
 
-    public static final AnnotationProperty defaultOrderByVarName = m_model.createAnnotationProperty( NS + "defaultOrderByVarName" );
+    public static final AnnotationProperty defaultOrderBy = m_model.createAnnotationProperty( NS + "defaultOrderBy" );
 
     public static final AnnotationProperty defaultDesc = m_model.createAnnotationProperty( NS + "defaultDesc" );
 
