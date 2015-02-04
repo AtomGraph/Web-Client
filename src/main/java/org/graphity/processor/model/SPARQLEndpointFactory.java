@@ -20,15 +20,15 @@ import org.graphity.processor.model.impl.SPARQLEndpointBase;
 import com.hp.hpl.jena.query.Dataset;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Request;
-import org.graphity.server.util.DataManager;
-import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.core.util.DataManager;
+import org.graphity.core.model.SPARQLEndpoint;
 
 /**
  * A factory class for creating SPARQL endpoints.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class SPARQLEndpointFactory extends org.graphity.server.model.SPARQLEndpointFactory
+public class SPARQLEndpointFactory extends org.graphity.core.model.SPARQLEndpointFactory
 {
     
     /**

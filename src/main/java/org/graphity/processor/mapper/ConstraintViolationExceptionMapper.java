@@ -16,9 +16,11 @@
 
 package org.graphity.processor.mapper;
 
+import java.net.URI;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import org.graphity.processor.exception.ConstraintViolationException;
+import org.graphity.processor.util.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.constraints.SPINConstraints;
@@ -37,9 +39,11 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 	//if (log.isDebugEnabled()) log.debug("ConstraintViolation root: {} source: {}", e.getConstraintViolation().getRoot(), e.getConstraintViolation().getSource());
 
         SPINConstraints.addConstraintViolationsRDF(e.getConstraintViolations(), e.getModel(), true);
+        Link classLink = new Link(URI.create(e.getMatchedOntClass().getURI()), "type", null);
 	
 	return Response.ok(e.getModel()).
 		status(Response.Status.BAD_REQUEST).
+                header("Link", classLink.toString()).
 		build();
     }
     

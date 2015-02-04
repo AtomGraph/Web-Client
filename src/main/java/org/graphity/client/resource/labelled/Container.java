@@ -17,8 +17,10 @@
 package org.graphity.client.resource.labelled;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.core.ResourceContext;
+import java.net.URI;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -27,9 +29,9 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.processor.query.SelectBuilder;
-import org.graphity.processor.vocabulary.LDP;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.processor.vocabulary.GP;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +52,7 @@ public class Container extends ResourceBase
 	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
-	this.searchString = getUriInfo().getQueryParameters().getFirst("label");
+	this.searchString = getUriInfo().getQueryParameters().getFirst(RDFS.label.getLocalName());
     }
 
     @Override
@@ -58,7 +60,7 @@ public class Container extends ResourceBase
     {
         super.init();
 
-	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(LDP.Container))
+	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(GP.Container))
 	{
             SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
 	    if (selectBuilder != null)
@@ -75,27 +77,21 @@ public class Container extends ResourceBase
     }
 
     @Override
-    public UriBuilder getPageUriBuilder()
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
-	if (getSearchString() != null) return super.getPageUriBuilder().queryParam("label", getSearchString());
-	
-	return super.getPageUriBuilder();
+	if (getSearchString() != null) return super.createState(state, offset, limit, orderBy, desc, mode).
+                addLiteral(RDFS.label, getSearchString());
+        
+        return super.createState(state, offset, limit, orderBy, desc, mode);
     }
-
+    
     @Override
-    public UriBuilder getPreviousUriBuilder()
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
-	if (getSearchString() != null) return super.getPreviousUriBuilder().queryParam("label", getSearchString());
+	if (getSearchString() != null) return super.getStateUriBuilder(offset, limit, orderBy, desc, mode).
+                queryParam(RDFS.label.getLocalName(), getSearchString());
 	
-	return super.getPreviousUriBuilder();
-    }
-
-    @Override
-    public UriBuilder getNextUriBuilder()
-    {
-	if (getSearchString() != null) return super.getNextUriBuilder().queryParam("label", getSearchString());
-	
-	return super.getNextUriBuilder();
+	return super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
     }
 
 }

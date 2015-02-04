@@ -16,6 +16,7 @@
 
 package org.graphity.client.reader;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -37,7 +38,8 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.processor.exception.ConstraintViolationException;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.server.model.QueriedResource;
+import org.graphity.processor.vocabulary.GP;
+import org.graphity.core.model.QueriedResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.constraints.ConstraintViolation;
@@ -79,15 +81,21 @@ public class ValidatingRDFPostReader extends RDFPostReader
             if (log.isDebugEnabled()) log.debug("SPIN constraint violations: {}", cvs);
             if (mode != null && mode.equals(URI.create(GC.EditMode.getURI()))) // check by HTTP request method?
             {
-                throw new ConstraintViolationException(cvs, model);
+                throw new ConstraintViolationException(cvs, model, getMatchedOntClass());
             }
             else // gc:CreateMode
             {
-                throw new ConstraintViolationException(cvs, match.describe().add(model));
+                throw new ConstraintViolationException(cvs, match.describe().add(model), getMatchedOntClass());
             }
         }
         
         return model;
+    }
+
+    public OntClass getMatchedOntClass()
+    {
+	ContextResolver<OntClass> cr = getProviders().getContextResolver(OntClass.class, null);
+	return cr.getContext(OntClass.class);
     }
     
     public OntModel getOntModel()
@@ -109,8 +117,8 @@ public class ValidatingRDFPostReader extends RDFPostReader
     
     public URI getMode()
     {
-        if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
-            return URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
+        if (getUriInfo().getQueryParameters().containsKey(GP.mode.getLocalName()))
+            return URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()));
                     
         return null;
     }

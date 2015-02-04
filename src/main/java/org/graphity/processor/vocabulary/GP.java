@@ -16,6 +16,7 @@
  */
 package org.graphity.processor.vocabulary;
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -51,6 +52,38 @@ public final class GP
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
     
+    public static final OntClass Space = m_model.createClass( NS + "Space" );
+    
+    public static final OntClass Container = m_model.createClass( NS + "Container" );
+
+    public static final OntClass Constructor = m_model.createClass( NS + "Constructor" );
+    
+    public static final OntClass ConstructItemMode = m_model.createClass( NS + "ConstructItemMode" );
+
+    public static final OntClass ConstructContainerMode = m_model.createClass( NS + "ConstructContainerMode" );
+    
+    public static final OntClass Page = m_model.createClass( NS + "Page" );
+
+    public static final AnnotationProperty defaultOffset = m_model.createAnnotationProperty( NS + "defaultOffset" );
+    
+    public static final AnnotationProperty defaultLimit = m_model.createAnnotationProperty( NS + "defaultLimit" );
+
+    public static final AnnotationProperty defaultOrderBy = m_model.createAnnotationProperty( NS + "defaultOrderBy" );
+
+    public static final AnnotationProperty defaultDesc = m_model.createAnnotationProperty( NS + "defaultDesc" );
+
+    public static final AnnotationProperty uriTemplate = m_model.createAnnotationProperty( NS + "uriTemplate" );
+
+    public static final AnnotationProperty skolemTemplate = m_model.createAnnotationProperty( NS + "skolemTemplate" );
+
+    public static final AnnotationProperty loadClass = m_model.createAnnotationProperty( NS + "loadClass" );
+
+    public static final AnnotationProperty cacheControl = m_model.createAnnotationProperty( NS + "cacheControl" );
+    
+    //public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
+        
+    public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
+    
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
 
     public static final ObjectProperty absolutePath = m_model.createObjectProperty( NS + "absolutePath" );
@@ -59,19 +92,11 @@ public final class GP
 
     public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
 
-    public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
-
-    public static final ObjectProperty ontModel = m_model.createObjectProperty( NS + "ontModel" );
+    //public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
     public static final DatatypeProperty sitemap = m_model.createDatatypeProperty( NS + "sitemap" );
-
-    public static final DatatypeProperty uriTemplate = m_model.createDatatypeProperty( NS + "uriTemplate" );
-
-    public static final DatatypeProperty skolemTemplate = m_model.createDatatypeProperty( NS + "skolemTemplate" );
-
-    public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
     
@@ -85,6 +110,10 @@ public final class GP
 
     public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
     
-    public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
+    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+
+    //public static final ObjectProperty modeOf = m_model.createObjectProperty( NS + "modeOf" );
+    
+    public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
 
 }

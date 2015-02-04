@@ -22,7 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
-import org.graphity.server.util.DataManager;
+import org.graphity.core.util.DataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-http-rdf-update/">SPARQL 1.1 Graph Store HTTP Protocol</a>
  */
-public class GraphStoreBase extends org.graphity.server.model.impl.GraphStoreBase
+public class GraphStoreBase extends org.graphity.core.model.impl.GraphStoreBase
 {
     private static final Logger log = LoggerFactory.getLogger(GraphStoreBase.class);
 

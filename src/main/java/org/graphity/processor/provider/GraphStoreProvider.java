@@ -22,7 +22,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.GraphStoreFactory;
 import org.graphity.processor.util.DataManager;
-import org.graphity.server.model.GraphStore;
+import org.graphity.core.model.GraphStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see org.graphity.server.model.GraphStore
  */
-public class GraphStoreProvider extends org.graphity.server.provider.GraphStoreProvider
+public class GraphStoreProvider extends org.graphity.core.provider.GraphStoreProvider
 {
     
     private static final Logger log = LoggerFactory.getLogger(GraphStoreProvider.class);

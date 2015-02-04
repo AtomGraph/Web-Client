@@ -17,7 +17,7 @@
 package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.ArrayList;
@@ -30,15 +30,16 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.DataManager;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.SPARQLEndpoint;
-import org.graphity.server.model.SPARQLEndpointFactory;
-import org.graphity.server.model.SPARQLEndpointOrigin;
-import org.graphity.server.model.impl.SPARQLEndpointOriginBase;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.core.model.SPARQLEndpointFactory;
+import org.graphity.core.model.SPARQLEndpointOrigin;
+import org.graphity.core.model.impl.SPARQLEndpointOriginBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,11 +202,27 @@ public class GlobalResourceBase extends ResourceBase
         
         return super.getSubResource();
     }
-    
+
     @Override
-    public Response post(Model model, SPARQLEndpoint endpoint)
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
-	return post(model, getTopicURI(), null, endpoint);
+        Resource superState = super.createState(state, offset, limit, orderBy, desc, mode);
+
+	if (getTopicURI() != null) superState.addProperty(GC.uri, state.getModel().createResource(getTopicURI().toString()));
+	if (getEndpointURI() != null) superState.addProperty(GC.endpointUri, state.getModel().createResource(getEndpointURI().toString()));
+        
+        return state;
+    }
+
+    @Override
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    {
+        UriBuilder builder = super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
+        
+	if (getTopicURI() != null) builder.queryParam(GC.uri.getLocalName(), getTopicURI().toString());
+	if (getEndpointURI() != null) builder.queryParam(GC.endpointUri.getLocalName(), getEndpointURI().toString());
+	
+	return builder;
     }
     
 }

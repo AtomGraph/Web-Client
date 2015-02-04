@@ -18,7 +18,11 @@ package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.Arrays;
@@ -35,10 +39,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.server.model.GraphStore;
-import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.core.model.GraphStore;
+import org.graphity.core.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.vocabulary.SP;
+import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  * Base class of generic read-write Graphity Client resources.
@@ -52,8 +58,8 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
 
-    private final URI mode;
-
+    private final String queryString;
+    
     /**
      * JAX-RS-compatible resource constructor with injected initialization objects.
      * 
@@ -73,25 +79,10 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
-
-        if (getUriInfo().getQueryParameters().containsKey(GC.mode.getLocalName()))
-            this.mode = URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
-        else mode = null;
-    }
-    
-    @Override
-    public void init()
-    {
-        super.init();
-       
-        if (getMode() != null &&
-            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))) &&
-            getQueryBuilder().getSubSelectBuilder() != null) // && getMatchedOntClass().hasSuperClass(LDP.Container)
-	{
-            if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
-            getQueryBuilder().getSubSelectBuilder().replaceLimit(Long.valueOf(0));
-            getQueryBuilder().build();
-        }
+        
+	if (getUriInfo().getQueryParameters().containsKey("query"))
+            queryString = getUriInfo().getQueryParameters().getFirst("query");
+        else queryString = null;
     }
     
     /**
@@ -129,15 +120,37 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     @Override
     public Model addMetadata(Model model)
     {
-        if (getMode() != null &&
-            (getMode().equals(URI.create(GC.CreateMode.getURI())) || getMode().equals(URI.create(GC.EditMode.getURI()))))
-	{
-            return model;
+        NodeIterator it = getMatchedOntClass().listPropertyValues(GC.supportedMode);
+        try
+        {
+            while (it.hasNext())
+            {
+                RDFNode supportedMode = it.next();
+                if (!supportedMode.isURIResource())
+                {
+                    if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", getMatchedOntClass().getURI());
+                    //throw new ConfigurationException("Invalid Mode defined for template '" + getMatchedOntClass().getURI() +"'");
+                }
+                else
+                {
+                    if (!supportedMode.equals(GP.ConstructItemMode))
+                    {
+                        String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                        createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                            addProperty(RDF.type, GP.Page).
+                            addProperty(GP.pageOf, this);
+                    }
+                }
+            }
         }
-
+        finally
+        {
+            it.close();
+        }
+        
         return super.addMetadata(model);
     }
-    
+        
     /**
      * Builds a list of acceptable response variants
      * 
@@ -172,61 +185,38 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         {
             super.put(model);
             
-            Resource document = getURIResource(model);
+            Resource document = getURIResource(model, FOAF.Document);
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
             return Response.seeOther(URI.create(document.getURI())).build();
         }
         
         return super.put(model);
     }
+
+    @Override
+    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
+    {
+        Resource superState = super.createState(state, offset, limit, orderBy, desc, mode);
+        
+	if (getQueryString() != null) superState.addProperty(SPIN.query,
+                superState.getModel().createResource().addLiteral(SP.text, getQueryString()));
+        
+        return superState;
+    }
+
+    @Override
+    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    {
+	UriBuilder builder = super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
+        
+	if (getQueryString() != null) builder.queryParam(SPIN.query.getLocalName(), getQueryString());
+        
+        return builder;
+    }
     
-    /**
-     * Returns the layout mode query parameter value.
-     * 
-     * @return mode URI
-     */
-    public URI getMode()
+    public String getQueryString()
     {
-	return mode;
-    }
-
-    /**
-     * Returns page URI builder.
-     * 
-     * @return URI builder
-     */
-    @Override
-    public UriBuilder getPageUriBuilder()
-    {
-	if (getMode() != null) return super.getPageUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
-	
-	return super.getPageUriBuilder();
-    }
-
-    /**
-     * Returns previous page URI builder.
-     * 
-     * @return URI builder
-     */
-    @Override
-    public UriBuilder getPreviousUriBuilder()
-    {
-	if (getMode() != null) return super.getPreviousUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
-	
-	return super.getPreviousUriBuilder();
-    }
-
-    /**
-     * Returns next page URI builder.
-     * 
-     * @return URI builder
-     */
-    @Override
-    public UriBuilder getNextUriBuilder()
-    {
-	if (getMode() != null) return super.getNextUriBuilder().queryParam(GC.mode.getLocalName(), getMode());
-	
-	return super.getNextUriBuilder();
+        return queryString;
     }
     
 }

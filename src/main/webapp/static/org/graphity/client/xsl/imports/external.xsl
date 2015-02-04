@@ -52,18 +52,6 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="gp:baseUri" as="xs:anyURI"/>
     
-    <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:HeaderMode" priority="1">
-	<!--
-        <div class="btn-group pull-right">
-	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
-	</div>
-        -->
-
-	<h1 class="page-header">
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</h1>
-    </xsl:template>
-
     <xsl:template match="@rdf:about[not(starts-with(., $gp:baseUri))]" mode="gc:HeaderMode">
 	<div class="btn-group pull-right">
 	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>

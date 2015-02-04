@@ -28,7 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.graphity.processor.util.DataManager;
-import org.graphity.server.vocabulary.GS;
+import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getPreemptiveAuth(getServletConfig(), GS.preemptiveAuth));
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth));
     }
 
     public boolean getPreemptiveAuth(ServletConfig servletConfig, Property property)

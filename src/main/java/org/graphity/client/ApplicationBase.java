@@ -34,10 +34,10 @@ import org.graphity.client.provider.XSLTBuilderProvider;
 import org.graphity.client.reader.SkolemizingRDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
-import org.graphity.server.provider.ModelProvider;
-import org.graphity.server.provider.QueryParamProvider;
-import org.graphity.server.provider.ResultSetWriter;
-import org.graphity.server.provider.UpdateRequestReader;
+import org.graphity.core.provider.ModelProvider;
+import org.graphity.core.provider.QueryParamProvider;
+import org.graphity.core.provider.ResultSetWriter;
+import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
 import org.graphity.processor.mapper.NotFoundExceptionMapper;
@@ -47,7 +47,7 @@ import org.graphity.processor.provider.OntClassMatcher;
 import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
-import org.graphity.server.vocabulary.GS;
+import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -62,7 +62,7 @@ import org.topbraid.spin.system.SPINModuleRegistry;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class ApplicationBase extends org.graphity.server.ApplicationBase
+public class ApplicationBase extends org.graphity.core.ApplicationBase
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
@@ -88,7 +88,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
         
         singletons.add(new DataManagerProvider());
         singletons.add(new org.graphity.processor.provider.DataManagerProvider());
-        singletons.add(new org.graphity.server.provider.DataManagerProvider());
+        singletons.add(new org.graphity.core.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
         singletons.add(new OntClassMatcher());
@@ -131,7 +131,7 @@ public class ApplicationBase extends org.graphity.server.ApplicationBase
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(), getPreemptiveAuth(getServletConfig(), GS.preemptiveAuth), getUriInfo());
+        DataManager manager = new DataManager(mapper, ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth), getUriInfo());
         FileManager.setStdLocators(manager);
 	manager.addLocatorLinkedData();
 	manager.removeLocatorURL();

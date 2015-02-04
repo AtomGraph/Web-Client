@@ -21,7 +21,7 @@ import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.ext.ContextResolver;
 import org.graphity.processor.model.SPARQLEndpointFactory;
-import org.graphity.server.model.SPARQLEndpoint;
+import org.graphity.core.model.SPARQLEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see org.graphity.server.model.SPARQLEndpoint
  */
-public class SPARQLEndpointProvider extends org.graphity.server.provider.SPARQLEndpointProvider
+public class SPARQLEndpointProvider extends org.graphity.core.provider.SPARQLEndpointProvider
 {
     
     private static final Logger log = LoggerFactory.getLogger(SPARQLEndpointProvider.class);
@@ -57,7 +57,7 @@ public class SPARQLEndpointProvider extends org.graphity.server.provider.SPARQLE
         return super.getSPARQLEndpoint();
     }
     
-    public SPARQLEndpoint getSPARQLEndpoint(Request request, ServletConfig servletConfig, Dataset dataset, org.graphity.server.util.DataManager dataManager)
+    public SPARQLEndpoint getSPARQLEndpoint(Request request, ServletConfig servletConfig, Dataset dataset, org.graphity.core.util.DataManager dataManager)
     {
         return SPARQLEndpointFactory.create(request, servletConfig, dataset, dataManager);
     }

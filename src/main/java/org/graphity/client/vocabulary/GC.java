@@ -17,6 +17,7 @@
 
 package org.graphity.client.vocabulary;
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -48,7 +49,7 @@ public final class GC
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
         
-    public static final OntClass CreateMode = m_model.createClass( NS + "CreateMode" );
+    //public static final OntClass CreateMode = m_model.createClass( NS + "CreateMode" );
     
     public static final OntClass EditMode = m_model.createClass( NS + "EditMode" );
 
@@ -62,11 +63,13 @@ public final class GC
 
     public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
     
+    public static final AnnotationProperty defaultMode = m_model.createAnnotationProperty( NS + "defaultMode" );
+
+    public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
+
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
     
-    public static final ObjectProperty defaultMode = m_model.createObjectProperty( NS + "defaultMode" );
-
-    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+    //public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 

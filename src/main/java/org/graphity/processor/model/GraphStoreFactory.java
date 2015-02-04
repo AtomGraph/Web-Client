@@ -21,15 +21,15 @@ import org.graphity.processor.model.impl.GraphStoreBase;
 import com.hp.hpl.jena.query.Dataset;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Request;
-import org.graphity.server.util.DataManager;
-import org.graphity.server.model.GraphStore;
+import org.graphity.core.util.DataManager;
+import org.graphity.core.model.GraphStore;
 
 /**
  * Factory class for creating Graph Stores.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class GraphStoreFactory extends org.graphity.server.model.GraphStoreFactory
+public class GraphStoreFactory extends org.graphity.core.model.GraphStoreFactory
 {
 
     /**
