@@ -104,7 +104,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	try
 	{
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    model.write(baos, RDFLanguages.RDFXML.getName());
+	    model.write(baos, RDFLanguages.RDFXML.getName(), null);
 
 	    // create XSLTBuilder per request output to avoid document() caching
 	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
@@ -129,7 +129,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	model.write(stream, null, RDFLanguages.RDFXML.getName());
+	model.write(stream, RDFLanguages.RDFXML.getName(), null);
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
@@ -143,7 +143,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
 	
 	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	ontModel.writeAll(stream, null, Lang.RDFXML.getName());
+	ontModel.writeAll(stream, Lang.RDFXML.getName(), null);
 
 	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	

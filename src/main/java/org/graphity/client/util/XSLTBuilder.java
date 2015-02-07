@@ -20,11 +20,13 @@ package org.graphity.client.util;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
@@ -44,9 +46,11 @@ public class XSLTBuilder
 
     private Source doc = null;
     private final SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
-    private TransformerHandler handler = null;
-    private Transformer transformer = null;
-    private Result result = null; 
+    private Templates templates = null;
+    private URIResolver resolver = null;
+    private final Map<String, Object> parameters = new HashMap<>();
+    private final Map<String, String> outputProperties = new HashMap<>();    
+    private Result result = null;
     private final boolean cachingTemplates;
     private final Map<String, Templates> templatesCache = new ConcurrentHashMap<>();
     
@@ -179,92 +183,80 @@ public class XSLTBuilder
         if (isCachingTemplates() && templatesCache.containsKey(stylesheet.getSystemId()))
             return stylesheet(templatesCache.get(stylesheet.getSystemId()));
 
-        Templates templates = factory.newTemplates(stylesheet);
-        if (isCachingTemplates()) templatesCache.put(stylesheet.getSystemId(), templates);
-        return stylesheet(templates);
+        Templates newTemplates = factory.newTemplates(stylesheet);
+        if (isCachingTemplates()) templatesCache.put(stylesheet.getSystemId(), newTemplates);
+        return stylesheet(newTemplates);
     }
 
-    public XSLTBuilder stylesheet(Templates stylesheet) throws TransformerConfigurationException            
+    public XSLTBuilder stylesheet(Templates templates) throws TransformerConfigurationException            
     {
-        handler = factory.newTransformerHandler(stylesheet);
-	transformer = handler.getTransformer();
+        this.templates = templates;
 	return this;
     }
 
     public XSLTBuilder parameter(String name, Object value)
     {
 	if (log.isTraceEnabled()) log.trace("Setting transformer parameter {} with value {}", name, value);
-	getTransformer().setParameter(name, value);
-	//handler.getTransformer().setParameter(name, value);
+        parameters.put(name, value);
 	return this;
     }
     
     public XSLTBuilder resolver(URIResolver resolver)
     {
 	if (log.isTraceEnabled()) log.trace("Setting URIResolver: {}", resolver);
-	getTransformer().setURIResolver(resolver);
-	//handler.getTransformer().setURIResolver(resolver);
+        this.resolver = resolver;
 	return this;
     }
 
     public XSLTBuilder outputProperty(String name, String value)
     {
 	if (log.isTraceEnabled()) log.trace("Setting transformer OutputProperty {} with value {}", name, value);
-	getTransformer().setOutputProperty(name, value);
-	//handler.getTransformer().setOutputProperty(name, value);
+	outputProperties.put(name, value);
 	return this;
     }
     
     public void transform() throws TransformerException
     {
+        TransformerHandler handler = factory.newTransformerHandler(templates);
+        handler.setResult(result);
+        
+	Transformer transformer = handler.getTransformer();
+        transformer.setURIResolver(resolver);
+        
+        Iterator<Entry<String, Object>> paramIt = parameters.entrySet().iterator();
+        while (paramIt.hasNext())
+        {
+            Entry<String, Object> param = paramIt.next();
+            transformer.setParameter(param.getKey(), param.getValue());
+        }
+
+        Iterator<Entry<String, String>> propertyIt = outputProperties.entrySet().iterator();
+        while (propertyIt.hasNext())
+        {
+            Entry<String, String> outputProperty = propertyIt.next();
+            transformer.setOutputProperty(outputProperty.getKey(), outputProperty.getValue());
+        }
+        
 	if (log.isTraceEnabled())
 	{
-	    log.trace("TransformerHandler: {}", getHandler());
-	    log.trace("Transformer: {}", getTransformer());
-	    log.trace("Transformer: {}", getHandler().getTransformer());
-	    log.trace("Document: {}", getDocument());
-	    log.trace("Result: {}", getResult());
+	    log.trace("TransformerHandler: {}", handler);
+	    log.trace("Transformer: {}", transformer);
+	    log.trace("Document: {}", doc);
+	    log.trace("Result: {}", result);
 	}
-	getTransformer().transform(getDocument(), getResult());
-	//handler.getTransformer().transform(doc, result);
+        
+	transformer.transform(doc, result);
     }
 
     public XSLTBuilder result(Result result) throws TransformerConfigurationException
     {
 	this.result = result;
-	//handler = factory.newTransformerHandler(stylesheet); // TransformerHandler not reusable in Saxon
-	getHandler().setResult(result);
 	return this;
     }
 
-    public Source getDocument()
-    {
-        return doc;
-    }
-
-    public Transformer getTransformer()
-    {
-	return transformer;
-    }
-    
-    public TransformerHandler getHandler()
-    {
-	return handler;
-    }
-
-    public Result getResult()
-    {
-        return result;
-    }
- 
     public boolean isCachingTemplates()
     {
         return cachingTemplates;
-    }
-    // http://xml.apache.org/xalan-j/usagepatterns.html#outasin
-    public XSLTBuilder result(XSLTBuilder next) throws TransformerException // for chaining stylesheets
-    {
-	return result(new SAXResult(next.getHandler()));
     }
     
 }

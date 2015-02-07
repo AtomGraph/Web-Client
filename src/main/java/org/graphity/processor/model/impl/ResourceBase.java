@@ -56,7 +56,6 @@ import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.impl.QueriedResourceBase;
 import org.graphity.core.model.SPARQLEndpoint;
 import org.graphity.core.util.ModelUtils;
-import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.SPINFactory;

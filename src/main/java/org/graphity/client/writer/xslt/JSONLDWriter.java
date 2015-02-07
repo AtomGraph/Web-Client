@@ -40,7 +40,6 @@ public class JSONLDWriter extends ModelXSLTWriter
     public JSONLDWriter(XSLTBuilder builder)
     {
 	super(builder);
-	log.debug("Constructing JSONLDWriter with stylesheet: {} and URIResolver: ", builder.getHandler().getSystemId(), builder.getTransformer().getURIResolver());
     }
 
 }
