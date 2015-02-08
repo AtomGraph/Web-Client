@@ -71,7 +71,7 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
             GP.lang.getLocalName(), GP.mode.getLocalName(),
             GC.uri.getLocalName(), GC.endpointUri.getLocalName());
 
-    private final XSLTBuilder builder;
+    private XSLTBuilder builder; // final
  
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
@@ -107,8 +107,12 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 	    model.write(baos, RDFLanguages.RDFXML.getName(), null);
 
 	    // create XSLTBuilder per request output to avoid document() caching
-	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
-		    headerMap, entityStream).transform();
+            XSLTBuilder bld = getXSLTBuilder();
+            synchronized (bld)
+            {
+                getXSLTBuilder(bld, new ByteArrayInputStream(baos.toByteArray()),
+                        headerMap, entityStream).transform();
+            }
 	}
 	catch (TransformerException ex)
 	{
@@ -190,10 +194,9 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         }
     }
 
-    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
+    public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {        
-        XSLTBuilder bld = getXSLTBuilder().
-	    document(is).
+            bld.document(is).
 	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
 	    parameter("{" + GP.absolutePath.getNameSpace() + "}" + GP.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
 	    parameter("{" + GP.requestUri.getNameSpace() + "}" + GP.requestUri.getLocalName(), getUriInfo().getRequestUri()).

@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -45,28 +44,20 @@ public class XSLTBuilder
     private static final Logger log = LoggerFactory.getLogger(XSLTBuilder.class) ;
 
     private Source doc = null;
-    private final SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();    
+    private final SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();
     private Templates templates = null;
     private URIResolver resolver = null;
     private final Map<String, Object> parameters = new HashMap<>();
-    private final Map<String, String> outputProperties = new HashMap<>();    
+    private final Map<String, String> outputProperties = new HashMap<>();
     private Result result = null;
-    private final boolean cachingTemplates;
-    private final Map<String, Templates> templatesCache = new ConcurrentHashMap<>();
     
-    protected XSLTBuilder(boolean cachingTemplates)
+    protected XSLTBuilder()
     {
-        this.cachingTemplates = cachingTemplates;
     }
     
-    public static XSLTBuilder newInstance(boolean cachingTemplates)
-    {
-	return new XSLTBuilder(cachingTemplates);
-    }
-
     public static XSLTBuilder newInstance()
     {
-	return new XSLTBuilder(true); // cache by default
+	return new XSLTBuilder();
     }
 
     public static XSLTBuilder fromStylesheet(Source xslt) throws TransformerConfigurationException
@@ -177,15 +168,7 @@ public class XSLTBuilder
     
     public XSLTBuilder stylesheet(Source stylesheet) throws TransformerConfigurationException
     {
-	if (log.isTraceEnabled()) log.trace("Loading stylesheet Source with system ID: {}", stylesheet.getSystemId());
-
-        // return Templates if they are already compiled and cached for this Source
-        if (isCachingTemplates() && templatesCache.containsKey(stylesheet.getSystemId()))
-            return stylesheet(templatesCache.get(stylesheet.getSystemId()));
-
-        Templates newTemplates = factory.newTemplates(stylesheet);
-        if (isCachingTemplates()) templatesCache.put(stylesheet.getSystemId(), newTemplates);
-        return stylesheet(newTemplates);
+        return stylesheet(factory.newTemplates(stylesheet));
     }
 
     public XSLTBuilder stylesheet(Templates templates) throws TransformerConfigurationException            
@@ -252,11 +235,6 @@ public class XSLTBuilder
     {
 	this.result = result;
 	return this;
-    }
-
-    public boolean isCachingTemplates()
-    {
-        return cachingTemplates;
     }
     
 }

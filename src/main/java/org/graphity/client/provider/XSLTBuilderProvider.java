@@ -35,7 +35,10 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
@@ -59,7 +62,8 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
     private final ServletConfig servletConfig;
-    private final XSLTBuilder builder;
+    private XSLTBuilder builder;
+    private final boolean cacheXSLT;
 
     /**
      * 
@@ -71,13 +75,11 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
 	super(XSLTBuilder.class);
         this.servletConfig = servletConfig;
         
-        boolean cacheXSLT = false;
         if (servletConfig.getInitParameter(GC.cacheXSLT.getURI()) != null)
             cacheXSLT = Boolean.parseBoolean(servletConfig.getInitParameter(GC.cacheXSLT.getURI()).toString());
-
-        builder = XSLTBuilder.newInstance(cacheXSLT);
+        else cacheXSLT = false;
     }
-    
+        
     public UriInfo getUriInfo()
     {
 	return uriInfo;
@@ -91,6 +93,11 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     public ServletConfig getServletConfig()
     {
         return servletConfig;
+    }
+    
+    public boolean cacheXSLT()
+    {
+        return cacheXSLT;
     }
     
     public DataManager getDataManager()
@@ -156,8 +163,16 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
         try
         {
-            //return XSLTBuilder.fromStylesheet(getSource(getStylesheetURI())).resolver(getDataManager());
-            return builder.stylesheet(getSource(getStylesheetURI())).resolver(getDataManager());
+            if (cacheXSLT())
+            {
+                if (builder == null) builder = XSLTBuilder.newInstance().
+                        stylesheet(getTemplates(getStylesheetURI())).resolver(getDataManager());
+
+                return builder;
+            }
+            else
+                return XSLTBuilder.newInstance().
+                    stylesheet(getTemplates(getStylesheetURI())).resolver(getDataManager());
         }
         catch (ConfigurationException ex)
         {
@@ -179,6 +194,11 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    public Templates getTemplates(URI stylesheetURI) throws FileNotFoundException, URISyntaxException, TransformerConfigurationException, MalformedURLException
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(getSource(stylesheetURI));
     }
     
     /**
