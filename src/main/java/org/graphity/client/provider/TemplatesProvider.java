@@ -30,18 +30,14 @@ import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.client.util.DataManager;
-import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,40 +50,27 @@ import org.slf4j.LoggerFactory;
  * @see org.graphity.client.util.XSLTBuilder
  */
 @Provider
-public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Context, XSLTBuilder> implements ContextResolver<XSLTBuilder>
+public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context, Templates> implements ContextResolver<Templates>
 {
 
-    private static final Logger log = LoggerFactory.getLogger(XSLTBuilderProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(TemplatesProvider.class);
 
-    @Context private Providers providers;
-    @Context private UriInfo uriInfo;
     private final ServletConfig servletConfig;
-    private XSLTBuilder builder;
+    private Templates templates;
     private final boolean cacheXSLT;
 
     /**
      * 
      * @param servletConfig
-     * @see <a href="http://docs.oracle.com/javase/7/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
      */
-    public XSLTBuilderProvider(@Context ServletConfig servletConfig)
+    public TemplatesProvider(@Context ServletConfig servletConfig)
     {
-	super(XSLTBuilder.class);
+	super(Templates.class);
         this.servletConfig = servletConfig;
         
         if (servletConfig.getInitParameter(GC.cacheXSLT.getURI()) != null)
             cacheXSLT = Boolean.parseBoolean(servletConfig.getInitParameter(GC.cacheXSLT.getURI()).toString());
         else cacheXSLT = false;
-    }
-        
-    public UriInfo getUriInfo()
-    {
-	return uriInfo;
-    }
-
-    public Providers getProviders()
-    {
-        return providers;
     }
 
     public ServletConfig getServletConfig()
@@ -99,30 +82,24 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
     {
         return cacheXSLT;
     }
-    
-    public DataManager getDataManager()
-    {
-	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
-	return cr.getContext(DataManager.class);
-    }
 
     @Override
-    public Injectable<XSLTBuilder> getInjectable(ComponentContext cc, Context a)
+    public Injectable<Templates> getInjectable(ComponentContext cc, Context a)
     {
-	return new Injectable<XSLTBuilder>()
+	return new Injectable<Templates>()
 	{
 	    @Override
-	    public XSLTBuilder getValue()
+	    public Templates getValue()
 	    {
-                return getXSLTBuilder();
+                return getTemplates();
 	    }
 	};
     }
 
     @Override
-    public XSLTBuilder getContext(Class<?> type)
+    public Templates getContext(Class<?> type)
     {
-        return getXSLTBuilder();
+        return getTemplates();
     }
 
     /**
@@ -159,20 +136,18 @@ public class XSLTBuilderProvider extends PerRequestTypeInjectableProvider<Contex
      * 
      * @return XSLT builder object
      */
-    public XSLTBuilder getXSLTBuilder()
+    public Templates getTemplates()
     {
         try
         {
             if (cacheXSLT())
             {
-                if (builder == null) builder = XSLTBuilder.newInstance().
-                        stylesheet(getTemplates(getStylesheetURI())).resolver(getDataManager());
+                if (templates == null) templates = getTemplates(getStylesheetURI());
 
-                return builder;
+                return templates;
             }
             else
-                return XSLTBuilder.newInstance().
-                    stylesheet(getTemplates(getStylesheetURI())).resolver(getDataManager());
+                return getTemplates(getStylesheetURI());
         }
         catch (ConfigurationException ex)
         {

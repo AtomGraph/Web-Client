@@ -65,6 +65,11 @@ public class XSLTBuilder
 	return newInstance().stylesheet(xslt);
     }
 
+    public static XSLTBuilder fromStylesheet(Templates xslt) throws TransformerConfigurationException
+    {
+	return newInstance().stylesheet(xslt);
+    }
+    
     public static XSLTBuilder fromStylesheet(Node n) throws TransformerConfigurationException
     {
 	return newInstance().stylesheet(new DOMSource(n));

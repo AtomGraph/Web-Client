@@ -30,7 +30,7 @@ import javax.ws.rs.core.UriInfo;
 import org.graphity.processor.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
-import org.graphity.client.provider.XSLTBuilderProvider;
+import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.reader.SkolemizingRDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
@@ -105,7 +105,7 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
 	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.HttpExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-	singletons.add(new XSLTBuilderProvider(servletConfig)); // loads XSLT stylesheet
+	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
     }
 
     /**

@@ -19,7 +19,7 @@ package org.graphity.client.writer.xslt;
 import com.sun.jersey.spi.resource.Singleton;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
-import org.graphity.client.util.XSLTBuilder;
+import javax.xml.transform.Templates;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +37,9 @@ public class JSONLDWriter extends ModelXSLTWriter
 {
     private static final Logger log = LoggerFactory.getLogger(JSONLDWriter.class);
     
-    public JSONLDWriter(XSLTBuilder builder)
+    public JSONLDWriter(Templates templates)
     {
-	super(builder);
+	super(templates);
     }
 
 }

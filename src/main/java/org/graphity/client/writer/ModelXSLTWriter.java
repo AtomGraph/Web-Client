@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
+import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.Link;
@@ -71,7 +72,8 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
             GP.lang.getLocalName(), GP.mode.getLocalName(),
             GC.uri.getLocalName(), GC.endpointUri.getLocalName());
 
-    private XSLTBuilder builder; // final
+    //private XSLTBuilder builder; // final
+    private Templates templates;
  
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
@@ -82,18 +84,29 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     /**
      * Constructs from XSLT builder.
      * 
-     * @param builder XSLT builder for this writer
+     * @param templates
      * @see org.graphity.client.util.XSLTBuilder
      */
-    public ModelXSLTWriter(XSLTBuilder builder)
+    public ModelXSLTWriter(Templates templates)
     {
-	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
-	this.builder = builder;
+	if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
+	this.templates = templates;
     }
 
+    public Providers getProviders()
+    {
+        return providers;
+    }
+
+    public DataManager getDataManager()
+    {
+	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+	return cr.getContext(DataManager.class);
+    }
+    
     public ModelXSLTWriter()
     {
-        this.builder = null;
+        this.templates = null;
     }
     
     @Override
@@ -103,15 +116,16 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 
 	try
 	{
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    model.write(baos, RDFLanguages.RDFXML.getName(), null);
-
-	    // create XSLTBuilder per request output to avoid document() caching
-            XSLTBuilder bld = getXSLTBuilder();
-            synchronized (bld)
+            synchronized (this)
             {
-                getXSLTBuilder(bld, new ByteArrayInputStream(baos.toByteArray()),
-                        headerMap, entityStream).transform();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                model.write(baos, RDFLanguages.RDFXML.getName(), null);
+                
+                getXSLTBuilder(XSLTBuilder.fromStylesheet(getTemplates()).document(new ByteArrayInputStream(baos.toByteArray())),
+                        headerMap).
+                    resolver(getDataManager()).
+                    result(new StreamResult(entityStream)).
+                    transform();
             }
 	}
 	catch (TransformerException ex)
@@ -167,11 +181,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     {
         return servletConfig;
     }
-    
-    public Providers getProviders()
-    {
-        return providers;
-    }
 
     public HttpServletRequest getHttpServletRequest()
     {
@@ -184,25 +193,23 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
                 resolve(getHttpServletRequest().getContextPath() + "/");
     }
     
-    public XSLTBuilder getXSLTBuilder()
+    public Templates getTemplates()
     {
-        if (builder != null) return builder;
+        if (templates != null) return templates;
         else
         {
-            ContextResolver<XSLTBuilder> cr = getProviders().getContextResolver(XSLTBuilder.class, null);
-            return cr.getContext(XSLTBuilder.class);
+            ContextResolver<Templates> cr = getProviders().getContextResolver(Templates.class, null);
+            return cr.getContext(Templates.class);
         }
     }
 
-    public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
+    public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-            bld.document(is).
-	    parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
+	    bld.parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
 	    parameter("{" + GP.absolutePath.getNameSpace() + "}" + GP.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
 	    parameter("{" + GP.requestUri.getNameSpace() + "}" + GP.requestUri.getLocalName(), getUriInfo().getRequestUri()).
 	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
-	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI()).
-	    result(new StreamResult(os));
+	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
         if (headerMap.containsKey("Link"))
         {
