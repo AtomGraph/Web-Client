@@ -240,7 +240,7 @@
                     PREFIX dct:     <http://purl.org/dc/terms/>
 
                     CONSTRUCT {
-                        ?this a foaf:Document, gp:Container, sioc:Container ;
+                        _:this a foaf:Document, gp:Container, sioc:Container ;
                             gp:slug " "^^xsd:string ;
                             dct:title " " .
                     }
@@ -272,7 +272,7 @@
                     PREFIX gp:      <http://graphity.org/gp#>
 
                     CONSTRUCT {
-                        ?this a foaf:Document, gp:Item, sioc:Item ;
+                        _:this a foaf:Document, gp:Item, sioc:Item ;
                             gp:slug " "^^xsd:string .
                     }
                     WHERE {}"""
