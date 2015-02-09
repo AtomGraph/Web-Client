@@ -88,7 +88,8 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>    
+    <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>
+    <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
@@ -302,10 +303,10 @@ exclude-result-prefixes="#all">
     <!-- MODE SELECT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
-        <xsl:if test="key('resources-by-constructor-of', $gc:uri) | key('resources-by-page-of', $gc:uri)">
+        <xsl:if test="key('resources-by-constructor-of', $gc:uri) | key('resources-by-page-of', $gc:uri) | key('resources-by-layout-of', $gc:uri)">
             <ul class="nav nav-tabs">
                 <xsl:apply-templates select="key('resources-by-constructor-of', $gc:uri)" mode="#current"/>
-                <xsl:apply-templates select="key('resources-by-page-of', $gc:uri)" mode="#current">
+                <xsl:apply-templates select="key('resources-by-page-of', $gc:uri) | key('resources-by-layout-of', $gc:uri)" mode="#current">
                     <xsl:sort select="gp:mode/@rdf:resource/gc:object-label(.)"/>
                 </xsl:apply-templates>
             </ul>
@@ -959,6 +960,8 @@ exclude-result-prefixes="#all">
 	    </div>
 	</form>
     </xsl:template>
+
+    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:EditMode" priority="1"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:EditMode" priority="1"/>
 
