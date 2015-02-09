@@ -945,11 +945,11 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:variable name="parent-uri" select="key('resources', $gc:uri)/sioc:has_container/@rdf:resource" as="xs:anyURI"/>
+            <xsl:variable name="parent-uri" select="key('resources', $gc:uri)/sioc:has_container/@rdf:resource | key('resources', $gc:uri)/sioc:has_space/@rdf:resource" as="xs:anyURI"/>
             <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 
-            <xsl:apply-templates mode="#current">                
+            <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">                
                 <xsl:with-param name="template-doc" select="document($construct-uri)"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
