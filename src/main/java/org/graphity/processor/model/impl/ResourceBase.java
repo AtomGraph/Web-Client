@@ -178,7 +178,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
                         this.offset = defaultOffset;
                     }
-                    if (log.isErrorEnabled()) log.error("Setting OFFSET on container sub-SELECT: {}", offset);
+                    if (log.isDebugEnabled()) log.debug("Setting OFFSET on container sub-SELECT: {}", offset);
                     queryBuilder.getSubSelectBuilder().replaceOffset(offset);
 
                     if (getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
@@ -189,7 +189,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         //if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:defaultLimit annotation if it is used as container");
                         this.limit = defaultLimit;                        
                     }
-                    if (log.isErrorEnabled()) log.error("Setting LIMIT on container sub-SELECT: {}", limit);
+                    if (log.isDebugEnabled()) log.debug("Setting LIMIT on container sub-SELECT: {}", limit);
                     queryBuilder.getSubSelectBuilder().replaceLimit(limit);
 
                     if (getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName()))
