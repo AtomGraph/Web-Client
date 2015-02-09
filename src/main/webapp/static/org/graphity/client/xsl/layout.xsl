@@ -241,7 +241,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gc:uri)]" as="element()*"/>
+        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gc:uri)][not(gp:constructorOf)][not(gp:pageOf)][not(gc:layoutOf)]" as="element()*"/>
 
         <div class="container-fluid">
 	    <div class="row-fluid">
@@ -672,9 +672,6 @@ exclude-result-prefixes="#all">
             <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
-
-    <!-- hide metadata -->
-    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:ListMode" priority="1"/>
                 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ListMode">
 	<div class="well">
@@ -711,7 +708,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- hide metadata -->
-    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:ReadMode" priority="1"/>
+    <xsl:template match="*[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:ReadMode" priority="1"/>
 
     <!-- hide document if topic is present -->
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ReadMode" priority="1"/>
@@ -750,9 +747,6 @@ exclude-result-prefixes="#all">
 	    </tbody>
 	</table>
     </xsl:template>
-
-    <!-- hide metadata -->
-    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:TableMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode">
 	<xsl:param name="predicates" as="element()*" tunnel="yes"/>
@@ -961,7 +955,8 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:EditMode" priority="1"/>
+    <!-- hide metadata -->
+    <xsl:template match="*[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:EditMode" priority="1"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:EditMode" priority="1"/>
 
