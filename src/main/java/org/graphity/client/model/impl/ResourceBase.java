@@ -135,10 +135,26 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
                 {
                     if (!supportedMode.equals(GP.ConstructItemMode))
                     {
-                        String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
-                        createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
-                            addProperty(RDF.type, GP.Page).
-                            addProperty(GP.pageOf, this);
+                        if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
+                                getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
+                        {
+                            String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), null).build().toString();                            
+                            String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
+                            createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
+                                addProperty(RDF.type, FOAF.Document).                                    
+                                addProperty(RDF.type, GP.Page).
+                                addProperty(RDF.type, GC.Layout).
+                                addProperty(GP.pageOf, this).
+                                addProperty(GC.layoutOf, model.createResource(pageURI));
+                        }
+                        else
+                        {
+                            String modeURI = getStateUriBuilder(null, null, null, null, URI.create(supportedMode.asResource().getURI())).build().toString();
+                            createState(model.createResource(modeURI), null, null, null, null, supportedMode.asResource()).
+                                addProperty(RDF.type, FOAF.Document).
+                                addProperty(RDF.type, GC.Layout).
+                                addProperty(GC.layoutOf, this);                            
+                        }
                     }
                 }
             }

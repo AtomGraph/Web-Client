@@ -550,10 +550,12 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
                 getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
 	{
-            Resource modeResource = null;
-            if (getMode() != null) modeResource = model.createResource(getMode().toString());
+            //Resource modeResource = null;
+            //if (getMode() != null) modeResource = model.createResource(getMode().toString());
+            
             String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructItemMode.getURI())).build().toString();
             Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
+                    addProperty(RDF.type, FOAF.Document).
                     addProperty(RDF.type, GP.Constructor).
                     addProperty(GP.constructorOf, this);
             
@@ -586,8 +588,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 if (getLimit() != null)
                 {
                     if (log.isDebugEnabled()) log.debug("Adding Page metadata: gp:pageOf {}", this);
-                    String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build().toString();
-                    Resource page = createState(model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), modeResource).
+                    String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), null).build().toString();
+                    Resource page = createState(model.createResource(pageURI), getOffset(), getLimit(), getOrderBy(), getDesc(), null).
+                            addProperty(RDF.type, FOAF.Document).
                             addProperty(RDF.type, GP.Page).
                             addProperty(GP.pageOf, this);
 

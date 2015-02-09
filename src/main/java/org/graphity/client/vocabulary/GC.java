@@ -49,7 +49,7 @@ public final class GC
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
         
-    //public static final OntClass CreateMode = m_model.createClass( NS + "CreateMode" );
+    public static final OntClass Layout = m_model.createClass( NS + "Layout" );
     
     public static final OntClass EditMode = m_model.createClass( NS + "EditMode" );
 
@@ -69,7 +69,7 @@ public final class GC
 
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
     
-    //public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+    public static final ObjectProperty layoutOf = m_model.createObjectProperty( NS + "layoutOf" );
 
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 

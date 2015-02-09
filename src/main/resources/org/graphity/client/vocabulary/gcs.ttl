@@ -49,6 +49,8 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
         ] ;
     gp:uriTemplate "/templates/{item}" ;
     gp:skolemTemplate "/{slug}" ;
+    gc:supportedMode gc:ReadMode, gc:EditMode ;
+    gc:defaultMode gc:ReadMode ;
     spin:query gp:DescribeWithTopic ;
     spin:update gp:DeleteWithTopic ;
     spin:constructor
@@ -141,6 +143,8 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
         ] ;
     gp:uriTemplate "/queries/{item}" ;
     gp:skolemTemplate "/{slug}" ;
+    gc:supportedMode gc:ReadMode, gc:EditMode ;
+    gc:defaultMode gc:ReadMode ;
     spin:query gp:DescribeWithTopic ;
     spin:update gp:DeleteWithTopic ;
     spin:constructor

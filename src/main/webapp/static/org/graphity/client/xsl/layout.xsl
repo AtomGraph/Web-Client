@@ -88,7 +88,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-construct-mode-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>    
+    <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>    
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
@@ -302,9 +302,9 @@ exclude-result-prefixes="#all">
     <!-- MODE SELECT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:ModeSelectMode">
-        <xsl:if test="key('resources-by-construct-mode-of', $gc:uri) | key('resources-by-page-of', $gc:uri)">
+        <xsl:if test="key('resources-by-constructor-of', $gc:uri) | key('resources-by-page-of', $gc:uri)">
             <ul class="nav nav-tabs">
-                <xsl:apply-templates select="key('resources-by-construct-mode-of', $gc:uri)" mode="#current"/>
+                <xsl:apply-templates select="key('resources-by-constructor-of', $gc:uri)" mode="#current"/>
                 <xsl:apply-templates select="key('resources-by-page-of', $gc:uri)" mode="#current">
                     <xsl:sort select="gp:mode/@rdf:resource/gc:object-label(.)"/>
                 </xsl:apply-templates>
@@ -671,7 +671,10 @@ exclude-result-prefixes="#all">
             <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
-        
+
+    <!-- hide metadata -->
+    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:ListMode" priority="1"/>
+                
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ListMode">
 	<div class="well">
             <xsl:apply-templates select="." mode="gc:ImageMode"/>
@@ -706,8 +709,8 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
 
-    <!-- hide page resource -->
-    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri]" mode="gc:ReadMode" priority="1"/>
+    <!-- hide metadata -->
+    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:ReadMode" priority="1"/>
 
     <!-- hide document if topic is present -->
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ReadMode" priority="1"/>
@@ -746,6 +749,9 @@ exclude-result-prefixes="#all">
 	    </tbody>
 	</table>
     </xsl:template>
+
+    <!-- hide metadata -->
+    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:TableMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode">
 	<xsl:param name="predicates" as="element()*" tunnel="yes"/>
@@ -883,7 +889,7 @@ exclude-result-prefixes="#all">
 	    </xsl:call-template>
 
             <xsl:variable name="parent-doc" select="document($gc:uri)" as="document-node()"/>
-            <xsl:variable name="construct-uri" select="key('resources-by-construct-mode-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
+            <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 
             <xsl:apply-templates mode="#current">                
                 <xsl:with-param name="template-doc" select="document($construct-uri)"/>
@@ -938,7 +944,7 @@ exclude-result-prefixes="#all">
 
             <xsl:variable name="parent-uri" select="key('resources', $gc:uri)/sioc:has_container/@rdf:resource" as="xs:anyURI"/>
             <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
-            <xsl:variable name="construct-uri" select="key('resources-by-construct-mode-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
+            <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 
             <xsl:apply-templates mode="#current">                
                 <xsl:with-param name="template-doc" select="document($construct-uri)"/>

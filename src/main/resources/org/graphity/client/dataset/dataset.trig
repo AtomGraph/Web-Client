@@ -114,11 +114,3 @@
 <queries/describe-graph-label-resources> a foaf:Document, sioc:Item, gcs:QueryItem ;
     sioc:has_container <queries> ;
     foaf:primaryTopic gcs:DescribeLabelResources .
-
-<queries/temp> a foaf:Document, sioc:Item, gcs:QueryItem ;
-    sioc:has_container <queries> ;
-    foaf:primaryTopic <queries/temp#this> .
-
-<queries/temp#this>    a       <http://spinrdf.org/sp#Describe>, <http://spinrdf.org/sp#Query>, gcs:Query ; # redefined to avoid importing gs: vocab with {path: *}
-    foaf:isPrimaryTopicOf <queries/temp> ;
-    <http://spinrdf.org/sp#text> """DESCRIBE ?this"""^^xsd:string .
