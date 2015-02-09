@@ -765,6 +765,9 @@ exclude-result-prefixes="#all">
 	</tr>
     </xsl:template>
 
+    <!-- hide system properties -->
+    <xsl:template match="gp:* | gc:* | xhv:*" mode="gc:TablePredicateMode" priority="1"/>
+
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]/*" mode="gc:TablePredicateMode" priority="1"/>
 
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:TableMode" priority="1">

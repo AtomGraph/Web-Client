@@ -111,10 +111,17 @@
     rdfs:isDefinedBy <#> .
 
 <#loadClass> a owl:AnnotationProperty ;
-    rdfs:subPropertyOf <http://jena.hpl.hp.com/2005/11/Assembler#loadClass> ;
     rdfs:domain <#Template> ;
     rdfs:label "Load class";
     rdfs:comment "Indicates the Java class that will handle requests matched by this template. Needs to start with 'java:' URI scheme." ;
+    rdfs:seeAlso <http://jena.hpl.hp.com/2005/11/Assembler#loadClass> ;
+    rdfs:isDefinedBy <#> .
+
+<#lang> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range rdf:langString ;
+    rdfs:label "Language" ;
+    rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
     rdfs:isDefinedBy <#> .
 
 # RESOURCE PROPERTIES
@@ -177,7 +184,7 @@
     rdfs:isDefinedBy <#> .
 
 <#mode> a owl:ObjectProperty ;
-    rdfs:domain <#Template> ; # ?
+    rdfs:domain foaf:Document ;
     rdfs:range <#Mode> ;
     rdfs:label "RDF description mode" ;
     rdfs:isDefinedBy <#> .

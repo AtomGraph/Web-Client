@@ -143,7 +143,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
                             createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
                                 addProperty(RDF.type, FOAF.Document).                                    
                                 addProperty(RDF.type, GP.Page).
-                                addProperty(RDF.type, GC.Layout).
                                 addProperty(GP.pageOf, this).
                                 addProperty(GC.layoutOf, model.createResource(pageURI));
                         }
@@ -152,7 +151,6 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
                             String modeURI = getStateUriBuilder(null, null, null, null, URI.create(supportedMode.asResource().getURI())).build().toString();
                             createState(model.createResource(modeURI), null, null, null, null, supportedMode.asResource()).
                                 addProperty(RDF.type, FOAF.Document).
-                                addProperty(RDF.type, GC.Layout).
                                 addProperty(GC.layoutOf, this);                            
                         }
                     }

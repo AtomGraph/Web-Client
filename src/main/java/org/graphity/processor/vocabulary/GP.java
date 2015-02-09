@@ -80,7 +80,7 @@ public final class GP
 
     public static final AnnotationProperty cacheControl = m_model.createAnnotationProperty( NS + "cacheControl" );
     
-    //public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
+    public static final AnnotationProperty lang = m_model.createAnnotationProperty( NS + "lang" );
         
     public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
     
@@ -107,12 +107,8 @@ public final class GP
     public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
 
     public static final DatatypeProperty slug = m_model.createDatatypeProperty( NS + "slug" );
-
-    public static final DatatypeProperty lang = m_model.createDatatypeProperty( NS + "lang" );
     
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
-
-    //public static final ObjectProperty modeOf = m_model.createObjectProperty( NS + "modeOf" );
     
     public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
 

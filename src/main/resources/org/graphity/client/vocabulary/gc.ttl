@@ -8,6 +8,7 @@
 @prefix spin:	<http://spinrdf.org/spin#> .
 @prefix gp:     <http://graphity.org/gp#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+@prefix dct:	<http://purl.org/dc/terms/> .
 
 # ONTOLOGY
 
@@ -34,11 +35,11 @@
     rdfs:label "XSLT stylesheet" ;
     rdfs:isDefinedBy <#> .
 
-<#lang> a owl:DatatypeProperty ;
-    rdfs:domain gp:Template ;
-    rdfs:range rdf:langString ;
-    rdfs:label "Language" ;
-    rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
+<#layoutOf> a owl:ObjectProperty ;
+    rdfs:subPropertyOf dct:isVersionOf ;
+    rdfs:domain foaf:Document ;
+    rdfs:range foaf:Document ;
+    rdfs:label "Layout of" ;
     rdfs:isDefinedBy <#> .
 
 # CLASSES
