@@ -919,6 +919,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
+        <xsl:param name="parent-uri" select="key('resources', $gc:uri)/sioc:has_container/@rdf:resource | key('resources', $gc:uri)/sioc:has_space/@rdf:resource" as="xs:anyURI"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -940,7 +941,6 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:variable name="parent-uri" select="key('resources', $gc:uri)/sioc:has_container/@rdf:resource | key('resources', $gc:uri)/sioc:has_space/@rdf:resource" as="xs:anyURI"/>
             <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 

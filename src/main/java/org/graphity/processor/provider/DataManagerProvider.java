@@ -99,7 +99,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();
 
-        if (log.isDebugEnabled()) log.debug("DataManager LocationMapper: {}", dataManager.getLocationMapper());
+        if (log.isTraceEnabled()) log.trace("DataManager LocationMapper: {}", dataManager.getLocationMapper());
 
         return dataManager;
     }
