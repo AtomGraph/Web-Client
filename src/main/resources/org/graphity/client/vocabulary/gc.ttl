@@ -73,10 +73,6 @@
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
-<#CreateMode> a <#Mode>, <#ContainerMode> ;
-    rdfs:label "Create" ;
-    rdfs:isDefinedBy <#> .
-
 <#TableMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .
@@ -92,14 +88,3 @@
 <#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .
-
-# RESOURCE TEMPLATES
-
-#gp:Space <#defaultMode> <#ListMode> ;
-#    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
-
-#gp:Container <#defaultMode> <#ListMode> ;
-#    <#mode> <#ReadMode>, <#ListMode>, <#TableMode>, <#ThumbnailMode>, <#MapMode> .
-
-#gp:Item <#defaultMode> <#ReadMode> ;
-#    <#mode> <#ReadMode>, <#EditMode> .

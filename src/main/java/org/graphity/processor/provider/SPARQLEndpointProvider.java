@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Needs to be registered in the application.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see org.graphity.server.model.SPARQLEndpoint
+ * @see org.graphity.core.model.SPARQLEndpoint
  */
 public class SPARQLEndpointProvider extends org.graphity.core.provider.SPARQLEndpointProvider
 {

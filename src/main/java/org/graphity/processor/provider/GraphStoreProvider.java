@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * Needs to be registered in the application.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see org.graphity.server.model.GraphStore
+ * @see org.graphity.core.model.GraphStore
  */
 public class GraphStoreProvider extends org.graphity.core.provider.GraphStoreProvider
 {

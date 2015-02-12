@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * Implements direct graph identification of the SPARQL Graph Store Protocol.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see org.graphity.server.model.GraphStore
+ * @see org.graphity.core.model.GraphStore
  * @see <a href="http://www.w3.org/TR/sparql11-http-rdf-update/#direct-graph-identification">4.1 Direct Graph Identification</a>
  */
 public class Item extends ResourceBase

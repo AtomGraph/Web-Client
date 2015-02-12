@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Needs to be registered in the application.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
- * @see org.graphity.server.model.GraphStoreOrigin
+ * @see org.graphity.core.model.GraphStoreOrigin
  */
 @Provider
 public class GraphStoreOriginProvider extends org.graphity.core.provider.GraphStoreOriginProvider
