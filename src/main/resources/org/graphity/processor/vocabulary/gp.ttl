@@ -378,7 +378,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
         UNION
         {
             {
-                SELECT ?doc ?thing
+                SELECT DISTINCT ?doc ?thing
                 WHERE {
                     {
                         ?doc sioc:has_space ?this
