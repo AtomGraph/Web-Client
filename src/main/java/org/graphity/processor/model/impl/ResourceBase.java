@@ -151,10 +151,10 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 
         try
         {
-            Query query = getQuery(getMatchedOntClass(), SPIN.query);
+            Query query = getQuery(getMatchedOntClass(), GP.query);
             if (query == null)
             {
-                if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (spin:query missing)", getMatchedOntClass().getURI());
+                if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (gp:query missing)", getMatchedOntClass().getURI());
                 throw new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'");
             }
             queryBuilder = QueryBuilder.fromQuery(query, getModel());
@@ -569,14 +569,14 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but Item template not attached Container template '{}' (owl:Restriction missing)", getMatchedOntClass().getURI());
                         throw new ConfigurationException("Item template not attached to '" + getMatchedOntClass().getURI() +"'");                    
                     }
-                    Query constructorQuery = getQuery(itemClasses.values().iterator().next(), SPIN.constructor);
-                    if (constructorQuery == null)
+                    Query templateQuery = getQuery(itemClasses.values().iterator().next(), GP.template);
+                    if (templateQuery == null)
                     {
-                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but constructor not defined for template '{}' (spin:constructor missing)", getMatchedOntClass().getURI());
+                        if (log.isErrorEnabled()) log.error("gp:ConstructItemMode is active but template not defined for template '{}' (gp:template missing)", getMatchedOntClass().getURI());
                         throw new ConfigurationException("Constructor not defined for template '" + getMatchedOntClass().getURI() +"'");
                     }
                     
-                    model.add(getSPARQLEndpoint().loadModel(constructorQuery)); // adds constructor Model
+                    model.add(getSPARQLEndpoint().loadModel(templateQuery)); // adds constructor Model
                 }
                 catch (ConfigurationException ex)
                 {
@@ -708,10 +708,10 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     
     public UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
     {
-	if (ontClass.getPropertyResourceValue(ResourceFactory.createProperty(SPIN.NS, "update")) == null)
+	if (ontClass.getPropertyResourceValue(GP.update) == null)
 	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update or template call resource (spin:update)");
 
-	Resource updateOrTemplateCall = ontClass.getPropertyResourceValue(ResourceFactory.createProperty(SPIN.NS, "update"));
+	Resource updateOrTemplateCall = ontClass.getPropertyResourceValue(GP.update);
 	
         Update update = SPINFactory.asUpdate(updateOrTemplateCall);
         if (update != null) return getUpdateRequest(update.toString(), resource);

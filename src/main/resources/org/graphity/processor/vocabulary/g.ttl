@@ -21,7 +21,7 @@
 <#Resource> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document ;
     gp:uriTemplate "/{path: .*}" ;
-    spin:query <#Describe> ;
+    gp:query <#Describe> ;
     rdfs:label "Resource" ;
     rdfs:comment "Linked Data resource backed by DESCRIBE query" ;
     rdfs:isDefinedBy <#> .

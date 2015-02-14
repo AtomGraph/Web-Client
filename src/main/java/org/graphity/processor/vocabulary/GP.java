@@ -64,6 +64,12 @@ public final class GP
     
     public static final OntClass Page = m_model.createClass( NS + "Page" );
 
+    public static final AnnotationProperty query = m_model.createAnnotationProperty( NS + "query" );
+
+    public static final AnnotationProperty update = m_model.createAnnotationProperty( NS + "update" );
+
+    public static final AnnotationProperty template = m_model.createAnnotationProperty( NS + "template" );
+
     public static final AnnotationProperty defaultOffset = m_model.createAnnotationProperty( NS + "defaultOffset" );
     
     public static final AnnotationProperty defaultLimit = m_model.createAnnotationProperty( NS + "defaultLimit" );

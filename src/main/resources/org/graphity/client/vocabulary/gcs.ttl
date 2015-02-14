@@ -37,7 +37,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:defaultLimit 20 ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
     gc:defaultMode gc:ListMode ;
-    spin:query gp:DescribeWithChildren ;
+    gp:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
     rdfs:isDefinedBy <#> .
 
@@ -51,9 +51,9 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:skolemTemplate "/{slug}" ;
     gc:supportedMode gc:ReadMode, gc:EditMode ;
     gc:defaultMode gc:ReadMode ;
-    spin:query gp:DescribeWithTopic ;
-    spin:update gp:DeleteWithTopic ;
-    spin:constructor
+    gp:query gp:DescribeWithTopic ;
+    gp:update gp:DeleteWithTopic ;
+    gp:template
               [ a       sp:Construct ;
                 sp:text """
                     PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
@@ -85,7 +85,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
                             gp:defaultOrderBy " "^^xsd:string ;
                             gp:cacheControl "no-cache" ;
                             gp:loadClass _:javaClass ;
-                            spin:query gp:Describe ;
+                            gp:query gp:Describe ;
                             gc:supportedMode gc:ReadMode .
                     }
                     WHERE {}"""
@@ -110,7 +110,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
 	] ,
         [ a dqc:MissingProperties ;
 	    sp:arg1 <#Template> ;
-	    sp:arg2 spin:query
+	    sp:arg2 gp:query
 	] ,
         [ a dqc:MissingProperties ;
 	    sp:arg1 <#Template> ;
@@ -131,7 +131,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:defaultLimit 20 ;
     gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
     gc:defaultMode gc:ListMode ;
-    spin:query gp:DescribeWithChildren ;
+    gp:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
     rdfs:isDefinedBy <#> .
 
@@ -145,9 +145,9 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:skolemTemplate "/{slug}" ;
     gc:supportedMode gc:ReadMode, gc:EditMode ;
     gc:defaultMode gc:ReadMode ;
-    spin:query gp:DescribeWithTopic ;
-    spin:update gp:DeleteWithTopic ;
-    spin:constructor
+    gp:query gp:DescribeWithTopic ;
+    gp:update gp:DeleteWithTopic ;
+    gp:template
               [ a       sp:Construct ;
                 sp:text """
                     PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
@@ -202,7 +202,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
 <#LabelResourcesContainer> a owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, gp:Container, sioc:Container ;
     gp:uriTemplate "/resources/labelled" ; # "/{path}/labelled" ?
-    spin:query <#DescribeLabelResources> ;
+    gp:query <#DescribeLabelResources> ;
     gp:defaultLimit 20 ;
     gp:defaultOrderBy "label"^^xsd:string ;
     gp:loadClass <java:org.graphity.client.resource.labelled.Container> ;

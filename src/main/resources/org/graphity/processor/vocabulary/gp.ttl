@@ -59,6 +59,32 @@
 
 # ANNOTATION PROPERTIES
 
+<#query> a owl:AnnotationProperty ;
+    rdfs:subPropertyOf spin:query ;
+    rdfs:domain <#Template> ;
+    rdfs:range [ a owl:Class ;
+        owl:unionOf (sp:Describe sp:Construct)
+    ] ;
+    rdfs:label "Query" ;
+    rdfs:comment "SPIN query to retrieve resource description (DESCRIBE or CONSTRUCT)" ;
+    rdfs:isDefinedBy <#> .
+
+<#update> a owl:AnnotationProperty ;
+    rdfs:subPropertyOf spin:update ;
+    rdfs:domain <#Template> ;
+    rdfs:range sp:Update ;
+    rdfs:label "Update" ;
+    rdfs:comment "SPIN update to remove resource description" ;
+    rdfs:isDefinedBy <#> .
+
+<#template> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range sp:Construct ;
+    rdfs:label "Template" ;
+    rdfs:comment "SPIN query to construct instance template (CONSTRUCT)" ;
+    rdfs:seeAlso <#Constructor>, spin:constructor ;
+    rdfs:isDefinedBy <#> .
+
 <#uriTemplate> a owl:AnnotationProperty ;
     rdfs:domain <#Template> ;
     rdfs:range rdfs:Literal ;
@@ -214,7 +240,7 @@
 
 <#Constructor> a rdfs:Class, owl:Class ;
     rdfs:label "Constructor template" ;
-    rdfs:comment "A class of RDF resources that are container constructors" ;
+    rdfs:comment "A class of RDF resources that are container/item constructors" ;
     rdfs:isDefinedBy <#> .
 
 # RESOURCE TEMPLATES
@@ -222,7 +248,7 @@
 <#Space> a rdfs:Class, owl:Class, <#Template> ;
      rdfs:subClassOf foaf:Document, sioc:Space ;
      <#uriTemplate> "/" ;
-     spin:query <#DescribeWithChildren> ;
+     <#query> <#DescribeWithChildren> ;
      <#limit> 20 ;
      rdfs:label "Space" ;
      rdfs:isDefinedBy <#> .
@@ -236,8 +262,8 @@
     <#uriTemplate> "/{container}" ;
     <#skolemTemplate> "/{slug}" ;
     <#limit> 20 ;
-    spin:query <#DescribeWithChildren> ;
-    spin:constructor
+    <#query> <#DescribeWithChildren> ;
+    <#template>
               [ a       sp:Construct ;
                 sp:text """
                     PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
@@ -268,9 +294,9 @@
         ] ;
     <#uriTemplate> "/{container}/{item}" ;
     <#skolemTemplate> "/{slug}" ;
-    spin:query <#DescribeWithTopic> ;
-    spin:update <#DeleteWithTopic> ;
-    spin:constructor
+    <#query> <#DescribeWithTopic> ;
+    <#update> <#DeleteWithTopic> ;
+    <#template>
               [ a       sp:Construct ;
                 sp:text """
                     PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
@@ -304,14 +330,14 @@
 <#SPARQLEndpoint> a owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
     <#uriTemplate> "/sparql" ;
-    spin:query <#Describe> ;
+    <#query> <#Describe> ;
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
 <#GraphStore> a owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
     <#uriTemplate> "/service" ;
-    spin:query <#Describe> ;
+    <#query> <#Describe> ;
     rdfs:label "Graph Store" ;
     rdfs:isDefinedBy <#> .
 
