@@ -178,6 +178,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         if (defaultOffset == null) defaultOffset = Long.valueOf(0); // OFFSET is 0 by default
                         this.offset = defaultOffset;
                     }
+                    
                     if (log.isDebugEnabled()) log.debug("Setting OFFSET on container sub-SELECT: {}", offset);
                     queryBuilder.getSubSelectBuilder().replaceOffset(offset);
 
@@ -189,21 +190,24 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         //if (defaultLimit == null) throw new IllegalArgumentException("Template class '" + getMatchedOntClass().getURI() + "' must have gp:defaultLimit annotation if it is used as container");
                         this.limit = defaultLimit;                        
                     }
+                    
                     if (log.isDebugEnabled()) log.debug("Setting LIMIT on container sub-SELECT: {}", limit);
                     queryBuilder.getSubSelectBuilder().replaceLimit(limit);
 
                     if (getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName()))
+                        this.orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
+                    else
+                        this.orderBy = getStringValue(getMatchedOntClass(), GP.defaultOrderBy);
+                    
+                    if (this.orderBy != null)
                     {
-                         if (getUriInfo().getQueryParameters().containsKey(GP.orderBy.getLocalName()))
-                            orderBy = getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName());
-                         else
-                             orderBy = getStringValue(getMatchedOntClass(), GP.defaultOrderBy);
                         if (getUriInfo().getQueryParameters().containsKey(GP.desc.getLocalName()))
-                            desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));                    
+                            desc = Boolean.parseBoolean(getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
                         else
                             desc = getBooleanValue(getMatchedOntClass(), GP.defaultDesc);
                         if (desc == null) desc = false; // ORDERY BY is ASC() by default
-                        
+
+                        if (log.isDebugEnabled()) log.debug("Setting ORDER BY on container sub-SELECT: ?{} DESC: {}", orderBy, desc);
                         queryBuilder.getSubSelectBuilder().replaceOrderBy(null). // any existing ORDER BY condition is removed first
                             orderBy(orderBy, desc);
                     }
