@@ -674,7 +674,17 @@ exclude-result-prefixes="#all">
     </xsl:template>
                 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:ListMode">
-	<div class="well">
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" select="'well'" as="xs:string?"/>
+        
+	<div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
             <xsl:apply-templates select="." mode="gc:ImageMode"/>
             
             <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
@@ -708,12 +718,15 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- hide metadata -->
-    <xsl:template match="*[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:ReadMode" priority="1"/>
+    <xsl:template match="*[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri] | *[gc:layoutOf/@rdf:resource]" mode="gc:ReadMode" priority="1"/>
 
     <!-- hide document if topic is present -->
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:ReadMode" priority="1"/>
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ReadMode">
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
         <xsl:apply-templates select="." mode="gc:PropertyListMode"/>
@@ -749,9 +762,18 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode">
-	<xsl:param name="predicates" as="element()*" tunnel="yes"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="predicates" as="element()*" tunnel="yes"/>
 
 	<tr>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
 	    <xsl:apply-templates select="$predicates" mode="gc:TableCellMode">
@@ -798,9 +820,18 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="gc:ThumbnailMode">
-	<xsl:param name="thumbnails-per-row" as="xs:integer"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="thumbnails-per-row" as="xs:integer"/>
+        <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
 	
-	<li class="span{12 div $thumbnails-per-row}">
+	<li>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
 	    <div class="thumbnail">
 		<xsl:apply-templates select="." mode="gc:ImageMode"/>
 		
@@ -903,9 +934,13 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about = $gc:uri] | *[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri]" mode="gp:ConstructItemMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructItemMode">
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="template-doc" as="document-node()?"/>
 
         <xsl:apply-templates select="." mode="gc:EditMode">
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="template-doc" select="$template-doc"/>
         </xsl:apply-templates>
     </xsl:template>
@@ -961,12 +996,21 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:EditMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="template-doc" as="document-node()?"/>
         <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
 
-        <fieldset id="fieldset-{generate-id()}">
+        <fieldset>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
             <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">
                 <legend>
                     <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
