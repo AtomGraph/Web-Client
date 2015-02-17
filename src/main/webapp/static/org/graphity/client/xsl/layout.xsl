@@ -375,7 +375,17 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode">
-	<div class="well header">
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" select="'well header'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:apply-templates select="." mode="gc:ImageMode"/>
             
             <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
@@ -920,7 +930,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="parent-doc" select="document($gc:uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 
-            <xsl:apply-templates mode="#current">                
+            <xsl:apply-templates mode="#current">
                 <xsl:with-param name="template-doc" select="document($construct-uri)"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>

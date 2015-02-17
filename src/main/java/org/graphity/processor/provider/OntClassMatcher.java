@@ -42,7 +42,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.processor.vocabulary.SIOC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +200,7 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
                             matchedClasses.put(uriTemplate, ontClass);
                         }
                         else
-                            if (log.isDebugEnabled()) log.debug("Path {} did not match UriTemplate {}", path, uriTemplate);
+                            if (log.isTraceEnabled()) log.trace("Path {} did not match UriTemplate {}", path, uriTemplate);
                     }
                 }
             }
@@ -214,77 +213,31 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
         return matchedClasses;
     }
 
-    public OntClass matchOntClass(Resource resource, UriInfo uriInfo, OntModel ontModel, OntClass parentClass)
+    public OntClass matchOntClass(Resource resource, OntClass parentClass)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
         if (parentClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 
-        Map<Property, OntClass> matchedClasses = new HashMap<>();
-
-        if (resource.hasProperty(SIOC.HAS_CONTAINER))
+        StmtIterator it = resource.listProperties(RDF.type);
+        try
         {
-            Resource container = resource.getPropertyResourceValue(SIOC.HAS_CONTAINER);
-            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
-            URI containerURI = URI.create(container.getURI());
-
-            OntClass containerClass = matchOntClass(ontModel, containerURI, uriInfo.getBaseUri());
-            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_CONTAINER, containerClass));
-        }
-        else
-        {
-            if (log.isDebugEnabled()) log.debug("Item {} will be stored as a child of requested OntClass {}", resource, parentClass);
-            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_CONTAINER, parentClass));
-        }
-        
-        if (resource.hasProperty(SIOC.HAS_PARENT))
-        {
-            Resource container = resource.getPropertyResourceValue(SIOC.HAS_PARENT);
-            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of specified container {}", resource, container);
-            URI containerURI = URI.create(container.getURI());
-
-            OntClass containerClass = matchOntClass(ontModel, containerURI, uriInfo.getBaseUri());
-            matchedClasses = matchOntClasses(ontModel, SIOC.HAS_PARENT, containerClass);
-        }
-        else
-        {
-            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of requested OntClass {}", resource, parentClass);
-            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_PARENT, parentClass));
-        }
-        
-        if (resource.hasProperty(SIOC.HAS_SPACE))
-        {
-            Resource space = resource.getPropertyResourceValue(SIOC.HAS_SPACE);
-            if (log.isDebugEnabled()) log.debug("Container {} will be stored as a child of specified space {}", resource, space);
-            URI containerURI = URI.create(space.getURI());
-            OntClass spaceClass = matchOntClass(ontModel, containerURI, uriInfo.getBaseUri());
-            matchedClasses = matchOntClasses(ontModel, SIOC.HAS_SPACE, spaceClass);
-        }
-        else
-        {
-            if (log.isDebugEnabled()) log.debug("Resource {} will be stored as a child of requested OntClass {}", resource, parentClass);
-            matchedClasses.putAll(matchOntClasses(ontModel, SIOC.HAS_SPACE, parentClass));
-        }
-
-        if (!matchedClasses.isEmpty())
-        {
-            // finally check by resource types
-            StmtIterator it = resource.listProperties(RDF.type);
             while (it.hasNext())
             {
                 Statement stmt = it.next();
-                if (stmt.getObject().canAs(OntClass.class))
+                if (stmt.getObject().isURIResource() && parentClass.getOntModel().containsResource(stmt.getObject()))
                 {
-                    OntClass typeClass = stmt.getObject().as(OntClass.class);
-                    if (matchedClasses.containsValue(typeClass))
+                    OntClass typeClass = parentClass.getOntModel().getOntClass(stmt.getObject().asResource().getURI());
+                    // return resource type which is defined by the sitemap ontology
+                    if (typeClass.getIsDefinedBy().equals(parentClass.getIsDefinedBy()))
                         return typeClass;
                 }
             }
-
-            return matchedClasses.values().iterator().next(); // return the first one
         }
-        
+        finally
+        {
+            it.close();
+        }
+
         return null;
     }
 

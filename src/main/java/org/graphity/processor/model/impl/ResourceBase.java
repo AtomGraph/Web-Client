@@ -317,7 +317,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
             && getRealURI().equals(getUriInfo().getRequestUri()) && getLimit() != null)
 	{
-	    if (log.isDebugEnabled()) log.debug("OntResource is ldp:Container, redirecting to the first ldp:Page");	    
+	    if (log.isDebugEnabled()) log.debug("OntResource is gp:Container or gp:Space, redirecting to the first gp:Page");
 	    return Response.seeOther(getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build()).build();
 	}
 
