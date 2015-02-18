@@ -641,16 +641,23 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
 
-        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
 	<xsl:choose>
-	    <xsl:when test="$bnode">
+            <!-- loop if node not visited already -->
+	    <xsl:when test="not(. = $traversed-ids)">
                 <xsl:apply-templates select="." mode="gc:InputMode">
                     <xsl:with-param name="type" select="'hidden'"/>
                 </xsl:apply-templates>
-		<xsl:apply-templates select="$bnode" mode="#current"/>
-                <!-- restore subject context -->
-                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
+
+                <xsl:variable name="bnode" select="key('resources', .)"/>
+                <xsl:if test="$bnode">
+                    <xsl:apply-templates select="$bnode" mode="#current">
+                        <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
+                    </xsl:apply-templates>
+                    <!-- restore subject context -->
+                    <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
+                </xsl:if>
             </xsl:when>
 	    <xsl:otherwise>
                 <xsl:apply-templates select="." mode="gc:InputMode">

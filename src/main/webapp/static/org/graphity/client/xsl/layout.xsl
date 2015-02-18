@@ -929,9 +929,10 @@ exclude-result-prefixes="#all">
 
             <xsl:variable name="parent-doc" select="document($gc:uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-
-            <xsl:apply-templates mode="#current">
-                <xsl:with-param name="template-doc" select="document($construct-uri)"/>
+            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()"/>
+            
+            <xsl:apply-templates select="key('resources-by-type', '&foaf;Document')[@rdf:nodeID]" mode="#current">
+                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
 
@@ -946,12 +947,10 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructItemMode">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="template-doc" as="document-node()?"/>
 
         <xsl:apply-templates select="." mode="gc:EditMode">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
-            <xsl:with-param name="template-doc" select="$template-doc"/>
         </xsl:apply-templates>
     </xsl:template>
    
@@ -1010,8 +1009,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="template-doc" as="document-node()?"/>
+        <xsl:param name="template-doc" as="document-node()?" tunnel="yes"/>
         <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
+        <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
 
         <fieldset>
             <xsl:if test="$id">
@@ -1034,6 +1034,7 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
+                        <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
                     </xsl:apply-templates>
                 </xsl:when>
                 <xsl:otherwise>
@@ -1041,6 +1042,7 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
+                        <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
                     </xsl:apply-templates>
                 </xsl:otherwise>
             </xsl:choose>
