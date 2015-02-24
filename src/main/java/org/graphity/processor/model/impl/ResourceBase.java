@@ -913,7 +913,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Query getQuery()
     {
-        Query query = queryBuilder.build();            
+        Query query = getQueryBuilder().build();            
         query.setBaseURI(getUriInfo().getBaseUri().toString());            
 	return query;
     }
