@@ -274,6 +274,10 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:ModeChoiceMode" priority="1">
+        <xsl:apply-templates select="." mode="gc:ReadMode"/>    
+    </xsl:template>
+
     <xsl:template match="rdf:RDF" mode="gc:ModeChoiceMode">
         <xsl:choose>
             <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gc;ListMode') or $gp:mode = '&gc;ListMode'">
@@ -793,7 +797,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- hide system properties -->
-    <xsl:template match="gp:* | gc:* | xhv:*" mode="gc:TablePredicateMode" priority="1"/>
+    <xsl:template match="gp:* | gc:* | xhv:*" mode="gc:TablePredicateMode" priority="2"/>
 
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]/*" mode="gc:TablePredicateMode" priority="1"/>
 
