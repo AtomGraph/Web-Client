@@ -241,7 +241,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $gc:uri)][not(gp:constructorOf)][not(gp:pageOf)][not(gc:layoutOf)]" as="element()*"/>
+        <xsl:param name="selected-resources" select="key('resources-by-container', $gc:uri)" as="element()*"/>
 
         <div class="container-fluid">
 	    <div class="row-fluid">
@@ -602,11 +602,17 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:PropertyListMode">
-        <dl class="dl-horizontal">
+        <xsl:variable name="properties" as="element()*">
             <xsl:apply-templates mode="#current">
                 <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gp:lang}"/>
             </xsl:apply-templates>
-        </dl>
+        </xsl:variable>
+
+        <xsl:if test="$properties">
+            <dl class="dl-horizontal">
+                <xsl:copy-of select="$properties"/>
+            </dl>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:resource)]" mode="gc:PropertyListMode" priority="1">

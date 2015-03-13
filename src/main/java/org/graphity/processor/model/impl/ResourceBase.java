@@ -131,7 +131,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	this.httpHeaders = httpHeaders;
         this.resourceContext = resourceContext;
 
-	querySolutionMap.add(SPIN.THIS_VAR_NAME, ontResource);        
+	querySolutionMap.add(SPIN.THIS_VAR_NAME, ontResource); // ?this
+	querySolutionMap.add(GP.baseUri.getLocalName(), ResourceFactory.createResource(getUriInfo().getBaseUri().toString())); // ?baseUri
 
         if (log.isDebugEnabled()) log.debug("Constructing ResourceBase with matched OntClass: {}", matchedOntClass);
     }

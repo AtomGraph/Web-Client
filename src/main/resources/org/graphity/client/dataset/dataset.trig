@@ -73,25 +73,13 @@
 
 # templates
 
-<templates/container-container> a foaf:Document, sioc:Item ;
-    sioc:has_container <templates> ;
-    foaf:primaryTopic gcs:ContainerContainer .
-
-<templates/ontology-container> a foaf:Document, sioc:Item ;
-    sioc:has_container <templates> ;
-    foaf:primaryTopic gcs:OntologyContainer .
-
-<templates/ontology-document> a foaf:Document, sioc:Item ;
-    sioc:has_container <templates> ;
-    foaf:primaryTopic gcs:OntologyDocument .
-
 <templates/template-container> a foaf:Document, sioc:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:TemplateContainer .
 
 <templates/template-document> a foaf:Document, sioc:Item ;
     sioc:has_container <templates> ;
-    foaf:primaryTopic gcs:TemplateDocument .
+    foaf:primaryTopic gcs:TemplateItem .
 
 <templates/query-container> a foaf:Document, sioc:Item ;
     sioc:has_container <templates> ;
@@ -99,15 +87,11 @@
 
 <templates/query-document> a foaf:Document, sioc:Item ;
     sioc:has_container <templates> ;
-    foaf:primaryTopic gcs:QueryDocument .
+    foaf:primaryTopic gcs:QueryItem .
 
 <templates/label-resources-container> a foaf:Document, sioc:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:LabelResourcesContainer .
-
-<templates/label-properties-container> a foaf:Document, sioc:Item ;
-    sioc:has_container <templates> ;
-    foaf:primaryTopic gcs:LabelPropertiesContainer .
 
 # queries
 
