@@ -36,7 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
@@ -140,7 +139,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     /**
      * Post-construct initialization. Subclasses need to call super.init() first, just like with super() constructor.
      */
-    @PostConstruct
+    @Override
     public void init()
     {
 	if (log.isDebugEnabled()) log.debug("OntResource {} gets type of OntClass: {}", this, getMatchedOntClass());
@@ -738,7 +737,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     }
 
     /**
-     * Adds matched sitemap class as affordance metadata in Link header.
+     * Adds matched sitemap class as affordance metadata in <pre>Link</pre> header.
      * 
      * @param model response model
      * @return response builder
@@ -746,7 +745,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public ResponseBuilder getResponseBuilder(Model model)
     {
-        Link classLink = new Link(URI.create(getMatchedOntClass().getURI()), "type", null);
+        Link classLink = new Link(URI.create(getMatchedOntClass().getURI()), RDF.type.getLocalName(), null);
         return super.getResponseBuilder(model).header("Link", classLink.toString());
     }
 
@@ -901,6 +900,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * 
      * @return cache control object or null, if not specified
      */
+    @Override
     public CacheControl getCacheControl()
     {
 	return cacheControl;
