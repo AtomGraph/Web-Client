@@ -249,6 +249,12 @@ public class SelectBuilder extends QueryBuilder implements Select
 	return getQuery().getOffset();
     }
 
+    @Override
+    public List<String> getResultVariableNames()
+    {
+        return getQuery().getResultVariableNames();
+    }
+
     public RDFList getOrderBy()
     {
         Resource orderBy = getQuery().getPropertyResourceValue(SP.orderBy);
