@@ -71,6 +71,10 @@ exclude-result-prefixes="#all">
     <xsl:param name="gp:httpHeaders" as="xs:string"/>
     <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
     <xsl:param name="gp:mode" as="xs:anyURI?"/>
+    <xsl:param name="gp:offset" as="xs:integer?"/>
+    <xsl:param name="gp:limit" as="xs:integer?"/>
+    <xsl:param name="gp:orderBy" as="xs:string?"/>
+    <xsl:param name="gp:desc" as="xs:boolean?"/>        
     <xsl:param name="gc:uri" select="$gp:absolutePath" as="xs:anyURI"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>

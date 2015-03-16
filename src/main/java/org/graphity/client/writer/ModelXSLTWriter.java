@@ -26,7 +26,6 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -67,12 +66,6 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
-    public static List<String> RESERVED_PARAMS = Arrays.asList(GP.offset.getLocalName(), GP.limit.getLocalName(),
-            GP.orderBy.getLocalName(), GP.desc.getLocalName(),
-            GP.lang.getLocalName(), GP.mode.getLocalName(),
-            GC.uri.getLocalName(), GC.endpointUri.getLocalName());
-
-    //private XSLTBuilder builder; // final
     private Templates templates;
  
     @Context private UriInfo uriInfo;
@@ -237,32 +230,37 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         while (it.hasNext())
         {
             Entry<String, List<String>> entry = it.next();
-            if (!getReservedParameterNames().contains(entry.getKey()))
-            {
-                bld.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
-                if (log.isDebugEnabled()) log.debug("Setting XSLT param \"{}\" from HTTP query string with value: {}", entry.getKey(), entry.getValue().get(0));
-            }
-            else
-                if (log.isDebugEnabled()) log.debug("HTTP query string param \"{}\" is reserved in XSLT writer, ignoring", entry.getKey());
+            bld.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
+            if (log.isDebugEnabled()) log.debug("Setting XSLT param \"{}\" from HTTP query string with value: {}", entry.getKey(), entry.getValue().get(0));
         }
 
         // override the reserved parameters that need special types
-	if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
+	if (getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()) != null)
+	    bld.parameter("{" + GP.offset.getNameSpace() + "}" + GP.offset.getLocalName(),
+                Long.valueOf(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName())));
+	if (getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()) != null)
+	    bld.parameter("{" + GP.limit.getNameSpace() + "}" + GP.limit.getLocalName(),
+                Long.valueOf(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName())));
+	if (getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()) != null)
+	    bld.parameter("{" + GP.orderBy.getNameSpace() + "}" + GP.orderBy.getLocalName(),
+                getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
+        if (getUriInfo().getQueryParameters().getFirst(GP.desc.getLocalName()) != null)
+	    bld.parameter("{" + GP.desc.getNameSpace() + "}" + GP.desc.getLocalName(),
+                Boolean.valueOf(getUriInfo().getQueryParameters().getFirst(GP.desc.getLocalName())));
+	if (getUriInfo().getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
+	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
+                getUriInfo().getQueryParameters().getFirst(GP.lang.getLocalName()));
+        if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
 	    bld.parameter("{" + GP.mode.getNameSpace() + "}" + GP.mode.getLocalName(),
-                    URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName())));
+                URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName())));
 	if (getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
 	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
                 URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName())));
 	if (getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
 	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
-                    URI.create(getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
+                URI.create(getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
 
 	return bld;
-    }
-
-    public List<String> getReservedParameterNames()
-    {
-        return RESERVED_PARAMS;
     }
     
 }
