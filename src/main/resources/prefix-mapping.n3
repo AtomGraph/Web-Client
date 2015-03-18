@@ -24,9 +24,9 @@
    [ lm:name "http://dbpedia.org/ontology/" ;			    lm:altName "org/graphity/client/vocabulary/dbpedia-owl.owl" ] ,
    [ lm:name "http://graph.facebook.com/schema/user#" ;		    lm:altName "org/graphity/client/vocabulary/gfb-user.owl" ] ,
    [ lm:name "http://semwebquality.org/ontologies/dq-constraints#" ;lm:altName "org/graphity/processor/vocabulary/dq-constraints.rdf" ] ,
-   [ lm:name "http://spinrdf.org/sp#" ;                             lm:altName "etc/sp.rdf" ] ,
-   [ lm:name "http://spinrdf.org/spin#" ;                           lm:altName "etc/spin.rdf" ] ,
-   [ lm:name "http://spinrdf.org/spl#" ;                            lm:altName "etc/spl.spin.rdf" ] ,
+   [ lm:name "http://spinrdf.org/sp#" ;                             lm:altName "etc/sp.ttl" ] ,
+   [ lm:name "http://spinrdf.org/spin#" ;                           lm:altName "etc/spin.ttl" ] ,
+   [ lm:name "http://spinrdf.org/spl#" ;                            lm:altName "etc/spl.spin.ttl" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;			    lm:altName "org/graphity/client/vocabulary/doap.owl" ] ,
 
    [ lm:prefix "http://graphity.org/gc" ;                           lm:altName "org/graphity/client/vocabulary/gc.ttl" ] ,
@@ -51,8 +51,8 @@
    [ lm:prefix "http://dbpedia.org/ontology/" ;			    lm:altName "org/graphity/client/vocabulary/dbpedia-owl.owl" ] ,
    [ lm:prefix "http://graph.facebook.com/schema/user" ;	    lm:altName "org/graphity/client/vocabulary/gfb-user.owl" ] ,
    [ lm:prefix "http://semwebquality.org/ontologies/dq-constraints";lm:altName "org/graphity/processor/vocabulary/dq-constraints.rdf" ] ,
-   [ lm:prefix "http://spinrdf.org/sp" ;                            lm:altName "etc/sp.rdf" ] ,
-   [ lm:prefix "http://spinrdf.org/spin" ;                          lm:altName "etc/spin.rdf" ] ,
-   [ lm:prefix "http://spinrdf.org/spl" ;                           lm:altName "etc/spl.spin.rdf" ] ,
+   [ lm:prefix "http://spinrdf.org/sp" ;                            lm:altName "etc/sp.ttl" ] ,
+   [ lm:prefix "http://spinrdf.org/spin" ;                          lm:altName "etc/spin.ttl" ] ,
+   [ lm:prefix "http://spinrdf.org/spl" ;                           lm:altName "etc/spl.spin.ttl" ] ,
    [ lm:prefix "http://usefulinc.com/ns/doap" ;			    lm:altName "org/graphity/client/vocabulary/doap.owl" ]
 .
