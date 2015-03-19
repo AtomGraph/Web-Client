@@ -1,6 +1,6 @@
 org.graphity.client
 org.graphity.client.filter
-org.graphity.client.mapper
+org.graphity.client.mapper.jena
 org.graphity.client.model.impl
 org.graphity.client.provider
 org.graphity.client.reader
@@ -13,10 +13,12 @@ org.graphity.processor.exception
 org.graphity.processor.locator
 org.graphity.processor.locator.grddl
 org.graphity.processor.mapper
+org.graphity.processor.mapper.jena
 org.graphity.processor.model
 org.graphity.processor.model.impl
 org.graphity.processor.provider
 org.graphity.processor.query
+org.graphity.processor.resource.graph
 org.graphity.processor.update
 org.graphity.processor.util
 org.graphity.processor.vocabulary
