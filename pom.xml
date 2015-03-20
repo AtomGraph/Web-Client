@@ -7,20 +7,21 @@
 
     <name>Graphity Client</name>
     <description>Generic Linked Data client</description>
+    <url>https://github.com/Graphity/graphity-client</url>
 
     <packaging>${packaging.type}</packaging>
     <!-- <packaging>war</packaging> -->
 
     <developers>
 	<developer>
-		<id>pumba_lt</id>
+		<id>pumba-lt</id>
 		<email>martynas@graphity.org</email>
 		<roles>
 			<role>Developer</role>
 			<role>Founder</role>
 		</roles>
 		<organization>Graphity</organization>
-		<organizationUrl>http://graphity.org</organizationUrl>
+		<organizationUrl>http://graphityhq.com</organizationUrl>
 	</developer>
     </developers>
     

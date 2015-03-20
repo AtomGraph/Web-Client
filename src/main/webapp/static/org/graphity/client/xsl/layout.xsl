@@ -1003,7 +1003,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 
             <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">                
-                <xsl:with-param name="template-doc" select="document($construct-uri)"/>
+                <xsl:with-param name="template-doc" select="document($construct-uri)" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
             
@@ -1084,7 +1084,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
-	<xsl:call-template name="gc:InputTemplate">
+        <xsl:call-template name="gc:InputTemplate">
 	    <xsl:with-param name="name" select="'ol'"/>
 	    <xsl:with-param name="type" select="$type"/>
 	    <xsl:with-param name="id" select="$id"/>

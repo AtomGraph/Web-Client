@@ -500,9 +500,11 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
+	<xsl:param name="class" as="xs:string?"/>
         <xsl:param name="required" select="false()"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
- 
+        <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
+
         <div class="control-group">
 	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
 		<xsl:attribute name="class">control-group error</xsl:attribute>
@@ -510,7 +512,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
-            <label class="control-label" for="{$id}" title="{$this}">
+            <label class="control-label" for="{$for}" title="{$this}">
                 <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
             </label>
             <div class="btn-group pull-right">
@@ -523,9 +525,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <div class="controls">
-                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
-                    <xsl:with-param name="id" select="$id"/>
-                </xsl:apply-templates>
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
             </div>
             <xsl:if test="@xml:lang | @rdf:datatype">
                 <div class="controls">
@@ -537,7 +537,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="text()" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
@@ -559,7 +559,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="text()[string-length(.) &gt; 50]" mode="gc:EditMode">
 	<xsl:param name="name" select="'ol'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="style" as="xs:string?"/>
 	<xsl:param name="value" select="." as="xs:string?"/>
@@ -594,7 +594,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:resource" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
@@ -609,7 +609,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@xml:lang" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
@@ -624,7 +624,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:datatype" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
@@ -639,7 +639,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
         <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
 
