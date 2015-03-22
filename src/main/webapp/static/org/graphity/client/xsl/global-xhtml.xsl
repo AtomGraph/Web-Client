@@ -143,7 +143,7 @@ exclude-result-prefixes="#all">
     <!--    
     <xsl:template match="*[@rdf:about = $gc:uri]" mode="gc:ModeToggleMode" priority="1">
         <div class="pull-right">
-            <a class="btn btn-primary" href="{$gp:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gc;CreateMode'))}">
+            <a class="btn btn-primary" href="{$gp:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gp;CreateItemMode'))}">
                 <xsl:apply-templates select="key('resources', 'save-as', document(''))" mode="gc:LabelMode"/>
             </a>
         </div>

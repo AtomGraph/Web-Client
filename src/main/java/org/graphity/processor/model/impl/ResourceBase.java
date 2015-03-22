@@ -32,6 +32,7 @@ import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -159,8 +160,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             }
             queryBuilder = QueryBuilder.fromQuery(query, getModel());
             
-            if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
-                    getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
+            if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container))
             {
                 if (queryBuilder.getSubSelectBuilder() == null)
                 {
@@ -212,8 +212,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                             orderBy(orderBy, desc);
                     }
 
-                    if (getMode() != null && (getMode().equals(URI.create(GP.ConstructItemMode.getURI())))
-                            && queryBuilder.getSubSelectBuilder() != null)
+                    if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())) &&
+                        queryBuilder.getSubSelectBuilder() != null)
                     {
                         if (log.isDebugEnabled()) log.debug("Mode is {}, setting sub-SELECT LIMIT to zero", getMode());
                         queryBuilder.getSubSelectBuilder().replaceLimit(Long.valueOf(0));
@@ -313,8 +313,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public Response get()
     {
         // gp:Space/gp:Container always redirect to first ldp:Page
-	if ((getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
-                getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
+	if ((getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container))
             && getRealURI().equals(getUriInfo().getRequestUri()) && getLimit() != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("OntResource is gp:Container or gp:Space, redirecting to the first gp:Page");
@@ -422,10 +421,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 
                 ObjectProperty memberProperty = SIOC.HAS_CONTAINER;
                 // use actual this resource types instead?
-                if (getMatchedOntClass().hasSuperClass(SIOC.CONTAINER) && res.hasProperty(RDF.type, SIOC.CONTAINER))
+                if (getMatchedOntClass().hasSuperClass(GP.Container) && res.hasProperty(RDF.type, GP.Container))
                     memberProperty = SIOC.HAS_PARENT;
-                if (getMatchedOntClass().hasSuperClass(SIOC.SPACE))
-                    memberProperty = SIOC.HAS_SPACE;
 
                 if (!res.hasProperty(memberProperty))
                     res.addProperty(memberProperty, this);
@@ -551,32 +548,66 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      */
     public Model addMetadata(Model model)
     {
-	if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
-                getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
+	if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container))
 	{
-            //Resource modeResource = null;
-            //if (getMode() != null) modeResource = model.createResource(getMode().toString());
+            Map<Property, OntClass> childrenClasses = new HashMap<>();
+            childrenClasses.putAll(new OntClassMatcher().matchOntClasses(getOntModel(), SIOC.HAS_PARENT, getMatchedOntClass()));
+            childrenClasses.putAll(new OntClassMatcher().matchOntClasses(getOntModel(), SIOC.HAS_CONTAINER, getMatchedOntClass()));
+
+            Iterator<OntClass> it = childrenClasses.values().iterator();
+            while (it.hasNext())
+            {
+                OntClass forClass = it.next();
+                String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructMode.getURI())).
+                        queryParam(GP.forClass.getLocalName(), forClass.getURI()).build().toString();
+                    Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructMode).
+                        addProperty(RDF.type, FOAF.Document).
+                        addProperty(RDF.type, GP.Constructor).
+                        addProperty(GP.forClass, forClass).
+                        addProperty(GP.constructorOf, this);
+            }
+
+            ResIterator resIt = model.listResourcesWithProperty(SIOC.HAS_PARENT, this);
+            try
+            {
+                while (resIt.hasNext())
+                {
+                    Resource childContainer = resIt.next();
+                    URI childURI = URI.create(childContainer.getURI());
+                    OntClass childClass = new OntClassMatcher().matchOntClass(getOntModel(), childURI, getUriInfo().getBaseUri());
+                    Map<Property, OntClass> grandChildrenClasses = new HashMap<>();
+                    grandChildrenClasses.putAll(new OntClassMatcher().matchOntClasses(getOntModel(), SIOC.HAS_PARENT, childClass));
+                    grandChildrenClasses.putAll(new OntClassMatcher().matchOntClasses(getOntModel(), SIOC.HAS_CONTAINER, childClass));
+                    Iterator<OntClass> gccIt = grandChildrenClasses.values().iterator();
+                    while (gccIt.hasNext())
+                    {
+                        OntClass forClass = gccIt.next();
+                        String constructorURI = getStateUriBuilder(UriBuilder.fromUri(childURI), getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructMode.getURI())).
+                            queryParam(GP.forClass.getLocalName(), forClass.getURI()).build().toString();
+                        Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructMode).
+                            addProperty(RDF.type, FOAF.Document).
+                            addProperty(RDF.type, GP.Constructor).
+                            addProperty(GP.forClass, forClass).                                    
+                            addProperty(GP.constructorOf, childContainer);                    
+                    }
+                }
+            }
+            finally
+            {
+                resIt.close();
+            }
             
-            String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructItemMode.getURI())).build().toString();
-            Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructItemMode).
-                    addProperty(RDF.type, FOAF.Document).
-                    addProperty(RDF.type, GP.Constructor).
-                    addProperty(GP.constructorOf, this);
-            
-            if (getMode() != null && getMode().equals(URI.create(GP.ConstructItemMode.getURI())))
+            if (getMode() != null && getMode().equals(URI.create(GP.ConstructMode.getURI())))
             {
                 try
                 {
-                    Map<Property, OntClass> itemClasses = new OntClassMatcher().matchOntClasses(getOntModel(), SIOC.HAS_CONTAINER, getMatchedOntClass());
-                    if (itemClasses.isEmpty())
-                    {
-                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but Item template not attached Container template '{}' (owl:Restriction missing)", getMatchedOntClass().getURI());
-                        throw new ConfigurationException("Item template not attached to '" + getMatchedOntClass().getURI() +"'");                    
-                    }
-                    Query templateQuery = getQuery(itemClasses.values().iterator().next(), GP.template);
+                    OntClass forClass = getOntModel().createClass(getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName()));
+                    if (forClass == null) throw new IllegalStateException("gp:ConstructMode is active, but gp:forClass value not supplied");
+
+                    Query templateQuery = getQuery(forClass, GP.template);
                     if (templateQuery == null)
                     {
-                        if (log.isErrorEnabled()) log.error("gp:ConstructItemMode is active but template not defined for template '{}' (gp:template missing)", getMatchedOntClass().getURI());
+                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but template not defined for template '{}' (gp:template missing)", getMatchedOntClass().getURI());
                         throw new ConfigurationException("Constructor not defined for template '" + getMatchedOntClass().getURI() +"'");
                     }
                     
@@ -851,8 +882,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      */
     public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
     {
-        UriBuilder uriBuilder = UriBuilder.fromUri(getURI());
-        
+	return getStateUriBuilder(UriBuilder.fromUri(getURI()), offset, limit, orderBy, desc, mode);
+    }
+
+    public UriBuilder getStateUriBuilder(UriBuilder uriBuilder, Long offset, Long limit, String orderBy, Boolean desc, URI mode)
+    {        
         if (offset != null) uriBuilder.queryParam(GP.offset.getLocalName(), offset);
         if (limit != null) uriBuilder.queryParam(GP.limit.getLocalName(), limit);
 	if (orderBy != null) uriBuilder.queryParam(GP.orderBy.getLocalName(), orderBy);
@@ -861,7 +895,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         
 	return uriBuilder;
     }
-    
+
     /**
      * Returns URI of this resource. Uses Java's URI class instead of string as the {@link #getURI()} does.
      * 

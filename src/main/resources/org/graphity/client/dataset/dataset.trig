@@ -9,7 +9,7 @@
 @prefix gp:	<http://graphity.org/gp#> .
 @prefix gcs:	<http://graphity.org/gcs#> .
 
-<> a sioc:Space, gp:Space, foaf:Document ;
+<> a sioc:Space, gp:Space, sioc:Container, gp:Container, foaf:Document ;
     dct:title "Graphity Client" ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;
@@ -17,7 +17,7 @@
     rdfs:seeAlso gcs: , <sparql>, <http://graphityhq.com>, <http://semantic-web.dk> .
 
 <sparql> a foaf:Document, gp:SPARQLEndpoint ;
-    sioc:has_space <> ; # without this, XSLT throws error as it cannot retrieve RDF/XML from /sparql without ?query=
+    sioc:has_space <> ;
     dct:title "SPARQL endpoint" .
 
 <service> a foaf:Document, gp:GraphStore ;
@@ -28,78 +28,78 @@
 
 <ontologies> a gp:Container, sioc:Container, foaf:Document ;
     gp:slug "ontologies"^^xsd:string ;
-    sioc:has_space <> ;
+    sioc:has_parent <> ;
     dct:title "Ontologies" .
 
 <templates> a gp:Container, sioc:Container, foaf:Document ;
     gp:slug "templates"^^xsd:string ;
-    sioc:has_space <> ;
+    sioc:has_parent <> ;
     dct:title "Templates" .
 
 <queries> a gp:Container, sioc:Container, foaf:Document ;
     gp:slug "queries"^^xsd:string ;
-    sioc:has_space <> ;
+    sioc:has_parent <> ;
     dct:title "Queries" .
 
 <resources/labelled> a gp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <resources> ;
+    sioc:has_parent <resources> ;
     dct:title "Labelled resources" .
 
 <properties/labelled> a gp:Container, sioc:Container, foaf:Document ;
-    sioc:has_space <properties> ;
+    sioc:has_parent <properties> ;
     dct:title "Labelled properties" .
 
 # ontologies 
 
-<ontologies/graphity-processor> a foaf:Document, sioc:Item ;
+<ontologies/graphity-processor> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <ontologies> ;
     dct:title "Graphity Processor ontology document" ;
     foaf:primaryTopic gp: .
 
-<ontologies/graphity-client> a foaf:Document, sioc:Item ;
+<ontologies/graphity-client> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <ontologies> ;
     dct:title "Graphity Client ontology document" ;
     foaf:primaryTopic gc: .
 
-<ontologies/foaf> a foaf:Document, sioc:Item ;
+<ontologies/foaf> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <ontologies> ;
     dct:title "FOAF ontology document" ;
     foaf:primaryTopic foaf: .
 
-<ontologies/void> a foaf:Document, sioc:Item ;
+<ontologies/void> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <ontologies> ;
     dct:title "VoID ontology document" ;
     foaf:primaryTopic void: .
 
 # templates
 
-<templates/template-container> a foaf:Document, sioc:Item ;
+<templates/template-container> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:TemplateContainer .
 
-<templates/template-document> a foaf:Document, sioc:Item ;
+<templates/template-document> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:TemplateItem .
 
-<templates/query-container> a foaf:Document, sioc:Item ;
+<templates/query-container> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:QueryContainer .
 
-<templates/query-document> a foaf:Document, sioc:Item ;
+<templates/query-document> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:QueryItem .
 
-<templates/label-resources-container> a foaf:Document, sioc:Item ;
+<templates/label-resources-container> a foaf:Document, sioc:Item, gp:Item ;
     sioc:has_container <templates> ;
     foaf:primaryTopic gcs:LabelResourcesContainer .
 
 # queries
 
-<queries/describe-graph-label-resources> a foaf:Document, sioc:Item, gcs:QueryItem ;
+<queries/describe-graph-label-resources> a foaf:Document, sioc:Item, gp:Item, gcs:QueryItem ;
     sioc:has_container <queries> ;
     foaf:primaryTopic gcs:DescribeLabelResources .
 
-<queries/temp> a foaf:Document, sioc:Item, gcs:QueryItem ;
+<queries/temp> a foaf:Document, sioc:Item, gp:Item, gcs:QueryItem ;
     sioc:has_container <queries> ;
     foaf:primaryTopic <queries/temp#this> .
 

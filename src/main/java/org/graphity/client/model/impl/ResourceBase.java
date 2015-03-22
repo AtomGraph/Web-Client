@@ -133,10 +133,9 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
                 }
                 else
                 {
-                    if (!supportedMode.equals(GP.ConstructItemMode))
+                    if (!supportedMode.equals(GP.ConstructMode))
                     {
-                        if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container) ||
-                                getMatchedOntClass().equals(GP.Space) || getMatchedOntClass().hasSuperClass(GP.Space))
+                        if (getMatchedOntClass().equals(GP.Container))
                         {
                             String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), null).build().toString();                            
                             String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();

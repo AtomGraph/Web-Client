@@ -27,15 +27,23 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
 
 # templates
 
+<#Space> a rdfs:Class, owl:Class, gp:Template ;
+     rdfs:subClassOf foaf:Document, sioc:Space, sioc:Container, gp:Container ;
+     gp:uriTemplate "/" ;
+     gp:query gp:DescribeWithChildren ;
+     gp:limit 20 ;
+     rdfs:label "Space" ;
+     rdfs:isDefinedBy <#> .
+
 <#TemplateContainer> a rdfs:Class, owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, gp:Container, sioc:Container,
         [ a owl:Restriction ;
-            owl:onProperty sioc:has_space ;
-            owl:allValuesFrom gp:Space
+            owl:onProperty sioc:has_parent ;
+            owl:allValuesFrom <#Space>
         ] ;
     gp:uriTemplate "/templates" ;
     gp:defaultLimit 20 ;
-    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
+    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructMode ;
     gc:defaultMode gc:ListMode ;
     gp:query gp:DescribeWithChildren ;
     rdfs:label "Template container" ;
@@ -124,12 +132,12 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
 <#QueryContainer> a rdfs:Class, owl:Class, gp:Template ;
     rdfs:subClassOf foaf:Document, gp:Container, sioc:Container,
         [ a owl:Restriction ;
-            owl:onProperty sioc:has_space ;
-            owl:allValuesFrom gp:Space
+            owl:onProperty sioc:has_parent ;
+            owl:allValuesFrom <#Space>
         ] ;
     gp:uriTemplate "/queries" ;
     gp:defaultLimit 20 ;
-    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
+    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructMode ;
     gc:defaultMode gc:ListMode ;
     gp:query gp:DescribeWithChildren ;
     rdfs:label "Query container" ;
@@ -206,7 +214,7 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
     gp:defaultLimit 20 ;
     gp:defaultOrderBy "label"^^xsd:string ;
     gp:loadClass <java:org.graphity.client.resource.labelled.Container> ;
-    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructItemMode ;
+    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gp:ConstructMode ;
     rdfs:label "Labelled resource container" ;
     rdfs:isDefinedBy <#> .
 

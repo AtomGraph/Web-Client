@@ -253,7 +253,10 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
         if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
 	    bld.parameter("{" + GP.mode.getNameSpace() + "}" + GP.mode.getLocalName(),
                 URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName())));
-	if (getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
+        if (getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName()) != null)
+	    bld.parameter("{" + GP.forClass.getNameSpace() + "}" + GP.forClass.getLocalName(),
+                URI.create(getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName())));
+        if (getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
 	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
                 URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName())));
 	if (getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)

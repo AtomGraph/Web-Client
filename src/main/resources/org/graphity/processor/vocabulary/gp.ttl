@@ -246,22 +246,22 @@
 # RESOURCE TEMPLATES
 
 <#Space> a rdfs:Class, owl:Class, <#Template> ;
-     rdfs:subClassOf foaf:Document, sioc:Space ;
+     rdfs:subClassOf foaf:Document, sioc:Space, sioc:Container, <#Container> ;
      <#uriTemplate> "/" ;
      <#query> <#DescribeWithChildren> ;
-     <#limit> 20 ;
+     <#defaultLimit> 20 ;
      rdfs:label "Space" ;
      rdfs:isDefinedBy <#> .
 
 <#Container> a rdfs:Class, owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document, sioc:Container ,
         [ a owl:Restriction ;
-            owl:onProperty sioc:has_space ;
+            owl:onProperty sioc:has_parent ;
             owl:allValuesFrom <#Space>
         ] ;
     <#uriTemplate> "/{container}" ;
     <#skolemTemplate> "/{slug}" ;
-    <#limit> 20 ;
+    <#defaultLimit> 20 ;
     <#query> <#DescribeWithChildren> ;
     <#template>
               [ a       sp:Construct ;
@@ -347,9 +347,14 @@
 
 # MODES
 
-<#ConstructItemMode> a <#Mode> ; # <#ContainerMode>
+<#ConstructItemMode> a <#Mode> ;
     rdfs:label "Create" ;
     rdfs:comment "Container responds with the CONSTRUCTed template of its Item class" ;
+    rdfs:isDefinedBy <#> .
+
+<#ConstructContainerMode> a <#Mode> ;
+    rdfs:label "Create" ;
+    rdfs:comment "Container responds with the CONSTRUCTed template of its sub-Container class" ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES

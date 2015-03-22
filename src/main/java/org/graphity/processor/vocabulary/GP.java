@@ -56,11 +56,15 @@ public final class GP
     
     public static final OntClass Container = m_model.createClass( NS + "Container" );
 
-    public static final OntClass Constructor = m_model.createClass( NS + "Constructor" );
-    
-    public static final OntClass ConstructItemMode = m_model.createClass( NS + "ConstructItemMode" );
+    public static final OntClass Item = m_model.createClass( NS + "Item" );
 
-    public static final OntClass ConstructContainerMode = m_model.createClass( NS + "ConstructContainerMode" );
+    public static final OntClass Constructor = m_model.createClass( NS + "Constructor" );
+
+    public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
+
+    //public static final OntClass ConstructItemMode = m_model.createClass( NS + "ConstructItemMode" );
+
+    //public static final OntClass ConstructContainerMode = m_model.createClass( NS + "ConstructContainerMode" );
     
     public static final OntClass Page = m_model.createClass( NS + "Page" );
 
@@ -98,7 +102,7 @@ public final class GP
 
     public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
 
-    //public static final ObjectProperty matchedOntClass = m_model.createObjectProperty( NS + "matchedOntClass" );
+    public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 

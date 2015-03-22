@@ -74,13 +74,14 @@ exclude-result-prefixes="#all">
     <xsl:param name="gp:offset" as="xs:integer?"/>
     <xsl:param name="gp:limit" as="xs:integer?"/>
     <xsl:param name="gp:orderBy" as="xs:string?"/>
-    <xsl:param name="gp:desc" as="xs:boolean?"/>        
+    <xsl:param name="gp:desc" as="xs:boolean?"/>
+    <xsl:param name="gp:forClass" as="xs:anyURI?"/>
     <xsl:param name="gc:uri" select="$gp:absolutePath" as="xs:anyURI"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
-    <xsl:param name="gp:sitemap" select="document(gc:document-uri(rdf:type))" as="document-node()?"/>
-    <xsl:param name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) then xs:anyURI(key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) else (if (key('resources', $gc:uri)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
+    <xsl:param name="gp:sitemap" select="if ($rdf:type) then document(gc:document-uri($rdf:type)) else ()" as="document-node()?"/>
+    <xsl:param name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) then xs:anyURI(key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) else (if (key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
@@ -239,7 +240,7 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="($gc:defaultMode, $gp:mode) = ('&gc;EditMode', '&gp;ConstructItemMode')">
+        <xsl:if test="($gc:defaultMode, $gp:mode) = ('&gc;EditMode', '&gp;ConstructMode')">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
@@ -299,8 +300,8 @@ exclude-result-prefixes="#all">
             <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gc;EditMode') or $gp:mode = '&gc;EditMode'">
                 <xsl:apply-templates select="." mode="gc:EditMode"/>
             </xsl:when>
-            <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gp;ConstructItemMode') or $gp:mode = '&gp;ConstructItemMode'">
-                <xsl:apply-templates select="." mode="gp:ConstructItemMode"/>
+            <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gp;ConstructMode') or $gp:mode = '&gp;ConstructMode'">
+                <xsl:apply-templates select="." mode="gp:ConstructMode"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="gc:ReadMode"/>
@@ -462,7 +463,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="gc:ModeToggleMode"/>
     
     <xsl:template match="*[@rdf:about]" mode="gc:ModeToggleMode" priority="1">
-        <xsl:if test="not(rdf:type/@rdf:resource = '&sioc;Container')">
+        <xsl:if test="not(rdf:type/@rdf:resource = '&gp;Container')">
             <div class="pull-right">
                 <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
                     <button class="btn btn-primary" type="submit">
@@ -471,17 +472,17 @@ exclude-result-prefixes="#all">
                 </form>
             </div>
         </xsl:if>
-        <xsl:if test="not($gp:mode = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&sioc;Container')">
+        <xsl:if test="not($gp:mode = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&gp;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
                 </a>                        
             </div>
         </xsl:if>
-        <xsl:if test="not($gp:mode = '&gp;ConstructItemMode') and rdf:type/@rdf:resource = ('&sioc;Space', '&sioc;Container')">
+        <xsl:if test="not($gp:mode = '&gp;ConstructMode') and key('resources-by-constructor-of', @rdf:about)">
             <div class="pull-right">
-                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gp;ConstructItemMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gp;ConstructItemMode', document('&gp;'))" mode="gc:LabelMode"/>
+                <a class="btn btn-primary" href="{key('resources-by-constructor-of', @rdf:about)/@rdf:about}">
+                    <xsl:apply-templates select="key('resources', '&gp;ConstructMode', document('&gp;'))" mode="gc:LabelMode"/>
                 </a>
             </div>
         </xsl:if>
@@ -913,9 +914,9 @@ exclude-result-prefixes="#all">
 
     <!-- CREATE MODE -->
     
-    <xsl:template match="rdf:RDF" mode="gp:ConstructItemMode">
+    <xsl:template match="rdf:RDF" mode="gp:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="action" select="concat($gc:uri, '?mode=', encode-for-uri($gp:mode))" as="xs:string"/>
+        <xsl:param name="action" select="concat($gc:uri, '?mode=', encode-for-uri($gp:mode), '&amp;forClass=', encode-for-uri($gp:forClass))" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
@@ -944,8 +945,8 @@ exclude-result-prefixes="#all">
             <xsl:variable name="parent-doc" select="document($gc:uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
             <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()"/>
-            
-            <xsl:apply-templates select="key('resources-by-type', '&foaf;Document')[@rdf:nodeID]" mode="#current">
+           
+            <xsl:apply-templates select="key('resources-by-type', $gp:forClass)" mode="#current">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -956,9 +957,9 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about = $gc:uri] | *[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri]" mode="gp:ConstructItemMode" priority="1"/>
+    <xsl:template match="*[@rdf:about = $gc:uri] | *[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri]" mode="gp:ConstructMode" priority="1"/>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructItemMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructMode">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
@@ -967,11 +968,11 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
     </xsl:template>
-   
+
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
-        <xsl:param name="method" select="'post'" as="xs:string"/>
+        <xsl:param name="method" select="'post'" as="xs:string"/>   
         <xsl:param name="action" select="concat($gc:uri, '?_method=PUT&amp;mode=', encode-for-uri($gp:mode))" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
@@ -1002,7 +1003,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
 
-            <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">                
+            <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current">
                 <xsl:with-param name="template-doc" select="document($construct-uri)" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -1014,9 +1015,11 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- hide metadata -->
+    <!--
     <xsl:template match="*[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:EditMode" priority="1"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:EditMode" priority="1"/>
+    -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
@@ -1024,9 +1027,11 @@ exclude-result-prefixes="#all">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="template-doc" as="document-node()?" tunnel="yes"/>
-        <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
+        <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
-
+YY<xsl:value-of select="current()/rdf:type/@rdf:resource"/>/YY
+XX<xsl:copy-of select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>/XX
+<!--
         <fieldset>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
@@ -1052,7 +1057,7 @@ exclude-result-prefixes="#all">
                     </xsl:apply-templates>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:message>gc:EditMode is active but gp:ConstructItemMode is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
+                    <xsl:message>gc:EditMode is active but gp:ConstructMode is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
                     <xsl:apply-templates mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
@@ -1061,8 +1066,10 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
         </fieldset>
+        -->
     </xsl:template>
 
+<!--
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[$gp:sitemap]" mode="gc:EditMode">
         <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:next-match>
@@ -1076,7 +1083,7 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])"/>
         </xsl:next-match>
     </xsl:template>
-        
+-->    
     <!-- remove spaces -->
     <xsl:template match="text()" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
