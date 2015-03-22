@@ -643,7 +643,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="class" as="xs:string?"/>
         <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
         <xsl:param name="template"  as="element()?"/>
-WW<xsl:copy-of select="$template"/>/WW
+
 	<xsl:choose>
             <!-- loop if node not visited already -->
 	    <xsl:when test="not(. = $traversed-ids)">

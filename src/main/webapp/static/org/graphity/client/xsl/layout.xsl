@@ -90,15 +90,14 @@ exclude-result-prefixes="#all">
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
     <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
-    <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
-    <xsl:key name="resources-by-space" match="*[@rdf:about]" use="sioc:has_space/@rdf:resource"/>
+    <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
     <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
     <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
-    <xsl:key name="restrictions-by-container" match="*[rdf:type/@rdf:resource = '&owl;Restriction'][owl:onProperty/@rdf:resource = ('&sioc;has_space', '&sioc;has_parent', '&sioc;has_container')]" use="owl:allValuesFrom/@rdf:resource"/>
+    <xsl:key name="restrictions-by-container" match="*[rdf:type/@rdf:resource = '&owl;Restriction'][owl:onProperty/@rdf:resource = ('&sioc;has_parent', '&sioc;has_container')]" use="owl:allValuesFrom/@rdf:resource"/>
 
     <xsl:preserve-space elements="rdfs:label dct:title gp:slug gp:uriTemplate gp:skolemTemplate gp:defaultOrderBy"/>
 
@@ -179,7 +178,7 @@ exclude-result-prefixes="#all">
                         
                         <ul class="nav">
                             <!-- make menu links for all containers in the ontology -->
-                            <xsl:apply-templates select="key('resources-by-space', $gp:baseUri, document($gp:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="gc:NavBarMode">
+                            <xsl:apply-templates select="key('resources-by-container', $gp:baseUri, document($gp:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="gc:NavBarMode">
                                 <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                 <xsl:with-param name="space" select="$space"/>
                             </xsl:apply-templates>
@@ -355,12 +354,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:BreadCrumbMode">
         <!-- walk up the parents recursively -->
         <xsl:choose>
-            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource)">
-                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource)" mode="#current"/>
+            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current"/>
             </xsl:when>
-            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource">
-                <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource)" as="document-node()?"/>
-                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource | sioc:has_space/@rdf:resource, $parent-doc)" mode="#current"/>
+            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource ">
+                <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current"/>
             </xsl:when>
         </xsl:choose>
 
@@ -945,7 +944,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="parent-doc" select="document($gc:uri)" as="document-node()"/>
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
             <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()"/>
-           
+
             <xsl:apply-templates select="key('resources-by-type', $gp:forClass)" mode="#current">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
@@ -978,7 +977,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="parent-uri" select="key('resources', $gc:uri)/sioc:has_container/@rdf:resource | key('resources', $gc:uri)/sioc:has_space/@rdf:resource" as="xs:anyURI"/>
+        <xsl:param name="parent-uri" select="key('resources', $gc:uri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -1027,11 +1026,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="template-doc" as="document-node()?" tunnel="yes"/>
-        <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
+        <xsl:param name="template" select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
         <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
-YY<xsl:value-of select="current()/rdf:type/@rdf:resource"/>/YY
-XX<xsl:copy-of select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]"/>/XX
-<!--
+
         <fieldset>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
@@ -1066,10 +1063,8 @@ XX<xsl:copy-of select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:reso
                 </xsl:otherwise>
             </xsl:choose>
         </fieldset>
-        -->
     </xsl:template>
 
-<!--
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[$gp:sitemap]" mode="gc:EditMode">
         <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:next-match>
@@ -1083,7 +1078,7 @@ XX<xsl:copy-of select="$template-doc/rdf:RDF/*[every $type in rdf:type/@rdf:reso
             <xsl:with-param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])"/>
         </xsl:next-match>
     </xsl:template>
--->    
+
     <!-- remove spaces -->
     <xsl:template match="text()" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>

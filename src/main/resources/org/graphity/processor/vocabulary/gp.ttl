@@ -347,14 +347,9 @@
 
 # MODES
 
-<#ConstructItemMode> a <#Mode> ;
+<#ConstructMode> a <#Mode> ;
     rdfs:label "Create" ;
-    rdfs:comment "Container responds with the CONSTRUCTed template of its Item class" ;
-    rdfs:isDefinedBy <#> .
-
-<#ConstructContainerMode> a <#Mode> ;
-    rdfs:label "Create" ;
-    rdfs:comment "Container responds with the CONSTRUCTed template of its sub-Container class" ;
+    rdfs:comment "Container responds with CONSTRUCTed template for gp:forClass value" ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES
