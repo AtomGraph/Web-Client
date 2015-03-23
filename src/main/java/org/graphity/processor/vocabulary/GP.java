@@ -61,10 +61,6 @@ public final class GP
     public static final OntClass Constructor = m_model.createClass( NS + "Constructor" );
 
     public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
-
-    //public static final OntClass ConstructItemMode = m_model.createClass( NS + "ConstructItemMode" );
-
-    //public static final OntClass ConstructContainerMode = m_model.createClass( NS + "ConstructContainerMode" );
     
     public static final OntClass Page = m_model.createClass( NS + "Page" );
 
