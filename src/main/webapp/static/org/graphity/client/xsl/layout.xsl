@@ -916,7 +916,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gp:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="forClass" select="$gp:forClass" as="xs:anyURI"/>
-        <xsl:param name="action" select="concat($gc:uri, '?mode=', encode-for-uri($gp:mode), '&amp;forClass=', encode-for-uri($forClass))" as="xs:string"/>
+        <xsl:param name="action" select="xs:anyURI(concat($gc:uri, '?mode=', encode-for-uri($gp:mode), '&amp;forClass=', encode-for-uri($forClass)))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
@@ -973,7 +973,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>   
-        <xsl:param name="action" select="concat($gc:uri, '?_method=PUT&amp;mode=', encode-for-uri($gp:mode))" as="xs:string"/>
+        <xsl:param name="action" select="xs:anyURI(concat($gc:uri, '?_method=PUT&amp;mode=', encode-for-uri($gp:mode)))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
