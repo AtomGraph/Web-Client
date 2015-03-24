@@ -228,7 +228,8 @@ public class OntClassMatcher extends PerRequestTypeInjectableProvider<Context, O
                 {
                     OntClass typeClass = parentClass.getOntModel().getOntClass(stmt.getObject().asResource().getURI());
                     // return resource type which is defined by the sitemap ontology
-                    if (typeClass.getIsDefinedBy().equals(parentClass.getIsDefinedBy()))
+                    if (typeClass.getIsDefinedBy() != null &&
+                            typeClass.getIsDefinedBy().equals(parentClass.getIsDefinedBy()))
                         return typeClass;
                 }
             }

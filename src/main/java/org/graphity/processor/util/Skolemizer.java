@@ -139,7 +139,6 @@ public class Skolemizer
     {
         if (resource.hasProperty(SIOC.HAS_CONTAINER)) return resource.getPropertyResourceValue(SIOC.HAS_CONTAINER);
         if (resource.hasProperty(SIOC.HAS_PARENT)) return resource.getPropertyResourceValue(SIOC.HAS_PARENT);
-        if (resource.hasProperty(SIOC.HAS_SPACE)) return resource.getPropertyResourceValue(SIOC.HAS_SPACE);
         
         return ResourceFactory.createResource(getUriInfo().getAbsolutePath().toString());
     }

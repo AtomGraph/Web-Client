@@ -64,13 +64,13 @@ public class ValidatingRDFPostReader extends RDFPostReader
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-        return validate(getOntModel(),
+        return validate(getOntModel(), getMatchedOntClass(),
                 super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream),
                 getMode(),
                 (QueriedResource)getUriInfo().getMatchedResources().get(0));
     }
 
-    public Model validate(OntModel ontModel, Model model, URI mode, QueriedResource match)
+    public Model validate(OntModel ontModel, OntClass matchedOntClass, Model model, URI mode, QueriedResource match)
     {
         OntModel tempModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         tempModel.add(ontModel).add(model);
@@ -81,11 +81,11 @@ public class ValidatingRDFPostReader extends RDFPostReader
             if (log.isDebugEnabled()) log.debug("SPIN constraint violations: {}", cvs);
             if (mode != null && mode.equals(URI.create(GC.EditMode.getURI()))) // check by HTTP request method?
             {
-                throw new ConstraintViolationException(cvs, model, getMatchedOntClass());
+                throw new ConstraintViolationException(cvs, model, matchedOntClass);
             }
             else // gc:CreateMode
             {
-                throw new ConstraintViolationException(cvs, match.describe().add(model), getMatchedOntClass());
+                throw new ConstraintViolationException(cvs, match.describe().add(model), matchedOntClass);
             }
         }
         
