@@ -164,7 +164,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             {
                 if (queryBuilder.getSubSelectBuilder() == null)
                 {
-                    if (log.isErrorEnabled()) log.error("Container query for template '{}' does not contain a sub-SELECT '{}'", getMatchedOntClass().getURI());
+                    if (log.isErrorEnabled()) log.error("Container query for template '{}' does not contain a sub-SELECT", getMatchedOntClass().getURI());
                     throw new ConfigurationException("Sub-SELECT missing in the query of container template '" + getMatchedOntClass().getURI() +"'");
                 }
 

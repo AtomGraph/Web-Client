@@ -357,7 +357,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
                 <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current"/>
             </xsl:when>
-            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource ">
+            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource">
                 <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
                 <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current"/>
             </xsl:when>
@@ -915,7 +915,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gp:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="action" select="concat($gc:uri, '?mode=', encode-for-uri($gp:mode), '&amp;forClass=', encode-for-uri($gp:forClass))" as="xs:string"/>
+        <xsl:param name="forClass" select="$gp:forClass" as="xs:anyURI"/>
+        <xsl:param name="action" select="concat($gc:uri, '?mode=', encode-for-uri($gp:mode), '&amp;forClass=', encode-for-uri($forClass))" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
@@ -945,7 +946,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
             <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()"/>
 
-            <xsl:apply-templates select="key('resources-by-type', $gp:forClass)" mode="#current">
+            <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
