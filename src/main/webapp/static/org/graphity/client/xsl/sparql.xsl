@@ -86,7 +86,7 @@ LIMIT 100</xsl:param>
     
     <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
         <xsl:param name="method" select="'get'" as="xs:string"/>
-        <xsl:param name="action" select="''" as="xs:string"/>
+        <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
