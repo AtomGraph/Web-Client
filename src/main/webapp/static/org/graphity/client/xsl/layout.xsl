@@ -921,6 +921,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
+        <xsl:param name="parent-doc" select="document($gc:uri)" as="document-node()?"/>
+        <xsl:param name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
+        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()"/>
                 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -941,10 +944,6 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
-
-            <xsl:variable name="parent-doc" select="document($gc:uri)" as="document-node()"/>
-            <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-            <xsl:variable name="template-doc" select="document($construct-uri)" as="document-node()"/>
 
             <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
@@ -978,7 +977,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="parent-uri" select="key('resources', $gc:uri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI"/>
+        <xsl:param name="parent-uri" select="key('resources', $gc:uri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
+        <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
+        <xsl:param name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
+        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -1000,11 +1002,8 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:variable name="parent-doc" select="document($parent-uri)" as="document-node()"/>
-            <xsl:variable name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-
             <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">            
-                <xsl:with-param name="template-doc" select="document($construct-uri)" tunnel="yes"/>
+                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
             
