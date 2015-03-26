@@ -81,7 +81,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
-    <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = ('&sioc;Container', '&sioc;Space')) then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
+    <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 

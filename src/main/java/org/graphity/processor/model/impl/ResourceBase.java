@@ -611,7 +611,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                         throw new ConfigurationException("Constructor not defined for template '" + getMatchedOntClass().getURI() +"'");
                     }
                     
-                    model.add(getSPARQLEndpoint().loadModel(templateQuery)); // adds constructor Model
+                    QueryExecution qex = QueryExecutionFactory.create(templateQuery, ModelFactory.createDefaultModel());
+                    Model templateModel = qex.execConstruct();
+                    model.add(templateModel);
+                    if (log.isDebugEnabled()) log.error("gp:template CONSTRUCT query '{}' created {} triples", templateQuery, templateModel.size());
+                    qex.close();
                 }
                 catch (ConfigurationException ex)
                 {

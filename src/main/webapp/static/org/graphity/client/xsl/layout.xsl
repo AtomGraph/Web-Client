@@ -245,7 +245,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF">
-        <xsl:param name="selected-resources" select="key('resources-by-container', $gc:uri)" as="element()*"/>
+        <xsl:param name="selected-resources" select="key('resources-by-container', $gc:uri)" as="element()*" tunnel="yes"/>
 
         <div class="container-fluid">
 	    <div class="row-fluid">
