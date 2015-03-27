@@ -39,6 +39,7 @@ import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetWriter;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.writer.ConstraintViolationExceptionXSLTWriter;
 import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
 import org.graphity.processor.mapper.NotFoundExceptionMapper;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
@@ -105,6 +106,7 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
 	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.HttpExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
+        singletons.add(new ConstraintViolationExceptionXSLTWriter()); // writes XHTML responses
 	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
     }
 

@@ -16,6 +16,7 @@
 
 package org.graphity.processor.mapper;
 
+import com.hp.hpl.jena.vocabulary.RDF;
 import java.net.URI;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -34,14 +35,14 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     private static final Logger log = LoggerFactory.getLogger(ConstraintViolationExceptionMapper.class);
     
     @Override
-    public Response toResponse(ConstraintViolationException e)
+    public Response toResponse(ConstraintViolationException cve)
     {
 	//if (log.isDebugEnabled()) log.debug("ConstraintViolation root: {} source: {}", e.getConstraintViolation().getRoot(), e.getConstraintViolation().getSource());
 
-        SPINConstraints.addConstraintViolationsRDF(e.getConstraintViolations(), e.getModel(), true);
-        Link classLink = new Link(URI.create(e.getMatchedOntClass().getURI()), "type", null);
+        SPINConstraints.addConstraintViolationsRDF(cve.getConstraintViolations(), cve.getModel(), true);
+        Link classLink = new Link(URI.create(cve.getMatchedOntClass().getURI()), RDF.type.getLocalName(), null);
 	
-	return Response.ok(e.getModel()).
+	return Response.ok(cve). // ok(e.getModel()).
 		status(Response.Status.BAD_REQUEST).
                 header("Link", classLink.toString()).
 		build();

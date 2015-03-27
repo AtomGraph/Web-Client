@@ -79,6 +79,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:uri" select="$gp:absolutePath" as="xs:anyURI"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
+    <xsl:param name="gc:constraintViolationsUri" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="gp:sitemap" select="if ($rdf:type) then document(gc:document-uri($rdf:type)) else ()" as="document-node()?"/>
     <xsl:param name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) then xs:anyURI(key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) else (if (key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
@@ -911,7 +912,7 @@ exclude-result-prefixes="#all">
         </script>
     </xsl:template>
 
-    <!-- CREATE MODE -->
+    <!-- CONSTRUCT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gp:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
@@ -921,9 +922,11 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
+        <!--
         <xsl:param name="parent-doc" select="document($gc:uri)" as="document-node()?"/>
         <xsl:param name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()"/>
+        -->
+        <xsl:param name="template-doc" select="root(.)" as="document-node()"/>
                 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -945,11 +948,22 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
-                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-                <xsl:sort select="gc:label(.)"/>
-            </xsl:apply-templates>
-
+            <xsl:choose>
+                <xsl:when test="$gc:constraintViolationsUri">
+                    <!-- ??<xsl:copy-of select="document($gc:constraintViolationsUri)"/>?? -->
+                    <xsl:apply-templates select="key('resources-by-type', $forClass, document($gc:constraintViolationsUri))" mode="#current">
+                        <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                        <xsl:sort select="gc:label(.)"/>
+                    </xsl:apply-templates>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
+                        <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                        <xsl:sort select="gc:label(.)"/>
+                    </xsl:apply-templates>
+                </xsl:otherwise>
+            </xsl:choose>
+            
             <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>
@@ -1024,7 +1038,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="legend" select="true()" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="template-doc" as="document-node()?" tunnel="yes"/>
-        <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()?"/>
+        <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
 
         <fieldset>

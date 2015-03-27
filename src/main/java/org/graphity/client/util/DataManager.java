@@ -196,7 +196,7 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
      * @param systemId system ID (usually origin URI) of the source
      * @return XML source
      */
-    protected Source getSource(Model model, String systemId)
+    public Source getSource(Model model, String systemId)
     {
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 	
@@ -215,7 +215,7 @@ public class DataManager extends org.graphity.processor.util.DataManager impleme
      * @param systemId system ID (usually origin URI) of the source
      * @return XML source
      */
-    protected Source getSource(ResultSet results, String systemId)
+    public Source getSource(ResultSet results, String systemId)
     {
 	if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());
 	

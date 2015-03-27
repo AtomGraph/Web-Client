@@ -37,9 +37,8 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import org.graphity.processor.exception.ConstraintViolationException;
-import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.core.model.QueriedResource;
+import org.graphity.core.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.constraints.ConstraintViolation;
@@ -60,17 +59,17 @@ public class ValidatingRDFPostReader extends RDFPostReader
 
     @Context private Providers providers;
     @Context private UriInfo uriInfo;
-
+    
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
-    {
+    {        
         return validate(getOntModel(), getMatchedOntClass(),
                 super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream),
                 getMode(),
-                (QueriedResource)getUriInfo().getMatchedResources().get(0));
+                (Resource)getUriInfo().getMatchedResources().get(0));
     }
 
-    public Model validate(OntModel ontModel, OntClass matchedOntClass, Model model, URI mode, QueriedResource match)
+    public Model validate(OntModel ontModel, OntClass matchedOntClass, Model model, URI mode, Resource match)
     {
         OntModel tempModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         tempModel.add(ontModel).add(model);
@@ -79,14 +78,7 @@ public class ValidatingRDFPostReader extends RDFPostReader
 	if (!cvs.isEmpty())
         {
             if (log.isDebugEnabled()) log.debug("SPIN constraint violations: {}", cvs);
-            if (mode != null && mode.equals(URI.create(GC.EditMode.getURI()))) // check by HTTP request method?
-            {
-                throw new ConstraintViolationException(cvs, model, matchedOntClass);
-            }
-            else // gc:CreateMode
-            {
-                throw new ConstraintViolationException(cvs, match.describe().add(model), matchedOntClass);
-            }
+            throw new ConstraintViolationException(cvs, model, matchedOntClass);
         }
         
         return model;
