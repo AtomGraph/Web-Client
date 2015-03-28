@@ -56,6 +56,7 @@ xmlns:xhv="&xhv;"
 xmlns:geo="&geo;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">
 
     <xsl:import href="group-sort-triples.xsl"/>
@@ -922,10 +923,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <!--
-        <xsl:param name="parent-doc" select="document($gc:uri)" as="document-node()?"/>
-        <xsl:param name="construct-uri" select="key('resources-by-constructor-of', $gc:uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-        -->
         <xsl:param name="template-doc" select="root(.)" as="document-node()"/>
                 
         <form method="{$method}" action="{$action}">
@@ -950,11 +947,12 @@ exclude-result-prefixes="#all">
 
             <xsl:choose>
                 <xsl:when test="$gc:constraintViolationsUri">
-                    <!-- ??<xsl:copy-of select="document($gc:constraintViolationsUri)"/>?? -->
                     <xsl:apply-templates select="key('resources-by-type', $forClass, document($gc:constraintViolationsUri))" mode="#current">
                         <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                         <xsl:sort select="gc:label(.)"/>
                     </xsl:apply-templates>
+                    <!-- remove constraint violations document from cache -->
+                    <xsl:for-each select="saxon:discard-document(document($gc:constraintViolationsUri))" use-when="function-available('saxon:discard-document')"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
