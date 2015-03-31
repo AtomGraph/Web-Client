@@ -86,6 +86,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     private Boolean desc;
     private Long limit, offset;
     private QueryBuilder queryBuilder;
+    private UpdateRequest updateRequest;
     private QuerySolutionMap querySolutionMap;
     private CacheControl cacheControl;
     private URI mode;
@@ -153,12 +154,20 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         try
         {
             Query query = getQuery(getMatchedOntClass(), GP.query);
-            if (query == null)
+            if (query == null && getRequest().getMethod().equalsIgnoreCase("GET"))
             {
                 if (log.isErrorEnabled()) log.error("Query not defined for template '{}' (gp:query missing)", getMatchedOntClass().getURI());
                 throw new ConfigurationException("Query not defined for template '" + getMatchedOntClass().getURI() +"'");
             }
             queryBuilder = QueryBuilder.fromQuery(query, getModel());
+
+            updateRequest = getUpdateRequest(getMatchedOntClass(), GP.update);
+            if (updateRequest == null && (getRequest().getMethod().equalsIgnoreCase("PUT") ||
+                    getRequest().getMethod().equalsIgnoreCase("DELETE")))
+            {
+                if (log.isErrorEnabled()) log.error("Update not defined for template '{}' (gp:update missing)", getMatchedOntClass().getURI());
+                throw new ConfigurationException("Update not defined for template '" + getMatchedOntClass().getURI() +"'");
+            }
             
             if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container))
             {
@@ -475,7 +484,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	}
 	
 	Model description = describe();	
-	UpdateRequest updateRequest = UpdateFactory.create();
+	UpdateRequest deleteInsertRequest = UpdateFactory.create();
 	
 	if (!description.isEmpty()) // remove existing representation
 	{
@@ -487,10 +496,10 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 		return rb.build();
 	    }
 	    
-	    UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
-	    if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
-	    Iterator<com.hp.hpl.jena.update.Update> it = deleteRequest.getOperations().iterator();
-	    while (it.hasNext()) updateRequest.add(it.next());
+	    //UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), GP.update, this);
+	    if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", getUpdateRequest());
+	    Iterator<com.hp.hpl.jena.update.Update> it = getUpdateRequest().getOperations().iterator();
+	    while (it.hasNext()) deleteInsertRequest.add(it.next());
 	}
 	
 	UpdateRequest insertDataRequest; 
@@ -498,10 +507,10 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	else insertDataRequest = InsertDataBuilder.fromData(model).build();
 	if (log.isDebugEnabled()) log.debug("INSERT DATA request: {}", insertDataRequest);
 	Iterator<com.hp.hpl.jena.update.Update> it = insertDataRequest.getOperations().iterator();
-	while (it.hasNext()) updateRequest.add(it.next());
+	while (it.hasNext()) deleteInsertRequest.add(it.next());
 	
-	if (log.isDebugEnabled()) log.debug("Combined DELETE/INSERT DATA request: {}", updateRequest);
-	getSPARQLEndpoint().post(updateRequest, null, null);
+	if (log.isDebugEnabled()) log.debug("Combined DELETE/INSERT DATA request: {}", deleteInsertRequest);
+	getSPARQLEndpoint().post(deleteInsertRequest, null, null);
 	
 	if (description.isEmpty()) return Response.created(getRealURI()).build();
 	else return getResponse(model);
@@ -517,9 +526,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     public Response delete()
     {
 	if (log.isDebugEnabled()) log.debug("DELETEing resource: {} matched OntClass: {}", this, getMatchedOntClass());
-	UpdateRequest deleteRequest = getUpdateRequest(getMatchedOntClass(), this);
-	if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", deleteRequest);
-	getSPARQLEndpoint().post(deleteRequest, null, null);
+	if (log.isDebugEnabled()) log.debug("DELETE UpdateRequest: {}", getUpdateRequest());
+	getSPARQLEndpoint().post(getUpdateRequest(), null, null);
 	
 	return Response.noContent().build();
     }
@@ -607,8 +615,8 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                     Query templateQuery = getQuery(forClass, GP.template);
                     if (templateQuery == null)
                     {
-                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but template not defined for template '{}' (gp:template missing)", getMatchedOntClass().getURI());
-                        throw new ConfigurationException("Constructor not defined for template '" + getMatchedOntClass().getURI() +"'");
+                        if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but template not defined for class '{}' (gp:template missing)", forClass.getURI());
+                        throw new ConfigurationException("gp:ConstructMode template not defined for class '" + forClass.getURI() +"'");
                     }
                     
                     QueryExecution qex = QueryExecutionFactory.create(templateQuery, ModelFactory.createDefaultModel());
@@ -718,19 +726,22 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * @return query object
      * @see org.topbraid.spin.model.TemplateCall
      */
-    public Query getQuery(OntClass ontClass, Property property)
+    public Query getQuery(OntClass ontClass, AnnotationProperty property)
     {
 	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-	if (ontClass.getPropertyResourceValue(property) == null)
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (" + property + ")");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
+	//if (ontClass.getPropertyResourceValue(property) == null)
+	//    throw new IllegalArgumentException("Resource OntClass must have a SPIN query or template call resource (" + property + ")");
 
 	Resource queryOrTemplateCall = ontClass.getPropertyResourceValue(property);
-        
-        org.topbraid.spin.model.Query spinQuery = SPINFactory.asQuery(queryOrTemplateCall);
-        if (spinQuery != null) return new ParameterizedSparqlString(spinQuery.toString()).asQuery();
-                
-        TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
-        if (templateCall != null) return new ParameterizedSparqlString(templateCall.getQueryString()).asQuery();
+        if (queryOrTemplateCall != null)
+        {
+            org.topbraid.spin.model.Query spinQuery = SPINFactory.asQuery(queryOrTemplateCall);
+            if (spinQuery != null) return new ParameterizedSparqlString(spinQuery.toString()).asQuery();
+
+            TemplateCall templateCall = SPINFactory.asTemplateCall(queryOrTemplateCall);
+            if (templateCall != null) return new ParameterizedSparqlString(templateCall.getQueryString()).asQuery();
+        }
         
         return null;
     }
@@ -745,30 +756,32 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         return querySolutionMap;
     }
     
-    public UpdateRequest getUpdateRequest(OntClass ontClass, Resource resource)
+    public UpdateRequest getUpdateRequest(OntClass ontClass, AnnotationProperty property)
     {
-	if (ontClass.getPropertyResourceValue(GP.update) == null)
-	    throw new IllegalArgumentException("Resource OntClass must have a SPIN update or template call resource (spin:update)");
+	if (ontClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
-	Resource updateOrTemplateCall = ontClass.getPropertyResourceValue(GP.update);
-	
-        Update update = SPINFactory.asUpdate(updateOrTemplateCall);
-        if (update != null) return getUpdateRequest(update.toString(), resource);
+	Resource updateOrTemplateCall = ontClass.getPropertyResourceValue(property);
+	if (updateOrTemplateCall != null)
+        {
+            Update spinUpdate = SPINFactory.asUpdate(updateOrTemplateCall);
+            if (spinUpdate != null) return new ParameterizedSparqlString(spinUpdate.toString()).asUpdate();
 
-        TemplateCall templateCall = SPINFactory.asTemplateCall(updateOrTemplateCall);
-        if (templateCall != null) return getUpdateRequest(templateCall.getQueryString(), resource);
+            TemplateCall templateCall = SPINFactory.asTemplateCall(updateOrTemplateCall);
+            if (templateCall != null) return new ParameterizedSparqlString(templateCall.getQueryString()).asUpdate();
+        }
         
         return null;
     }
 
-    public UpdateRequest getUpdateRequest(String queryString, Resource resource)
+    public UpdateRequest getUpdateRequest(String updateString, Resource resource)
     {
-	if (queryString == null) throw new IllegalArgumentException("TemplateCall cannot be null");
+	if (updateString == null) throw new IllegalArgumentException("TemplateCall cannot be null");
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 	
 	QuerySolutionMap qsm = new QuerySolutionMap();
 	qsm.add("this", resource);
-	return new ParameterizedSparqlString(queryString, qsm).asUpdate();
+	return new ParameterizedSparqlString(updateString, qsm).asUpdate();
     }
 
     /**
@@ -978,6 +991,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
 	return queryBuilder;
     }
 
+    public UpdateRequest getUpdateRequest()
+    {
+        return updateRequest;
+    }
+    
     /**
      * Returns HTTP headers of the current request.
      * 
