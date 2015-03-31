@@ -42,7 +42,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
         SPINConstraints.addConstraintViolationsRDF(cve.getConstraintViolations(), cve.getModel(), true);
         Link classLink = new Link(URI.create(cve.getMatchedOntClass().getURI()), RDF.type.getLocalName(), null);
 	
-	return Response.ok(cve). // ok(e.getModel()).
+	return Response.ok(cve). // TO-DO: use ModelResponse instead
 		status(Response.Status.BAD_REQUEST).
                 header("Link", classLink.toString()).
 		build();

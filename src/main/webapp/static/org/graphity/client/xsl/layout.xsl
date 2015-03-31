@@ -1014,11 +1014,25 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">            
-                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-                <xsl:sort select="gc:label(.)"/>
-            </xsl:apply-templates>
-            
+            <xsl:choose>
+                <xsl:when test="$gc:constraintViolationsUri">
+                    <xsl:for-each select="document($gc:constraintViolationsUri)/rdf:RDF">
+                        <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
+                            <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                            <xsl:sort select="gc:label(.)"/>
+                        </xsl:apply-templates>
+                    </xsl:for-each>
+                    <!-- remove constraint violations document from cache -->
+                    <xsl:for-each select="saxon:discard-document(document($gc:constraintViolationsUri))" use-when="function-available('saxon:discard-document')"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">            
+                        <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                        <xsl:sort select="gc:label(.)"/>
+                    </xsl:apply-templates>
+                </xsl:otherwise>
+            </xsl:choose>
+                
             <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Save</button>
 	    </div>
@@ -1053,11 +1067,17 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
 
+            <xsl:for-each select="$constraint-violations/rdfs:label">
+                <div class="alert alert-error">
+                    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+                </div>
+            </xsl:for-each>
+
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
             <xsl:choose>
                 <xsl:when test="$template">
-                    <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name()) = current()/*/concat(namespace-uri(), local-name()))]" mode="#current">
+                    <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                         <xsl:sort select="gc:property-label(.)"/>
                         <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
                         <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
