@@ -921,6 +921,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="action" select="xs:anyURI(concat($gc:uri, '?mode=', encode-for-uri($gp:mode), '&amp;forClass=', encode-for-uri($forClass)))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
+        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="template-doc" select="root(.)" as="document-node()"/>
@@ -963,7 +964,7 @@ exclude-result-prefixes="#all">
             </xsl:choose>
             
             <div class="form-actions">
-		<button type="submit" class="btn btn-primary">Save</button>
+		<button type="submit" class="{$button-class}">Save</button>
 	    </div>
 	</form>
     </xsl:template>
@@ -987,6 +988,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="action" select="xs:anyURI(concat($gc:uri, '?_method=PUT&amp;mode=', encode-for-uri($gp:mode)))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
+        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="parent-uri" select="key('resources', $gc:uri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
@@ -1034,7 +1036,7 @@ exclude-result-prefixes="#all">
             </xsl:choose>
                 
             <div class="form-actions">
-		<button type="submit" class="btn btn-primary">Save</button>
+		<button type="submit" class="{$button-class}">Save</button>
 	    </div>
 	</form>
     </xsl:template>
