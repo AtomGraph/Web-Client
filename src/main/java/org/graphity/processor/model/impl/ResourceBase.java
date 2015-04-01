@@ -95,7 +95,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
      * Public JAX-RS constructor. Suitable for subclassing.
      * If the request URI does not match any URI template in the sitemap ontology, 404 Not Found is returned.
      * 
-     * If the matching ontology class is a subclass of LDP Page, this resource becomes a page resource and
+     * If the matching ontology class is a subclass of <code>gp:Page</code>, this resource becomes a page resource and
      * HATEOS metadata is added (relations to the container and previous/next page resources).
      * 
      * @param uriInfo URI information of the current request
@@ -239,7 +239,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
         }
         catch (ConfigurationException ex)
         {
-            throw new WebApplicationException(ex, Status.BAD_REQUEST);
+            throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
         }
         
         cacheControl = getCacheControl(getMatchedOntClass(), GP.cacheControl);        
@@ -321,11 +321,11 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
     @Override
     public Response get()
     {
-        // gp:Space/gp:Container always redirect to first ldp:Page
+        // gp:Container always redirect to first gp:Page
 	if ((getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container))
             && getRealURI().equals(getUriInfo().getRequestUri()) && getLimit() != null)
 	{
-	    if (log.isDebugEnabled()) log.debug("OntResource is gp:Container or gp:Space, redirecting to the first gp:Page");
+	    if (log.isDebugEnabled()) log.debug("OntResource is gp:Container, redirecting to the first gp:Page");
 	    return Response.seeOther(getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), getMode()).build()).build();
 	}
 
@@ -566,9 +566,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             while (it.hasNext())
             {
                 OntClass forClass = it.next();
-                String constructorURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructMode.getURI())).
+                String constructorURI = getStateUriBuilder(null, null, null, null, URI.create(GP.ConstructMode.getURI())).
                         queryParam(GP.forClass.getLocalName(), forClass.getURI()).build().toString();
-                    Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructMode).
+                    Resource template = createState(model.createResource(constructorURI), null, null, null, null, GP.ConstructMode).
                         addProperty(RDF.type, FOAF.Document).
                         addProperty(RDF.type, GP.Constructor).
                         addProperty(GP.forClass, forClass).
@@ -590,9 +590,9 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                     while (gccIt.hasNext())
                     {
                         OntClass forClass = gccIt.next();
-                        String constructorURI = getStateUriBuilder(UriBuilder.fromUri(childURI), getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(GP.ConstructMode.getURI())).
+                        String constructorURI = getStateUriBuilder(UriBuilder.fromUri(childURI), null, null, null, null, URI.create(GP.ConstructMode.getURI())).
                             queryParam(GP.forClass.getLocalName(), forClass.getURI()).build().toString();
-                        Resource template = createState(model.createResource(constructorURI), getOffset(), getLimit(), getOrderBy(), getDesc(), GP.ConstructMode).
+                        Resource template = createState(model.createResource(constructorURI), null, null, null, null, GP.ConstructMode).
                             addProperty(RDF.type, FOAF.Document).
                             addProperty(RDF.type, GP.Constructor).
                             addProperty(GP.forClass, forClass).                                    
@@ -622,7 +622,7 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                     QueryExecution qex = QueryExecutionFactory.create(templateQuery, ModelFactory.createDefaultModel());
                     Model templateModel = qex.execConstruct();
                     model.add(templateModel);
-                    if (log.isDebugEnabled()) log.error("gp:template CONSTRUCT query '{}' created {} triples", templateQuery, templateModel.size());
+                    if (log.isDebugEnabled()) log.debug("gp:template CONSTRUCT query '{}' created {} triples", templateQuery, templateModel.size());
                     qex.close();
                 }
                 catch (ConfigurationException ex)

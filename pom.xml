@@ -111,6 +111,15 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
+	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <excludePackageNames>*.impl</excludePackageNames>
+                </configuration>
+	    </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -169,6 +178,9 @@
 	</profile>
         <profile> 
           <id>release</id>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
           <build>
               <plugins>
                 <plugin>
@@ -185,17 +197,21 @@
                   </executions>
                 </plugin>
                 <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-javadoc-plugin</artifactId>
-                  <version>2.9.1</version>
-                  <executions>
-                    <execution>
-                      <id>attach-javadocs</id>
-                      <goals>
-                        <goal>jar</goal>
-                      </goals>
-                    </execution>
-                  </executions>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <excludePackageNames>*.impl</excludePackageNames>
+                    </configuration>
+                    <executions>
+                      <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                          <goal>jar</goal>
+                        </goals>
+                      </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
