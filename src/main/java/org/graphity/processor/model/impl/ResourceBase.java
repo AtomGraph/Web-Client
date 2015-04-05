@@ -30,6 +30,7 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -609,8 +610,12 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
             {
                 try
                 {
-                    OntClass forClass = getOntModel().createClass(getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName()));
-                    if (forClass == null) throw new IllegalStateException("gp:ConstructMode is active, but gp:forClass value not supplied");
+                    if (!getUriInfo().getQueryParameters().containsKey(GP.forClass.getLocalName()))
+                        throw new IllegalStateException("gp:ConstructMode is active, but gp:forClass value not supplied");
+
+                    URI forClassURI = new URI(getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName()));
+                    OntClass forClass = getOntModel().createClass(forClassURI.toString());
+                    if (forClass == null) throw new IllegalStateException("gp:ConstructMode is active, but gp:forClass value is not a known owl:Class");
 
                     Query templateQuery = getQuery(forClass, GP.template);
                     if (templateQuery == null)
@@ -627,7 +632,12 @@ public class ResourceBase extends QueriedResourceBase implements org.graphity.pr
                 }
                 catch (ConfigurationException ex)
                 {
-                    throw new WebApplicationException(ex);
+                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+                }
+                catch (URISyntaxException ex)
+                {
+                    if (log.isErrorEnabled()) log.error("gp:ConstructMode is active but gp:forClass value is not a URI: '{}'", getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName()));
+                    throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
                 }
             }
             else
