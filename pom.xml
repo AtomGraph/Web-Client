@@ -71,16 +71,18 @@
             <artifactId>saxon</artifactId>
             <version>9.1.0.8</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>processor</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+        <!--
 	<dependency>
 	    <groupId>org.topbraid</groupId>
 	    <artifactId>spin</artifactId>
 	    <version>1.4.0</version>
 	</dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        -->
     </dependencies>
 
     <build>

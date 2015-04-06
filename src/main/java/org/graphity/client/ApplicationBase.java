@@ -18,7 +18,6 @@ package org.graphity.client;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.query.ARQ;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.util.HashSet;
@@ -63,7 +62,7 @@ import org.topbraid.spin.system.SPINModuleRegistry;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class ApplicationBase extends org.graphity.core.ApplicationBase
+public class ApplicationBase extends org.graphity.processor.ApplicationBase
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
@@ -121,6 +120,7 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
      * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
      */
     @PostConstruct
+    @Override
     public void init()
     {
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
@@ -192,17 +192,6 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
     public Set<Object> getSingletons()
     {
 	return singletons;
-    }
-
-    public boolean getPreemptiveAuth(ServletConfig servletConfig, Property property)
-    {
-	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
-	if (property == null) throw new IllegalArgumentException("Property cannot be null");
-
-        boolean preemptiveAuth = false;
-        if (servletConfig.getInitParameter(property.getURI()) != null)
-            preemptiveAuth = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()).toString());
-        return preemptiveAuth;
     }
     
     /**

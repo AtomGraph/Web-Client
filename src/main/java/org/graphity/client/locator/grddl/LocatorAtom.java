@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.graphity.processor.locator.grddl;
+package org.graphity.client.locator.grddl;
 
 import com.sun.jersey.api.uri.UriTemplate;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.URIResolver;
-import org.graphity.processor.locator.LocatorGRDDL;
+import org.graphity.client.locator.LocatorGRDDL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

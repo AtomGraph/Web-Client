@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.graphity.processor.locator;
+package org.graphity.client.locator;
 
 import com.hp.hpl.jena.util.TypedStream;
 import com.sun.jersey.api.uri.UriTemplate;
@@ -34,6 +34,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
+import org.graphity.processor.locator.LocatorLinkedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
