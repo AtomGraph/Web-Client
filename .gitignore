@@ -3,3 +3,6 @@
 /release.properties
 /pom.xml.releaseBackup
 /nb-configuration.xml
+.idea
+/Graphity Server/*.iml
+/*.iml

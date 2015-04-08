@@ -34,7 +34,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.WebContent;
 import org.graphity.client.util.XSLTBuilder;
-import org.graphity.processor.locator.LocatorLinkedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

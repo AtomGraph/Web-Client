@@ -34,7 +34,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.util.DataManager;
+import org.graphity.client.util.DataManager;
 import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
 import org.graphity.core.model.SPARQLEndpointFactory;

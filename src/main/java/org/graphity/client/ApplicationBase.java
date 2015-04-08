@@ -26,7 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import org.graphity.processor.locator.PrefixMapper;
+import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.TemplatesProvider;
@@ -87,7 +87,6 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	singletons.add(new UpdateRequestReader());
         
         singletons.add(new DataManagerProvider());
-        singletons.add(new org.graphity.processor.provider.DataManagerProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());
         singletons.add(new OntologyProvider());
