@@ -455,7 +455,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:MediaTypeSelectMode" priority="1">
+    <xsl:template match="*[key('resources', foaf:isPrimaryTopicOf/@rdf:resource)]" mode="gc:MediaTypeSelectMode" priority="2">
         <xsl:apply-templates select="key('resources', foaf:isPrimaryTopicOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
@@ -663,7 +663,7 @@ exclude-result-prefixes="#all">
             </li>
             <li class="next">
                 <xsl:choose>
-                    <xsl:when test="xhv:next and $count &gt;= gp:limit">
+                    <xsl:when test="xhv:next and $count &gt;= $gp:limit">
                         <xsl:apply-templates select="xhv:next" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
