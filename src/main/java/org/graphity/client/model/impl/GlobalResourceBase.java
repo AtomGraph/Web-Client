@@ -22,7 +22,9 @@ import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -87,7 +89,12 @@ public class GlobalResourceBase extends ResourceBase
         this.dataManager = dataManager;
 
 	if (getUriInfo().getQueryParameters().containsKey("accept"))
-            mediaType = MediaType.valueOf(getUriInfo().getQueryParameters().getFirst("accept"));
+        {
+            Map<String, String> utf8Param = new HashMap<>();
+            utf8Param.put("charset", "UTF-8");            
+            MediaType formatType = MediaType.valueOf(getUriInfo().getQueryParameters().getFirst("accept"));
+            mediaType = new MediaType(formatType.getType(), formatType.getSubtype(), utf8Param);
+        }
         else mediaType = null;
         if (getUriInfo().getQueryParameters().containsKey(GC.uri.getLocalName()))
             topicURI = URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()));
