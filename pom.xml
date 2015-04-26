@@ -3,7 +3,7 @@
 
     <groupId>org.graphity</groupId>
     <artifactId>client</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
 
     <name>Graphity Client</name>
     <description>Generic Linked Data client</description>
@@ -13,30 +13,30 @@
     <!-- <packaging>war</packaging> -->
 
     <developers>
-	<developer>
-		<id>pumba-lt</id>
-		<email>martynas@graphity.org</email>
-		<roles>
-			<role>Developer</role>
-			<role>Founder</role>
-		</roles>
-		<organization>Graphity</organization>
-		<organizationUrl>http://graphityhq.com</organizationUrl>
-	</developer>
+        <developer>
+            <id>pumba-lt</id>
+            <email>martynas@graphity.org</email>
+            <roles>
+                <role>Developer</role>
+                <role>Founder</role>
+            </roles>
+            <organization>Graphity</organization>
+            <organizationUrl>http://graphityhq.com</organizationUrl>
+        </developer>
     </developers>
     
     <licenses>
-	<license>
-	    <name>Apache License 2.0</name>
-	    <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-	    <distribution>repo</distribution>
-	</license>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<netbeans.hint.license>apache20</netbeans.hint.license>
+        <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
  
     <scm>
@@ -46,17 +46,17 @@
     </scm>
   
     <repositories>
-	<repository>
-	    <id>apache-repo-releases</id>
-	    <url>https://repository.apache.org/content/repositories/releases/</url>
-	    <releases>
-	    <enabled>true</enabled>
-	    </releases>
-	</repository>
-	<repository>
-	    <id>org.topbraid</id>
-	    <url>http://topquadrant.com/repository/spin</url>
-	</repository>
+        <repository>
+            <id>apache-repo-releases</id>
+            <url>https://repository.apache.org/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>org.topbraid</id>
+            <url>http://topquadrant.com/repository/spin</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -77,21 +77,21 @@
             <version>${project.version}</version>
         </dependency>        
         <!--
-	<dependency>
-	    <groupId>org.topbraid</groupId>
-	    <artifactId>spin</artifactId>
-	    <version>1.4.0</version>
-	</dependency>
+        <dependency>
+            <groupId>org.topbraid</groupId>
+            <artifactId>spin</artifactId>
+            <version>1.4.0</version>
+        </dependency>
         -->
     </dependencies>
 
     <build>
         <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-	<version>2.1</version>
-      </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -113,7 +113,7 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
-	    <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.7</version>
@@ -121,45 +121,45 @@
                     <encoding>UTF-8</encoding>
                     <excludePackageNames>*.impl</excludePackageNames>
                 </configuration>
-	    </plugin>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.1</version>
                 <executions>
-		    <execution>
-			<id>resource-dependencies</id>
-			<phase>generate-resources</phase>
-			<goals>
-			    <goal>unpack-dependencies</goal>
-			</goals>
-			<configuration>
-			    <includeGroupIds>org.graphity</includeGroupIds>
-			    <includes>**\/*.xsl,**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
-			    <outputDirectory>${project.build.directory}/classes</outputDirectory>
-			</configuration>
-		    </execution>
+                    <execution>
+                        <id>resource-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.graphity</includeGroupIds>
+                            <includes>**\/*.xsl,**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
-              <groupId>org.sonatype.plugins</groupId>
-              <artifactId>nexus-staging-maven-plugin</artifactId>
-              <version>1.6.3</version>
-              <extensions>true</extensions>
-              <configuration>
-                <serverId>ossrh</serverId>
-                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                <autoReleaseAfterClose>true</autoReleaseAfterClose>
-              </configuration>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
     </build>
 
     <distributionManagement>
-      <snapshotRepository>
-        <id>ossrh</id>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      </snapshotRepository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <profiles>
@@ -177,60 +177,60 @@
             <properties>
                 <packaging.type>jar</packaging.type>
             </properties>
-	</profile>
+        </profile>
         <profile> 
-          <id>release</id>
+            <id>release</id>
             <properties>
                 <packaging.type>war</packaging.type>
             </properties>
-          <build>
-              <plugins>
-                <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-source-plugin</artifactId>
-                  <version>2.2.1</version>
-                  <executions>
-                    <execution>
-                      <id>attach-sources</id>
-                      <goals>
-                        <goal>jar-no-fork</goal>
-                      </goals>
-                    </execution>
-                  </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                        <excludePackageNames>*.impl</excludePackageNames>
-                    </configuration>
-                    <executions>
-                      <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                          <goal>jar</goal>
-                        </goals>
-                      </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-gpg-plugin</artifactId>
-                  <version>1.5</version>
-                  <executions>
-                    <execution>
-                      <id>sign-artifacts</id>
-                      <phase>verify</phase>
-                      <goals>
-                        <goal>sign</goal>
-                      </goals>
-                    </execution>
-                  </executions>
-                </plugin>
-              </plugins>
-          </build>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <excludePackageNames>*.impl</excludePackageNames>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
