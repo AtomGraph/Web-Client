@@ -26,7 +26,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -173,12 +175,17 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     public List<MediaType> getMediaTypes()
     {
         List<MediaType> list = super.getMediaTypes();
-        list.add(0, MediaType.APPLICATION_XHTML_XML_TYPE);
+        Map<String, String> utf8Param = new HashMap<>();
+        utf8Param.put("charset", "UTF-8");
+
+        MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), utf8Param);
+        list.add(0, xhtmlXml);
 
         if (getMode() != null && getMode().equals(URI.create(GC.MapMode.getURI())))
 	{
 	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Google Maps workaround", getMode());
-            list.add(0, MediaType.TEXT_HTML_TYPE);
+            MediaType textHtml = new MediaType(MediaType.TEXT_HTML_TYPE.getType(), MediaType.TEXT_HTML_TYPE.getSubtype(), utf8Param);
+            list.add(0, textHtml);
 	}
 
         return list;
