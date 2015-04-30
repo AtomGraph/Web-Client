@@ -50,13 +50,13 @@ classes is attached, and you can address it as a separate artifact:
         <dependency>
             <groupId>org.graphity</groupId>
             <artifactId>client</artifactId>
-            <version>1.1.3-SNAPSHOT</version>
+            <version>1.1.2</version>
             <classifier>classes</classifier>
         </dependency>
         <dependency>
             <groupId>org.graphity</groupId>
             <artifactId>client</artifactId>
-            <version>1.1.3-SNAPSHOT</version>
+            <version>1.1.2</version>
             <type>war</type>
         </dependency>
 
