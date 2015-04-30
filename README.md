@@ -1,6 +1,7 @@
-Graphity is a Java framework for building read-write Linked Data applications. If you have a triplestore with RDF
+Graphity Client is a Java framework for building read-write Linked Data applications. If you have a triplestore with RDF
 data that you want to publish and/or build an end-user application on it, or would like to explore Linked Open
-Data, Graphity provides the components you need.
+Data, Graphity provides the components you need. It is stable yet actively maintained software, conveniently available on
+Maven as a single dependency for your project.
 
 What Graphity provides for users as out-of-the-box generic features:
 * declarative control of published data using URI and SPARQL templates
@@ -35,6 +36,30 @@ Getting started
 * [JavaDoc](http://graphity.github.io/graphity-client/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
+
+Maven
+-----
+
+Graphity artifacts `graphity-client`, `graphity-processor` and `graphity-core` are released on Maven under the 
+[`org.graphity`](http://search.maven.org/#browse%7C1400901156) group ID.
+
+You should choose Graphity Client as it includes both XSLT and Linked Data functionality, making it useful for end-user as well as server applications.
+Dependencies to other Graphity artifacts will be resolved automagically during the Maven build processs. GC is released as WAR by default, but the JAR with
+classes is attached, and you can address it as a separate artifact:
+
+        <dependency>
+            <groupId>org.graphity</groupId>
+            <artifactId>client</artifactId>
+            <version>1.1.3-SNAPSHOT</version>
+            <classifier>classes</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.graphity</groupId>
+            <artifactId>client</artifactId>
+            <version>1.1.3-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
+
 
 No permanent storage!
 ---------------------
