@@ -1,9 +1,9 @@
 Graphity Client is a Java framework for building read-write Linked Data applications. If you have a triplestore with RDF
 data that you want to publish and/or build an end-user application on it, or would like to explore Linked Open
-Data, Graphity provides the components you need. It is stable yet actively maintained software, conveniently available on
+Data, Client provides the components you need. It is stable yet actively maintained software, conveniently available on
 Maven as a single dependency for your project.
 
-What Graphity provides for users as out-of-the-box generic features:
+What GC provides for users as out-of-the-box generic features:
 * declarative control of published data using URI and SPARQL templates
 * multilingual, responsive user interface built with Twitter Bootstrap
 * multiple rendering modes (currently item/list/table)
@@ -12,7 +12,7 @@ What Graphity provides for users as out-of-the-box generic features:
 * loading RDF data from remote Linked Data sources
 * HTTP content negotiation and caching
 
-What Graphity can be quickly extended to do:
+What GC can be quickly extended to do:
 * render custom layouts/designs by overriding XSLT templates
 * store RDF data directly from HTML forms into the triplestore
 * control RDF input quality with SPARQL-based constraints
@@ -29,10 +29,9 @@ Getting started
 ===============
 
 * [what is Linked Data](../../wiki/What-is-Linked-Data)
-* [how Graphity works](../../wiki/How-Graphity-works)
-* [installing Graphity](../../wiki/Installation)
-* [extending Graphity](../../wiki/Extending-Graphity)
-* [configuring Graphity](../../wiki/Configuration)
+* [installing Graphity Client](../../wiki/Installation)
+* [extending Graphity Client](../../wiki/Extending-Graphity)
+* [configuring Graphity Client](../../wiki/Configuration)
 * [JavaDoc](http://graphity.github.io/graphity-client/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
@@ -73,7 +72,7 @@ For open-source, we recommend trying Jena's [TDB](http://jena.apache.org/documen
 Demonstration
 =============
 
-![Graphity screenshot](https://raw.github.com/Graphity/graphity-client/master/screenshot.jpg)
+![Graphity Client screenshot](https://raw.github.com/Graphity/graphity-client/master/screenshot.jpg)
 
 An instance of Graphity Client runs for demonstration purposes on [Linked Data Hub](http://linkeddatahub.com).
 See the DBPedia Linked Data description of Sir [Tim Berners-Lee](http://linkeddatahub.com/?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FTim_Berners-Lee).
