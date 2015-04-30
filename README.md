@@ -40,7 +40,8 @@ For full documentation, see the [wiki index](../../wiki).
 Maven
 -----
 
-Graphity artifacts `graphity-client`, `graphity-processor` and `graphity-core` are released on Maven under the 
+Graphity artifacts [`graphity-client`](http://search.maven.org/#browse%7C-605419744), [`graphity-processor`](http://search.maven.org/#browse%7C2124019457)
+and [`graphity-core`](http://search.maven.org/#browse%7C57568460) are released on Maven under the
 [`org.graphity`](http://search.maven.org/#browse%7C1400901156) group ID.
 
 You should choose Graphity Client as it includes both XSLT and Linked Data functionality, making it useful for end-user as well as server applications.
