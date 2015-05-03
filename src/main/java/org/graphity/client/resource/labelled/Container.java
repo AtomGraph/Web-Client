@@ -28,7 +28,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.model.impl.ResourceBase;
-import org.graphity.processor.query.SelectBuilder;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
@@ -60,14 +59,11 @@ public class Container extends ResourceBase
     {
         super.init();
 
-	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(GP.Container))
+	if (!(getSearchString() == null || getSearchString().isEmpty()) && getMatchedOntClass().hasSuperClass(GP.Container) &&
+                getSubSelectBuilder() != null)
 	{
-            SelectBuilder selectBuilder = getQueryBuilder().getSubSelectBuilder();
-	    if (selectBuilder != null)
-	    {
-                selectBuilder.filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(getSearchString())); // escape special regex() characters!
-		if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", getSearchString(), getQueryBuilder());
-	    }
+            getSubSelectBuilder().filter(RDFS.label.getLocalName(), getQueryBuilder().quoteRegexMeta(getSearchString())); // escape special regex() characters!
+            if (log.isDebugEnabled()) log.debug("Search query: {} QueryBuilder: {}", getSearchString(), getQueryBuilder());
 	}
     }
     

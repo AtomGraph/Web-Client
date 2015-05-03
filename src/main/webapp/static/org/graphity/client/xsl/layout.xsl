@@ -246,6 +246,12 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = 'http://graphity.org/gcs#DescribeLabelResources']" priority="1">
+        <xsl:next-match>
+            <xsl:with-param name="selected-resources" select="*[rdf:type/@rdf:resource = '&gp;Item']" tunnel="yes"/>
+        </xsl:next-match>
+    </xsl:template>
+    
     <xsl:template match="rdf:RDF">
         <xsl:param name="selected-resources" select="key('resources-by-container', $gc:uri)" as="element()*" tunnel="yes"/>
 

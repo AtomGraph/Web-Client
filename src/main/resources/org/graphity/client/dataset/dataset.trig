@@ -41,11 +41,11 @@
     sioc:has_parent <> ;
     dct:title "Queries" .
 
-<resources/labelled> a gp:Container, sioc:Container, foaf:Document ;
+<resources/labelled> a gp:Container, sioc:Container, foaf:Document, gcs:DescribeLabelResources ;
     sioc:has_parent <resources> ;
     dct:title "Labelled resources" .
 
-<properties/labelled> a gp:Container, sioc:Container, foaf:Document ;
+<properties/labelled> a gp:Container, sioc:Container, foaf:Document, gcs:DescribeLabelResources ;
     sioc:has_parent <properties> ;
     dct:title "Labelled properties" .
 
