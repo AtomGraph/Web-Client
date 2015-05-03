@@ -60,6 +60,7 @@ classes is attached, and you can address it as a separate artifact:
             <type>war</type>
         </dependency>
 
+See more about [installation](../../wiki/Installation).
 
 No permanent storage!
 ---------------------
