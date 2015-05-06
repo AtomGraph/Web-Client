@@ -38,8 +38,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
+import org.graphity.processor.provider.ValidatingModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public class RDFPostReader implements MessageBodyReader<Model>
+public class RDFPostReader extends ValidatingModelProvider // implements MessageBodyReader<Model>
 {
     private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class);
     
@@ -106,7 +106,7 @@ public class RDFPostReader implements MessageBodyReader<Model>
 	// getHttpContext().getRequest().getFormParameters() returns same info, but ordering is lost
         try
         {
-            return parse(getHttpContext().getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name());
+            return validate(parse(getHttpContext().getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name()));
         }
         catch (URISyntaxException ex)
         {

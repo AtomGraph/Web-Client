@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public class SkolemizingRDFPostReader extends ValidatingRDFPostReader
+public class SkolemizingRDFPostReader extends RDFPostReader
 {
     private static final Logger log = LoggerFactory.getLogger(SkolemizingRDFPostReader.class);
 

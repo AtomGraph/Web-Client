@@ -18,28 +18,19 @@ package org.graphity.client.writer;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.spi.resource.Singleton;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URI;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import org.apache.jena.riot.RDFLanguages;
-import org.graphity.client.util.XSLTBuilder;
-import org.graphity.client.vocabulary.GC;
 import org.graphity.core.model.Resource;
 import org.graphity.processor.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -96,26 +87,7 @@ public class ConstraintViolationExceptionXSLTWriter implements MessageBodyWriter
             
 	if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
-	try
-	{
-            synchronized (this)
-            {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                model.write(baos, RDFLanguages.RDFXML.getName(), null);
-                
-                mxw.getXSLTBuilder(XSLTBuilder.fromStylesheet(mxw.getTemplates()).document(new ByteArrayInputStream(baos.toByteArray())),
-                        headerMap).
-                    resolver(new ConstraintViolationExceptionURIResolver(cve, mxw.getDataManager())).
-                    parameter("{" + GC.NS + "}" + "constraintViolationsUri", URI.create("gc://" + cve.hashCode())).
-                    result(new StreamResult(entityStream)).
-                    transform();
-            }
-	}
-	catch (TransformerException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-	}
+        mxw.writeTo(cve.getModel().add(model), type, genericType, annotations, mediaType, headerMap, entityStream);
     }
     
 }

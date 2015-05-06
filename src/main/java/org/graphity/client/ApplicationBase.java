@@ -33,12 +33,10 @@ import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.reader.SkolemizingRDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
-import org.graphity.core.provider.ModelProvider;
 import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetWriter;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
-import org.graphity.client.writer.ConstraintViolationExceptionXSLTWriter;
 import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
 import org.graphity.processor.mapper.NotFoundExceptionMapper;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
@@ -48,6 +46,8 @@ import org.graphity.processor.provider.OntologyProvider;
 import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.core.vocabulary.G;
+import org.graphity.processor.provider.ConstraintViolationProvider;
+import org.graphity.processor.provider.ValidatingModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -81,7 +81,7 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         
 	classes.add(GlobalResourceBase.class); // handles /
 
-	singletons.add(new ModelProvider());
+	singletons.add(new ValidatingModelProvider());
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
@@ -97,6 +97,7 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         singletons.add(new GraphStoreOriginProvider());
         singletons.add(new SkolemizingRDFPostReader());
 	singletons.add(new NotFoundExceptionMapper());
+        singletons.add(new ConstraintViolationProvider());        
 	singletons.add(new ConstraintViolationExceptionMapper());	
         singletons.add(new org.graphity.client.mapper.jena.DoesNotExistExceptionMapper());
 	singletons.add(new org.graphity.client.mapper.jena.NotFoundExceptionMapper());
@@ -104,7 +105,7 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.HttpExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-        singletons.add(new ConstraintViolationExceptionXSLTWriter()); // writes XHTML responses
+        //singletons.add(new ConstraintViolationExceptionXSLTWriter()); // writes XHTML responses
 	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
     }
 

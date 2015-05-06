@@ -45,6 +45,7 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
+xmlns:http="&http;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
@@ -80,7 +81,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:uri" select="$gp:absolutePath" as="xs:anyURI"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
-    <xsl:param name="gc:constraintViolationsUri" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="gp:sitemap" select="if ($rdf:type) then document(gc:document-uri($rdf:type)) else ()" as="document-node()?"/>
     <xsl:param name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) then xs:anyURI(key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) else (if (key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
@@ -286,10 +286,10 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:ModeChoiceMode" priority="1">
-        <xsl:apply-templates select="." mode="gc:ReadMode"/>    
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoiceMode" priority="1">
+        XX<xsl:apply-templates select="." mode="gc:ReadMode"/>/XX
     </xsl:template>
-
+    
     <xsl:template match="rdf:RDF" mode="gc:ModeChoiceMode">
         <xsl:choose>
             <xsl:when test="(not($gp:mode) and $gc:defaultMode = '&gc;ListMode') or $gp:mode = '&gc;ListMode'">
@@ -930,7 +930,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="template-doc" select="root(.)" as="document-node()"/>
+        <xsl:param name="template-doc" select="document($action)" as="document-node()"/>
                 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -952,22 +952,10 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:choose>
-                <xsl:when test="$gc:constraintViolationsUri">
-                    <xsl:apply-templates select="key('resources-by-type', $forClass, document($gc:constraintViolationsUri))" mode="#current">
-                        <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-                        <xsl:sort select="gc:label(.)"/>
-                    </xsl:apply-templates>
-                    <!-- remove constraint violations document from cache -->
-                    <xsl:for-each select="saxon:discard-document(document($gc:constraintViolationsUri))" use-when="function-available('saxon:discard-document')"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
-                        <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-                        <xsl:sort select="gc:label(.)"/>
-                    </xsl:apply-templates>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
+                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                <xsl:sort select="gc:label(.)"/>
+            </xsl:apply-templates>
             
             <div class="form-actions">
 		<button type="submit" class="{$button-class}">Save</button>
@@ -1022,24 +1010,10 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:choose>
-                <xsl:when test="$gc:constraintViolationsUri">
-                    <xsl:for-each select="document($gc:constraintViolationsUri)/rdf:RDF">
-                        <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-                            <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-                            <xsl:sort select="gc:label(.)"/>
-                        </xsl:apply-templates>
-                    </xsl:for-each>
-                    <!-- remove constraint violations document from cache -->
-                    <xsl:for-each select="saxon:discard-document(document($gc:constraintViolationsUri))" use-when="function-available('saxon:discard-document')"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">            
-                        <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-                        <xsl:sort select="gc:label(.)"/>
-                    </xsl:apply-templates>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
+                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                <xsl:sort select="gc:label(.)"/>
+            </xsl:apply-templates>
                 
             <div class="form-actions">
 		<button type="submit" class="{$button-class}">Save</button>
@@ -1050,7 +1024,7 @@ exclude-result-prefixes="#all">
     <!-- hide metadata -->
     <xsl:template match="*[gc:layoutOf/@rdf:resource = $gc:uri]" mode="gc:EditMode" priority="1"/>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:EditMode" priority="1"/>
+    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:EditMode" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>

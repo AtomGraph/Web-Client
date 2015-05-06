@@ -101,6 +101,7 @@
 
 <queries/temp> a foaf:Document, sioc:Item, gp:Item, gcs:QueryItem ;
     sioc:has_container <queries> ;
+    gp:slug "temp"^^xsd:string ;
     foaf:primaryTopic <queries/temp#this> .
 
 <queries/temp#this>    a       <http://spinrdf.org/sp#Describe>, <http://spinrdf.org/sp#Query>, gcs:Query ; # redefined to avoid importing gs: vocab with {path: *}
