@@ -287,7 +287,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoiceMode" priority="1">
-        XX<xsl:apply-templates select="." mode="gc:ReadMode"/>/XX
+        <xsl:apply-templates select="." mode="gc:ReadMode"/>
     </xsl:template>
     
     <xsl:template match="rdf:RDF" mode="gc:ModeChoiceMode">
