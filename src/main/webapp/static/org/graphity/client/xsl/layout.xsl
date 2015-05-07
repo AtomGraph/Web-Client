@@ -1057,23 +1057,14 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
-            <xsl:choose>
-                <xsl:when test="$template">
-                    <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
-                        <xsl:sort select="gc:property-label(.)"/>
-                        <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
-                        <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
-                    </xsl:apply-templates>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:message>gc:EditMode is active but gp:ConstructMode is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
-                    <xsl:apply-templates mode="#current">
-                        <xsl:sort select="gc:property-label(.)"/>
-                        <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
-                        <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
-                    </xsl:apply-templates>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:if test="not($template)">
+                <xsl:message>gc:EditMode is active but gp:ConstructMode is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
+            </xsl:if>
+            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
+                <xsl:sort select="gc:property-label(.)"/>
+                <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
+                <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
+            </xsl:apply-templates>
         </fieldset>
     </xsl:template>
 
