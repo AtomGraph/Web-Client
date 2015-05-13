@@ -77,21 +77,6 @@ public class RDFPostReaderTest
     }
 
     /**
-     * Test of initKeysValues method, of class RDFPostReader.
-     */
-    @Test
-    @Ignore
-    public void testInitKeysValues()
-    {
-	System.out.println("initKeysValues");
-	String charsetName = "";
-	RDFPostReader instance = new RDFPostReader();
-	instance.initKeysValues(POST_BODY, charsetName);
-	// TODO review the generated test code and remove the default call to fail.
-	fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of isReadable method, of class RDFPostReader.
      */
     @Test

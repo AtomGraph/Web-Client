@@ -30,7 +30,7 @@ import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.TemplatesProvider;
-import org.graphity.client.reader.SkolemizingRDFPostReader;
+import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.core.provider.QueryParamProvider;
@@ -47,7 +47,7 @@ import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
 import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.core.vocabulary.G;
 import org.graphity.processor.provider.ConstraintViolationExceptionProvider;
-import org.graphity.processor.provider.ValidatingModelProvider;
+import org.graphity.processor.provider.SkolemizingModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
@@ -81,7 +81,8 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         
 	classes.add(GlobalResourceBase.class); // handles /
 
-	singletons.add(new ValidatingModelProvider());
+        singletons.add(new RDFPostReader());        
+	singletons.add(new SkolemizingModelProvider());
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
@@ -95,7 +96,6 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new GraphStoreProvider());
         singletons.add(new GraphStoreOriginProvider());
-        singletons.add(new SkolemizingRDFPostReader());
         singletons.add(new ConstraintViolationExceptionProvider());        
 	singletons.add(new ConstraintViolationExceptionMapper());
 	singletons.add(new NotFoundExceptionMapper());

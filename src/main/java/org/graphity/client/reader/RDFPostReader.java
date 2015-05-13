@@ -17,7 +17,6 @@
 
 package org.graphity.client.reader;
 
-import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.rdf.model.*;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.core.util.ReaderWriter;
@@ -26,7 +25,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -37,9 +35,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import org.graphity.processor.provider.ValidatingModelProvider;
+import org.graphity.processor.provider.SkolemizingModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,18 +51,37 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public class RDFPostReader extends ValidatingModelProvider // implements MessageBodyReader<Model>
+public class RDFPostReader extends SkolemizingModelProvider // implements MessageBodyReader<Model>
 {
     private static final Logger log = LoggerFactory.getLogger(RDFPostReader.class);
     
-    @Context private UriInfo uriInfo;
     @Context private HttpContext httpContext;
-    private List<String> keys = null, values = null;
-
-    protected void initKeysValues(String body, String charsetName)
+    
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	keys = new ArrayList<>();
-	values = new ArrayList<>();
+	return type == Model.class;
+    }
+
+    @Override
+    public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
+    {
+	// getHttpContext().getRequest().getFormParameters() returns same info, but ordering is lost
+        try
+        {
+            return process(parse(getHttpContext().getRequest().getEntity(String.class),
+                    ReaderWriter.getCharset(mediaType).name()));
+        }
+        catch (URISyntaxException ex)
+        {
+            if (log.isErrorEnabled()) log.error("URI '{}' has syntax error in request with media type '{}'", ex.getInput(), mediaType);
+            throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
+        }
+    }
+        
+    public Model parse(String body, String charsetName) throws URISyntaxException
+    {
+        List<String> keys = new ArrayList<>(), values = new ArrayList<>();
 
 	String[] params = body.split("&");
 
@@ -92,187 +108,19 @@ public class RDFPostReader extends ValidatingModelProvider // implements Message
                 values.add(value);
             }
 	}
-    }
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-    {
-	return type == Model.class;
-    }
-
-    @Override
-    public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
-    {
-	// getHttpContext().getRequest().getFormParameters() returns same info, but ordering is lost
-        try
-        {
-            return validate(parse(getHttpContext().getRequest().getEntity(String.class), ReaderWriter.getCharset(mediaType).name()));
-        }
-        catch (URISyntaxException ex)
-        {
-            if (log.isErrorEnabled()) log.error("URI '{}' has syntax error in request with media type '{}'", ex.getInput(), mediaType);
-            throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
-        }
-    }
-
-    public Model parse(String request, String encoding) throws URISyntaxException
-    {
-	initKeysValues(request, encoding);
-	return parse(getKeys(), getValues());
+        return parse(keys, values);
     }
 
     public Model parse(List<String> k, List<String> v) throws URISyntaxException
     {
-        return parse(getKeys(), getValues(), getUriInfo().getBaseUri());
+        return new org.graphity.core.riot.lang.RDFPostReader().parse(k, v); // getUriInfo().getBaseUri()
     }
     
-    public Model parse(List<String> k, List<String> v, URI baseURI) throws URISyntaxException
-    {
-	Model model = ModelFactory.createDefaultModel();
-
-	Resource subject = null;
-	Property property = null;
-	RDFNode object = null;
-
-	for (int i = 0; i < k.size(); i++)
-	{
-	    switch (k.get(i))
-	    {
-		case "v":
-		    model.setNsPrefix("", v.get(i)); // default namespace
-		    break;
-		case "n":
-		    if (i + 1 < k.size() && k.get(i + 1).equals("v")) // if followed by "v" (if not out of bounds)
-		    {
-			model.setNsPrefix(v.get(i), v.get(i + 1)); // namespace with prefix
-			i++; // skip the following "v"
-		    }
-		    break;
-		    
-		case "sb":
-		    subject = model.createResource(new AnonId(v.get(i))); // blank node
-		    property = null;
-		    object = null;
-		    break;
-		case "su":
-                    URI subjectURI = new URI(v.get(i));
-                    if (!subjectURI.isAbsolute()) subjectURI = baseURI.resolve(subjectURI);
-		    subject = model.createResource(subjectURI.toString()); // full URI
-		    property = null;
-		    object = null;
-		    break;
-		case "sv":
-		    subject = model.createResource(model.getNsPrefixURI("") + v.get(i)); // default namespace
-		    property = null;
-		    object = null;
-		    break;
-		case "sn":
-		    if (i + 1 < k.size() && k.get(i + 1).equals("sv")) // if followed by "sv" (if not out of bounds)
-		    {
-			subject = model.createResource(model.getNsPrefixURI(v.get(i)) + v.get(i + 1)); // ns prefix + local name
-			property = null;
-			object = null;
-			i++; // skip the following "sv"
-		    }
-		    break;
-
-		case "pu":
-                    URI propertyURI = new URI(v.get(i));
-                    if (!propertyURI.isAbsolute()) propertyURI = baseURI.resolve(propertyURI);
-                    property = model.createProperty(propertyURI.toString());
-		    object = null;
-		    break;
-		case "pv":
-		    property = model.createProperty(model.getNsPrefixURI(""), v.get(i));
-		    object = null;
-		    break;
-		case "pn":
-		    if (i + 1 < k.size() && k.get(i + 1).equals("pv")) // followed by "pv" (if not out of bounds)
-		    {
-			property = model.createProperty(model.getNsPrefixURI(v.get(i)) + v.get(i + 1)); // ns prefix + local name
-			object = null;
-			i++; // skip the following "pv"
-		    }
-		    break;
-
-		case "ob":
-		    object = model.createResource(new AnonId(v.get(i))); // blank node
-		    break;
-		case "ou":
-                    URI objectURI = new URI(v.get(i));
-                    if (!objectURI.isAbsolute()) objectURI = baseURI.resolve(objectURI);
-                    object = model.createResource(objectURI.toString()); // full URI
-		    break;
-		case "ov":
-		    object = model.createResource(model.getNsPrefixURI("") + v.get(i)); // default namespace
-		    break;
-		case "on":
-		    if (i + 1 < k.size() && k.get(i + 1).equals("ov")) // followed by "ov" (if not out of bounds)
-		    {
-			object = model.createResource(model.getNsPrefixURI(v.get(i)) + v.get(i + 1)); // ns prefix + local name
-			i++; // skip the following "ov"
-		    }
-		    break;
-		case "ol":
-		    if (i + 1 < k.size()) // check if not out of bounds
-			switch (k.get(i + 1))
-			{
-			    case "lt":
-				object = model.createTypedLiteral(v.get(i), new BaseDatatype(v.get(i + 1))); // typed literal (value+datatype)
-				i++; // skip the following "lt"
-				break;
-			    case "ll":
-				object = model.createLiteral(v.get(i), v.get(i + 1)); // literal with language (value+lang)
-				i++; // skip the following "ll"
-				break;
-			    default:
-				object = model.createLiteral(v.get(i)); // plain literal (if not followed by lang or datatype)
-				break;
-			}
-		    else
-			object = model.createLiteral(v.get(i)); // plain literal
-		    break;
-		case "lt":
-		    if (i + 1 < k.size() && k.get(i + 1).equals("ol")) // followed by "ol" (if not out of bounds)
-		    {
-			object = model.createTypedLiteral(v.get(i + 1), new BaseDatatype(v.get(i))); // typed literal (datatype+value)
-			i++; // skip the following "ol"
-		    }
-		    break;
-		case "ll":
-		    if (i + 1 < k.size() && k.get(i + 1).equals("ol")) // followed by "ol" (if not out of bounds)
-		    {
-			model.createLiteral(v.get(i + 1), v.get(i)); // literal with language (lang+value)
-			i++; // skip the following "ol"
-		    }
-		    break;
-	    }
-
-	    if (subject != null && property != null && object != null)
-		model.add(model.createStatement(subject, property, object));
-	}
-
-	return model;
-    }
-
     public HttpContext getHttpContext()
     {
 	return httpContext;
     }
 
-    public UriInfo getUriInfo()
-    {
-	return uriInfo;
-    }
-
-    public List<String> getKeys()
-    {
-	return keys;
-    }
-
-    public List<String> getValues()
-    {
-	return values;
-    }
     
 }

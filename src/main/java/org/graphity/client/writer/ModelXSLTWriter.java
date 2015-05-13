@@ -35,6 +35,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
@@ -47,7 +48,6 @@ import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.util.Link;
 import org.graphity.processor.vocabulary.GP;
-import org.graphity.core.provider.ModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 @Provider
 @Singleton
 @Produces({MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML}) // MediaType.APPLICATION_XML ?
-public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
+public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends ModelProvider // implements RDFWriter
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
@@ -132,6 +132,12 @@ public class ModelXSLTWriter extends ModelProvider // implements RDFWriter
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
         return Model.class.isAssignableFrom(type);
+    }
+
+    @Override
+    public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    {
+	return -1;
     }
     
     public Source getSource(Model model)
