@@ -81,7 +81,7 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         
 	classes.add(GlobalResourceBase.class); // handles /
 
-        singletons.add(new RDFPostReader());        
+        //singletons.add(new RDFPostReader());        
 	singletons.add(new SkolemizingModelProvider());
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());

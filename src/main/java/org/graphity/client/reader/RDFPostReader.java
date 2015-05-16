@@ -42,14 +42,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JAX-RS RDF/POST reader.
- * Reads RDF from RDF/POST-encoded request body
+ * Reads RDF from RDF/POST-encoded request body by buffering it into string. See instead the new streaming parser
+ * in Graphity Core.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.lsrn.org/semweb/rdfpost.html">RDF/POST Encoding for RDF</a>
  * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/Model.html">Model</a>
  * @see <a href="http://jsr311.java.net/nonav/javadoc/javax/ws/rs/ext/MessageBodyReader.html">MessageBodyReader</a>
+ * @see org.graphity.core.riot.lang.RDFPostReader
  */
 @Provider
+@Deprecated
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class RDFPostReader extends SkolemizingModelProvider // implements MessageBodyReader<Model>
 {
