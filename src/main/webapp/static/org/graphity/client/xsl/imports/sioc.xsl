@@ -22,6 +22,7 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
@@ -35,6 +36,25 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sioc:content" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
+    </xsl:template>
+
+    <xsl:template match="sioc:content/text()" mode="gc:EditMode">
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        
+        <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10">
+            <xsl:value-of select="."/>
+        </textarea>
+
+        <xsl:if test="$type-label">
+            <xsl:choose>
+                <xsl:when test="../@rdf:datatype">
+                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="help-inline">Literal</span>
+                </xsl:otherwise>
+            </xsl:choose>            
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="sioc:avatar" mode="gc:PropertyListMode" priority="1"/>

@@ -22,6 +22,7 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sp="&sp;"
@@ -34,18 +35,22 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="sp:text/text()" mode="gc:EditMode">
-        <textarea name="ol" id="{generate-id(..)}" class="sp:text" rows="10" style="font-family: monospace;">
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        
+        <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10" style="font-family: monospace;">
             <xsl:value-of select="."/>
         </textarea>
 
-        <xsl:choose>
-            <xsl:when test="../@rdf:datatype">
-                <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <span class="help-inline">Literal</span>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:if test="$type-label">
+            <xsl:choose>
+                <xsl:when test="../@rdf:datatype">
+                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="help-inline">Literal</span>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="sp:text/@rdf:datatype" mode="gc:EditMode">
