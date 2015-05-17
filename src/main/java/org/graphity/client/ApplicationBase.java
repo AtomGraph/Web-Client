@@ -30,7 +30,6 @@ import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.TemplatesProvider;
-import org.graphity.client.reader.RDFPostReader;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.core.provider.QueryParamProvider;
@@ -81,7 +80,6 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         
 	classes.add(GlobalResourceBase.class); // handles /
 
-        //singletons.add(new RDFPostReader());        
 	singletons.add(new SkolemizingModelProvider());
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
