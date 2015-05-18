@@ -39,12 +39,31 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="sioc:content/text()" mode="gc:EditMode">
+	<xsl:param name="name" select="'ol'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="style" as="xs:string?"/>
+	<xsl:param name="value" select="." as="xs:string?"/>
+        <xsl:param name="rows" select="10" as="xs:integer?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         
-        <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10">
-            <xsl:value-of select="."/>
-        </textarea>
+        <textarea name="{$name}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$style">
+                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$rows">
+                <xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
+            </xsl:if>
 
+            <xsl:value-of select="$value"/>
+        </textarea>
+        
         <xsl:if test="$type-label">
             <xsl:choose>
                 <xsl:when test="../@rdf:datatype">
@@ -53,7 +72,7 @@ exclude-result-prefixes="#all">
                 <xsl:otherwise>
                     <span class="help-inline">Literal</span>
                 </xsl:otherwise>
-            </xsl:choose>            
+            </xsl:choose>
         </xsl:if>
     </xsl:template>
 

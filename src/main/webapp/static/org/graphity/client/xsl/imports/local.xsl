@@ -499,10 +499,11 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
-        <xsl:param name="constraint-violations" as="element()*" tunnel="yes"/>
+        <xsl:param name="constraint-violations" as="element()*"/>
 	<xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="cloneable" select="false()"/>        
-        <xsl:param name="required" select="false()"/>
+        <xsl:param name="label" select="true()" as="xs:boolean"/>
+        <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
 
@@ -513,9 +514,11 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:InputMode">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
-            <label class="control-label" for="{$for}" title="{$this}">
-                <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
-            </label>
+            <xsl:if test="$label">
+                <label class="control-label" for="{$for}" title="{$this}">
+                    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
+                </label>
+            </xsl:if>
             <xsl:if test="$cloneable">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-small pull-right btn-add" title="Add another statement">&#x271a;</button>
