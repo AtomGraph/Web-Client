@@ -1064,7 +1064,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                 <xsl:sort select="gc:property-label(.)"/>
-                <xsl:with-param name="constraint-violations" select="$constraint-violations" tunnel="yes"/>
+                <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
             </xsl:apply-templates>
         </fieldset>
