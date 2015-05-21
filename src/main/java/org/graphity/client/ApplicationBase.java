@@ -20,12 +20,19 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.impl.GlobalResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
@@ -36,6 +43,8 @@ import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetWriter;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.writer.xslt.JSONLDWriter;
+import org.graphity.core.riot.RDFLanguages;
 import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
 import org.graphity.processor.mapper.NotFoundExceptionMapper;
 import org.graphity.processor.provider.GraphStoreOriginProvider;
@@ -141,11 +150,11 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         OntDocumentManager.getInstance().setCacheModels(true); // lets cache the ontologies FTW!!
 	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
         
-        /*
 	try
 	{
-	    singletons.add(new JSONLDWriter(XSLTBuilder.fromStylesheet(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")).
-		resolver(DataManager.get()))); // writes JSON-LD responses
+	    singletons.add(new JSONLDWriter(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")));
+            // add RDF/POST serialization. It will support JSON-LD during conneg, even though it's a JAX-RS and not Jena writer
+            RDFLanguages.register(RDFLanguages.JSONLD) ;            
 	}
 	catch (TransformerConfigurationException ex)
 	{
@@ -163,7 +172,6 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	{
 	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
 	}
-        */
     }
     
     /**
@@ -201,17 +209,14 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
      * @throws java.net.MalformedURLException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      */
-    /*
     public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
     {
-	if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletConfig().getResourcePaths("/"), filename);
 	URL xsltUrl = getServletConfig().getServletContext().getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
 	return new StreamSource(xsltUri);
     }
-    */
     
     /**
      * Returns URI information

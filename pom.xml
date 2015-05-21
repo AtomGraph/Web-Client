@@ -75,7 +75,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>processor</artifactId>
             <version>${project.version}</version>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <build>

@@ -19,7 +19,11 @@ package org.graphity.client.writer.xslt;
 import com.sun.jersey.spi.resource.Singleton;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
+import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +36,15 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-@Produces("application/ld+json")
+@Produces(org.graphity.core.MediaType.APPLICATION_LD_JSON)
 public class JSONLDWriter extends ModelXSLTWriter
 {
     private static final Logger log = LoggerFactory.getLogger(JSONLDWriter.class);
+    
+    public JSONLDWriter(Source stylesheet) throws TransformerConfigurationException
+    {
+        this(((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(stylesheet));
+    }
     
     public JSONLDWriter(Templates templates)
     {
