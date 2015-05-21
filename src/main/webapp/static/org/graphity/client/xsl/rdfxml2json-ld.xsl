@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2012 Martynas Jusevičius <martynas@graphity.org>
+Copyright 2015 Martynas Jusevičius <martynas@graphity.org>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ limitations under the License.
 	<!ENTITY rdf	"http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<!ENTITY rdfs	"http://www.w3.org/2000/01/rdf-schema#">
 	<!ENTITY xsd	"http://www.w3.org/2001/XMLSchema#">
-	<!ENTITY gc	"http://graphity.org/gc#">
+	<!ENTITY gc		"http://graphity.org/gc#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -33,15 +33,25 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:date="http://exslt.org/dates-and-times"
 exclude-result-prefixes="xs">
 
+	<!-- 
+	
+	An XSLT stylesheet transforming Jena's RDF/XML format to JSON-LD.
+	Supports @context and prefixed names.
+	
+	RDF/XML: http://www.w3.org/TR/REC-rdf-syntax/
+	JSON-LD: http://www.w3.org/TR/json-ld/
+
+	-->
+
 	<xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="application/ld+json"/>
 	<xsl:strip-space elements="*"/>
 
 	<xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 	<xsl:key name="predicates" match="*[@rdf:about or @rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
-        <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
+    <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     
 	<xsl:template match="/">
-	    <xsl:apply-templates mode="gc:JSONLDMode"/>
+		<xsl:apply-templates mode="gc:JSONLDMode"/>
 	</xsl:template>
 	
 	<xsl:template match="rdf:RDF" mode="gc:JSONLDMode">
@@ -54,8 +64,20 @@ exclude-result-prefixes="xs">
 	<!-- subject -->
 	<xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:JSONLDMode">
 	{
-	    <xsl:if test="@rdf:about">
-		<xsl:apply-templates select="@rdf:about" mode="#current"/>,
+	    <xsl:if test="namespace::*">
+			"@context": 
+			{
+				<xsl:for-each-group select="*" group-by="substring-before(name(), ':')">
+					"<xsl:value-of select="current-grouping-key()"/>": "<xsl:value-of select="namespace-uri()"/>"
+					<xsl:if test="position() != last()">,
+					</xsl:if>
+				</xsl:for-each-group>,
+				<xsl:apply-templates mode="gc:JSONLDContextMode"/>
+			} ,
+	    </xsl:if>
+
+		<xsl:if test="@rdf:about">
+			<xsl:apply-templates select="@rdf:about" mode="#current"/>,
 	    </xsl:if>
 
 	    <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
@@ -161,5 +183,38 @@ exclude-result-prefixes="xs">
 	<xsl:template match="@xml:lang" mode="gc:JSONLDMode">
 	    "@language": "<xsl:value-of select="."/>"
 	</xsl:template>
-	
+
+	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode">
+		<xsl:choose>
+			<xsl:when test="../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))]">
+				"<xsl:value-of select="name()"/>"
+			</xsl:when>
+			<xsl:otherwise>
+				"<xsl:value-of select="local-name()"/>"
+			</xsl:otherwise>
+		</xsl:choose>
+		:
+		{
+			"@id": "<xsl:value-of select="name()"/>"
+			<xsl:if test="@xml:lang | @rdf:datatype">, <!-- "@type": "", -->
+				<xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current"/>
+			</xsl:if>
+		}
+
+	    <xsl:if test="position() != last()">,
+	    </xsl:if>
+	</xsl:template>
+
+	<xsl:template match="@xml:lang"  mode="gc:JSONLDContextMode">
+		"@language": "<xsl:value-of select="."/>"
+	    <xsl:if test="position() != last()">,
+	    </xsl:if>
+	</xsl:template>
+
+	<xsl:template match="@rdf:datatype"  mode="gc:JSONLDContextMode">
+		"@type": "<xsl:value-of select="."/>"
+	    <xsl:if test="position() != last()">,
+	    </xsl:if>
+	</xsl:template>
+
 </xsl:stylesheet>
