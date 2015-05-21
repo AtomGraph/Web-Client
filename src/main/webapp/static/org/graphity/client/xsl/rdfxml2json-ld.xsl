@@ -76,13 +76,17 @@ exclude-result-prefixes="xs">
 			} ,
 	    </xsl:if>
 
-		<xsl:if test="@rdf:about">
-			<xsl:apply-templates select="@rdf:about" mode="#current"/>,
-	    </xsl:if>
+		<xsl:if test="@rdf:about | @rdf:nodeID">
+			<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>,
+		</xsl:if>
 
+		<xsl:variable name="resource" select="."/>
 	    <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
 			<xsl:choose>
 				<xsl:when test="current-grouping-key() = '&rdf;type'">"@type"</xsl:when>
+				<xsl:when test="not($resource/*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])">
+					"<xsl:value-of select="local-name()"/>"
+				</xsl:when>
 				<xsl:otherwise>
 					"<xsl:value-of select="current-grouping-key()"/>"
 				</xsl:otherwise>
@@ -185,14 +189,7 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode">
-		<xsl:choose>
-			<xsl:when test="../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))]">
-				"<xsl:value-of select="name()"/>"
-			</xsl:when>
-			<xsl:otherwise>
-				"<xsl:value-of select="local-name()"/>"
-			</xsl:otherwise>
-		</xsl:choose>
+		"<xsl:value-of select="local-name()"/>"
 		:
 		{
 			"@id": "<xsl:value-of select="name()"/>"
