@@ -121,7 +121,12 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDMode">
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
+		<xsl:choose>
+			<xsl:when test="node() | @rdf:resource | @rdf:nodeID">
+				<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
+			</xsl:when>
+			<xsl:when test=". = ''">""</xsl:when>
+		</xsl:choose>
 
 	    <xsl:if test="position() != last()">,
 	    </xsl:if>
