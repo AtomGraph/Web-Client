@@ -188,7 +188,8 @@ exclude-result-prefixes="xs">
 	    "@language": "<xsl:value-of select="."/>"
 	</xsl:template>
 
-	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode">
+	<!-- can only shorten names for properties which do not conflict with properties with the same but different namespace -->
+	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])]" mode="gc:JSONLDContextMode" priority="1">
 		"<xsl:value-of select="local-name()"/>"
 		:
 		{
@@ -201,6 +202,9 @@ exclude-result-prefixes="xs">
 	    <xsl:if test="position() != last()">,
 	    </xsl:if>
 	</xsl:template>
+
+	<!-- hide conflicting properties from @context. They will need to use a full name (prefix+suffix). -->
+	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode"/>
 
 	<xsl:template match="@xml:lang"  mode="gc:JSONLDContextMode">
 		"@language": "<xsl:value-of select="."/>"
