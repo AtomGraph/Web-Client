@@ -71,8 +71,19 @@ exclude-result-prefixes="xs">
 					"<xsl:value-of select="current-grouping-key()"/>": "<xsl:value-of select="namespace-uri()"/>"
 					<xsl:if test="position() != last()">,
 					</xsl:if>
-				</xsl:for-each-group>,
-				<xsl:apply-templates mode="gc:JSONLDContextMode"/>
+				</xsl:for-each-group>
+
+				<!-- @context avoids shortening properties with conflicting namespace-uri()/local-name(). Those will be used as a full prefix+suffix name. -->
+				<xsl:variable name="context-properties" as="element()*">
+					<xsl:for-each-group select="*" group-by="local-name()">
+						<xsl:if test="count(distinct-values(current-group()/namespace-uri())) = 1">
+							<xsl:sequence select="."/>
+						</xsl:if>
+					</xsl:for-each-group>
+				</xsl:variable>
+				<xsl:if test="$context-properties">,
+					<xsl:apply-templates select="$context-properties" mode="gc:JSONLDContextMode"/>
+				</xsl:if>
 			} ,
 	    </xsl:if>
 
@@ -87,6 +98,7 @@ exclude-result-prefixes="xs">
 				<xsl:when test="not($resource/*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])">
 					"<xsl:value-of select="local-name()"/>"
 				</xsl:when>
+				<!-- conflicting namespace-uri()/local-name() - full name() is used -->
 				<xsl:otherwise>
 					"<xsl:value-of select="current-grouping-key()"/>"
 				</xsl:otherwise>
@@ -193,8 +205,8 @@ exclude-result-prefixes="xs">
 	    "@language": "<xsl:value-of select="."/>"
 	</xsl:template>
 
-	<!-- can only shorten names for properties which do not conflict with properties with the same but different namespace -->
-	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])]" mode="gc:JSONLDContextMode" priority="1">
+	<!-- [not(../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])] -->
+	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode">
 		"<xsl:value-of select="local-name()"/>"
 		:
 		{
@@ -203,21 +215,17 @@ exclude-result-prefixes="xs">
 				<xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current"/>
 			</xsl:if>
 		}
-
-	    <xsl:if test="position() != last()">,
-	    </xsl:if>
+		<xsl:if test="position() != last()">,
+		</xsl:if>
 	</xsl:template>
 
-	<!-- hide conflicting properties from @context. They will need to use a full name (prefix+suffix). -->
-	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode"/>
-
-	<xsl:template match="@xml:lang"  mode="gc:JSONLDContextMode">
+	<xsl:template match="@xml:lang" mode="gc:JSONLDContextMode">
 		"@language": "<xsl:value-of select="."/>"
 	    <xsl:if test="position() != last()">,
 	    </xsl:if>
 	</xsl:template>
 
-	<xsl:template match="@rdf:datatype"  mode="gc:JSONLDContextMode">
+	<xsl:template match="@rdf:datatype" mode="gc:JSONLDContextMode">
 		"@type": "<xsl:value-of select="."/>"
 	    <xsl:if test="position() != last()">,
 	    </xsl:if>
