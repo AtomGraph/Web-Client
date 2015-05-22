@@ -28,15 +28,19 @@ xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
 exclude-result-prefixes="#all">
 
+    <!--
     <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
-
+    -->
+    
     <xsl:template match="sioc:name | @sioc:name" mode="gc:LabelMode">
 	<xsl:value-of select="."/>
     </xsl:template>
 
+    <!--
     <xsl:template match="sioc:content" mode="gc:DescriptionMode">
         <xsl:value-of select="."/>
     </xsl:template>
+    -->
 
     <xsl:template match="sioc:content/text()" mode="gc:EditMode">
 	<xsl:param name="name" select="'ol'" as="xs:string"/>
