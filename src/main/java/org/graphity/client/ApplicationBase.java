@@ -58,8 +58,6 @@ import org.graphity.processor.provider.ConstraintViolationExceptionProvider;
 import org.graphity.processor.provider.SkolemizingModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.arq.ARQFactory;
-import org.topbraid.spin.system.SPINModuleRegistry;
 
 /**
  * Graphity Client JAX-RS application base class.
@@ -129,12 +127,11 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
     @Override
     public void init()
     {
-        if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
-
-	SPINModuleRegistry.get().init(); // needs to be called before any SPIN-related code
-        ARQFactory.get().setUseCaches(false); // enabled caching leads to unexpected QueryBuilder behaviour
+        super.init(); // Graphity Processor initialization
         
-	// initialize locally cached ontology mapping
+        if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
+        
+	// initialize mapping for locally stored vocabularies
 	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3"); // check if file exists?
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
@@ -147,7 +144,6 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
 
         OntDocumentManager.getInstance().setFileManager(FileManager.get());
-        OntDocumentManager.getInstance().setCacheModels(true); // lets cache the ontologies FTW!!
 	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
         
 	try
