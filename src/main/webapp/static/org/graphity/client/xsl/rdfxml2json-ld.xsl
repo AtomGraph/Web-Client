@@ -30,7 +30,6 @@ xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:gc="&gc;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:date="http://exslt.org/dates-and-times"
 exclude-result-prefixes="xs">
 
 	<!-- 
