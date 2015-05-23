@@ -55,24 +55,24 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 	
 	<xsl:template match="rdf:RDF" mode="gc:JSONLDMode">
-[
-         <!-- do not process blank nodes that are triple objects-->
-	    <xsl:apply-templates select="*[@rdf:about or count(key('predicates-by-object', @rdf:nodeID)) &gt; 1]" mode="#current"/>
-]
+		<xsl:variable name="resources" as="xs:string*">
+	        <!-- do not process blank nodes that are triple objects-->
+			<xsl:apply-templates select="*[@rdf:about or count(key('predicates-by-object', @rdf:nodeID)) &gt; 1]" mode="#current"/>
+		</xsl:variable>
+		
+		<xsl:sequence select="concat('[ ', string-join($resources, ', '), ' ]')"/>
 	</xsl:template>
 
-	<!-- subject -->
+	<!-- resource description -->
 	<xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:JSONLDMode">
-	{
-	    <xsl:if test="namespace::*">
-			"@context": 
-			{
+	    <xsl:variable name="context" as="xs:string">
+			<xsl:variable name="prefixes" as="xs:string*">
 				<xsl:for-each-group select="*" group-by="substring-before(name(), ':')">
-					"<xsl:value-of select="current-grouping-key()"/>": "<xsl:value-of select="namespace-uri()"/>"
-					<xsl:if test="position() != last()">,
-					</xsl:if>
+					<xsl:sequence select="concat('&quot;', current-grouping-key(), '&quot;: &quot;', namespace-uri(), '&quot;')"/>
 				</xsl:for-each-group>
+			</xsl:variable>
 
+			<xsl:variable name="context-properties" as="xs:string*">
 				<!-- @context avoids shortening properties with conflicting namespace-uri()/local-name(). Those will be used as a full prefix+suffix name. -->
 				<xsl:variable name="safe-properties" as="element()*">
 					<xsl:for-each-group select="*" group-by="local-name()">
@@ -81,71 +81,50 @@ exclude-result-prefixes="xs">
 						</xsl:if>
 					</xsl:for-each-group>
 				</xsl:variable>
-				<xsl:variable name="context-properties" as="xs:string*">
-					<xsl:apply-templates select="." mode="gc:JSONLDContextMode"/>
-				</xsl:variable>
-				<xsl:if test="not(empty($context-properties))">
-					,
-					<xsl:for-each select="$context-properties">
-						<xsl:sequence select="."/>
-						<xsl:if test="position() != last()">,
-						</xsl:if>
-					</xsl:for-each>
-				</xsl:if>
-			} ,
-	    </xsl:if>
-
-		<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>,
-
-		<xsl:variable name="resource" select="."/>
-	    <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
-			<xsl:choose>
-				<xsl:when test="current-grouping-key() = '&rdf;type'">"@type"</xsl:when>
-				<xsl:when test="not($resource/*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])">
-					"<xsl:value-of select="local-name()"/>"
-				</xsl:when>
-				<!-- conflicting namespace-uri()/local-name() - full name() is used -->
-				<xsl:otherwise>
-					"<xsl:value-of select="current-grouping-key()"/>"
-				</xsl:otherwise>
-			</xsl:choose>
-			:
-<!-- ??<xsl:apply-templates select="current-group()" mode="#current"/>/?? -->
-
-			<xsl:variable name="properties" as="xs:string*">
-				<xsl:apply-templates select="current-group()" mode="#current"/>
+				<xsl:apply-templates select="." mode="gc:JSONLDContextMode"/>
 			</xsl:variable>
-			<xsl:choose>
-			    <xsl:when test="count(current-group()) = 1">
-					<xsl:for-each select="$properties">
-						<xsl:sequence select="."/>
-						<xsl:if test="position() != last()">,
-						</xsl:if>
-					</xsl:for-each>
-				</xsl:when>
-				<xsl:otherwise>
-					[
-						<xsl:for-each select="$properties">
-							<xsl:sequence select="."/>
-							<xsl:if test="position() != last()">,
-							</xsl:if>
-						</xsl:for-each>
-					]
-				</xsl:otherwise>
-			</xsl:choose>
 
-			<xsl:if test="position() != last()">,
-			</xsl:if>
-	    </xsl:for-each-group>
-	}
-	
-	    <xsl:if test="position() != last()">,
-	    </xsl:if>
+			<xsl:sequence select="concat('&quot;@context&quot;: { ', string-join($prefixes, ', '),
+			if (not(empty($context-properties))) then (', ') else (), string-join($context-properties, ', '), ' }')"/>
+	    </xsl:variable>
+		
+		<xsl:variable name="subject" as="xs:string">
+			<xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+		</xsl:variable>
+		
+		<xsl:variable name="resource" select="."/>
+		<xsl:variable name="properties" as="xs:string*">
+			<xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
+				<xsl:variable name="key" as="xs:string*">
+					<xsl:choose>
+						<xsl:when test="current-grouping-key() = '&rdf;type'">
+							<xsl:sequence select="'&quot;@type&quot;'"/>
+						</xsl:when>
+						<xsl:when test="not($resource/*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])">
+							<xsl:sequence select="concat('&quot;', local-name(), '&quot;')"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- conflicting namespace-uri()/local-name() - full name() is used -->
+							<xsl:sequence select="concat('&quot;', current-grouping-key(), '&quot;')"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<xsl:variable name="values" as="xs:string*">
+					<xsl:apply-templates select="current-group()" mode="#current"/>
+				</xsl:variable>
+
+				<xsl:sequence select="concat($key, ': ',
+					if (count(current-group()) &gt; 1) then '[' else (),
+					string-join($values, ', '),
+					if (count(current-group()) &gt; 1) then ']' else ())"/>
+			</xsl:for-each-group>
+		</xsl:variable>
+
+		<xsl:sequence select="concat('{ ', $context, ', ', $subject, ', ', string-join($properties, ', '), ' }')"/>
 	</xsl:template>
 	
 	<!-- property -->
 	<xsl:template match="*[@rdf:about or @rdf:nodeID]/rdf:type" mode="gc:JSONLDMode" priority="1">
-	    <!-- "<xsl:value-of select="@rdf:resource"/>" -->
 		<xsl:sequence select="concat('&quot;', @rdf:resource, '&quot;')"/>
 	</xsl:template>
 
@@ -159,20 +138,10 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="text()" mode="gc:JSONLDMode">
-	    <!-- "<xsl:value-of select="."/>" -->
 		<xsl:sequence select="concat('&quot;', ., '&quot;')"/>
 	</xsl:template>
 
 	<xsl:template match="text()[../@rdf:datatype or ../@xml:lang]" mode="gc:JSONLDMode" priority="1">
-		<!-- {
-			"@value": "<xsl:value-of select="."/>"
-			<xsl:if test="../@rdf:datatype">
-			, <xsl:apply-templates select="../@rdf:datatype" mode="#current"/>
-			</xsl:if>
-			<xsl:if test="../@xml:lang">
-			, <xsl:apply-templates select="../@xml:lang" mode="#current"/>
-			</xsl:if>
-		}-->
 		<xsl:variable name="datatype" as="xs:string?">
 			<xsl:apply-templates select="../@rdf:datatype" mode="#current"/>
 		</xsl:variable>
@@ -185,31 +154,22 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="@rdf:about" mode="gc:JSONLDMode">
-	    <!-- "@id": "<xsl:value-of select="."/>" -->
 	    <xsl:sequence select="concat('&quot;@id&quot;: &quot;', ., '&quot;')"/>
 	</xsl:template>
 
 	<xsl:template match="@rdf:resource" mode="gc:JSONLDMode">
-		<!--
-		{
-			"@id": "<xsl:value-of select="."/>"
-		}
-		-->
 	    <xsl:sequence select="concat('{ &quot;@id&quot;: &quot;', ., '&quot; }')"/>
 	</xsl:template>
 
 	<xsl:template match="@rdf:nodeID" mode="gc:JSONLDMode">
-	    <!-- "@id": "_:<xsl:value-of select="."/>" -->
 	    <xsl:sequence select="concat('&quot;@id&quot;: &quot;_:', ., '&quot;')"/>
 	</xsl:template>
 
 	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:JSONLDMode">
-		<!--{
-			<xsl:next-match/>
-		}-->
 		<xsl:variable name="bnode" as="xs:string">
 			<xsl:next-match/>
 		</xsl:variable>
+
 		<xsl:sequence select="concat('{ ', $bnode, ' }')"/>
 	</xsl:template>
 
@@ -231,30 +191,15 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="@rdf:datatype" mode="gc:JSONLDMode">
-	    <!-- "@type": "<xsl:value-of select="."/>" -->
 	    <xsl:sequence select="concat('&quot;@type&quot;: &quot;', ., '&quot;')"/>
 	</xsl:template>
 
 	<xsl:template match="@xml:lang" mode="gc:JSONLDMode">
-	    <!-- "@language": "<xsl:value-of select="."/>" -->
 	    <xsl:sequence select="concat('&quot;@language&quot;: &quot;', ., '&quot;')"/>
 	</xsl:template>
 
 	<!-- [not(../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])] -->
 	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode">
-		<!--
-		"<xsl:value-of select="local-name()"/>"
-		:
-		{
-			"@id": "<xsl:value-of select="name()"/>"
-			<xsl:if test="@xml:lang">
-			, <xsl:apply-templates select="@xml:lang" mode="gc:JSONLDMode"/>
-			</xsl:if>
-			<xsl:if test="@rdf:datatype">
-			,	<xsl:apply-templates select="@rdf:datatype" mode="gc:JSONLDMode"/>
-			</xsl:if>
-		}
-		-->
 		<xsl:sequence select="concat('&quot;', local-name(), '&quot; : { &quot;@id&quot;: &quot;', name(), '&quot; }')"/>
 	</xsl:template>
 
