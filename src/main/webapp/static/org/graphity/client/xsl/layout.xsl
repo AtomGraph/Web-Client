@@ -1051,11 +1051,7 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
 
-            <xsl:for-each select="$constraint-violations/rdfs:label">
-                <div class="alert alert-error">
-                    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-                </div>
-            </xsl:for-each>
+            <xsl:apply-templates select="$constraint-violations" mode="gc:ConstaintViolationMode"/>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
@@ -1070,6 +1066,19 @@ exclude-result-prefixes="#all">
         </fieldset>
     </xsl:template>
 
+    <xsl:template match="*" mode="gc:ConstaintViolationMode"/>
+
+    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:ConstaintViolationMode" priority="1">
+	<xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>            
+            <xsl:apply-templates select="." mode="gc:LabelMode"/>
+        </div>
+    </xsl:template>
+    
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[$gp:sitemap]" mode="gc:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*"/>

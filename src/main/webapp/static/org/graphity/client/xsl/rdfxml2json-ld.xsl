@@ -213,7 +213,7 @@ exclude-result-prefixes="xs">
 		<xsl:sequence select="concat('{ ', $bnode, ' }')"/>
 	</xsl:template>
 
-	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[count(key('predicates-by-object', .)) &lt;= 1]" mode="gc:JSONLDMode">
+	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[count(key('predicates-by-object', .)) &lt;= 1]" mode="gc:JSONLDMode" priority="1">
 		<xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
 		<xsl:variable name="bnode" select="key('resources', .)"/>
 			   
