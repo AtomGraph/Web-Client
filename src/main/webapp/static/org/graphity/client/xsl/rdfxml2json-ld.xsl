@@ -132,7 +132,9 @@ exclude-result-prefixes="xs">
 			<xsl:when test="node() | @rdf:resource | @rdf:nodeID">
 				<xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
 			</xsl:when>
-			<xsl:when test=". = ''">""</xsl:when>
+			<xsl:when test=". = ''">
+				<xsl:sequence select="'&quot;&quot;'"/>
+			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
 
