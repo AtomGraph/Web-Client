@@ -1051,7 +1051,7 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
 
-            <xsl:apply-templates select="$constraint-violations" mode="gc:ConstaintViolationMode"/>
+            <xsl:apply-templates select="$constraint-violations" mode="gc:ConstraintViolationMode"/>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
@@ -1066,9 +1066,9 @@ exclude-result-prefixes="#all">
         </fieldset>
     </xsl:template>
 
-    <xsl:template match="*" mode="gc:ConstaintViolationMode"/>
+    <xsl:template match="*" mode="gc:ConstraintViolationMode"/>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:ConstaintViolationMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="gc:ConstraintViolationMode" priority="1">
 	<xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
 
         <div>
