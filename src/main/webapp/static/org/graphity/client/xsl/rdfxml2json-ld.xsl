@@ -143,15 +143,10 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="text()[../@rdf:datatype or ../@xml:lang]" mode="gc:JSONLDMode" priority="1">
-		<xsl:variable name="datatype" as="xs:string?">
-			<xsl:apply-templates select="../@rdf:datatype" mode="#current"/>
+		<xsl:variable name="datatype-or-lang" as="xs:string?">
+			<xsl:apply-templates select="../@rdf:datatype | ../@xml:lang" mode="#current"/>
 		</xsl:variable>
-		<xsl:variable name="lang" as="xs:string?">
-			<xsl:apply-templates select="../@xml:lang" mode="#current"/>
-		</xsl:variable>
-		<xsl:sequence select="concat('{ &quot;@value&quot;: &quot;', ., '&quot;',
-			if ($datatype) then (concat(', ', $datatype)) else (), 
-			if ($lang) then (concat(', ', $lang)) else (), '}')"/>
+		<xsl:sequence select="concat('{ &quot;@value&quot;: &quot;', ., '&quot;, ', $datatype-or-lang, ' }')"/>
 	</xsl:template>
 
 	<xsl:template match="@rdf:about" mode="gc:JSONLDMode">
@@ -199,7 +194,6 @@ exclude-result-prefixes="xs">
 	    <xsl:sequence select="concat('&quot;@language&quot;: &quot;', ., '&quot;')"/>
 	</xsl:template>
 
-	<!-- [not(../*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])] -->
 	<xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:JSONLDContextMode">
 		<xsl:sequence select="concat('&quot;', local-name(), '&quot; : { &quot;@id&quot;: &quot;', name(), '&quot; }')"/>
 	</xsl:template>
