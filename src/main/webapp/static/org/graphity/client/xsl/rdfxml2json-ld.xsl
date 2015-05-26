@@ -46,7 +46,6 @@ exclude-result-prefixes="xs">
 	<xsl:strip-space elements="*"/>
 
 	<xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-	<xsl:key name="predicates" match="*[@rdf:about or @rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
     <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     
 	<xsl:template match="/">
