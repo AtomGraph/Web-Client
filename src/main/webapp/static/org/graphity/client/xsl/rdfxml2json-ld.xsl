@@ -138,14 +138,14 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="text()" mode="gc:JSONLDMode">
-		<xsl:sequence select="concat('&quot;', ., '&quot;')"/>
+		<xsl:sequence select="concat('&quot;', gc:escape-json(.), '&quot;')"/>
 	</xsl:template>
 
 	<xsl:template match="text()[../@rdf:datatype or ../@xml:lang]" mode="gc:JSONLDMode" priority="1">
 		<xsl:variable name="datatype-or-lang" as="xs:string?">
 			<xsl:apply-templates select="../@rdf:datatype | ../@xml:lang" mode="#current"/>
 		</xsl:variable>
-		<xsl:sequence select="concat('{ &quot;@value&quot;: &quot;', ., '&quot;, ', $datatype-or-lang, ' }')"/>
+		<xsl:sequence select="concat('{ &quot;@value&quot;: &quot;', gc:escape-json(.), '&quot;, ', $datatype-or-lang, ' }')"/>
 	</xsl:template>
 
 	<xsl:template match="@rdf:about" mode="gc:JSONLDMode">
@@ -198,5 +198,18 @@ exclude-result-prefixes="xs">
 	</xsl:template>
 
 	<xsl:template match="rdf:type[@rdf:resource]" mode="gc:JSONLDContextMode" priority="1"/>
+
+    <xsl:function name="gc:escape-json" as="xs:string?">
+        <xsl:param name="string" as="xs:string?"/>
+
+        <xsl:variable name="string" select="replace($string, '\\', '\\\\')"/>
+        <xsl:variable name="string" select="replace($string, '&quot;', '\\&quot;')"/>
+        <xsl:variable name="string" select="replace($string, '''', '\\''')"/>
+        <xsl:variable name="string" select="replace($string, '&#09;', '\\t')"/>
+        <xsl:variable name="string" select="replace($string, '&#10;', '\\n')"/>
+        <xsl:variable name="string" select="replace($string, '&#13;', '\\r')"/>
+
+        <xsl:sequence select="$string"/>
+    </xsl:function>
 
 </xsl:stylesheet>
