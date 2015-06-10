@@ -16,8 +16,11 @@
  */
 package org.graphity.client.model.impl;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,21 +30,20 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.util.DataManager;
-import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
 import org.graphity.core.model.SPARQLEndpointFactory;
 import org.graphity.core.model.SPARQLEndpointOrigin;
 import org.graphity.core.model.impl.SPARQLEndpointOriginBase;
+import org.graphity.core.provider.ModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,56 +58,84 @@ import org.slf4j.LoggerFactory;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
-public class GlobalResourceBase extends ResourceBase
+public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
 {
-    private static final Logger log = LoggerFactory.getLogger(GlobalResourceBase.class);
+    private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
+    private final ResourceContext resourceContext;
     private final DataManager dataManager;
     private final MediaType mediaType;
     private final URI topicURI, endpointURI;
-
+    private final WebResource webResource;
+    private final Application application;
+    
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
      * 
      * @param uriInfo URI information of the request
      * @param request current request
      * @param servletConfig servlet config
-     * @param endpoint SPARQL endpoint of this resource
-     * @param graphStore Graph Store of this resource
-     * @param ontClass sitemap ontology model
-     * @param httpHeaders HTTP headers of current request
      * @param resourceContext resource context
      * @param dataManager data manager for this resource
+     * @param application
      */
-    public GlobalResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
-            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
-            @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext,
-            @Context DataManager dataManager)
+    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig,
+            @Context ResourceContext resourceContext, @Context DataManager dataManager, @Context Application application)
     {
-	super(uriInfo, request, servletConfig, 
-                endpoint, graphStore,
-                ontClass, httpHeaders, resourceContext);
-	if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+	super(uriInfo, request, servletConfig);
+	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
+        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+        if (application == null) throw new IllegalArgumentException("Application cannot be null");
+        this.resourceContext = resourceContext;
         this.dataManager = dataManager;
+        this.application = application;
 
-	if (getUriInfo().getQueryParameters().containsKey("accept"))
+	if (uriInfo.getQueryParameters().containsKey("accept"))
         {
             Map<String, String> utf8Param = new HashMap<>();
             utf8Param.put("charset", "UTF-8");            
-            MediaType formatType = MediaType.valueOf(getUriInfo().getQueryParameters().getFirst("accept"));
+            MediaType formatType = MediaType.valueOf(uriInfo.getQueryParameters().getFirst("accept"));
             mediaType = new MediaType(formatType.getType(), formatType.getSubtype(), utf8Param);
         }
         else mediaType = null;
-        if (getUriInfo().getQueryParameters().containsKey(GC.uri.getLocalName()))
-            topicURI = URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()));
-        else topicURI = null;
-        if (getUriInfo().getQueryParameters().containsKey(GC.endpointUri.getLocalName()))
-            endpointURI = URI.create(getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
+        if (uriInfo.getQueryParameters().containsKey(GC.uri.getLocalName()))
+        {
+            topicURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()));
+            ClientConfig cc = new DefaultClientConfig();
+            cc.getSingletons().add(new ModelProvider());
+            Client client = Client.create(cc);
+            webResource = client.resource(topicURI); // org.graphity.core.MediaType.getRegistered()
+        }
+        else
+        {
+            topicURI = null;
+            webResource = null;
+        }
+        if (uriInfo.getQueryParameters().containsKey(GC.endpointUri.getLocalName()))
+            endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
         else endpointURI = null;
 
+        /*
+        URI classURI = null;
+        List<String> links = httpHeaders.getRequestHeader("Link");
+        if (links != null)
+        {
+            Iterator<String> it = links.iterator();
+            Link link = Link.valueOf(it.next());
+            if (link.getType().equals(RDF.type.getLocalName())) classURI = link.getHref();
+        }
+        if (classURI != null) matchedOntClass = OntDocumentManager.getInstance().getOntology(classURI.toString(), OntModelSpec.OWL_MEM);
+        else matchedOntClass = null;
+        */
+        
         if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
     }
 
+    public ResourceContext getResourceContext()
+    {
+        return resourceContext;
+    }
+    
     public DataManager getDataManager()
     {
         return dataManager;
@@ -142,6 +172,11 @@ public class GlobalResourceBase extends ResourceBase
         return endpointURI;
     }
     
+    public WebResource getWebResource()
+    {
+        return webResource;
+    }
+    
     /**
      * Returns a list of supported RDF media types.
      * If media type is specified in query string,that type is used to serialize RDF representation.
@@ -172,15 +207,33 @@ public class GlobalResourceBase extends ResourceBase
     @Override
     public Response get()
     {
-	if (getTopicURI() != null)
+	if (getWebResource() != null)
 	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getTopicURI());
-	    return getResponse(getDataManager().loadModel(getTopicURI().toString()));
+	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
+	    return getResponse(getWebResource().
+                    accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
+                    get(Model.class));
 	}	
 
-	return super.get();
+	return getResourceContext().
+                getResource(ResourceBase.class).
+                get(); //super.get();
     }
 
+    @Override
+    public Response post(Model model)
+    {
+	if (getWebResource() != null)
+	{
+	    if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
+	    return getResponse(getWebResource().post(Model.class, model));
+	}	
+
+	return getResourceContext().
+                getResource(ResourceBase.class).
+                post(model); // super.post(model);
+    }
+    
     /**
      * Returns sub-resource instance.
      * By default matches any path.
@@ -188,14 +241,14 @@ public class GlobalResourceBase extends ResourceBase
      * @return resource object
      */
     @Path("{path: .+}")
-    @Override
+    //@Override
     public Object getSubResource()
     {
         if (getEndpointURI() != null)
         {
             List<MediaType> mediaTypes = getMediaTypes();
             mediaTypes.addAll(Arrays.asList(SPARQLEndpoint.RESULT_SET_MEDIA_TYPES));
-            List<Variant> variants = getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
+            List<Variant> variants = getResponse().getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
 
             if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&
@@ -207,9 +260,10 @@ public class GlobalResourceBase extends ResourceBase
             }
         }
         
-        return super.getSubResource();
+        return this;
     }
 
+    /*
     @Override
     public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
@@ -230,6 +284,38 @@ public class GlobalResourceBase extends ResourceBase
 	if (getEndpointURI() != null) builder.queryParam(GC.endpointUri.getLocalName(), getEndpointURI().toString());
 	
 	return builder;
+    }
+    */
+
+    @Override
+    public Response put(Model model)
+    {
+	if (getWebResource() != null)
+	{
+	    if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
+	    return getResponse(getWebResource().put(Model.class, model));
+	}	
+
+	return getResourceContext().
+                getResource(ResourceBase.class).
+                put(model);
+    }
+
+    @Override
+    public Response delete()
+    {
+        //getWebResource().delete(ClientResponse.class).
+        Response temp = Client.create().resource(getTopicURI()).get(Response.class);
+        
+	if (getWebResource() != null)
+	{
+	    if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
+	    //return getWebResource().delete(ClientResponse.class);
+	}	
+
+	return getResourceContext().
+                getResource(ResourceBase.class).
+                delete();
     }
     
 }

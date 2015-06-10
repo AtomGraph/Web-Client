@@ -51,7 +51,7 @@ public class Container extends ResourceBase
 	super(uriInfo, request, servletConfig,
                 endpoint, graphStore,
                 ontClass, httpHeaders, resourceContext);
-	this.searchString = getUriInfo().getQueryParameters().getFirst(RDFS.label.getLocalName());
+	this.searchString = uriInfo.getQueryParameters().getFirst(RDFS.label.getLocalName());
     }
 
     @Override

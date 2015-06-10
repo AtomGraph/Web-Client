@@ -55,7 +55,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-@Path("/")
+//@Path("/")
 public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
@@ -101,7 +101,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
         {
             List<MediaType> mediaTypes = getMediaTypes();
             mediaTypes.addAll(Arrays.asList(SPARQLEndpoint.RESULT_SET_MEDIA_TYPES));
-            List<Variant> variants = getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
+            List<Variant> variants = getResponse().getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
             
             if (variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) ||

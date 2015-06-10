@@ -34,7 +34,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
-import org.graphity.client.model.impl.GlobalResourceBase;
+import org.graphity.client.model.impl.ProxyResourceBase;
+import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.writer.ModelXSLTWriter;
@@ -85,7 +86,8 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
     {
         super(servletConfig);
         
-	classes.add(GlobalResourceBase.class); // handles /
+	classes.add(ProxyResourceBase.class);
+	classes.add(ResourceBase.class);
 
 	singletons.add(new SkolemizingModelProvider());
 	singletons.add(new ResultSetWriter());
