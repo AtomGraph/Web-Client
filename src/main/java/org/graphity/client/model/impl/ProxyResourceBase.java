@@ -175,42 +175,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     }
     
     /**
-     * Returns a list of supported RDF media types.
-     * If media type is specified in query string,that type is used to serialize RDF representation.
-     * Otherwise, normal content negotiation is used.
-     * 
-     * @return variant list
-     */
-    /*
-    @Override
-    public List<MediaType> getMediaTypes()
-    {
-	if (getMediaType() != null)
-        {
-            List<MediaType> list = new ArrayList<>();
-            list.add(getMediaType());
-            return list;
-        }
-        
-        List<MediaType> list = getMediaTypes();
-        Map<String, String> utf8Param = new HashMap<>();
-        utf8Param.put("charset", "UTF-8");
-
-        MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), utf8Param);
-        list.add(0, xhtmlXml);
-
-        if (getMode() != null && getMode().equals(URI.create(GC.MapMode.getURI())))
-	{
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Google Maps workaround", getMode());
-            MediaType textHtml = new MediaType(MediaType.TEXT_HTML_TYPE.getType(), MediaType.TEXT_HTML_TYPE.getSubtype(), utf8Param);
-            list.add(0, textHtml);
-	}
-        
-        return list;
-    }
-    */
-    
-    /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
      * If <samp>uri</samp> query string parameter is present, resource is loaded from the specified remote URI and
      * its RDF representation is returned. Otherwise, local resource with request URI is used.

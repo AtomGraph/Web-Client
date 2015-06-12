@@ -17,20 +17,21 @@
 package org.graphity.client.provider;
 
 import javax.ws.rs.ext.Provider;
-import org.graphity.core.MediaTypes;
+import org.graphity.client.model.impl.ResourceBase;
+import org.graphity.core.model.QueriedResource;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class MediaTypesProvider extends org.graphity.core.provider.MediaTypesProvider
+public class QueriedResourceProvider extends org.graphity.processor.provider.QueriedResourceProvider
 {
 
     @Override
-    public MediaTypes getMediaTypes()
+    public QueriedResource getQueriedResource()
     {
-        return new org.graphity.client.MediaTypes();
+        return getResourceContext().getResource(ResourceBase.class); // UniformInterface
     }
     
 }
