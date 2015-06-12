@@ -37,6 +37,7 @@ import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
+import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.processor.provider.DatasetProvider;
@@ -93,7 +94,8 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
-        
+        singletons.add(new MediaTypesProvider());
+        //singletons.add(new org.graphity.core.provider.MediaTypesProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());
         singletons.add(new DatasetProvider());
