@@ -32,6 +32,7 @@ import org.graphity.client.model.impl.ResourceBase;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.processor.model.Hypermedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +47,11 @@ public class Container extends ResourceBase
     private final String searchString;
     
     public Container(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
-            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context SPARQLEndpoint endpoint, @Context Hypermedia hypermedia, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
 	super(uriInfo, request, servletConfig, mediaTypes,
-                endpoint, graphStore,
+                endpoint, hypermedia, graphStore,
                 ontClass, httpHeaders, resourceContext);
 	this.searchString = uriInfo.getQueryParameters().getFirst(RDFS.label.getLocalName());
     }

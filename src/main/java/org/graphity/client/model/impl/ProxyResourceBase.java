@@ -35,6 +35,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
+import org.graphity.client.provider.ViewProxyProvider;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.util.DataManager;
@@ -63,7 +64,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     private final ResourceContext resourceContext;
     private final DataManager dataManager;
     private final MediaType mediaType;
-    private final URI topicURI, endpointURI;
+    private final URI uri, endpointURI;
     private final WebResource webResource;
     //private final Application application;
     
@@ -95,19 +96,19 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
             mediaType = new MediaType(formatType.getType(), formatType.getSubtype(), utf8Param);
         }
         else mediaType = null;
+
+        ClientConfig cc = new DefaultClientConfig();
+        cc.getSingletons().add(new ModelProvider());
+        //cc.getSingletons().add(new ViewProxyProvider());
+        Client client = Client.create(cc);        
         if (uriInfo.getQueryParameters().containsKey(GC.uri.getLocalName()))
-        {
-            topicURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()));
-            ClientConfig cc = new DefaultClientConfig();
-            cc.getSingletons().add(new ModelProvider());
-            Client client = Client.create(cc);
-            webResource = client.resource(topicURI); // org.graphity.core.MediaType.getRegistered()
-        }
+            uri = URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()));
         else
-        {
-            topicURI = null;
-            webResource = null;
-        }
+            uri = getUriInfo().getAbsolutePath();
+        webResource = client.resource(uri); //
+        
+        org.graphity.core.model.Resource resource = client.view(uri, org.graphity.core.model.Resource.class);
+        
         if (uriInfo.getQueryParameters().containsKey(GC.endpointUri.getLocalName()))
             endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
         else endpointURI = null;
@@ -125,7 +126,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
         else matchedOntClass = null;
         */
         
-        if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, topicURI);
+        if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, uri);
     }
 
     public ResourceContext getResourceContext()
@@ -145,7 +146,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
      */
     public URI getTopicURI()
     {
-	return topicURI;
+	return uri;
     }
 
     /**
@@ -186,40 +187,18 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     {
         UniformInterface resource;
         
-	if (getWebResource() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
-	    /*
-            return getResponse(getWebResource().
-                    accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
-                    get(Model.class));
-            */
-            resource = getWebResource().
-                    accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML);
-	}
-        /*
-        else
-        {
-            resource = getResourceContext().getResource(ResourceBase.class);
-        }
-        */
-        
-	//return getResponse(resource.get(Model.class));
-        return getResourceContext().getResource(ResourceBase.class).get();
+        if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
+        resource = getWebResource().
+            accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML); // TO-DO: MediaTypes!
+
+        return getResponse(resource.get(Model.class));
     }
 
     @Override
     public Response post(Model model)
     {
-	if (getWebResource() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
-	    return getResponse(getWebResource().post(Model.class, model));
-	}	
-
-	return getResourceContext().
-                getResource(ResourceBase.class).
-                post(model); // super.post(model);
+        if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
+        return getResponse(getWebResource().post(Model.class, model));
     }
     
     /**
@@ -234,7 +213,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     {
         if (getEndpointURI() != null)
         {
-            List<MediaType> mediaTypes = getMediaTypes().getModelMediaTypes();
+            List<MediaType> mediaTypes = getModelMediaTypes();
             mediaTypes.addAll(getMediaTypes().getResultSetMediaTypes());
             List<Variant> variants = getResponse().getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
@@ -275,35 +254,37 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     }
     */
 
+    /**
+     * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
+     * Redirects to document URI in <pre>gc:EditMode</pre>.
+     * 
+     * @param model RDF payload
+     * @return response
+     */
     @Override
     public Response put(Model model)
     {
-	if (getWebResource() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
-	    return getResponse(getWebResource().put(Model.class, model));
-	}	
+        if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
+        return getResponse(getWebResource().put(Model.class, model));
 
-	return getResourceContext().
-                getResource(ResourceBase.class).
-                put(model);
+        /*
+        if (getMode() != null && getMode().equals(URI.create(GC.EditMode.getURI())))
+        {
+            super.put(model);
+            
+            Resource document = getURIResource(model, RDF.type, FOAF.Document);
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
+            return Response.seeOther(URI.create(document.getURI())).build();
+        }
+        */
     }
-
+    
     @Override
     public Response delete()
     {
-        //getWebResource().delete(ClientResponse.class).
-        Response temp = Client.create().resource(getTopicURI()).get(Response.class);
-        
-	if (getWebResource() != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
-	    //return getWebResource().delete(ClientResponse.class);
-	}	
-
-	return getResourceContext().
-                getResource(ResourceBase.class).
-                delete();
+        if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
+        //return getWebResource().delete(ClientResponse.class);
+        return null;
     }
     
 }

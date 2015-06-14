@@ -23,6 +23,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.sun.jersey.api.client.UniformInterface;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.graphity.client.vocabulary.GC;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.processor.model.Hypermedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.spin.vocabulary.SP;
@@ -74,11 +76,11 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param resourceContext resource context
      */
     public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
-            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
+            @Context SPARQLEndpoint endpoint, @Context Hypermedia hypermedia, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
 	super(uriInfo, request, servletConfig, mediaTypes,
-                endpoint, graphStore,
+                endpoint, hypermedia, graphStore,
                 ontClass, httpHeaders, resourceContext);
         
 	if (getUriInfo().getQueryParameters().containsKey("query"))
@@ -98,7 +100,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
     {
         if (getMatchedOntClass().equals(GP.SPARQLEndpoint))
         {
-            List<MediaType> mediaTypes = getMediaTypes().getModelMediaTypes();
+            List<MediaType> mediaTypes = getModelMediaTypes();
             mediaTypes.addAll(getMediaTypes().getResultSetMediaTypes());
             List<Variant> variants = getResponse().getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
