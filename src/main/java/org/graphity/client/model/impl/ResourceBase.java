@@ -23,7 +23,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.sun.jersey.api.client.UniformInterface;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
@@ -55,7 +54,6 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-//@Path("/")
 public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase // implements UniformInterface
 {
     private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
@@ -121,7 +119,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @return description model with metadata
      */
     @Override
-    public Model addMetadata(Model model)
+    public Model addHypermedia(Model model)
     {
         NodeIterator it = getMatchedOntClass().listPropertyValues(GC.supportedMode);
         try
@@ -164,7 +162,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
             it.close();
         }
         
-        return super.addMetadata(model);
+        return super.addHypermedia(model);
     }
         
     /**

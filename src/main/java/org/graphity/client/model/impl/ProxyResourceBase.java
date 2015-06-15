@@ -18,7 +18,6 @@ package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.UniformInterface;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -35,7 +34,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
-import org.graphity.client.provider.ViewProxyProvider;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.util.DataManager;
@@ -64,9 +62,8 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     private final ResourceContext resourceContext;
     private final DataManager dataManager;
     private final MediaType mediaType;
-    private final URI uri, endpointURI;
+    private final URI endpointURI;
     private final WebResource webResource;
-    //private final Application application;
     
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -99,15 +96,14 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
 
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
-        //cc.getSingletons().add(new ViewProxyProvider());
         Client client = Client.create(cc);        
         if (uriInfo.getQueryParameters().containsKey(GC.uri.getLocalName()))
-            uri = URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()));
+        {
+            URI uri = URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()));
+            webResource = client.resource(uri);
+        }
         else
-            uri = getUriInfo().getAbsolutePath();
-        webResource = client.resource(uri); //
-        
-        org.graphity.core.model.Resource resource = client.view(uri, org.graphity.core.model.Resource.class);
+            webResource = null;
         
         if (uriInfo.getQueryParameters().containsKey(GC.endpointUri.getLocalName()))
             endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
@@ -126,7 +122,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
         else matchedOntClass = null;
         */
         
-        if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, uri);
+        //if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, uri);
     }
 
     public ResourceContext getResourceContext()
@@ -137,16 +133,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     public DataManager getDataManager()
     {
         return dataManager;
-    }
-
-    /**
-     * Returns URI of remote resource (<samp>uri</samp> query string parameter)
-     * 
-     * @return remote URI
-     */
-    public URI getTopicURI()
-    {
-	return uri;
     }
 
     /**
@@ -185,13 +171,17 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     @Override
     public Response get()
     {
-        UniformInterface resource;
+        Model model = getResourceContext().getResource(ResourceBase.class).describe();
         
-        if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
-        resource = getWebResource().
-            accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML); // TO-DO: MediaTypes!
+        if (getWebResource() != null)
+        {
+            if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
+            model = getWebResource().
+                accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
+                get(Model.class); // TO-DO: MediaTypes!
+        }
 
-        return getResponse(resource.get(Model.class));
+        return getResponse(model);
     }
 
     @Override
