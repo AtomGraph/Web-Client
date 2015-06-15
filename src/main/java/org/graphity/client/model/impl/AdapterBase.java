@@ -54,9 +54,9 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase // implements UniformInterface
+public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase // implements UniformInterface
 {
-    private static final Logger log = LoggerFactory.getLogger(ResourceBase.class);
+    private static final Logger log = LoggerFactory.getLogger(AdapterBase.class);
 
     private final String queryString;
     
@@ -73,7 +73,7 @@ public class ResourceBase extends org.graphity.processor.model.impl.ResourceBase
      * @param httpHeaders HTTP headers of the current request
      * @param resourceContext resource context
      */
-    public ResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
+    public AdapterBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
             @Context SPARQLEndpoint endpoint, @Context Hypermedia hypermedia, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {

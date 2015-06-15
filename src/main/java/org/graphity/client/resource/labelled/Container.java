@@ -28,7 +28,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.graphity.client.MediaTypes;
-import org.graphity.client.model.impl.ResourceBase;
+import org.graphity.client.model.impl.AdapterBase;
 import org.graphity.processor.vocabulary.GP;
 import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class Container extends ResourceBase
+public class Container extends AdapterBase
 {
     private static final Logger log = LoggerFactory.getLogger(Container.class);
 

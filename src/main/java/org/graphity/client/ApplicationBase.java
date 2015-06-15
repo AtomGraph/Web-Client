@@ -34,8 +34,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
+import org.graphity.client.mapper.UniformInterfaceExceptionMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
-import org.graphity.client.model.impl.ResourceBase;
+import org.graphity.client.model.impl.AdapterBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.QueriedResourceProvider;
@@ -91,7 +92,7 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
         super(servletConfig);
         
 	classes.add(ProxyResourceBase.class);
-	classes.add(ResourceBase.class);
+	classes.add(AdapterBase.class);
 
 	singletons.add(new SkolemizingModelProvider());
 	singletons.add(new ResultSetWriter());
@@ -118,6 +119,7 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	singletons.add(new org.graphity.processor.mapper.jena.QueryExceptionHTTPMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
 	singletons.add(new org.graphity.processor.mapper.jena.HttpExceptionMapper());
+	singletons.add(new UniformInterfaceExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
     }

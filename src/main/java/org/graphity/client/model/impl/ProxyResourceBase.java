@@ -171,8 +171,8 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     @Override
     public Response get()
     {
-        Model model = getResourceContext().getResource(ResourceBase.class).describe();
-        
+        Model model;
+                
         if (getWebResource() != null)
         {
             if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
@@ -180,6 +180,8 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
                 accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
                 get(Model.class); // TO-DO: MediaTypes!
         }
+        else
+            model = getResourceContext().getResource(AdapterBase.class).describe();
 
         return getResponse(model);
     }
