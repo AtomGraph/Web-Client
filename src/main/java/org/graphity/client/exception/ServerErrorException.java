@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-package org.graphity.client.provider;
-
-import javax.ws.rs.ext.Provider;
-import org.graphity.client.model.impl.AdapterBase;
-import org.graphity.core.model.QueriedResource;
+package org.graphity.client.exception;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-@Provider
-public class QueriedResourceProvider //extends org.graphity.processor.provider.QueriedResourceProvider
+public class ServerErrorException
 {
-
-    //@Override
-    public QueriedResource getQueriedResource()
-    {
-        return null;
-        //return getResourceContext().getResource(AdapterBase.class); // UniformInterface
-    }
     
 }

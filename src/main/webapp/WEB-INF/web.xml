@@ -17,7 +17,6 @@
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
 	    <param-value>org.graphity.client.filter.PostReplaceFilter</param-value>
 	</init-param>
-        <!--
         <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
@@ -26,6 +25,7 @@
             <param-name>http://graphity.org/g#graphStore</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
         </init-param>
+        <!--
         <init-param>
             <param-name>http://jena.hpl.hp.com/Service#queryAuthUser</param-name>
             <param-value>username</param-value>
@@ -39,14 +39,16 @@
             <param-value>true</param-value>
         </init-param>
         -->
+        <!--
         <init-param>
             <param-name>http://graphity.org/gp#datasetLocation</param-name>
             <param-value>/org/graphity/client/dataset/dataset.trig</param-value>
         </init-param>
         <init-param>
             <param-name>http://graphity.org/gp#sitemap</param-name>
-            <param-value>http://graphity.org/gcs#</param-value>
+            <param-value>http://graphity.org/gps#</param-value>
         </init-param>
+        -->
         <init-param>
             <param-name>http://graphity.org/gc#stylesheet</param-name>
             <param-value>/static/org/graphity/client/xsl/global-xhtml.xsl</param-value>
@@ -57,7 +59,7 @@
         </init-param>
         <init-param>
             <param-name>http://graphity.org/gc#cacheXSLT</param-name>
-            <param-value>true</param-value>
+            <param-value>false</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

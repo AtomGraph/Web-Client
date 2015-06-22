@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
+    <!ENTITY g      "http://graphity.org/g#">
     <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
@@ -39,6 +40,7 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:g="&g;"
 xmlns:gp="&gp;"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
@@ -67,10 +69,10 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
-    <xsl:param name="gp:baseUri" as="xs:anyURI"/>
-    <xsl:param name="gp:absolutePath" as="xs:anyURI"/>
-    <xsl:param name="gp:requestUri" as="xs:anyURI"/>
-    <xsl:param name="gp:httpHeaders" as="xs:string"/>
+    <xsl:param name="g:baseUri" as="xs:anyURI"/>
+    <xsl:param name="g:absolutePath" as="xs:anyURI"/>
+    <xsl:param name="g:requestUri" as="xs:anyURI"/>
+    <xsl:param name="g:httpHeaders" as="xs:string"/>
     <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
     <xsl:param name="gp:mode" as="xs:anyURI?"/>
     <xsl:param name="gp:offset" as="xs:integer?"/>
@@ -78,13 +80,13 @@ exclude-result-prefixes="#all">
     <xsl:param name="gp:orderBy" as="xs:string?"/>
     <xsl:param name="gp:desc" as="xs:boolean?"/>
     <xsl:param name="gp:forClass" as="xs:anyURI?"/>
-    <xsl:param name="gc:uri" select="$gp:absolutePath" as="xs:anyURI"/>
+    <xsl:param name="gc:uri" select="$g:absolutePath" as="xs:anyURI"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="gp:sitemap" select="if ($rdf:type) then document(gc:document-uri($rdf:type)) else ()" as="document-node()?"/>
-    <!-- <xsl:param name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) then xs:anyURI(key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) else (if (key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/> -->
-    <xsl:param name="gc:defaultMode" select="xs:anyURI('&gc;ReadMode')" as="xs:anyURI"/>
+    <xsl:param name="gc:defaultMode" select="if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $gp:sitemap) then xs:anyURI(key('resources', $rdf:type, $gp:sitemap)/gc:defaultMode/@rdf:resource) else (if (key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode'))" as="xs:anyURI"/>
+    <!--  <xsl:param name="gc:defaultMode" select="xs:anyURI('&gc;ReadMode')" as="xs:anyURI"/> -->
     <xsl:param name="query" as="xs:string?"/>
 
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
@@ -136,7 +138,7 @@ exclude-result-prefixes="#all">
             <title>
                 <xsl:apply-templates mode="gc:TitleMode"/>
             </title>
-            <base href="{$gp:baseUri}" />
+            <base href="{$g:baseUri}" />
 
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -168,8 +170,8 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="brand" href="{$gp:baseUri}">
-                        <xsl:for-each select="key('resources', $gp:baseUri, document($gp:baseUri))">
+                    <a class="brand" href="{$g:baseUri}">
+                        <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
                             <img src="{foaf:logo/@rdf:resource}">
                                 <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
                             </img>
@@ -181,15 +183,15 @@ exclude-result-prefixes="#all">
                         
                         <ul class="nav">
                             <!-- make menu links for all containers in the ontology -->
-                            <xsl:apply-templates select="key('resources-by-container', $gp:baseUri, document($gp:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="gc:NavBarMode">
+                            <xsl:apply-templates select="key('resources-by-container', $g:baseUri, document($g:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="gc:NavBarMode">
                                 <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                 <xsl:with-param name="space" select="$space"/>
                             </xsl:apply-templates>
                         </ul>
 
-                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
+                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
+                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="gc:NavBarMode">
                                     <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
@@ -223,7 +225,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
-	<xsl:apply-templates select="key('resources', $gp:baseUri, document($gp:baseUri))" mode="gc:LabelMode"/>
+	<xsl:apply-templates select="key('resources', $g:baseUri, document($g:baseUri))" mode="gc:LabelMode"/>
 	<xsl:text> - </xsl:text>
 	<xsl:apply-templates select="key('resources', $gc:uri)" mode="gc:LabelMode"/>
     </xsl:template>
@@ -255,7 +257,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF">
         <xsl:param name="selected-resources" select="key('resources-by-container', $gc:uri)" as="element()*" tunnel="yes"/>
-
+!!<xsl:value-of select="$rdf:type"/>!!
+??<xsl:copy-of select="$gp:sitemap"/>/??
         <div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
@@ -356,7 +359,7 @@ exclude-result-prefixes="#all">
         </ul>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$gc:uri = $gp:baseUri]" mode="gc:BreadCrumbMode" priority="2"/>
+    <xsl:template match="rdf:RDF[$gc:uri = $g:baseUri]" mode="gc:BreadCrumbMode" priority="2"/>
 
     <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="gc:BreadCrumbMode" priority="3"/>
 
@@ -454,7 +457,7 @@ exclude-result-prefixes="#all">
                 <!--
                 <xsl:if test="@rdf:about = $gc:uri and $query-res/sp:text">
                     <li>
-                        <a href="{resolve-uri('sparql', $gp:baseUri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
+                        <a href="{resolve-uri('sparql', $g:baseUri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
                     </li>
                 </xsl:if>
                 -->

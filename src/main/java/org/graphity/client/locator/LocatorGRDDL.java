@@ -16,6 +16,7 @@
  */
 package org.graphity.client.locator;
 
+import org.graphity.core.locator.LocatorLinkedData;
 import com.hp.hpl.jena.util.TypedStream;
 import com.sun.jersey.api.uri.UriTemplate;
 import java.io.BufferedInputStream;

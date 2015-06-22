@@ -1,0 +1,457 @@
+@base           <http://graphity.org/gp> .
+
+# @prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix http:   <http://www.w3.org/2011/http#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix spl:    <http://spinrdf.org/spl#> .
+@prefix dqc:	<http://semwebquality.org/ontologies/dq-constraints#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+<#> a owl:Ontology ;
+    owl:imports sp:, spin:, dqc:, sioc:, foaf: ;
+    owl:versionInfo "1.1.3" ;
+    dct:title "Graphity Processor ontology" ;
+    rdfs:label "Graphity Processor ontology" ;
+    dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
+    dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
+    dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime, "2014-08-24T02:04:00+02:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://graphity.org/gp#" ;
+    vann:preferredNamespacePrefix "gp";
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
+    dct:creator <http://semantic-web.dk/#martynas> .
+
+# SYSTEM PROPERTIES
+
+<#sitemap> a owl:ObjectProperty ;
+    rdfs:label "Application sitemap" ;
+    rdfs:domain <#Application> ;
+    rdfs:range <#Sitemap> ;
+    rdfs:comment "OWL ontology with resource classes (templates)" ;
+    rdfs:isDefinedBy <#> .
+
+# ANNOTATION PROPERTIES
+
+<#query> a owl:AnnotationProperty ;
+    rdfs:subPropertyOf spin:query ;
+    rdfs:domain <#Template> ;
+    rdfs:range [ a owl:Class ;
+        owl:unionOf (sp:Describe sp:Construct)
+    ] ;
+    rdfs:label "Query" ;
+    rdfs:comment "SPIN query to retrieve resource description (DESCRIBE or CONSTRUCT)" ;
+    rdfs:isDefinedBy <#> .
+
+<#update> a owl:AnnotationProperty ;
+    rdfs:subPropertyOf spin:update ;
+    rdfs:domain <#Template> ;
+    rdfs:range sp:Update ;
+    rdfs:label "Update" ;
+    rdfs:comment "SPIN update to remove resource description" ;
+    rdfs:isDefinedBy <#> .
+
+<#template> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range sp:Construct ;
+    rdfs:label "Template" ;
+    rdfs:comment "SPIN query to construct instance template (CONSTRUCT)" ;
+    rdfs:seeAlso <#Constructor>, spin:constructor ;
+    rdfs:isDefinedBy <#> .
+
+<#uriTemplate> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range rdfs:Literal ;
+    rdfs:label "URI template" ;
+    rdfs:comment "URI template for resource matching (JAX-RS syntax)" ;
+    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html> ;
+    rdfs:isDefinedBy <#> .
+
+<#skolemTemplate> a owl:AnnotationProperty ;
+    rdfs:domain owl:Class ;
+    rdfs:range rdfs:Literal ;
+    rdfs:label "Skolemization template" ;
+    rdfs:comment "Container-relative URI template for blank node skolemization (JAX-RS syntax)" ;
+    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html>,
+        <http://www.w3.org/TR/rdf11-concepts/#section-skolemization> ;
+    rdfs:isDefinedBy <#> .
+
+<#cacheControl> a owl:AnnotationProperty ;
+    rdfs:subPropertyOf http:fieldValue ;
+    rdfs:label "Cache control" ;
+    rdfs:comment "Value of the HTTP Cache-Control response header" ;
+    rdfs:seeAlso <http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.1.3> ;
+    rdfs:isDefinedBy <#> .
+
+<#defaultLimit> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:long ;
+    rdfs:label "LIMIT modifier" ;
+    rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
+    rdfs:isDefinedBy <#> .
+
+<#defaultOffset> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:long ;
+    rdfs:label "OFFSET modifier" ;
+    rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
+    rdfs:isDefinedBy <#> .
+
+<#defaultOrderBy> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:string ;
+    rdfs:label "ORDER BY ?varName" ;
+    rdfs:comment "Variable name of the default ORDER BY" ;
+    rdfs:isDefinedBy <#> .
+
+<#defaultDesc> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "DESC" ;
+    rdfs:comment "DESC if true" ;
+    rdfs:isDefinedBy <#> .
+
+<#loadClass> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:label "Load class";
+    rdfs:comment "Indicates the Java class that will handle requests matched by this template. Needs to start with 'java:' URI scheme." ;
+    rdfs:seeAlso <http://jena.hpl.hp.com/2005/11/Assembler#loadClass> ;
+    rdfs:isDefinedBy <#> .
+
+<#lang> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range rdf:langString ;
+    rdfs:label "Content language" ;
+    rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
+    rdfs:isDefinedBy <#> .
+
+# RESOURCE PROPERTIES
+
+<#pageOf> a owl:ObjectProperty ;
+    rdfs:label "Page of container" ;
+    rdfs:domain <#Page> ;
+    rdfs:range <#Container> ;
+    rdfs:comment "Links page resource to its container resource" ;
+    rdfs:isDefinedBy <#> .
+
+<#constructorOf> a owl:ObjectProperty ;
+    rdfs:domain <#Constructor> ;
+    rdfs:range <#Container> ;
+    rdfs:label "Links constructor resource to its container" ;
+    rdfs:isDefinedBy <#> .
+
+<#limit> a owl:DatatypeProperty ;
+    rdfs:domain <#Page> ;
+    rdfs:range xsd:long ;
+    rdfs:label "LIMIT modifier" ;
+    rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:limit ;
+    rdfs:isDefinedBy <#> .
+
+<#offset> a owl:DatatypeProperty ;
+    rdfs:domain <#Page> ;
+    rdfs:range xsd:long ;
+    rdfs:label "OFFSET modifier" ;
+    rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:offset ;
+    rdfs:isDefinedBy <#> .
+
+<#orderBy> a owl:DatatypeProperty ;
+    rdfs:domain <#Page> ;
+    rdfs:range xsd:long ;
+    rdfs:label "ORDER BY modifier" ;
+    rdfs:comment "SPIN expects an rdf:List of OrderByConditions for sp:orderBy" ;
+    rdfs:seeAlso sp:orderBy ;
+    rdfs:isDefinedBy <#> .
+
+<#slug> a owl:DatatypeProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range xsd:string ;
+    rdfs:label "URI slug" ;
+    rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
+    rdfs:isDefinedBy <#> .
+
+<#mode> a owl:ObjectProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range <#Mode> ;
+    rdfs:label "RDF description mode" ;
+    rdfs:isDefinedBy <#> .
+
+# CLASSES
+
+<#Application> a rdfs:Class, owl:Class ;
+    rdfs:label "Graphity Processor application" ;
+    rdfs:comment "Declarative Linked Data application" ;
+    rdfs:isDefinedBy <#> .
+
+<#Sitemap> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf owl:Ontology ;
+    rdfs:label "Sitemap ontology" ;
+    rdfs:comment "A class of sitemap ontologies" ;
+    rdfs:isDefinedBy <#> .
+
+<#Template> a rdfs:Class, owl:Class ;
+    rdfs:label "Resource template" ;
+    rdfs:comment "A class of RDF resources that share the same URI template and SPARQL query template" ;
+    rdfs:isDefinedBy <#> .
+
+<#Page> a rdfs:Class, owl:Class ;
+    rdfs:label "Page resource" ;
+    rdfs:comment "A class of RDF resources that are container pages" ;
+    rdfs:isDefinedBy <#> .
+
+<#Constructor> a rdfs:Class, owl:Class ;
+    rdfs:label "Constructor template" ;
+    rdfs:comment "A class of RDF resources that are container/item constructors" ;
+    rdfs:isDefinedBy <#> .
+
+# RESOURCE TEMPLATES
+
+<#Space> a rdfs:Class, owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document, sioc:Space, sioc:Container, <#Container> ;
+    <#uriTemplate> "/" ;
+    <#query> <#DescribeWithChildren> ;
+    <#defaultLimit> 20 ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Space> ;
+	    sp:arg2 <#slug>
+	] , [ a <#MissingType> ;
+	    sp:arg1 foaf:Document
+	] ;
+     rdfs:label "Space" ;
+     rdfs:comment "Application space that all resources belong to (usually also root container)" ;
+     rdfs:isDefinedBy <#> .
+
+<#Container> a rdfs:Class, owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document, sioc:Container ,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_parent ;
+            owl:allValuesFrom <#Space>
+        ] ;
+    <#uriTemplate> "/{container}" ;
+    <#skolemTemplate> "/{slug}" ;
+    <#defaultLimit> 20 ;
+    <#query> <#DescribeWithChildren> ;
+    <#template>
+              [ a       sp:Construct ;
+                sp:text """
+                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+                    PREFIX gp:      <http://graphity.org/gp#>
+                    PREFIX dct:     <http://purl.org/dc/terms/>
+
+                    CONSTRUCT {
+                        _:this a foaf:Document, gp:Container, sioc:Container ;
+                            gp:slug " "^^xsd:string ;
+                            dct:title " " .
+                    }
+                    WHERE {}"""
+              ] ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Container> ;
+	    sp:arg2 <#slug>
+	] , [ a <#MissingType> ;
+	    sp:arg1 foaf:Document
+	] ;
+    rdfs:label "Container" ;
+    rdfs:comment "First-level container" ;
+    rdfs:isDefinedBy <#> .
+
+<#Item> a rdfs:Class, owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document, sioc:Item,
+        [ a owl:Restriction ;
+            owl:onProperty sioc:has_container ;
+            owl:allValuesFrom <#Container>
+        ] ;
+    <#uriTemplate> "/{container}/{item}" ;
+    <#skolemTemplate> "/{slug}" ;
+    <#query> <#DescribeWithTopic> ;
+    <#update> <#DeleteWithTopic> ;
+    <#template>
+              [ a       sp:Construct ;
+                sp:text """
+                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+                    PREFIX gp:      <http://graphity.org/gp#>
+
+                    CONSTRUCT {
+                        _:this a foaf:Document, gp:Item, sioc:Item ;
+                            gp:slug " "^^xsd:string .
+                    }
+                    WHERE {}"""
+              ] ;
+    spin:constraint [ a dqc:MissingProperties ;
+	    sp:arg1 <#Item> ;
+	    sp:arg2 <#slug>
+	] , [ a <#MissingType> ;
+	    sp:arg1 foaf:Document
+	] ;
+    rdfs:label "Item" ;
+    rdfs:comment "Child item of a first-level container" ;
+    rdfs:isDefinedBy <#> .
+
+<#Topic> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf owl:Class,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom <#Item>
+	] ;
+    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
+    rdfs:label "Topic" ;
+    rdfs:isDefinedBy <#> .
+
+<#SPARQLEndpoint> a owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document ;
+    <#uriTemplate> "/sparql" ;
+    <#query> <#Describe> ;
+    rdfs:label "SPARQL endpoint" ;
+    rdfs:isDefinedBy <#> .
+
+<#GraphStore> a owl:Class, <#Template> ;
+    rdfs:subClassOf foaf:Document ;
+    <#uriTemplate> "/service" ;
+    <#query> <#Describe> ;
+    rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy <#> .
+
+<#Mode> a owl:Class ;
+    rdfs:label "Class of RDF modes" ;
+    rdfs:isDefinedBy <#> .
+
+# MODES
+
+<#ConstructMode> a <#Mode> ;
+    rdfs:label "Create" ;
+    rdfs:comment "Container responds with CONSTRUCTed template for gp:forClass value" ;
+    rdfs:isDefinedBy <#> .
+
+# SPIN TEMPLATES
+
+<#MissingType> a spin:Template ;
+    rdfs:subClassOf dqc:MissingElementConstraints ;
+    rdfs:label "Missing type" ;
+    spin:body <#ConstructMissingType> ;
+    spin:labelTemplate "Instance does not have a mandatory RDF type {?arg1}"^^xsd:string ;
+    spin:constraint [ a spl:Argument ;
+        spl:predicate sp:arg1 ;
+        spl:valueType rdfs:Class
+    ] ;
+    rdfs:isDefinedBy <#> .
+
+# QUERIES
+
+<#Describe>    a       sp:Describe, sp:Query ;
+    sp:text """DESCRIBE ?this"""^^xsd:string .
+
+# ====
+
+<#DescribeWithTopic>    a       sp:Describe, sp:Query ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DESCRIBE ?this ?topic WHERE {
+    ?topic foaf:isPrimaryTopicOf ?this .
+}"""^^xsd:string .
+
+# ====
+
+<#DescribeWithChildren>    a       sp:Describe, sp:Query ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+DESCRIBE ?this ?doc ?thing WHERE {
+    OPTIONAL {
+        {
+            ?thing foaf:isPrimaryTopicOf ?this .
+        }
+        UNION
+        {
+            {
+                SELECT DISTINCT ?doc ?thing
+                WHERE {
+                    {
+                        ?doc sioc:has_space ?this
+                    }
+                    UNION
+                    {
+                        ?doc sioc:has_parent ?this
+                    }
+                    UNION
+                    {
+                        ?doc sioc:has_container ?this
+                    }
+                    OPTIONAL {
+                        ?doc foaf:primaryTopic ?thing .
+                    } .
+                }
+            } .
+        } .
+    } .
+}"""^^xsd:string .
+
+# ====
+
+<#Construct>    a       sp:Construct, sp:Query ;
+      sp:text """CONSTRUCT {
+    ?this ?property ?object .
+}
+WHERE {
+    ?this ?property ?object .
+}"""^^xsd:string .
+
+# ====
+
+<#ConstructResources>    a       sp:Construct, sp:Query ;
+      sp:text """CONSTRUCT {
+    ?subject ?property ?object .
+}
+WHERE {
+    ?subject ?property ?object .
+}"""^^xsd:string .
+
+# ====
+
+<#Delete>    a       sp:DeleteWhere ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DELETE WHERE {
+    ?this ?p ?o .
+}"""^^xsd:string .
+
+# ====
+
+<#DeleteWithTopic>    a       sp:DeleteWhere ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DELETE {
+    ?this ?p ?o .
+    ?primaryTopic ?p ?o .
+}
+WHERE {
+    {
+        ?this ?p ?o .
+    }
+    UNION
+    {
+        ?primaryTopic foaf:isPrimaryTopicOf ?this .
+        ?primaryTopic ?p ?o .
+    }
+}"""^^xsd:string .
+
+# ====
+
+<#ConstructMissingType> a sp:Construct, sp:Query ;
+      sp:text """CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?this .
+    _:b0 spin:violationPath rdf:type .
+}
+WHERE {
+    NOT EXISTS {
+        ?this a ?arg1 .
+    } 
+}"""^^xsd:string .

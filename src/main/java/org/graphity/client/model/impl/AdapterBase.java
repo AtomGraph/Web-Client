@@ -20,9 +20,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
 import java.util.List;
@@ -33,19 +30,15 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.vocabulary.GP;
+import org.graphity.client.vocabulary.GP;
 import org.graphity.core.model.GraphStore;
 import org.graphity.core.model.SPARQLEndpoint;
-import org.graphity.processor.model.Hypermedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.vocabulary.SP;
-import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  * Base class of generic read-write Graphity Client resources.
@@ -54,7 +47,7 @@ import org.topbraid.spin.vocabulary.SPIN;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
-public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase // implements UniformInterface
+public class AdapterBase extends org.graphity.core.model.impl.QueriedResourceBase // implements UniformInterface
 {
     private static final Logger log = LoggerFactory.getLogger(AdapterBase.class);
 
@@ -74,16 +67,19 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
      * @param resourceContext resource context
      */
     public AdapterBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
-            @Context SPARQLEndpoint endpoint, @Context Hypermedia hypermedia, @Context GraphStore graphStore,
+            @Context SPARQLEndpoint endpoint, @Context GraphStore graphStore,
             @Context OntClass ontClass, @Context HttpHeaders httpHeaders, @Context ResourceContext resourceContext)
     {
-	super(uriInfo, request, servletConfig, mediaTypes,
-                endpoint, hypermedia, graphStore,
-                ontClass, httpHeaders, resourceContext);
+	super(uriInfo, request, servletConfig, mediaTypes, endpoint);
         
 	if (getUriInfo().getQueryParameters().containsKey("query"))
             queryString = getUriInfo().getQueryParameters().getFirst("query");
         else queryString = null;
+    }
+    
+    public OntClass getMatchedOntClass()
+    {
+        return null; //Link.valueOf(getRequest)
     }
     
     /**
@@ -93,7 +89,7 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
      * @return resource object
      */
     @Path("{path: .+}")
-    @Override
+    //@Override
     public Object getSubResource()
     {
         if (getMatchedOntClass().equals(GP.SPARQLEndpoint))
@@ -108,7 +104,7 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
                 return this;
         }
         
-        return super.getSubResource();
+        return this; //return super.getSubResource();
     }
     
     /**
@@ -118,7 +114,7 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
      * @param model target RDF model
      * @return description model with metadata
      */
-    @Override
+    //@Override
     public Model addHypermedia(Model model)
     {
         NodeIterator it = getMatchedOntClass().listPropertyValues(GC.supportedMode);
@@ -138,6 +134,7 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
                     {
                         if (getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().equals(GP.Container) || getMatchedOntClass().hasSuperClass(GP.Container))
                         {
+                            /*
                             String pageURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), null).build().toString();                            
                             String pageModeURI = getStateUriBuilder(getOffset(), getLimit(), getOrderBy(), getDesc(), URI.create(supportedMode.asResource().getURI())).build().toString();
                             createState(model.createResource(pageModeURI), getOffset(), getLimit(), getOrderBy(), getDesc(), supportedMode.asResource()).
@@ -145,13 +142,16 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
                                 addProperty(RDF.type, GP.Page).
                                 addProperty(GP.pageOf, this).
                                 addProperty(GC.layoutOf, model.createResource(pageURI));
+                            */
                         }
                         else
                         {
+                            /*
                             String modeURI = getStateUriBuilder(null, null, null, null, URI.create(supportedMode.asResource().getURI())).build().toString();
                             createState(model.createResource(modeURI), null, null, null, null, supportedMode.asResource()).
                                 addProperty(RDF.type, FOAF.Document).
-                                addProperty(GC.layoutOf, this);                            
+                                addProperty(GC.layoutOf, this);
+                            */
                         }
                     }
                 }
@@ -162,7 +162,7 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
             it.close();
         }
         
-        return super.addHypermedia(model);
+        return model; // super.addHypermedia(model);
     }
         
     /**
@@ -179,14 +179,15 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
         {
             super.put(model);
             
-            Resource document = getURIResource(model, RDF.type, FOAF.Document);
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
-            return Response.seeOther(URI.create(document.getURI())).build();
+            //Resource document = getURIResource(model, RDF.type, FOAF.Document);
+	    //if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
+            //return Response.seeOther(URI.create(document.getURI())).build();
         }
         
         return super.put(model);
     }
 
+    /*
     @Override
     public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
     {
@@ -207,10 +208,16 @@ public class AdapterBase extends org.graphity.processor.model.impl.ResourceBase 
         
         return builder;
     }
+    */
     
     public String getQueryString()
     {
         return queryString;
+    }
+    
+    public URI getMode()
+    {
+        return URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getURI()));
     }
     
 }

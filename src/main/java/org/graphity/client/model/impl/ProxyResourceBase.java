@@ -18,11 +18,12 @@ package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.core.ResourceContext;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +33,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
+import org.graphity.client.exception.ClientErrorException;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.client.util.DataManager;
-import org.graphity.core.model.SPARQLEndpointFactory;
-import org.graphity.core.model.SPARQLEndpointOrigin;
-import org.graphity.core.model.impl.SPARQLEndpointOriginBase;
+import org.graphity.core.model.SPARQLEndpoint;
 import org.graphity.core.provider.ModelProvider;
+import org.graphity.core.util.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +57,12 @@ import org.slf4j.LoggerFactory;
  * @see <a href="http://www.w3.org/TR/sparql11-query/#solutionModifiers">15 Solution Sequences and Modifiers</a>
  */
 @Path("/")
-public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
+public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
-    private final ResourceContext resourceContext;
-    private final DataManager dataManager;
+    //private final ResourceContext resourceContext;
+    //private final DataManager dataManager;
     private final MediaType mediaType;
     private final URI endpointURI;
     private final WebResource webResource;
@@ -71,18 +73,19 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
      * @param uriInfo URI information of the request
      * @param request current request
      * @param servletConfig servlet config
+     * @param mediaTypes supported media types
      * @param resourceContext resource context
      * @param dataManager data manager for this resource
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
-            @Context ResourceContext resourceContext, @Context DataManager dataManager)
+            @Context SPARQLEndpoint endpoint)
     {
-	super(uriInfo, request, servletConfig, mediaTypes);
-	if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
-        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+	super(uriInfo, request, servletConfig, mediaTypes, endpoint);
+	//if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
+        //if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         //if (application == null) throw new IllegalArgumentException("Application cannot be null");
-        this.resourceContext = resourceContext;
-        this.dataManager = dataManager;
+        //this.resourceContext = resourceContext;
+        //this.dataManager = dataManager;
         //this.application = application;
 
 	if (uriInfo.getQueryParameters().containsKey("accept"))
@@ -125,6 +128,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
         //if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, uri);
     }
 
+    /*
     public ResourceContext getResourceContext()
     {
         return resourceContext;
@@ -134,7 +138,8 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     {
         return dataManager;
     }
-
+    */
+    
     /**
      * Returns media type requested by the client ("accept" query string parameter).
      * This mechanism overrides the normally used content negotiation.
@@ -161,6 +166,13 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
         return webResource;
     }
     
+    /*
+    public Resource getService()
+    {
+        return getResourceContext().getResource(AdapterBase.class);
+    }
+    */
+    
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
      * If <samp>uri</samp> query string parameter is present, resource is loaded from the specified remote URI and
@@ -171,19 +183,38 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
     @Override
     public Response get()
     {
-        Model model;
+        //Model model;
                 
         if (getWebResource() != null)
         {
-            if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
-            model = getWebResource().
+            ClientResponse resp = getWebResource().
                 accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
-                get(Model.class); // TO-DO: MediaTypes!
-        }
-        else
-            model = getResourceContext().getResource(AdapterBase.class).describe();
+                get(ClientResponse.class);
 
-        return getResponse(model);
+            //  || resp.getStatusInfo().getFamily().equals(CLIENT_ERROR)
+            if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+                throw new ClientErrorException(resp);
+            
+            Link link = null;
+            if (resp.getHeaders().getFirst("Link") != null)
+                try
+                {
+                    link = Link.valueOf(resp.getHeaders().getFirst("Link"));
+                    //if (!link.getType().equals("type")) link = null;
+                    if (log.isDebugEnabled()) log.debug("Link header of the remote resource: {}", link);
+                }
+                catch (URISyntaxException ex)   
+                {
+                    if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", resp.getHeaders().getFirst("Link"));
+                }
+            
+            if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
+            ResponseBuilder bld = getResponseBuilder(resp.getEntity(Model.class));
+            if (link != null) bld.header("Link", link.toString());
+            return bld.build(); // TO-DO: MediaTypes!
+        }
+
+        return super.get(); // return getService().get();
     }
 
     @Override
@@ -201,7 +232,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
      */
     @Path("{path: .+}")
     //@Override
-    public Object getSubResource()
+    public Object getSubResource() // Adapter.getSubResource()
     {
         if (getEndpointURI() != null)
         {
@@ -210,6 +241,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
             List<Variant> variants = getResponse().getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
 
+            /*
             if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&
                     !variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
             {
@@ -217,6 +249,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.ResourceBase
                 SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(getEndpointURI().toString());
                 return SPARQLEndpointFactory.createProxy(getRequest(), getServletConfig(), getMediaTypes(), origin, getDataManager());
             }
+            */
         }
         
         return this;

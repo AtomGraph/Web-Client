@@ -18,6 +18,7 @@ limitations under the License.
     <!ENTITY java           "http://xml.apache.org/xalan/java/">
     <!ENTITY gc             "http://graphity.org/gc#">
     <!ENTITY gp             "http://graphity.org/gp#">
+    <!ENTITY g              "http://graphity.org/g#">
     <!ENTITY rdf            "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs           "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd            "http://www.w3.org/2001/XMLSchema#">
@@ -42,6 +43,7 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:gp="&gp;"
+xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -98,8 +100,8 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="brand" href="{$gp:baseUri}">
-                        <xsl:for-each select="key('resources', $gp:baseUri, document($gp:baseUri))">
+                    <a class="brand" href="{$g:baseUri}">
+                        <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
                             <img src="{foaf:logo/@rdf:resource}">
                                 <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
                             </img>
@@ -107,10 +109,10 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
-                        <form action="{$gp:baseUri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
+                        <form action="{$g:baseUri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <input type="text" name="uri" class="input-xxlarge">
-                                    <xsl:if test="not(starts-with($gc:uri, $gp:baseUri))">
+                                    <xsl:if test="not(starts-with($gc:uri, $g:baseUri))">
                                         <xsl:attribute name="value">
                                             <xsl:value-of select="$gc:uri"/>
                                         </xsl:attribute>
@@ -126,9 +128,9 @@ exclude-result-prefixes="#all">
                         </form>
 
                         <xsl:variable name="space" select="($gc:uri, key('resources', $gc:uri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))">
+                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($gp:baseUri))" mode="gc:NavBarMode">
+                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="gc:NavBarMode">
                                     <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
@@ -143,7 +145,7 @@ exclude-result-prefixes="#all">
     <!--    
     <xsl:template match="*[@rdf:about = $gc:uri]" mode="gc:ModeToggleMode" priority="1">
         <div class="pull-right">
-            <a class="btn btn-primary" href="{$gp:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gp;CreateItemMode'))}">
+            <a class="btn btn-primary" href="{$g:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gp;CreateItemMode'))}">
                 <xsl:apply-templates select="key('resources', 'save-as', document(''))" mode="gc:LabelMode"/>
             </a>
         </div>
@@ -156,7 +158,7 @@ exclude-result-prefixes="#all">
         </div>
 
         <xsl:apply-imports>
-            <xsl:with-param name="result-doc" select="document(concat($gp:absolutePath, gc:query-string($gc:endpointUri, $query, $gp:mode, ())))"/>
+            <xsl:with-param name="result-doc" select="document(concat($g:absolutePath, gc:query-string($gc:endpointUri, $query, $gp:mode, ())))"/>
         </xsl:apply-imports>
     </xsl:template>
         
@@ -183,7 +185,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about = $gc:uri][rdf:type/@rdf:resource = '&foaf;Document']" mode="gc:EditMode" priority="1">
-        <xsl:param name="container" select="resolve-uri('saved', $gp:baseUri)" as="xs:anyURI"/>
+        <xsl:param name="container" select="resolve-uri('saved', $g:baseUri)" as="xs:anyURI"/>
         
         <xsl:apply-imports/>
 
@@ -242,7 +244,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="*[*][@rdf:about = $gc:uri]" mode="gc:EditMode">
-        <xsl:param name="container" select="resolve-uri('saved', $gp:baseUri)" as="xs:anyURI"/>
+        <xsl:param name="container" select="resolve-uri('saved', $g:baseUri)" as="xs:anyURI"/>
 
         <xsl:apply-imports/>
         

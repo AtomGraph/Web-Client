@@ -26,6 +26,7 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -46,8 +47,9 @@ import org.apache.jena.riot.RDFLanguages;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.processor.util.Link;
-import org.graphity.processor.vocabulary.GP;
+import org.graphity.client.vocabulary.GP;
+import org.graphity.core.util.Link;
+import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,18 +206,25 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 
     public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-	    bld.parameter("{" + GP.baseUri.getNameSpace() + "}" + GP.baseUri.getLocalName(), getUriInfo().getBaseUri()).
-	    parameter("{" + GP.absolutePath.getNameSpace() + "}" + GP.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
-	    parameter("{" + GP.requestUri.getNameSpace() + "}" + GP.requestUri.getLocalName(), getUriInfo().getRequestUri()).
-	    parameter("{" + GP.httpHeaders.getNameSpace() + "}" + GP.httpHeaders.getLocalName(), headerMap.toString()).
+	    bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), getUriInfo().getBaseUri()).
+	    parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+	    parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+	    parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
 	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
         if (headerMap.containsKey("Link"))
         {
-            Link classLink = Link.valueOf(headerMap.getFirst("Link").toString());
-	    bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), classLink.getHref());
-            OntModel sitemap = OntDocumentManager.getInstance().getOntology(classLink.getHref().toString(), OntModelSpec.OWL_MEM);
-            bld.parameter("{" + GP.sitemap.getNameSpace() + "}" + GP.sitemap.getLocalName(), getSource(sitemap, true)); // $ont-model from the current Resource (with imports)
+            try
+            {
+                Link classLink = Link.valueOf(headerMap.getFirst("Link").toString());
+                bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), classLink.getHref());
+                OntModel sitemap = OntDocumentManager.getInstance().getOntology(classLink.getHref().toString(), OntModelSpec.OWL_MEM);
+                bld.parameter("{" + GP.sitemap.getNameSpace() + "}" + GP.sitemap.getLocalName(), getSource(sitemap, true)); // $ont-model from the current Resource (with imports)
+            }
+            catch (URISyntaxException ex)   
+            {
+                if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", headerMap.getFirst("Link"));
+            }
         }
         
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);

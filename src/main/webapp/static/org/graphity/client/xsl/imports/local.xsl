@@ -18,6 +18,7 @@ limitations under the License.
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY g      "http://graphity.org/g#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
@@ -32,6 +33,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:gp="&gp;"
+xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -49,9 +51,11 @@ exclude-result-prefixes="#all">
     <!-- subject resource -->
     <xsl:template match="@rdf:about" mode="gc:InlineMode">
 	<a href="{.}" title="{.}">
+            <!--
 	    <xsl:if test="substring-after(., concat($gp:requestUri, '#'))">
 		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($gp:requestUri, '#'))"/></xsl:attribute>
 	    </xsl:if>	
+            -->
 	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
 	</a>
     </xsl:template>

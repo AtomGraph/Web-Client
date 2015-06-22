@@ -21,7 +21,7 @@ import com.hp.hpl.jena.shared.DoesNotExistException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import org.graphity.processor.mapper.ExceptionMapperBase;
+import org.graphity.client.mapper.ExceptionMapperBase;
 
 /**
  * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.

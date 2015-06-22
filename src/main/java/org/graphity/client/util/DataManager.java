@@ -43,7 +43,7 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
-import org.graphity.client.locator.LocatorLinkedData;
+import org.graphity.core.locator.LocatorLinkedData;
 import org.graphity.client.locator.PrefixMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

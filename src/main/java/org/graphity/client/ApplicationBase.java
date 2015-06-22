@@ -34,6 +34,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
+import org.graphity.client.mapper.ClientErrorExceptionMapper;
 import org.graphity.client.mapper.UniformInterfaceExceptionMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.model.impl.AdapterBase;
@@ -42,26 +43,16 @@ import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.QueriedResourceProvider;
 import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.writer.ModelXSLTWriter;
-import org.graphity.processor.provider.DatasetProvider;
 import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetWriter;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.xslt.JSONLDWriter;
+import org.graphity.core.provider.ModelProvider;
+import org.graphity.core.provider.SPARQLEndpointOriginProvider;
+import org.graphity.core.provider.SPARQLEndpointProvider;
 import org.graphity.core.riot.RDFLanguages;
-import org.graphity.processor.mapper.ConstraintViolationExceptionMapper;
-import org.graphity.processor.mapper.NotFoundExceptionMapper;
-import org.graphity.processor.provider.GraphStoreOriginProvider;
-import org.graphity.processor.provider.GraphStoreProvider;
-import org.graphity.processor.provider.OntClassMatcher;
-import org.graphity.processor.provider.OntologyProvider;
-import org.graphity.processor.provider.SPARQLEndpointOriginProvider;
-import org.graphity.processor.provider.SPARQLEndpointProvider;
 import org.graphity.core.vocabulary.G;
-import org.graphity.processor.provider.ConstraintViolationExceptionProvider;
-import org.graphity.processor.provider.HypermediaProvider;
-import org.graphity.processor.provider.ModifiersProvider;
-import org.graphity.processor.provider.SkolemizingModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class ApplicationBase extends org.graphity.processor.ApplicationBase
+public class ApplicationBase extends org.graphity.core.ApplicationBase
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
@@ -94,31 +85,24 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
 	classes.add(ProxyResourceBase.class);
 	classes.add(AdapterBase.class);
 
-	singletons.add(new SkolemizingModelProvider());
+        /*
+        singletons.add(new GraphStoreOriginProvider());
+        */
+	singletons.add(new ModelProvider());
+        singletons.add(new SPARQLEndpointOriginProvider());
+        singletons.add(new SPARQLEndpointProvider());
+        
 	singletons.add(new ResultSetWriter());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
         singletons.add(new MediaTypesProvider());
         singletons.add(new QueriedResourceProvider());
-        singletons.add(new ModifiersProvider());
-        singletons.add(new HypermediaProvider());
+        //singletons.add(new ModifiersProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());
-        singletons.add(new DatasetProvider());
-        singletons.add(new OntologyProvider());
-        singletons.add(new OntClassMatcher());
-	singletons.add(new SPARQLEndpointProvider());
-	singletons.add(new SPARQLEndpointOriginProvider());
-        singletons.add(new GraphStoreProvider());
-        singletons.add(new GraphStoreOriginProvider());
-        singletons.add(new ConstraintViolationExceptionProvider());        
-	singletons.add(new ConstraintViolationExceptionMapper());
-	singletons.add(new NotFoundExceptionMapper());
-        singletons.add(new org.graphity.client.mapper.jena.DoesNotExistExceptionMapper());
-	singletons.add(new org.graphity.client.mapper.jena.NotFoundExceptionMapper());
-	singletons.add(new org.graphity.processor.mapper.jena.QueryExceptionHTTPMapper());
-	singletons.add(new org.graphity.processor.mapper.jena.QueryParseExceptionMapper());
-	singletons.add(new org.graphity.processor.mapper.jena.HttpExceptionMapper());
+        //singletons.add(new DoesNotExistExceptionMapper());
+	//singletons.add(new NotFoundExceptionMapper());
+	singletons.add(new ClientErrorExceptionMapper());        
 	singletons.add(new UniformInterfaceExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
@@ -135,10 +119,10 @@ public class ApplicationBase extends org.graphity.processor.ApplicationBase
      * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
      */
     @PostConstruct
-    @Override
+    //@Override
     public void init()
     {
-        super.init(); // Graphity Processor initialization
+        //super.init(); // Graphity Processor initialization
         
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
         

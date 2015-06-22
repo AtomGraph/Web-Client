@@ -16,26 +16,26 @@
 
 package org.graphity.client.mapper;
 
-import com.sun.jersey.api.client.UniformInterfaceException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.graphity.client.exception.ClientErrorException;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class UniformInterfaceExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<UniformInterfaceException>
+public class ClientErrorExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<ClientErrorException>
 {
-
+    
     @Override
-    public Response toResponse(UniformInterfaceException ex)
+    public Response toResponse(ClientErrorException ex)
     {
         return org.graphity.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null).
+            getResponseBuilder(toResource(ex, Response.Status.fromStatusCode(ex.getClientResponse().getStatus()), null).
                 getModel(), getVariants()).
-            status(ex.getResponse().getStatus()).
+            status(ex.getClientResponse().getStatus()).
             build();
     }
     
