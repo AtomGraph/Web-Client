@@ -23,16 +23,13 @@ import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.mapper.ClientErrorExceptionMapper;
 import org.graphity.client.mapper.UniformInterfaceExceptionMapper;
@@ -119,11 +116,8 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
      * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
      */
     @PostConstruct
-    //@Override
     public void init()
     {
-        //super.init(); // Graphity Processor initialization
-        
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
         
 	// initialize mapping for locally stored vocabularies
@@ -143,7 +137,7 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
         
 	try
 	{
-	    singletons.add(new JSONLDWriter(getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")));
+	    singletons.add(new JSONLDWriter(new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")));
             // add RDF/POST serialization. It will support JSON-LD during conneg, even though it's a JAX-RS and not Jena writer
             RDFLanguages.register(RDFLanguages.JSONLD) ;            
 	}
@@ -188,25 +182,6 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
     public Set<Object> getSingletons()
     {
 	return singletons;
-    }
-    
-    /**
-     * Provides XML source from filename
-     * 
-     * @param filename
-     * @return XML source
-     * @throws FileNotFoundException
-     * @throws URISyntaxException 
-     * @throws java.net.MalformedURLException 
-     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
-     */
-    public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
-    {
-	URL xsltUrl = getServletConfig().getServletContext().getResource(filename);
-	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
-	String xsltUri = xsltUrl.toURI().toString();
-	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
-	return new StreamSource(xsltUri);
     }
     
     /**
