@@ -14,7 +14,7 @@
 
 <#> a owl:Ontology ;
     rdfs:label "Graphity Client ontology" ;
-    owl:versionInfo "1.1.2" .
+    owl:versionInfo "1.1.4" .
 
 # ANNOTATION PROPERTIES
 
