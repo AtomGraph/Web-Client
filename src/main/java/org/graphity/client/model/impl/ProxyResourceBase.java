@@ -16,6 +16,10 @@
  */
 package org.graphity.client.model.impl;
 
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -61,8 +65,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
-    //private final ResourceContext resourceContext;
-    //private final DataManager dataManager;
     private final MediaType mediaType;
     private final URI endpointURI;
     private final WebResource webResource;
@@ -74,19 +76,12 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
      * @param request current request
      * @param servletConfig servlet config
      * @param mediaTypes supported media types
-     * @param resourceContext resource context
-     * @param dataManager data manager for this resource
+     * @param endpoint SPARQL endpoint
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
             @Context SPARQLEndpoint endpoint)
     {
 	super(uriInfo, request, servletConfig, mediaTypes, endpoint);
-	//if (resourceContext == null) throw new IllegalArgumentException("ResourceContext cannot be null");
-        //if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
-        //if (application == null) throw new IllegalArgumentException("Application cannot be null");
-        //this.resourceContext = resourceContext;
-        //this.dataManager = dataManager;
-        //this.application = application;
 
 	if (uriInfo.getQueryParameters().containsKey("accept"))
         {
@@ -127,18 +122,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         
         //if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, uri);
     }
-
-    /*
-    public ResourceContext getResourceContext()
-    {
-        return resourceContext;
-    }
-    
-    public DataManager getDataManager()
-    {
-        return dataManager;
-    }
-    */
     
     /**
      * Returns media type requested by the client ("accept" query string parameter).
@@ -165,14 +148,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
     {
         return webResource;
     }
-    
-    /*
-    public Resource getService()
-    {
-        return getResourceContext().getResource(AdapterBase.class);
-    }
-    */
-    
+        
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
      * If <samp>uri</samp> query string parameter is present, resource is loaded from the specified remote URI and
@@ -182,9 +158,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
      */
     @Override
     public Response get()
-    {
-        //Model model;
-                
+    {                
         if (getWebResource() != null)
         {
             ClientResponse resp = getWebResource().
@@ -196,12 +170,16 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
                 throw new ClientErrorException(resp);
             
             Link link = null;
+            OntClass ontClass = null;
             if (resp.getHeaders().getFirst("Link") != null)
                 try
                 {
                     link = Link.valueOf(resp.getHeaders().getFirst("Link"));
                     //if (!link.getType().equals("type")) link = null;
                     if (log.isDebugEnabled()) log.debug("Link header of the remote resource: {}", link);
+                    URI classURI = link.getHref();
+                    OntModel ontModel = OntDocumentManager.getInstance().getOntology(classURI.toString(), OntModelSpec.OWL_MEM);
+                    ontClass = ontModel.getOntClass(classURI.toString());
                 }
                 catch (URISyntaxException ex)   
                 {
@@ -209,12 +187,16 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
                 }
             
             if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
-            ResponseBuilder bld = getResponseBuilder(resp.getEntity(Model.class));
+            Model description = resp.getEntity(Model.class);
+            if (ontClass != null) description = new Hypermedia(ontClass).
+                    addStates(description.createResource(getWebResource().getURI().toString()), description);
+            
+            ResponseBuilder bld = getResponseBuilder(description);
             if (link != null) bld.header("Link", link.toString());
             return bld.build(); // TO-DO: MediaTypes!
         }
 
-        return super.get(); // return getService().get();
+        return super.get();
     }
 
     @Override
@@ -254,30 +236,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         
         return this;
     }
-
-    /*
-    @Override
-    public Resource createState(Resource state, Long offset, Long limit, String orderBy, Boolean desc, Resource mode)
-    {
-        Resource superState = super.createState(state, offset, limit, orderBy, desc, mode);
-
-	if (getTopicURI() != null) superState.addProperty(GC.uri, state.getModel().createResource(getTopicURI().toString()));
-	if (getEndpointURI() != null) superState.addProperty(GC.endpointUri, state.getModel().createResource(getEndpointURI().toString()));
-        
-        return state;
-    }
-
-    @Override
-    public UriBuilder getStateUriBuilder(Long offset, Long limit, String orderBy, Boolean desc, URI mode)
-    {
-        UriBuilder builder = super.getStateUriBuilder(offset, limit, orderBy, desc, mode);
-        
-	if (getTopicURI() != null) builder.queryParam(GC.uri.getLocalName(), getTopicURI().toString());
-	if (getEndpointURI() != null) builder.queryParam(GC.endpointUri.getLocalName(), getEndpointURI().toString());
-	
-	return builder;
-    }
-    */
 
     /**
      * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.

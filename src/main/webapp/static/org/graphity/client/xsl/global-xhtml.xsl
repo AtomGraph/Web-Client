@@ -151,7 +151,13 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     -->
-    
+
+    <xsl:template match="rdf:RDF" mode="gc:ReadMode">
+        <xsl:apply-imports>
+            <xsl:with-param name="selected-resources" select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" tunnel="yes"/>
+        </xsl:apply-imports>
+    </xsl:template>
+      
     <xsl:template match="rdf:RDF[key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint'][$gc:endpointUri]" mode="gc:QueryResultMode">
         <div class="btn-group pull-right">
             <a href="{$gc:endpointUri}?query={encode-for-uri($query)}" class="btn">Source</a>

@@ -9,7 +9,7 @@
 @prefix gp:	<http://graphity.org/gp#> .
 @prefix gcs:	<http://graphity.org/gcs#> .
 
-<> a sioc:Space, gp:Space, sioc:Container, gp:Container, foaf:Document ;
+<> a sioc:Space, sioc:Container, gp:Container, foaf:Document ;
     dct:title "Graphity Client" ;
     dct:description "Generic Linked Data browser and end-user-oriented platform" ;
     foaf:logo <static/img/graphity-logo.svg> ;

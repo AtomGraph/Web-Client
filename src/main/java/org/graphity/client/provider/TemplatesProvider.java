@@ -25,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.naming.ConfigurationException;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -39,6 +38,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.core.exception.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +118,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         return null;
     }
     
-    public URI getStylesheetURI() throws ConfigurationException, URISyntaxException
+    public URI getStylesheetURI() throws URISyntaxException
     {
         URI stylesheetURI = getStylesheetURI(GC.stylesheet);
         

@@ -55,7 +55,7 @@ public final class GC
     
     public static final OntClass TableMode = m_model.createClass( NS + "TableMode" );
 
-    public static final OntClass ThumbnailMode = m_model.createClass( NS + "ThumbnailMode" );
+    public static final OntClass GridMode = m_model.createClass( NS + "GridMode" );
     
     public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
 
@@ -65,6 +65,8 @@ public final class GC
 
     public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
 
+    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+    
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
     
     public static final ObjectProperty layoutOf = m_model.createObjectProperty( NS + "layoutOf" );

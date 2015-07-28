@@ -71,6 +71,18 @@ exclude-result-prefixes="#all">
 	<a href="{$g:baseUri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
 	<a href="{$g:baseUri}?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about][gc:mode/@rdf:resource]" mode="gc:ModeSelectMode">
+	<li>
+	    <xsl:if test="(not($gp:mode) and $gc:defaultMode = gp:mode/@rdf:resource) or $gp:mode = gc:mode/@rdf:resource">
+		<xsl:attribute name="class">active</xsl:attribute>
+	    </xsl:if>
+
+            <a href="{$g:baseUri}?uri={encode-for-uri(@rdf:about)}">
+                <xsl:apply-templates select="gc:mode/@rdf:resource" mode="gc:ObjectLabelMode"/>
+            </a>
+	</li>	
+    </xsl:template>
 	    
     <!-- subject resource -->
     <xsl:template match="@rdf:about[not(starts-with(., $g:baseUri))]" mode="gc:InlineMode">

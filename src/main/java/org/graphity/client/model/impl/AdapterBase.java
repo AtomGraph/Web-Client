@@ -162,7 +162,7 @@ public class AdapterBase extends org.graphity.core.model.impl.QueriedResourceBas
             it.close();
         }
         
-        return model; // super.addHypermedia(model);
+        return model;
     }
         
     /**

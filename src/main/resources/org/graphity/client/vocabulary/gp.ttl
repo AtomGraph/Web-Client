@@ -15,10 +15,11 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+@prefix gc:     <http://graphity.org/gc#> .
 
 <#> a owl:Ontology ;
     owl:imports sp:, spin:, dqc:, sioc:, foaf: ;
-    owl:versionInfo "1.1.3" ;
+    owl:versionInfo "1.1.4" ;
     dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
     dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
@@ -214,47 +215,18 @@
 
 # RESOURCE TEMPLATES
 
-<#Space> a rdfs:Class, owl:Class, <#Template> ;
-    rdfs:subClassOf foaf:Document, sioc:Space, sioc:Container, <#Container> ;
-    <#uriTemplate> "/" ;
-    <#query> <#DescribeWithChildren> ;
-    <#defaultLimit> 20 ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#Space> ;
-	    sp:arg2 <#slug>
-	] , [ a <#MissingType> ;
-	    sp:arg1 foaf:Document
-	] ;
-     rdfs:label "Space" ;
-     rdfs:comment "Application space that all resources belong to (usually also root container)" ;
-     rdfs:isDefinedBy <#> .
-
 <#Container> a rdfs:Class, owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document, sioc:Container ,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_parent ;
-            owl:allValuesFrom <#Space>
+            owl:allValuesFrom <#Container>
         ] ;
-    <#uriTemplate> "/{container}" ;
+    <#uriTemplate> "/{path: [^/]*}" ; # ([^/]+?)
     <#skolemTemplate> "/{slug}" ;
     <#defaultLimit> 20 ;
     <#query> <#DescribeWithChildren> ;
-    <#template>
-              [ a       sp:Construct ;
-                sp:text """
-                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
-                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
-                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
-                    PREFIX gp:      <http://graphity.org/gp#>
-                    PREFIX dct:     <http://purl.org/dc/terms/>
-
-                    CONSTRUCT {
-                        _:this a foaf:Document, gp:Container, sioc:Container ;
-                            gp:slug " "^^xsd:string ;
-                            dct:title " " .
-                    }
-                    WHERE {}"""
-              ] ;
+    <#template> <#ContainerConstructor> ;
+    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:GridMode, <#ConstructMode> ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Container> ;
 	    sp:arg2 <#slug>
@@ -265,30 +237,32 @@
     rdfs:comment "First-level container" ;
     rdfs:isDefinedBy <#> .
 
+<#ContainerConstructor> a       sp:Construct ;
+  sp:text """
+      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+      PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+      PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+      PREFIX gp:      <http://graphity.org/gp#>
+      PREFIX dct:     <http://purl.org/dc/terms/>
+
+      CONSTRUCT {
+          _:this a foaf:Document, gp:Container, sioc:Container ;
+              gp:slug " " ;
+              dct:title " " .
+      }
+      WHERE {}""" .
+
 <#Item> a rdfs:Class, owl:Class, <#Template> ;
     rdfs:subClassOf foaf:Document, sioc:Item,
         [ a owl:Restriction ;
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#Container>
         ] ;
-    <#uriTemplate> "/{container}/{item}" ;
+    <#uriTemplate> "/{container: [^/]*}/{path: [^/]*}" ;
     <#skolemTemplate> "/{slug}" ;
     <#query> <#DescribeWithTopic> ;
     <#update> <#DeleteWithTopic> ;
-    <#template>
-              [ a       sp:Construct ;
-                sp:text """
-                    PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
-                    PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
-                    PREFIX sioc:    <http://rdfs.org/sioc/ns#>
-                    PREFIX gp:      <http://graphity.org/gp#>
-
-                    CONSTRUCT {
-                        _:this a foaf:Document, gp:Item, sioc:Item ;
-                            gp:slug " "^^xsd:string .
-                    }
-                    WHERE {}"""
-              ] ;
+    <#template> <#ItemConstructor> ;
     spin:constraint [ a dqc:MissingProperties ;
 	    sp:arg1 <#Item> ;
 	    sp:arg2 <#slug>
@@ -297,6 +271,22 @@
 	] ;
     rdfs:label "Item" ;
     rdfs:comment "Child item of a first-level container" ;
+    rdfs:isDefinedBy <#> .
+
+<#ItemConstructor> a       sp:Construct ;
+  sp:text """
+      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+      PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+      PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+      PREFIX gp:      <http://graphity.org/gp#>
+      PREFIX dct:     <http://purl.org/dc/terms/>
+
+      CONSTRUCT {
+          _:this a foaf:Document, gp:Item, sioc:Item ;
+              gp:slug " " ;
+              dct:title " " .
+      }
+      WHERE {}""" ;
     rdfs:isDefinedBy <#> .
 
 <#Topic> a rdfs:Class, owl:Class ;
@@ -340,7 +330,7 @@
     rdfs:subClassOf dqc:MissingElementConstraints ;
     rdfs:label "Missing type" ;
     spin:body <#ConstructMissingType> ;
-    spin:labelTemplate "Instance does not have a mandatory RDF type {?arg1}"^^xsd:string ;
+    spin:labelTemplate "Instance does not have a mandatory RDF type {?arg1}" ;
     spin:constraint [ a spl:Argument ;
         spl:predicate sp:arg1 ;
         spl:valueType rdfs:Class
@@ -350,7 +340,7 @@
 # QUERIES
 
 <#Describe>    a       sp:Describe, sp:Query ;
-    sp:text """DESCRIBE ?this"""^^xsd:string .
+    sp:text """DESCRIBE ?this""" .
 
 # ====
 
@@ -358,7 +348,7 @@
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
     ?topic foaf:isPrimaryTopicOf ?this .
-}"""^^xsd:string .
+}""" .
 
 # ====
 
@@ -376,10 +366,6 @@ DESCRIBE ?this ?doc ?thing WHERE {
                 SELECT DISTINCT ?doc ?thing
                 WHERE {
                     {
-                        ?doc sioc:has_space ?this
-                    }
-                    UNION
-                    {
                         ?doc sioc:has_parent ?this
                     }
                     UNION
@@ -393,7 +379,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
             } .
         } .
     } .
-}"""^^xsd:string .
+}""" .
 
 # ====
 
@@ -403,7 +389,7 @@ DESCRIBE ?this ?doc ?thing WHERE {
 }
 WHERE {
     ?this ?property ?object .
-}"""^^xsd:string .
+}""" .
 
 # ====
 
@@ -413,7 +399,7 @@ WHERE {
 }
 WHERE {
     ?subject ?property ?object .
-}"""^^xsd:string .
+}""" .
 
 # ====
 
@@ -421,7 +407,7 @@ WHERE {
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DELETE WHERE {
     ?this ?p ?o .
-}"""^^xsd:string .
+}""" .
 
 # ====
 
@@ -440,7 +426,7 @@ WHERE {
         ?primaryTopic foaf:isPrimaryTopicOf ?this .
         ?primaryTopic ?p ?o .
     }
-}"""^^xsd:string .
+}""" .
 
 # ====
 
@@ -454,4 +440,4 @@ WHERE {
     NOT EXISTS {
         ?this a ?arg1 .
     } 
-}"""^^xsd:string .
+}""" .

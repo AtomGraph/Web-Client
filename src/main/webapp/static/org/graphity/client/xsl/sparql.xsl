@@ -155,8 +155,8 @@ LIMIT 100</xsl:param>
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gp:mode = '&gc;ThumbnailMode'">
-                        <xsl:apply-templates select="." mode="gc:ThumbnailMode">
+                    <xsl:when test="$gp:mode = '&gc;GridMode'">
+                        <xsl:apply-templates select="." mode="gc:GridMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
