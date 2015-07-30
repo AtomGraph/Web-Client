@@ -74,6 +74,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/owl.xsl"/>
     <xsl:import href="imports/rdf.xsl"/>
     <xsl:import href="imports/rdfs.xsl"/>
+    <xsl:import href="imports/xhv.xsl"/>    
     <xsl:import href="imports/sd.xsl"/>
     <xsl:import href="imports/sioc.xsl"/>
     <xsl:import href="imports/skos.xsl"/>

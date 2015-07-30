@@ -28,6 +28,8 @@ xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="gc:*" mode="gc:TablePredicateMode"/>
+    
     <xsl:template match="gc:supportedMode[position() &gt; 1]" mode="gc:EditMode"/>
     
     <xsl:template match="gc:supportedMode/@rdf:resource" mode="gc:EditMode">

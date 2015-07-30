@@ -32,7 +32,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.TransformerConfigurationException;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.mapper.ClientErrorExceptionMapper;
-import org.graphity.client.mapper.UniformInterfaceExceptionMapper;
+import org.graphity.client.mapper.jersey.ClientHandlerExceptionMapper;
+import org.graphity.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.model.impl.AdapterBase;
 import org.graphity.client.provider.DataManagerProvider;
@@ -97,10 +98,9 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
         //singletons.add(new ModifiersProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());
-        //singletons.add(new DoesNotExistExceptionMapper());
-	//singletons.add(new NotFoundExceptionMapper());
-	singletons.add(new ClientErrorExceptionMapper());        
+	singletons.add(new ClientErrorExceptionMapper());
 	singletons.add(new UniformInterfaceExceptionMapper());
+	singletons.add(new ClientHandlerExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
     }

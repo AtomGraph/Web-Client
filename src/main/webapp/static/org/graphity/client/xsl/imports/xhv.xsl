@@ -17,7 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY gp     "http://graphity.org/gp#">
+    <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">    
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -25,23 +25,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
-xmlns:gp="&gp;"
+xmlns:xhv="&xhv;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gp:slug" mode="gc:PropertyListMode"/>
-        
-    <xsl:template match="gp:*" mode="gc:TablePredicateMode"/>
-    
-    <xsl:template match="gp:uriTemplate/text() | gp:skolemTemplate/text()" mode="gc:InlineMode">
-        <pre>
-            <xsl:next-match/>
-        </pre>
-    </xsl:template>
-
-    <xsl:template match="gp:slug/@rdf:datatype | gp:defaultLimit/@rdf:datatype | gp:defaultOffset/@rdf:datatype | gp:defaultOrderBy/@rdf:datatype | gp:defaultDesc/@rdf:datatype" mode="gc:EditMode">
-        <xsl:next-match>
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:next-match>
-    </xsl:template>
+    <xsl:template match="xhv:*" mode="gc:TablePredicateMode"/>
     
 </xsl:stylesheet>

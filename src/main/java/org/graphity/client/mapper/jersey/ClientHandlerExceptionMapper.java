@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package org.graphity.client.mapper;
+package org.graphity.client.mapper.jersey;
 
-import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.ClientHandlerException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.graphity.client.mapper.ExceptionMapperBase;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class UniformInterfaceExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<UniformInterfaceException>
+public class ClientHandlerExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<ClientHandlerException>
 {
 
     @Override
-    public Response toResponse(UniformInterfaceException ex)
+    public Response toResponse(ClientHandlerException ex)
     {
         return org.graphity.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null).
+            getResponseBuilder(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR, null).
                 getModel(), getVariants()).
-            status(ex.getResponse().getStatus()).
+            status(Response.Status.INTERNAL_SERVER_ERROR).
             build();
     }
     
