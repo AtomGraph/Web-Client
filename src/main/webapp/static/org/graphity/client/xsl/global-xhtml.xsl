@@ -154,8 +154,10 @@ exclude-result-prefixes="#all">
     -->
 
     <xsl:template match="rdf:RDF" mode="gc:ReadMode">
+        <xsl:param name="selected-resources" select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
+
         <xsl:apply-imports>
-            <xsl:with-param name="selected-resources" select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" tunnel="yes"/>
+            <xsl:with-param name="selected-resources" select="$selected-resources" tunnel="yes"/>
         </xsl:apply-imports>
     </xsl:template>
       
