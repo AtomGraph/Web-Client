@@ -4,10 +4,10 @@ $(document).ready(function()
     $(".navbar-form").on("submit", function()
     {
         var uriOrLabel = $(this).find("input[name=uri]").val();
-        if (uriOrLabel.indexOf("http://") === -1 && uriOrLabel.indexOf("https://") === -1)
+        if (uriOrLabel.indexOf("http://") === 0 || uriOrLabel.indexOf("https://") === 0)
         {
-            $(this).attr("action", "resources/labelled");
-            $(this).find("input[name=uri]").attr("name", "label");
+            $(this).attr("action", "");
+            $(this).find("input[name=label]").attr("name", "uri");
         }
         
         return true;

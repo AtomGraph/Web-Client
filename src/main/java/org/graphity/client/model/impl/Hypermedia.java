@@ -20,6 +20,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -64,10 +65,24 @@ public class Hypermedia
 
                 if (!supportedMode.equals(GP.ConstructMode))
                 {
-                    String modeURI = getStateUriBuilder(UriBuilder.fromUri(resource.getURI()), URI.create(supportedMode.asResource().getURI())).build().toString();
-                    createState(model.createResource(modeURI), supportedMode.asResource()).
-                        addProperty(RDF.type, FOAF.Document).
-                        addProperty(GC.layoutOf, resource);                    
+                    //Set<Resource> pages = new HashSet<>();
+                    ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
+                    try
+                    {
+                        while (resIt.hasNext())
+                        {
+                            //pages.add(stmtIt.next());
+                            Resource page = resIt.next();
+                            String modeURI = getStateUriBuilder(UriBuilder.fromUri(page.getURI()), URI.create(supportedMode.asResource().getURI())).build().toString();
+                            createState(model.createResource(modeURI), supportedMode.asResource()).
+                                addProperty(RDF.type, FOAF.Document).
+                                addProperty(GC.layoutOf, resource);
+                        }
+                    }
+                    finally
+                    {
+                        resIt.close();
+                    }
                 }
             }
         }

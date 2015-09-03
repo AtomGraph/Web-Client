@@ -110,7 +110,7 @@ exclude-result-prefixes="#all">
                     </a>
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
-                        <form action="{$g:baseUri}" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
+                        <form action="resources/labelled/" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <input type="text" name="uri" class="input-xxlarge">
                                     <xsl:if test="not(starts-with($gc:uri, $g:baseUri))">

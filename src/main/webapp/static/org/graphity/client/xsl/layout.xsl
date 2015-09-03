@@ -1081,29 +1081,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[$gp:sitemap]" mode="gc:EditMode">
-        <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
-        <xsl:param name="constraint-violations" as="element()*"/>
-	<xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="label" select="true()" as="xs:boolean"/>
-        <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
-        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and key('constraints-by-type', ../rdf:type/@rdf:resource, $gp:sitemap)/sp:arg2/@rdf:resource = $this"/>
-        <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
-
-        <xsl:next-match>
-            <xsl:with-param name="this" select="$this"/>
-            <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
-            <xsl:with-param name="class" select="$class"/>
-            <xsl:with-param name="label" select="$label"/>
-            <xsl:with-param name="cloneable" select="$cloneable"/>
-            <xsl:with-param name="required" select="$required"/>
-            <xsl:with-param name="id" select="$id"/>
-            <xsl:with-param name="for" select="$for"/>
-        </xsl:next-match>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not($gp:sitemap)]" mode="gc:EditMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*"/>
 	<xsl:param name="class" as="xs:string?"/>
