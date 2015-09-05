@@ -959,11 +959,19 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
-            
-            <div class="form-actions">
-		<button type="submit" class="{$button-class}">Save</button>
-	    </div>
+
+            <xsl:apply-templates select="." mode="gc:FormActionsMode">
+                <xsl:with-param name="button-class" select="$button-class"/>
+            </xsl:apply-templates>
 	</form>
+    </xsl:template>
+    
+    <xsl:template match="rdf:RDF" mode="gc:FormActionsMode">
+        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
+        
+        <div class="form-actions">
+            <button type="submit" class="{$button-class}">Save</button>
+        </div>
     </xsl:template>
     
     <xsl:template match="*[@rdf:about = $gc:uri] | *[gp:constructorOf/@rdf:resource = $gc:uri] | *[gp:pageOf/@rdf:resource = $gc:uri]" mode="gp:ConstructMode" priority="1"/>
@@ -1019,10 +1027,10 @@ exclude-result-prefixes="#all">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
                 
-            <div class="form-actions">
-		<button type="submit" class="{$button-class}">Save</button>
-	    </div>
-	</form>
+            <xsl:apply-templates select="." mode="gc:FormActionsMode">
+                <xsl:with-param name="button-class" select="$button-class"/>
+            </xsl:apply-templates>
+        </form>
     </xsl:template>
 
     <!-- hide metadata -->
