@@ -52,8 +52,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:about" mode="gc:InlineMode">
 	<a href="{.}" title="{.}">
             <!--
-	    <xsl:if test="substring-after(., concat($gp:requestUri, '#'))">
-		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($gp:requestUri, '#'))"/></xsl:attribute>
+	    <xsl:if test="substring-after(., concat($g:requestUri, '#'))">
+		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($g:requestUri, '#'))"/></xsl:attribute>
 	    </xsl:if>	
             -->
 	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
@@ -174,7 +174,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="node()" mode="gc:ObjectLabelMode"/>
         
-    <xsl:template match="@rdf:resource | sparql:uri" mode="gc:ObjectLabelMode">
+    <xsl:template match="@rdf:resource | @rdf:nodeID | sparql:uri" mode="gc:ObjectLabelMode">
         <xsl:choose>
             <xsl:when test="key('resources', .)">
                 <xsl:apply-templates select="key('resources', .)" mode="gc:LabelMode"/>

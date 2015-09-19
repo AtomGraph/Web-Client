@@ -20,6 +20,9 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
+import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
@@ -218,8 +221,24 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
             {
                 Link classLink = Link.valueOf(headerMap.getFirst("Link").toString());
                 bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), classLink.getHref());
-                OntModel sitemap = OntDocumentManager.getInstance().getOntology(classLink.getHref().toString(), OntModelSpec.OWL_MEM);
-                bld.parameter("{" + GP.sitemap.getNameSpace() + "}" + GP.sitemap.getLocalName(), getSource(sitemap, true)); // $ont-model from the current Resource (with imports)
+
+                OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
+                if (headerMap.containsKey("Rules"))
+                {
+                    String rulesString = headerMap.getFirst("Rules").toString();
+                    if (rulesString != null)
+                    {
+                        List<Rule> rules = Rule.parseRules(rulesString);
+                        Reasoner reasoner = new GenericRuleReasoner(rules);
+                        //reasoner.setDerivationLogging(true);
+                        //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
+                        ontModelSpec = new OntModelSpec(ontModelSpec);
+                        ontModelSpec.setReasoner(reasoner);
+                    }
+                }
+                
+                OntModel sitemap = OntDocumentManager.getInstance().getOntology(classLink.getHref().toString(), ontModelSpec);
+                bld.parameter("{" + GP.sitemap.getNameSpace() + "}" + GP.sitemap.getLocalName(), getSource(sitemap, true));
             }
             catch (URISyntaxException ex)   
             {

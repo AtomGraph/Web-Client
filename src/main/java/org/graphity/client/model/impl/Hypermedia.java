@@ -65,13 +65,11 @@ public class Hypermedia
 
                 if (!supportedMode.equals(GP.ConstructMode))
                 {
-                    //Set<Resource> pages = new HashSet<>();
                     ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
                     try
                     {
                         while (resIt.hasNext())
                         {
-                            //pages.add(stmtIt.next());
                             Resource page = resIt.next();
                             String modeURI = getStateUriBuilder(UriBuilder.fromUri(page.getURI()), URI.create(supportedMode.asResource().getURI())).build().toString();
                             createState(model.createResource(modeURI), supportedMode.asResource()).
