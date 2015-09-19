@@ -10,19 +10,18 @@
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
 @prefix spl:    <http://spinrdf.org/spl#> .
-@prefix dqc:	<http://semwebquality.org/ontologies/dq-constraints#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
-@prefix gc:     <http://graphity.org/gc#> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin:, dqc:, sioc:, foaf: ;
+    owl:imports sp:, spin:, sioc:, foaf: ;
     owl:versionInfo "1.1.4" ;
-    dct:title "Graphity Processor ontology" ;
+    # dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
-    dct:description "Graphity Linked Data processor ontology. Should be imported and reused by all extending applications" ;
+    # dct:description "Should be imported and reused by all extending applications" ;
+    rdfs:label "Should be imported and reused by all extending applications" ;
     dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
     dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime, "2014-08-24T02:04:00+02:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "http://graphity.org/gp#" ;
@@ -221,20 +220,19 @@
             owl:onProperty sioc:has_parent ;
             owl:allValuesFrom <#Container>
         ] ;
-    <#uriTemplate> "/{path: [^/]*}" ; # ([^/]+?)
-    <#skolemTemplate> "/{slug}" ;
+    <#uriTemplate> "{path: .*}/" ; # "/{path: [^/]*}" ; # ([^/]+?)
+    <#skolemTemplate> "{slug}/" ;
     <#defaultLimit> 20 ;
     <#query> <#DescribeWithChildren> ;
     <#template> <#ContainerConstructor> ;
-    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:GridMode, <#ConstructMode> ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#Container> ;
-	    sp:arg2 <#slug>
-	] , [ a <#MissingType> ;
-	    sp:arg1 foaf:Document
+    spin:constraint [ a <#MissingPropertyValue> ;
+	    sp:arg1 <#slug>
+	] , [ a <#MissingPropertyValue> ;
+            sp:arg1 rdf:type ;
+	    sp:arg2 foaf:Document
 	] ;
     rdfs:label "Container" ;
-    rdfs:comment "First-level container" ;
+    rdfs:comment "Container that can have other containers and items as children" ;
     rdfs:isDefinedBy <#> .
 
 <#ContainerConstructor> a       sp:Construct ;
@@ -258,19 +256,19 @@
             owl:onProperty sioc:has_container ;
             owl:allValuesFrom <#Container>
         ] ;
-    <#uriTemplate> "/{container: [^/]*}/{path: [^/]*}" ;
-    <#skolemTemplate> "/{slug}" ;
+    <#uriTemplate> "{path: .*}" ; # "/{container: [^/]*}/{path: [^/]*}" ;
+    <#skolemTemplate> "{slug}" ;
     <#query> <#DescribeWithTopic> ;
     <#update> <#DeleteWithTopic> ;
     <#template> <#ItemConstructor> ;
-    spin:constraint [ a dqc:MissingProperties ;
-	    sp:arg1 <#Item> ;
-	    sp:arg2 <#slug>
-	] , [ a <#MissingType> ;
-	    sp:arg1 foaf:Document
+    spin:constraint [ a <#MissingPropertyValue> ;
+	    sp:arg1 <#slug>
+	] , [ a <#MissingPropertyValue> ;
+	    sp:arg1 rdf:type ;
+            sp:arg2 foaf:Document
 	] ;
     rdfs:label "Item" ;
-    rdfs:comment "Child item of a first-level container" ;
+    rdfs:comment "Child item of a container" ;
     rdfs:isDefinedBy <#> .
 
 <#ItemConstructor> a       sp:Construct ;
@@ -303,6 +301,7 @@
     rdfs:subClassOf foaf:Document ;
     <#uriTemplate> "/sparql" ;
     <#query> <#Describe> ;
+    <#loadClass> <java:org.graphity.processor.model.SPARQLEndpointBase> ;
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
@@ -326,34 +325,38 @@
 
 # SPIN TEMPLATES
 
-<#MissingType> a spin:Template ;
-    rdfs:subClassOf dqc:MissingElementConstraints ;
-    rdfs:label "Missing type" ;
-    spin:body <#ConstructMissingType> ;
-    spin:labelTemplate "Instance does not have a mandatory RDF type {?arg1}" ;
+<#MissingPropertyValue> a spin:Template ;
+    rdfs:label "Missing property value" ;
+    spin:body <#ConstructMissingPropertyValue> ;
+    spin:labelTemplate "Instance does not have a mandatory RDF property {?arg1} with optional value {?arg2}" ;
     spin:constraint [ a spl:Argument ;
         spl:predicate sp:arg1 ;
-        spl:valueType rdfs:Class
+        spl:valueType rdf:Property
+    ] , [ a spl:Argument ;
+        spl:predicate sp:arg2 ;
+        spl:optional true
     ] ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES
 
 <#Describe>    a       sp:Describe, sp:Query ;
-    sp:text """DESCRIBE ?this""" .
+    sp:text """DESCRIBE ?this""" ;
+    rdfs:isDefinedBy <#> .
 
 # ====
 
 <#DescribeWithTopic>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DESCRIBE ?this ?topic WHERE {
     ?topic foaf:isPrimaryTopicOf ?this .
-}""" .
+}""" ;
+    rdfs:isDefinedBy <#> .
 
 # ====
 
 <#DescribeWithChildren>    a       sp:Describe, sp:Query ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 DESCRIBE ?this ?doc ?thing WHERE {
     OPTIONAL {
@@ -379,7 +382,8 @@ DESCRIBE ?this ?doc ?thing WHERE {
             } .
         } .
     } .
-}""" .
+}""" ;
+    rdfs:isDefinedBy <#> .
 
 # ====
 
@@ -389,7 +393,8 @@ DESCRIBE ?this ?doc ?thing WHERE {
 }
 WHERE {
     ?this ?property ?object .
-}""" .
+}""" ;
+    rdfs:isDefinedBy <#> .
 
 # ====
 
@@ -399,7 +404,8 @@ WHERE {
 }
 WHERE {
     ?subject ?property ?object .
-}""" .
+}""" ;
+    rdfs:isDefinedBy <#> .
 
 # ====
 
@@ -430,14 +436,14 @@ WHERE {
 
 # ====
 
-<#ConstructMissingType> a sp:Construct, sp:Query ;
+<#ConstructMissingPropertyValue> a sp:Construct, sp:Query ;
       sp:text """CONSTRUCT {
     _:b0 a spin:ConstraintViolation .
     _:b0 spin:violationRoot ?this .
-    _:b0 spin:violationPath rdf:type .
+    _:b0 spin:violationPath ?arg1 .
 }
 WHERE {
     NOT EXISTS {
-        ?this a ?arg1 .
+        ?this ?arg1 ?arg2 .
     } 
 }""" .

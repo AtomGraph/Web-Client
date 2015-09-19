@@ -100,7 +100,6 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
-    <xsl:key name="constraints-by-type" match="*[rdf:type/@rdf:resource = '&dqc;MissingProperties']" use="sp:arg1/@rdf:resource | sp:arg1/@rdf:nodeID"/>
     <xsl:key name="restrictions-by-container" match="*[rdf:type/@rdf:resource = '&owl;Restriction'][owl:onProperty/@rdf:resource = ('&sioc;has_parent', '&sioc;has_container')]" use="owl:allValuesFrom/@rdf:resource"/>
 
     <xsl:preserve-space elements="rdfs:label dct:title gp:slug gp:uriTemplate gp:skolemTemplate gp:defaultOrderBy"/>
@@ -598,7 +597,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource]" mode="gc:TypeListMode" priority="1">
         <ul class="inline">
             <xsl:apply-templates select="rdf:type" mode="#current">
-                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
+                <xsl:sort select="gc:object-label(@rdf:resource | @rdf:nodeID)" data-type="text" order="ascending" lang="{$gp:lang}"/>
             </xsl:apply-templates>
         </ul>
     </xsl:template>
@@ -637,7 +636,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gc:SidebarNavMode">
 	<xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-	    <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$gp:lang}"/>
+	    <xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gp:lang}"/>
 	    <xsl:apply-templates select="current-group()[1]" mode="#current">
                 <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending"/>
             </xsl:apply-templates>
@@ -1095,7 +1094,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="class" as="xs:string?"/>
         <xsl:param name="label" select="true()" as="xs:boolean"/>
         <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
-        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])" as="xs:boolean"/>
+        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and (if ($gp:sitemap) then (key('resources', key('resources', ../rdf:type/@rdf:resource, $gp:sitemap)/spin:constraint/(@rdf:resource|@rdf:nodeID), $gp:sitemap)[rdf:type/@rdf:resource = '&gp;MissingPropertyValue'][sp:arg1/@rdf:resource = $this]) else true())" as="xs:boolean"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
         
