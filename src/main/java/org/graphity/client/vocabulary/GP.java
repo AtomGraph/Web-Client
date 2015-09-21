@@ -48,6 +48,10 @@ public final class GP
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
 
+    // public static final OntClass Sitemap = m_model.createClass( NS + "Sitemap" );
+
+    public static final OntClass Template = m_model.createClass( NS + "Template" );
+    
     public static final OntClass SPARQLEndpoint = m_model.createClass( NS + "SPARQLEndpoint" );
 
     public static final OntClass GraphStore = m_model.createClass( NS + "GraphStore" );
@@ -94,7 +98,7 @@ public final class GP
 
     public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
 
-    public static final DatatypeProperty sitemap = m_model.createDatatypeProperty( NS + "sitemap" );
+    public static final ObjectProperty ontology = m_model.createObjectProperty( NS + "ontology" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
     
@@ -107,7 +111,11 @@ public final class GP
     public static final DatatypeProperty slug = m_model.createDatatypeProperty( NS + "slug" );
 
     public static final DatatypeProperty cacheSitemap = m_model.createDatatypeProperty( NS + "cacheSitemap" );
-    
+
+    public static final DatatypeProperty sitemapRules = m_model.createDatatypeProperty( NS + "sitemapRules" );
+
+    public static final DatatypeProperty restrictionsQuery = m_model.createDatatypeProperty( NS + "restrictionsQuery" );
+
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
     
     public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );

@@ -33,7 +33,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="gc:supportedMode[position() &gt; 1]" mode="gc:EditMode"/>
     
     <xsl:template match="gc:supportedMode/@rdf:resource" mode="gc:EditMode">
-        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gp:sitemap)" as="element()*"/>
+        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
         <select name="ou" id="{generate-id(.)}" multiple="multiple" size="{count($modes)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
@@ -43,7 +43,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="gc:defaultMode/@rdf:resource" mode="gc:EditMode">
-        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gp:sitemap)" as="element()*"/>
+        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
         <select name="ou" id="{generate-id(.)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>

@@ -209,40 +209,54 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 
     public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-	    bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), getUriInfo().getBaseUri()).
-	    parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
-	    parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getUriInfo().getRequestUri()).
-	    parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
-	    parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
+        bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), getUriInfo().getBaseUri()).
+        parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+        parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+        parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
+        parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
-        if (headerMap.containsKey("Link"))
+        List<Object> links = headerMap.get("Link");
+        if (links != null)
         {
+            Iterator<Object> it = links.iterator();
             try
             {
-                Link classLink = Link.valueOf(headerMap.getFirst("Link").toString());
-                bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), classLink.getHref());
-
-                OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
-                if (headerMap.containsKey("Rules"))
+                while (it.hasNext())
                 {
-                    String rulesString = headerMap.getFirst("Rules").toString();
-                    if (rulesString != null)
+                    String linkHeader = it.next().toString();
+                    Link link = Link.valueOf(linkHeader);
+
+                    if (link.getRel().equals(RDF.type.getLocalName()))
+                        bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), link.getHref());
+
+                    if (link.getRel().equals(GP.ontology.getURI()))
                     {
-                        List<Rule> rules = Rule.parseRules(rulesString);
-                        Reasoner reasoner = new GenericRuleReasoner(rules);
-                        //reasoner.setDerivationLogging(true);
-                        //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
-                        ontModelSpec = new OntModelSpec(ontModelSpec);
-                        ontModelSpec.setReasoner(reasoner);
+                        bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), link.getHref());
+                        OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
+
+                        if (headerMap.containsKey("Rules"))
+                        {
+                            String rulesString = headerMap.getFirst("Rules").toString();
+                            if (rulesString != null)
+                            {
+                                List<Rule> rules = Rule.parseRules(rulesString);
+                                Reasoner reasoner = new GenericRuleReasoner(rules);
+                                //reasoner.setDerivationLogging(true);
+                                //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
+                                ontModelSpec = new OntModelSpec(ontModelSpec);
+                                ontModelSpec.setReasoner(reasoner);
+                            }
+                        }
+
+                        // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
+                        OntModel sitemap = OntDocumentManager.getInstance().getOntology(link.getHref().toString(), ontModelSpec);
+                        bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
                     }
                 }
-                
-                OntModel sitemap = OntDocumentManager.getInstance().getOntology(classLink.getHref().toString(), ontModelSpec);
-                bld.parameter("{" + GP.sitemap.getNameSpace() + "}" + GP.sitemap.getLocalName(), getSource(sitemap, true));
             }
             catch (URISyntaxException ex)   
             {
-                if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", headerMap.getFirst("Link"));
+                if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", ex);
             }
         }
         
@@ -260,10 +274,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 	}
 
         // pass HTTP query parameters into XSLT, ignore reserved param names (as params cannot be unset)
-	Iterator<Entry<String, List<String>>> it = getUriInfo().getQueryParameters().entrySet().iterator();
-        while (it.hasNext())
+	Iterator<Entry<String, List<String>>> paramIt = getUriInfo().getQueryParameters().entrySet().iterator();
+        while (paramIt.hasNext())
         {
-            Entry<String, List<String>> entry = it.next();
+            Entry<String, List<String>> entry = paramIt.next();
             bld.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
             if (log.isDebugEnabled()) log.debug("Setting XSLT param \"{}\" from HTTP query string with value: {}", entry.getKey(), entry.getValue().get(0));
         }
