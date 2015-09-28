@@ -174,6 +174,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
             if (resp.getHeaders().getFirst("Link") != null)
                 try
                 {
+                    // TO-DO: add support for Rules and gp:ontology Link HTTP headers
                     link = Link.valueOf(resp.getHeaders().getFirst("Link"));
                     //if (!link.getType().equals("type")) link = null;
                     if (log.isDebugEnabled()) log.debug("Link header of the remote resource: {}", link);

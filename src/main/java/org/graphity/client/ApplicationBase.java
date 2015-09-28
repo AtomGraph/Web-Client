@@ -35,7 +35,6 @@ import org.graphity.client.mapper.ClientErrorExceptionMapper;
 import org.graphity.client.mapper.jersey.ClientHandlerExceptionMapper;
 import org.graphity.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
-import org.graphity.client.model.impl.AdapterBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.QueriedResourceProvider;
@@ -81,7 +80,7 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
         super(servletConfig);
         
 	classes.add(ProxyResourceBase.class);
-	classes.add(AdapterBase.class);
+	//classes.add(AdapterBase.class);
 
         /*
         singletons.add(new GraphStoreOriginProvider());
@@ -125,7 +124,8 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth), getUriInfo());
+        DataManager manager = new DataManager(mapper, ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth));
+        manager.setUriInfo(getUriInfo());
         FileManager.setStdLocators(manager);
 	manager.addLocatorLinkedData();
 	manager.removeLocatorURL();

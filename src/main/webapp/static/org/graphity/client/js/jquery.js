@@ -3,7 +3,7 @@ $(document).ready(function()
 
     $(".navbar-form").on("submit", function()
     {
-        var uriOrLabel = $(this).find("input[name=uri]").val();
+        var uriOrLabel = $(this).find("input[name=label]").val();
         if (uriOrLabel.indexOf("http://") === 0 || uriOrLabel.indexOf("https://") === 0)
         {
             $(this).attr("action", "");

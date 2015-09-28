@@ -20,6 +20,7 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
@@ -215,49 +216,36 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
-        List<Object> links = headerMap.get("Link");
-        if (links != null)
+        URI typeHref = getTypeURI(headerMap);
+        if (typeHref != null)
+            bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
+
+        URI ontologyHref = getOntologyURI(headerMap);
+        if (ontologyHref != null)                    
         {
-            Iterator<Object> it = links.iterator();
-            try
+            bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);
+            /*
+            OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
+
+            if (headerMap.containsKey("Rules"))
             {
-                while (it.hasNext())
+                String rulesString = headerMap.getFirst("Rules").toString();
+                if (rulesString != null)
                 {
-                    String linkHeader = it.next().toString();
-                    Link link = Link.valueOf(linkHeader);
-
-                    if (link.getRel().equals(RDF.type.getLocalName()))
-                        bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), link.getHref());
-
-                    if (link.getRel().equals(GP.ontology.getURI()))
-                    {
-                        bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), link.getHref());
-                        OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
-
-                        if (headerMap.containsKey("Rules"))
-                        {
-                            String rulesString = headerMap.getFirst("Rules").toString();
-                            if (rulesString != null)
-                            {
-                                List<Rule> rules = Rule.parseRules(rulesString);
-                                Reasoner reasoner = new GenericRuleReasoner(rules);
-                                //reasoner.setDerivationLogging(true);
-                                //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
-                                ontModelSpec = new OntModelSpec(ontModelSpec);
-                                ontModelSpec.setReasoner(reasoner);
-                            }
-                        }
-
-                        // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
-                        OntModel sitemap = OntDocumentManager.getInstance().getOntology(link.getHref().toString(), ontModelSpec);
-                        bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
-                    }
+                    List<Rule> rules = Rule.parseRules(rulesString);
+                    Reasoner reasoner = new GenericRuleReasoner(rules);
+                    //reasoner.setDerivationLogging(true);
+                    //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
+                    ontModelSpec = new OntModelSpec(ontModelSpec);
+                    ontModelSpec.setReasoner(reasoner);
                 }
             }
-            catch (URISyntaxException ex)   
-            {
-                if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", ex);
-            }
+            */
+            
+            // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
+            OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
+            OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
+            bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
         }
         
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
@@ -283,35 +271,128 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         }
 
         // override the reserved parameters that need special types
-	if (getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()) != null)
-	    bld.parameter("{" + GP.offset.getNameSpace() + "}" + GP.offset.getLocalName(),
-                Long.valueOf(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName())));
-	if (getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()) != null)
-	    bld.parameter("{" + GP.limit.getNameSpace() + "}" + GP.limit.getLocalName(),
-                Long.valueOf(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName())));
-	if (getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()) != null)
-	    bld.parameter("{" + GP.orderBy.getNameSpace() + "}" + GP.orderBy.getLocalName(),
-                getUriInfo().getQueryParameters().getFirst(GP.orderBy.getLocalName()));
-        if (getUriInfo().getQueryParameters().getFirst(GP.desc.getLocalName()) != null)
-	    bld.parameter("{" + GP.desc.getNameSpace() + "}" + GP.desc.getLocalName(),
-                Boolean.valueOf(getUriInfo().getQueryParameters().getFirst(GP.desc.getLocalName())));
-	if (getUriInfo().getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
-	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
-                getUriInfo().getQueryParameters().getFirst(GP.lang.getLocalName()));
-        if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
-	    bld.parameter("{" + GP.mode.getNameSpace() + "}" + GP.mode.getLocalName(),
-                URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName())));
-        if (getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName()) != null)
-	    bld.parameter("{" + GP.forClass.getNameSpace() + "}" + GP.forClass.getLocalName(),
-                URI.create(getUriInfo().getQueryParameters().getFirst(GP.forClass.getLocalName())));
-        if (getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
-	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
-                URI.create(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName())));
-	if (getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
-	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
-                URI.create(getUriInfo().getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
+	return setDefaultParameters(bld, getUriInfo());
+    }
 
-	return bld;
+    public XSLTBuilder setDefaultParameters(XSLTBuilder bld, UriInfo uriInfo)
+    {
+	if (bld == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
+	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
+
+        if (uriInfo.getQueryParameters().getFirst(GP.offset.getLocalName()) != null)
+	    bld.parameter("{" + GP.offset.getNameSpace() + "}" + GP.offset.getLocalName(),
+                Long.valueOf(uriInfo.getQueryParameters().getFirst(GP.offset.getLocalName())));
+	if (uriInfo.getQueryParameters().getFirst(GP.limit.getLocalName()) != null)
+	    bld.parameter("{" + GP.limit.getNameSpace() + "}" + GP.limit.getLocalName(),
+                Long.valueOf(uriInfo.getQueryParameters().getFirst(GP.limit.getLocalName())));
+	if (uriInfo.getQueryParameters().getFirst(GP.orderBy.getLocalName()) != null)
+	    bld.parameter("{" + GP.orderBy.getNameSpace() + "}" + GP.orderBy.getLocalName(),
+                uriInfo.getQueryParameters().getFirst(GP.orderBy.getLocalName()));
+        if (uriInfo.getQueryParameters().getFirst(GP.desc.getLocalName()) != null)
+	    bld.parameter("{" + GP.desc.getNameSpace() + "}" + GP.desc.getLocalName(),
+                Boolean.valueOf(uriInfo.getQueryParameters().getFirst(GP.desc.getLocalName())));
+	if (uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
+	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
+                uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()));
+        if (uriInfo.getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
+	    bld.parameter("{" + GP.mode.getNameSpace() + "}" + GP.mode.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(GP.mode.getLocalName())));
+        if (uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName()) != null)
+	    bld.parameter("{" + GP.forClass.getNameSpace() + "}" + GP.forClass.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName())));
+        if (uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
+	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
+	if (uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
+	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
+        
+        return bld;
+    }
+        
+    public URI getTypeURI(MultivaluedMap<String, Object> headerMap)
+    {
+        return getLinkHref(headerMap, "Link", RDF.type);
+    }
+
+    public URI getOntologyURI(MultivaluedMap<String, Object> headerMap)
+    {
+        return getLinkHref(headerMap, "Link", GP.ontology);
+    }
+    
+    public OntModel getSitemap(MultivaluedMap<String, Object> headerMap, String ontologyURI)
+    {
+        return getSitemap(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
+    }
+    
+    public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, Property property)
+    {
+	if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
+	if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
+        if (property == null) throw new IllegalArgumentException("Property Map cannot be null");
+        
+        List<Object> links = headerMap.get(headerName);
+        if (links != null)
+        {
+            Iterator<Object> it = links.iterator();
+            try
+            {
+                while (it.hasNext())
+                {
+                    String linkHeader = it.next().toString();
+                    Link link = Link.valueOf(linkHeader);
+                    if (link.getRel().equals(property.getURI())) return link.getHref();
+                }
+            }
+            catch (URISyntaxException ex)   
+            {
+                if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", ex);
+            }    
+        }
+        
+        return null;
+    }
+
+    public OntModelSpec getOntModelSpec(List<Rule> rules)
+    {
+        OntModelSpec ontModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
+        
+        if (rules != null)
+        {
+            Reasoner reasoner = new GenericRuleReasoner(rules);
+            //reasoner.setDerivationLogging(true);
+            //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
+            ontModelSpec.setReasoner(reasoner);
+        }
+        
+        return ontModelSpec;
+    }
+    
+    public final List<Rule> getRules(MultivaluedMap<String, Object> headerMap, String headerName)
+    {
+        String rules = getRulesString(headerMap, headerName);
+        if (rules == null) return null;
+        
+        return Rule.parseRules(rules);
+    }
+    
+    public String getRulesString(MultivaluedMap<String, Object> headerMap, String headerName)
+    {
+	if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
+	if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
+
+        Object rules = headerMap.getFirst(headerName);
+        if (rules != null) return rules.toString();
+        
+        return null;
+    }
+    
+    public OntModel getSitemap(String ontologyURI, OntModelSpec ontModelSpec)
+    {
+	if (ontologyURI == null) throw new IllegalArgumentException("String cannot be null");
+	if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
+        
+        return OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
     }
     
 }

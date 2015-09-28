@@ -149,11 +149,13 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
             else
                 return getTemplates(getStylesheetURI());
         }
+        /*
         catch (ConfigurationException ex)
         {
     	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not configured", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
+        */
         catch (TransformerConfigurationException ex)
         {
 	    if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);

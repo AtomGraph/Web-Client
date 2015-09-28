@@ -74,13 +74,11 @@ public class DataManager extends org.graphity.core.util.DataManager implements U
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
     
-    private final UriInfo uriInfo;
+    private UriInfo uriInfo = null;
         
-    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth, UriInfo uriInfo)
+    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth)
     {
 	super(mapper, context, preemptiveAuth);
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
-        this.uriInfo = uriInfo;
     }
 
     @Override
@@ -298,6 +296,8 @@ public class DataManager extends org.graphity.core.util.DataManager implements U
      * Resolves relative URI to XML source.
      * @param href relative URI
      * @param base base URI
+     * @return XML source
+     * @throws javax.xml.transform.TransformerException 
      */
     @Override
     public Source resolve(String href, String base) throws TransformerException
@@ -503,6 +503,11 @@ public class DataManager extends org.graphity.core.util.DataManager implements U
     public UriInfo getUriInfo()
     {
         return uriInfo;
+    }
+ 
+    public void setUriInfo(UriInfo uriInfo)
+    {
+        this.uriInfo = uriInfo;
     }
     
 }

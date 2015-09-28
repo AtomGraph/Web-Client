@@ -101,7 +101,8 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
             boolean preemptiveAuth, UriInfo uriInfo)
     {
-        DataManager dataManager = new DataManager(mapper, context, preemptiveAuth, uriInfo);
+        DataManager dataManager = new DataManager(mapper, context, preemptiveAuth);
+        dataManager.setUriInfo(uriInfo);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();

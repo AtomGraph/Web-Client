@@ -37,7 +37,7 @@ exclude-result-prefixes="#all">
         <select name="ou" id="{generate-id(.)}" multiple="multiple" size="{count($modes)}">
             <xsl:apply-templates select="$modes" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
-                <xsl:with-param name="selected" select="../../gc:mode/@rdf:resource"/>
+                <xsl:with-param name="selected" select="../../gc:supportedMode/@rdf:resource"/>
             </xsl:apply-templates>
         </select>
     </xsl:template>
