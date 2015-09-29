@@ -20,7 +20,6 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
@@ -223,25 +222,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         URI ontologyHref = getOntologyURI(headerMap);
         if (ontologyHref != null)                    
         {
-            bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);
-            /*
-            OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
+            bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);            
 
-            if (headerMap.containsKey("Rules"))
-            {
-                String rulesString = headerMap.getFirst("Rules").toString();
-                if (rulesString != null)
-                {
-                    List<Rule> rules = Rule.parseRules(rulesString);
-                    Reasoner reasoner = new GenericRuleReasoner(rules);
-                    //reasoner.setDerivationLogging(true);
-                    //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
-                    ontModelSpec = new OntModelSpec(ontModelSpec);
-                    ontModelSpec.setReasoner(reasoner);
-                }
-            }
-            */
-            
             // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
             OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
             OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
@@ -312,12 +294,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         
     public URI getTypeURI(MultivaluedMap<String, Object> headerMap)
     {
-        return getLinkHref(headerMap, "Link", RDF.type);
+        return getLinkHref(headerMap, "Link", RDF.type.getLocalName());
     }
 
     public URI getOntologyURI(MultivaluedMap<String, Object> headerMap)
     {
-        return getLinkHref(headerMap, "Link", GP.ontology);
+        return getLinkHref(headerMap, "Link", GP.ontology.getURI());
     }
     
     public OntModel getSitemap(MultivaluedMap<String, Object> headerMap, String ontologyURI)
@@ -325,11 +307,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         return getSitemap(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
     }
     
-    public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, Property property)
+    public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, String rel)
     {
 	if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
 	if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
-        if (property == null) throw new IllegalArgumentException("Property Map cannot be null");
+        if (rel == null) throw new IllegalArgumentException("Property Map cannot be null");
         
         List<Object> links = headerMap.get(headerName);
         if (links != null)
@@ -341,7 +323,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
                 {
                     String linkHeader = it.next().toString();
                     Link link = Link.valueOf(linkHeader);
-                    if (link.getRel().equals(property.getURI())) return link.getHref();
+                    if (link.getRel().equals(rel)) return link.getHref();
                 }
             }
             catch (URISyntaxException ex)   

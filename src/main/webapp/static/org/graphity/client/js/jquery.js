@@ -23,6 +23,13 @@ $(document).ready(function()
         return $(this).parent().parent().remove();
     });
 
+    $("div.btn-group:has(div.btn.dropdown-toggle)").on("click", function()
+    {
+        $(this).toggleClass("open");
+        
+        return true;
+    });
+
     $(".btn-add").on("click", function()
     {
         var clone = $(this).parent().parent().clone(true, true);

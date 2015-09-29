@@ -76,14 +76,5 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>        
     </xsl:template>
-
-    <!--
-    <xsl:template match="rdfs:subClassOf/@rdf:resource[. = '&gp;Item']" mode="gc:EditMode">
-        <select name="ou" id="{generate-id()}">
-            <xsl:apply-templates select="key('resources', '&gp;Item', $gp:ontModel)" mode="gc:OptionMode"/>
-            <xsl:apply-templates select="key('resources', '&gp;Container', $gp:ontModel)" mode="gc:OptionMode"/>
-        </select>
-    </xsl:template>
-    -->
     
 </xsl:stylesheet>
