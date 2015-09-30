@@ -999,8 +999,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="parent-uri" select="key('resources', $gc:uri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
         <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
-        <xsl:param name="construct-uri" select="key('resources-by-constructor-of', $parent-uri, $parent-doc)/@rdf:about" as="xs:anyURI"/>
-        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()"/>
+        <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gp:forClass/@rdf:resource = key('resources', $gc:uri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
+        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">

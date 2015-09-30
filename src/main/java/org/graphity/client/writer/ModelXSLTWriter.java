@@ -229,7 +229,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
             OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
             bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
         }
-        
+	
+        Object query = headerMap.getFirst("Query");
+	if (query != null) bld.parameter("{http://spinrdf.org/spin#}query", query.toString());
+    
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
 	if (contentType != null)
 	{
@@ -253,10 +256,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         }
 
         // override the reserved parameters that need special types
-	return setDefaultParameters(bld, getUriInfo());
+	return setQueryParameters(bld, getUriInfo());
     }
 
-    public XSLTBuilder setDefaultParameters(XSLTBuilder bld, UriInfo uriInfo)
+    public XSLTBuilder setQueryParameters(XSLTBuilder bld, UriInfo uriInfo)
     {
 	if (bld == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
