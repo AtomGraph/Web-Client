@@ -215,19 +215,26 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
-        URI typeHref = getTypeURI(headerMap);
-        if (typeHref != null)
-            bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
-
-        URI ontologyHref = getOntologyURI(headerMap);
-        if (ontologyHref != null)                    
+        try
         {
-            bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);            
+            URI typeHref = getTypeURI(headerMap);
+            if (typeHref != null)
+                bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
-            // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
-            OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
-            OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
-            bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
+            URI ontologyHref = getOntologyURI(headerMap);
+            if (ontologyHref != null)                    
+            {
+                bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);            
+
+                // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
+                OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
+                OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
+                bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
+            }
+        }
+        catch (URISyntaxException ex)
+        {
+            if (log.isErrorEnabled()) log.error("'Link' response header contains invalid URI: {}", headerMap.getFirst("Link"));
         }
 	
         Object query = headerMap.getFirst("Query");
@@ -295,12 +302,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         return bld;
     }
         
-    public URI getTypeURI(MultivaluedMap<String, Object> headerMap)
+    public URI getTypeURI(MultivaluedMap<String, Object> headerMap) throws URISyntaxException
     {
         return getLinkHref(headerMap, "Link", RDF.type.getLocalName());
     }
 
-    public URI getOntologyURI(MultivaluedMap<String, Object> headerMap)
+    public URI getOntologyURI(MultivaluedMap<String, Object> headerMap) throws URISyntaxException
     {
         return getLinkHref(headerMap, "Link", GP.ontology.getURI());
     }
@@ -310,7 +317,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         return getSitemap(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
     }
     
-    public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, String rel)
+    public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, String rel) throws URISyntaxException
     {
 	if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
 	if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
@@ -320,19 +327,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         if (links != null)
         {
             Iterator<Object> it = links.iterator();
-            try
+            while (it.hasNext())
             {
-                while (it.hasNext())
-                {
-                    String linkHeader = it.next().toString();
-                    Link link = Link.valueOf(linkHeader);
-                    if (link.getRel().equals(rel)) return link.getHref();
-                }
+                String linkHeader = it.next().toString();
+                Link link = Link.valueOf(linkHeader);
+                if (link.getRel().equals(rel)) return link.getHref();
             }
-            catch (URISyntaxException ex)   
-            {
-                if (log.isDebugEnabled()) log.debug("'Link' header contains invalid URI: {}", ex);
-            }    
         }
         
         return null;

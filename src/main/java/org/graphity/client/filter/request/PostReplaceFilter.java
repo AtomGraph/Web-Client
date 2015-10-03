@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.graphity.client.filter;
+package org.graphity.client.filter.request;
 
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.header.MediaTypes;

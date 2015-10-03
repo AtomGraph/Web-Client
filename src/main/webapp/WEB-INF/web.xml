@@ -15,8 +15,12 @@
         </init-param>
         <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-	    <param-value>org.graphity.client.filter.PostReplaceFilter</param-value>
+	    <param-value>org.graphity.client.filter.request.PostReplaceFilter</param-value>
 	</init-param>
+        <init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>org.graphity.client.filter.response.HypermediaFilter</param-value>
+	</init-param>        
         <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
