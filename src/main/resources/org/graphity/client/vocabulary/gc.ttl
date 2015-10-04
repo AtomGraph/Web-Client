@@ -38,7 +38,7 @@
 <#layoutOf> a owl:ObjectProperty ;
     rdfs:subPropertyOf dct:isVersionOf ;
     rdfs:domain foaf:Document ;
-    rdfs:range foaf:Document ;
+    rdfs:range foaf:Document ; # <#Layout> ?
     rdfs:label "Layout of" ;
     rdfs:isDefinedBy <#> .
 

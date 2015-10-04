@@ -37,8 +37,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.vocabulary.GP;
@@ -56,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public class HypermediaFilter implements ContainerResponseFilter
 {
     private static final Logger log = LoggerFactory.getLogger(HypermediaFilter.class);
+
+    @Context UriInfo uriInfo;
     
     public OntClass getMatchedOntClass(MultivaluedMap<String, Object> headerMap)
     {
@@ -95,7 +99,14 @@ public class HypermediaFilter implements ContainerResponseFilter
             Model model = (Model)response.getEntity();
             long oldCount = model.size();
             Resource resource = model.createResource(request.getAbsolutePath().toString());
-            model = addStates(resource, matchedOntClass);
+
+            Long limit = null, offset = null;
+            if (getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+                limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
+            if (getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+                offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+            
+            model = addStates(resource, matchedOntClass, limit, offset);
             if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
             response.setEntity(model);
             return response;
@@ -104,10 +115,12 @@ public class HypermediaFilter implements ContainerResponseFilter
         return response;
     }
     
-    public Model addStates(Resource resource, OntClass matchedOntClass)
+    public Model addStates(Resource resource, OntClass matchedOntClass, Long limit, Long offset)
     {
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
         if (matchedOntClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+        if (limit == null) throw new IllegalArgumentException("Long cannot be null");
+        if (offset == null) throw new IllegalArgumentException("Long cannot be null");
         
         Model model = resource.getModel();
         NodeIterator it = matchedOntClass.listPropertyValues(GC.supportedMode);
@@ -130,13 +143,12 @@ public class HypermediaFilter implements ContainerResponseFilter
                         while (resIt.hasNext())
                         {
                             Resource page = resIt.next();
-                            StateBuilder.fromUri(page.getURI(), page.getModel()).
-                                property(GC.mode, supportedMode.asResource()).
-                                build().
-                                addProperty(RDF.type, FOAF.Document).
-                                addProperty(GC.layoutOf, resource);
-                            //String modeURI = getStateUriBuilder(UriBuilder.fromUri(page.getURI()), URI.create(supportedMode.asResource().getURI())).build().toString();
-                            //createState(model.createResource(modeURI), supportedMode.asResource()).                            
+                            if (page.hasLiteral(GP.limit, limit) && page.hasLiteral(GP.offset, offset))
+                                StateBuilder.fromUri(page.getURI(), page.getModel()).
+                                    replaceProperty(GC.mode, supportedMode.asResource()).
+                                    build().
+                                    addProperty(GC.layoutOf, page).
+                                    addProperty(RDF.type, FOAF.Document);
                         }
                     }
                     finally
@@ -225,6 +237,11 @@ public class HypermediaFilter implements ContainerResponseFilter
 	if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
         
         return OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
+    }
+ 
+    public UriInfo getUriInfo()
+    {
+        return uriInfo;
     }
     
 }

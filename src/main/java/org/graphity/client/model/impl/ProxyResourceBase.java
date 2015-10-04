@@ -16,10 +16,6 @@
  */
 package org.graphity.client.model.impl;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -170,17 +166,11 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
                 throw new ClientErrorException(resp);
             
             Link link = null;
-            OntClass ontClass = null;
             if (resp.getHeaders().getFirst("Link") != null)
                 try
                 {
                     // TO-DO: add support for Rules and gp:ontology Link HTTP headers
                     link = Link.valueOf(resp.getHeaders().getFirst("Link"));
-                    //if (!link.getType().equals("type")) link = null;
-                    if (log.isDebugEnabled()) log.debug("Link header of the remote resource: {}", link);
-                    URI classURI = link.getHref();
-                    OntModel ontModel = OntDocumentManager.getInstance().getOntology(classURI.toString(), OntModelSpec.OWL_MEM);
-                    ontClass = ontModel.getOntClass(classURI.toString());
                 }
                 catch (URISyntaxException ex)   
                 {
@@ -189,11 +179,9 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
             
             if (log.isDebugEnabled()) log.debug("Loading Model from URI: {}", getWebResource().getURI());
             Model description = resp.getEntity(Model.class);
-            if (ontClass != null) description = new Hypermedia(ontClass).
-                    addStates(description.createResource(getWebResource().getURI().toString()), description);
             
             ResponseBuilder bld = getResponseBuilder(description);
-            if (link != null) bld.header("Link", link.toString());
+            if (link != null) bld.header("Link", link.toString()); // move to HypermediaFilter?
             return bld.build(); // TO-DO: MediaTypes!
         }
 

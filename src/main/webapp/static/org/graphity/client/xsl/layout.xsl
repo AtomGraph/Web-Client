@@ -647,7 +647,7 @@ exclude-result-prefixes="#all">
     <!-- PAGINATION MODE -->
 
     <xsl:template match="rdf:RDF" mode="gc:PaginationMode" priority="1">
-        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
+        <xsl:apply-templates select="key('resources-by-page-of', $gc:uri)[gp:limit = $gp:limit][gp:offset = $gp:offset]" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*" mode="gc:PaginationMode"/>
