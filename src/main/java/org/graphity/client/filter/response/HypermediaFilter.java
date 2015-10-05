@@ -99,14 +99,8 @@ public class HypermediaFilter implements ContainerResponseFilter
             Model model = (Model)response.getEntity();
             long oldCount = model.size();
             Resource resource = model.createResource(request.getAbsolutePath().toString());
-
-            Long limit = null, offset = null;
-            if (getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
-                limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
-            if (getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
-                offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
             
-            model = addStates(resource, matchedOntClass, limit, offset);
+            model = addStates(resource, matchedOntClass);
             if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
             response.setEntity(model);
             return response;
@@ -115,12 +109,10 @@ public class HypermediaFilter implements ContainerResponseFilter
         return response;
     }
     
-    public Model addStates(Resource resource, OntClass matchedOntClass, Long limit, Long offset)
+    public Model addStates(Resource resource, OntClass matchedOntClass)
     {
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
         if (matchedOntClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-        if (limit == null) throw new IllegalArgumentException("Long cannot be null");
-        if (offset == null) throw new IllegalArgumentException("Long cannot be null");
         
         Model model = resource.getModel();
         NodeIterator it = matchedOntClass.listPropertyValues(GC.supportedMode);
@@ -137,23 +129,40 @@ public class HypermediaFilter implements ContainerResponseFilter
 
                 if (!supportedMode.equals(GP.ConstructMode))
                 {
-                    ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
-                    try
+                    if (resource.hasProperty(RDF.type, GP.Container))
                     {
-                        while (resIt.hasNext())
+                        ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
+                        try
                         {
-                            Resource page = resIt.next();
-                            if (page.hasLiteral(GP.limit, limit) && page.hasLiteral(GP.offset, offset))
-                                StateBuilder.fromUri(page.getURI(), page.getModel()).
-                                    replaceProperty(GC.mode, supportedMode.asResource()).
-                                    build().
-                                    addProperty(GC.layoutOf, page).
-                                    addProperty(RDF.type, FOAF.Document);
+                            while (resIt.hasNext())
+                            {
+                                Resource page = resIt.next();
+                                Long limit = null, offset = null;
+                                if (getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
+                                    limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
+                                if (getUriInfo().getQueryParameters().containsKey(GP.offset.getLocalName()))
+                                    offset = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.offset.getLocalName()));
+
+                                if (page.hasLiteral(GP.limit, limit) && page.hasLiteral(GP.offset, offset))
+                                    StateBuilder.fromUri(page.getURI(), page.getModel()).
+                                        replaceProperty(GC.mode, supportedMode.asResource()).
+                                        build().
+                                        addProperty(GC.layoutOf, page).
+                                        addProperty(RDF.type, FOAF.Document);
+                            }
+                        }
+                        finally
+                        {
+                            resIt.close();
                         }
                     }
-                    finally
+                    else
                     {
-                        resIt.close();
+                        StateBuilder.fromUri(resource.getURI(), resource.getModel()).
+                            replaceProperty(GC.mode, supportedMode.asResource()).
+                            build().
+                            addProperty(GC.layoutOf, resource).
+                            addProperty(RDF.type, FOAF.Document);                        
                     }
                 }
             }
