@@ -1135,11 +1135,15 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:OptionMode">
-        <xsl:param name="selected" as="xs:string*"/>
+        <xsl:param name="selected" as="xs:boolean?"/>
+        <xsl:param name="disabled" as="xs:boolean?"/>
 
         <option value="{@rdf:about | @rdf:nodeID}">
-            <xsl:if test="(@rdf:about, @rdf:nodeID) = $selected">
+            <xsl:if test="$selected">
                 <xsl:attribute name="selected">selected</xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$disabled">
+                <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="." mode="gc:LabelMode"/>
         </option>

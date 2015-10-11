@@ -3,6 +3,7 @@ body { padding-top: 60px; padding-bottom: 40px; }
 form.form-inline { margin: 0; }
 ul.inline { margin-left: 0; max-height: 7em; overflow-y: auto; }
 .inline li { display: inline; }
+.btn-type.btn-primary { font-weight: bold; background: inherit; }
 .well-small { background-color: #FAFAFA; }
 .well-small dl { max-height: 60em; overflow-y: auto; }
 textarea#query-string { font-family: monospace; }
