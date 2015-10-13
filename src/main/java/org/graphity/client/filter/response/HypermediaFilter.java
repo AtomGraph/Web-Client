@@ -129,8 +129,9 @@ public class HypermediaFilter implements ContainerResponseFilter
 
                 if (!supportedMode.equals(GP.ConstructMode))
                 {
-                    if (resource.hasProperty(RDF.type, GP.Container))
+                    if (resource.hasProperty(RDF.type, GP.Container) && model.contains(null, GP.pageOf, resource))
                     {
+                        // container pages
                         ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
                         try
                         {
@@ -158,6 +159,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                     }
                     else
                     {
+                        // container without pagination or item
                         StateBuilder.fromUri(resource.getURI(), resource.getModel()).
                             replaceProperty(GC.mode, supportedMode.asResource()).
                             build().
