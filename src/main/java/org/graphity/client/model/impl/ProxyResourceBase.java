@@ -16,6 +16,8 @@
  */
 package org.graphity.client.model.impl;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -24,6 +26,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +41,13 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.exception.ClientErrorException;
+import org.graphity.client.util.DataManager;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.core.model.SPARQLEndpoint;
+import org.graphity.core.model.SPARQLEndpointFactory;
+import org.graphity.core.model.SPARQLEndpointOrigin;
+import org.graphity.core.model.impl.SPARQLEndpointOriginBase;
 import org.graphity.core.provider.ModelProvider;
 import org.graphity.core.util.Link;
 import org.slf4j.Logger;
@@ -62,8 +69,9 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
     private final MediaType mediaType;
-    private final URI endpointURI;
     private final WebResource webResource;
+    private final SPARQLEndpoint remoteEndpoint;
+    private final Query userQuery;
     
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -99,9 +107,31 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         else
             webResource = null;
         
-        if (uriInfo.getQueryParameters().containsKey(GC.endpointUri.getLocalName()))
-            endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
-        else endpointURI = null;
+        if (uriInfo.getQueryParameters().containsKey(GC.endpointUri.getLocalName()) &&
+                uriInfo.getQueryParameters().containsKey("query"))
+        {
+            userQuery = QueryFactory.create(uriInfo.getQueryParameters().getFirst("query"));
+            
+            URI endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
+            List<MediaType> modelMediaTypes = new ArrayList<>(mediaTypes.getModelMediaTypes());
+            modelMediaTypes.addAll(getMediaTypes().getResultSetMediaTypes());
+            List<Variant> variants = getResponse().getVariantListBuilder(modelMediaTypes, getLanguages(), getEncodings()).add().build();
+            Variant variant = getRequest().selectVariant(variants);
+
+            if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&
+                    !variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
+            {
+                if (log.isDebugEnabled()) log.debug("Using remote SPARQL endpoint URI: {}", endpointURI);
+                SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(endpointURI.toString());
+                this.remoteEndpoint = SPARQLEndpointFactory.createProxy(request, servletConfig, mediaTypes, origin, (DataManager)DataManager.get());
+            }
+            else this.remoteEndpoint = null;
+        }
+        else
+        {
+            this.remoteEndpoint = null;
+            this.userQuery = null;
+        }
 
         /*
         URI classURI = null;
@@ -131,13 +161,18 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
     }
 
     /**
-     * Returns URI of remote SPARQL endpoint (<samp>endpoint-uri</samp> query string parameter).
+     * Returns remote SPARQL endpoint (<samp>endpointUri</samp> query string parameter).
      * 
      * @return SPARQL endpoint URI
      */
-    public URI getEndpointURI()
+    public SPARQLEndpoint getRemoteEndpoint()
     {
-        return endpointURI;
+        return remoteEndpoint;
+    }
+    
+    public Query getUserQuery()
+    {
+        return userQuery;
     }
     
     public WebResource getWebResource()
@@ -161,7 +196,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
                 accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
                 get(ClientResponse.class);
 
-            //  || resp.getStatusInfo().getFamily().equals(CLIENT_ERROR)
             if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
                 throw new ClientErrorException(resp);
             
@@ -185,6 +219,12 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
             return bld.build(); // TO-DO: MediaTypes!
         }
 
+        if (getRemoteEndpoint() != null && getUserQuery() != null)
+        {
+            Response response = getRemoteEndpoint().get(getUserQuery(), null, null);
+            return response;
+        }
+        
         return super.get();
     }
 
@@ -193,37 +233,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
     {
         if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
         return getResponse(getWebResource().post(Model.class, model));
-    }
-    
-    /**
-     * Returns sub-resource instance.
-     * By default matches any path.
-     * 
-     * @return resource object
-     */
-    @Path("{path: .+}")
-    //@Override
-    public Object getSubResource() // Adapter.getSubResource()
-    {
-        if (getEndpointURI() != null)
-        {
-            List<MediaType> mediaTypes = getModelMediaTypes();
-            mediaTypes.addAll(getMediaTypes().getResultSetMediaTypes());
-            List<Variant> variants = getResponse().getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
-            Variant variant = getRequest().selectVariant(variants);
-
-            /*
-            if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&
-                    !variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
-            {
-                if (log.isDebugEnabled()) log.debug("Using remote SPARQL endpoint URI: {}", getEndpointURI());
-                SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(getEndpointURI().toString());
-                return SPARQLEndpointFactory.createProxy(getRequest(), getServletConfig(), getMediaTypes(), origin, getDataManager());
-            }
-            */
-        }
-        
-        return this;
     }
 
     /**

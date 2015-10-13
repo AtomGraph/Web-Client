@@ -33,6 +33,12 @@ exclude-result-prefixes="#all">
         </span>
     </xsl:template>
 
+    <xsl:template match="rdf:type/@rdf:resource[. = $rdf:type]" priority="2" mode="gc:InlineMode">
+	<span title="{.}" class="btn btn-type btn-primary">
+            <xsl:next-match/>
+        </span>
+    </xsl:template>
+
     <xsl:template match="rdf:type" mode="gc:EditMode">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>
