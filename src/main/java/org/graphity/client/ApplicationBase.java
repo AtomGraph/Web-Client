@@ -37,7 +37,6 @@ import org.graphity.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
-import org.graphity.client.provider.QueriedResourceProvider;
 import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.core.provider.QueryParamProvider;
@@ -62,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class ApplicationBase extends org.graphity.core.ApplicationBase
+public class ApplicationBase extends org.graphity.core.Application
 {
     private static final Logger log = LoggerFactory.getLogger(ApplicationBase.class);
 
@@ -93,7 +92,6 @@ public class ApplicationBase extends org.graphity.core.ApplicationBase
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
         singletons.add(new MediaTypesProvider());
-        singletons.add(new QueriedResourceProvider());
         //singletons.add(new ModifiersProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());

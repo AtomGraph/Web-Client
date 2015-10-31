@@ -95,7 +95,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
     <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
-    <xsl:key name="resources-by-container" match="*[@rdf:about]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
+    <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
     <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
@@ -255,7 +255,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="rdf:RDF">
-        <xsl:param name="selected-resources" select="key('resources-by-container', $gc:uri)" as="element()*" tunnel="yes"/>
+        <xsl:param name="selected-resources" select="if (key('resources', $gc:uri)/rdf:type/@rdf:resource = '&gp;Container') then key('resources-by-container', $gc:uri) else key('resources', $gc:uri)" as="element()*" tunnel="yes"/>
 
         <div class="container-fluid">
 	    <div class="row-fluid">
@@ -425,9 +425,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:HeaderMode">
-	<h1>
+	<h2>
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</h1>
+	</h2>
     </xsl:template>
 
     <xsl:template match="@rdf:nodeID[../rdf:type/@rdf:resource = '&http;Response']" mode="gc:HeaderMode" priority="1">
@@ -934,7 +934,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="template-doc" select="document($action)" as="document-node()"/>
-                
+        
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
