@@ -76,8 +76,11 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="gc:label" as="xs:string?">
 	<xsl:param name="resource" as="element()"/>
-	
-	<xsl:apply-templates select="$resource" mode="gc:LabelMode"/>
+
+        <xsl:variable name="labels" as="xs:string*">
+            <xsl:apply-templates select="$resource" mode="gc:LabelMode"/>
+        </xsl:variable>
+        <xsl:sequence select="$labels[1]"/>
     </xsl:function>
 
     <xsl:function name="gc:property-label" as="xs:string?">

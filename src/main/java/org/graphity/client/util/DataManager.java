@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
-public class DataManager extends org.graphity.core.util.DataManager implements URIResolver
+public class DataManager extends org.graphity.core.util.jena.DataManager implements URIResolver
 {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);

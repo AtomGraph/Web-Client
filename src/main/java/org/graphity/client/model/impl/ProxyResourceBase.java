@@ -193,7 +193,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         if (getWebResource() != null)
         {
             ClientResponse resp = getWebResource().
-                accept(org.graphity.core.MediaType.TEXT_TURTLE, org.graphity.core.MediaType.APPLICATION_RDF_XML).
+                accept(org.graphity.core.MediaType.TEXT_NTRIPLES_TYPE, org.graphity.core.MediaType.APPLICATION_RDF_XML_TYPE).
                 get(ClientResponse.class);
 
             if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))

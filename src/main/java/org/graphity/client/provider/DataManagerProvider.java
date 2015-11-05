@@ -84,10 +84,10 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth), getUriInfo());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(), getBooleanParam(getServletConfig(), G.preemptiveAuth), getUriInfo());
     }
     
-    public boolean getPreemptiveAuth(ServletConfig servletConfig, Property property)
+    public boolean getBooleanParam(ServletConfig servletConfig, Property property)
     {
 	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
 	if (property == null) throw new IllegalArgumentException("Property cannot be null");

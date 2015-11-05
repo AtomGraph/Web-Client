@@ -11,7 +11,7 @@
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.graphity.client.ApplicationBase</param-value>
+            <param-value>org.graphity.client.Application</param-value>
         </init-param>
         <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
@@ -62,7 +62,7 @@
             <param-value>100</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gc#cacheXSLT</param-name>
+            <param-name>http://graphity.org/gc#cacheStylesheet</param-name>
             <param-value>false</param-value>
         </init-param>
     </servlet>

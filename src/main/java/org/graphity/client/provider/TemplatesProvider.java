@@ -57,7 +57,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 
     private final ServletConfig servletConfig;
     private Templates templates;
-    private final boolean cacheXSLT;
+    private final boolean cacheStylesheet;
 
     /**
      * 
@@ -68,9 +68,9 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	super(Templates.class);
         this.servletConfig = servletConfig;
         
-        if (servletConfig.getInitParameter(GC.cacheXSLT.getURI()) != null)
-            cacheXSLT = Boolean.parseBoolean(servletConfig.getInitParameter(GC.cacheXSLT.getURI()).toString());
-        else cacheXSLT = false;
+        if (servletConfig.getInitParameter(GC.cacheStylesheet.getURI()) != null)
+            cacheStylesheet = Boolean.parseBoolean(servletConfig.getInitParameter(GC.cacheStylesheet.getURI()).toString());
+        else cacheStylesheet = false;
     }
 
     public ServletConfig getServletConfig()
@@ -78,9 +78,9 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         return servletConfig;
     }
     
-    public boolean cacheXSLT()
+    public boolean cacheStylesheet()
     {
-        return cacheXSLT;
+        return cacheStylesheet;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     {
         try
         {
-            if (cacheXSLT())
+            if (cacheStylesheet())
             {
                 if (templates == null) templates = getTemplates(getStylesheetURI());
 

@@ -122,7 +122,7 @@ public class ApplicationBase extends org.graphity.core.Application
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(), getPreemptiveAuth(getServletConfig(), G.preemptiveAuth));
+        DataManager manager = new DataManager(mapper, ARQ.getContext(), getBooleanParam(getServletConfig(), G.preemptiveAuth));
         manager.setUriInfo(getUriInfo());
         FileManager.setStdLocators(manager);
 	manager.addLocatorLinkedData();
