@@ -40,7 +40,7 @@ import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.TemplatesProvider;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.core.provider.QueryParamProvider;
-import org.graphity.core.provider.ResultSetWriter;
+import org.graphity.core.provider.ResultSetProvider;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.writer.xslt.JSONLDWriter;
@@ -88,7 +88,7 @@ public class ApplicationBase extends org.graphity.core.Application
         singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new SPARQLEndpointProvider());
         
-	singletons.add(new ResultSetWriter());
+	singletons.add(new ResultSetProvider());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
         singletons.add(new MediaTypesProvider());
