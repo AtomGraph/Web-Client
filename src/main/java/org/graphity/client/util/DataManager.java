@@ -36,7 +36,6 @@ import java.util.*;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -70,15 +69,14 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	IGNORED_EXT.add("exe"); // binary executables
     }
 
-    protected boolean resolvingUncached = false;
+    protected final boolean resolvingUncached;
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
-    
-    private UriInfo uriInfo = null;
-        
-    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth)
+            
+    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth, boolean resolvingUncached)
     {
 	super(mapper, context, preemptiveAuth);
+        this.resolvingUncached = resolvingUncached;
     }
 
     @Override
@@ -345,20 +343,13 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                 log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
             }
 
-            URI relative = null; // indicates whether the URI being resolved is relative to the base URI
-            if (getUriInfo() != null) // DataManager neeeds to be registered as @Provider
-            {
-                relative = getUriInfo().getBaseUri().relativize(uri);
-                if (relative.isAbsolute()) relative = null;
-            }
-
             Map.Entry<String, Context> endpoint = findEndpoint(uri.toString());
             if (endpoint != null)
                 if (log.isDebugEnabled()) log.debug("URI {} has SPARQL endpoint: {}", uri, endpoint.getKey());
             else
                 if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
             
-            if (isResolvingUncached() || relative != null ||
+            if (resolvingUncached() ||
                     (isResolvingSPARQL() && endpoint != null) ||
                     (isResolvingMapped() && isMapped(uri.toString())))
                 try
@@ -470,16 +461,11 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
     }
 
-    public boolean isResolvingUncached()
+    public boolean resolvingUncached()
     {
 	return resolvingUncached;
     }
-
-    public void setResolvingUncached(boolean resolvingUncached)
-    {
-	this.resolvingUncached = resolvingUncached;
-    }
-
+    
     public boolean isResolvingSPARQL()
     {
         return resolvingSPARQL;
@@ -499,15 +485,5 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     {
         this.resolvingMapped = resolvingMapped;
     }
-
-    public UriInfo getUriInfo()
-    {
-        return uriInfo;
-    }
- 
-    public void setUriInfo(UriInfo uriInfo)
-    {
-        this.uriInfo = uriInfo;
-    }
-    
+     
 }
