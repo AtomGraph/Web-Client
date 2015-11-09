@@ -226,7 +226,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
             {
                 bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);            
 
-                // ((DataManager)FileManager.get()).setSecurityContext(getSecurityContex());
                 OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
                 OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
                 bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));

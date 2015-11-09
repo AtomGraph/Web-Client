@@ -349,7 +349,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
             else
                 if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
             
-            if (resolvingUncached() ||
+            if (resolvingUncached(uri.toString()) ||
                     (isResolvingSPARQL() && endpoint != null) ||
                     (isResolvingMapped() && isMapped(uri.toString())))
                 try
@@ -461,7 +461,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
     }
 
-    public boolean resolvingUncached()
+    public boolean resolvingUncached(String filenameOrURI)
     {
 	return resolvingUncached;
     }
