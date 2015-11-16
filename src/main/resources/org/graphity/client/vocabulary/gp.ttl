@@ -18,16 +18,14 @@
 <#> a owl:Ontology ;
     owl:imports sp:, spin:, sioc:, foaf: ;
     owl:versionInfo "1.1.4" ;
-    # dct:title "Graphity Processor ontology" ;
     rdfs:label "Graphity Processor ontology" ;
-    # dct:description "Should be imported and reused by all extending applications" ;
     rdfs:label "Should be imported and reused by all extending applications" ;
     dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
     dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime, "2014-08-24T02:04:00+02:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "http://graphity.org/gp#" ;
     vann:preferredNamespacePrefix "gp";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> ;
-    dct:creator <http://semantic-web.dk/#martynas> .
+    dct:creator <http://graphityhq.com/persons/martynas#this> .
 
 # SYSTEM PROPERTIES
 
@@ -184,22 +182,20 @@
 <#Template> a rdfs:Class, owl:Class ;
     rdfs:label "Resource template" ;
     rdfs:comment "A class of RDF resources that share the same URI template and SPARQL query template" ;
-    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
+    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
     spin:constructor <#TemplateConstructor> ;
-    spin:constraint [ a <#MissingPropertyValue> ;
+    spin:constraint <#MissingRDFSLabel> , <#MissingRDFSisDefinedBy> ,
+        [ a <#MissingPropertyValue> ;
+            rdfs:label "Missing rdfs:subClassOf" ;
 	    sp:arg1 rdfs:subClassOf
 	] ,
         [ a <#MissingPropertyValue> ;
+            rdfs:label "Missing gp:uriTemplate" ;
 	    sp:arg1 <#uriTemplate>
 	] ,
         [ a <#MissingPropertyValue> ;
+            rdfs:label "Missing gp:query" ;
 	    sp:arg1 <#query>
-	] ,
-        [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdfs:label
-	] ,
-        [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdfs:isDefinedBy
 	] ;
     rdfs:isDefinedBy <#> .
 
@@ -227,7 +223,7 @@
               gp:skolemTemplate " " ;
               gp:defaultLimit 20 ;
               gp:defaultOffset 0 ;
-              gp:defaultOrderBy " "^^xsd:string ;
+              gp:defaultOrderBy " " ;
               gp:cacheControl "no-cache" ;
               gp:loadClass _:loadClass ;
               gp:query gp:Describe ;
@@ -245,16 +241,12 @@
     rdfs:subClassOf [ a owl:Class ;
         owl:unionOf (sp:Describe sp:Construct)
     ] ;
-    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
+    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
     spin:constructor <#QueryConstructor> ;
-    spin:constraint [ a <#MissingPropertyValue> ;
+    spin:constraint <#MissingRDFSLabel>,
+        [ a <#MissingPropertyValue> ;
+            rdfs:label "Missing sp:text" ;
 	    sp:arg1 sp:text
-	] ,
-        [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdfs:label
-	] ,
-        [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdfs:isDefinedBy
 	] ;
     rdfs:label "Query" ;
     rdfs:isDefinedBy <#> .
@@ -268,7 +260,7 @@
       CONSTRUCT {
           ?this a sp:Query, _:ConstructOrDescribe ;
               rdfs:label " " ;
-              sp:text "DESCRIBE ?this"^^xsd:string ;
+              sp:text "DESCRIBE ?this" ;
               rdfs:isDefinedBy _:isDefinedBy .
       }
       WHERE {}""" ;
@@ -277,16 +269,12 @@
 
 <#Update> a rdfs:Class, owl:Class ;
     rdfs:subClassOf sp:Update ;
-    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
+    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
     spin:constructor <#UpdateConstructor> ;
-    spin:constraint [ a <#MissingPropertyValue> ;
+    spin:constraint <#MissingRDFSLabel> ,
+        [ a <#MissingPropertyValue> ;
+            rdfs:label "Missing sp:text" ;
 	    sp:arg1 sp:text
-	] ,
-        [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdfs:label
-	] ,
-        [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdfs:isDefinedBy
 	] ;
     rdfs:label "Update" ;
     rdfs:isDefinedBy <#> .
@@ -298,7 +286,7 @@
       PREFIX sp:      <http://spinrdf.org/sp#>
 
       CONSTRUCT {
-          ?this a sp:Update ;
+          ?this a sp:Modify ;
               rdfs:label " " ;
               rdfs:comment " " ;
               sp:text "DELETE\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}\\r\\nINSERT\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}\\r\\nWHERE\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}" ;
@@ -317,6 +305,27 @@
     rdfs:comment "A class of RDF resources that are container/item constructors" ;
     rdfs:isDefinedBy <#> .
 
+<#Constraint> a rdfs:Class, owl:Class ;
+    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    spin:constructor <#ConstraintConstructor> ;
+    spin:constraint <#MissingRDFSLabel> ;
+    rdfs:label "Constraint" ;
+    rdfs:isDefinedBy <#> .
+
+<#ConstraintConstructor> a       sp:Construct ;
+  sp:text """
+      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX sp:      <http://spinrdf.org/sp#>
+
+      CONSTRUCT {
+          ?this a _:Type ;
+            rdfs:label " " ;
+            sp:arg1 _:arg1 ;
+            sp:arg2 _:arg2 .
+      }
+      WHERE {}""" ;
+    rdfs:isDefinedBy <#> .
+
 # RESOURCE TEMPLATES
 
 <#Container> a rdfs:Class, owl:Class, <#Template> ;
@@ -327,15 +336,9 @@
         ] ;
     <#uriTemplate> "{path: .*}/" ;
     <#skolemTemplate> "{slug}/" ;
-    <#defaultLimit> 20 ;
     <#query> <#DescribeWithChildren> ;
     spin:constructor <#ContainerConstructor> ;
-    spin:constraint [ a <#MissingPropertyValue> ;
-	    sp:arg1 <#slug>
-	] , [ a <#MissingPropertyValue> ;
-            sp:arg1 rdf:type ;
-	    sp:arg2 foaf:Document
-	] ;
+    spin:constraint <#MissingSlug> , <#MissingDocumentType> ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
     rdfs:isDefinedBy <#> .
@@ -363,12 +366,7 @@
     <#query> <#DescribeWithTopic> ;
     <#update> <#DeleteWithTopic> ;
     spin:constructor <#ItemConstructor> ;
-    spin:constraint [ a <#MissingPropertyValue> ;
-	    sp:arg1 <#slug>
-	] , [ a <#MissingPropertyValue> ;
-	    sp:arg1 rdf:type ;
-            sp:arg2 foaf:Document
-	] ;
+    spin:constraint <#MissingSlug> , <#MissingDocumentType> ;
     rdfs:label "Item" ;
     rdfs:comment "Child item of a container" ;
     rdfs:isDefinedBy <#> .
@@ -386,14 +384,27 @@
       WHERE {}""" ;
     rdfs:isDefinedBy <#> .
 
-<#Topic> a rdfs:Class, owl:Class ;
-    rdfs:subClassOf owl:Class,
-        [ a owl:Restriction ;
-            owl:onProperty foaf:isPrimaryTopicOf ;
-            owl:allValuesFrom <#Item>
-	] ;
-    <#skolemTemplate> "/{isPrimaryTopicOf.slug}" ;
-    rdfs:label "Topic" ;
+<#QueryTemplate> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf spin:Template ;
+    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    spin:constructor <#QueryTemplateConstructor> ;
+    spin:constraint <#MissingRDFSLabel> ;
+    rdfs:label "Query template" ;
+    rdfs:isDefinedBy <#> .
+
+<#QueryTemplateConstructor> a       sp:Construct ;
+  sp:text """
+      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX spin:    <http://spinrdf.org/spin#>
+
+      CONSTRUCT {
+          ?this a spin:Template ;
+            rdfs:label " " ;
+            spin:body _:body ;
+            spin:labelTemplate " " ;
+            spin:constraint _:constraint .
+      }
+      WHERE {}""" ;
     rdfs:isDefinedBy <#> .
 
 <#SPARQLEndpoint> a owl:Class, <#Template> ;
@@ -424,7 +435,8 @@
 
 # SPIN TEMPLATES
 
-<#MissingPropertyValue> a spin:Template ;
+<#MissingPropertyValue> a rdfs:Class, spin:Template, <#QueryTemplate> ;
+    rdfs:subClassOf <#Constraint> ;
     rdfs:label "Missing property value" ;
     spin:body <#ConstructMissingPropertyValue> ;
     spin:labelTemplate "Instance does not have a mandatory RDF property {?arg1} with optional value {?arg2}" ;
@@ -436,6 +448,30 @@
         spl:optional true
     ] ;
     rdfs:isDefinedBy <#> .
+
+# CONSTRAINTS
+
+<#MissingRDFSLabel> a <#Constraint>, <#MissingPropertyValue> ;
+    rdfs:label "Missing rdfs:label" ;
+    sp:arg1 rdfs:label ;
+    rdfs:isDefinedBy <#> .
+
+<#MissingRDFSisDefinedBy> a <#Constraint>, <#MissingPropertyValue> ;
+    rdfs:label "Missing rdfs:isDefinedBy" ;
+    sp:arg1 rdfs:isDefinedBy ;
+    rdfs:isDefinedBy <#> .
+
+<#MissingSlug> a <#Constraint>, <#MissingPropertyValue> ;
+    rdfs:label "Missing gp:slug" ;
+    sp:arg1 <#slug> ;
+    rdfs:isDefinedBy <#> .
+
+<#MissingDocumentType> a <#Constraint>, <#MissingPropertyValue> ;
+    rdfs:label "Missing rdf:type foaf:Document" ;
+    sp:arg1 rdf:type ;
+    sp:arg2 foaf:Document ;
+    rdfs:isDefinedBy <#> .
+
 
 # QUERIES
 

@@ -30,26 +30,36 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="gc:*" mode="gc:TablePredicateMode"/>
     
+    <!--
     <xsl:template match="gc:supportedMode[position() &gt; 1]" mode="gc:EditMode"/>
     
-    <xsl:template match="gc:supportedMode/@rdf:resource" mode="gc:EditMode">
+    <xsl:template match="gc:supportedMode/@rdf:*[$gc:sitemap]" mode="gc:EditMode">
         <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
+        <xsl:variable name="template" select="../.." as="element()"/>
+        
         <select name="ou" id="{generate-id(.)}" multiple="multiple" size="{count($modes)}">
-            <xsl:apply-templates select="$modes" mode="gc:OptionMode">
+            <xsl:for-each select="$modes">
                 <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
-                <xsl:with-param name="selected" select="../../gc:supportedMode/@rdf:resource"/>
-            </xsl:apply-templates>
+                <xsl:apply-templates select="." mode="gc:OptionMode">
+                    <xsl:with-param name="selected" select="(@rdf:about, @rdf:nodeID) = $template/gc:supportedMode/@rdf:resource"/>
+                </xsl:apply-templates>
+            </xsl:for-each>
         </select>
     </xsl:template>
 
-    <xsl:template match="gc:defaultMode/@rdf:resource" mode="gc:EditMode">
-        <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
+    <xsl:template match="gc:defaultMode/@rdf:*[$gc:sitemap]" mode="gc:EditMode">
+        <xsl:param name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
+        <xsl:variable name="template" select="../.." as="element()"/>
+        
         <select name="ou" id="{generate-id(.)}">
-            <xsl:apply-templates select="$modes" mode="gc:OptionMode">
+            <xsl:for-each select="$modes">
                 <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
-                <xsl:with-param name="selected" select="../@rdf:resource"/>
-            </xsl:apply-templates>
+                <xsl:apply-templates select="." mode="gc:OptionMode">
+                    <xsl:with-param name="selected" select="(@rdf:about, @rdf:nodeID) = $template/gc:defaultMode/@rdf:resource"/>
+                </xsl:apply-templates>
+            </xsl:for-each>
         </select>
     </xsl:template>
+    -->
     
 </xsl:stylesheet>
