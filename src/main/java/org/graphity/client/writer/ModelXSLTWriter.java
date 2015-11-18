@@ -30,6 +30,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -190,6 +191,14 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
     {
         return httpServletRequest;
     }
+
+    public URI getMode()
+    {
+        if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
+            return URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()));
+        
+        return null;
+    }
     
     public URI getContextURI()
     {
@@ -238,7 +247,22 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 	
         Object query = headerMap.getFirst("Query");
 	if (query != null) bld.parameter("{http://spinrdf.org/spin#}query", query.toString());
-    
+
+        // workaround for Google Maps and Saxon-CE
+        // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
+        // https://saxonica.plan.io/issues/1447
+        // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
+        if (getMode() != null &&
+                (getMode().equals(URI.create(GP.ConstructMode.getURI())) ||
+                getMode().equals(URI.create(GC.EditMode.getURI())) ||
+                getMode().equals(URI.create(GC.MapMode.getURI()))))
+	{
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Google Maps workaround", getMode());
+            List<Object> contentTypes = new ArrayList();
+            contentTypes.add(MediaType.TEXT_HTML);
+            headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
+	}
+        
 	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
 	if (contentType != null)
 	{

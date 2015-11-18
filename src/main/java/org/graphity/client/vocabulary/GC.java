@@ -61,8 +61,6 @@ public final class GC
 
     public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
     
-    public static final AnnotationProperty defaultMode = m_model.createAnnotationProperty( NS + "defaultMode" );
-
     public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
 
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );

@@ -13,19 +13,15 @@
 # ONTOLOGY
 
 <#> a owl:Ontology ;
+    # owl:imports gp: ;
     rdfs:label "Graphity Client ontology" ;
     owl:versionInfo "1.1.4" .
 
 # ANNOTATION PROPERTIES
 
 <#supportedMode> a owl:AnnotationProperty ;
-    rdfs:range <#Mode> ;
+    rdfs:range gp:Mode ;
     rdfs:label "Layout mode" ;
-    rdfs:isDefinedBy <#> .
-
-<#defaultMode> a owl:AnnotationProperty ;
-    rdfs:range <#Mode> ;
-    rdfs:label "Default layout mode" ;
     rdfs:isDefinedBy <#> .
 
 # PROPERTIES
@@ -49,42 +45,42 @@
     rdfs:label "Graphity Client application" ;
     rdfs:isDefinedBy <#> .
 
-<#Mode> a owl:Class ;
+gp:Mode a owl:Class ;
     rdfs:label "Class of layout modes" ;
     rdfs:isDefinedBy <#> .
 
 <#ContainerMode> a owl:Class ;
-    rdfs:subClassOf <#Mode> ;
+    rdfs:subClassOf gp:Mode ;
     rdfs:label "Class of container layout modes" ;
     rdfs:isDefinedBy <#> .
 
 <#ItemMode> a owl:Class ;
-    rdfs:subClassOf <#Mode> ;
+    rdfs:subClassOf gp:Mode ;
     rdfs:label "Class of item layout modes" ;
     rdfs:isDefinedBy <#> .
 
 # INDIVIDUALS
 
-<#ReadMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#ReadMode> a gp:Mode, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
-<#EditMode> a <#Mode>, <#ItemMode> ;
+<#EditMode> a gp:Mode, <#ItemMode> ;
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
-<#TableMode> a <#Mode>, <#ContainerMode> ;
+<#TableMode> a gp:Mode, <#ContainerMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .
 
-<#ListMode> a <#Mode>, <#ContainerMode> ;
+<#ListMode> a gp:Mode, <#ContainerMode> ;
     rdfs:label "List" ;
     rdfs:isDefinedBy <#> .
 
-<#GridMode> a <#Mode>, <#ContainerMode> ;
+<#GridMode> a gp:Mode, <#ContainerMode> ;
     rdfs:label "Grid" ;
     rdfs:isDefinedBy <#> .
 
-<#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#MapMode> a gp:Mode, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .

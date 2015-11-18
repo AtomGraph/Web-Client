@@ -78,6 +78,12 @@
     rdfs:seeAlso <http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.1.3> ;
     rdfs:isDefinedBy <#> .
 
+<#defaultMode> a owl:AnnotationProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Default mode" ;
+    rdfs:comment "Indicates RDF representation mode" ;
+    rdfs:isDefinedBy <#> .
+
 <#defaultLimit> a owl:AnnotationProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
@@ -209,7 +215,6 @@
       PREFIX sioc:    <http://rdfs.org/sioc/ns#>
       PREFIX spin:    <http://spinrdf.org/spin#>
       PREFIX gp:      <http://graphity.org/gp#>
-      PREFIX gc:      <http://graphity.org/gc#>
 
       CONSTRUCT {
           ?this a owl:Class, rdfs:Class ;
@@ -227,8 +232,7 @@
               gp:cacheControl "no-cache" ;
               gp:loadClass _:loadClass ;
               gp:query gp:Describe ;
-              gc:supportedMode _:supportedMode ;
-              gc:defaultMode gc:ReadMode ;
+              gp:defaultMode _:defaultMode ;
               spin:constraint _:constraint ;
               spin:constructor _:constructor ;
               rdfs:isDefinedBy _:isDefinedBy .
