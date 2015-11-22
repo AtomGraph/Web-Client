@@ -36,8 +36,8 @@ public class MediaTypesProvider extends org.graphity.core.provider.MediaTypesPro
 {
     private static final Logger log = LoggerFactory.getLogger(MediaTypesProvider.class);
 
-    @Override
-    public MediaTypes getMediaTypes()
+    private final MediaTypes mediaTypes;
+    
     {
         List<MediaType> modelMediaTypes = new ArrayList<>(super.getMediaTypes().getModelMediaTypes());
         Map<String, String> utf8Param = new HashMap<>();
@@ -46,7 +46,13 @@ public class MediaTypesProvider extends org.graphity.core.provider.MediaTypesPro
         MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), utf8Param);
         modelMediaTypes.add(0, xhtmlXml);
 
-        return new MediaTypes(Collections.unmodifiableList(modelMediaTypes), super.getMediaTypes().getResultSetMediaTypes());
+        mediaTypes = new MediaTypes(Collections.unmodifiableList(modelMediaTypes), super.getMediaTypes().getResultSetMediaTypes());
+    }
+    
+    @Override
+    public MediaTypes getMediaTypes()
+    {
+        return mediaTypes;
     }
     
 }
