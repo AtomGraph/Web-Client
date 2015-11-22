@@ -31,8 +31,10 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +75,14 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
     private Templates templates;
- 
+    private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>();
+    
+    {
+        modeMediaTypeMap.put(URI.create(GP.ConstructMode.getURI()), MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(URI.create(GC.EditMode.getURI()), MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(URI.create(GC.MapMode.getURI()), MediaType.TEXT_HTML_TYPE);
+    }
+    
     @Context private UriInfo uriInfo;
     @Context private HttpHeaders httpHeaders;
     @Context private ServletConfig servletConfig;
@@ -192,6 +201,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         return httpServletRequest;
     }
 
+    public Map<URI, MediaType> getModeMediaTypeMap()
+    {
+        return modeMediaTypeMap;
+    }
+    
     public URI getMode()
     {
         if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
@@ -252,14 +266,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
         // https://saxonica.plan.io/issues/1447
         // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-        if (getMode() != null &&
-                (getMode().equals(URI.create(GP.ConstructMode.getURI())) ||
-                getMode().equals(URI.create(GC.EditMode.getURI())) ||
-                getMode().equals(URI.create(GC.MapMode.getURI()))))
+        if (getMode() != null && getModeMediaTypeMap().containsKey(getMode()))
 	{
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, returning 'text/html' media type as Google Maps workaround", getMode());
+            MediaType mediaType = getModeMediaTypeMap().get(getMode());
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, overriding response media type with '{}'", getMode(), mediaType);
             List<Object> contentTypes = new ArrayList();
-            contentTypes.add(MediaType.TEXT_HTML);
+            contentTypes.add(mediaType);
             headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
 	}
         
