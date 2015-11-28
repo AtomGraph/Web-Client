@@ -237,7 +237,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
 
     /**
      * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
-     * Redirects to document URI in <pre>gc:EditMode</pre>.
      * 
      * @param model RDF payload
      * @return response
@@ -247,17 +246,6 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
     {
         if (log.isDebugEnabled()) log.debug("Submitting Model to URI: {}", getWebResource().getURI());
         return getResponse(getWebResource().put(Model.class, model));
-
-        /*
-        if (getMode() != null && getMode().equals(URI.create(GC.EditMode.getURI())))
-        {
-            super.put(model);
-            
-            Resource document = getURIResource(model, RDF.type, FOAF.Document);
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, redirecting to document URI {} after PUT", getMode(), document.getURI());
-            return Response.seeOther(URI.create(document.getURI())).build();
-        }
-        */
     }
     
     @Override
