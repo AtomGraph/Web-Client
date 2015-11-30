@@ -129,12 +129,7 @@ public class HypermediaFilter implements ContainerResponseFilter
 
                 if (!supportedMode.equals(GP.ConstructMode))
                 {
-                    Long limit = null;
-                    if (getUriInfo().getQueryParameters().containsKey(GP.limit.getLocalName()))
-                        limit = Long.parseLong(getUriInfo().getQueryParameters().getFirst(GP.limit.getLocalName()));
-                    if (limit != null &&
-                            resource.hasProperty(RDF.type, GP.Container) &&
-                            model.contains(null, GP.pageOf, resource))
+                    if (model.contains(null, GP.pageOf, resource))
                     {
                         // container pages
                         ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
@@ -143,12 +138,15 @@ public class HypermediaFilter implements ContainerResponseFilter
                             while (resIt.hasNext())
                             {
                                 Resource page = resIt.next();
-                                if (page.hasLiteral(GP.limit, limit)) //  && page.hasLiteral(GP.offset, offset)
-                                    StateBuilder.fromUri(page.getURI(), page.getModel()).
-                                        replaceProperty(GC.mode, supportedMode.asResource()).
-                                        build().
-                                        addProperty(GC.layoutOf, page).
-                                        addProperty(RDF.type, FOAF.Document);
+                                StateBuilder sb = StateBuilder.fromUri(page.getURI(), page.getModel()).
+                                    replaceProperty(GC.mode, supportedMode.asResource());
+                                if (page.getProperty(GP.limit) != null) sb.replaceLiteral(GP.limit, page.getProperty(GP.limit).getLong());
+                                if (page.getProperty(GP.offset) != null) sb.replaceLiteral(GP.offset, page.getProperty(GP.offset).getLong());
+                                if (page.getProperty(GP.orderBy) != null) sb.replaceLiteral(GP.orderBy, page.getProperty(GP.orderBy).getString());
+                                if (page.getProperty(GP.desc) != null) sb.replaceLiteral(GP.desc, page.getProperty(GP.desc).getBoolean());
+                                sb.build().
+                                    addProperty(GC.layoutOf, page).
+                                    addProperty(RDF.type, FOAF.Document);
                             }
                         }
                         finally
