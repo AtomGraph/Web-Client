@@ -21,7 +21,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.sparql.util.Context;
-import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.Locator;
 import com.hp.hpl.jena.util.TypedStream;
@@ -56,18 +55,6 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
-
-    public static final List<String> IGNORED_EXT = new ArrayList<>();
-    static
-    {
-	IGNORED_EXT.add("html"); IGNORED_EXT.add("htm"); // GRDDL or <link> inspection could be used to analyzed HTML
-	IGNORED_EXT.add("jpg");	IGNORED_EXT.add("gif");	IGNORED_EXT.add("png"); // binary image formats
-	IGNORED_EXT.add("avi"); IGNORED_EXT.add("mpg"); IGNORED_EXT.add("wmv"); // binary video formats
-	IGNORED_EXT.add("mp3"); IGNORED_EXT.add("wav"); // binary sound files
-	IGNORED_EXT.add("zip"); IGNORED_EXT.add("rar"); // binary archives
-	IGNORED_EXT.add("pdf"); IGNORED_EXT.add("ps"); IGNORED_EXT.add("doc"); // binary documents
-	IGNORED_EXT.add("exe"); // binary executables
-    }
 
     protected final boolean resolvingUncached;
     protected boolean resolvingMapped = true;
@@ -327,12 +314,6 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     {
         if (uri == null) throw new IllegalArgumentException("URI cannot be null");
         if (!uri.isAbsolute()) throw new IllegalArgumentException("URI to be resolved must be absolute");
-        
-        if (isIgnored(uri.toString()))
-        {
-            if (log.isDebugEnabled()) log.debug("URI ignored by file extension: {}", uri);
-            return getDefaultSource();
-        }
 
         Model model = getFromCache(uri.toString());
         if (model == null) // URI not cached, 
@@ -456,11 +437,6 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	return null;
     }
     
-    public boolean isIgnored(String filenameOrURI)
-    {
-	return IGNORED_EXT.contains(FileUtils.getFilenameExt(filenameOrURI));
-    }
-
     public boolean resolvingUncached(String filenameOrURI)
     {
 	return resolvingUncached;

@@ -29,6 +29,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,9 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(), getBooleanParam(getServletConfig(), G.preemptiveAuth), getUriInfo());
+        return getDataManager(LocationMapper.get(), ARQ.getContext(),
+                getBooleanParam(getServletConfig(), G.preemptiveAuth),
+                getBooleanParam(getServletConfig(), GC.resolvingUncached));
     }
     
     public boolean getBooleanParam(ServletConfig servletConfig, Property property)
@@ -92,16 +95,16 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
 	if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
-        boolean preemptiveAuth = false;
+        boolean value = false;
         if (servletConfig.getInitParameter(property.getURI()) != null)
-            preemptiveAuth = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()).toString());
-        return preemptiveAuth;
+            value = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()).toString());
+        return value;
     }
     
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
-            boolean preemptiveAuth, UriInfo uriInfo)
+            boolean preemptiveAuth, boolean resolvingUncached)
     {
-        DataManager dataManager = new DataManager(mapper, context, preemptiveAuth, false); // TO-DO: make resolvingUncached configurable
+        DataManager dataManager = new DataManager(mapper, context, preemptiveAuth, resolvingUncached);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();

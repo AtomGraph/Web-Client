@@ -78,5 +78,7 @@ public final class GC
     public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
 
     public static final DatatypeProperty cacheStylesheet = m_model.createDatatypeProperty( NS + "cacheStylesheet" );
+    
+    public static final DatatypeProperty resolvingUncached = m_model.createDatatypeProperty( NS + "resolvingUncached" );    
 
 }

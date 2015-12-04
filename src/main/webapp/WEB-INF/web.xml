@@ -41,6 +41,10 @@
             <param-name>http://graphity.org/gc#cacheStylesheet</param-name>
             <param-value>false</param-value>
         </init-param>
+        <init-param>
+            <param-name>http://graphity.org/gc#resolvingUncached</param-name>
+            <param-value>true</param-value>
+        </init-param>       
     </servlet>
     <servlet-mapping>
         <servlet-name>default</servlet-name>
