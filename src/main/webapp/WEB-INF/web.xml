@@ -42,6 +42,10 @@
             <param-value>false</param-value>
         </init-param>
         <init-param>
+            <param-name>http://graphity.org/g#cacheModelLoads</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
             <param-name>http://graphity.org/gc#resolvingUncached</param-name>
             <param-value>true</param-value>
         </init-param>       

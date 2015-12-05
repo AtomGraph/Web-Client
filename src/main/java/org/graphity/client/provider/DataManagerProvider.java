@@ -86,8 +86,9 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     public DataManager getDataManager()
     {
         return getDataManager(LocationMapper.get(), ARQ.getContext(),
+                getBooleanParam(servletConfig, G.cacheModelLoads),                
                 getBooleanParam(getServletConfig(), G.preemptiveAuth),
-                getBooleanParam(getServletConfig(), GC.resolvingUncached));
+                getBooleanParam(getServletConfig(), GC.resolvingUncached)); // necessary?
     }
     
     public boolean getBooleanParam(ServletConfig servletConfig, Property property)
@@ -102,16 +103,17 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     }
     
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
-            boolean preemptiveAuth, boolean resolvingUncached)
+            boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        DataManager dataManager = new DataManager(mapper, context, preemptiveAuth, resolvingUncached);
+        /*
+        DataManager dataManager = new DataManager(mapper, context, cacheModelLoads, preemptiveAuth, resolvingUncached);
         FileManager.setStdLocators(dataManager);
 	dataManager.addLocatorLinkedData();
 	dataManager.removeLocatorURL();
-
-        if (log.isTraceEnabled()) log.trace("DataManager LocationMapper: {}", dataManager.getLocationMapper());
-
-        return dataManager;
+        return dataManager;        
+        */
+        // application.getDataManager()?
+        return (DataManager)FileManager.get();
     }
 
 }

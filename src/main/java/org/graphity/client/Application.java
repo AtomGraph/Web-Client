@@ -43,6 +43,7 @@ import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetProvider;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.client.writer.xslt.JSONLDWriter;
 import org.graphity.core.provider.ModelProvider;
 import org.graphity.core.provider.SPARQLEndpointOriginProvider;
@@ -122,7 +123,10 @@ public class Application extends org.graphity.core.Application
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(), getBooleanParam(getServletConfig(), G.preemptiveAuth), false);
+        DataManager manager = new DataManager(mapper, ARQ.getContext(),
+                getBooleanParam(getServletConfig(), G.cacheModelLoads),
+                getBooleanParam(getServletConfig(), G.preemptiveAuth),
+                getBooleanParam(getServletConfig(), GC.resolvingUncached));
         FileManager.setStdLocators(manager);
 	manager.addLocatorLinkedData();
 	manager.removeLocatorURL();

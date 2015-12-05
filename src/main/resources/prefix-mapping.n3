@@ -3,7 +3,9 @@
 [] lm:mapping
 
    [ lm:name "http://graphity.org/gc#" ;                            lm:altName "org/graphity/client/gc.ttl" ] ,   
+   [ lm:name "http://graphity.org/gc" ;                             lm:altName "org/graphity/client/gc.ttl" ] ,
    [ lm:name "http://graphity.org/gp#" ;                            lm:altName "org/graphity/client/gp.ttl" ] ,
+   [ lm:name "http://graphity.org/gp" ;                             lm:altName "org/graphity/client/gp.ttl" ] ,
    [ lm:name "http://rdfs.org/sioc/ns#" ;			    lm:altName "org/graphity/client/sioc.owl" ] ,
    [ lm:name "http://rdfs.org/ns/void#" ;			    lm:altName "org/graphity/client/void.owl" ] ,
    [ lm:name "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ;	    lm:altName "org/graphity/client/rdf.owl" ] ,
@@ -26,8 +28,6 @@
    [ lm:name "http://spinrdf.org/spl#" ;                            lm:altName "etc/spl.spin.ttl" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;			    lm:altName "org/graphity/client/doap.owl" ] ,
 
-   [ lm:prefix "http://graphity.org/gc" ;                           lm:altName "org/graphity/client/gc.ttl" ] ,
-   [ lm:prefix "http://graphity.org/gp" ;                           lm:altName "org/graphity/client/gp.ttl" ] ,
    [ lm:prefix "http://rdfs.org/sioc/ns" ;			    lm:altName "org/graphity/client/sioc.owl" ] ,
    [ lm:prefix "http://rdfs.org/ns/void" ;			    lm:altName "org/graphity/client/void.owl" ] ,
    [ lm:prefix "http://www.w3.org/1999/02/22-rdf-syntax-ns" ;	    lm:altName "org/graphity/client/rdf.owl" ] ,

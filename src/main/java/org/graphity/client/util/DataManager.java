@@ -60,9 +60,9 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
             
-    public DataManager(LocationMapper mapper, Context context, boolean preemptiveAuth, boolean resolvingUncached)
+    public DataManager(LocationMapper mapper, Context context, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-	super(mapper, context, preemptiveAuth);
+	super(mapper, context, cacheModelLoads, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
     }
 
@@ -287,7 +287,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     @Override
     public Source resolve(String href, String base) throws TransformerException
     {
-	if (!href.equals("") && URI.create(href).isAbsolute())
+	if (!href.isEmpty() && URI.create(href).isAbsolute())
 	{
 	    if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
 	    URI uri = URI.create(base).resolve(href);

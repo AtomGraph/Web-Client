@@ -288,7 +288,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(), contentLanguage.toString());
 	}
 
-        // pass HTTP query parameters into XSLT, ignore reserved param names (as params cannot be unset)
+        // pass HTTP query parameters into XSLT
 	Iterator<Entry<String, List<String>>> paramIt = getUriInfo().getQueryParameters().entrySet().iterator();
         while (paramIt.hasNext())
         {
@@ -306,6 +306,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 	if (bld == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
 
+        // map uri query param values to g:requestUri XSLT param values
+        if (uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
+	    bld.parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
+        
         if (uriInfo.getQueryParameters().getFirst(GP.offset.getLocalName()) != null)
 	    bld.parameter("{" + GP.offset.getNameSpace() + "}" + GP.offset.getLocalName(),
                 Long.valueOf(uriInfo.getQueryParameters().getFirst(GP.offset.getLocalName())));
@@ -327,9 +332,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
         if (uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName()) != null)
 	    bld.parameter("{" + GP.forClass.getNameSpace() + "}" + GP.forClass.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName())));
-        if (uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
-	    bld.parameter("{" + GC.uri.getNameSpace() + "}" + GC.uri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
 	if (uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
 	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
