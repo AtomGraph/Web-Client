@@ -128,8 +128,8 @@ public class Application extends org.graphity.core.Application
                 getBooleanParam(getServletConfig(), G.preemptiveAuth),
                 getBooleanParam(getServletConfig(), GC.resolvingUncached));
         FileManager.setStdLocators(manager);
-	manager.addLocatorLinkedData();
-	manager.removeLocatorURL();
+	//manager.addLocatorLinkedData();
+	//manager.removeLocatorURL();
         FileManager.setGlobalFileManager(manager);
 	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
 

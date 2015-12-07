@@ -22,12 +22,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.util.LocationMapper;
-import com.hp.hpl.jena.util.Locator;
-import com.hp.hpl.jena.util.TypedStream;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -39,9 +36,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.graphity.core.locator.LocatorLinkedData;
 import org.graphity.client.locator.PrefixMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +54,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
             
-    public DataManager(LocationMapper mapper, Context context, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
+    public DataManager(LocationMapper mapper, Context context,
+            boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
 	super(mapper, context, cacheModelLoads, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
@@ -126,6 +121,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	}  
 
 	Model model;
+        /*
 	Map.Entry<String, Context> endpoint = findEndpoint(filenameOrURI);
 	if (endpoint != null)
 	{
@@ -133,16 +129,17 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 
 	    model = ModelFactory.createDefaultModel();
 	    Query query = parseQuery(filenameOrURI);
-	    if (query != null) model = loadModel(endpoint.getKey(), query);
+	    if (query != null) model = executeQuery(endpoint.getKey(), query).getEntity(Model.class);
 	}
 	else
+        */
 	{
 	    if (log.isDebugEnabled()) log.debug("URI {} is *not* a SPARQL service, reading Model from TypedStream", filenameOrURI);
 
 	    model = ModelFactory.createDefaultModel();
 	    readModel(model, filenameOrURI);
 	}
-
+        
 	addCacheModel(filenameOrURI, model);
 	
         return model;
@@ -175,6 +172,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	    return super.readModel(model, mappedURI, filenameOrURI, null); // let FileManager handle
 	}
 
+        /*
 	TypedStream in = openNoMapOrNull(filenameOrURI);
 	if (in != null)
 	{
@@ -197,17 +195,21 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	    if (log.isDebugEnabled()) log.debug("Failed to locate '"+filenameOrURI+"'") ;
 	    throw new NotFoundException("Not found: "+filenameOrURI) ;
 	}
+        */
 
-	return model;
+        return super.loadModel(filenameOrURI);
     }
-    
+
     /** Add a Linked Data locator */
+    /*
     public void addLocatorLinkedData()
     {
         Locator loc = new LocatorLinkedData() ;
         addLocator(loc) ;
     }
+    */
 
+    /*
     public void removeLocatorURL()
     {
 	Locator locURL = null;
@@ -224,7 +226,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	    remove(locURL);
 	}
     }
- 
+    */
+    
     /**
      * Parses query from URI, if it is a SPARQL Protocol URI.
      * 
@@ -336,24 +339,21 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                 try
                 {
                     Query query = parseQuery(uri.toString());
+
                     if (query != null)
                     {
-                        if (query.isSelectType() || query.isAskType())
-                        {
-                            if (log.isTraceEnabled()) log.trace("Loading ResultSet for URI: {} using Query: {}", uri, query);
-                            return getSource(loadResultSet(UriBuilder.fromUri(uri).
+                        javax.ws.rs.core.MediaType[] acceptedTypes = null;
+                        if (query.isSelectType() || query.isAskType()) acceptedTypes = getResultSetMediaTypes();
+                        if (query.isConstructType() || query.isDescribeType()) acceptedTypes = getModelMediaTypes();
+
+                        if (log.isTraceEnabled()) log.trace("Loading result from URI: {} using SPARQL query: {}", uri, query);
+                        return getSource(executeQuery(UriBuilder.fromUri(uri).
                                     replaceQuery(null).
                                     build().toString(),
-                                query, parseParamMap(uri.toString())), uri.toString());
-                        }
-                        if (query.isConstructType() || query.isDescribeType())
-                        {
-                            if (log.isTraceEnabled()) log.trace("Loading Model for URI: {} using Query: {}", uri, query);
-                            return getSource(loadModel(UriBuilder.fromUri(uri).
-                                    replaceQuery(null).
-                                    build().toString(),
-                                query, parseParamMap(uri.toString())), uri.toString());
-                        }
+                                query,
+                                acceptedTypes,
+                                parseParamMap(uri.toString())).
+                            getEntity(Model.class), uri.toString());
                     }
 
                     if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
@@ -446,20 +446,10 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     {
         return resolvingSPARQL;
     }
-
-    public void setResolvingSPARQL(boolean resolvingSPARQL)
-    {
-	this.resolvingSPARQL = resolvingSPARQL;
-    }
-
+    
     public boolean isResolvingMapped()
     {
         return resolvingMapped;
-    }
-    
-    public void setResolvingMapped(boolean resolvingMapped)
-    {
-        this.resolvingMapped = resolvingMapped;
     }
      
 }
