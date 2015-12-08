@@ -19,9 +19,14 @@ package org.graphity.client.util;
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.NotFoundException;
+import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.util.LocationMapper;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.ClientFilter;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,7 +55,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    protected final boolean resolvingUncached;
+    private final Context context;    
+    private final boolean resolvingUncached;
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
             
@@ -58,22 +64,9 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
             boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
 	super(mapper, context, cacheModelLoads, preemptiveAuth);
+	if (context == null) throw new IllegalArgumentException("Context cannot be null");
+	this.context = context;        
         this.resolvingUncached = resolvingUncached;
-    }
-
-    @Override
-    public void addCacheModel(String uri, Model m)
-    {
-	if (log.isTraceEnabled()) log.trace("Adding Model to cache with URI: ({})", uri);
-	super.addCacheModel(uri, m);
-    }
-
-    @Override
-    public boolean hasCachedModel(String filenameOrURI)
-    {
-	boolean cached = super.hasCachedModel(filenameOrURI);
-	if (log.isTraceEnabled()) log.trace("Is Model with URI {} cached: {}", filenameOrURI, cached);
-	return cached;
     }
 
     public boolean isPrefixMapped(String filenameOrURI)
@@ -338,6 +331,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                     (isResolvingMapped() && isMapped(uri.toString())))
                 try
                 {
+                    /*
                     Query query = parseQuery(uri.toString());
 
                     if (query != null)
@@ -355,7 +349,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                                 parseParamMap(uri.toString())).
                             getEntity(Model.class), uri.toString());
                     }
-
+                    */
+                    
                     if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
                     return getSource(loadModel(uri.toString()), uri.toString());
                 }
@@ -452,4 +447,215 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
         return resolvingMapped;
     }
      
+    /**
+     * Returns SPARQL context
+     * 
+     * @return global context
+     */
+    public Context getContext()
+    {
+	return context;
+    }
+
+    /**
+     * Given a URI (e.g. with encoded SPARQL query string), finds matching SPARQL endpoint in the service
+     * context map.
+     * 
+     * @param filenameOrURI SPARQL request URI
+     * @return matching map entry, or null if none
+     */
+    public Map.Entry<String, Context> findEndpoint(String filenameOrURI)
+    {
+	if (getServiceContextMap() != null)
+	{
+	    Iterator<Map.Entry<String, Context>> it = getServiceContextMap().entrySet().iterator();
+
+	    while (it.hasNext())
+	    {
+		Map.Entry<String, Context> endpoint = it.next(); 
+		if (filenameOrURI.startsWith(endpoint.getKey()))
+		    return endpoint;
+	    }
+	}
+	
+	return null;
+    }
+
+    /**
+     * Returns the service context map. Endpoint URIs are used as keys.
+     * 
+     * @return service context map
+     */
+    public Map<String,Context> getServiceContextMap()
+    {
+	if (!getContext().isDefined(Service.serviceContext))
+	{
+	    Map<String,Context> serviceContext = new HashMap<>();
+	    getContext().put(Service.serviceContext, serviceContext);
+	}
+	
+	return (Map<String,Context>)getContext().get(Service.serviceContext);
+    }
+
+    /**
+     * Adds service context for a SPARQL endpoint.
+     * 
+     * @param endpointURI endpoint URI
+     * @param context context
+     */
+    public void addServiceContext(String endpointURI, Context context)
+    {
+	if (endpointURI == null) throw new IllegalArgumentException("Endpoint URI must be not null");
+	
+	getServiceContextMap().put(endpointURI, context);
+    }
+
+    /**
+     * Adds service context for a SPARQL endpoint.
+     * 
+     * @param endpoint endpoint resource (must be URI resource, not a blank node)
+     * @param context context
+     */
+    public void addServiceContext(Resource endpoint, Context context)
+    {
+	if (endpoint == null) throw new IllegalArgumentException("Endpoint Resource must be not null");
+	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint Resource must be URI Resource (not a blank node)");
+	
+	getServiceContextMap().put(endpoint.getURI(), context);
+    }
+
+    /**
+     * Adds empty service context for a SPARQL endpoint.
+     * 
+     * @param endpointURI endpoint URI
+     */
+    public void addServiceContext(String endpointURI)
+    {
+	addServiceContext(endpointURI, new Context());
+    }
+
+    /**
+     * Adds empty service context for a SPARQL endpoint.
+     *
+     * @param endpoint endpoint resource (must be URI resource, not a blank node)
+     */
+    public void addServiceContext(Resource endpoint)
+    {
+	addServiceContext(endpoint, new Context());
+    }
+
+    /**
+     * Returns service context of a SPARQL endpoint.
+     * 
+     * @param endpointURI endpoint URI
+     * @return context of the endpoint
+     */
+    public Context getServiceContext(String endpointURI)
+    {
+	if (endpointURI == null) throw new IllegalArgumentException("Endpoint URI must be not null");
+
+	return getServiceContextMap().get(endpointURI);
+    }
+    
+    public Context putServiceContext(String endpointURI, Context context)
+    {
+	if (endpointURI == null) throw new IllegalArgumentException("Endpoint URI must be not null");
+	if (context == null) throw new IllegalArgumentException("Context must be not null");
+
+        return getServiceContextMap().put(endpointURI, context);
+    }
+    
+    /**
+     * Returns service context of a SPARQL endpoint.
+     * 
+     * @param endpoint endpoint resource (must be URI resource, not a blank node)
+     * @return context of the endpoint
+     */    
+    public Context getServiceContext(Resource endpoint)
+    {
+	if (endpoint == null) throw new IllegalArgumentException("Endpoint Resource must be not null");
+	if (!endpoint.isURIResource()) throw new IllegalArgumentException("Endpoint Resource must be URI Resource (not a blank node)");
+
+	return getServiceContext(endpoint.getURI());
+    }
+
+    /**
+     * Checks if SPARQL endpoint has service context.
+     * 
+     * @param endpointURI endpoint URI
+     * @return true if endpoint URI is bound to a context, false otherwise
+     */    
+    public boolean hasServiceContext(String endpointURI)
+    {
+	return getServiceContext(endpointURI) != null;
+    }
+
+    /**
+     * Checks if SPARQL endpoint has service context.
+     * 
+     * @param endpoint endpoint resource (must be URI resource, not a blank node)
+     * @return true if endpoint resource is bound to a context, false otherwise
+     */    
+    public boolean hasServiceContext(Resource endpoint)
+    {
+	return getServiceContext(endpoint) != null;
+    }
+
+    /**
+     * Configures HTTP Basic authentication for SPARQL service context
+     * 
+     * @param endpointURI endpoint or graph store URI
+     * @param authUser username
+     * @param authPwd password
+     * @return service context
+     * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
+     */
+    public Context putAuthContext(String endpointURI, String authUser, String authPwd)
+    {
+	if (endpointURI == null) throw new IllegalArgumentException("SPARQL endpoint URI cannot be null");
+	if (authUser == null) throw new IllegalArgumentException("SPARQL endpoint authentication username cannot be null");
+	if (authPwd == null) throw new IllegalArgumentException("SPARQL endpoint authentication password cannot be null");
+
+	if (log.isDebugEnabled()) log.debug("Setting username/password credentials for SPARQL endpoint: {}", endpointURI);
+	Context queryContext = new Context();
+	queryContext.put(Service.queryAuthUser, authUser);
+	queryContext.put(Service.queryAuthPwd, authPwd);
+
+        return putServiceContext(endpointURI, queryContext);
+    }
+
+    public ClientFilter getClientAuthFilter(String endpointURI)
+    {
+        return getClientAuthFilter(getServiceContext(endpointURI));
+    }
+        
+    public ClientFilter getClientAuthFilter(Context serviceContext)
+    {
+        if (serviceContext != null)
+        {
+            String usr = serviceContext.getAsString(Service.queryAuthUser);
+            String pwd = serviceContext.getAsString(Service.queryAuthPwd);
+
+            if (usr != null || pwd != null)
+            {
+                usr = usr==null?"":usr;
+                pwd = pwd==null?"":pwd;
+
+                return new HTTPBasicAuthFilter(usr, pwd);
+            }
+        }
+        
+        return null;
+    }
+
+    public WebResource getEndpoint(String endpointURI)
+    {
+        return getEndpoint(endpointURI, getClientAuthFilter(endpointURI), null);
+    }
+    
+    public WebResource getEndpoint(String endpointURI, MultivaluedMap<String, String> params)
+    {
+        return getEndpoint(endpointURI, getClientAuthFilter(endpointURI), params);
+    }
+    
 }

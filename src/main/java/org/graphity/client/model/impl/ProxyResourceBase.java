@@ -41,7 +41,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import org.graphity.client.exception.ClientErrorException;
-import org.graphity.client.util.DataManager;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.core.model.SPARQLEndpoint;
@@ -123,7 +122,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
             {
                 if (log.isDebugEnabled()) log.debug("Using remote SPARQL endpoint URI: {}", endpointURI);
                 SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(endpointURI.toString());
-                this.remoteEndpoint = SPARQLEndpointFactory.createProxy(request, servletConfig, mediaTypes, origin, (DataManager)DataManager.get());
+                this.remoteEndpoint = SPARQLEndpointFactory.createProxy(request, servletConfig, mediaTypes, origin);
             }
             else this.remoteEndpoint = null;
         }
