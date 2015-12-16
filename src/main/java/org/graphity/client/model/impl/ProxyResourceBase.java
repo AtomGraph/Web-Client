@@ -121,7 +121,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
                     !variant.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
             {
                 if (log.isDebugEnabled()) log.debug("Using remote SPARQL endpoint URI: {}", endpointURI);
-                SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(endpointURI.toString());
+                SPARQLEndpointOrigin origin = new SPARQLEndpointOriginBase(client.resource(endpointURI));
                 this.remoteEndpoint = SPARQLEndpointFactory.createProxy(request, servletConfig, mediaTypes, origin);
             }
             else this.remoteEndpoint = null;

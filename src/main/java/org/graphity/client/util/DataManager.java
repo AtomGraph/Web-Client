@@ -20,7 +20,6 @@ import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.NotFoundException;
 import com.hp.hpl.jena.sparql.engine.http.Service;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.util.LocationMapper;
@@ -42,6 +41,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.graphity.client.locator.PrefixMapper;
+import org.graphity.core.exception.ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,25 +113,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	    return getFromCache(filenameOrURI) ;
 	}  
 
-	Model model;
-        /*
-	Map.Entry<String, Context> endpoint = findEndpoint(filenameOrURI);
-	if (endpoint != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("URI {} is a SPARQL service, executing Query on SPARQL endpoint: {}", filenameOrURI);
-
-	    model = ModelFactory.createDefaultModel();
-	    Query query = parseQuery(filenameOrURI);
-	    if (query != null) model = executeQuery(endpoint.getKey(), query).getEntity(Model.class);
-	}
-	else
-        */
-	{
-	    if (log.isDebugEnabled()) log.debug("URI {} is *not* a SPARQL service, reading Model from TypedStream", filenameOrURI);
-
-	    model = ModelFactory.createDefaultModel();
-	    readModel(model, filenameOrURI);
-	}
+        Model model = ModelFactory.createDefaultModel();
+        readModel(model, filenameOrURI);
         
 	addCacheModel(filenameOrURI, model);
 	
@@ -165,61 +148,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	    return super.readModel(model, mappedURI, filenameOrURI, null); // let FileManager handle
 	}
 
-        /*
-	TypedStream in = openNoMapOrNull(filenameOrURI);
-	if (in != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Opened filename or URI {} with TypedStream {}", filenameOrURI, in);
-
-            Lang lang = RDFLanguages.contentTypeToLang(in.getMimeType());
-	    if (lang != null) // do not read if MimeType/syntax are not known
-	    {
-                String syntax = lang.getName();
-		if (log.isDebugEnabled()) log.debug("URI {} syntax is {}, reading it", filenameOrURI, syntax);
-
-		model.read(in.getInput(), filenameOrURI, syntax) ;
-		try { in.getInput().close(); } catch (IOException ex) {}
-	    }
-	    else
-		if (log.isDebugEnabled()) log.debug("Syntax for URI {} unknown, ignoring", filenameOrURI);
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Failed to locate '"+filenameOrURI+"'") ;
-	    throw new NotFoundException("Not found: "+filenameOrURI) ;
-	}
-        */
-
         return super.loadModel(filenameOrURI);
     }
-
-    /** Add a Linked Data locator */
-    /*
-    public void addLocatorLinkedData()
-    {
-        Locator loc = new LocatorLinkedData() ;
-        addLocator(loc) ;
-    }
-    */
-
-    /*
-    public void removeLocatorURL()
-    {
-	Locator locURL = null;
-	Iterator<Locator> it = locators();
-	while (it.hasNext())
-	{
-	    Locator loc = it.next();
-	    if (loc.getName().equals("LocatorURL")) locURL = loc;
-	}
-	// remove() needs to be called outside the iterator
-	if (locURL != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Removing Locator: {}", locURL);
-	    remove(locURL);
-	}
-    }
-    */
     
     /**
      * Parses query from URI, if it is a SPARQL Protocol URI.
@@ -327,7 +257,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                 if (log.isDebugEnabled()) log.debug("URI {} has no SPARQL endpoint", uri);
             
             if (resolvingUncached(uri.toString()) ||
-                    (isResolvingSPARQL() && endpoint != null) ||
+                    //(isResolvingSPARQL() && endpoint != null) ||
                     (isResolvingMapped() && isMapped(uri.toString())))
                 try
                 {
@@ -354,9 +284,9 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                     if (log.isTraceEnabled()) log.trace("Loading Model for URI: {}", uri);
                     return getSource(loadModel(uri.toString()), uri.toString());
                 }
-                catch (IllegalArgumentException | UriBuilderException | NotFoundException ex)
+                catch (IllegalArgumentException | UriBuilderException | ClientException ex)
                 {
-                    if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI (not found or syntax error)", ex);
+                    if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
                     return getDefaultSource(); // return empty Model
                 }
             else

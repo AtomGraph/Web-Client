@@ -45,6 +45,7 @@ import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.writer.xslt.JSONLDWriter;
+import org.graphity.core.provider.ClientProvider;
 import org.graphity.core.provider.ModelProvider;
 import org.graphity.core.provider.SPARQLEndpointOriginProvider;
 import org.graphity.core.provider.SPARQLEndpointProvider;
@@ -95,6 +96,7 @@ public class Application extends org.graphity.core.Application
         singletons.add(new MediaTypesProvider());
         //singletons.add(new ModifiersProvider());
         singletons.add(new DataManagerProvider());
+        singletons.add(new ClientProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());
 	singletons.add(new ClientErrorExceptionMapper());
 	singletons.add(new UniformInterfaceExceptionMapper());
