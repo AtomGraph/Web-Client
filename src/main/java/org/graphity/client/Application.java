@@ -29,7 +29,10 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFWriterRegistry;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.mapper.ClientErrorExceptionMapper;
 import org.graphity.client.mapper.jersey.ClientHandlerExceptionMapper;
@@ -38,6 +41,7 @@ import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.TemplatesProvider;
+import org.graphity.client.riot.lang.JSONLDWriterFactory;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetProvider;
@@ -130,8 +134,6 @@ public class Application extends org.graphity.core.Application
                 getBooleanParam(getServletConfig(), G.preemptiveAuth),
                 getBooleanParam(getServletConfig(), GC.resolvingUncached));
         FileManager.setStdLocators(manager);
-	//manager.addLocatorLinkedData();
-	//manager.removeLocatorURL();
         FileManager.setGlobalFileManager(manager);
 	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
 
@@ -140,9 +142,10 @@ public class Application extends org.graphity.core.Application
         
 	try
 	{
-	    singletons.add(new JSONLDWriter(new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl")));
-            // add RDF/POST serialization. It will support JSON-LD during conneg, even though it's a JAX-RS and not Jena writer
-            RDFLanguages.register(RDFLanguages.JSONLD) ;            
+            Source jsonLdTemplates = new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl");
+	    singletons.add(new JSONLDWriter(jsonLdTemplates));
+            RDFLanguages.register(RDFLanguages.JSONLD);
+            RDFWriterRegistry.register(new RDFFormat(RDFLanguages.JSONLD), new JSONLDWriterFactory(jsonLdTemplates));
 	}
 	catch (TransformerConfigurationException ex)
 	{

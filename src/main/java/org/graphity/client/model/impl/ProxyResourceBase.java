@@ -18,6 +18,7 @@ package org.graphity.client.model.impl;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -112,9 +113,9 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
             userQuery = QueryFactory.create(uriInfo.getQueryParameters().getFirst("query"));
             
             URI endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
-            List<MediaType> modelMediaTypes = new ArrayList<>(mediaTypes.getModelMediaTypes());
-            modelMediaTypes.addAll(getMediaTypes().getResultSetMediaTypes());
-            List<Variant> variants = getResponse().getVariantListBuilder(modelMediaTypes, getLanguages(), getEncodings()).add().build();
+            List<MediaType> mediaTypeList = new ArrayList<>(mediaTypes.forClass(Model.class));
+            mediaTypeList.addAll(getMediaTypes().forClass(ResultSet.class));
+            List<Variant> variants = getResponse().getVariantListBuilder(mediaTypeList, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
 
             if (!variant.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE) &&

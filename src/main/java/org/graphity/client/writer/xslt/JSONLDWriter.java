@@ -16,15 +16,26 @@
  */
 package org.graphity.client.writer.xslt;
 
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.util.Context;
 import com.sun.jersey.spi.resource.Singleton;
+import java.io.OutputStream;
+import java.io.Writer;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RiotException;
+import org.apache.jena.riot.WriterGraphRIOT;
+import org.apache.jena.riot.system.PrefixMap;
 import org.graphity.client.writer.ModelXSLTWriter;
+import org.graphity.core.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @Provider
 @Singleton
 @Produces(org.graphity.core.MediaType.APPLICATION_LD_JSON)
-public class JSONLDWriter extends ModelXSLTWriter
+public class JSONLDWriter extends ModelXSLTWriter implements WriterGraphRIOT
 {
     private static final Logger log = LoggerFactory.getLogger(JSONLDWriter.class);
     
@@ -49,6 +60,32 @@ public class JSONLDWriter extends ModelXSLTWriter
     public JSONLDWriter(Templates templates)
     {
 	super(templates);
+    }
+
+    @Override
+    public void write(OutputStream out, Graph graph, PrefixMap prefixMap, String baseURI, Context context)
+    {
+        try
+        {
+            write(ModelFactory.createModelForGraph(graph), out);
+        }
+        catch (TransformerException ex)
+        {
+            if (log.isDebugEnabled()) log.debug("Writing JSON-LD stream failed: {}", ex);            
+            throw new RiotException(ex);
+        }
+    }
+
+    @Override
+    public void write(Writer out, Graph graph, PrefixMap prefixMap, String baseURI, Context context)
+    {
+        throw new UnsupportedOperationException("Use OutputStream instead of Writer");
+    }
+
+    @Override
+    public Lang getLang()
+    {
+        return RDFLanguages.JSONLD;
     }
 
 }

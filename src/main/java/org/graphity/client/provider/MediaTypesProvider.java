@@ -16,6 +16,8 @@
 
 package org.graphity.client.provider;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,14 +41,19 @@ public class MediaTypesProvider extends org.graphity.core.provider.MediaTypesPro
     private final MediaTypes mediaTypes;
     
     {
-        List<MediaType> modelMediaTypes = new ArrayList<>(super.getMediaTypes().getModelMediaTypes());
+        Map<Class, List<MediaType>> classTypes = new HashMap<>();
+        
+        List<MediaType> modelMediaTypes = new ArrayList<>(super.getMediaTypes().forClass(Model.class));
         Map<String, String> utf8Param = new HashMap<>();
         utf8Param.put("charset", "UTF-8");
         
         MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), utf8Param);
         modelMediaTypes.add(0, xhtmlXml);
-
-        mediaTypes = new MediaTypes(Collections.unmodifiableList(modelMediaTypes), super.getMediaTypes().getResultSetMediaTypes());
+        
+        classTypes.put(Model.class, Collections.unmodifiableList(modelMediaTypes));
+        classTypes.put(ResultSet.class, Collections.unmodifiableList(super.getMediaTypes().forClass(ResultSet.class)));
+        
+        mediaTypes = new MediaTypes(classTypes);
     }
     
     @Override

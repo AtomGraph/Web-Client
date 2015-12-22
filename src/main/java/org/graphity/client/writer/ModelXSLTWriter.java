@@ -143,6 +143,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends Mode
 	}
     }
 
+    public void write(Model model, OutputStream entityStream) throws TransformerException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        model.write(baos, RDFLanguages.RDFXML.getName(), null);
+
+        XSLTBuilder.fromStylesheet(getTemplates()).document(new ByteArrayInputStream(baos.toByteArray())).
+            resolver(getDataManager()).
+            result(new StreamResult(entityStream)).
+            transform();        
+    }
+    
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {

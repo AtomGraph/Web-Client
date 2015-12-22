@@ -16,6 +16,7 @@
 
 package org.graphity.client.mapper;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -98,7 +99,7 @@ abstract public class ExceptionMapperBase
     
     public List<MediaType> getModelMediaTypes()
     {
-        return getMediaTypes().getModelMediaTypes();
+        return getMediaTypes().forClass(Model.class);
     }
     
     public List<Locale> getLanguages()
