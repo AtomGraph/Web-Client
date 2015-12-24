@@ -31,6 +31,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
+import org.apache.jena.riot.IO_Jena;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriterRegistry;
 import org.graphity.client.locator.PrefixMapper;
@@ -41,6 +42,7 @@ import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.TemplatesProvider;
+import org.graphity.client.riot.lang.JSONLDWriterAdapter;
 import org.graphity.client.riot.lang.JSONLDWriterFactory;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.core.provider.QueryParamProvider;
@@ -48,7 +50,6 @@ import org.graphity.core.provider.ResultSetProvider;
 import org.graphity.core.provider.UpdateRequestReader;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.vocabulary.GC;
-import org.graphity.client.writer.xslt.JSONLDWriter;
 import org.graphity.core.provider.ClientProvider;
 import org.graphity.core.provider.ModelProvider;
 import org.graphity.core.provider.SPARQLEndpointOriginProvider;
@@ -143,9 +144,10 @@ public class Application extends org.graphity.core.Application
 	try
 	{
             Source jsonLdTemplates = new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl");
-	    singletons.add(new JSONLDWriter(jsonLdTemplates));
+	    //singletons.add(new JSONLDWriter(jsonLdTemplates));
             RDFLanguages.register(RDFLanguages.JSONLD);
             RDFWriterRegistry.register(new RDFFormat(RDFLanguages.JSONLD), new JSONLDWriterFactory(jsonLdTemplates));
+            IO_Jena.registerForModelWrite(RDFLanguages.strLangJSONLD, JSONLDWriterAdapter.class);
 	}
 	catch (TransformerConfigurationException ex)
 	{

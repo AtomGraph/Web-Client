@@ -36,30 +36,21 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class MediaTypesProvider extends org.graphity.core.provider.MediaTypesProvider
 {
-    private static final Logger log = LoggerFactory.getLogger(MediaTypesProvider.class);
-
-    private final MediaTypes mediaTypes;
-    
-    {
-        Map<Class, List<MediaType>> classTypes = new HashMap<>();
-        
-        List<MediaType> modelMediaTypes = new ArrayList<>(super.getMediaTypes().forClass(Model.class));
-        Map<String, String> utf8Param = new HashMap<>();
-        utf8Param.put("charset", "UTF-8");
-        
-        MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), utf8Param);
-        modelMediaTypes.add(0, xhtmlXml);
-        
-        classTypes.put(Model.class, Collections.unmodifiableList(modelMediaTypes));
-        classTypes.put(ResultSet.class, Collections.unmodifiableList(super.getMediaTypes().forClass(ResultSet.class)));
-        
-        mediaTypes = new MediaTypes(classTypes);
-    }
+    private static final Logger log = LoggerFactory.getLogger(MediaTypesProvider.class);    
     
     @Override
     public MediaTypes getMediaTypes()
     {
-        return mediaTypes;
+        Map<Class, List<MediaType>> writable = new HashMap<>();
+
+        List<MediaType> writableModelTypes = new ArrayList<>(super.getMediaTypes().getWritable(Model.class));
+        MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), MediaTypes.UTF8_PARAM);
+        writableModelTypes.add(0, xhtmlXml);
+        
+        writable.put(Model.class, Collections.unmodifiableList(writableModelTypes));
+        writable.put(ResultSet.class, Collections.unmodifiableList(super.getMediaTypes().getWritable(ResultSet.class)));
+        
+        return new MediaTypes(super.getMediaTypes().getReadable(), writable);
     }
     
 }

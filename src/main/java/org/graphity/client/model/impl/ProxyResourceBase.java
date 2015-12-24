@@ -113,8 +113,8 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
             userQuery = QueryFactory.create(uriInfo.getQueryParameters().getFirst("query"));
             
             URI endpointURI = URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()));
-            List<MediaType> mediaTypeList = new ArrayList<>(mediaTypes.forClass(Model.class));
-            mediaTypeList.addAll(getMediaTypes().forClass(ResultSet.class));
+            List<MediaType> mediaTypeList = new ArrayList<>(mediaTypes.getWritable(Model.class));
+            mediaTypeList.addAll(getMediaTypes().getWritable(ResultSet.class));
             List<Variant> variants = getResponse().getVariantListBuilder(mediaTypeList, getLanguages(), getEncodings()).add().build();
             Variant variant = getRequest().selectVariant(variants);
 

@@ -65,20 +65,6 @@ abstract public class ExceptionMapperBase
         
         return resource;
     }
-
-    /*
-    public Response toResponse(RuntimeException ex)
-    {
-	return org.graphity.core.model.impl.Response.fromRequest(getRequest()).
-                getResponseBuilder(toResource(ex, getStatus(ex), getResource(ex)).getModel(), getVariants()).
-                    status(getStatus(ex)).
-                    build();
-    }
-    
-    public abstract Status getStatus(RuntimeException ex);
-    
-    public abstract Resource getResource(RuntimeException ex);
-    */
     
     public MediaTypes getMediaTypes()
     {
@@ -94,12 +80,12 @@ abstract public class ExceptionMapperBase
     public Variant.VariantListBuilder getVariantListBuilder()
     {
         org.graphity.core.model.impl.Response response = org.graphity.core.model.impl.Response.fromRequest(getRequest());
-        return response.getVariantListBuilder(getModelMediaTypes(), getLanguages(), getEncodings());
+        return response.getVariantListBuilder(getWritableMediaTypes(), getLanguages(), getEncodings());
     }
     
-    public List<MediaType> getModelMediaTypes()
+    public List<MediaType> getWritableMediaTypes()
     {
-        return getMediaTypes().forClass(Model.class);
+        return getMediaTypes().getWritable(Model.class);
     }
     
     public List<Locale> getLanguages()

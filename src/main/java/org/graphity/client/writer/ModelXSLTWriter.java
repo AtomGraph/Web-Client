@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 @Provider
 @Singleton
 @Produces({MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML}) // MediaType.APPLICATION_XML ?
-public class ModelXSLTWriter implements MessageBodyWriter<Model> // extends ModelProvider // implements RDFWriter
+public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphRIOT?
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
