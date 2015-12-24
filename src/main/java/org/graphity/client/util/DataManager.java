@@ -148,7 +148,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	    return super.readModel(model, mappedURI, filenameOrURI, null); // let FileManager handle
 	}
 
-        return super.loadModel(filenameOrURI);
+        model.add(super.loadModel(filenameOrURI));
+        return model;
     }
     
     /**

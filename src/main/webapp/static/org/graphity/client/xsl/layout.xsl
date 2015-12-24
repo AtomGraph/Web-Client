@@ -444,7 +444,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:about[. = (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource, $g:requestUri)] | @rdf:about[../foaf:isPrimaryTopicOf/@rdf:resource = $g:requestUri]" mode="gc:HeaderMode" priority="1">
-XX<xsl:copy-of select="/"/>/XX
         <h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
