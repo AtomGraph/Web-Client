@@ -983,7 +983,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="#current">
+            <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="gc:EditMode">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -1002,18 +1002,6 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about = $g:requestUri] | *[gp:constructorOf/@rdf:resource = $g:requestUri] | *[gp:pageOf/@rdf:resource = $g:requestUri]" mode="gp:ConstructMode" priority="1"/>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gp:ConstructMode">
-        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
-        <xsl:param name="class" as="xs:string?"/>
-
-        <xsl:apply-templates select="." mode="gc:EditMode">
-            <xsl:with-param name="id" select="$id"/>
-            <xsl:with-param name="class" select="$class"/>
-        </xsl:apply-templates>
-    </xsl:template>
-
     <!-- EDIT MODE -->
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">

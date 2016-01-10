@@ -151,13 +151,13 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!--
     <xsl:template match="rdf:RDF" mode="gp:ConstructMode">
         <xsl:apply-imports>
             <xsl:with-param name="action" select="xs:anyURI(concat('?uri=', encode-for-uri(key('resources', $g:requestUri)/@rdf:about)))"/>
         </xsl:apply-imports>
     </xsl:template>
                 
-    <!--    
     <xsl:template match="*[@rdf:about = $g:requestUri]" mode="gc:ModeToggleMode" priority="1">
         <div class="pull-right">
             <a class="btn btn-primary" href="{$g:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gp;CreateItemMode'))}">
