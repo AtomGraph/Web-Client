@@ -63,6 +63,8 @@ public final class GC
     
     public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
 
+    public static final AnnotationProperty defaultMode = m_model.createAnnotationProperty( NS + "defaultMode" );
+    
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
     public static final ObjectProperty sitemap = m_model.createObjectProperty( NS + "sitemap" );

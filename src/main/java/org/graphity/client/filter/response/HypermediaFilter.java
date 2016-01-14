@@ -127,42 +127,35 @@ public class HypermediaFilter implements ContainerResponseFilter
                     throw new ConfigurationException("Invalid Mode defined for template '" + matchedOntClass.getURI() +"'");
                 }
 
-                if (!supportedMode.equals(GP.ConstructMode))
+                if (model.contains(null, GP.pageOf, resource))
                 {
-                    if (model.contains(null, GP.pageOf, resource))
+                    // container pages
+                    ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
+                    try
                     {
-                        // container pages
-                        ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
-                        try
+                        while (resIt.hasNext())
                         {
-                            while (resIt.hasNext())
-                            {
-                                Resource page = resIt.next();
-                                StateBuilder sb = StateBuilder.fromUri(page.getURI(), page.getModel()).
-                                    replaceProperty(GC.mode, supportedMode.asResource());
-                                if (page.getProperty(GP.limit) != null) sb.replaceLiteral(GP.limit, page.getProperty(GP.limit).getLong());
-                                if (page.getProperty(GP.offset) != null) sb.replaceLiteral(GP.offset, page.getProperty(GP.offset).getLong());
-                                if (page.getProperty(GP.orderBy) != null) sb.replaceLiteral(GP.orderBy, page.getProperty(GP.orderBy).getString());
-                                if (page.getProperty(GP.desc) != null) sb.replaceLiteral(GP.desc, page.getProperty(GP.desc).getBoolean());
-                                sb.build().
-                                    addProperty(GC.layoutOf, page).
-                                    addProperty(RDF.type, FOAF.Document);
-                            }
-                        }
-                        finally
-                        {
-                            resIt.close();
+                            Resource page = resIt.next();
+                            StateBuilder sb = StateBuilder.fromUri(page.getURI(), page.getModel()).
+                                replaceProperty(GC.mode, supportedMode.asResource());
+                            sb.build().
+                                addProperty(GC.layoutOf, page).
+                                addProperty(RDF.type, FOAF.Document);
                         }
                     }
-                    else
+                    finally
                     {
-                        // container without pagination or item
-                        StateBuilder.fromUri(resource.getURI(), resource.getModel()).
-                            replaceProperty(GC.mode, supportedMode.asResource()).
-                            build().
-                            addProperty(GC.layoutOf, resource).
-                            addProperty(RDF.type, FOAF.Document);                        
+                        resIt.close();
                     }
+                }
+                else
+                {
+                    // container without pagination or item
+                    StateBuilder.fromUri(resource.getURI(), resource.getModel()).
+                        replaceProperty(GC.mode, supportedMode.asResource()).
+                        build().
+                        addProperty(GC.layoutOf, resource).
+                        addProperty(RDF.type, FOAF.Document);                        
                 }
             }
         }

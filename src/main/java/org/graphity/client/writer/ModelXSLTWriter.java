@@ -78,7 +78,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>();
     
     {
-        modeMediaTypeMap.put(URI.create(GP.ConstructMode.getURI()), MediaType.TEXT_HTML_TYPE);
         modeMediaTypeMap.put(URI.create(GC.EditMode.getURI()), MediaType.TEXT_HTML_TYPE);
         modeMediaTypeMap.put(URI.create(GC.MapMode.getURI()), MediaType.TEXT_HTML_TYPE);
     }
@@ -219,8 +218,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public URI getMode()
     {
-        if (getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
-            return URI.create(getUriInfo().getQueryParameters().getFirst(GP.mode.getLocalName()));
+        if (getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
+            return URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
         
         return null;
     }
@@ -337,9 +336,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	if (uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
 	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
                 uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()));
-        if (uriInfo.getQueryParameters().getFirst(GP.mode.getLocalName()) != null)
-	    bld.parameter("{" + GP.mode.getNameSpace() + "}" + GP.mode.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GP.mode.getLocalName())));
+        if (uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
+	    bld.parameter("{" + GC.mode.getNameSpace() + "}" + GC.mode.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName())));
         if (uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName()) != null)
 	    bld.parameter("{" + GP.forClass.getNameSpace() + "}" + GP.forClass.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName())));

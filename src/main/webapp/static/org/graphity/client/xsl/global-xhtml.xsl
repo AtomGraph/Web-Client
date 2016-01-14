@@ -143,7 +143,7 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gp:mode/@rdf:resource = '&gp;ConstructMode']" mode="gc:ModeToggleMode">
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gp;ConstructMode']" mode="gc:ModeToggleMode">
         <div class="pull-right">
             <a class="btn btn-primary" href="?uri={encode-for-uri(@rdf:about)}">
                 <xsl:apply-templates select="key('resources', '&gp;ConstructMode', document('&gp;'))" mode="gc:LabelMode"/>
@@ -182,7 +182,7 @@ exclude-result-prefixes="#all">
         </div>
 
         <xsl:apply-imports>
-            <xsl:with-param name="result-doc" select="document(concat($g:absolutePath, gc:query-string($gc:endpointUri, $query, $gp:mode, ())))"/>
+            <xsl:with-param name="result-doc" select="document(concat($g:absolutePath, gc:query-string($gc:endpointUri, $query, $gc:mode, ())))"/>
         </xsl:apply-imports>
     </xsl:template>
     -->

@@ -64,8 +64,6 @@ public final class GP
 
     public static final OntClass Constructor = m_model.createClass( NS + "Constructor" );
 
-    public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
-    
     public static final OntClass Page = m_model.createClass( NS + "Page" );
 
     public static final AnnotationProperty query = m_model.createAnnotationProperty( NS + "query" );
@@ -73,7 +71,7 @@ public final class GP
     public static final AnnotationProperty update = m_model.createAnnotationProperty( NS + "update" );
 
     public static final AnnotationProperty template = m_model.createAnnotationProperty( NS + "template" );
-
+    
     public static final AnnotationProperty defaultOffset = m_model.createAnnotationProperty( NS + "defaultOffset" );
     
     public static final AnnotationProperty defaultLimit = m_model.createAnnotationProperty( NS + "defaultLimit" );
@@ -116,8 +114,6 @@ public final class GP
 
     public static final DatatypeProperty restrictionsQuery = m_model.createDatatypeProperty( NS + "restrictionsQuery" );
 
-    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
-    
     public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
 
 }

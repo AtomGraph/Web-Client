@@ -78,12 +78,6 @@
     rdfs:seeAlso <http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.1.3> ;
     rdfs:isDefinedBy <#> .
 
-<#defaultMode> a owl:AnnotationProperty ;
-    rdfs:range <#Mode> ;
-    rdfs:label "Default mode" ;
-    rdfs:comment "Indicates RDF representation mode" ;
-    rdfs:isDefinedBy <#> .
-
 <#defaultLimit> a owl:AnnotationProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:long ;
@@ -172,12 +166,6 @@
     rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
     rdfs:isDefinedBy <#> .
 
-<#mode> a owl:ObjectProperty ;
-    rdfs:domain foaf:Document ;
-    rdfs:range <#Mode> ;
-    rdfs:label "RDF description mode" ;
-    rdfs:isDefinedBy <#> .
-
 # CLASSES
 
 <#Application> a rdfs:Class, owl:Class ;
@@ -191,10 +179,10 @@
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
     spin:constructor <#TemplateConstructor> ;
     spin:constraint <#MissingRDFSLabel> , <#MissingRDFSisDefinedBy> ,
-        [ a <#MissingPropertyValue> ;
-            rdfs:label "Missing rdfs:subClassOf" ;
-	    sp:arg1 rdfs:subClassOf
-	] ,
+        #[ a <#MissingPropertyValue> ;
+        #    rdfs:label "Missing rdfs:subClassOf" ;
+	#    sp:arg1 rdfs:subClassOf
+	#] ,
         [ a <#MissingPropertyValue> ;
             rdfs:label "Missing gp:uriTemplate" ;
 	    sp:arg1 <#uriTemplate>
@@ -232,7 +220,6 @@
               gp:cacheControl "no-cache" ;
               gp:loadClass _:loadClass ;
               gp:query gp:Describe ;
-              gp:defaultMode _:defaultMode ;
               spin:constraint _:constraint ;
               spin:constructor _:constructor ;
               rdfs:isDefinedBy _:isDefinedBy .
@@ -415,7 +402,7 @@
     rdfs:subClassOf foaf:Document ;
     <#uriTemplate> "/sparql" ;
     <#query> <#Describe> ;
-    <#loadClass> <java:org.graphity.processor.model.SPARQLEndpointBase> ;
+    <#loadClass> <java:org.graphity.processor.model.impl.SPARQLEndpointBase> ;
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy <#> .
 
@@ -424,17 +411,6 @@
     <#uriTemplate> "/service" ;
     <#query> <#Describe> ;
     rdfs:label "Graph Store" ;
-    rdfs:isDefinedBy <#> .
-
-<#Mode> a owl:Class ;
-    rdfs:label "Class of RDF modes" ;
-    rdfs:isDefinedBy <#> .
-
-# MODES
-
-<#ConstructMode> a <#Mode> ;
-    rdfs:label "Create" ;
-    rdfs:comment "Container responds with CONSTRUCTed template for gp:forClass value" ;
     rdfs:isDefinedBy <#> .
 
 # SPIN TEMPLATES
