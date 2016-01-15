@@ -19,8 +19,14 @@
 
 # ANNOTATION PROPERTIES
 
+<#defaultMode> a owl:AnnotationProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Default mode" ;
+    rdfs:comment "Indicates RDF representation mode" ;
+    rdfs:isDefinedBy <#> .
+
 <#supportedMode> a owl:AnnotationProperty ;
-    rdfs:range gp:Mode ;
+    rdfs:range <#Mode> ;
     rdfs:label "Layout mode" ;
     rdfs:isDefinedBy <#> .
 
@@ -45,42 +51,42 @@
     rdfs:label "Graphity Client application" ;
     rdfs:isDefinedBy <#> .
 
-gp:Mode a owl:Class ;
+<#Mode> a owl:Class ;
     rdfs:label "Class of layout modes" ;
     rdfs:isDefinedBy <#> .
 
 <#ContainerMode> a owl:Class ;
-    rdfs:subClassOf gp:Mode ;
+    rdfs:subClassOf <#Mode> ;
     rdfs:label "Class of container layout modes" ;
     rdfs:isDefinedBy <#> .
 
 <#ItemMode> a owl:Class ;
-    rdfs:subClassOf gp:Mode ;
+    rdfs:subClassOf <#Mode> ;
     rdfs:label "Class of item layout modes" ;
     rdfs:isDefinedBy <#> .
 
 # INDIVIDUALS
 
-<#ReadMode> a gp:Mode, <#ContainerMode>, <#ItemMode> ;
+<#ReadMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
-<#EditMode> a gp:Mode, <#ItemMode> ;
+<#EditMode> a <#Mode>, <#ItemMode> ;
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
-<#TableMode> a gp:Mode, <#ContainerMode> ;
+<#TableMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .
 
-<#ListMode> a gp:Mode, <#ContainerMode> ;
+<#ListMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "List" ;
     rdfs:isDefinedBy <#> .
 
-<#GridMode> a gp:Mode, <#ContainerMode> ;
+<#GridMode> a <#Mode>, <#ContainerMode> ;
     rdfs:label "Grid" ;
     rdfs:isDefinedBy <#> .
 
-<#MapMode> a gp:Mode, <#ContainerMode>, <#ItemMode> ;
+<#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .
