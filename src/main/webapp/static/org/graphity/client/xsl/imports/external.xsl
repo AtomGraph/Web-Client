@@ -74,7 +74,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about][gc:mode/@rdf:resource]" mode="gc:ModeSelectMode">
 	<li>
-	    <xsl:if test="(not($gc:mode) and $gc:defaultMode = gc:mode/@rdf:resource) or $gc:mode = gc:mode/@rdf:resource">
+	    <xsl:if test="$gc:mode = gc:mode/@rdf:resource">
 		<xsl:attribute name="class">active</xsl:attribute>
 	    </xsl:if>
 

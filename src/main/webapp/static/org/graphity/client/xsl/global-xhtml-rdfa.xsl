@@ -81,7 +81,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="uri" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
-    <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/>
+    <!-- <xsl:variable name="gc:defaultMode" select="if ($gc:uri) then (xs:anyURI('&gc;ReadMode')) else (if (not(/rdf:RDF/*/rdf:type/@rdf:resource = '&http;Response') and $matched-ont-class/gc:defaultMode/@rdf:resource) then xs:anyURI($matched-ont-class/gc:defaultMode/@rdf:resource) else (if (key('resources', $absolute-path)/rdf:type/@rdf:resource = '&gp;Container') then xs:anyURI('&gc;ListMode') else xs:anyURI('&gc;ReadMode')))" as="xs:anyURI"/> -->
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
 
@@ -214,18 +214,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
 	<xsl:choose>
 	    <xsl:when test="$gc:uri">
-		<xsl:choose>
-		    <xsl:when test=". = $gc:defaultMode">
-			<a href="{$absolute-path}{gc:query-string($gc:uri, ())}">
-			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-			</a>		
-		    </xsl:when>
-		    <xsl:otherwise>
-			<a href="{$absolute-path}{gc:query-string($gc:uri, .)}">
-			    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
-			</a>		
-		    </xsl:otherwise>
-		</xsl:choose>
+                <a href="{$absolute-path}{gc:query-string($gc:uri, .)}">
+                    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
+                </a>		
 	    </xsl:when>
 	    <xsl:otherwise>
 		<xsl:apply-imports/>

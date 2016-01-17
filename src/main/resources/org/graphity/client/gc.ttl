@@ -13,7 +13,6 @@
 # ONTOLOGY
 
 <#> a owl:Ontology ;
-    # owl:imports gp: ;
     rdfs:label "Graphity Client ontology" ;
     owl:versionInfo "1.1.4" .
 
