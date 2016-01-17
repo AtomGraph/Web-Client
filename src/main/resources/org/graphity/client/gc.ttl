@@ -66,6 +66,10 @@
 
 # INDIVIDUALS
 
+<#ConstructMode> a <#Mode>, <#ContainerMode>;
+    rdfs:label "Create" ;
+    rdfs:isDefinedBy <#> .
+
 <#ReadMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .

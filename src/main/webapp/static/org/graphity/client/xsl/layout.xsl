@@ -404,7 +404,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@rdf:about[../gc:mode/@rdf:resource = '&gc;ConstructMode']" mode="gc:InlineMode" priority="1">
-        <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gp;'))" mode="gc:LabelMode"/>
+        <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="../gp:forClass/@rdf:resource" mode="gc:InlineMode"/>
     </xsl:template>
@@ -518,7 +518,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;ConstructMode']" mode="gc:ModeToggleMode">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
-                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gp;'))" mode="gc:LabelMode"/>
+                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
             </a>
         </div>
     </xsl:template>

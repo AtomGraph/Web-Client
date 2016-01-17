@@ -146,7 +146,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="gc:ModeToggleMode">
         <div class="pull-right">
             <a class="btn btn-primary" href="?uri={encode-for-uri(@rdf:about)}">
-                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gp;'))" mode="gc:LabelMode"/>
+                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
             </a>
         </div>
     </xsl:template>
