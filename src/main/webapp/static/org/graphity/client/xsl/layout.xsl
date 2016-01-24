@@ -952,7 +952,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="gc:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="forClass" select="key('resources', $g:requestUri)/gp:forClass/@rdf:resource" as="xs:anyURI"/>
-        <!-- <xsl:param name="mode" select="key('resources', $g:requestUri)/gc:mode/@rdf:resource" as="xs:anyURI"/> -->
         <xsl:param name="action" select="$g:requestUri" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
@@ -981,7 +980,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="key('resources-by-type', $forClass)" mode="gc:EditMode">
+            <xsl:apply-templates select="key('resources-by-type', $forClass)[@rdf:nodeID]" mode="gc:EditMode">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>

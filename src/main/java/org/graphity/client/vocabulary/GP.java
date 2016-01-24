@@ -94,9 +94,9 @@ public final class GP
     
     public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
 
-    public static final ObjectProperty datasetLocation = m_model.createObjectProperty( NS + "datasetLocation" );
-
     public static final ObjectProperty ontology = m_model.createObjectProperty( NS + "ontology" );
+
+    public static final DatatypeProperty dataset = m_model.createDatatypeProperty( NS + "dataset" );
     
     public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
     
