@@ -959,6 +959,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="template-doc" select="document(key('resources', $g:requestUri)/@rdf:about)" as="document-node()"/>
+        <xsl:param name="selected-resources" select="key('resources-by-type', $forClass)[@rdf:nodeID]" as="element()*" tunnel="yes"/>
         
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -980,7 +981,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="key('resources-by-type', $forClass)[@rdf:nodeID]" mode="gc:EditMode">
+            <xsl:apply-templates select="$selected-resources" mode="gc:EditMode">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -1009,10 +1010,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="parent-uri" select="key('resources', $g:requestUri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
-        <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
-        <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gp:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
-        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?" tunnel="yes"/>
+        <xsl:param name="selected-resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -1034,8 +1032,8 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="*[not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
-                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+            <xsl:apply-templates select="$selected-resources" mode="#current">
+                <!-- <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/> -->
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
                 
@@ -1053,9 +1051,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:EditMode">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="legend" select="true()" as="xs:boolean"/>
+        <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="template-doc" as="document-node()?" tunnel="yes"/>
+        <xsl:param name="parent-uri" select="key('resources', $g:requestUri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
+        <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
+        <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gp:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
+        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?" tunnel="yes"/>
         <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
 
@@ -1067,7 +1068,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:if test="$legend and (@rdf:about or not(key('predicates-by-object', @rdf:nodeID)))">
+            <xsl:if test="$legend">
                 <legend>
                     <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
                 </legend>

@@ -34,7 +34,7 @@ exclude-result-prefixes="#all">
     <!--    
     <xsl:template match="spin:query/@rdf:resource | spin:query/@rdf:nodeID" mode="gc:EditMode">
         <select name="ou" id="{generate-id()}">
-            <xsl:apply-templates select="key('resources-by-type', '&sp;Query', $gp:ontModel)" mode="gc:OptionMode">
+            <xsl:apply-templates select="key('resources-by-type', '&sp;Query', $gc:sitemap)" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" order="ascending"/>
                 <xsl:with-param name="selected" select="../@rdf:resource"/>
             </xsl:apply-templates>
