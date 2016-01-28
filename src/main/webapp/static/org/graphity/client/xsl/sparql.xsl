@@ -56,7 +56,7 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" priority="2">
+    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" priority="2">
         <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $g:requestUri)]" as="element()*"/>
 
 	<div class="container-fluid">
@@ -64,7 +64,7 @@ LIMIT 100</xsl:param>
 		<div class="span8">
                     <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
-                    <xsl:apply-templates select="." mode="gc:HeaderMode"/> 
+                    <xsl:apply-templates select="." mode="gc:HeaderMode"/>
 
                     <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 
@@ -80,13 +80,17 @@ LIMIT 100</xsl:param>
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:StyleMode" priority="1">
+    <xsl:template match="rdf:RDF" mode="gc:HeaderMode" priority="1">
+        <xsl:apply-templates select="key('resources', $g:absolutePath)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:StyleMode" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
+    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -138,8 +142,8 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
-	<xsl:param name="result-doc" select="document(concat($g:requestUri, gc:query-string((), $query, $gc:mode, ())))"/>
+    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
+	<xsl:param name="result-doc" select="document(concat($g:absolutePath, gc:query-string((), $query, $gc:mode, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">

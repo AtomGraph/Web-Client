@@ -411,8 +411,12 @@ exclude-result-prefixes="#all">
         
     <!-- HEADER MODE -->
 
-    <xsl:template match="rdf:RDF" mode="gc:HeaderMode">        
-        <xsl:apply-templates select="if (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) then key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) else key('resources', $g:requestUri)" mode="#current"/>
+    <xsl:template match="rdf:RDF[key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource)]" mode="gc:HeaderMode" priority="1">
+        <xsl:apply-templates select="key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF" mode="gc:HeaderMode">
+        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
     </xsl:template>
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:HeaderMode">
