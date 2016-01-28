@@ -17,7 +17,6 @@
 package org.graphity.client;
 
 import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import java.io.FileNotFoundException;
@@ -130,7 +129,7 @@ public class Application extends org.graphity.core.Application
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, ARQ.getContext(),
+        DataManager manager = new DataManager(mapper, new MediaTypesProvider().getMediaTypes(),
                 getBooleanParam(getServletConfig(), G.cacheModelLoads),
                 getBooleanParam(getServletConfig(), G.preemptiveAuth),
                 getBooleanParam(getServletConfig(), GC.resolvingUncached));

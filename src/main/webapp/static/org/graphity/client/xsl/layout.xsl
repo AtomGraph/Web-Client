@@ -1004,7 +1004,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="gc:EditMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>   
-        <xsl:param name="action" select="xs:anyURI(concat($g:requestUri, '?_method=PUT&amp;mode=', encode-for-uri('&gc;EditMode')))" as="xs:anyURI"/>
+        <xsl:param name="action" select="xs:anyURI(concat($g:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri('&gc;EditMode')))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
