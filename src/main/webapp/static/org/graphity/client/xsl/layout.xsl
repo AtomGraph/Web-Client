@@ -963,7 +963,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="template-doc" select="document(key('resources', $g:requestUri)/@rdf:about)" as="document-node()"/>
-        <xsl:param name="selected-resources" select="key('resources-by-type', $forClass)[@rdf:nodeID]" as="element()*" tunnel="yes"/>
+        <xsl:param name="resources" select="key('resources-by-type', $forClass)[@rdf:nodeID]" as="element()*" tunnel="yes"/>
         
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -985,7 +985,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="$selected-resources" mode="gc:EditMode">
+            <xsl:apply-templates select="$resources" mode="gc:EditMode">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -1014,7 +1014,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="selected-resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
+        <xsl:param name="resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -1036,8 +1036,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="$selected-resources" mode="#current">
-                <!-- <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/> -->
+            <xsl:apply-templates select="$resources" mode="#current">
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
                 
