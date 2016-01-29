@@ -25,13 +25,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.*;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-import org.graphity.client.locator.PrefixMapper;
 import org.graphity.core.MediaType;
 import org.graphity.core.MediaTypes;
 import org.graphity.core.exception.ClientException;
@@ -59,22 +56,6 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
         this.resolvingUncached = resolvingUncached;
     }
 
-    public boolean isPrefixMapped(String filenameOrURI)
-    {
-	return !getPrefix(filenameOrURI).equals(filenameOrURI);
-    }
-
-    public String getPrefix(String filenameOrURI)
-    {
-	if (getLocationMapper() instanceof PrefixMapper)
-	{
-	    String baseURI = ((PrefixMapper)getLocationMapper()).getPrefix(filenameOrURI);
-	    if (baseURI != null) return baseURI;
-	}
-	
-	return filenameOrURI;
-    }
-
     public ClientResponse load(String filenameOrURI)
     {
         List<javax.ws.rs.core.MediaType> acceptedTypeList = new ArrayList();
@@ -85,71 +66,10 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
         return get(filenameOrURI, acceptedTypes);
     }
     
-    /**
-     * Loads RDF model from URI.
-     * If URI is prefix-mapped, local file is returned.
-     * If the URI is SPARQL Protocol URI (contains endpoint and encoded query), the query is decoded and executed on the endpoint.
-     * Otherwise, attempting to reading RDF from Linked Data URI.
-     * 
-     * @param filenameOrURI target location
-     * @return RDF model
-     */
-    @Override
-    public Model loadModel(String filenameOrURI)
-    {
-	if (isPrefixMapped(filenameOrURI))
-	{
-	    String prefix = getPrefix(filenameOrURI);
-	    if (log.isDebugEnabled()) log.debug("URI {} is prefix mapped, loading prefix URI: {}", filenameOrURI, prefix);
-	    return loadModel(prefix);
-	}
-	
-	if (log.isDebugEnabled()) log.debug("loadModel({})", filenameOrURI);
-	filenameOrURI = UriBuilder.fromUri(filenameOrURI).fragment(null).build().toString(); // remove document fragments
-	
-        if (hasCachedModel(filenameOrURI))
-	{
-	    if (log.isDebugEnabled()) log.debug("Returning cached Model for URI: {}", filenameOrURI);
-	    return getFromCache(filenameOrURI) ;
-	}  
-
-        Model model = ModelFactory.createDefaultModel();
-        readModel(model, filenameOrURI);
-        
-	addCacheModel(filenameOrURI, model);
-	
-        return model;
-    }
-
     public boolean isMapped(String filenameOrURI)
     {
 	String mappedURI = mapURI(filenameOrURI);
 	return (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:"));
-    }
-
-    /**
-     * Reads RDF into model from URI location.
-     * If the URI is mapped, local mapped file is read.
-     * Otherwise, attempting to select RDF syntax and read into stream from the target location.
-     * 
-     * @param model RDF model
-     * @param filenameOrURI target location
-     * @return populated RDF model
-     */
-    @Override
-    public Model readModel(Model model, String filenameOrURI)
-    {
-	String mappedURI = mapURI(filenameOrURI);
-	if (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:")) // if URI is mapped and local
-	{
-	    if (log.isDebugEnabled()) log.debug("URI {} is mapped to {}, letting FileManager.readModel() handle it", filenameOrURI, mappedURI);
-	    if (log.isDebugEnabled()) log.debug("FileManager.readModel() URI: {} Base URI: {}", mappedURI, filenameOrURI);
-
-	    return super.readModel(model, mappedURI, filenameOrURI, null); // let FileManager handle
-	}
-
-        model.add(super.loadModel(filenameOrURI));
-        return model;
     }
     
     /**
@@ -193,16 +113,17 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
         Model model = getFromCache(uri.toString());
         if (model == null) // URI not cached, 
         {
-            if (log.isDebugEnabled())
-            {
-                log.debug("No cached Model for URI: {}", uri);
-                log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
-            }
+            if (log.isDebugEnabled()) log.debug("No cached Model for URI: {}", uri);
 
-            if (resolvingUncached(uri.toString()) ||
-                    (isResolvingMapped() && isMapped(uri.toString())))
+            if (isResolvingMapped() && isMapped(uri.toString()))
+            {
+                if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
+                return getSource(loadModel(uri.toString()), uri.toString());
+            }
+            
+            if (resolvingUncached(uri.toString()))
                 try
-                {
+                {                    
                     if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
                     ClientResponse cr = load(uri.toString());
                     
@@ -218,7 +139,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
                     
                     return getDefaultSource(); // return empty Model                    
                 }
-                catch (IllegalArgumentException | UriBuilderException | ClientException ex)
+                catch (IllegalArgumentException | ClientException ex)
                 {
                     if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
                     return getDefaultSource(); // return empty Model
