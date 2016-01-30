@@ -45,6 +45,7 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
+    private final javax.ws.rs.core.MediaType[] acceptedTypes;
     private final boolean resolvingUncached;
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
@@ -54,16 +55,16 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
     {
 	super(mapper, mediaTypes, cacheModelLoads, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
-    }
-
-    public ClientResponse load(String filenameOrURI)
-    {
+        
         List<javax.ws.rs.core.MediaType> acceptedTypeList = new ArrayList();
         acceptedTypeList.addAll(getMediaTypes().getReadable(Model.class));
         acceptedTypeList.addAll(getMediaTypes().getReadable(ResultSet.class));
-        javax.ws.rs.core.MediaType[] acceptedTypes = acceptedTypeList.toArray(new javax.ws.rs.core.MediaType[acceptedTypeList.size()]);
-        
-        return get(filenameOrURI, acceptedTypes);
+        acceptedTypes = acceptedTypeList.toArray(new javax.ws.rs.core.MediaType[acceptedTypeList.size()]);        
+    }
+
+    public ClientResponse load(String filenameOrURI)
+    {        
+        return get(filenameOrURI, getAcceptedMediaTypes());
     }
     
     public boolean isMapped(String filenameOrURI)
@@ -199,7 +200,12 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
 	
 	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
     }
-     
+ 
+    public javax.ws.rs.core.MediaType[] getAcceptedMediaTypes()
+    {
+        return acceptedTypes;
+    }
+    
     public boolean resolvingUncached(String filenameOrURI)
     {
 	return resolvingUncached;
