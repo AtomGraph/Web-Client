@@ -6,6 +6,8 @@
    [ lm:name "http://graphity.org/gc" ;                             lm:altName "org/graphity/client/gc.ttl" ] ,
    [ lm:name "http://graphity.org/gp#" ;                            lm:altName "org/graphity/client/gp.ttl" ] ,
    [ lm:name "http://graphity.org/gp" ;                             lm:altName "org/graphity/client/gp.ttl" ] ,
+   [ lm:name "http://graphity.org/gps#" ;                           lm:altName "org/graphity/client/gps.ttl" ] ,
+   [ lm:name "http://graphity.org/gps" ;                            lm:altName "org/graphity/client/gps.ttl" ] ,
    [ lm:name "http://rdfs.org/sioc/ns#" ;			    lm:altName "org/graphity/client/sioc.owl" ] ,
    [ lm:name "http://rdfs.org/ns/void#" ;			    lm:altName "org/graphity/client/void.owl" ] ,
    [ lm:name "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ;	    lm:altName "org/graphity/client/rdf.owl" ] ,
@@ -23,9 +25,6 @@
    [ lm:name "http://xmlns.com/foaf/0.1/" ;			    lm:altName "org/graphity/client/foaf.owl" ] ,
    [ lm:name "http://dbpedia.org/ontology/" ;			    lm:altName "org/graphity/client/dbpedia-owl.owl" ] ,
    [ lm:name "http://graph.facebook.com/schema/user#" ;		    lm:altName "org/graphity/client/gfb-user.owl" ] ,
-   [ lm:name "http://spinrdf.org/sp#" ;                             lm:altName "etc/sp.ttl" ] ,
-   [ lm:name "http://spinrdf.org/spin#" ;                           lm:altName "etc/spin.ttl" ] ,
-   [ lm:name "http://spinrdf.org/spl#" ;                            lm:altName "etc/spl.spin.ttl" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;			    lm:altName "org/graphity/client/doap.owl" ] ,
 
    [ lm:prefix "http://rdfs.org/sioc/ns" ;			    lm:altName "org/graphity/client/sioc.owl" ] ,
@@ -45,8 +44,5 @@
    [ lm:prefix "http://xmlns.com/foaf/0.1/" ;			    lm:altName "org/graphity/client/foaf.owl" ] ,
    [ lm:prefix "http://dbpedia.org/ontology/" ;			    lm:altName "org/graphity/client/dbpedia-owl.owl" ] ,
    [ lm:prefix "http://graph.facebook.com/schema/user" ;	    lm:altName "org/graphity/client/gfb-user.owl" ] ,
-   [ lm:prefix "http://spinrdf.org/sp" ;                            lm:altName "etc/sp.ttl" ] ,
-   [ lm:prefix "http://spinrdf.org/spin" ;                          lm:altName "etc/spin.ttl" ] ,
-   [ lm:prefix "http://spinrdf.org/spl" ;                           lm:altName "etc/spl.spin.ttl" ] ,
    [ lm:prefix "http://usefulinc.com/ns/doap" ;			    lm:altName "org/graphity/client/doap.owl" ]
 .

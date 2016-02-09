@@ -321,27 +321,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	    bld.parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
         
-        if (uriInfo.getQueryParameters().getFirst(GP.offset.getLocalName()) != null)
-	    bld.parameter("{" + GP.offset.getNameSpace() + "}" + GP.offset.getLocalName(),
-                Long.valueOf(uriInfo.getQueryParameters().getFirst(GP.offset.getLocalName())));
-	if (uriInfo.getQueryParameters().getFirst(GP.limit.getLocalName()) != null)
-	    bld.parameter("{" + GP.limit.getNameSpace() + "}" + GP.limit.getLocalName(),
-                Long.valueOf(uriInfo.getQueryParameters().getFirst(GP.limit.getLocalName())));
-	if (uriInfo.getQueryParameters().getFirst(GP.orderBy.getLocalName()) != null)
-	    bld.parameter("{" + GP.orderBy.getNameSpace() + "}" + GP.orderBy.getLocalName(),
-                uriInfo.getQueryParameters().getFirst(GP.orderBy.getLocalName()));
-        if (uriInfo.getQueryParameters().getFirst(GP.desc.getLocalName()) != null)
-	    bld.parameter("{" + GP.desc.getNameSpace() + "}" + GP.desc.getLocalName(),
-                Boolean.valueOf(uriInfo.getQueryParameters().getFirst(GP.desc.getLocalName())));
 	if (uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
 	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
                 uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()));
         if (uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
 	    bld.parameter("{" + GC.mode.getNameSpace() + "}" + GC.mode.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName())));
-        if (uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName()) != null)
-	    bld.parameter("{" + GP.forClass.getNameSpace() + "}" + GP.forClass.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GP.forClass.getLocalName())));
 	if (uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
 	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName())));

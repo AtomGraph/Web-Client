@@ -74,11 +74,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="g:requestUri" as="xs:anyURI"/>
     <xsl:param name="g:httpHeaders" as="xs:string"/>
     <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
-    <xsl:param name="gp:offset" as="xs:integer?"/>
-    <xsl:param name="gp:limit" as="xs:integer?"/>
-    <xsl:param name="gp:orderBy" as="xs:string?"/>
-    <xsl:param name="gp:desc" as="xs:boolean?"/>
-    <xsl:param name="gp:forClass" as="xs:anyURI?"/>
     <xsl:param name="gc:mode" as="xs:anyURI?"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
@@ -237,11 +232,11 @@ exclude-result-prefixes="#all">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
-        <xsl:if test="$gc:mode = '&gc;MapMode' or $gp:forClass">
+        <xsl:if test="$gc:mode = '&gc;MapMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="$gc:mode = '&gc;EditMode' or $gp:forClass">
+        <xsl:if test="$gc:mode = '&gc;EditMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
