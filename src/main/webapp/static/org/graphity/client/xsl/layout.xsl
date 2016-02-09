@@ -676,8 +676,14 @@ exclude-result-prefixes="#all">
 
     <!-- PAGINATION MODE -->
 
-    <xsl:template match="rdf:RDF" mode="gc:PaginationMode" priority="1">
-        <xsl:apply-templates select="key('resources-by-page-of', $g:requestUri)[gp:limit = $gp:limit][gp:offset = $gp:offset]" mode="#current"/>
+    <xsl:template match="rdf:RDF" mode="gc:PaginationMode">
+	<xsl:param name="count" as="xs:integer" tunnel="yes"/>
+        
+        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
+    </xsl:template>
+    
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="gc:PaginationMode" priority="2">
+        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*" mode="gc:PaginationMode"/>
@@ -701,7 +707,7 @@ exclude-result-prefixes="#all">
             </li>
             <li class="next">
                 <xsl:choose>
-                    <xsl:when test="xhv:next and $count &gt;= $gp:limit">
+                    <xsl:when test="xhv:next and $count &gt;= gp:limit">
                         <xsl:apply-templates select="xhv:next" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
