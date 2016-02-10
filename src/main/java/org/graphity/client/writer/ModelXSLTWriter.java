@@ -319,14 +319,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         // map uri query param values to g:requestUri XSLT param values
         if (uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
 	    bld.parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
-        
+                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));        
 	if (uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
 	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
                 uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()));
-        if (uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
-	    bld.parameter("{" + GC.mode.getNameSpace() + "}" + GC.mode.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName())));
 	if (uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
 	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName())));

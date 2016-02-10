@@ -133,8 +133,8 @@ LIMIT 100</xsl:param>
                 </script>
 
                 <div class="form-actions">
-                    <xsl:if test="$gc:mode">
-                        <input type="hidden" name="mode" value="{$gc:mode}"/>
+                    <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource">
+                        <input type="hidden" name="mode" value="{key('resources', $g:requestUri)/gc:mode/@rdf:resource}"/>
                     </xsl:if>
                     <button type="submit" class="btn btn-primary">Query</button>
                 </div>
@@ -143,7 +143,7 @@ LIMIT 100</xsl:param>
     </xsl:template>
 
     <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
-	<xsl:param name="result-doc" select="document(concat($g:absolutePath, gc:query-string((), $query, $gc:mode, ())))"/>
+	<xsl:param name="result-doc" select="document(concat($g:absolutePath, gc:query-string((), $query, key('resources', $g:requestUri)/gc:mode/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
@@ -151,27 +151,27 @@ LIMIT 100</xsl:param>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
-                    <xsl:when test="$gc:mode = '&gc;ListMode'">
+                    <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;ListMode'">
                         <xsl:apply-templates select="*" mode="gc:ListMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;TableMode'">
+                    <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;TableMode'">
                         <xsl:apply-templates select="." mode="gc:TableMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;GridMode'">
+                    <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;GridMode'">
                         <xsl:apply-templates select="." mode="gc:GridMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;MapMode'">
+                    <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode'">
                         <xsl:apply-templates select="." mode="gc:MapMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="$gc:mode = '&gc;EditMode'">
+                    <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode'">
                         <xsl:apply-templates select="." mode="gc:EditMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>                            

@@ -74,7 +74,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="g:requestUri" as="xs:anyURI"/>
     <xsl:param name="g:httpHeaders" as="xs:string"/>
     <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
-    <xsl:param name="gc:mode" as="xs:anyURI?"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="gp:ontology" as="xs:anyURI?"/>
@@ -232,11 +231,11 @@ exclude-result-prefixes="#all">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
-        <xsl:if test="$gc:mode = '&gc;MapMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
+        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="$gc:mode = '&gc;EditMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
+        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
@@ -255,7 +254,7 @@ exclude-result-prefixes="#all">
 		<div class="span8">
                     <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
 
-                    <xsl:if test="not($gc:mode = '&gc;ReadMode')">
+                    <xsl:if test="not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;ReadMode')">
                         <xsl:apply-templates select="." mode="gc:HeaderMode"/>
                     </xsl:if>
 
@@ -289,20 +288,23 @@ exclude-result-prefixes="#all">
         <xsl:choose>
             <xsl:when test="key('resources', $g:requestUri)/rdf:type/@rdf:resource = '&gp;Constructor'">
                 <xsl:apply-templates select="." mode="gc:ConstructMode"/>
-           </xsl:when>
-            <xsl:when test="$gc:mode = '&gc;ListMode'">
+           </xsl:when>            
+            <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;ListMode'">
                 <xsl:apply-templates select="." mode="gc:ListMode"/>
             </xsl:when>
-            <xsl:when test="$gc:mode = '&gc;TableMode'">
+            <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;TableMode'">
                 <xsl:apply-templates select="." mode="gc:TableMode"/>
             </xsl:when>
-            <xsl:when test="$gc:mode = '&gc;GridMode'">
+            <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;GridMode'">
                 <xsl:apply-templates select="." mode="gc:GridMode"/>
             </xsl:when>
-            <xsl:when test="$gc:mode = '&gc;MapMode'">
+            <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode'">
                 <xsl:apply-templates select="." mode="gc:MapMode"/>
             </xsl:when>
-            <xsl:when test="$gc:mode = '&gc;EditMode'">
+            <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;GraphMode'">
+                <xsl:apply-templates select="." mode="gc:GraphMode"/>
+            </xsl:when>
+            <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode'">
                 <xsl:apply-templates select="." mode="gc:EditMode"/>
             </xsl:when>
             <xsl:otherwise>
@@ -328,7 +330,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about][gc:mode/@rdf:resource]" mode="gc:ModeSelectMode" priority="1">
 	<li>
-	    <xsl:if test="$gc:mode = gc:mode/@rdf:resource">
+	    <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = gc:mode/@rdf:resource">
 		<xsl:attribute name="class">active</xsl:attribute>
 	    </xsl:if>
 
@@ -503,7 +505,7 @@ exclude-result-prefixes="#all">
                 </form>
             </div>
         </xsl:if>
-        <xsl:if test="not($gc:mode = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&gp;Container')">
+        <xsl:if test="not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&gp;Container')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
