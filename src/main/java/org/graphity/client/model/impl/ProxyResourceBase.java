@@ -25,6 +25,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
+    private final HttpHeaders httpHeaders;
     private final MediaType mediaType;
     private final WebResource webResource;
     private final SPARQLEndpoint remoteEndpoint;
@@ -83,15 +85,17 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
      * 
      * @param uriInfo URI information of the request
      * @param request current request
+     * @param httpHeaders HTTP headers
      * @param servletConfig servlet config
      * @param mediaTypes supported media types
      * @param endpoint SPARQL endpoint
      */
-    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes,
-            @Context SPARQLEndpoint endpoint)
+    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders,
+            @Context ServletConfig servletConfig, @Context MediaTypes mediaTypes, @Context SPARQLEndpoint endpoint)
     {
 	super(uriInfo, request, servletConfig, mediaTypes, endpoint);
 
+        this.httpHeaders = httpHeaders;
 	if (uriInfo.getQueryParameters().containsKey("accept"))
         {
             Map<String, String> utf8Param = new HashMap<>();
@@ -108,6 +112,7 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         {
             URI uri = URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()));
             webResource = client.resource(uri);
+            if (log.isDebugEnabled()) webResource.addFilter(new LoggingFilter(System.out));
         }
         else
             webResource = null;
@@ -154,6 +159,11 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         //if (log.isDebugEnabled()) log.debug("Constructing GlobalResourceBase with MediaType: {} topic URI: {}", mediaType, uri);
     }
     
+    public HttpHeaders getHttpHeaders()
+    {
+        return httpHeaders;
+    }
+    
     /**
      * Returns media type requested by the client ("accept" query string parameter).
      * This mechanism overrides the normally used content negotiation.
@@ -197,12 +207,20 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
     {                
         if (getWebResource() != null)
         {
-            ClientResponse resp = getWebResource().
-                accept(org.graphity.core.MediaType.TEXT_NTRIPLES_TYPE, org.graphity.core.MediaType.APPLICATION_RDF_XML_TYPE).
+            WebResource.Builder builder = getWebResource().getRequestBuilder();
+            
+            // forward Authorization request header
+            List<String> authHeaders = getHttpHeaders().getRequestHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeaders != null && !authHeaders.isEmpty())
+                builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
+
+            ClientResponse resp = builder.accept(org.graphity.core.MediaType.TEXT_NTRIPLES_TYPE,
+                    org.graphity.core.MediaType.APPLICATION_RDF_XML_TYPE).
                 get(ClientResponse.class);
 
             if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
             {
+                // forward WWW-Authenticate response header
                 if (resp.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
                 {
                     Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, resp.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
