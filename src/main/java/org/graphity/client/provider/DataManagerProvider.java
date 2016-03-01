@@ -25,7 +25,6 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.util.DataManager;
@@ -47,16 +46,10 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
 
     @Context ServletConfig servletConfig;
-    @Context UriInfo uriInfo;
     
     public DataManagerProvider()
     {
         super(DataManager.class);
-    }
-
-    public UriInfo getUriInfo()
-    {
-	return uriInfo;
     }
 
     public ServletConfig getServletConfig()
@@ -105,14 +98,6 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
             boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        /*
-        DataManager dataManager = new DataManager(mapper, context, cacheModelLoads, preemptiveAuth, resolvingUncached);
-        FileManager.setStdLocators(dataManager);
-	dataManager.addLocatorLinkedData();
-	dataManager.removeLocatorURL();
-        return dataManager;        
-        */
-        // application.getDataManager()?
         return (DataManager)FileManager.get();
     }
 

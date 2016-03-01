@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -41,9 +42,13 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.message.BasicHeader;
 import org.graphity.client.exception.ClientErrorException;
 import org.graphity.core.MediaTypes;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.core.exception.AuthenticationException;
 import org.graphity.core.model.SPARQLEndpoint;
 import org.graphity.core.model.SPARQLEndpointFactory;
 import org.graphity.core.model.SPARQLEndpointOrigin;
@@ -197,7 +202,20 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
                 get(ClientResponse.class);
 
             if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+            {
+                if (resp.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
+                {
+                    Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, resp.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
+                    String realm = null;
+                    for (HeaderElement element : wwwAuthHeader.getElements())
+                        if (element.getName().equals("Basic realm")) realm = element.getValue();
+
+                    // TO-DO: improve handling of missing realm
+                    if (realm != null) throw new AuthenticationException("Login is required", realm);
+                }
+                    
                 throw new ClientErrorException(resp);
+            }
             
             Link link = null;
             if (resp.getHeaders().getFirst("Link") != null)
