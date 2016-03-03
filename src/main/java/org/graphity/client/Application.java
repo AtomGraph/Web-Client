@@ -145,7 +145,9 @@ public class Application extends org.graphity.core.Application
             Source jsonLdTemplates = new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl");
 	    //singletons.add(new JSONLDWriter(jsonLdTemplates));
             RDFLanguages.register(RDFLanguages.JSONLD);
-            RDFWriterRegistry.register(new RDFFormat(RDFLanguages.JSONLD), new JSONLDWriterFactory(jsonLdTemplates));
+            RDFFormat jsonLdFormat = new RDFFormat(RDFLanguages.JSONLD);
+            RDFWriterRegistry.register(RDFLanguages.JSONLD, jsonLdFormat);
+            RDFWriterRegistry.register(jsonLdFormat, new JSONLDWriterFactory(jsonLdTemplates));
             IO_Jena.registerForModelWrite(RDFLanguages.strLangJSONLD, JSONLDWriterAdapter.class);
 	}
 	catch (TransformerConfigurationException ex)

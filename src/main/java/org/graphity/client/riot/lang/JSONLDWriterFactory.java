@@ -24,7 +24,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.WriterGraphRIOT;
 import org.apache.jena.riot.WriterGraphRIOTFactory;
-import org.graphity.client.writer.xslt.JSONLDWriter;
+import org.graphity.client.riot.JSONLDWriter;
 
 /**
  *

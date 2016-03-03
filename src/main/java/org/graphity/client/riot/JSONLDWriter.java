@@ -14,27 +14,27 @@
  *  limitations under the License.
  *
  */
-package org.graphity.client.writer.xslt;
+package org.graphity.client.riot;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.util.Context;
-import com.sun.jersey.spi.resource.Singleton;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.WriterGraphRIOT;
 import org.apache.jena.riot.system.PrefixMap;
-import org.graphity.client.writer.ModelXSLTWriter;
+import org.graphity.client.util.XSLTBuilder;
 import org.graphity.core.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +45,11 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  * @see <a href="http://json-ld.org">JSON-LD - JSON for Linking Data</a>
  */
-@Provider
-@Singleton
-@Produces(org.graphity.core.MediaType.APPLICATION_LD_JSON)
-public class JSONLDWriter extends ModelXSLTWriter implements WriterGraphRIOT
+public class JSONLDWriter implements WriterGraphRIOT
 {
     private static final Logger log = LoggerFactory.getLogger(JSONLDWriter.class);
+    
+    private final Templates templates;
     
     public JSONLDWriter(Source stylesheet) throws TransformerConfigurationException
     {
@@ -59,15 +58,23 @@ public class JSONLDWriter extends ModelXSLTWriter implements WriterGraphRIOT
     
     public JSONLDWriter(Templates templates)
     {
-	super(templates);
+	if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
+	this.templates = templates;
     }
 
     @Override
     public void write(OutputStream out, Graph graph, PrefixMap prefixMap, String baseURI, Context context)
     {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ModelFactory.createModelForGraph(graph).
+                write(baos, org.apache.jena.riot.RDFLanguages.RDFXML.getName(), baseURI);
+        
         try
         {
-            write(ModelFactory.createModelForGraph(graph), out);
+            XSLTBuilder.fromStylesheet(getTemplates()).
+                document(new ByteArrayInputStream(baos.toByteArray())).
+                result(new StreamResult(out)).
+                transform();                    
         }
         catch (TransformerException ex)
         {
@@ -88,4 +95,9 @@ public class JSONLDWriter extends ModelXSLTWriter implements WriterGraphRIOT
         return RDFLanguages.JSONLD;
     }
 
+    public Templates getTemplates()
+    {
+        return templates;
+    }
+    
 }

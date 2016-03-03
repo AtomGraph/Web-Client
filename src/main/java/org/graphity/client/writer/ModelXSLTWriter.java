@@ -74,7 +74,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
-    private Templates templates;
+    private final Templates templates;
     private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>();
     
     {
@@ -147,7 +147,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         model.write(baos, RDFLanguages.RDFXML.getName(), null);
 
-        XSLTBuilder.fromStylesheet(getTemplates()).document(new ByteArrayInputStream(baos.toByteArray())).
+        XSLTBuilder.fromStylesheet(getTemplates()).
+            document(new ByteArrayInputStream(baos.toByteArray())).
             resolver(getDataManager()).
             result(new StreamResult(entityStream)).
             transform();        

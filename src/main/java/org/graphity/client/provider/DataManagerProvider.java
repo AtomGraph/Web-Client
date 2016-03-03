@@ -79,7 +79,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     public DataManager getDataManager()
     {
         return getDataManager(LocationMapper.get(), ARQ.getContext(),
-                getBooleanParam(servletConfig, G.cacheModelLoads),                
+                getBooleanParam(getServletConfig(), G.cacheModelLoads),                
                 getBooleanParam(getServletConfig(), G.preemptiveAuth),
                 getBooleanParam(getServletConfig(), GC.resolvingUncached)); // necessary?
     }
