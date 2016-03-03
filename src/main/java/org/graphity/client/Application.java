@@ -143,7 +143,6 @@ public class Application extends org.graphity.core.Application
 	try
 	{
             Source jsonLdTemplates = new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl");
-	    //singletons.add(new JSONLDWriter(jsonLdTemplates));
             RDFLanguages.register(RDFLanguages.JSONLD);
             RDFFormat jsonLdFormat = new RDFFormat(RDFLanguages.JSONLD);
             RDFWriterRegistry.register(RDFLanguages.JSONLD, jsonLdFormat);
