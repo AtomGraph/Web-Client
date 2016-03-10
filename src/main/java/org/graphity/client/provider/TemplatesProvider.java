@@ -25,6 +25,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -56,7 +58,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     private static final Logger log = LoggerFactory.getLogger(TemplatesProvider.class);
 
     private final ServletConfig servletConfig;
-    private Templates templates;
+    private final Map<URI, Templates> templatesCache = new HashMap<>();
     private final boolean cacheStylesheet;
 
     /**
@@ -76,6 +78,11 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     public ServletConfig getServletConfig()
     {
         return servletConfig;
+    }
+    
+    protected Map<URI, Templates> getTemplatesCache()
+    {
+        return templatesCache;
     }
     
     public boolean cacheStylesheet()
@@ -140,22 +147,18 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     {
         try
         {
+            URI stylesheetURI = getStylesheetURI();
             if (cacheStylesheet())
             {
-                if (templates == null) templates = getTemplates(getStylesheetURI());
+                // create cache entry if it does not exist
+                if (!getTemplatesCache().containsKey(stylesheetURI))
+                    getTemplatesCache().put(stylesheetURI, getTemplates(stylesheetURI));
 
-                return templates;
+                return getTemplatesCache().get(stylesheetURI);
             }
             else
-                return getTemplates(getStylesheetURI());
+                return getTemplates(stylesheetURI);
         }
-        /*
-        catch (ConfigurationException ex)
-        {
-    	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not configured", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-        */
         catch (TransformerConfigurationException ex)
         {
 	    if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);
