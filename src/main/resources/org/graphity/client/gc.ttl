@@ -93,3 +93,7 @@
 <#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .
+
+<#GraphMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+    rdfs:label "Graph" ;
+    rdfs:isDefinedBy <#> .

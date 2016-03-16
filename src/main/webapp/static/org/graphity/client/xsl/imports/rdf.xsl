@@ -38,17 +38,5 @@ exclude-result-prefixes="#all">
             <xsl:next-match/>
         </span>
     </xsl:template>
-
-    <xsl:template match="rdf:type" mode="gc:EditMode">
-        <xsl:apply-templates select="." mode="gc:InputMode">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>        
-    </xsl:template>
-
+    
 </xsl:stylesheet>

@@ -400,11 +400,13 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
 
+    <!--
     <xsl:template match="@rdf:about[../gc:mode/@rdf:resource = '&gc;ConstructMode']" mode="gc:InlineMode" priority="1">
         <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="../gp:forClass/@rdf:resource" mode="gc:InlineMode"/>
     </xsl:template>
+    -->
         
     <!-- HEADER MODE -->
 
@@ -516,6 +518,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="#current"/>
     </xsl:template>
 
+    <!--
     <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;ConstructMode']" mode="gc:ModeToggleMode">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
@@ -523,6 +526,7 @@ exclude-result-prefixes="#all">
             </a>
         </div>
     </xsl:template>
+    -->
     
     <!-- IMAGE MODE -->
         

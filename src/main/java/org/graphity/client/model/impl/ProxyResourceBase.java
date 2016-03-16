@@ -292,4 +292,17 @@ public class ProxyResourceBase extends org.graphity.core.model.impl.QueriedResou
         return null;
     }
     
+    @Override
+    public List<MediaType> getWritableMediaTypes()
+    {
+        if (getMediaType() != null)
+        {
+            List<MediaType> list = new ArrayList<>();
+            list.add(getMediaType());
+            return list;
+        }
+        
+        return super.getWritableMediaTypes();
+    }
+    
 }

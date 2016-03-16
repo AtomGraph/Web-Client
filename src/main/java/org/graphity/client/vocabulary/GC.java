@@ -82,5 +82,7 @@ public final class GC
     public static final DatatypeProperty cacheStylesheet = m_model.createDatatypeProperty( NS + "cacheStylesheet" );
     
     public static final DatatypeProperty resolvingUncached = m_model.createDatatypeProperty( NS + "resolvingUncached" );    
-
+    
+    public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
+    
 }
