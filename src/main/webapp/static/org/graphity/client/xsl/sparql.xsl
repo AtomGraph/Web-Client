@@ -80,7 +80,7 @@ LIMIT 100</xsl:param>
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF" mode="gc:HeaderMode" priority="1">
+    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:HeaderMode" priority="1">
         <xsl:apply-templates select="key('resources', $g:absolutePath)" mode="#current"/>
     </xsl:template>
 

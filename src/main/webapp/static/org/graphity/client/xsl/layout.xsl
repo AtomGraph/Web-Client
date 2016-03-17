@@ -500,16 +500,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="gc:ModeToggleMode"/>
     
     <xsl:template match="*[@rdf:about]" mode="gc:ModeToggleMode" priority="1">
-        <xsl:if test="not(rdf:type/@rdf:resource = '&gp;Container')">
-            <div class="pull-right">
-                <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
-                    <button class="btn btn-primary" type="submit">
-                        <xsl:apply-templates select="key('resources', 'delete', document(''))" mode="gc:LabelMode"/>
-                    </button>
-                </form>
-            </div>
-        </xsl:if>
-        <xsl:if test="not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode') and not(rdf:type/@rdf:resource = '&gp;Container')">
+        <div class="pull-right">
+            <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
+                <button class="btn btn-primary" type="submit">
+                    <xsl:apply-templates select="key('resources', 'delete', document(''))" mode="gc:LabelMode"/>
+                </button>
+            </form>
+        </div>
+        <xsl:if test="not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
                     <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>

@@ -145,9 +145,28 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="gc:ModeToggleMode">
+    <xsl:template match="*[@rdf:about]" mode="gc:ModeToggleMode">
         <div class="pull-right">
-            <a class="btn btn-primary" href="?uri={encode-for-uri(@rdf:about)}">
+            <form action="{gc:query-string(@rdf:about, (), (), (), (), ())}&amp;_method=DELETE" method="post">
+                <button class="btn btn-primary" type="submit">
+                    <xsl:apply-templates select="key('resources', '&gc;Delete', document('&gc;'))" mode="gc:LabelMode"/>
+                </button>
+            </form>
+        </div>
+        <xsl:if test="not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode')">
+            <div class="pull-right">
+                <a class="btn btn-primary" href="{gc:query-string(@rdf:about, (), (), (), (), ())}&amp;mode={encode-for-uri('&gc;EditMode')}">
+                    <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
+                </a>                        
+            </div>
+        </xsl:if>
+        
+        <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="gc:ModeToggleMode" priority="1">
+        <div class="pull-right">
+            <a class="btn btn-primary" href="{gc:query-string(@rdf:about, (), (), (), (), ())}">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
             </a>
         </div>
