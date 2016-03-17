@@ -243,19 +243,23 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-        bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), getUriInfo().getBaseUri()).
-        parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
-        parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getUriInfo().getRequestUri()).
-        parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
+        //bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), getBaseUri()).
+        //bld.parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+        //bld.parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getRequestUri()).
+        bld.parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
         try
         {
-            URI typeHref = getTypeURI(headerMap);
+            URI typeHref = getLinkHref(headerMap, "Link", RDF.type.getLocalName());
             if (typeHref != null)
                 bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
-            URI ontologyHref = getOntologyURI(headerMap);
+            URI baseHref = getLinkHref(headerMap, "Link", G.baseUri.getURI());
+            if (baseHref != null)
+                bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), baseHref);
+            
+            URI ontologyHref = getLinkHref(headerMap, "Link", GP.ontology.getURI());
             if (ontologyHref != null)                    
             {
                 bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);            
@@ -330,17 +334,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         
         return bld;
     }
-        
-    public URI getTypeURI(MultivaluedMap<String, Object> headerMap) throws URISyntaxException
-    {
-        return getLinkHref(headerMap, "Link", RDF.type.getLocalName());
-    }
 
-    public URI getOntologyURI(MultivaluedMap<String, Object> headerMap) throws URISyntaxException
-    {
-        return getLinkHref(headerMap, "Link", GP.ontology.getURI());
-    }
-    
     public OntModel getSitemap(MultivaluedMap<String, Object> headerMap, String ontologyURI)
     {
         return getSitemap(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
@@ -408,5 +402,5 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         
         return OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
     }
-    
+     
 }

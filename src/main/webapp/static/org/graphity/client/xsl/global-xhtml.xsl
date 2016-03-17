@@ -101,23 +101,23 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="brand" href="{$g:baseUri}">
-                        <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
-                            <img src="{foaf:logo/@rdf:resource}">
-                                <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
-                            </img>
-                        </xsl:for-each>
-                    </a>
+                    <xsl:if test="$g:baseUri">
+                        <a class="brand" href="{$g:baseUri}">
+                            <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
+                                <img src="{foaf:logo/@rdf:resource}">
+                                    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+                                </img>
+                            </xsl:for-each>
+                        </a>
+                    </xsl:if>                    
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
                         <form action="resources/labelled/" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <input type="text" name="label" class="input-xxlarge">
-                                    <xsl:if test="not(starts-with($g:requestUri, $g:baseUri))">
-                                        <xsl:attribute name="value">
-                                            <xsl:value-of select="$g:requestUri"/>
-                                        </xsl:attribute>
-                                    </xsl:if>
+                                    <xsl:attribute name="uri">
+                                        <xsl:value-of select="$g:requestUri"/>
+                                    </xsl:attribute>
                                     <xsl:if test="$label">
                                         <xsl:attribute name="value">
                                             <xsl:value-of select="$label"/>
@@ -128,14 +128,16 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
-                            <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="gc:NavBarMode">
-                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
-                                    <xsl:with-param name="space" select="$space"/>
-                                </xsl:apply-templates>
-                            </ul>
+                        <xsl:if test="$g:baseUri">
+                            <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                            <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
+                                <ul class="nav pull-right">
+                                    <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="gc:NavBarMode">
+                                        <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
+                                        <xsl:with-param name="space" select="$space"/>
+                                    </xsl:apply-templates>
+                                </ul>
+                            </xsl:if>
                         </xsl:if>
                     </div>
 		</div>
@@ -149,6 +151,18 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
             </a>
         </div>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF" mode="gc:ConstructMode" priority="2">
+        <xsl:next-match>
+            <xsl:with-param name="action" select="xs:anyURI(gc:query-string($g:requestUri, (), (), (), (), ()))" as="xs:string?"/>
+        </xsl:next-match>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF" mode="gc:EditMode" priority="2">
+        <xsl:next-match>
+            <xsl:with-param name="action" select="xs:anyURI(concat(gc:query-string($g:requestUri, (), (), (), (), ()), '&amp;_method=PUT&amp;mode=', encode-for-uri('&gc;EditMode')))" as="xs:string?"/>
+        </xsl:next-match>
     </xsl:template>
 
     <!--

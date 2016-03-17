@@ -69,9 +69,9 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
-    <xsl:param name="g:baseUri" as="xs:anyURI"/>
-    <xsl:param name="g:absolutePath" as="xs:anyURI"/>
+    <xsl:param name="g:baseUri" as="xs:anyURI?"/>
     <xsl:param name="g:requestUri" as="xs:anyURI"/>
+    <xsl:param name="g:absolutePath" select="xs:anyURI(tokenize($g:requestUri,'\?')[1])" as="xs:anyURI"/>
     <xsl:param name="g:httpHeaders" as="xs:string"/>
     <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
@@ -129,7 +129,7 @@ exclude-result-prefixes="#all">
             <title>
                 <xsl:apply-templates mode="gc:TitleMode"/>
             </title>
-            <base href="{$g:baseUri}" />
+            <!-- <base href="{$g:baseUri}" /> -->
 
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -216,8 +216,10 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="gc:TitleMode">
-	<xsl:apply-templates select="key('resources', $g:baseUri, document($g:baseUri))" mode="gc:LabelMode"/>
-	<xsl:text> - </xsl:text>
+	<xsl:if test="$g:baseUri">
+            <xsl:apply-templates select="key('resources', $g:baseUri, document($g:baseUri))" mode="gc:LabelMode"/>
+            <xsl:text> - </xsl:text>
+        </xsl:if>
 	<xsl:apply-templates select="if (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) then key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) else key('resources', $g:requestUri) | key('resources-by-type', '&http;Response')" mode="gc:LabelMode"/>
     </xsl:template>
 
