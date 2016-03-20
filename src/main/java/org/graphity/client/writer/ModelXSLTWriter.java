@@ -243,9 +243,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-        //bld.parameter("{" + G.baseUri.getNameSpace() + "}" + G.baseUri.getLocalName(), getBaseUri()).
-        //bld.parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
-        //bld.parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getRequestUri()).
         bld.parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      

@@ -83,6 +83,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/void.xsl"/>
     <xsl:import href="layout.xsl"/>
 
+    <xsl:param name="g:requestUri" as="xs:anyURI?"/>    
     <xsl:param name="label" as="xs:string?"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>

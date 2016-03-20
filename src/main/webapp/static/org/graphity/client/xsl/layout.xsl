@@ -507,26 +507,18 @@ exclude-result-prefixes="#all">
                 </button>
             </form>
         </div>
-        <xsl:if test="not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode')">
-            <div class="pull-right">
-                <a class="btn btn-primary" href="{gc:document-uri(@rdf:about)}{gc:query-string((), xs:anyURI('&gc;EditMode'))}">
-                    <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:LabelMode"/>
-                </a>                        
-            </div>
-        </xsl:if>
+        <xsl:apply-templates select="key('resources-by-layout-of', @rdf:about)" mode="#current"/>
         
         <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="#current"/>
     </xsl:template>
 
-    <!--
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;ConstructMode']" mode="gc:ModeToggleMode">
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="gc:ModeToggleMode" priority="1">
         <div class="pull-right">
-            <a class="btn btn-primary" href="{@rdf:about}">
-                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
-            </a>
+            <a class="btn btn-primary" href="gc:mode/@rdf:resource">
+                <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:LabelMode"/>
+            </a>                        
         </div>
     </xsl:template>
-    -->
     
     <!-- IMAGE MODE -->
         

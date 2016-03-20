@@ -35,6 +35,7 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriterRegistry;
 import org.graphity.client.locator.PrefixMapper;
 import org.graphity.client.mapper.ClientErrorExceptionMapper;
+import org.graphity.client.mapper.NotFoundExceptionMapper;
 import org.graphity.client.mapper.jersey.ClientHandlerExceptionMapper;
 import org.graphity.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import org.graphity.client.model.impl.ProxyResourceBase;
@@ -102,7 +103,8 @@ public class Application extends org.graphity.core.Application
         singletons.add(new DataManagerProvider());
         singletons.add(new ClientProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());
-	singletons.add(new ClientErrorExceptionMapper());
+	singletons.add(new NotFoundExceptionMapper());
+        singletons.add(new ClientErrorExceptionMapper());
 	singletons.add(new UniformInterfaceExceptionMapper());
 	singletons.add(new ClientHandlerExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
