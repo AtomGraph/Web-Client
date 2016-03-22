@@ -31,7 +31,7 @@
         </init-param>
         <init-param>
             <param-name>http://graphity.org/gc#stylesheet</param-name>
-            <param-value>/static/org/graphity/client/xsl/bootstrap2.3.2/layout.xsl</param-value>
+            <param-value>/static/org/graphity/client/xsl/bootstrap/2.3.2/layout.xsl</param-value>
         </init-param>
         <init-param>
             <param-name>http://graphity.org/g#resultLimit</param-name>
