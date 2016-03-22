@@ -40,41 +40,6 @@ exclude-result-prefixes="#all">
         <xsl:value-of select="."/>
     </xsl:template>
     
-    <xsl:template match="dct:subject" mode="gc:SidebarNavMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-	
-	<div class="well sidebar-nav">
-	    <h2 class="nav-header">
-		<xsl:apply-templates select="." mode="gc:InlineMode"/>
-	    </h2>
-		
-	    <!-- TO-DO: fix for a single resource! -->
-	    <ul class="nav nav-pills nav-stacked">
-		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
-		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
-		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
-		</xsl:for-each-group>
-	    </ul>
-	</div>
-    </xsl:template>
-
-    <xsl:template match="dct:subject/@rdf:resource" mode="gc:SidebarNavMode">
-	<li>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</li>
-    </xsl:template>
-
-    <xsl:template match="dct:created | dct:modified | dct:issued" mode="gc:InlinePropertyListMode">
-        <dl class="pull-left" style="margin: 0; margin-right: 1em">
-            <dt>
-                <xsl:apply-templates select="." mode="gc:InlineMode"/>
-            </dt>
-            <dd>
-                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
-            </dd>
-        </dl>
-    </xsl:template>
-
     <xsl:template match="dct:created | dct:modified | dct:issued" mode="gc:EditMode">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>

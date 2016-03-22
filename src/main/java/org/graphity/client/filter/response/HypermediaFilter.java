@@ -98,8 +98,8 @@ public class HypermediaFilter implements ContainerResponseFilter
         {
             Model model = (Model)response.getEntity();
             long oldCount = model.size();
-            Resource resource = model.createResource(request.getAbsolutePath().toString());
             
+            Resource resource = getResource(model);
             model = addStates(resource, matchedOntClass);
             if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
             response.setEntity(model);
@@ -127,36 +127,35 @@ public class HypermediaFilter implements ContainerResponseFilter
                     throw new ConfigurationException("Invalid Mode defined for template '" + matchedOntClass.getURI() +"'");
                 }
 
-                if (model.contains(null, GP.pageOf, resource))
+                if (supportedMode.asResource().hasProperty(RDF.type, GC.PageMode))
                 {
-                    // container pages
-                    ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
-                    try
+                    if (model.contains(null, GP.pageOf, resource))
                     {
-                        while (resIt.hasNext())
+                        // container pages
+                        ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
+                        try
                         {
-                            Resource page = resIt.next();
-                            StateBuilder sb = StateBuilder.fromUri(page.getURI(), page.getModel()).
-                                replaceProperty(GC.mode, supportedMode.asResource());
-                            sb.build().
-                                addProperty(GC.layoutOf, page).
-                                addProperty(RDF.type, FOAF.Document);
+                            while (resIt.hasNext())
+                            {
+                                Resource page = resIt.next();
+                                getStateBuilder(page).replaceProperty(GC.mode, supportedMode.asResource()).
+                                    build().
+                                    addProperty(GC.layoutOf, page).
+                                    addProperty(RDF.type, FOAF.Document);
+                            }
+                        }
+                        finally
+                        {
+                            resIt.close();
                         }
                     }
-                    finally
-                    {
-                        resIt.close();
-                    }
                 }
-                else
-                {
-                    // container without pagination or item
-                    StateBuilder.fromUri(resource.getURI(), resource.getModel()).
-                        replaceProperty(GC.mode, supportedMode.asResource()).
-                        build().
-                        addProperty(GC.layoutOf, resource).
-                        addProperty(RDF.type, FOAF.Document);                        
-                }
+
+                getStateBuilder(resource).
+                    replaceProperty(GC.mode, supportedMode.asResource()).
+                    build().
+                    addProperty(GC.layoutOf, resource).
+                    addProperty(RDF.type, FOAF.Document);                        
             }
         }
         finally
@@ -243,6 +242,23 @@ public class HypermediaFilter implements ContainerResponseFilter
     public UriInfo getUriInfo()
     {
         return uriInfo;
+    }
+ 
+    public Resource getResource(Model model)
+    {
+	if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        
+        return model.createResource(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()));
+    }
+    
+    public StateBuilder getStateBuilder(Resource resource)
+    {
+	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+
+        return StateBuilder.fromUri(getUriInfo().getBaseUriBuilder().
+                queryParam(GC.uri.getLocalName(), resource.getURI()).
+                build(),
+            resource.getModel());
     }
     
 }

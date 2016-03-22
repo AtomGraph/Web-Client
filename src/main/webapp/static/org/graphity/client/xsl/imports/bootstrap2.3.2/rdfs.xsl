@@ -32,14 +32,27 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdfs:label | rdfs:comment | rdfs:seeAlso" mode="gc:PropertyListMode"/>
+    <xsl:template match="rdfs:seeAlso" mode="bs2:SidebarNavMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+	
+	<div class="well sidebar-nav">
+	    <h2 class="nav-header">
+		<xsl:apply-templates select="." mode="gc:InlineMode"/>
+	    </h2>
 
-    <xsl:template match="rdfs:label | @rdfs:label" mode="gc:LabelMode">
-	<xsl:value-of select="."/>
+	    <ul class="nav nav-pills nav-stacked">
+		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
+		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
+		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
+		</xsl:for-each-group>
+	    </ul>
+	</div>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment" mode="gc:DescriptionMode">
-        <xsl:value-of select="."/>
+    <xsl:template match="rdfs:seeAlso/@rdf:resource" mode="bs2:SidebarNavMode">
+	<li>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</li>
     </xsl:template>
     
 </xsl:stylesheet>

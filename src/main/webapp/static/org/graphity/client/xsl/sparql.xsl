@@ -41,6 +41,7 @@ xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:sd="&sd;"
 xmlns:void="&void;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 exclude-result-prefixes="#all">
 
@@ -62,9 +63,9 @@ LIMIT 100</xsl:param>
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
-                    <xsl:apply-templates select="." mode="gc:BreadCrumbMode"/>
+                    <xsl:apply-templates select="." mode="bs2:BreadCrumbMode"/>
 
-                    <xsl:apply-templates select="." mode="gc:HeaderMode"/>
+                    <xsl:apply-templates select="." mode="bs2:HeaderMode"/>
 
                     <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
 
@@ -74,23 +75,23 @@ LIMIT 100</xsl:param>
                 </div>
 
 		<div class="span4">
-		    <xsl:apply-templates select="." mode="gc:SidebarNavMode"/>
+		    <xsl:apply-templates select="." mode="bs2:SidebarNavMode"/>
 		</div>
 	    </div>
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:HeaderMode" priority="1">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:HeaderMode" priority="1">
         <xsl:apply-templates select="key('resources', $g:absolutePath)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:StyleMode" priority="1">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:StyleMode" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -142,17 +143,17 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
 	<xsl:param name="result-doc" select="document(concat($g:absolutePath, gc:query-string((), $query, key('resources', $g:requestUri)/gc:mode/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
-            <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+            <xsl:apply-templates select="." mode="bs2:ModeSelectMode"/>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
                     <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;ListMode'">
-                        <xsl:apply-templates select="*" mode="gc:ListMode">
+                        <xsl:apply-templates select="*" mode="bs2:ListMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
@@ -162,12 +163,12 @@ LIMIT 100</xsl:param>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;GridMode'">
-                        <xsl:apply-templates select="." mode="gc:GridMode">
+                        <xsl:apply-templates select="." mode="bs2:GridMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode'">
-                        <xsl:apply-templates select="." mode="gc:MapMode">
+                        <xsl:apply-templates select="." mode="bs2:MapMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
@@ -177,7 +178,7 @@ LIMIT 100</xsl:param>
                         </xsl:apply-templates>                            
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:apply-templates select="." mode="gc:ReadMode">
+                        <xsl:apply-templates select="." mode="bs2:ReadMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:otherwise>

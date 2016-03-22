@@ -15,31 +15,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc "http://graphity.org/gc#">
-    <!ENTITY gp "http://graphity.org/gp#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc "http://rdfs.org/sioc/ns#">
+    <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
-xmlns:rdfs="&rdfs;"
+xmlns:sioc="&sioc;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdfs:label | rdfs:comment | rdfs:seeAlso" mode="gc:PropertyListMode"/>
-
-    <xsl:template match="rdfs:label | @rdfs:label" mode="gc:LabelMode">
-	<xsl:value-of select="."/>
+    <xsl:template match="sioc:*" mode="bs2:InlinePropertyListMode">
+        <dl class="pull-left" style="margin: 0; margin-right: 1em">
+            <dt>
+                <xsl:apply-templates select="." mode="gc:InlineMode"/>
+            </dt>
+            <dd>
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
+            </dd>
+        </dl>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment" mode="gc:DescriptionMode">
-        <xsl:value-of select="."/>
-    </xsl:template>
-    
 </xsl:stylesheet>

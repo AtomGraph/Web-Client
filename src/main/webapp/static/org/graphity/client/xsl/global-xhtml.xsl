@@ -58,6 +58,7 @@ xmlns:sp="&sp;"
 xmlns:sd="&sd;"
 xmlns:void="&void;"
 xmlns:list="&list;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:uuid="java:java.util.UUID"
 exclude-result-prefixes="#all">
 
@@ -82,8 +83,9 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/spin.xsl"/>
     <xsl:import href="imports/void.xsl"/>
     <xsl:import href="layout.xsl"/>
-
+    
     <xsl:param name="g:requestUri" as="xs:anyURI?"/>    
+    <xsl:param name="g:absolutePath" as="xs:anyURI?"/>
     <xsl:param name="label" as="xs:string?"/>
 
     <xsl:key name="resources-by-endpoint" match="*" use="void:sparqlEndpoint/@rdf:resource"/>
@@ -92,7 +94,7 @@ exclude-result-prefixes="#all">
 	<rdfs:label xml:lang="en">Save as...</rdfs:label>
     </rdf:Description>
     
-    <xsl:template match="/" mode="gc:NavBarMode">
+    <xsl:template match="/" mode="bs2:NavBarMode">
 	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
 		<div class="container-fluid">
@@ -133,7 +135,7 @@ exclude-result-prefixes="#all">
                             <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                             <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
                                 <ul class="nav pull-right">
-                                    <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="gc:NavBarMode">
+                                    <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="bs2:NavBarMode">
                                         <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
                                         <xsl:with-param name="space" select="$space"/>
                                     </xsl:apply-templates>
@@ -146,7 +148,7 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about]" mode="gc:ModeToggleMode">
+    <xsl:template match="*[@rdf:about]" mode="bs2:ModeToggleMode">
         <div class="pull-right">
             <form action="{gc:query-string(@rdf:about, (), (), (), (), ())}&amp;_method=DELETE" method="post">
                 <button class="btn btn-primary" type="submit">
@@ -165,7 +167,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="gc:ModeToggleMode" priority="1">
+    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="bs2:ModeToggleMode" priority="1">
         <div class="pull-right">
             <a class="btn btn-primary" href="{gc:query-string(@rdf:about, (), (), (), (), ())}">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
@@ -192,7 +194,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-imports>
     </xsl:template>
                 
-    <xsl:template match="*[@rdf:about = $g:requestUri]" mode="gc:ModeToggleMode" priority="1">
+    <xsl:template match="*[@rdf:about = $g:requestUri]" mode="bs2:ModeToggleMode" priority="1">
         <div class="pull-right">
             <a class="btn btn-primary" href="{$g:absolutePath}{gc:query-string(@rdf:about, xs:anyURI('&gp;CreateItemMode'))}">
                 <xsl:apply-templates select="key('resources', 'save-as', document(''))" mode="gc:LabelMode"/>
@@ -202,7 +204,7 @@ exclude-result-prefixes="#all">
     -->
 
     <!--
-    <xsl:template match="rdf:RDF" mode="gc:ReadMode">
+    <xsl:template match="rdf:RDF" mode="bs2:ReadMode">
         <xsl:param name="selected-resources" select="*[not(@rdf:about = $g:requestUri)][not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
 
         <xsl:apply-imports>

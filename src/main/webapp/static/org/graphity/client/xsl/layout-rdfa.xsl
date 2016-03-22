@@ -46,23 +46,23 @@ exclude-result-prefixes="#all">
     <!-- BLOCK LEVEL -->
     
     <!-- subject -->
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ReadMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ReadMode">
         <div about="{@rdf:about}">
             <xsl:next-match/>
         </div>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ListMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ListMode">
 	<div class="well" about="{@rdf:about}">
             <xsl:apply-templates select="." mode="gc:ImageMode"/>
             
-            <xsl:apply-templates select="." mode="gc:ModeToggleMode"/>
+            <xsl:apply-templates select="." mode="bs2:ModeToggleMode"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 	    
 	    <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
 
-	    <xsl:apply-templates select="." mode="gc:TypeListMode"/>            
+	    <xsl:apply-templates select="." mode="bs2:TypeListMode"/>            
 
 	    <xsl:if test="@rdf:nodeID">
 		<xsl:apply-templates select="." mode="gc:PropertyListMode"/>
@@ -76,7 +76,7 @@ exclude-result-prefixes="#all">
         -->
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource]" mode="gc:TypeListMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeListMode" priority="1">
         <ul class="inline" rel="&rdf;type">
             <xsl:apply-templates select="rdf:type" mode="#current">
                 <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
@@ -119,7 +119,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:choose>
 	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode" mode="gc:ReadMode">
+		<xsl:apply-templates select="$bnode" mode="bs2:ReadMode">
                     <xsl:with-param name="nested" select="true()"/>
                 </xsl:apply-templates>
 	    </xsl:when>

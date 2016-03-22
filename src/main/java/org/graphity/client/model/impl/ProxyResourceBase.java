@@ -36,10 +36,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeader;
 import org.graphity.client.exception.ClientErrorException;
+import org.graphity.client.vocabulary.GC;
 import org.graphity.core.exception.AuthenticationException;
 import org.graphity.core.exception.NotFoundException;
 import org.graphity.core.provider.ModelProvider;
@@ -48,9 +51,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Resource that can publish Linked Data and (X)HTML as well as load RDF from remote sources.
- * The remote datasources can either be native-RDF Linked Data, or formats supported by Locators
- * (for example, Atom XML transformed to RDF/XML using GRDDL XSLT stylesheet). The ability to load remote
- * RDF data is crucial for generic Linked Data browser functionality.
  * 
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
@@ -59,27 +59,34 @@ public class ProxyResourceBase
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
+    private final UriInfo uriInfo;
     private final HttpHeaders httpHeaders;
     private final MediaType mediaType;
     private final WebResource webResource;
+    private final URI mode;
     
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
      * 
+     * @param uriInfo URI information
      * @param httpHeaders HTTP headers
      * @param uri RDF resource URI
-     * @param mediaType
+     * @param mediaType response media type
+     * @param mode layout mode
      */
-    public ProxyResourceBase(@Context HttpHeaders httpHeaders,
-            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType mediaType)
+    public ProxyResourceBase(@Context UriInfo uriInfo, @Context HttpHeaders httpHeaders,
+            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType mediaType, @QueryParam("mode") URI mode)
     {
         if (uri == null) throw new NotFoundException("Resource URI not supplied");        
+        this.uriInfo = uriInfo;
         this.httpHeaders = httpHeaders;
         this.mediaType = mediaType;
+        this.mode = mode;
 
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
         Client client = Client.create(cc);
+        client.setFollowRedirects(false); // wee take care of redirects ourselves
         webResource = client.resource(uri);
     }
     
@@ -104,6 +111,15 @@ public class ProxyResourceBase
         return webResource;
     }
 
+    public UriInfo getUriInfo()
+    {
+        return uriInfo;
+    }
+
+    public URI getMode()
+    {
+        return mode;
+    }
     
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
@@ -125,6 +141,19 @@ public class ProxyResourceBase
         ClientResponse resp = builder.accept(org.graphity.core.MediaType.TEXT_NTRIPLES_TYPE,
                 org.graphity.core.MediaType.APPLICATION_RDF_XML_TYPE).
             get(ClientResponse.class);
+
+        if (resp.getStatusInfo().getFamily().equals(Status.Family.REDIRECTION))
+            // redirect to Location
+            if (resp.getHeaders().containsKey(HttpHeaders.LOCATION))
+            {
+                URI location = URI.create(resp.getHeaders().getFirst(HttpHeaders.LOCATION));
+                UriBuilder uriBuilder = getUriInfo().getBaseUriBuilder().
+                        queryParam(GC.uri.getLocalName(), location);
+                if (getMediaType() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMediaType());
+                if (getMode() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMode());
+                
+                return Response.seeOther(uriBuilder.build()).build();
+            }
 
         if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
         {

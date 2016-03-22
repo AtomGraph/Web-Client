@@ -49,12 +49,13 @@ xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:skos="&skos;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="@rdf:about" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about" mode="bs2:HeaderMode">
 	<div class="btn-group pull-right">
-	    <xsl:apply-templates select="." mode="gc:MediaTypeSelectMode"/>
+	    <xsl:apply-templates select="." mode="bs2:MediaTypeSelectMode"/>
 	</div>
 
 	<h2>
@@ -62,13 +63,13 @@ exclude-result-prefixes="#all">
 	</h2>
     </xsl:template>
 
-    <xsl:template match="@rdf:about" mode="gc:MediaTypeSelectMode">
+    <xsl:template match="@rdf:about" mode="bs2:MediaTypeSelectMode">
         <a href="{.}" class="btn">Source</a>
 	<a href="?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
 	<a href="?uri={encode-for-uri(.)}&amp;accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about][gc:mode/@rdf:resource]" mode="gc:ModeSelectMode">
+    <xsl:template match="*[*][@rdf:about][gc:mode/@rdf:resource]" mode="bs2:ModeSelectMode">
 	<li>
 	    <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = gc:mode/@rdf:resource">
 		<xsl:attribute name="class">active</xsl:attribute>

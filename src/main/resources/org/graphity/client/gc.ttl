@@ -54,46 +54,37 @@
     rdfs:label "Class of layout modes" ;
     rdfs:isDefinedBy <#> .
 
-<#ContainerMode> a owl:Class ;
+<#PageMode> a owl:Class ;
     rdfs:subClassOf <#Mode> ;
-    rdfs:label "Class of container layout modes" ;
-    rdfs:isDefinedBy <#> .
-
-<#ItemMode> a owl:Class ;
-    rdfs:subClassOf <#Mode> ;
-    rdfs:label "Class of item layout modes" ;
+    rdfs:label "Class of page layout modes" ;
     rdfs:isDefinedBy <#> .
 
 # INDIVIDUALS
 
-<#ConstructMode> a <#Mode>, <#ContainerMode>;
-    rdfs:label "Create" ;
-    rdfs:isDefinedBy <#> .
-
-<#ReadMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#ReadMode> a <#Mode>, <#PageMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
-<#EditMode> a <#Mode>, <#ItemMode> ;
+<#EditMode> a <#Mode> ;
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
-<#TableMode> a <#Mode>, <#ContainerMode> ;
+<#TableMode> a <#Mode>, <#PageMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .
 
-<#ListMode> a <#Mode>, <#ContainerMode> ;
+<#ListMode> a <#Mode>, <#PageMode> ;
     rdfs:label "List" ;
     rdfs:isDefinedBy <#> .
 
-<#GridMode> a <#Mode>, <#ContainerMode> ;
+<#GridMode> a <#Mode>, <#PageMode> ;
     rdfs:label "Grid" ;
     rdfs:isDefinedBy <#> .
 
-<#MapMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#MapMode> a <#Mode>, <#PageMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .
 
-<#GraphMode> a <#Mode>, <#ContainerMode>, <#ItemMode> ;
+<#GraphMode> a <#Mode>, <#PageMode> ;
     rdfs:label "Graph" ;
     rdfs:isDefinedBy <#> .

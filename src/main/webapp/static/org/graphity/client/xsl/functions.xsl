@@ -236,7 +236,7 @@ exclude-result-prefixes="#all">
 	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
 	</xsl:if>
     </xsl:function>
-
+    
     <xsl:function name="gc:visit-elements" as="element()*">
         <xsl:param name="element" as="element()"/>
         <xsl:param name="type" as="xs:string?"/>

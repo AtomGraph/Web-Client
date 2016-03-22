@@ -31,12 +31,29 @@ xmlns:rdf="&rdf;"
 xmlns:owl="&owl;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="owl:sameAs" mode="gc:PropertyListMode"/>
 
-    <!--
-    <xsl:template match="owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:resource | owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:nodeID" mode="gc:EditMode">
-SHEET
+    <xsl:template match="owl:sameAs" mode="bs2:SidebarNavMode">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+	
+	<div class="well sidebar-nav">
+	    <h2 class="nav-header">
+		<xsl:apply-templates select="." mode="gc:InlineMode"/>
+	    </h2>
+		
+	    <!-- TO-DO: fix for a single resource! -->
+	    <ul class="nav nav-pills nav-stacked">
+		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
+		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
+		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
+		</xsl:for-each-group>
+	    </ul>
+	</div>
     </xsl:template>
-    -->
+
+    <xsl:template match="owl:sameAs/@rdf:resource" mode="bs2:SidebarNavMode">
+	<li>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</li>
+    </xsl:template>
     
 </xsl:stylesheet>

@@ -48,6 +48,8 @@ public final class GC
     
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
+
+    public static final OntClass PageMode = m_model.createClass( NS + "PageMode" );
     
     public static final OntClass EditMode = m_model.createClass( NS + "EditMode" );
 

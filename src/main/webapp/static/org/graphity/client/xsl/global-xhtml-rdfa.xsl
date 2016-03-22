@@ -102,7 +102,7 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="/" mode="gc:NavBarMode">
+    <xsl:template match="/" mode="bs2:NavBarMode">
 	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
 		<div class="container-fluid">
@@ -171,7 +171,7 @@ exclude-result-prefixes="#all">
                         <xsl:if test="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]">
                             <xsl:variable name="space" select="($absolute-path, key('resources', $absolute-path)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                             <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]" mode="gc:NavBarMode">
+                                <xsl:apply-templates select="key('resources-by-space', $base-uri, document($base-uri))[@rdf:about = resolve-uri('sparql', $base-uri) or @rdf:about = resolve-uri('ontology', $base-uri)]" mode="bs2:NavBarMode">
                                     <xsl:sort select="gc:label(.)" order="ascending" lang="{$lang}"/>
                                     <xsl:with-param name="space" select="$space"/>
                                 </xsl:apply-templates>
@@ -183,27 +183,27 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ReadMode">
-        <xsl:apply-templates select="." mode="gc:ModeSelectMode"/>
+    <xsl:template match="rdf:RDF[$gc:uri]" mode="bs2:ReadMode">
+        <xsl:apply-templates select="." mode="bs2:ModeSelectMode"/>
 
-        <xsl:apply-templates select="key('resources', $gc:uri)" mode="gc:ReadMode"/>
+        <xsl:apply-templates select="key('resources', $gc:uri)" mode="bs2:ReadMode"/>
 
         <xsl:apply-templates select="*[not(@rdf:about = $gc:uri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$lang}"/>
         </xsl:apply-templates>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:HeaderMode">
+    <xsl:template match="rdf:RDF[$gc:uri]" mode="bs2:HeaderMode">
         <xsl:apply-templates select="key('resources', $gc:uri)" mode="#current"/>
     </xsl:template>
     
-    <xsl:template match="@rdf:about[. = $gc:uri]" mode="gc:HeaderMode">
+    <xsl:template match="@rdf:about[. = $gc:uri]" mode="bs2:HeaderMode">
 	<h1 class="page-header">
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h1>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[$gc:uri]" mode="gc:ModeSelectMode">
+    <xsl:template match="rdf:RDF[$gc:uri]" mode="bs2:ModeSelectMode">
         <ul class="nav nav-tabs">
             <xsl:apply-templates select="key('resources-by-type', '&gc;Mode', document('&gc;'))[rdf:type/@rdf:resource = '&gc;ItemMode']" mode="#current">
                 <xsl:sort select="gc:label(.)"/>                    
@@ -211,7 +211,7 @@ exclude-result-prefixes="#all">
         </ul>
     </xsl:template>
 
-    <xsl:template match="@rdf:about" mode="gc:ModeSelectMode">
+    <xsl:template match="@rdf:about" mode="bs2:ModeSelectMode">
 	<xsl:choose>
 	    <xsl:when test="$gc:uri">
                 <a href="{$absolute-path}{gc:query-string($gc:uri, .)}">
@@ -224,7 +224,7 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $gc:uri]" mode="gc:ModeToggleMode" priority="1">
+    <xsl:template match="*[@rdf:about = $gc:uri]" mode="bs2:ModeToggleMode" priority="1">
         <div class="pull-right">
             <a class="btn btn-primary" href="{$absolute-path}{gc:query-string(@rdf:about, xs:anyURI('&gc;CreateMode'))}">
                 <xsl:apply-templates select="key('resources', 'save-as', document(''))" mode="gc:LabelMode"/>
