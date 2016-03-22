@@ -63,16 +63,35 @@ xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">
 
-    <xsl:import href="group-sort-triples.xsl"/>
+    <xsl:import href="../group-sort-triples.xsl"/>
+    <xsl:import href="../generic.xsl"/>
+    <xsl:import href="../functions.xsl"/>
+    <xsl:import href="../imports/dbpedia-owl.xsl"/>
+    <xsl:import href="../imports/dc.xsl"/>
+    <xsl:import href="../imports/dct.xsl"/>
+    <xsl:import href="../imports/doap.xsl"/>
+    <xsl:import href="../imports/foaf.xsl"/>
+    <xsl:import href="../imports/gc.xsl"/>
+    <xsl:import href="../imports/gp.xsl"/>
+    <xsl:import href="../imports/gr.xsl"/>
+    <xsl:import href="../imports/owl.xsl"/>
+    <xsl:import href="../imports/rdf.xsl"/>
+    <xsl:import href="../imports/rdfs.xsl"/>
+    <xsl:import href="../imports/xhv.xsl"/>
+    <xsl:import href="../imports/sd.xsl"/>
+    <xsl:import href="../imports/sp.xsl"/>
+    <xsl:import href="../imports/spin.xsl"/>
+    <xsl:import href="../imports/sioc.xsl"/>
+    <xsl:import href="../imports/skos.xsl"/>
+    <xsl:import href="../imports/void.xsl"/>
 
     <xsl:include href="sparql.xsl"/>
-    <xsl:include href="functions.xsl"/>
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
     <xsl:param name="g:baseUri" as="xs:anyURI?"/>
-    <xsl:param name="g:requestUri" as="xs:anyURI"/>
-    <xsl:param name="g:absolutePath" select="xs:anyURI(tokenize($g:requestUri,'\?')[1])" as="xs:anyURI"/>
+    <xsl:param name="g:requestUri" as="xs:anyURI?"/>
+    <xsl:param name="g:absolutePath" select="xs:anyURI(tokenize($g:requestUri,'\?')[1])" as="xs:anyURI?"/>
     <xsl:param name="g:httpHeaders" as="xs:string"/>
     <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
     <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
@@ -81,7 +100,8 @@ exclude-result-prefixes="#all">
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="gc:sitemap" select="if ($rdf:type) then document(gc:document-uri($rdf:type)) else ()" as="document-node()?"/>
     <xsl:param name="query" as="xs:string?"/>
-
+    <xsl:param name="label" as="xs:string?"/>
+    
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
     
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
@@ -130,7 +150,6 @@ exclude-result-prefixes="#all">
             <title>
                 <xsl:apply-templates mode="bs2:TitleMode"/>
             </title>
-            <!-- <base href="{$g:baseUri}" /> -->
 
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -162,39 +181,47 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="brand" href="{$g:baseUri}">
-                        <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
-                            <img src="{foaf:logo/@rdf:resource}">
-                                <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
-                            </img>
-                        </xsl:for-each>
-                    </a>
+                    <xsl:if test="$g:baseUri">
+                        <a class="brand" href="{$g:baseUri}">
+                            <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
+                                <img src="{foaf:logo/@rdf:resource}">
+                                    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:LabelMode"/></xsl:attribute>
+                                </img>
+                            </xsl:for-each>
+                        </a>
+                    </xsl:if>                    
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
-                        <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/gp:pageOf/@rdf:resource)" as="xs:anyURI*"/>
-                        
-                        <ul class="nav">
-                            <!-- make menu links for all containers in the ontology -->
-                            <xsl:apply-templates select="key('resources-by-container', $g:baseUri, document($g:baseUri))[not(rdf:type/@rdf:resource = '&gp;SPARQLEndpoint')]" mode="bs2:NavBarMode">
-                                <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
-                                <xsl:with-param name="space" select="$space"/>
-                            </xsl:apply-templates>
-                        </ul>
+                        <form action="" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
+                            <div class="input-append">
+                                <input type="text" name="uri" class="input-xxlarge">
+                                    <xsl:if test="$g:requestUri">
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="$g:requestUri"/>
+                                        </xsl:attribute>
+                                    </xsl:if>
+                                </input>
+                                <button type="submit" class="btn btn-primary">Go</button>
+                            </div>
+                        </form>
 
-                        <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
-                            <ul class="nav pull-right">
-                                <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="bs2:NavBarMode">
-                                    <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
-                                    <xsl:with-param name="space" select="$space"/>
-                                </xsl:apply-templates>
-                            </ul>
+                        <xsl:if test="$g:baseUri">
+                            <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                            <xsl:if test="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))">
+                                <ul class="nav pull-right">
+                                    <xsl:apply-templates select="key('resources-by-type', '&gp;SPARQLEndpoint', document($g:baseUri))" mode="bs2:NavBarMode">
+                                        <xsl:sort select="gc:label(.)" order="ascending" lang="{$gp:lang}"/>
+                                        <xsl:with-param name="space" select="$space"/>
+                                    </xsl:apply-templates>
+                                </ul>
+                            </xsl:if>
                         </xsl:if>
                     </div>
 		</div>
 	    </div>
 	</div>
     </xsl:template>
-
+    
     <xsl:template match="*[@rdf:about]" mode="bs2:NavBarMode">
         <xsl:param name="space" as="xs:anyURI*"/>
         <li>
@@ -354,8 +381,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="if (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) then key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) else key('resources', $g:requestUri)" mode="#current"/>
         </ul>
     </xsl:template>
-
-    <!-- <xsl:template match="rdf:RDF[$g:requestUri = $g:baseUri]" mode="bs2:BreadCrumbMode" priority="2"/> -->
 
     <xsl:template match="rdf:RDF[*/rdf:type/@rdf:resource = '&http;Response']" mode="bs2:BreadCrumbMode" priority="3"/>
 
@@ -712,7 +737,6 @@ exclude-result-prefixes="#all">
 
         <xsl:apply-templates select="if (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) then key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) else key('resources', $g:requestUri) | key('resources-by-type', '&http;Response')" mode="#current"/>
 
-        <!-- <xsl:apply-templates select="*[not(@rdf:about = $g:requestUri)][not(key('predicates-by-object', @rdf:nodeID))]" mode="#current"> -->
         <xsl:apply-templates select="$selected-resources" mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>
@@ -976,30 +1000,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:LabelMode"/>
         </div>
     </xsl:template>
-
-    <!--    
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:EditMode">
-        <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
-        <xsl:param name="constraint-violations" as="element()*"/>
-	<xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="label" select="true()" as="xs:boolean"/>
-        <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
-        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and (if ($gc:sitemap) then (key('resources', key('resources', ../rdf:type/@rdf:resource, $gc:sitemap)/spin:constraint/(@rdf:resource|@rdf:nodeID), $gc:sitemap)[rdf:type/@rdf:resource = '&gp;MissingPropertyValue'][sp:arg1/@rdf:resource = $this]) else true())" as="xs:boolean"/>
-        <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
-        
-        <xsl:next-match>
-            <xsl:with-param name="this" select="$this"/>
-            <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
-            <xsl:with-param name="class" select="$class"/>
-            <xsl:with-param name="label" select="$label"/>
-            <xsl:with-param name="cloneable" select="$cloneable"/>
-            <xsl:with-param name="required" select="$required"/>
-            <xsl:with-param name="id" select="$id"/>
-            <xsl:with-param name="for" select="$for"/>
-        </xsl:next-match>
-    </xsl:template>
-    -->
     
     <!-- remove spaces -->
     <xsl:template match="text()" mode="gc:InputMode">

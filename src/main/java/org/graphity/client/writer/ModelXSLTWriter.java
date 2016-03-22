@@ -278,10 +278,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
         // https://saxonica.plan.io/issues/1447
         // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-        if (getMode() != null && getModeMediaTypeMap().containsKey(getMode()))
+        URI mode = getMode();
+        if (mode != null && getModeMediaTypeMap().containsKey(mode))
 	{
-            MediaType mediaType = getModeMediaTypeMap().get(getMode());
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, overriding response media type with '{}'", getMode(), mediaType);
+            MediaType mediaType = getModeMediaTypeMap().get(mode);
+	    if (log.isDebugEnabled()) log.debug("Mode is {}, overriding response media type with '{}'", mode, mediaType);
             List<Object> contentTypes = new ArrayList();
             contentTypes.add(mediaType);
             headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
