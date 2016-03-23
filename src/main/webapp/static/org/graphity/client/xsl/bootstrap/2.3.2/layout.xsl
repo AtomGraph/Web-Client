@@ -525,14 +525,15 @@ exclude-result-prefixes="#all">
                 </button>
             </form>
         </div>
-        <xsl:apply-templates select="key('resources-by-layout-of', @rdf:about)" mode="#current"/>
         
-        <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="#current"/>
+        <xsl:apply-templates select="key('resources-by-layout-of', @rdf:about)" mode="bs2:ButtonMode"/>
+        
+        <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="bs2:ButtonMode"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:ModeToggleMode" priority="1"/>
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:ButtonMode" priority="1"/>
 
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:ModeToggleMode" priority="2">
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:ButtonMode" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:LabelMode"/>
@@ -540,7 +541,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="bs2:ModeToggleMode" priority="2">
+    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="bs2:ButtonMode" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))"/>
