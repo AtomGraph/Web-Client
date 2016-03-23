@@ -530,14 +530,26 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources-by-constructor-of', @rdf:about)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:ModeToggleMode" priority="1">
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:ModeToggleMode" priority="1"/>
+
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:ModeToggleMode" priority="2">
         <div class="pull-right">
-            <a class="btn btn-primary" href="gc:mode/@rdf:resource">
+            <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:LabelMode"/>
             </a>                        
         </div>
     </xsl:template>
-    
+
+    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="bs2:ModeToggleMode" priority="2">
+        <div class="pull-right">
+            <a class="btn btn-primary" href="{@rdf:about}">
+                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))"/>
+                <xsl:text> </xsl:text>
+                <xsl:apply-templates select="key('resources', gp:forClass/@rdf:resource, document(gc:document-uri(gp:forClass/@rdf:resource)))" mode="gc:LabelMode"/>
+            </a>                        
+        </div>
+    </xsl:template>
+            
     <!-- IMAGE MODE -->
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ImageMode">
