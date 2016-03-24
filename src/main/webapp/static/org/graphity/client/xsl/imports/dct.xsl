@@ -28,6 +28,7 @@ xmlns:gc="&gc;"
 xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:dct="&dct;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <xsl:template match="dct:title | dct:description | dct:subject" mode="gc:PropertyListMode"/>
@@ -40,7 +41,7 @@ exclude-result-prefixes="#all">
         <xsl:value-of select="."/>
     </xsl:template>
     
-    <xsl:template match="dct:created | dct:modified | dct:issued" mode="gc:EditMode">
+    <xsl:template match="dct:created | dct:modified | dct:issued" mode="bs2:EditMode">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>

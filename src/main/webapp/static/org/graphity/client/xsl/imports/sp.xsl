@@ -26,6 +26,7 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sp="&sp;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
     
     <xsl:template match="sp:text/text()" mode="gc:InlineMode">
@@ -34,7 +35,7 @@ exclude-result-prefixes="#all">
         </pre>
     </xsl:template>
 
-    <xsl:template match="sp:text/text()" mode="gc:EditMode">
+    <xsl:template match="sp:text/text()" mode="bs2:EditMode">
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         
         <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10" style="font-family: monospace;">
@@ -53,7 +54,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="sp:text/@rdf:datatype" mode="gc:EditMode">
+    <xsl:template match="sp:text/@rdf:datatype" mode="bs2:EditMode">
         <xsl:next-match>
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:next-match>

@@ -173,7 +173,7 @@ LIMIT 100</xsl:param>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode'">
-                        <xsl:apply-templates select="." mode="gc:EditMode">
+                        <xsl:apply-templates select="." mode="bs2:EditMode">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>                            
                     </xsl:when>

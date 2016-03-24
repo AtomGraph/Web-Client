@@ -180,7 +180,7 @@ public class PostReplaceFilter implements ContainerRequestFilter {
         }
 
         String[] parts = configString.toUpperCase().split(",");
-        ArrayList<ConfigFlag> result = new ArrayList<ConfigFlag>(parts.length);
+        ArrayList<ConfigFlag> result = new ArrayList<>(parts.length);
         for (String part : parts) {
             part = part.trim();
             if (part.length() > 0) {

@@ -42,10 +42,10 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeader;
 import org.graphity.client.exception.ClientErrorException;
+import org.graphity.client.provider.URIRewritingModelProvider;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.core.exception.AuthenticationException;
 import org.graphity.core.exception.NotFoundException;
-import org.graphity.core.provider.ModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ public class ProxyResourceBase
         this.mode = mode;
 
         ClientConfig cc = new DefaultClientConfig();
-        cc.getSingletons().add(new ModelProvider());
+        cc.getSingletons().add(new URIRewritingModelProvider(uriInfo));
         Client client = Client.create(cc);
         client.setFollowRedirects(false); // wee take care of redirects ourselves
         webResource = client.resource(uri);

@@ -26,6 +26,7 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <xsl:template match="foaf:page/@rdf:resource | foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource" mode="gc:InlineMode">
@@ -150,14 +151,14 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:EditMode">
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="bs2:EditMode">
 	<input type="text" name="ol" id="{generate-id()}" value="{.}"/><br/>
 	<input type="file" name="ol" id="{generate-id()}"/><br/>
 	<img src="{.}" alt=""/>
     </xsl:template
     -->
 
-    <xsl:template match="foaf:primaryTopic | foaf:isPrimaryTopicOf" mode="gc:EditMode">
+    <xsl:template match="foaf:primaryTopic | foaf:isPrimaryTopicOf" mode="bs2:EditMode">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
@@ -169,7 +170,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>        
     </xsl:template>
 
-    <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]"  mode="gc:EditMode">
+    <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]"  mode="bs2:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -188,7 +189,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="gc:EditMode">
+    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="bs2:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>

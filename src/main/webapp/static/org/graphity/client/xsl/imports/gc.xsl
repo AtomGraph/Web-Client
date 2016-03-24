@@ -26,14 +26,15 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <xsl:template match="gc:*" mode="gc:TablePredicateMode"/>
     
     <!--
-    <xsl:template match="gc:supportedMode[position() &gt; 1]" mode="gc:EditMode"/>
+    <xsl:template match="gc:supportedMode[position() &gt; 1]" mode="bs2:EditMode"/>
     
-    <xsl:template match="gc:supportedMode/@rdf:*[$gc:sitemap]" mode="gc:EditMode">
+    <xsl:template match="gc:supportedMode/@rdf:*[$gc:sitemap]" mode="bs2:EditMode">
         <xsl:variable name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
         <xsl:variable name="template" select="../.." as="element()"/>
         
@@ -47,7 +48,7 @@ exclude-result-prefixes="#all">
         </select>
     </xsl:template>
 
-    <xsl:template match="gc:defaultMode/@rdf:*[$gc:sitemap]" mode="gc:EditMode">
+    <xsl:template match="gc:defaultMode/@rdf:*[$gc:sitemap]" mode="bs2:EditMode">
         <xsl:param name="modes" select="key('resources-by-type', '&gc;Mode', $gc:sitemap)" as="element()*"/>
         <xsl:variable name="template" select="../.." as="element()"/>
         

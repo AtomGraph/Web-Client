@@ -94,19 +94,22 @@ public class HypermediaFilter implements ContainerResponseFilter
         OntClass matchedOntClass = getMatchedOntClass(response.getHttpHeaders());
         if (matchedOntClass != null &&
                 response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL) &&
-                response.getEntity() != null && response.getEntity() instanceof Model)
+                response.getEntity() instanceof Model)
         {
-            Model model = (Model)response.getEntity();
-            long oldCount = model.size();
-            
-            Resource resource = getResource(model);
-            model = addStates(resource, matchedOntClass);
-            if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
+            Model model = addStates((Model)response.getEntity(), matchedOntClass);
             response.setEntity(model);
-            return response;
         }
         
         return response;
+    }
+
+    public Model addStates(Model model, OntClass matchedOntClass)
+    {
+        Resource resource = getResource(model);
+        long oldCount = model.size();
+        model = addStates(resource, matchedOntClass);
+        if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
+        return model;
     }
     
     public Model addStates(Resource resource, OntClass matchedOntClass)
@@ -138,7 +141,8 @@ public class HypermediaFilter implements ContainerResponseFilter
                             while (resIt.hasNext())
                             {
                                 Resource page = resIt.next();
-                                getStateBuilder(page).replaceProperty(GC.mode, supportedMode.asResource()).
+                                StateBuilder.fromUri(page.getURI(), page.getModel()).
+                                    replaceProperty(GC.mode, supportedMode.asResource()).
                                     build().
                                     addProperty(GC.layoutOf, page).
                                     addProperty(RDF.type, FOAF.Document);
@@ -151,7 +155,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                     }
                 }
 
-                getStateBuilder(resource).
+                StateBuilder.fromUri(resource.getURI(), resource.getModel()).
                     replaceProperty(GC.mode, supportedMode.asResource()).
                     build().
                     addProperty(GC.layoutOf, resource).
@@ -250,7 +254,8 @@ public class HypermediaFilter implements ContainerResponseFilter
         
         return model.createResource(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()));
     }
-    
+
+    /*
     public StateBuilder getStateBuilder(Resource resource)
     {
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
@@ -260,5 +265,6 @@ public class HypermediaFilter implements ContainerResponseFilter
                 build(),
             resource.getModel());
     }
+    */
     
 }

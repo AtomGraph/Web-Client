@@ -32,7 +32,7 @@
 # PROPERTIES
 
 <#stylesheet> a owl:ObjectProperty ;
-    rdfs:domain <#Application> ;
+    rdfs:domain gp:Application ;
     rdfs:label "XSLT stylesheet" ;
     rdfs:isDefinedBy <#> .
 
@@ -44,11 +44,6 @@
     rdfs:isDefinedBy <#> .
 
 # CLASSES
-
-<#Application> a owl:Class ;
-    rdfs:subClassOf gp:Application ;
-    rdfs:label "Graphity Client application" ;
-    rdfs:isDefinedBy <#> .
 
 <#Mode> a owl:Class ;
     rdfs:label "Class of layout modes" ;

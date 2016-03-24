@@ -26,6 +26,7 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <!--
@@ -42,7 +43,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="sioc:content/text()" mode="gc:EditMode">
+    <xsl:template match="sioc:content/text()" mode="bs2:EditMode">
 	<xsl:param name="name" select="'ol'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -114,7 +115,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="gc:TablePredicateMode"/>
         
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="gc:EditMode">
+    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:EditMode">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>

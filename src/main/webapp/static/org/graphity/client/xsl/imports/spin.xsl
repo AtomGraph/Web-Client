@@ -29,10 +29,11 @@ xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <!--    
-    <xsl:template match="spin:query/@rdf:resource | spin:query/@rdf:nodeID" mode="gc:EditMode">
+    <xsl:template match="spin:query/@rdf:resource | spin:query/@rdf:nodeID" mode="bs2:EditMode">
         <select name="ou" id="{generate-id()}">
             <xsl:apply-templates select="key('resources-by-type', '&sp;Query', $gc:sitemap)" mode="gc:OptionMode">
                 <xsl:sort select="gc:label(.)" order="ascending"/>

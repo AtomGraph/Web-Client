@@ -86,6 +86,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="../../imports/void.xsl"/>
 
     <xsl:include href="sparql.xsl"/>
+    <xsl:include href="EditMode.xsl"/>
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
@@ -894,7 +895,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="$resources" mode="gc:EditMode">
+            <xsl:apply-templates select="$resources" mode="bs2:EditMode">
                 <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
@@ -913,94 +914,6 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <!-- EDIT MODE -->
-    
-    <xsl:template match="rdf:RDF" mode="bs2:EditMode">
-        <xsl:param name="method" select="'post'" as="xs:string"/>   
-        <xsl:param name="action" select="xs:anyURI(concat($g:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri('&gc;EditMode')))" as="xs:anyURI"/>
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
-        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
-        <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
-        <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
-
-        <form method="{$method}" action="{$action}">
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$accept-charset">
-                <xsl:attribute name="accept-charset"><xsl:value-of select="$accept-charset"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$enctype">
-                <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
-	    <xsl:call-template name="gc:InputTemplate">
-		<xsl:with-param name="name" select="'rdf'"/>
-		<xsl:with-param name="type" select="'hidden'"/>
-	    </xsl:call-template>
-
-            <xsl:apply-templates select="$resources" mode="gc:EditMode">
-                <xsl:sort select="gc:label(.)"/>
-            </xsl:apply-templates>
-                
-            <xsl:apply-templates select="." mode="bs2:FormActionsMode">
-                <xsl:with-param name="button-class" select="$button-class"/>
-            </xsl:apply-templates>
-        </form>
-    </xsl:template>
-
-    <!-- hide metadata -->
-    <xsl:template match="*[gc:layoutOf/@rdf:resource = $g:requestUri]" mode="bs2:EditMode" priority="1"/>
-
-    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:EditMode" priority="1"/>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:EditMode">
-        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
-        <xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
-        <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="parent-uri" select="key('resources', $g:requestUri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
-        <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
-        <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gp:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
-        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?" tunnel="yes"/>
-        <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
-        <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
-
-        <fieldset>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:if test="$legend">
-                <legend>
-                    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:InlineMode"/>
-                </legend>
-            </xsl:if>
-
-            <xsl:apply-templates select="$constraint-violations" mode="bs2:ConstraintViolationMode"/>
-
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="gc:EditMode"/>
-
-            <xsl:if test="not($template)">
-                <xsl:message>gc:EditMode is active but spin:constructor is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
-            </xsl:if>
-            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="gc:EditMode">
-                <xsl:sort select="gc:property-label(.)"/>
-                <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
-                <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
-            </xsl:apply-templates>
-        </fieldset>
-    </xsl:template>
-
     <xsl:template match="*" mode="bs2:ConstraintViolationMode"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:ConstraintViolationMode" priority="1">
