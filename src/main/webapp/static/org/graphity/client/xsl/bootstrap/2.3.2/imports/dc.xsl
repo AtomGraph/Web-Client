@@ -28,6 +28,7 @@ xmlns:gc="&gc;"
 xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:dc="&dc;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <xsl:template match="dc:subject" mode="bs2:SidebarNavMode">

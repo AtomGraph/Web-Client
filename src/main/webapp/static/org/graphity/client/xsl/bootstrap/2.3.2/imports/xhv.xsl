@@ -16,45 +16,29 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
-    <!ENTITY gp     "http://graphity.org/gp#">    
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
-    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
+    <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">    
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
-xmlns:owl="&owl;"
+xmlns:xhv="&xhv;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-
-    <xsl:template match="owl:sameAs" mode="bs2:SidebarNavMode">
-	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-	
-	<div class="well sidebar-nav">
-	    <h2 class="nav-header">
-		<xsl:apply-templates select="." mode="gc:InlineMode"/>
-	    </h2>
-		
-	    <!-- TO-DO: fix for a single resource! -->
-	    <ul class="nav nav-pills nav-stacked">
-		<xsl:for-each-group select="key('predicates', $this)" group-by="@rdf:resource">
-		    <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$gp:lang}"/>
-		    <xsl:apply-templates select="current-group()[1]/@rdf:resource" mode="#current"/>
-		</xsl:for-each-group>
-	    </ul>
-	</div>
+    <xsl:template match="xhv:prev[@rdf:resource]" mode="bs2:PaginationMode">
+        <a href="{@rdf:resource}" class="active">
+            &#8592; <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/>
+        </a>
     </xsl:template>
-
-    <xsl:template match="owl:sameAs/@rdf:resource" mode="bs2:SidebarNavMode">
-	<li>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</li>
+        
+    <xsl:template match="xhv:next[@rdf:resource]" mode="bs2:PaginationMode">
+        <a href="{@rdf:resource}">
+            <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/> &#8594;
+        </a>
     </xsl:template>
     
 </xsl:stylesheet>
