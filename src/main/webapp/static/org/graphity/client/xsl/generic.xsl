@@ -136,9 +136,13 @@ exclude-result-prefixes="#all">
 		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicateMode"/>
             </xsl:for-each-group>
 	</xsl:param>
+        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
 
-	<table class="table table-bordered table-striped">
-	    <thead>
+	<table>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            <thead>
 		<tr>
 		    <th>
 			<xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="gc:LabelMode"/>

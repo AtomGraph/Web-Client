@@ -26,13 +26,5 @@ xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sd="&sd;"
 exclude-result-prefixes="#all">
-    
-    <!--
-    <xsl:template match="sd:endpoint/@rdf:resource">
-	<a href="{$base-uri}sparql?endpointUri={encode-for-uri(.)}">
-	    <xsl:apply-templates select="." mode="gc:LabelMode"/>
-	</a>
-    </xsl:template>
-    -->
 
 </xsl:stylesheet>

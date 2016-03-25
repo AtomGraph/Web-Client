@@ -16,28 +16,23 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
-    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY dct    "http://purl.org/dc/terms/">
+    <!ENTITY gp     "http://graphity.org/gp#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
-xmlns:dct="&dct;"
+xmlns:gp="&gp;"
+xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="dct:title | dct:description | dct:subject" mode="gc:PropertyListMode"/>
-    
-    <xsl:template match="dct:title | @dct:title" mode="gc:LabelMode">
-	<xsl:value-of select="."/>
-    </xsl:template>
-
-    <xsl:template match="dct:description" mode="gc:DescriptionMode">
-        <xsl:value-of select="."/>
+    <xsl:template match="gp:slug/@rdf:datatype | gp:defaultLimit/@rdf:datatype | gp:defaultOffset/@rdf:datatype | gp:defaultOrderBy/@rdf:datatype | gp:defaultDesc/@rdf:datatype" mode="bs2:EditMode">
+        <xsl:next-match>
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:next-match>
     </xsl:template>
     
 </xsl:stylesheet>

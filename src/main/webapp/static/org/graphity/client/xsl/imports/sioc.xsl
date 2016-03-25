@@ -26,7 +26,6 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
-xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <!--
@@ -42,44 +41,6 @@ exclude-result-prefixes="#all">
         <xsl:value-of select="."/>
     </xsl:template>
     -->
-
-    <xsl:template match="sioc:content/text()" mode="bs2:EditMode">
-	<xsl:param name="name" select="'ol'" as="xs:string"/>
-        <xsl:param name="id" select="generate-id()" as="xs:string"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="style" as="xs:string?"/>
-	<xsl:param name="value" select="." as="xs:string?"/>
-        <xsl:param name="rows" select="10" as="xs:integer?"/>
-        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
-        
-        <textarea name="{$name}">
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$style">
-                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$rows">
-                <xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:value-of select="$value"/>
-        </textarea>
-        
-        <xsl:if test="$type-label">
-            <xsl:choose>
-                <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <span class="help-inline">Literal</span>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:if>
-    </xsl:template>
 
     <xsl:template match="sioc:avatar" mode="gc:PropertyListMode" priority="1"/>
 
@@ -114,17 +75,5 @@ exclude-result-prefixes="#all">
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="gc:PropertyListMode"/>
 
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="gc:TablePredicateMode"/>
-        
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:EditMode">
-        <xsl:apply-templates select="." mode="gc:InputMode">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>        
-    </xsl:template>
 
 </xsl:stylesheet>
