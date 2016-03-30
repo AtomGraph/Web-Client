@@ -58,8 +58,6 @@ WHERE
 LIMIT 100</xsl:param>
 
     <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" priority="2">
-        <xsl:param name="selected-resources" select="*[rdf:type/@rdf:resource = '&foaf;Document'][not(@rdf:about = $g:requestUri)]" as="element()*"/>
-
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
@@ -67,7 +65,7 @@ LIMIT 100</xsl:param>
 
                     <xsl:apply-templates select="." mode="bs2:HeaderMode"/>
 
-                    <xsl:apply-templates select="." mode="gc:QueryFormMode"/>
+                    <xsl:apply-templates select="." mode="bs2:QueryFormMode"/>
 
                     <xsl:if test="$query">
                         <xsl:apply-templates select="." mode="gc:QueryResultMode"/>
@@ -90,8 +88,10 @@ LIMIT 100</xsl:param>
         
         <link href="{resolve-uri('static/css/yasqe.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
-    
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryFormMode">
+
+    <xsl:template match="*[rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:ModeToggleMode" priority="1"/>
+        
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:QueryFormMode">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
