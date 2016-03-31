@@ -72,9 +72,14 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
     
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="bs2:EditMode">
+	<xsl:param name="type" select="'hidden'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+	<xsl:param name="class" as="xs:string?"/>
+
         <xsl:apply-templates select="." mode="gc:InputMode">
-            <xsl:with-param name="type" select="'hidden'"/>
-            <xsl:with-param name="id" select="generate-id()"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -126,12 +131,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>            
         </xsl:apply-templates>
         
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -153,6 +160,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="style" as="xs:string?"/>
 	<xsl:param name="value" select="." as="xs:string?"/>
         <xsl:param name="rows" as="xs:integer?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         
         <textarea name="{$name}">
@@ -167,6 +175,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:if test="$rows">
                 <xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$disabled">
+                <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
 
             <xsl:value-of select="$value"/>
@@ -188,12 +199,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>            
         </xsl:apply-templates>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -205,12 +218,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>            
         </xsl:apply-templates>
         
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -222,12 +237,14 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
+	    <xsl:with-param name="disabled" select="$disabled"/>            
         </xsl:apply-templates>
         
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -239,6 +256,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
+	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
         <xsl:param name="template"  as="element()?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
@@ -264,6 +282,7 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="type" select="$type"/>
                     <xsl:with-param name="id" select="$id"/>
                     <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
                 </xsl:apply-templates>
                 
                 <xsl:if test="not($type = 'hidden') and $type-label">
