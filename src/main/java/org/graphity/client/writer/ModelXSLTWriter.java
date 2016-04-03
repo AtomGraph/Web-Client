@@ -123,12 +123,13 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
 	try
 	{
+            Templates stylesheet = getTemplates();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            model.write(baos, RDFLanguages.RDFXML.getName(), null);
+            
             synchronized (this)
-            {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                model.write(baos, RDFLanguages.RDFXML.getName(), null);
-                
-                getXSLTBuilder(XSLTBuilder.fromStylesheet(getTemplates()).document(new ByteArrayInputStream(baos.toByteArray())),
+            {                
+                getXSLTBuilder(XSLTBuilder.fromStylesheet(stylesheet).document(new ByteArrayInputStream(baos.toByteArray())),
                         headerMap).
                     resolver(getDataManager()).
                     result(new StreamResult(entityStream)).

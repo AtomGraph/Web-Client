@@ -21,6 +21,7 @@ import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -164,19 +165,19 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	    if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
-        catch (FileNotFoundException ex)
+        catch (IOException ex)
         {
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found", ex);
+	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found or error reading it", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
-        catch (URISyntaxException | MalformedURLException ex)
+        catch (URISyntaxException ex)
         {
-    	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
+    	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
     
-    public Templates getTemplates(URI stylesheetURI) throws FileNotFoundException, URISyntaxException, TransformerConfigurationException, MalformedURLException
+    public Templates getTemplates(URI stylesheetURI) throws IOException, URISyntaxException, TransformerConfigurationException, MalformedURLException
     {
         return ((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(getSource(stylesheetURI));
     }
@@ -190,7 +191,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
      * @throws URISyntaxException
      * @throws MalformedURLException 
      */
-    public Source getSource(URI stylesheetURI) throws FileNotFoundException, URISyntaxException, MalformedURLException
+    public Source getSource(URI stylesheetURI) throws IOException, URISyntaxException
     {
 	if (stylesheetURI == null) throw new IllegalArgumentException("Stylesheet URI name cannot be null");	
 
@@ -208,7 +209,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
      * @throws java.net.MalformedURLException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      */
-    public Source getSource(String filename) throws FileNotFoundException, URISyntaxException, MalformedURLException
+    public Source getSource(String filename) throws URISyntaxException, IOException
     {
 	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
 

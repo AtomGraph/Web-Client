@@ -19,8 +19,7 @@ package org.graphity.client;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
@@ -155,17 +154,13 @@ public class Application extends org.graphity.core.Application
 	{
 	    if (log.isErrorEnabled()) log.error("XSLT transformer config error", ex);
 	}
-	catch (FileNotFoundException ex)
+	catch (IOException ex)
 	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found", ex);
+	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found or cannot be read", ex);
 	}
 	catch (URISyntaxException ex)
 	{
 	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
-	}
-	catch (MalformedURLException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URL error", ex);
 	}
     }
     
