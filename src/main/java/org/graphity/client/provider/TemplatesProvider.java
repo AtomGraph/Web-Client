@@ -110,55 +110,18 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         return getTemplates();
     }
 
-    /**
-     * Returns configured XSLT stylesheet resource.
-     * Uses <code>gc:stylesheet</code> context parameter value from web.xml as stylesheet location.
-     * 
-     * @param property
-     * @return stylesheet URI
-     * @throws URISyntaxException 
-     */
-    public URI getStylesheetURI(Property property) throws URISyntaxException
-    {
-        Object stylesheetURI = getServletConfig().getInitParameter(property.getURI());
-        if (stylesheetURI != null) return new URI(stylesheetURI.toString());
-        
-        return null;
-    }
-    
-    public URI getStylesheetURI() throws URISyntaxException
-    {
-        URI stylesheetURI = getStylesheetURI(GC.stylesheet);
-        
-        if (stylesheetURI == null)
-        {
-            if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
-            throw new ConfigurationException("XSLT stylesheet (gc:stylesheet) not configured");
-        }
-        
-        return stylesheetURI;
-    }
-    
-    /**
-     * Constructs XSLT builder from configuration.
-     * 
-     * @return XSLT builder object
-     */
     public Templates getTemplates()
     {
         try
         {
-            URI stylesheetURI = getStylesheetURI();
-            if (cacheStylesheet())
+            URI stylesheetURI = getStylesheetURI(getServletConfig(), GC.stylesheet);
+            if (stylesheetURI == null)
             {
-                // create cache entry if it does not exist
-                if (!getTemplatesCache().containsKey(stylesheetURI))
-                    getTemplatesCache().put(stylesheetURI, getTemplates(stylesheetURI));
-
-                return getTemplatesCache().get(stylesheetURI);
+                if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
+                throw new ConfigurationException("XSLT stylesheet (gc:stylesheet) not configured");
             }
-            else
-                return getTemplates(stylesheetURI);
+
+            return getTemplates(stylesheetURI, getTemplatesCache());
         }
         catch (TransformerConfigurationException ex)
         {
@@ -174,12 +137,56 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         {
     	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        }        
     }
     
-    public Templates getTemplates(URI stylesheetURI) throws IOException, URISyntaxException, TransformerConfigurationException, MalformedURLException
+    /**
+     * Returns configured XSLT stylesheet resource.
+     * Uses <code>gc:stylesheet</code> context parameter value from web.xml as stylesheet location.
+     * 
+     * @param servletConfig
+     * @param property
+     * @return stylesheet URI
+     * @throws URISyntaxException 
+     */
+    public URI getStylesheetURI(ServletConfig servletConfig, Property property) throws URISyntaxException
     {
-        return ((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(getSource(stylesheetURI));
+	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
+        
+        Object stylesheetURI = servletConfig.getInitParameter(property.getURI());
+        if (stylesheetURI != null) return new URI(stylesheetURI.toString());
+        
+        return null;
+    }
+    
+    /**
+     * Get compiled XSLT stylesheet. First look in the cache, if it's enabled; otherwise read from file.
+     * 
+     * @param stylesheetURI
+     * @param templatesCache
+     * @return XSLT builder object
+     * @throws java.io.IOException
+     * @throws java.net.URISyntaxException
+     * @throws javax.xml.transform.TransformerConfigurationException
+     */
+    public Templates getTemplates(URI stylesheetURI, Map<URI, Templates> templatesCache) throws IOException, URISyntaxException, TransformerConfigurationException
+    {
+        if (cacheStylesheet())
+        {
+            // create cache entry if it does not exist
+            if (!templatesCache.containsKey(stylesheetURI))
+                templatesCache.put(stylesheetURI, getTemplates(getSource(stylesheetURI)));
+
+            return templatesCache.get(stylesheetURI);
+        }
+        else
+            return getTemplates(getSource(stylesheetURI));
+    }
+    
+    public Templates getTemplates(Source source) throws IOException, URISyntaxException, TransformerConfigurationException, MalformedURLException
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(source);
     }
     
     /**
