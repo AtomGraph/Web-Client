@@ -98,7 +98,6 @@ public class Application extends org.graphity.core.Application
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
         singletons.add(new MediaTypesProvider());
-        //singletons.add(new ModifiersProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new ClientProvider());
         singletons.add(new org.graphity.core.provider.DataManagerProvider());

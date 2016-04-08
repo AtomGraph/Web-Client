@@ -86,7 +86,7 @@ public class ProxyResourceBase
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
         Client client = Client.create(cc);
-        client.setFollowRedirects(false); // wee take care of redirects ourselves
+        client.setFollowRedirects(false); // we take care of redirects ourselves
         webResource = client.resource(uri);
     }
     

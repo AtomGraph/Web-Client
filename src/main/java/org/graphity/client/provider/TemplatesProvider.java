@@ -99,7 +99,25 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	    @Override
 	    public Templates getValue()
 	    {
-                return getTemplates();
+                try
+                {
+                    return getTemplates();
+                }
+                catch (TransformerConfigurationException ex)
+                {
+                    if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);
+                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+                }
+                catch (IOException ex)
+                {
+                    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found or error reading it", ex);
+                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+                }
+                catch (URISyntaxException ex)
+                {
+                    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
+                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+                }
 	    }
 	};
     }
@@ -107,21 +125,9 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     @Override
     public Templates getContext(Class<?> type)
     {
-        return getTemplates();
-    }
-
-    public Templates getTemplates()
-    {
         try
         {
-            URI stylesheetURI = getStylesheetURI(getServletConfig(), GC.stylesheet);
-            if (stylesheetURI == null)
-            {
-                if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
-                throw new ConfigurationException("XSLT stylesheet (gc:stylesheet) not configured");
-            }
-
-            return getTemplates(stylesheetURI, getTemplatesCache());
+            return getTemplates();
         }
         catch (TransformerConfigurationException ex)
         {
@@ -137,12 +143,24 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         {
     	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-        }        
+        }
+    }
+
+    public Templates getTemplates() throws TransformerConfigurationException, IOException, URISyntaxException
+    {
+        URI stylesheetURI = getStylesheetURI(getServletConfig(), GC.stylesheet);
+        if (stylesheetURI == null)
+        {
+            if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
+            throw new ConfigurationException("XSLT stylesheet (gc:stylesheet) not configured");
+        }
+
+        return getTemplates(stylesheetURI, getTemplatesCache());
     }
     
     /**
      * Returns configured XSLT stylesheet resource.
-     * Uses <code>gc:stylesheet</code> context parameter value from web.xml as stylesheet location.
+     * Uses <code>gc:stylesheet</code> servlet parameter value from web.xml as stylesheet location.
      * 
      * @param servletConfig
      * @param property
