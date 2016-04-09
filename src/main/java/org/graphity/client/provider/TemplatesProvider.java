@@ -101,7 +101,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	    {
                 try
                 {
-                    return getTemplates();
+                    return getTemplates(getServletConfig());
                 }
                 catch (TransformerConfigurationException ex)
                 {
@@ -127,7 +127,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     {
         try
         {
-            return getTemplates();
+            return getTemplates(getServletConfig());
         }
         catch (TransformerConfigurationException ex)
         {
@@ -146,9 +146,9 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         }
     }
 
-    public Templates getTemplates() throws TransformerConfigurationException, IOException, URISyntaxException
+    public Templates getTemplates(ServletConfig servletConfig) throws TransformerConfigurationException, IOException, URISyntaxException
     {
-        URI stylesheetURI = getStylesheetURI(getServletConfig(), GC.stylesheet);
+        URI stylesheetURI = getStylesheetURI(servletConfig, GC.stylesheet);
         if (stylesheetURI == null)
         {
             if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
