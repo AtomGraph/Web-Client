@@ -284,7 +284,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/rdf:type/@rdf:resource = 'http://graphity.org/gcs#DescribeLabelResources']" priority="1">
         <xsl:next-match>
-            <xsl:with-param name="selected-resources" select="*[rdf:type/@rdf:resource = '&gp;Item']" tunnel="yes"/>
+            <xsl:with-param name="selected-resources" select="*[rdf:type/@rdf:resource = '&gp;Document']" tunnel="yes"/>
         </xsl:next-match>
     </xsl:template>
     
@@ -494,7 +494,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*" mode="bs2:MediaTypeSelectMode"/>
     
-    <xsl:template match="*[rdf:type/@rdf:resource = '&foaf;Document']" mode="bs2:MediaTypeSelectMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&gp;Document']" mode="bs2:MediaTypeSelectMode" priority="1">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">

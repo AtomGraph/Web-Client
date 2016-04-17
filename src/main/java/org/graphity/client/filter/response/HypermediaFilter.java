@@ -144,8 +144,8 @@ public class HypermediaFilter implements ContainerResponseFilter
                                 StateBuilder.fromUri(page.getURI(), page.getModel()).
                                     replaceProperty(GC.mode, supportedMode.asResource()).
                                     build().
-                                    addProperty(GC.layoutOf, page).
-                                    addProperty(RDF.type, FOAF.Document);
+                                    addProperty(GC.layoutOf, page);
+                                    //addProperty(RDF.type, FOAF.Document);
                             }
                         }
                         finally
@@ -158,8 +158,8 @@ public class HypermediaFilter implements ContainerResponseFilter
                 StateBuilder.fromUri(resource.getURI(), resource.getModel()).
                     replaceProperty(GC.mode, supportedMode.asResource()).
                     build().
-                    addProperty(GC.layoutOf, resource).
-                    addProperty(RDF.type, FOAF.Document);                        
+                    addProperty(GC.layoutOf, resource);
+                    //addProperty(RDF.type, FOAF.Document);                        
             }
         }
         finally
