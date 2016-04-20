@@ -16,12 +16,12 @@
  */
 package org.graphity.client.locator;
 
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.shared.JenaException;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.FileUtils;
-import com.hp.hpl.jena.util.LocationMapper;
-import com.hp.hpl.jena.vocabulary.LocationMappingVocab;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.shared.JenaException;
+import org.apache.jena.util.FileManager;
+import org.apache.jena.util.FileUtils;
+import org.apache.jena.util.LocationMapper;
+import org.apache.jena.vocabulary.LocationMappingVocab;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;

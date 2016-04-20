@@ -16,10 +16,10 @@
 
 package org.graphity.client.provider;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.util.ResourceUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ResIterator;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.util.ResourceUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;

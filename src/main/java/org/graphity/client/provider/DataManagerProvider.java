@@ -16,10 +16,10 @@
  */
 package org.graphity.client.provider;
 
-import com.hp.hpl.jena.query.ARQ;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
+import org.apache.jena.query.ARQ;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.util.FileManager;
+import org.apache.jena.util.LocationMapper;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -95,7 +95,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
         return value;
     }
     
-    public DataManager getDataManager(LocationMapper mapper, com.hp.hpl.jena.sparql.util.Context context, 
+    public DataManager getDataManager(LocationMapper mapper, org.apache.jena.sparql.util.Context context, 
             boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
         return (DataManager)FileManager.get();

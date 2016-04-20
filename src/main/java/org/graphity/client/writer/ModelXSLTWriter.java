@@ -16,14 +16,14 @@
  */
 package org.graphity.client.writer;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
-import com.hp.hpl.jena.reasoner.rulesys.Rule;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.reasoner.Reasoner;
+import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
+import org.apache.jena.reasoner.rulesys.Rule;
+import org.apache.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;

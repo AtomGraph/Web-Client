@@ -16,10 +16,10 @@
  */
 package org.graphity.client.util;
 
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.LocationMapper;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.util.LocationMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

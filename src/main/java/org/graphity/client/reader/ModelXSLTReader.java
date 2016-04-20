@@ -16,12 +16,12 @@
  */
 package org.graphity.client.reader;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
-import com.hp.hpl.jena.rdf.model.RDFReader;
-import com.hp.hpl.jena.shared.JenaException;
-import com.hp.hpl.jena.util.FileUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFErrorHandler;
+import org.apache.jena.rdf.model.RDFReader;
+import org.apache.jena.shared.JenaException;
+import org.apache.jena.util.FileUtils;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

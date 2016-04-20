@@ -16,9 +16,9 @@
  */
 package org.graphity.client;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.util.FileManager;
+import org.apache.jena.util.LocationMapper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
