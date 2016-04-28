@@ -122,7 +122,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gp:constructorOf/@rdf:resource"/>
+    <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gc:constructorOf/@rdf:resource"/>
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
@@ -273,11 +273,11 @@ exclude-result-prefixes="#all">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
-        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
+        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode' or key('resources', $g:requestUri)/gc:forClass/@rdf:resource">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode' or key('resources', $g:requestUri)/gp:forClass/@rdf:resource">
+        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode' or key('resources', $g:requestUri)/gc:forClass/@rdf:resource">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
@@ -406,8 +406,8 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="leaf" select="false()"/>
                 </xsl:apply-templates>
             </xsl:when>
-            <xsl:when test="key('resources', gp:constructorOf/@rdf:resource)">
-                <xsl:apply-templates select="key('resources', gp:constructorOf/@rdf:resource)" mode="#current">
+            <xsl:when test="key('resources', gc:constructorOf/@rdf:resource)">
+                <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current">
                     <xsl:with-param name="leaf" select="false()"/>
                 </xsl:apply-templates>
             </xsl:when>
@@ -417,9 +417,9 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="leaf" select="false()"/>
                 </xsl:apply-templates>
             </xsl:when>
-            <xsl:when test="gp:constructorOf/@rdf:resource">
-                <xsl:variable name="container-doc" select="document(gp:constructorOf/@rdf:resource)" as="document-node()?"/>
-                <xsl:apply-templates select="key('resources', gp:constructorOf/@rdf:resource, $container-doc)" mode="#current">
+            <xsl:when test="gc:constructorOf/@rdf:resource">
+                <xsl:variable name="container-doc" select="document(gc:constructorOf/@rdf:resource)" as="document-node()?"/>
+                <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource, $container-doc)" mode="#current">
                     <xsl:with-param name="leaf" select="false()"/>
                 </xsl:apply-templates>
             </xsl:when>
@@ -547,12 +547,12 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gp:forClass/@rdf:resource]" mode="bs2:ButtonMode" priority="2">
+    <xsl:template match="*[@rdf:about][gc:forClass/@rdf:resource]" mode="bs2:ButtonMode" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))"/>
                 <xsl:text> </xsl:text>
-                <xsl:apply-templates select="key('resources', gp:forClass/@rdf:resource, document(gc:document-uri(gp:forClass/@rdf:resource)))" mode="gc:LabelMode"/>
+                <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))" mode="gc:LabelMode"/>
             </a>                        
         </div>
     </xsl:template>
@@ -738,7 +738,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- hide metadata -->
-    <xsl:template match="*[gp:constructorOf/@rdf:resource] | *[gp:pageOf/@rdf:resource] | *[gc:layoutOf/@rdf:resource]" mode="bs2:ReadMode" priority="1"/>
+    <xsl:template match="*[gc:constructorOf/@rdf:resource] | *[gp:pageOf/@rdf:resource] | *[gc:layoutOf/@rdf:resource]" mode="bs2:ReadMode" priority="1"/>
 
     <!-- hide document if topic is present -->
     <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="bs2:ReadMode" priority="1"/>
@@ -840,7 +840,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="bs2:ConstructMode">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="forClass" select="key('resources', $g:requestUri)/gp:forClass/@rdf:resource" as="xs:anyURI"/>
+        <xsl:param name="forClass" select="key('resources', $g:requestUri)/gc:forClass/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="action" select="$g:requestUri" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
@@ -943,7 +943,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="parent-uri" select="key('resources', $g:requestUri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
         <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
-        <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gp:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
+        <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gc:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
         <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?" tunnel="yes"/>
         <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
