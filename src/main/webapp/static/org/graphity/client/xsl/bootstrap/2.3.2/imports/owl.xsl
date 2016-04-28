@@ -50,11 +50,5 @@ exclude-result-prefixes="#all">
 	    </ul>
 	</div>
     </xsl:template>
-
-    <xsl:template match="owl:sameAs/@rdf:resource" mode="bs2:SidebarNavMode">
-	<li>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</li>
-    </xsl:template>
     
 </xsl:stylesheet>

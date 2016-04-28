@@ -75,6 +75,10 @@ public final class GC
     
     public static final ObjectProperty layoutOf = m_model.createObjectProperty( NS + "layoutOf" );
 
+    public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
+    
+    public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
+    
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 
     public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );

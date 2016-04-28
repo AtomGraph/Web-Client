@@ -31,7 +31,7 @@ xmlns:dc="&dc;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="dc:subject" mode="bs2:SidebarNavMode">
+    <xsl:template match="dc:subject[@rdf:resource]" mode="bs2:SidebarNavMode">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
 	
 	<div class="well sidebar-nav">
@@ -47,12 +47,6 @@ exclude-result-prefixes="#all">
 		</xsl:for-each-group>
 	    </ul>
 	</div>
-    </xsl:template>
-
-    <xsl:template match="dc:subject/@rdf:resource" mode="bs2:SidebarNavMode">
-	<li>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</li>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -899,7 +899,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="resources" select="*[not(key('predicates-by-object', @rdf:nodeID))]" as="element()*" tunnel="yes"/>
+        <xsl:param name="resources" select="*[not(key('predicates-by-object', @rdf:*))]" as="element()*" tunnel="yes"/>
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">

@@ -22,13 +22,13 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
@@ -49,6 +49,7 @@ import org.graphity.core.util.Link;
 import org.graphity.core.util.StateBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  *
@@ -61,58 +62,69 @@ public class HypermediaFilter implements ContainerResponseFilter
 
     @Context UriInfo uriInfo;
     
-    public OntClass getMatchedOntClass(MultivaluedMap<String, Object> headerMap)
-    {
-        try
-        {
-            URI ontologyHref = getOntologyURI(headerMap);
-            if (ontologyHref != null)                    
-            {
-                URI typeHref = getTypeURI(headerMap);
-                if (typeHref != null)
-                {
-                    OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
-                    OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
-                        return sitemap.getOntClass(typeHref.toString());
-                }
-            }
-        }
-        catch (URISyntaxException ex)   
-        {
-            if (log.isErrorEnabled()) log.error("'Link' response header contains invalid URI: {}", headerMap.getFirst("Link"));
-        }
-        
-        return null;
-    }
-    
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response)
     {
         if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
         if (response == null) throw new IllegalArgumentException("ContainerResponse cannot be null");
 
-        OntClass matchedOntClass = getMatchedOntClass(response.getHttpHeaders());
-        if (matchedOntClass != null &&
-                response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL) &&
-                response.getEntity() instanceof Model)
+        Model model = getModel(response.getEntity());
+        if (model == null) return response;
+        Resource resource = getResource(model);
+        if (resource == null) return response;
+
+        try
         {
-            Model model = addStates((Model)response.getEntity(), matchedOntClass);
+            MultivaluedMap<String, Object> headerMap = response.getHttpHeaders();
+            URI ontologyHref = getOntologyURI(headerMap);
+            URI typeHref = getTypeURI(headerMap);
+            if (ontologyHref == null || typeHref == null) return response;
+
+            OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));            
+            OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
+            OntClass matchedOntClass = ontModel.getOntClass(typeHref.toString());            
+
+            if (matchedOntClass != null &&
+                    response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+            {
+                long oldCount = model.size();
+                model = addLayouts(resource, matchedOntClass);
+                if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
+            }
+
+            String forClassURI = getUriInfo().getQueryParameters().getFirst(GC.forClass.getLocalName());
+            if (forClassURI != null)
+            {
+                OntClass forClass = ontModel.createClass(forClassURI);
+
+                if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                    addInstance(model, forClass);
+                
+                StateBuilder.fromUri(getUriInfo().getRequestUri(), model).
+                    replaceProperty(GC.forClass, forClass).
+                    build().
+                    addProperty(RDF.type, GP.Document).
+                    addProperty(GC.constructorOf, resource);
+            }
+            
             response.setEntity(model);
         }
-        
+        catch (URISyntaxException ex)
+        {
+            return response;
+        }
+
         return response;
     }
-
-    public Model addStates(Model model, OntClass matchedOntClass)
+    
+    public Model getModel(Object entity)
     {
-        Resource resource = getResource(model);
-        long oldCount = model.size();
-        model = addStates(resource, matchedOntClass);
-        if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
-        return model;
+        if (entity instanceof Model) return (Model)entity;
+        
+        return null;
     }
     
-    public Model addStates(Resource resource, OntClass matchedOntClass)
+    public Model addLayouts(Resource resource, OntClass matchedOntClass)
     {
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
         if (matchedOntClass == null) throw new IllegalArgumentException("OntClass cannot be null");
@@ -130,9 +142,9 @@ public class HypermediaFilter implements ContainerResponseFilter
                     throw new ConfigurationException("Invalid Mode defined for template '" + matchedOntClass.getURI() +"'");
                 }
 
-                if (supportedMode.asResource().hasProperty(RDF.type, GC.PageMode))
+                if (model.contains(null, GP.pageOf, resource))
                 {
-                    if (model.contains(null, GP.pageOf, resource))
+                    if (supportedMode.asResource().hasProperty(RDF.type, GC.PageMode))                    
                     {
                         // container pages
                         ResIterator resIt = model.listSubjectsWithProperty(GP.pageOf, resource);
@@ -145,7 +157,6 @@ public class HypermediaFilter implements ContainerResponseFilter
                                     replaceProperty(GC.mode, supportedMode.asResource()).
                                     build().
                                     addProperty(GC.layoutOf, page);
-                                    //addProperty(RDF.type, FOAF.Document);
                             }
                         }
                         finally
@@ -154,12 +165,13 @@ public class HypermediaFilter implements ContainerResponseFilter
                         }
                     }
                 }
-
-                StateBuilder.fromUri(resource.getURI(), resource.getModel()).
-                    replaceProperty(GC.mode, supportedMode.asResource()).
-                    build().
-                    addProperty(GC.layoutOf, resource);
-                    //addProperty(RDF.type, FOAF.Document);                        
+                else
+                {
+                    StateBuilder.fromUri(resource.getURI(), resource.getModel()).
+                        replaceProperty(GC.mode, supportedMode.asResource()).
+                        build().
+                        addProperty(GC.layoutOf, resource);
+                }
             }
         }
         finally
@@ -235,7 +247,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
     
-    public OntModel getSitemap(String ontologyURI, OntModelSpec ontModelSpec)
+    public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
 	if (ontologyURI == null) throw new IllegalArgumentException("String cannot be null");
 	if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
@@ -255,16 +267,15 @@ public class HypermediaFilter implements ContainerResponseFilter
         return model.createResource(getUriInfo().getQueryParameters().getFirst(GC.uri.getLocalName()));
     }
 
-    /*
-    public StateBuilder getStateBuilder(Resource resource)
+    public Model addInstance(Model model, OntClass forClass)
     {
-	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 
-        return StateBuilder.fromUri(getUriInfo().getBaseUriBuilder().
-                queryParam(GC.uri.getLocalName(), resource.getURI()).
-                build(),
-            resource.getModel());
+        Property property = SPIN.constructor;
+        if (log.isDebugEnabled()) log.debug("Invoking constructor on class {} using property {}", forClass, property);
+        new ConstructorBase().construct(forClass, property, model);
+        
+        return model;
     }
-    */
     
 }

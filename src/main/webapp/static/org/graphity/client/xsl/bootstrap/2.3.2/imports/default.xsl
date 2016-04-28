@@ -252,7 +252,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="bs2:EditMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:*" mode="bs2:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -260,22 +260,20 @@ exclude-result-prefixes="#all">
         <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
         <xsl:param name="template"  as="element()?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:variable name="resource" select="key('resources', .)"/>
 
 	<xsl:choose>
             <!-- loop if node not visited already -->
-	    <xsl:when test="not(. = $traversed-ids)">
+	    <xsl:when test="$resource and not(. = $traversed-ids)">
                 <xsl:apply-templates select="." mode="gc:InputMode">
                     <xsl:with-param name="type" select="'hidden'"/>
                 </xsl:apply-templates>
 
-                <xsl:variable name="bnode" select="key('resources', .)"/>
-                <xsl:if test="$bnode">
-                    <xsl:apply-templates select="$bnode" mode="#current">
-                        <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
-                    </xsl:apply-templates>
-                    <!-- restore subject context -->
-                    <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
-                </xsl:if>
+                <xsl:apply-templates select="$resource" mode="#current">
+                    <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
+                </xsl:apply-templates>
+                <!-- restore subject context -->
+                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
             </xsl:when>
 	    <xsl:otherwise>
                 <xsl:apply-templates select="." mode="gc:InputMode">
@@ -286,7 +284,7 @@ exclude-result-prefixes="#all">
                 </xsl:apply-templates>
                 
                 <xsl:if test="not($type = 'hidden') and $type-label">
-                    <span class="help-inline">Blank node</span>
+                    <span class="help-inline">Resource</span>
                 </xsl:if>
 	    </xsl:otherwise>
 	</xsl:choose>
@@ -303,6 +301,12 @@ exclude-result-prefixes="#all">
     <!-- SIDEBAR NAV MODE -->
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:SidebarNavMode"/>
+    
+    <xsl:template match="@rdf:nodeID | @rdf:resource" mode="bs2:SidebarNavMode">
+	<li>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</li>
+    </xsl:template>
     
     <!-- INLINE PROPERTY LIST MODE -->
     
