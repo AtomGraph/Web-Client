@@ -74,7 +74,7 @@ public final class GP
 
     public static final AnnotationProperty defaultDesc = m_model.createAnnotationProperty( NS + "defaultDesc" );
 
-    public static final AnnotationProperty uriTemplate = m_model.createAnnotationProperty( NS + "uriTemplate" );
+    public static final AnnotationProperty path = m_model.createAnnotationProperty( NS + "path" );
 
     public static final AnnotationProperty skolemTemplate = m_model.createAnnotationProperty( NS + "skolemTemplate" );
 

@@ -946,7 +946,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gc:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
         <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?" tunnel="yes"/>
         <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
-        <xsl:param name="traversed-ids" select="@rdf:nodeID" as="xs:string*" tunnel="yes"/>
+        <xsl:param name="traversed-ids" select="@rdf:*" as="xs:string*" tunnel="yes"/>
 
         <fieldset>
             <xsl:if test="$id">

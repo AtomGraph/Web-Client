@@ -54,7 +54,7 @@
     rdfs:comment "SPIN update to remove resource description" ;
     rdfs:isDefinedBy <#> .
 
-<#uriTemplate> a owl:AnnotationProperty ;
+<#path> a owl:AnnotationProperty ;
     rdfs:domain <#Template> ;
     rdfs:range xsd:string ;
     rdfs:label "URI template" ;
@@ -198,8 +198,8 @@
 	#    sp:arg1 rdfs:subClassOf
 	#] ,
         [ a <#MissingPropertyValue> ;
-            rdfs:label "Missing gp:uriTemplate" ;
-	    sp:arg1 <#uriTemplate>
+            rdfs:label "Missing gp:path" ;
+	    sp:arg1 <#path>
 	] ,
         [ a <#MissingPropertyValue> ;
             rdfs:label "Missing gp:query" ;
@@ -221,7 +221,7 @@
       CONSTRUCT {
           ?this rdfs:subClassOf gp:Document ;
               rdfs:label " " ;
-              gp:uriTemplate " " ;
+              gp:path " " ;
               gp:skolemTemplate " " ;
               gp:defaultLimit 20 ;
               gp:defaultOffset 0 ;
@@ -333,7 +333,7 @@
 
 <#Container> a rdfs:Class, <#Template> ;
     rdfs:subClassOf <#Document>, sioc:Container ;
-    <#uriTemplate> "{path: .*}/" ;
+    <#path> "{path: .*}/" ;
     <#skolemTemplate> "{slug}/" ;
     <#query> <#DescribeWithChildren> ;
     rdfs:label "Container" ;
@@ -342,7 +342,7 @@
 
 <#Document> a rdfs:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
-    <#uriTemplate> "{path: .*}" ;
+    <#path> "{path: .*}" ;
     <#skolemTemplate> "{slug}" ;
     <#query> <#DescribeWithTopic> ;
     <#update> <#DeleteWithTopic> ;
@@ -388,7 +388,7 @@
 
 <#SPARQLEndpoint> a rdfs:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
-    <#uriTemplate> "/sparql" ;
+    <#path> "/sparql" ;
     <#query> <#Describe> ;
     <#loadClass> <java:org.graphity.processor.model.impl.SPARQLEndpointBase> ;
     rdfs:label "SPARQL endpoint" ;
@@ -396,7 +396,7 @@
 
 <#GraphStore> a rdfs:Class, <#Template> ;
     rdfs:subClassOf foaf:Document ;
-    <#uriTemplate> "/service" ;
+    <#path> "/service" ;
     <#query> <#Describe> ;
     rdfs:label "Graph Store" ;
     rdfs:isDefinedBy <#> .
