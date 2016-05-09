@@ -871,7 +871,7 @@ exclude-result-prefixes="#all">
 	    </xsl:call-template>
 
             <xsl:apply-templates select="$resources" mode="bs2:EditMode">
-                <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+                <xsl:with-param name="template-doc" select="$template-doc"/>
                 <xsl:sort select="gc:label(.)"/>
             </xsl:apply-templates>
 
@@ -944,7 +944,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="parent-uri" select="key('resources', $g:requestUri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
         <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
         <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gc:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
-        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?" tunnel="yes"/>
+        <xsl:param name="template-doc" select="document($construct-uri)" as="document-node()?"/>
         <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:*" as="xs:string*" tunnel="yes"/>
 
