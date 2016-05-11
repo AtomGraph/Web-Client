@@ -20,6 +20,8 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.rulesys.GenericRuleReasoner;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
@@ -75,11 +77,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
     private final Templates templates;
-    private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>();
+    private final Map<Resource, MediaType> modeMediaTypeMap = new HashMap<>();
     
     {
-        modeMediaTypeMap.put(URI.create(GC.EditMode.getURI()), MediaType.TEXT_HTML_TYPE);
-        modeMediaTypeMap.put(URI.create(GC.MapMode.getURI()), MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(GC.EditMode, MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(GC.MapMode, MediaType.TEXT_HTML_TYPE);
     }
     
     @Context private UriInfo uriInfo;
@@ -213,7 +215,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return httpServletRequest;
     }
 
-    public Map<URI, MediaType> getModeMediaTypeMap()
+    public Map<Resource, MediaType> getModeMediaTypeMap()
     {
         return modeMediaTypeMap;
     }
@@ -279,13 +281,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
         // https://saxonica.plan.io/issues/1447
         // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-        URI mode = getMode();
-        if (mode != null && getModeMediaTypeMap().containsKey(mode))
+        MediaType customMediaType = getCustomMediaType(getUriInfo());
+        if (customMediaType != null)
 	{
-            MediaType mediaType = getModeMediaTypeMap().get(mode);
-	    if (log.isDebugEnabled()) log.debug("Mode is {}, overriding response media type with '{}'", mode, mediaType);
+	    if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
             List<Object> contentTypes = new ArrayList();
-            contentTypes.add(mediaType);
+            contentTypes.add(customMediaType);
             headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
 	}
         
@@ -401,5 +402,23 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         
         return OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
     }
-     
+
+    public MediaType getCustomMediaType(UriInfo uriInfo)
+    {
+        Resource mode = null;
+
+        if (uriInfo.getQueryParameters().getFirst(GC.forClass.getLocalName()) != null)
+            mode = GC.EditMode; // this could be solved using a dummy gc:ConstructMode instead
+        else
+        {
+            if (uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
+                mode = ResourceFactory.createResource(uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()));
+        }
+        
+        if (mode != null && getModeMediaTypeMap().containsKey(mode))
+             return getModeMediaTypeMap().get(mode);
+         
+        return null;
+    }
+    
 }
