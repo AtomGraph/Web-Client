@@ -139,7 +139,7 @@ public class ConstructorBase
                         if (!valueClass.equals(forClass)) // avoid circular restrictions
                         {
                             com.hp.hpl.jena.rdf.model.Resource value = targetModel.createResource().
-                                addProperty(RDF.type, valueClass); //addProperty(FOAF.isPrimaryTopicOf, doc)
+                                addProperty(RDF.type, valueClass);
                             instance.addProperty(avfr.getOnProperty(), value);
                         
                             // add inverse properties

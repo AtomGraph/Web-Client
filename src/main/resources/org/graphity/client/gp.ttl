@@ -353,13 +353,14 @@
 
 <#DocumentConstructor> a sp:Construct, sp:Query ; # <#Query> ;
   sp:text """
-      PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
       PREFIX gp:      <http://graphity.org/gp#>
 
       CONSTRUCT {
-        ?this gp:slug " " .
+        ?this gp:slug ?slug .
       }
-      WHERE {}""" .
+      WHERE {
+        BIND (STRUUID() AS ?slug)
+}""" .
     # rdfs:label "Document constructor" ;
     # rdfs:isDefinedBy <#> .
 
