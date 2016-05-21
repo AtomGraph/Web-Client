@@ -100,10 +100,10 @@ public class HypermediaFilter implements ContainerResponseFilter
                 }                    
 
                 long oldCount = model.size();
-                Resource page = getStateBuilder(resource, request.getQueryParameters(), template).
+                Resource doc = getStateBuilder(resource, request.getQueryParameters(), template).
                         replaceProperty(GC.mode, null). // remove mode to get back to page URI
                         build();
-                model = addLayouts(page, request.getQueryParameters(), template);
+                model = addLayouts(doc, request.getQueryParameters(), template);
                 if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", resource.getURI(), model.size() - oldCount);
             }
 
