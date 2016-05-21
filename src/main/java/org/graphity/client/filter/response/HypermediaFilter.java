@@ -114,12 +114,6 @@ public class HypermediaFilter implements ContainerResponseFilter
 
                 if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     addInstance(model, forClass);
-    
-                StateBuilder.fromUri(request.getRequestUri(), model).
-                    replaceProperty(GC.forClass, forClass).
-                    build().
-                    addProperty(RDF.type, GP.Document).
-                    addProperty(GC.constructorOf, resource);
             }
             
             response.setEntity(model);

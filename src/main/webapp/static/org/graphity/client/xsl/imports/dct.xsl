@@ -30,6 +30,8 @@ xmlns:rdf="&rdf;"
 xmlns:dct="&dct;"
 exclude-result-prefixes="#all">
 
+    <xsl:preserve-space elements="dct:title dct:description"/>
+
     <xsl:template match="dct:title | dct:description | dct:subject" mode="gc:PropertyListMode"/>
     
     <xsl:template match="dct:title | @dct:title" mode="gc:LabelMode">
