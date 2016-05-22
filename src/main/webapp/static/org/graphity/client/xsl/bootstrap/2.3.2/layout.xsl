@@ -131,11 +131,11 @@ exclude-result-prefixes="#all">
     <!-- <xsl:preserve-space elements="rdfs:label dct:title gp:slug gp:uriTemplate gp:skolemTemplate gp:defaultOrderBy"/> -->
 
     <rdf:Description rdf:about="">
-	<foaf:maker rdf:resource="http://graphityhq.com/#company"/>
+	<foaf:maker rdf:resource="http://atomgraph.com/#company"/>
     </rdf:Description>
 
-    <rdf:Description rdf:about="http://graphityhq.com/#company">
-        <dct:title>Graphity</dct:title>
+    <rdf:Description rdf:about="http://atomgraph.com/#company">
+        <dct:title>AtomGraph</dct:title>
     </rdf:Description>
 
     <rdf:Description rdf:about="&xhv;prev">

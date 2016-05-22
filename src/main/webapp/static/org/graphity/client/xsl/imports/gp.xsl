@@ -28,6 +28,8 @@ xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
 
+    <xsl:preserve-space elements="gp:path gp:slug gp:uriTemplate gp:skolemTemplate gp:defaultOrderBy"/>
+
     <xsl:template match="gp:slug" mode="gc:PropertyListMode"/>
         
     <xsl:template match="gp:*" mode="gc:TablePredicateMode"/>
