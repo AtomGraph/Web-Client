@@ -86,19 +86,21 @@ public class HypermediaFilter implements ContainerResponseFilter
             OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
             OntClass template = ontModel.getOntClass(typeHref.toString());            
 
-            if (template != null &&
-                    response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+            if (template != null)
             {
-                // transition to a URI of another application state (HATEOAS)
-                Resource state = getStateBuilder(resource, request.getQueryParameters(), template).
-                        build();
-                if (!state.getURI().equals(request.getRequestUri().toString()))
+                if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 {
-                    if (log.isDebugEnabled()) log.debug("Redirecting to a state transition URI: {}", state.getURI());
-                    response.setResponse(Response.seeOther(URI.create(state.getURI())).build());
-                    return response;
-                }                    
-
+                    // transition to a URI of another application state (HATEOAS)
+                    Resource state = getStateBuilder(resource, request.getQueryParameters(), template).
+                            build();
+                    if (!state.getURI().equals(request.getRequestUri().toString()))
+                    {
+                        if (log.isDebugEnabled()) log.debug("Redirecting to a state transition URI: {}", state.getURI());
+                        response.setResponse(Response.seeOther(URI.create(state.getURI())).build());
+                        return response;
+                    }                    
+                }
+                
                 long oldCount = model.size();
                 Resource doc = getStateBuilder(resource, request.getQueryParameters(), template).
                         replaceProperty(GC.mode, null). // remove mode to get back to page URI
