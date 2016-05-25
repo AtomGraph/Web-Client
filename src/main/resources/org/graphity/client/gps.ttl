@@ -1,0 +1,124 @@
+@base           <http://graphity.org/gps> .
+
+# @prefix :	<#> .
+@prefix gc:     <http://graphity.org/gc#> .
+@prefix gp:	<http://graphity.org/gp#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+<#> a owl:Ontology ;
+    owl:imports gp:, gc:, sp:, spin:, foaf:, sioc: ;
+    owl:versionInfo "1.1.4" ;
+    rdfs:label "Graphity Processor sitemap" ;
+    rdfs:comment "Ontology of Graphity Client domain resource templates" .
+
+gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:MapMode .
+
+# TEMPLATES
+
+<#Document> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Document ;
+    gc:supportedMode gc:ReadMode, gc:EditMode ;
+    gc:defaultMode gc:ReadMode ;
+    rdfs:label "Document" ;
+    rdfs:isDefinedBy <#> .
+
+<#Container> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf gp:Container ;
+    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode ;
+    gp:defaultLimit 20 ;
+    gc:defaultMode gc:ListMode ;
+    rdfs:label "Container" ;
+    rdfs:isDefinedBy <#> .
+
+<#LabelResourcesContainer> a owl:Class, gp:Template ;
+    rdfs:subClassOf <#Container> ;
+    gp:path "/resources/labelled/" ; # "/{path}/labelled" ?
+    gp:query <#DescribeLabelResources> ;
+    gp:defaultOrderBy "label" ;
+    gp:loadClass <java:org.graphity.processor.resource.labelled.Container> ;
+    rdfs:label "Labelled resource container" ;
+    rdfs:isDefinedBy <#> .
+
+<#SPARQLEndpoint> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf gp:SPARQLEndpoint ;
+    rdfs:label "SPARQL endpoint" ;
+    rdfs:isDefinedBy <#> .
+
+<#GraphStore> a rdfs:Class, owl:Class, gp:Template ;
+    rdfs:subClassOf gp:GraphStore ;
+    rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy <#> .
+
+# CLASSES
+
+<#Template> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf gp:Template ,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom gp:Document
+	] ;
+    rdfs:label "Template" ;
+    rdfs:isDefinedBy <#> .
+
+<#Query> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf gp:Query ,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom gp:Document
+	] ;
+    rdfs:label "Query" ;
+    rdfs:isDefinedBy <#> .
+
+<#Constraint> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf gp:Constraint ,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom gp:Document
+	] ;
+    rdfs:label "Constraint" ;
+    rdfs:isDefinedBy <#> .
+
+<#QueryTemplate> a rdfs:Class, owl:Class ;
+    rdfs:subClassOf gp:QueryTemplate ,
+        [ a owl:Restriction ;
+            owl:onProperty foaf:isPrimaryTopicOf ;
+            owl:allValuesFrom gp:Document
+	] ;
+    rdfs:label "Query template" ;
+    rdfs:isDefinedBy <#> .
+
+# QUERIES
+
+<#DescribeLabelResources> a sp:Describe, sp:Query ;
+      sp:text """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+
+DESCRIBE ?this ?resource ?thing ?doc WHERE {
+    {
+        SELECT DISTINCT ?resource ?thing ?doc
+        WHERE {
+            ?resource rdfs:label|dct:title ?label .
+            FILTER isURI(?resource) .
+            OPTIONAL {
+                ?resource foaf:primaryTopic ?thing # ?resource is a document
+            }
+            OPTIONAL {
+                ?resource foaf:isPrimaryTopicOf ?doc # ?resource is a thing
+            }
+        }
+    } .
+}""" ;
+    rdfs:label "Describe labelled resources" ;
+    rdfs:isDefinedBy <#> .

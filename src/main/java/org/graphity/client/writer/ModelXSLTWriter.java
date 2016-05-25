@@ -246,7 +246,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-        bld.parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
+        bld.parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+        parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+        parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
         try
@@ -321,10 +323,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	if (bld == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
 
+        /*
         // map uri query param values to g:requestUri XSLT param values
         if (uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
 	    bld.parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));        
+                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
+        */
 	if (uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()) != null)
 	    bld.parameter("{" + GP.lang.getNameSpace() + "}" + GP.lang.getLocalName(),
                 uriInfo.getQueryParameters().getFirst(GP.lang.getLocalName()));

@@ -2,6 +2,8 @@
 
 [] lm:mapping
 
+   [ lm:name "http://graphity.org/gps#" ;                           lm:altName "org/graphity/client/gps.ttl" ] ,
+   [ lm:name "http://graphity.org/gps" ;                            lm:altName "org/graphity/client/gps.ttl" ] ,
    [ lm:name "http://graphity.org/gc#" ;                            lm:altName "org/graphity/client/gc.ttl" ] ,   
    [ lm:name "http://graphity.org/gc" ;                             lm:altName "org/graphity/client/gc.ttl" ] ,
    [ lm:name "http://graphity.org/gp#" ;                            lm:altName "org/graphity/client/gp.ttl" ] ,

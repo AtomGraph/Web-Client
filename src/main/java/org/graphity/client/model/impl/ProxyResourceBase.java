@@ -23,6 +23,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,6 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -43,6 +45,7 @@ import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeader;
 import org.graphity.client.exception.ClientErrorException;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.core.MediaTypes;
 import org.graphity.core.exception.AuthenticationException;
 import org.graphity.core.exception.NotFoundException;
 import org.graphity.core.provider.ModelProvider;
@@ -60,7 +63,9 @@ public class ProxyResourceBase
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
     private final UriInfo uriInfo;
+    private final Request request;
     private final HttpHeaders httpHeaders;
+    private final MediaTypes mediaTypes;
     private final MediaType mediaType;
     private final WebResource webResource;
     private final URI mode;
@@ -69,17 +74,21 @@ public class ProxyResourceBase
      * JAX-RS compatible resource constructor with injected initialization objects.
      * 
      * @param uriInfo URI information
+     * @param request request
      * @param httpHeaders HTTP headers
+     * @param mediaTypes supported media types
      * @param uri RDF resource URI
      * @param mediaType response media type
      * @param mode layout mode
      */
-    public ProxyResourceBase(@Context UriInfo uriInfo, @Context HttpHeaders httpHeaders,
+    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("accept") MediaType mediaType, @QueryParam("mode") URI mode)
     {
         if (uri == null) throw new NotFoundException("Resource URI not supplied");        
         this.uriInfo = uriInfo;
+        this.request = request;
         this.httpHeaders = httpHeaders;
+        this.mediaTypes = mediaTypes;
         this.mediaType = mediaType;
         this.mode = mode;
 
@@ -116,6 +125,16 @@ public class ProxyResourceBase
         return uriInfo;
     }
 
+    public Request getRequest()
+    {
+        return request;
+    }
+    
+    public MediaTypes getMediaTypes()
+    {
+        return mediaTypes;
+    }
+    
     public URI getMode()
     {
         return mode;
@@ -175,7 +194,12 @@ public class ProxyResourceBase
         if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
         Model description = resp.getEntity(Model.class);
 
-        ResponseBuilder bld = Response.ok(description); //getResponseBuilder(description);
+        org.graphity.core.model.impl.Response response = org.graphity.core.model.impl.Response.fromRequest(getRequest());
+        ResponseBuilder bld = response.getResponseBuilder(description,
+                response.getVariantListBuilder(getMediaTypes().getWritable(Model.class), new ArrayList(), new ArrayList()).
+                        add().build());
+        //ResponseBuilder bld = Response.ok(description).
+        //        variant()); //getResponseBuilder(description);
         
         // move headers to HypermediaFilter?
         if (!resp.getHeaders().get("Link").isEmpty())
