@@ -44,6 +44,7 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeader;
 import org.graphity.client.exception.ClientErrorException;
+import org.graphity.client.filter.response.SubjectRewriteFilter;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.core.MediaTypes;
 import org.graphity.core.exception.AuthenticationException;
@@ -95,6 +96,7 @@ public class ProxyResourceBase
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
         Client client = Client.create(cc);
+        client.addFilter(new SubjectRewriteFilter());
         client.setFollowRedirects(false); // we take care of redirects ourselves
         webResource = client.resource(uri);
     }

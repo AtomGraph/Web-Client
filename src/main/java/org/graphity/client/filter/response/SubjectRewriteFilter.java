@@ -20,6 +20,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.ResourceUtils;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.uri.UriComponent;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
@@ -36,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class SubjectRewriteFilter implements ContainerResponseFilter
+public class SubjectRewriteFilter extends ClientFilter implements ContainerResponseFilter
 {
     private static final Logger log = LoggerFactory.getLogger(SubjectRewriteFilter.class);
 
@@ -89,6 +93,23 @@ public class SubjectRewriteFilter implements ContainerResponseFilter
         
         return null;
     }
-    
+
+    @Override
+    public ClientResponse handle(ClientRequest request) throws ClientHandlerException
+    {
+        ClientResponse response = getNext().handle(request);
+
+        /*
+        if (response.hasEntity())
+        {
+            Model model = response.getEntity(Model.class);
+            rewrite(model, UriBuilder.fromUri(request.getURI()));
+            //InputStream stream = response.getEntityInputStream();            
+            //response.setEntityInputStream(model.geti);
+        }
+        */
+        
+        return response;
+    }
     
 }

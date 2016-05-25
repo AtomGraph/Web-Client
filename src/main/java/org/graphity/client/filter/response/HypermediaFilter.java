@@ -254,7 +254,14 @@ public class HypermediaFilter implements ContainerResponseFilter
 	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
         
-        return model.createResource(request.getRequestUri().toString());        
+        // cannot use request URI directly because for some reason browsers send decoded query param values
+        //return model.createResource(request.getRequestUri().toString());
+        StateBuilder sb = StateBuilder.fromUri(request.getRequestUri(), model).
+            replaceProperty(GC.uri, model.createResource(request.getQueryParameters().getFirst(GC.uri.getLocalName())));
+        if (request.getQueryParameters().containsKey(GC.mode.getLocalName()))
+            sb.replaceProperty(GC.mode, model.createResource(request.getQueryParameters().getFirst(GC.mode.getLocalName())));
+
+        return sb.build();
     }
 
     public Resource getMode(ContainerRequest request, OntClass template)

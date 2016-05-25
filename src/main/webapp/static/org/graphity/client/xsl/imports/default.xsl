@@ -126,67 +126,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:ImageMode"/>
         
     <!-- TABLE MODE -->
-
-    <xsl:template match="rdf:RDF" mode="gc:TableMode">
-        <xsl:param name="selected-resources" as="element()*" tunnel="yes"/>
-	<xsl:param name="predicates" as="element()*">
-            <!-- <xsl:for-each-group select="$selected-resources/* | key('resources', $selected-resources/foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))/*" group-by="concat(namespace-uri(), local-name())"> -->
-	    <xsl:for-each-group select="$selected-resources/*" group-by="concat(namespace-uri(), local-name())">
-		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gp:lang}"/>
-		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicateMode"/>
-            </xsl:for-each-group>
-	</xsl:param>
-        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
-
-	<table>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-            <thead>
-		<tr>
-		    <th>
-			<xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="gc:LabelMode"/>
-		    </th>
-		    <xsl:apply-templates select="$predicates" mode="gc:TableHeaderMode"/>
-		</tr>
-	    </thead>
-	    <tbody>
-		<xsl:apply-templates select="$selected-resources" mode="#current">
-		    <xsl:with-param name="predicates" select="$predicates" tunnel="yes"/>
-                    <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
-                </xsl:apply-templates>
-	    </tbody>
-	</table>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="gc:TableMode">
-        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
-        <xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="predicates" as="element()*" tunnel="yes"/>
-
-	<tr>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-            
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-
-	    <xsl:apply-templates select="$predicates" mode="gc:TableCellMode">
-                <xsl:with-param name="resource" select="."/>
-            </xsl:apply-templates>
-	</tr>
-    </xsl:template>
-
-    <!--
-    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]/*" mode="gc:TablePredicateMode" priority="1"/>
-
-    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="gc:TableMode" priority="1">
-        <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
-    </xsl:template>
-    -->
     
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:TableMode">
 	<td>
