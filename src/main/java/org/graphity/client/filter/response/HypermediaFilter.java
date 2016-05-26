@@ -93,7 +93,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                 {
 
                     // transition to a URI of another application state (HATEOAS)
-                    Resource defaultState = getStateBuilder(state, getMode(request, template)).
+                    Resource defaultState = getStateBuilder(state, getMode(request, template), getForClass(request)).
                             build();
                     if (!defaultState.equals(state))
                     {
@@ -104,7 +104,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                 }
                 
                 long oldCount = model.size();
-                addLayouts(getStateBuilder(state, null).build(), template);
+                addLayouts(getStateBuilder(state, null, null).build(), template);
                 if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", state.getURI(), model.size() - oldCount);
             }
 
@@ -113,6 +113,9 @@ public class HypermediaFilter implements ContainerResponseFilter
             {
                 OntClass forClass = ontModel.createClass(forClassURI);
                 addInstance(model, forClass);
+                
+                state.addProperty(GC.constructorOf, getStateBuilder(state, getMode(request, template), null).
+                    build());
             }
             
             response.setEntity(model);
@@ -132,12 +135,13 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
     
-    public StateBuilder getStateBuilder(Resource resource, Resource mode)
+    public StateBuilder getStateBuilder(Resource resource, Resource mode, Resource forClass)
     {
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 
         return StateBuilder.fromUri(resource.getURI(), resource.getModel()).
-            replaceProperty(GC.mode, mode);
+            replaceProperty(GC.mode, mode).
+            replaceProperty(GC.forClass, forClass);
     }
     
     public final Resource getResource(OntClass ontClass, AnnotationProperty property)
@@ -165,7 +169,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                     throw new ConfigurationException("Invalid Mode defined for template '" + template.getURI() +"'");
                 }
 
-                getStateBuilder(state, supportedMode.asResource()).
+                getStateBuilder(state, supportedMode.asResource(), null).
                     build().
                     addProperty(GC.layoutOf, state);
             }
@@ -260,6 +264,8 @@ public class HypermediaFilter implements ContainerResponseFilter
             replaceProperty(GC.uri, model.createResource(request.getQueryParameters().getFirst(GC.uri.getLocalName())));
         if (request.getQueryParameters().containsKey(GC.mode.getLocalName()))
             sb.replaceProperty(GC.mode, model.createResource(request.getQueryParameters().getFirst(GC.mode.getLocalName())));
+        if (request.getQueryParameters().containsKey(GC.forClass.getLocalName()))
+            sb.replaceProperty(GC.forClass, model.createResource(request.getQueryParameters().getFirst(GC.forClass.getLocalName())));
 
         return sb.build();
     }
@@ -275,6 +281,16 @@ public class HypermediaFilter implements ContainerResponseFilter
         else mode = getResource(template, GC.defaultMode);
         
         return mode;
+    }
+
+    public Resource getForClass(ContainerRequest request)
+    {
+	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
+
+        if (request.getQueryParameters().containsKey(GC.forClass.getLocalName()))
+            return ResourceFactory.createResource(request.getQueryParameters().getFirst(GC.forClass.getLocalName()));
+        
+        return null;
     }
     
     public Model addInstance(Model model, OntClass forClass)

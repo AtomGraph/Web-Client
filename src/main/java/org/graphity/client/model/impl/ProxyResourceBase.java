@@ -69,7 +69,7 @@ public class ProxyResourceBase
     private final MediaTypes mediaTypes;
     private final MediaType mediaType;
     private final WebResource webResource;
-    private final URI mode;
+    private final URI mode, forClass;
     
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -81,9 +81,10 @@ public class ProxyResourceBase
      * @param uri RDF resource URI
      * @param mediaType response media type
      * @param mode layout mode
+     * @param forClass instance class
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
-            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType mediaType, @QueryParam("mode") URI mode)
+            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType mediaType, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass)
     {
         if (uri == null) throw new NotFoundException("Resource URI not supplied");        
         this.uriInfo = uriInfo;
@@ -92,6 +93,7 @@ public class ProxyResourceBase
         this.mediaTypes = mediaTypes;
         this.mediaType = mediaType;
         this.mode = mode;
+        this.forClass = forClass;
 
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
@@ -142,6 +144,11 @@ public class ProxyResourceBase
         return mode;
     }
     
+    public URI getForClass()
+    {
+        return forClass;
+    }
+    
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
      * If <samp>uri</samp> query string parameter is present, resource is loaded from the specified remote URI and
@@ -168,10 +175,12 @@ public class ProxyResourceBase
             if (resp.getHeaders().containsKey(HttpHeaders.LOCATION))
             {
                 URI location = URI.create(resp.getHeaders().getFirst(HttpHeaders.LOCATION));
+                // TO-DO: use StateBuilder?
                 UriBuilder uriBuilder = getUriInfo().getBaseUriBuilder().
                         queryParam(GC.uri.getLocalName(), location);
                 if (getMediaType() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMediaType());
                 if (getMode() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMode());
+                if (getForClass() != null) uriBuilder.queryParam(GC.forClass.getLocalName(), getForClass());
                 
                 return Response.seeOther(uriBuilder.build()).build();
             }
