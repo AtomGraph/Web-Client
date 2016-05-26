@@ -29,6 +29,7 @@ xmlns:xhv="&xhv;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
+    <!--
     <xsl:template match="xhv:prev[@rdf:resource]" mode="bs2:PaginationMode">
         <a href="{@rdf:resource}" class="active">
             &#8592; <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/>
@@ -40,5 +41,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/> &#8594;
         </a>
     </xsl:template>
+    -->
     
 </xsl:stylesheet>

@@ -458,9 +458,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:HeaderMode" priority="1"/>
 
     <xsl:template match="rdf:RDF" mode="bs2:HeaderMode">
-        <h1 class="page-header">
+        <div class="page-header">
             <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
-        </h1>
+        </div>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:HeaderMode" priority="3">
@@ -695,9 +695,7 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:PropertyListMode">
-        <h1 class="page-header">
-            <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
-        </h1>
+        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PropertyListMode" priority="3">
@@ -758,7 +756,9 @@ exclude-result-prefixes="#all">
             <li class="previous">
                 <xsl:choose>
                     <xsl:when test="xhv:prev">
-                        <xsl:apply-templates select="xhv:prev" mode="#current"/>
+                        <a href="{xhv:prev/@rdf:resource}" class="active">
+                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="gc:LabelMode"/>
+                        </a>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="class">previous disabled</xsl:attribute>
@@ -771,7 +771,9 @@ exclude-result-prefixes="#all">
             <li class="next">
                 <xsl:choose>
                     <xsl:when test="xhv:next"> <!--  and $count &gt;= gp:limit -->
-                        <xsl:apply-templates select="xhv:next" mode="#current"/>
+                        <a href="{xhv:next/@rdf:resource}" class="active">
+                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="gc:LabelMode"/>  &#8594;
+                        </a>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="class">next disabled</xsl:attribute>

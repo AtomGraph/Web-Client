@@ -26,14 +26,14 @@ gp:SPARQLEndpoint gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:Ma
 
 <#Document> a rdfs:Class, owl:Class, gp:Template ;
     rdfs:subClassOf gp:Document ;
-    gc:supportedMode gc:ReadMode, gc:EditMode ;
+    gc:supportedMode gc:ReadMode, gc:EditMode, gc:MapMode ;
     gc:defaultMode gc:ReadMode ;
     rdfs:label "Document" ;
     rdfs:isDefinedBy <#> .
 
 <#Container> a rdfs:Class, owl:Class, gp:Template ;
     rdfs:subClassOf gp:Container ;
-    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode ;
+    gc:supportedMode gc:ReadMode, gc:ListMode, gc:TableMode, gc:GridMode, gc:MapMode ;
     gp:defaultLimit 20 ;
     gc:defaultMode gc:ListMode ;
     rdfs:label "Container" ;
