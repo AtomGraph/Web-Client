@@ -123,7 +123,6 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-constructor-of" match="*[@rdf:about]" use="gc:constructorOf/@rdf:resource"/>
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
@@ -292,7 +291,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF">
         <xsl:param name="selected-resources" select="if (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) then key('resources-by-container', key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource)/@rdf:about) else key('resources', $g:requestUri)" as="element()*" tunnel="yes"/>
-??<xsl:copy-of select="."/>/??
+
         <div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
@@ -425,20 +424,9 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="leaf" select="false()"/>
                 </xsl:apply-templates>
             </xsl:when>
-            <xsl:when test="key('resources', gc:constructorOf/@rdf:resource)">
-                <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current">
-                    <xsl:with-param name="leaf" select="false()"/>
-                </xsl:apply-templates>
-            </xsl:when>
             <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource">
                 <xsl:variable name="container-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
                 <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $container-doc)" mode="#current">
-                    <xsl:with-param name="leaf" select="false()"/>
-                </xsl:apply-templates>
-            </xsl:when>
-            <xsl:when test="gc:constructorOf/@rdf:resource">
-                <xsl:variable name="container-doc" select="document(gc:constructorOf/@rdf:resource)" as="document-node()?"/>
-                <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource, $container-doc)" mode="#current">
                     <xsl:with-param name="leaf" select="false()"/>
                 </xsl:apply-templates>
             </xsl:when>
@@ -658,12 +646,32 @@ exclude-result-prefixes="#all">
 
     <!-- INLINE LIST MODE -->
     
+    <xsl:template match="rdf:RDF" mode="bs2:TypeListMode">
+        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:TypeListMode" priority="3">
+        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:TypeListMode" priority="2">
+        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:TypeListMode" priority="1">
+        <xsl:apply-templates select="key('resources-by-container', gp:pageOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="bs2:TypeListMode" priority="1">
+        <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
+    </xsl:template>
+        
     <xsl:template match="*" mode="bs2:TypeListMode"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeListMode" priority="1">
         <ul class="inline">
-            <xsl:apply-templates select="rdf:type" mode="#current">
-                <xsl:sort select="gc:object-label(@rdf:resource | @rdf:nodeID)" data-type="text" order="ascending" lang="{$gp:lang}"/>
+            <xsl:apply-templates select="rdf:type/@rdf:resource" mode="#current">
+                <xsl:sort select="gc:object-label(.)" order="ascending" lang="{$gp:lang}"/>
             </xsl:apply-templates>
         </ul>
     </xsl:template>
@@ -672,7 +680,37 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
     </xsl:template>
 
+    <!--
+    <xsl:template match="@rdf:resource" mode="bs2:TypeListMode" priority="1">
+        <li>
+	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	</li>
+    </xsl:template>
+    -->
+
     <!-- PROPERTY LIST MODE -->
+
+    <xsl:template match="rdf:RDF" mode="bs2:PropertyListMode">
+        <h1 class="page-header">
+            <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
+        </h1>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PropertyListMode" priority="3">
+        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PropertyListMode" priority="2">
+        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:PropertyListMode" priority="1">
+        <xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="bs2:PropertyListMode" priority="1">
+        <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
+    </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyListMode">
         <xsl:variable name="properties" as="element()*">
@@ -686,10 +724,6 @@ exclude-result-prefixes="#all">
                 <xsl:copy-of select="$properties"/>
             </dl>
         </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="bs2:PropertyListMode" priority="1">
-        <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
     </xsl:template>
 
     <!-- SIDEBAR NAV MODE -->

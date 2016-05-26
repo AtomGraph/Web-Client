@@ -54,30 +54,19 @@ public class SubjectRewriteFilter extends ClientFilter implements ContainerRespo
         Model model = getModel(response.getEntity());
         if (model == null) return response;
 
-        response.setEntity(rewrite(model, request.getBaseUriBuilder()), Model.class);
+        response.setEntity(rewrite(model, request, request.getBaseUriBuilder()), Model.class);
         
         return response;
     }
     
-    Model rewrite(Model model, UriBuilder uriBuilder)
+    Model rewrite(Model model, ContainerRequest request, UriBuilder uriBuilder)
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        if (uriBuilder == null) throw new IllegalArgumentException("UriBuilder cannot be null");
         
         ResIterator it = model.listSubjects();
         try
         {
-            while (it.hasNext())
-            {
-                Resource resource = it.next();
-                if (resource.isURIResource())
-                {
-                    URI newURI = uriBuilder.clone().queryParam(GC.uri.getLocalName(),
-                            UriComponent.encode(resource.getURI(), UriComponent.Type.UNRESERVED)).
-                            build();
-                    ResourceUtils.renameResource(resource, newURI.toString());
-                }
-            }
+            while (it.hasNext()) renameResource(it.next(), request, uriBuilder);
         }
         finally
         {
@@ -85,6 +74,20 @@ public class SubjectRewriteFilter extends ClientFilter implements ContainerRespo
         }
         
         return model;
+    }
+
+    public void renameResource(Resource resource, ContainerRequest request, UriBuilder uriBuilder)
+    {
+        if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (uriBuilder == null) throw new IllegalArgumentException("UriBuilder cannot be null");
+
+        if (resource.isURIResource())
+        {
+            URI newURI = uriBuilder.clone().queryParam(GC.uri.getLocalName(),
+                    UriComponent.encode(resource.getURI(), UriComponent.Type.UNRESERVED)).
+                    build();
+            ResourceUtils.renameResource(resource, newURI.toString());
+        }        
     }
     
     public Model getModel(Object entity)
