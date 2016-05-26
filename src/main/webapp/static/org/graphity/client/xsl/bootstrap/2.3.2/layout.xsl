@@ -282,16 +282,8 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
-
-    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/rdf:type/@rdf:resource = 'http://graphity.org/gcs#DescribeLabelResources']" priority="1">
-        <xsl:next-match>
-            <xsl:with-param name="selected-resources" select="*[rdf:type/@rdf:resource = '&gp;Document']" tunnel="yes"/>
-        </xsl:next-match>
-    </xsl:template>
     
     <xsl:template match="rdf:RDF">
-        <xsl:param name="selected-resources" select="if (key('resources', $g:requestUri)/gp:pageOf/@rdf:resource) then key('resources-by-container', key('resources', key('resources', $g:requestUri)/gp:pageOf/@rdf:resource)/@rdf:about) else key('resources', $g:requestUri)" as="element()*" tunnel="yes"/>
-
         <div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
@@ -303,17 +295,11 @@ exclude-result-prefixes="#all">
 
                     <xsl:apply-templates select="." mode="bs2:ModeSelectMode"/>
 
-                    <xsl:apply-templates select="." mode="bs2:PaginationMode">
-                        <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-                    </xsl:apply-templates>
+                    <xsl:apply-templates select="." mode="bs2:PaginationMode"/>
 
-                    <xsl:apply-templates select="." mode="gc:ModeChoiceMode">
-                        <xsl:with-param name="selected-resources" select="$selected-resources" tunnel="yes"/>
-                    </xsl:apply-templates>
+                    <xsl:apply-templates select="." mode="gc:ModeChoiceMode"/>
                     
-                    <xsl:apply-templates select="." mode="bs2:PaginationMode">
-                        <xsl:with-param name="count" select="count($selected-resources)" tunnel="yes"/>
-                    </xsl:apply-templates>
+                    <xsl:apply-templates select="." mode="bs2:PaginationMode"/>
                 </div>
 
 		<div class="span4">
@@ -740,8 +726,6 @@ exclude-result-prefixes="#all">
     <!-- PAGINATION MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:PaginationMode">
-	<xsl:param name="count" as="xs:integer" tunnel="yes"/>
-        
         <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
     </xsl:template>
     
@@ -752,8 +736,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="bs2:PaginationMode"/>
 
     <xsl:template match="*[xhv:prev/@rdf:resource] | *[xhv:next/@rdf:resource]" mode="bs2:PaginationMode">
-	<xsl:param name="count" as="xs:integer" tunnel="yes"/>
-
         <ul class="pager">
             <li class="previous">
                 <xsl:choose>
@@ -770,7 +752,7 @@ exclude-result-prefixes="#all">
             </li>
             <li class="next">
                 <xsl:choose>
-                    <xsl:when test="xhv:next and $count &gt;= gp:limit">
+                    <xsl:when test="xhv:next"> <!--  and $count &gt;= gp:limit -->
                         <xsl:apply-templates select="xhv:next" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
@@ -872,10 +854,9 @@ exclude-result-prefixes="#all">
 	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
 
         <xsl:variable name="thumbnail-items" as="element()*">	    
-            <!-- all resources that are not recursive blank nodes, except page -->
-            <xsl:apply-templates select="$selected-resources" mode="#current">
+            <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current">
                 <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
-                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row"/>
+                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
@@ -884,12 +865,28 @@ exclude-result-prefixes="#all">
                     <xsl:copy-of select="current-group()"/>
                 </ul>
             </div>
-        </xsl:for-each-group>
+        </xsl:for-each-group>        
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:GridMode" priority="3">
+        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:GridMode" priority="2">
+        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:GridMode" priority="1">
+        <xsl:apply-templates select="key('resources-by-container', gp:pageOf/@rdf:resource)" mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="bs2:GridMode" priority="1">
+        <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="bs2:GridMode">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
-        <xsl:param name="thumbnails-per-row" as="xs:integer"/>
+        <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
         <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
 	
 	<li>
