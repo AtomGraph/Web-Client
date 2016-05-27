@@ -423,19 +423,39 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)]" mode="bs2:BreadCrumbMode" priority="1">
-        <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current">
-            <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-        </xsl:apply-templates>
+    <xsl:template match="*[sioc:has_container/@rdf:resource] | *[sioc:has_parent/@rdf:resource]" mode="bs2:BreadCrumbMode" priority="1">
+        <xsl:choose>
+            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current">
+                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current">
+                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:otherwise>
+        </xsl:choose>
         
         <xsl:next-match/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="bs2:BreadCrumbMode" priority="1">
-        <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current">
-            <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-        </xsl:apply-templates>
-
+    <xsl:template match="*[gc:constructorOf/@rdf:resource]" mode="bs2:BreadCrumbMode" priority="1">
+        <xsl:choose>
+            <xsl:when test="key('resources', gc:constructorOf/@rdf:resource)">
+                <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current">
+                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="parent-doc" select="document(gc:constructorOf/@rdf:resource)" as="document-node()?"/>
+                <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource, $parent-doc)" mode="#current">
+                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:otherwise>
+        </xsl:choose>
+        
         <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))/@rdf:about" mode="gc:InlineMode"/>
@@ -1143,15 +1163,6 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
         </form>
     </xsl:template>
-
-    <!-- hide metadata -->
-    <!-- <xsl:template match="*[gc:layoutOf/@rdf:resource = $g:requestUri]" mode="bs2:EditMode" priority="1"/> -->
-
-    <!--
-    <xsl:template match="rdf:RDF" mode="bs2:EditMode">
-        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
-    </xsl:template>
-    -->
     
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:EditMode" priority="3">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
@@ -1165,9 +1176,12 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources-by-container', gp:pageOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
+    <!-- in Edit mode, we render the document, which then recursively renders the primary topic, if any -->
+    <!--
     <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]" mode="bs2:EditMode" priority="1">
         <xsl:apply-templates select="key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
     </xsl:template>    
+    -->
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:EditMode" priority="1"/>
 
