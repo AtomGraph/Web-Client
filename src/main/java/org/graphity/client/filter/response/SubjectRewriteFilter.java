@@ -29,6 +29,7 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import java.net.URI;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.vocabulary.GC;
@@ -51,12 +52,24 @@ public class SubjectRewriteFilter extends ClientFilter implements ContainerRespo
         if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
         if (response == null) throw new IllegalArgumentException("ContainerResponse cannot be null");
 
+        if (response.getMediaType() == null ||
+                !(response.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE) ||
+                response.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE)))
+            return response;
+        
         Model model = getModel(response.getEntity());
         if (model == null) return response;
 
-        response.setEntity(rewrite(model, request, request.getBaseUriBuilder()), Model.class);
+        response.setEntity(rewrite(model, request, getBaseUriBuilder(request)), Model.class);
         
         return response;
+    }
+    
+    public UriBuilder getBaseUriBuilder(ContainerRequest request)
+    {
+        if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
+        
+        return request.getBaseUriBuilder();
     }
     
     Model rewrite(Model model, ContainerRequest request, UriBuilder uriBuilder)

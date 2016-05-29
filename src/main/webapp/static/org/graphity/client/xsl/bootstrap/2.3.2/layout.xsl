@@ -587,7 +587,7 @@ exclude-result-prefixes="#all">
             </div>
         </xsl:if>
 
-        <xsl:if test="rdf:type/@rdf:resource = '&gp;Container'">
+        <!-- <xsl:if test="rdf:type/@rdf:resource = '&gp;Container'"> -->
             <xsl:variable name="this" select="@rdf:about"/>
 
             <div class="btn-group pull-right">
@@ -609,7 +609,7 @@ exclude-result-prefixes="#all">
                     </xsl:for-each>                        
                 </ul>
             </div>
-        </xsl:if>
+        <!-- </xsl:if> -->
     </xsl:template>
 
     <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:ButtonMode" priority="1"/>
