@@ -43,6 +43,7 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.header.MediaTypes;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -223,6 +224,8 @@ public class PostReplaceFilter implements ContainerRequestFilter {
         String override;
         if (header == null) {
             override = query;
+            URI originalRequestUri = request.getRequestUriBuilder().replaceQueryParam("_method", null).build();
+            request.setUris(request.getBaseUri(), originalRequestUri);            
         } else {
             override = header;
             if (query != null && !query.equals(header)) {
