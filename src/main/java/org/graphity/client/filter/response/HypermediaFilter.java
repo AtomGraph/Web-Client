@@ -104,14 +104,14 @@ public class HypermediaFilter implements ContainerResponseFilter
                 }
                 
                 long oldCount = model.size();
-                addLayouts(getStateBuilder(state, null, null).build(), template);
+                addLayouts(getStateBuilder(state, null, getForClass(request)).build(), template);
                 if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", state.getURI(), model.size() - oldCount);
             }
 
-            String forClassURI = request.getQueryParameters().getFirst(GC.forClass.getLocalName());
-            if (forClassURI != null && response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+            //String forClassURI = request.getQueryParameters().getFirst(GC.forClass.getLocalName());
+            if (getForClass(request) != null && response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
             {
-                OntClass forClass = ontModel.createClass(forClassURI);
+                OntClass forClass = ontModel.createClass(getForClass(request).getURI());
                 addInstance(model, forClass);
                 
                 state.addProperty(GC.constructorOf, getStateBuilder(state, getMode(request, template), null).

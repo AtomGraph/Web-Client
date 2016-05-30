@@ -540,8 +540,12 @@ exclude-result-prefixes="#all">
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
 
     <xsl:template match="*" mode="bs2:MediaTypeSelectMode"/>
-    
-    <xsl:template match="*[rdf:type/@rdf:resource = '&gp;Document']" mode="bs2:MediaTypeSelectMode" priority="1">
+
+    <xsl:template match="*[key('resources', foaf:isPrimaryTopicOf/(@rdf:resource, @rdf:nodeID))]" mode="bs2:MediaTypeSelectMode" priority="2">
+        <xsl:apply-templates select="key('resources', foaf:isPrimaryTopicOf/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
+    </xsl:template>
+        
+    <xsl:template match="*[@rdf:about]" mode="bs2:MediaTypeSelectMode" priority="1">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
@@ -560,10 +564,6 @@ exclude-result-prefixes="#all">
                 -->
             </ul>
         </div>
-    </xsl:template>
-
-    <xsl:template match="*[key('resources', foaf:isPrimaryTopicOf/(@rdf:resource, @rdf:nodeID))]" mode="bs2:MediaTypeSelectMode" priority="2">
-        <xsl:apply-templates select="key('resources', foaf:isPrimaryTopicOf/(@rdf:resource, @rdf:nodeID))" mode="#current"/>
     </xsl:template>
 
     <!-- MODE TOGGLE MODE (Create/Edit buttons) -->
