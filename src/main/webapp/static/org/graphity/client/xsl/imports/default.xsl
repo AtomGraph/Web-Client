@@ -45,6 +45,7 @@ xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="gc:uri/@rdf:resource"/>
 
     <!-- LABEL MODE -->
     
@@ -134,7 +135,13 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- INLINE MODE -->
-    
+
+    <xsl:template match="@rdf:about[key('resources-by-uri', .)/@rdf:about]" mode="gc:InlineMode" priority="1">
+	<a href="{key('resources-by-uri', .)/@rdf:about}" title="{.}">
+	    <xsl:apply-templates select=".." mode="gc:LabelMode"/>
+	</a>
+    </xsl:template>
+
     <!-- subject resource -->
     <xsl:template match="@rdf:about" mode="gc:InlineMode">
 	<a href="{.}" title="{.}">
@@ -160,6 +167,12 @@ exclude-result-prefixes="#all">
 	<span title="{$this}">
 	    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
 	</span>
+    </xsl:template>
+
+    <xsl:template match="@rdf:resource[key('resources-by-uri', .)/@rdf:about]" mode="gc:InlineMode" priority="1">
+	<a href="{key('resources-by-uri', .)/@rdf:about}" title="{.}">
+            <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
+	</a>
     </xsl:template>
 
     <!-- object resource -->    

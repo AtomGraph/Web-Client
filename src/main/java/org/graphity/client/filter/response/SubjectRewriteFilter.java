@@ -17,13 +17,11 @@
 package org.graphity.client.filter.response;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.ResourceUtils;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.uri.UriComponent;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
@@ -33,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import org.graphity.client.vocabulary.GC;
+import org.graphity.core.util.StateBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@graphity.org>
  */
 @Provider
-public class SubjectRewriteFilter extends ClientFilter implements ContainerResponseFilter
+public class SubjectRewriteFilter implements ContainerResponseFilter // extends ClientFilter 
 {
     private static final Logger log = LoggerFactory.getLogger(SubjectRewriteFilter.class);
 
@@ -60,35 +59,59 @@ public class SubjectRewriteFilter extends ClientFilter implements ContainerRespo
         Model model = getModel(response.getEntity());
         if (model == null) return response;
 
-        response.setEntity(rewrite(model, request, getBaseUriBuilder(request)), Model.class);
+        //response.setEntity(rewrite(model, request, getBaseUriBuilder(request)), Model.class);
+        response.setEntity(addStates(model.createResource(getBaseUri(request).toString()), model), Model.class);
         
         return response;
     }
     
-    public UriBuilder getBaseUriBuilder(ContainerRequest request)
+    public URI getBaseUri(ContainerRequest request)
     {
         if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
         
-        return request.getBaseUriBuilder();
+        return request.getBaseUri();
     }
     
-    Model rewrite(Model model, ContainerRequest request, UriBuilder uriBuilder)
+    Model addStates(Resource baseUri, Model model)
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
         
-        ResIterator it = model.listSubjects();
+        ResIterator subjectIt = model.listSubjects();
         try
         {
-            while (it.hasNext()) renameResource(it.next(), request, uriBuilder);
+            while (subjectIt.hasNext())
+            {
+                Resource resource = subjectIt.next();
+                StateBuilder.fromResource(baseUri).
+                    property(GC.uri, resource).build();
+            }
         }
         finally
         {
-            it.close();
+            subjectIt.close();
+        }
+
+        NodeIterator objectIt = model.listObjects();
+        try
+        {
+            while (objectIt.hasNext())
+            {
+                RDFNode node = objectIt.next();
+                if (node.isURIResource())
+                {
+                    StateBuilder.fromResource(baseUri).
+                        property(GC.uri, node).build();
+                }
+            }
+        }
+        finally
+        {
+            objectIt.close();
         }
         
         return model;
     }
-
+    
     public void renameResource(Resource resource, ContainerRequest request, UriBuilder uriBuilder)
     {
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
@@ -110,22 +133,14 @@ public class SubjectRewriteFilter extends ClientFilter implements ContainerRespo
         return null;
     }
 
+    /*
     @Override
     public ClientResponse handle(ClientRequest request) throws ClientHandlerException
     {
         ClientResponse response = getNext().handle(request);
-
-        /*
-        if (response.hasEntity())
-        {
-            Model model = response.getEntity(Model.class);
-            rewrite(model, UriBuilder.fromUri(request.getURI()));
-            //InputStream stream = response.getEntityInputStream();            
-            //response.setEntityInputStream(model.geti);
-        }
-        */
         
         return response;
     }
+    */
     
 }
