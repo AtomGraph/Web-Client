@@ -38,14 +38,12 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeader;
+import org.graphity.client.LinkedDataClient;
 import org.graphity.client.exception.ClientErrorException;
-import org.graphity.client.filter.response.SubjectRewriteFilter;
-import org.graphity.client.vocabulary.GC;
 import org.graphity.core.MediaTypes;
 import org.graphity.core.exception.AuthenticationException;
 import org.graphity.core.exception.NotFoundException;
@@ -69,6 +67,7 @@ public class ProxyResourceBase
     private final MediaTypes mediaTypes;
     private final MediaType mediaType;
     private final WebResource webResource;
+    private final LinkedDataClient linkedDataClient;
     private final URI mode, forClass;
     
     /**
@@ -98,9 +97,9 @@ public class ProxyResourceBase
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
         Client client = Client.create(cc);
-        client.addFilter(new SubjectRewriteFilter());
-        client.setFollowRedirects(false); // we take care of redirects ourselves
+        //client.setFollowRedirects(false);
         webResource = client.resource(uri);
+        linkedDataClient = LinkedDataClient.create(webResource);
     }
     
     public HttpHeaders getHttpHeaders()
@@ -148,6 +147,24 @@ public class ProxyResourceBase
     {
         return forClass;
     }
+
+    public LinkedDataClient getLinkedDataClient()
+    {
+        return linkedDataClient;
+    }
+    
+    public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders, MediaType... mediaTypes)
+    {
+        WebResource.Builder builder = webResource.getRequestBuilder();
+
+        // forward Authorization request header
+        List<String> authHeaders = httpHeaders.getRequestHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeaders != null && !authHeaders.isEmpty())
+            builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
+
+        return builder.accept(mediaTypes).
+                get(ClientResponse.class);        
+    }
     
     /**
      * Handles GET request and returns response with RDF description of this or remotely loaded resource.
@@ -159,17 +176,10 @@ public class ProxyResourceBase
     @GET
     public Response get()
     {                
-        WebResource.Builder builder = getWebResource().getRequestBuilder();
+        ClientResponse resp = getClientResponse(getWebResource(), getHttpHeaders(),
+                org.graphity.core.MediaType.TEXT_NTRIPLES_TYPE, org.graphity.core.MediaType.APPLICATION_RDF_XML_TYPE);
 
-        // forward Authorization request header
-        List<String> authHeaders = getHttpHeaders().getRequestHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeaders != null && !authHeaders.isEmpty())
-            builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
-
-        ClientResponse resp = builder.accept(org.graphity.core.MediaType.TEXT_NTRIPLES_TYPE,
-                org.graphity.core.MediaType.APPLICATION_RDF_XML_TYPE).
-            get(ClientResponse.class);
-
+        /*
         if (resp.getStatusInfo().getFamily().equals(Status.Family.REDIRECTION))
             // redirect to Location
             if (resp.getHeaders().containsKey(HttpHeaders.LOCATION))
@@ -184,7 +194,8 @@ public class ProxyResourceBase
                 
                 return Response.seeOther(uriBuilder.build()).build();
             }
-
+        */
+        
         if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
         {
             // forward WWW-Authenticate response header
@@ -209,14 +220,12 @@ public class ProxyResourceBase
         ResponseBuilder bld = response.getResponseBuilder(description,
                 response.getVariantListBuilder(getMediaTypes().getWritable(Model.class), new ArrayList(), new ArrayList()).
                         add().build());
-        //ResponseBuilder bld = Response.ok(description).
-        //        variant()); //getResponseBuilder(description);
         
         // move headers to HypermediaFilter?
-        if (!resp.getHeaders().get("Link").isEmpty())
+        if (resp.getHeaders().get("Link") != null)
             for (String linkValue : resp.getHeaders().get("Link"))
                 bld.header("Link", linkValue);
-        if (!resp.getHeaders().get("Rules").isEmpty())
+        if (resp.getHeaders().get("Rules") != null)
             for (String linkValue : resp.getHeaders().get("Rules"))
                 bld.header("Rules", linkValue);
         
