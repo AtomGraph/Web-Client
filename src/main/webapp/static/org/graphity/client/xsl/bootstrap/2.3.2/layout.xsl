@@ -861,13 +861,17 @@ exclude-result-prefixes="#all">
     </xsl:template>
         
     <!-- READ MODE -->
-    
-    <xsl:template match="rdf:RDF" mode="bs2:ReadMode">
+
+    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/gc:uri/@rdf:resource]" mode="bs2:ReadMode" priority="1">
         <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
         
         <xsl:apply-templates select="*[not(. is key('resources', $g:requestUri))][not(. is key('resources', key('resources', $g:requestUri)/gc:uri/@rdf:resource))][not(gc:uri)]" mode="#current">
             <xsl:sort select="gc:label(.)"/>
         </xsl:apply-templates>
+    </xsl:template>
+        
+    <xsl:template match="rdf:RDF" mode="bs2:ReadMode">
+        <xsl:apply-templates select="key('resources', $g:requestUri)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:ReadMode" priority="3">

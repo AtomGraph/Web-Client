@@ -72,7 +72,7 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
         return request.getBaseUri();
     }
     
-    Model addStates(Resource baseUri, Model model)
+    public Model addStates(Resource baseUri, Model model)
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
         
@@ -82,8 +82,9 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
             while (subjectIt.hasNext())
             {
                 Resource resource = subjectIt.next();
-                StateBuilder.fromResource(baseUri).
-                    property(GC.uri, resource).build();
+                if (resource.isURIResource())
+                    StateBuilder.fromResource(baseUri).
+                        property(GC.uri, resource).build();
             }
         }
         finally
@@ -98,10 +99,8 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
             {
                 RDFNode node = objectIt.next();
                 if (node.isURIResource())
-                {
                     StateBuilder.fromResource(baseUri).
                         property(GC.uri, node).build();
-                }
             }
         }
         finally
