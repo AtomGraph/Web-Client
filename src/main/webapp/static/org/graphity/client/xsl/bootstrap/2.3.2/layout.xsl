@@ -377,7 +377,7 @@ exclude-result-prefixes="#all">
     
     <!-- MODE SELECT MODE -->
 
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeSelectMode" priority="1"/>
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeSelectMode" priority="2"/>
         
     <xsl:template match="rdf:RDF" mode="bs2:ModeSelectMode">
         <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource">
