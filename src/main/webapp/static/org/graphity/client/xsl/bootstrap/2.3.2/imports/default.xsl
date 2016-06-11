@@ -45,6 +45,8 @@ xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
+    <xsl:param name="gc:sitemap" as="document-node()?"/>
+
     <!-- HEADER MODE -->
     
     <xsl:template match="@rdf:about | @rdf:nodeID" mode="bs2:HeaderMode">

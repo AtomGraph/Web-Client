@@ -65,11 +65,6 @@ public class HypermediaFilter implements ContainerResponseFilter
     {
         if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
         if (response == null) throw new IllegalArgumentException("ContainerResponse cannot be null");
-
-        if (response.getMediaType() == null ||
-                !(response.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE) ||
-                response.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE)))
-            return response;
             
         Model model = getModel(response.getEntity());
         if (model == null) return response;
@@ -100,6 +95,12 @@ public class HypermediaFilter implements ContainerResponseFilter
             }
             else
             {
+                // layout modes only apply to XHTML media type
+                if (response.getMediaType() == null ||
+                        !(response.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE) ||
+                        response.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE)))
+                    return response;
+                
                 OntClass template = ontModel.getOntClass(typeHref.toString());            
                 if (template != null)
                 {

@@ -44,6 +44,8 @@ xmlns:spin="&spin;"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
+    <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
+
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="gc:uri/@rdf:resource"/>
 
@@ -119,6 +121,23 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="." mode="gc:LabelMode"/>
+        </option>
+    </xsl:template>
+
+    <!-- TO-DO: turn <option> into a named template like <input> ? -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyOptionMode">
+        <xsl:param name="selected" as="xs:boolean?"/>
+        <xsl:param name="disabled" as="xs:boolean?"/>
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+
+        <option value="{$this}">
+            <xsl:if test="$selected">
+                <xsl:attribute name="selected">selected</xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$disabled">
+                <xsl:attribute name="disabled">disabled</xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
         </option>
     </xsl:template>
 

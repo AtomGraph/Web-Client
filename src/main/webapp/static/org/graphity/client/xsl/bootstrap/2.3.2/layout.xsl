@@ -110,7 +110,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="gp:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
-    <xsl:param name="gc:sitemap" select="if ($rdf:type) then document(gc:document-uri($rdf:type)) else ()" as="document-node()?"/>
+    <xsl:param name="gc:sitemap" as="document-node()?"/>
     <xsl:param name="uri" as="xs:string?"/>
     <xsl:param name="query" as="xs:string?"/>
     <xsl:param name="label" as="xs:string?"/>
@@ -123,6 +123,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="gp:pageOf/@rdf:resource"/>
+    <xsl:key name="resources-by-view-of" match="*[@rdf:about]" use="gp:viewOf/@rdf:resource"/>    
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
@@ -712,7 +713,7 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="*" mode="bs2:TypeListMode"/>
 
-    <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeListMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeListMode" priority="0.8">
         <ul class="inline">
             <xsl:apply-templates select="rdf:type/@rdf:resource" mode="#current">
                 <xsl:sort select="gc:object-label(.)" order="ascending" lang="{$gp:lang}"/>
@@ -850,7 +851,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:ListMode" priority="1">
+    <xsl:template match="*[key('resources-by-view-of', @rdf:about) or key('resources-by-page-of', @rdf:about)][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:ListMode" priority="1">
         <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="#current"/>
     </xsl:template>
 
@@ -916,7 +917,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:ReadMode" priority="1">
+    <xsl:template match="*[key('resources-by-view-of', @rdf:about) or key('resources-by-page-of', @rdf:about)][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:ReadMode" priority="1">
         <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="#current"/>
     </xsl:template>
 
@@ -970,7 +971,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:GridMode" priority="1">
+    <xsl:template match="*[key('resources-by-view-of', @rdf:about) or key('resources-by-page-of', @rdf:about)][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:GridMode" priority="1">
         <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="#current"/>
     </xsl:template>
 
@@ -1052,7 +1053,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&gp;Container']" mode="gc:TableMode" priority="1">
+    <xsl:template match="*[key('resources-by-view-of', @rdf:about) or key('resources-by-page-of', @rdf:about)][rdf:type/@rdf:resource = '&gp;Container']" mode="gc:TableMode" priority="1">
         <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="#current"/>
     </xsl:template>
 
@@ -1109,7 +1110,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:MapMode" priority="1">
+    <xsl:template match="*[key('resources-by-view-of', @rdf:about) or key('resources-by-page-of', @rdf:about)][rdf:type/@rdf:resource = '&gp;Container']" mode="bs2:MapMode" priority="1">
         <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="#current"/>
     </xsl:template>
 
