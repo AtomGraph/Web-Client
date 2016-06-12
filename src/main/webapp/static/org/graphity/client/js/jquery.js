@@ -20,7 +20,7 @@ $(document).ready(function()
 
     $(".btn-remove").on("click", function()
     {        
-        return $(this).parent().parent().remove();
+        return $(this).parent().parent().parent().remove();
     });
 
     $("div.btn-group:has(div.btn.dropdown-toggle)").on("click", function()
