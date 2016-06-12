@@ -438,7 +438,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- subject resource -->
-    <xsl:template match="@rdf:about" mode="gc:InputMode">
+    <!-- @rdf:about -->
+    <xsl:template match="@rdf:*[local-name() = 'about']" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -455,7 +456,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- subject blank node -->
-    <xsl:template match="@rdf:nodeID" mode="gc:InputMode">
+    <!-- @rdf:nodeID -->
+    <xsl:template match="@rdf:*[local-name() = 'nodeID']" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -472,7 +474,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InputMode">
+    <!-- *[@rdf:about or @rdf:nodeID]/* -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -489,7 +492,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- object resource -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:resource" mode="gc:InputMode">
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:resource -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = 'resource']" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -506,7 +510,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object blank node -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:InputMode">
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:nodeID" mode="gc:InputMode" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -523,7 +528,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object literal -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/text()" mode="gc:InputMode">
+    <!-- *[@rdf:about or @rdf:nodeID]/*/text() -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/text()" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -540,7 +546,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- datatype -->
-    <xsl:template match="@rdf:datatype" mode="gc:InputMode">
+    <!-- @rdf:datatype -->
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -557,7 +564,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- language tag -->
-    <xsl:template match="@xml:lang" mode="gc:InputMode">
+    <!-- @xml:lang -->
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="gc:InputMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>

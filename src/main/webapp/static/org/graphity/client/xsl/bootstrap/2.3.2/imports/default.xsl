@@ -73,7 +73,8 @@ exclude-result-prefixes="#all">
 
     <!-- EDIT MODE -->
     
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="bs2:EditMode">
+    <!-- @rdf:about | @rdf:nodeID -->
+    <xsl:template match="@rdf:*[local-name() = ('about', 'nodeID')]" mode="bs2:EditMode">
 	<xsl:param name="type" select="'hidden'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -85,7 +86,8 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:EditMode">
+    <!-- *[@rdf:about or @rdf:nodeID]/* -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="bs2:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="constraint-violations" as="element()*"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -197,6 +199,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
+    <!--
     <xsl:template match="@rdf:resource" mode="bs2:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
@@ -215,8 +218,10 @@ exclude-result-prefixes="#all">
             <span class="help-inline">Resource</span>
         </xsl:if>
     </xsl:template>
+    -->
 
-    <xsl:template match="@xml:lang" mode="bs2:EditMode">
+    <!-- @xml:lang -->
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="bs2:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
@@ -235,7 +240,8 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="@rdf:datatype" mode="bs2:EditMode">
+    <!-- @rdf:datatype -->
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="bs2:EditMode">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -254,7 +260,8 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:*" mode="bs2:EditMode">
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:* -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:EditMode" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
