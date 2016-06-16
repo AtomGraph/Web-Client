@@ -546,6 +546,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!--
     <xsl:template match="@rdf:nodeID[../rdf:type/@rdf:resource = '&http;Response']" mode="bs2:HeaderMode" priority="1">
         <div class="alert alert-error">
             <h1>
@@ -553,6 +554,7 @@ exclude-result-prefixes="#all">
             </h1>
         </div>
     </xsl:template>
+    -->
         
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
 

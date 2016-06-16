@@ -24,6 +24,7 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
@@ -53,6 +54,14 @@ exclude-result-prefixes="#all">
 	<h2>
 	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
 	</h2>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID[../rdf:type/@rdf:resource = '&http;Response']" mode="bs2:HeaderMode" priority="1">
+        <div class="alert alert-error">
+            <h1>
+                <xsl:apply-templates select="." mode="gc:InlineMode"/>
+            </h1>
+        </div>
     </xsl:template>
 
     <!-- LIST MODE -->

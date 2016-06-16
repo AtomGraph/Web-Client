@@ -62,11 +62,28 @@
     rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html> ;
     rdfs:isDefinedBy <#> .
 
+<#priority> a owl:AnnotationProperty ;
+    rdfs:domain <#Template> ;
+    rdfs:range xsd:float ;
+    rdfs:label "Priority" ;
+    rdfs:comment "Template priority (overrides URI template priority)" ;
+    rdfs:seeAlso <https://www.w3.org/TR/xslt20/#conflict> ;
+    rdfs:isDefinedBy <#> .
+
 <#skolemTemplate> a owl:AnnotationProperty ;
     rdfs:domain rdfs:Class ;
     rdfs:range xsd:string ;
     rdfs:label "Skolemization template" ;
-    rdfs:comment "Container-relative URI template for blank node skolemization (JAX-RS syntax)" ;
+    rdfs:comment "Parent-relative URI template for blank node skolemization (JAX-RS syntax)" ;
+    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html>,
+        <http://www.w3.org/TR/rdf11-concepts/#section-skolemization> ;
+    rdfs:isDefinedBy <#> .
+
+<#fragmentTemplate> a owl:AnnotationProperty ;
+    rdfs:domain rdfs:Class ;
+    rdfs:range xsd:string ;
+    rdfs:label "Fragment template" ;
+    rdfs:comment "URI fragment template for blank node skolemization (JAX-RS syntax)" ;
     rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html>,
         <http://www.w3.org/TR/rdf11-concepts/#section-skolemization> ;
     rdfs:isDefinedBy <#> .
@@ -191,6 +208,7 @@
     rdfs:label "Resource template" ;
     rdfs:comment "A class of RDF resources that share the same URI template and SPARQL query template" ;
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    <#fragmentTemplate> "this" ;
     spin:constructor <#TemplateConstructor> ;
     spin:constraint <#MissingRDFSLabel> , <#MissingRDFSisDefinedBy> ,
         #[ a <#MissingPropertyValue> ;
@@ -219,20 +237,21 @@
       PREFIX gp:      <http://graphity.org/gp#>
 
       CONSTRUCT {
-          ?this rdfs:subClassOf gp:Document ;
+          ?this rdfs:subClassOf [ a rdfs:Class ] ;
               rdfs:label " " ;
               gp:path " " ;
               gp:skolemTemplate " " ;
+              gp:fragmentTemplate " " ;
               gp:defaultLimit 20 ;
               gp:defaultOffset 0 ;
               gp:defaultOrderBy " " ;
               gp:cacheControl "no-cache" ;
-              gp:loadClass _:loadClass ;
+              gp:loadClass [ a rdfs:Resource ] ;
               gp:query gp:Describe ;
               gp:update gp:Delete ;
-              spin:constraint _:constraint ;
-              spin:constructor _:constructor ;
-              rdfs:isDefinedBy _:isDefinedBy .
+              spin:constraint [ a rdfs:Resource ] ;
+              spin:constructor [ a spin:Rule ] ;
+              rdfs:isDefinedBy [ a gp:Ontology ] .
       }
       WHERE {}""" .
     # rdfs:label "Template constructor" ;
@@ -243,6 +262,7 @@
         owl:unionOf (sp:Describe sp:Construct)
     ] ;
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    <#fragmentTemplate> "this" ;
     spin:constructor <#QueryConstructor> ;
     spin:constraint <#MissingRDFSLabel>,
         [ a <#MissingPropertyValue> ;
@@ -255,13 +275,14 @@
 <#QueryConstructor> a sp:Construct, sp:Query ; # <#Query> ;
   sp:text """
       PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX gp:      <http://graphity.org/gp#>
       PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
       PREFIX sp:      <http://spinrdf.org/sp#>
 
       CONSTRUCT {
           ?this rdfs:label " " ;
               sp:text "DESCRIBE ?this" .
-              # rdfs:isDefinedBy _:isDefinedBy .
+              # rdfs:isDefinedBy [ a gp:Ontology ] .
       }
       WHERE {}""" .
     # rdfs:label "Query constructor" ;
@@ -270,6 +291,7 @@
 <#Update> a rdfs:Class ;
     rdfs:subClassOf sp:Update ;
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    <#fragmentTemplate> "this" ;
     spin:constructor <#UpdateConstructor> ;
     spin:constraint <#MissingRDFSLabel> ,
         [ a <#MissingPropertyValue> ;
@@ -283,6 +305,7 @@
   sp:text """
       PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX gp:      <http://graphity.org/gp#>
       PREFIX sp:      <http://spinrdf.org/sp#>
 
       CONSTRUCT {
@@ -290,7 +313,7 @@
               rdfs:label " " ;
               rdfs:comment " " ;
               sp:text "DELETE\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}\\r\\nINSERT\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}\\r\\nWHERE\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}" ;
-              rdfs:isDefinedBy _:isDefinedBy .
+              rdfs:isDefinedBy [ a gp:Ontology ] .
       }
       WHERE {}""" .
     # rdfs:label "Update constructor" ;
@@ -310,6 +333,7 @@
 
 <#Constraint> a rdfs:Class ;
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    <#fragmentTemplate> "this" ;
     spin:constructor <#ConstraintConstructor> ;
     spin:constraint <#MissingRDFSLabel> ;
     rdfs:label "Constraint" ;
@@ -322,8 +346,8 @@
 
       CONSTRUCT {
           ?this rdfs:label " " ;
-            sp:arg1 _:arg1 ;
-            sp:arg2 _:arg2 .
+            sp:arg1 [ a rdfs:Resource ] ;
+            sp:arg2 [ a rdfs:Resource ] .
       }
       WHERE {}""" .
     # rdfs:label "Constraint constructor" ;
@@ -367,6 +391,7 @@
 <#QueryTemplate> a rdfs:Class ;
     rdfs:subClassOf spin:Template ;
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
+    <#fragmentTemplate> "this" ;
     spin:constructor <#QueryTemplateConstructor> ;
     spin:constraint <#MissingRDFSLabel> ;
     rdfs:label "Query template" ;
@@ -375,13 +400,18 @@
 <#QueryTemplateConstructor> a sp:Construct, sp:Query ; # <#Query> ;
   sp:text """
       PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX gp:      <http://graphity.org/gp#>
       PREFIX spin:    <http://spinrdf.org/spin#>
+      PREFIX spl:     <http://spinrdf.org/spl#>
 
       CONSTRUCT {
           ?this rdfs:label " " ;
-            spin:body _:body ;
+            spin:body [ a gp:Query ] ;
             spin:labelTemplate " " ;
-            spin:constraint _:constraint .
+            spin:constraint [ a spl:Argument ;
+                spl:predicate [ a rdfs:Resource ] ;
+                spl:valueType [ a rdfs:Resource ]
+            ] .
       }
       WHERE {}""" .
     # rdfs:label "Query template constructor" ;
@@ -435,13 +465,6 @@
     sp:arg1 <#slug> ;
     rdfs:isDefinedBy <#> .
 
-#<#MissingDocumentType> a <#Constraint>, <#MissingPropertyValue> ;
-#    rdfs:label "Missing rdf:type foaf:Document" ;
-#    sp:arg1 rdf:type ;
-#    sp:arg2 foaf:Document ;
-#    rdfs:isDefinedBy <#> .
-
-
 # QUERIES
 
 <#Describe> a sp:Describe, sp:Query ; # <#Query> ;
@@ -452,43 +475,40 @@
 # ====
 
 <#DescribeWithTopic> a sp:Describe, sp:Query ; # <#Query>  ;
-    sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-DESCRIBE ?this ?topic WHERE {
-    ?topic foaf:isPrimaryTopicOf ?this .
-}""" .
+    sp:text """PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+DESCRIBE ?this ?primaryTopic
+WHERE
+  { ?this ?p ?o
+    OPTIONAL
+      { ?this foaf:primaryTopic ?primaryTopic }
+  }""" .
     # rdfs:label "Describe with topic" ;
     # rdfs:isDefinedBy <#> .
 
 # ====
 
 <#DescribeWithChildren> a sp:Describe, sp:Query ; # <#Query>  ;
-    sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sioc: <http://rdfs.org/sioc/ns#>
-DESCRIBE ?this ?doc ?thing WHERE {
-    OPTIONAL {
-        {
-            ?thing foaf:isPrimaryTopicOf ?this .
+    sp:text """PREFIX  sioc: <http://rdfs.org/sioc/ns#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+DESCRIBE ?this ?primaryTopic ?child ?childPrimaryTopic
+WHERE
+  { ?this ?p ?o 
+    OPTIONAL
+      { ?this foaf:primaryTopic ?primaryTopic }
+    OPTIONAL
+      { { SELECT DISTINCT ?child ?childPrimaryTopic
+          WHERE
+            {   { ?child sioc:has_parent ?this }
+              UNION
+                { ?child sioc:has_container ?this }
+              OPTIONAL
+                { ?child foaf:primaryTopic ?childPrimaryTopic }
+            }
         }
-        UNION
-        {
-            {
-                SELECT DISTINCT ?doc ?thing
-                WHERE {
-                    {
-                        ?doc sioc:has_parent ?this
-                    }
-                    UNION
-                    {
-                        ?doc sioc:has_container ?this
-                    }
-                    OPTIONAL {
-                        ?doc foaf:primaryTopic ?thing .
-                    } .
-                }
-            } .
-        } .
-    } .
-}""" .
+      }
+  }""" .
     # rdfs:label "Describe with children" ;
     # rdfs:isDefinedBy <#> .
 
