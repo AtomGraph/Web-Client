@@ -28,7 +28,7 @@ xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
 
-    <xsl:preserve-space elements="gp:path gp:slug gp:uriTemplate gp:skolemTemplate gp:defaultOrderBy"/>
+    <xsl:preserve-space elements="gp:path gp:slug gp:uriTemplate gp:skolemTemplate gp:fragmentTemplate gp:defaultOrderBy"/>
 
     <xsl:template match="gp:slug" mode="gc:PropertyListMode"/>
         
