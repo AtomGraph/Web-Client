@@ -247,8 +247,8 @@
               gp:defaultOrderBy " " ;
               gp:cacheControl "no-cache" ;
               gp:loadClass [ a rdfs:Resource ] ;
-              gp:query gp:Describe ;
-              gp:update gp:Delete ;
+              gp:query [ a gp:Query ] ;
+              gp:update [ a gp:Delete ] ;
               spin:constraint [ a rdfs:Resource ] ;
               spin:constructor [ a spin:Rule ] ;
               rdfs:isDefinedBy [ a gp:Ontology ] .

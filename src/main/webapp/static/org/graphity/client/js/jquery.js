@@ -1,3 +1,8 @@
+var onRemoveButtonClick = function()
+{        
+    return $(this).parent().parent().parent().remove();
+};
+
 $(document).ready(function()
 {
 
@@ -18,10 +23,7 @@ $(document).ready(function()
         return confirm('Are you sure?');
     });
 
-    $(".btn-remove").on("click", function()
-    {        
-        return $(this).parent().parent().parent().remove();
-    });
+    $(".btn-remove").on("click", onRemoveButtonClick);
 
     $("div.btn-group:has(div.btn.dropdown-toggle)").on("click", function()
     {
