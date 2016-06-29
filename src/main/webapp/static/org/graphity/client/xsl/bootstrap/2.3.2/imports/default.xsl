@@ -152,7 +152,7 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>            
+	    <xsl:with-param name="disabled" select="$disabled"/>
         </xsl:apply-templates>
         
         <xsl:if test="not($type = 'hidden') and $type-label">

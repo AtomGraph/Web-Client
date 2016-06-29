@@ -232,13 +232,15 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
-    <xsl:template match="@rdf:datatype[starts-with(., '&xsd;')]" mode="gc:InlineMode" priority="1">
+    <!-- @rdf:datatype -->
+    <xsl:template match="@rdf:*[local-name() = 'datatype'][starts-with(., '&xsd;')]" mode="gc:InlineMode" priority="1">
         <span class="help-inline" title="{.}">
             xsd:<xsl:value-of select="substring-after(., '&xsd;')"/>
         </span>
     </xsl:template>
 
-    <xsl:template match="@rdf:datatype" mode="gc:InlineMode">
+    <!-- @rdf:datatype -->
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="gc:InlineMode">
         <span class="help-inline" title="{.}">
             <xsl:value-of select="."/>
         </span>
