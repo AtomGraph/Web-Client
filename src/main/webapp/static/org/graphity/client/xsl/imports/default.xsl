@@ -513,7 +513,7 @@ exclude-result-prefixes="#all">
 
     <!-- object blank node -->
     <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID -->
-    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:nodeID" mode="gc:InputMode" priority="1">
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = 'nodeID']" mode="gc:InputMode" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>

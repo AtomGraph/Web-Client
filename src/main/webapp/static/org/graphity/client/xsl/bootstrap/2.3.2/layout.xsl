@@ -1179,7 +1179,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="forClass" select="key('resources', $g:requestUri)/gc:forClass/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="action" select="$g:requestUri" as="xs:anyURI"/>
-        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
