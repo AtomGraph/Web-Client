@@ -20,6 +20,11 @@ import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -29,6 +34,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +48,7 @@ import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.SPINQueryFinder;
 import org.topbraid.spin.vocabulary.SP;
+import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  *
@@ -51,13 +58,13 @@ public class ConstructorBase
 {
     private static final Logger log = LoggerFactory.getLogger(ConstructorBase.class);
 
-    public void construct(OntClass forClass, Property property, Model targetModel)
+    public void construct(OntClass forClass, Model targetModel)
     {
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
         if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");
 
-        construct(forClass, property, targetModel.createResource(), targetModel);
+        addInstance(forClass, SPIN.constructor, targetModel.createResource(), targetModel);
+        addClass(forClass, targetModel);
     }
 
     // workaround for SPIN API limitation: https://groups.google.com/d/msg/topbraid-users/AVXXEJdbQzk/w5NrJFs35-0J
@@ -102,7 +109,7 @@ public class ConstructorBase
         return fixedModel;
     }
     
-    public void construct(OntClass forClass, Property property, Resource instance, Model targetModel)
+    public void addInstance(OntClass forClass, Property property, Resource instance, Model targetModel)
     {
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
@@ -156,7 +163,7 @@ public class ConstructorBase
                                 it.close();
                             }
 
-                            construct(valueClass, property, value, targetModel);
+                            addInstance(valueClass, property, value, targetModel);
                         }
                     }
                 }
@@ -183,6 +190,37 @@ public class ConstructorBase
         }
         
         return null;
+    }
+    
+    // TO-DO: this method should not be necessary when system ontologies/classes are dereferencable! -->
+    public void addClass(OntClass forClass, Model targetModel)
+    {
+        if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+        if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");    
+
+        String queryString = "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+"PREFIX  spin: <http://spinrdf.org/spin#>\n" +
+"\n" +
+"DESCRIBE ?Class ?Constraint\n" +
+"WHERE\n" +
+"  { ?Class rdfs:isDefinedBy ?Ontology\n" +
+"    OPTIONAL\n" +
+"      { ?Class spin:constraint ?Constraint }\n" +
+"  }";
+        
+        // the client needs at least labels and constraints
+        QuerySolutionMap qsm = new QuerySolutionMap();
+        qsm.add(RDFS.Class.getLocalName(), forClass);
+        Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
+        QueryExecution qex = QueryExecutionFactory.create(query, forClass.getOntModel());
+        try
+        {
+            targetModel.add(qex.execDescribe());
+        }
+        finally
+        {
+            qex.close();
+        }
     }
     
 }

@@ -23,7 +23,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -49,7 +48,6 @@ import org.graphity.core.util.Link;
 import org.graphity.core.util.StateBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.vocabulary.SPIN;
 
 /**
  *
@@ -306,9 +304,8 @@ public class HypermediaFilter implements ContainerResponseFilter
     {
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
 
-        Property property = SPIN.constructor;
-        if (log.isDebugEnabled()) log.debug("Invoking constructor on class {} using property {}", forClass, property);
-        new ConstructorBase().construct(forClass, property, model);
+        if (log.isDebugEnabled()) log.debug("Invoking constructor on class {} using property {}", forClass);
+        new ConstructorBase().construct(forClass, model);
         
         return model;
     }
