@@ -16,18 +16,18 @@
  */
 package org.graphity.client.reader;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
-import com.hp.hpl.jena.rdf.model.RDFReader;
-import com.hp.hpl.jena.shared.JenaException;
-import com.hp.hpl.jena.util.FileUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFErrorHandler;
+import org.apache.jena.rdf.model.RDFReader;
+import org.apache.jena.shared.JenaException;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -120,7 +120,7 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
             // Inc .gz streams.
 
             if ( encoding == null )
-                read(model, new InputStreamReader(conn.getInputStream(), FileUtils.encodingUTF8), url);
+                read(model, new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8), url);
             else
             {
                 if ( ! encoding.equalsIgnoreCase("UTF-8") )

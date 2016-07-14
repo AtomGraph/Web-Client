@@ -16,9 +16,9 @@
  */
 package org.graphity.client;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.util.FileManager;
+import org.apache.jena.util.LocationMapper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -29,7 +29,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
-import org.apache.jena.riot.IO_Jena;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriterRegistry;
 import org.graphity.client.locator.PrefixMapper;
@@ -41,7 +40,6 @@ import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.TemplatesProvider;
-import org.graphity.client.riot.lang.JSONLDWriterAdapter;
 import org.graphity.client.riot.lang.JSONLDWriterFactory;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.core.provider.QueryParamProvider;
@@ -147,7 +145,7 @@ public class Application extends org.graphity.core.Application
             RDFFormat jsonLdFormat = new RDFFormat(RDFLanguages.JSONLD);
             RDFWriterRegistry.register(RDFLanguages.JSONLD, jsonLdFormat);
             RDFWriterRegistry.register(jsonLdFormat, new JSONLDWriterFactory(jsonLdTemplates));
-            IO_Jena.registerForModelWrite(RDFLanguages.strLangJSONLD, JSONLDWriterAdapter.class);
+            //IO_Jena.registerForModelWrite(RDFLanguages.strLangJSONLD, JSONLDWriterAdapter.class);
 	}
 	catch (TransformerConfigurationException ex)
 	{
