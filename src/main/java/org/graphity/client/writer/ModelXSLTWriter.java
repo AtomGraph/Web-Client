@@ -267,7 +267,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 bld.parameter("{" + GP.ontology.getNameSpace() + "}" + GP.ontology.getLocalName(), ontologyHref);            
 
                 OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
-                OntModel sitemap = getSitemap(ontologyHref.toString(), ontModelSpec);
+                OntModel sitemap = getOntModel(ontologyHref.toString(), ontModelSpec);
                 bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
             }
         }
@@ -341,7 +341,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public OntModel getSitemap(MultivaluedMap<String, Object> headerMap, String ontologyURI)
     {
-        return getSitemap(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
+        return getOntModel(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
     }
     
     public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, String rel) throws URISyntaxException
@@ -399,7 +399,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return null;
     }
     
-    public OntModel getSitemap(String ontologyURI, OntModelSpec ontModelSpec)
+    public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
 	if (ontologyURI == null) throw new IllegalArgumentException("String cannot be null");
 	if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
