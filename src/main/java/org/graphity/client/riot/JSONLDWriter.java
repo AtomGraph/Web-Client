@@ -16,9 +16,9 @@
  */
 package org.graphity.client.riot;
 
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.util.Context;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.util.Context;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

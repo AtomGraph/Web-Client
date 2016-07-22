@@ -16,20 +16,16 @@
  */
 package org.graphity.client;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.LocationMapper;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.util.FileManager;
+import org.apache.jena.util.LocationMapper;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
-import org.apache.jena.riot.IO_Jena;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriterRegistry;
 import org.graphity.client.locator.PrefixMapper;
@@ -41,8 +37,6 @@ import org.graphity.client.model.impl.ProxyResourceBase;
 import org.graphity.client.provider.DataManagerProvider;
 import org.graphity.client.provider.MediaTypesProvider;
 import org.graphity.client.provider.TemplatesProvider;
-import org.graphity.client.riot.lang.JSONLDWriterAdapter;
-import org.graphity.client.riot.lang.JSONLDWriterFactory;
 import org.graphity.client.writer.ModelXSLTWriter;
 import org.graphity.core.provider.QueryParamProvider;
 import org.graphity.core.provider.ResultSetProvider;
@@ -53,7 +47,6 @@ import org.graphity.core.provider.ClientProvider;
 import org.graphity.core.provider.ModelProvider;
 import org.graphity.core.provider.SPARQLEndpointOriginProvider;
 import org.graphity.core.provider.SPARQLEndpointProvider;
-import org.graphity.core.riot.RDFLanguages;
 import org.graphity.core.vocabulary.G;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,11 +78,7 @@ public class Application extends org.graphity.core.Application
         super(servletConfig);
         
 	classes.add(ProxyResourceBase.class);
-	//classes.add(AdapterBase.class);
 
-        /*
-        singletons.add(new GraphStoreOriginProvider());
-        */
 	singletons.add(new ModelProvider());
         singletons.add(new SPARQLEndpointOriginProvider());
         singletons.add(new SPARQLEndpointProvider());
@@ -139,28 +128,9 @@ public class Application extends org.graphity.core.Application
 
         OntDocumentManager.getInstance().setFileManager(FileManager.get());
 	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
-        
-	try
-	{
-            Source jsonLdTemplates = new TemplatesProvider(getServletConfig()).getSource("/static/org/graphity/client/xsl/rdfxml2json-ld.xsl");
-            RDFLanguages.register(RDFLanguages.JSONLD);
-            RDFFormat jsonLdFormat = new RDFFormat(RDFLanguages.JSONLD);
-            RDFWriterRegistry.register(RDFLanguages.JSONLD, jsonLdFormat);
-            RDFWriterRegistry.register(jsonLdFormat, new JSONLDWriterFactory(jsonLdTemplates));
-            IO_Jena.registerForModelWrite(RDFLanguages.strLangJSONLD, JSONLDWriterAdapter.class);
-	}
-	catch (TransformerConfigurationException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT transformer config error", ex);
-	}
-	catch (IOException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found or cannot be read", ex);
-	}
-	catch (URISyntaxException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
-	}
+
+        // register plain RDF/XML writer as default
+        RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
     }
     
     /**

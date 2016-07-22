@@ -16,8 +16,8 @@
 
 package org.graphity.client.provider;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

@@ -16,10 +16,10 @@
  */
 package org.graphity.client.util;
 
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.LocationMapper;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.util.LocationMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,8 +57,8 @@ public class DataManager extends org.graphity.core.util.jena.DataManager impleme
         this.resolvingUncached = resolvingUncached;
         
         List<javax.ws.rs.core.MediaType> acceptedTypeList = new ArrayList();
-        acceptedTypeList.addAll(getMediaTypes().getReadable(Model.class));
-        acceptedTypeList.addAll(getMediaTypes().getReadable(ResultSet.class));
+        acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
+        acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(new javax.ws.rs.core.MediaType[acceptedTypeList.size()]);        
     }
 
