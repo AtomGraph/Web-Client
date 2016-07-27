@@ -98,8 +98,9 @@ exclude-result-prefixes="#all">
     <!-- *[@rdf:about or @rdf:nodeID]/* -->
     <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="bs2:EditMode">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
-        <xsl:param name="constraint-violations" as="element()*"/>
-	<xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="violations" as="element()*"/>
+        <xsl:param name="error" select="$violations/spin:violationPath/@rdf:resource = $this" as="xs:boolean"/>
+        <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="label" select="true()" as="xs:boolean"/>
         <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
         <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and (if ($gc:sitemap) then (key('resources', key('resources', ../rdf:type/@rdf:resource, $gc:sitemap)/spin:constraint/(@rdf:resource|@rdf:nodeID), $gc:sitemap)[rdf:type/@rdf:resource = '&gp;MissingPropertyValue'][sp:arg1/@rdf:resource = $this]) else true())" as="xs:boolean"/>
@@ -107,7 +108,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
 
         <div class="control-group">
-	    <xsl:if test="$constraint-violations/spin:violationPath/@rdf:resource = $this">
+	    <xsl:if test="$error">
 		<xsl:attribute name="class">control-group error</xsl:attribute>
 	    </xsl:if>
             <xsl:apply-templates select="." mode="gc:InputMode">

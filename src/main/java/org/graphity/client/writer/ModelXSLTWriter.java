@@ -50,6 +50,8 @@ import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.jena.rdf.model.RDFWriter;
+import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.graphity.client.util.DataManager;
@@ -127,7 +129,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	{
             Templates stylesheet = getTemplates();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            model.write(baos, RDFLanguages.RDFXML.getName(), null);
+            
+            //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
+            RDFWriter writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
+            writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
+            writer.write(model, baos, null);
             
             synchronized (this)
             {                

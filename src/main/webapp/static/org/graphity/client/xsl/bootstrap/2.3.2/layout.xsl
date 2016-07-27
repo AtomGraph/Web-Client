@@ -1297,7 +1297,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
-        <xsl:param name="constraint-violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
+        <xsl:param name="violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="parent-uri" select="key('resources', $g:requestUri)/(sioc:has_parent, sioc:has_container)/@rdf:resource" as="xs:anyURI?"/>
         <xsl:param name="parent-doc" select="document($parent-uri)" as="document-node()?"/>
         <xsl:param name="construct-uri" select="if ($parent-doc) then key('resources-by-constructor-of', $parent-uri, $parent-doc)[gc:forClass/@rdf:resource = key('resources', $g:requestUri)/rdf:type/@rdf:resource]/@rdf:about else ()" as="xs:anyURI*"/>
@@ -1319,7 +1319,7 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
 
-            <xsl:apply-templates select="$constraint-violations" mode="bs2:ConstraintViolationMode"/>
+            <xsl:apply-templates select="$violations" mode="bs2:ViolationMode"/>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
@@ -1328,7 +1328,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                 <xsl:sort select="gc:property-label(.)"/>
-                <xsl:with-param name="constraint-violations" select="$constraint-violations"/>
+                <xsl:with-param name="violations" select="$violations"/>
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
             </xsl:apply-templates>
         </fieldset>
@@ -1336,9 +1336,9 @@ exclude-result-prefixes="#all">
 
     <!-- CONSTRAINT VIOLATION MODE -->
     
-    <xsl:template match="*" mode="bs2:ConstraintViolationMode"/>
+    <xsl:template match="*" mode="bs2:ViolationMode"/>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:ConstraintViolationMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:ViolationMode" priority="1">
 	<xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
 
         <div>
