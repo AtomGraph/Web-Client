@@ -121,7 +121,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     }
     
     @Override
-    public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException, WebApplicationException
+    public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException
     {
 	if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
@@ -147,7 +147,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	catch (TransformerException ex)
 	{
 	    if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR); // TO-DO: make Mapper
 	}
     }
 

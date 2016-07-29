@@ -47,7 +47,7 @@ public class URIRewritingModelProvider extends ModelProvider
     }
     
     @Override
-    public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
+    public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
     {
         return process(super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream));
     }
