@@ -18,7 +18,6 @@ package org.graphity.client.filter.response;
 
 import org.apache.jena.ontology.AnnotationProperty;
 import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
@@ -41,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+import org.graphity.client.util.OntologyProvider;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.vocabulary.GP;
 import org.graphity.core.exception.ConfigurationException;
@@ -256,10 +256,7 @@ public class HypermediaFilter implements ContainerResponseFilter
     
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
-	if (ontologyURI == null) throw new IllegalArgumentException("String cannot be null");
-	if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
-        
-        return OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
+        return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
     }
   
     public Resource getState(ContainerRequest request, Model model)

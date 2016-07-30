@@ -16,7 +16,6 @@
  */
 package org.graphity.client.writer;
 
-import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
@@ -55,6 +54,7 @@ import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.graphity.client.util.DataManager;
+import org.graphity.client.util.OntologyProvider;
 import org.graphity.client.util.XSLTBuilder;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.vocabulary.GP;
@@ -407,10 +407,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
-	if (ontologyURI == null) throw new IllegalArgumentException("String cannot be null");
-	if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
-        
-        return OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
+        return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
     }
 
     public MediaType getCustomMediaType(UriInfo uriInfo)
