@@ -299,9 +299,7 @@ public class HypermediaFilter implements ContainerResponseFilter
     
     public Model addInstance(Model model, OntClass forClass)
     {
-        if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-
-        if (log.isDebugEnabled()) log.debug("Invoking constructor on class {} using property {}", forClass);
+        if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
         new ConstructorBase().construct(forClass, model);
         
         return model;
