@@ -40,6 +40,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+import org.apache.jena.iri.IRI;
+import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.riot.checker.CheckerIRI;
+import org.apache.jena.riot.system.ErrorHandlerFactory;
+import org.graphity.client.exception.OntClassNotFoundException;
 import org.graphity.client.util.OntologyProvider;
 import org.graphity.client.vocabulary.GC;
 import org.graphity.client.vocabulary.GP;
@@ -80,13 +85,14 @@ public class HypermediaFilter implements ContainerResponseFilter
             OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
 
             long oldCount = model.size();
-            if (getForClass(request) != null)
+            IRI forClassIRI = getForClassIRI(request, ontModel);            
+            if (forClassIRI != null)
             {
+                OntClass forClass = ontModel.getOntClass(forClassIRI.toURI().toString());
+                if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassIRI + "' not found in sitemap");
+                
                 if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                {
-                    OntClass forClass = ontModel.createClass(getForClass(request).getURI());
                     addInstance(model, forClass);
-                }
                 
                 state.addProperty(GC.constructorOf, getForClassBuilder(state, null).
                     build());
@@ -99,7 +105,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                         response.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE)))
                     return response;
                 
-                OntClass template = ontModel.getOntClass(typeHref.toString());            
+                OntClass template = ontModel.getOntClass(typeHref.toString());
                 if (template != null)
                 {
                     if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
@@ -137,7 +143,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
 
-    public StateBuilder getForClassBuilder(Resource resource, Resource forClass)
+    public StateBuilder getForClassBuilder(Resource resource, OntClass forClass)
     {
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 
@@ -287,12 +293,20 @@ public class HypermediaFilter implements ContainerResponseFilter
         return mode;
     }
 
-    public Resource getForClass(ContainerRequest request)
+    public IRI getForClassIRI(ContainerRequest request, OntModel ontModel)
     {
 	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
+	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
 
         if (request.getQueryParameters().containsKey(GC.forClass.getLocalName()))
-            return ResourceFactory.createResource(request.getQueryParameters().getFirst(GC.forClass.getLocalName()));
+        {
+            String classIRIStr = request.getQueryParameters().getFirst(GC.forClass.getLocalName());
+            IRI classIRI = IRIFactory.iriImplementation().create(classIRIStr);
+            // throws Exceptions on bad URIs:
+            CheckerIRI.iriViolations(classIRI, ErrorHandlerFactory.getDefaultErrorHandler());
+
+            return classIRI;
+        }
         
         return null;
     }
