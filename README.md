@@ -29,9 +29,9 @@ Getting started
 ===============
 
 * [what is Linked Data](../../wiki/What-is-Linked-Data)
-* [installing AtomGraph Web-Client](../../wiki/Installation)
-* [extending AtomGraph Client](../../wiki/Extending-Web-Client)
-* [configuring AtomGraph Client](../../wiki/Configuration)
+* [installing Web-Client](../../wiki/Installation)
+* [extending Web-Client](../../wiki/Extending-Web-Client)
+* [configuring Web-Client](../../wiki/Configuration)
 * [JavaDoc](http://graphity.github.io/graphity-client/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
