@@ -56,6 +56,7 @@
 
 # INDIVIDUALS
 
+# rename to #Create?
 <#ConstructMode> rdfs:label "Create" ;
     rdfs:isDefinedBy <#> .
 
@@ -85,4 +86,11 @@
 
 <#GraphMode> a <#Mode>, <#PageMode> ;
     rdfs:label "Graph" ;
+    rdfs:isDefinedBy <#> .
+
+# rename to #Delete?
+<#DeleteMode> rdfs:label "Delete" ;
+    rdfs:isDefinedBy <#> .
+
+<#Export> rdfs:label "Export" ;
     rdfs:isDefinedBy <#> .

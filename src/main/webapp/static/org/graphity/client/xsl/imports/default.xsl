@@ -101,9 +101,7 @@ exclude-result-prefixes="#all">
             </xsl:choose>
         </xsl:variable>
         <xsl:if test="not(empty($descriptions))">
-            <p>
-                <xsl:copy-of select="substring($descriptions[1], 1, 300)"/>
-            </p>
+            <xsl:copy-of select="$descriptions[1]"/>
         </xsl:if>
     </xsl:template>
 

@@ -83,6 +83,15 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="$labels[1]"/>
     </xsl:function>
 
+    <xsl:function name="gc:description" as="xs:string?">
+	<xsl:param name="resource" as="element()"/>
+
+        <xsl:variable name="descriptions" as="xs:string*">
+            <xsl:apply-templates select="$resource" mode="gc:DescriptionMode"/>
+        </xsl:variable>
+        <xsl:sequence select="$descriptions[1]"/>
+    </xsl:function>
+
     <xsl:function name="gc:property-label" as="xs:string?">
 	<xsl:param name="property" as="element()"/>
 	

@@ -454,7 +454,8 @@ exclude-result-prefixes="#all">
         <xsl:next-match/>
     </xsl:template>
 
-    <xsl:template match="*[gc:constructorOf/@rdf:resource]" mode="bs2:BreadCrumbMode" priority="1">
+    <!--
+    <xsl:template match="*[gc:constructorOf/@rdf:resource]" mode="bs2:BreadCrumbMode" priority="2">
         <xsl:choose>
             <xsl:when test="key('resources', gc:constructorOf/@rdf:resource)">
                 <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current">
@@ -473,7 +474,8 @@ exclude-result-prefixes="#all">
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))/@rdf:about" mode="gc:InlineMode"/>
     </xsl:template>
-
+    -->
+    
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:BreadCrumbMode">
         <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
         
@@ -1207,10 +1209,25 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="$resources" mode="bs2:EditMode">
-                <xsl:with-param name="template-doc" select="$template-doc"/>
-                <xsl:sort select="gc:label(.)"/>
-            </xsl:apply-templates>
+            <fieldset>
+                <xsl:for-each select="key('resources', $forClass, $template-doc)">
+                    <legend>
+                        <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:LabelMode"/>
+                        <xsl:text> </xsl:text>
+                        <xsl:apply-templates select="." mode="gc:LabelMode"/>
+                    </legend>
+                    <xsl:if test="gc:description(.)">
+                        <p class="text-info">
+                            <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
+                        </p>
+                    </xsl:if>
+                </xsl:for-each>
+                
+                <xsl:apply-templates select="$resources" mode="bs2:EditMode">
+                    <xsl:with-param name="template-doc" select="$template-doc"/>
+                    <xsl:sort select="gc:label(.)"/>
+                </xsl:apply-templates>
+            </fieldset>
 
             <xsl:apply-templates select="." mode="bs2:FormActionsMode">
                 <xsl:with-param name="button-class" select="$button-class"/>

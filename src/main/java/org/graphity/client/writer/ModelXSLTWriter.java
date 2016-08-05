@@ -87,6 +87,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     }
     
     @Context private UriInfo uriInfo;
+    @Context private Request request;
     @Context private HttpHeaders httpHeaders;
     @Context private ServletConfig servletConfig;
     @Context private Providers providers;
@@ -206,6 +207,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	return uriInfo;
     }
 
+    public Request getRequest()
+    {
+        return request;
+    }
+    
     public HttpHeaders getHttpHeaders()
     {
 	return httpHeaders;
@@ -254,6 +260,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {        
         bld.parameter("{" + G.absolutePath.getNameSpace() + "}" + G.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
         parameter("{" + G.requestUri.getNameSpace() + "}" + G.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+        parameter("{" + G.method.getNameSpace() + "}" + G.method.getLocalName(), getRequest().getMethod()).
         parameter("{" + G.httpHeaders.getNameSpace() + "}" + G.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
      
