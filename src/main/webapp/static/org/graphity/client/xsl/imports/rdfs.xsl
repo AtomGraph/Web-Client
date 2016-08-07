@@ -32,15 +32,11 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="#all">
 
-    <xsl:preserve-space elements="rdfs:label rdfs:label"/>
-
-    <xsl:template match="rdfs:label | rdfs:comment | rdfs:seeAlso" mode="gc:PropertyListMode"/>
-
-    <xsl:template match="rdfs:label | @rdfs:label" mode="gc:LabelMode">
+    <xsl:template match="rdfs:label | @rdfs:label" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment" mode="gc:DescriptionMode">
+    <xsl:template match="rdfs:comment" mode="gc:description">
         <xsl:value-of select="."/>
     </xsl:template>
     

@@ -29,18 +29,24 @@ xmlns:sioc="&sioc;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="sioc:avatar" mode="bs2:PropertyList" priority="1"/>
+
+    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:PropertyList"/>
+
+    <!--
     <xsl:template match="sioc:*" mode="bs2:InlinePropertyListMode">
         <dl class="pull-left" style="margin: 0; margin-right: 1em">
             <dt>
-                <xsl:apply-templates select="." mode="gc:InlineMode"/>
+                <xsl:apply-templates select="."/>
             </dt>
             <dd>
-                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="gc:InlineMode"/>
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
             </dd>
         </dl>
     </xsl:template>
+    -->
 
-    <xsl:template match="sioc:content/text()" mode="bs2:EditMode">
+    <xsl:template match="sioc:content/text()" mode="bs2:FormControl">
 	<xsl:param name="name" select="'ol'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -69,7 +75,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="$type-label">
             <xsl:choose>
                 <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                    <xsl:apply-templates select="../@rdf:datatype"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="help-inline">Literal</span>
@@ -78,7 +84,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:EditMode">
+    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:FormControl">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>

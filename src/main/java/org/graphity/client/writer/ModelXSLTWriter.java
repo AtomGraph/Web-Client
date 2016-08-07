@@ -49,10 +49,18 @@ import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.jena.iri.IRI;
+import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFWriter;
 import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.checker.CheckerIRI;
+import org.apache.jena.riot.system.ErrorHandlerFactory;
+import org.graphity.client.exception.OntClassNotFoundException;
+import org.graphity.client.filter.response.ConstructorBase;
 import org.graphity.client.util.DataManager;
 import org.graphity.client.util.OntologyProvider;
 import org.graphity.client.util.XSLTBuilder;
@@ -434,5 +442,31 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
          
         return null;
     }
-    
+
+    public IRI checkURI(String classIRIStr)
+    {
+	if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");
+
+        IRI classIRI = IRIFactory.iriImplementation().create(classIRIStr);
+        // throws Exceptions on bad URIs:
+        CheckerIRI.iriViolations(classIRI, ErrorHandlerFactory.getDefaultErrorHandler());
+
+        return classIRI;
+    }
+
+    public Source getConstructedSource(URI ontologyURI, URI forClassURI) throws URISyntaxException
+    {
+	if (ontologyURI == null) throw new IllegalArgumentException("Ontology URI cannot be null");
+	if (forClassURI == null) throw new IllegalArgumentException("Class URI cannot be null");
+
+        Model model = ModelFactory.createDefaultModel();
+        OntModelSpec ontModelSpec = getOntModelSpec(null);
+        OntModel ontModel = getOntModel(ontologyURI.toString(), ontModelSpec);
+        OntClass forClass = ontModel.getOntClass(checkURI(forClassURI.toString()).toURI().toString());
+        if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
+        
+        new ConstructorBase().construct(forClass, model);
+        return getSource(model);
+    }
+
 }

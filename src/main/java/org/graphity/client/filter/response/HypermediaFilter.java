@@ -92,10 +92,10 @@ public class HypermediaFilter implements ContainerResponseFilter
                 if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassIRI + "' not found in sitemap");
                 
                 if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                    addInstance(model, forClass);
+                    state.addProperty(GC.constructor, addInstance(model, forClass)); // connects hypermedia resource to CONSTRUCTed template
                 
-                state.addProperty(GC.constructorOf, getForClassBuilder(state, null).
-                    build());
+                //state.addProperty(GC.constructorOf, getForClassBuilder(state, null).
+                //    build());
             }
             else
             {
@@ -311,12 +311,10 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
     
-    public Model addInstance(Model model, OntClass forClass)
+    public Resource addInstance(Model model, OntClass forClass)
     {
         if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
-        new ConstructorBase().construct(forClass, model);
-        
-        return model;
+        return new ConstructorBase().construct(forClass, model);
     }
     
 }

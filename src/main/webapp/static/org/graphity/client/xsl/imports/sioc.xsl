@@ -27,52 +27,16 @@ xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
 exclude-result-prefixes="#all">
-
-    <!--
-    <xsl:template match="sioc:content" mode="gc:PropertyListMode"/>
-    -->
     
-    <xsl:template match="sioc:name | @sioc:name" mode="gc:LabelMode">
+    <xsl:template match="sioc:name | @sioc:name" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <!--
-    <xsl:template match="sioc:content" mode="gc:DescriptionMode">
-        <xsl:value-of select="."/>
-    </xsl:template>
-    -->
-
-    <xsl:template match="sioc:avatar" mode="gc:PropertyListMode" priority="1"/>
-
-    <xsl:template match="sioc:avatar[../@rdf:about][@rdf:resource]" mode="gc:ImageMode">
-	<a href="{../@rdf:about}">
-	    <img src="{@rdf:resource}">
-		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
-	    </img>
-	</a>
-    </xsl:template>
-
-    <xsl:template match="sioc:avatar[../@rdf:nodeID][@rdf:resource]" mode="gc:ImageMode">
-	<img src="{sioc:avatar/@rdf:resource}">
-	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
-	</img>
-    </xsl:template>
-
-    <xsl:template match="sioc:avatar/@rdf:resource" mode="gc:InlineMode">
-	<a href="{.}">
-	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:ObjectLabelMode"/></xsl:attribute>
-	    </img>
-	</a>
-    </xsl:template>
-
-    <xsl:template match="sioc:email/@rdf:resource" mode="gc:InlineMode">
+    <xsl:template match="sioc:email/@rdf:resource">
 	<a href="{.}">
 	    <xsl:value-of select="substring-after(., 'mailto:')"/>
 	</a>
     </xsl:template>
-
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="gc:PropertyListMode"/>
 
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="gc:TablePredicateMode"/>
 

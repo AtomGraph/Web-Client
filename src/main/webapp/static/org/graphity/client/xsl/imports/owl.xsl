@@ -32,10 +32,10 @@ xmlns:owl="&owl;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="owl:sameAs" mode="gc:PropertyListMode"/>
+    <xsl:template match="owl:sameAs" mode="bs2:PropertyList"/>
 
     <!--
-    <xsl:template match="owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:resource | owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:nodeID" mode="bs2:EditMode">
+    <xsl:template match="owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:resource | owl:hasValue[../owl:onProperty/@rdf:resource = '&sioc;has_container']/@rdf:nodeID" mode="bs2:FormControl">
 SHEET
     </xsl:template>
     -->

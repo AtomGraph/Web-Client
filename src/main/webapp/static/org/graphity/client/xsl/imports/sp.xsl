@@ -28,7 +28,7 @@ xmlns:rdf="&rdf;"
 xmlns:sp="&sp;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="sp:text/text()" mode="gc:InlineMode">
+    <xsl:template match="sp:text/text()">
         <pre>
             <xsl:next-match/>
         </pre>

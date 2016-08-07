@@ -31,14 +31,12 @@ xmlns:dct="&dct;"
 exclude-result-prefixes="#all">
 
     <xsl:preserve-space elements="dct:title dct:description"/>
-
-    <xsl:template match="dct:title | dct:description | dct:subject" mode="gc:PropertyListMode"/>
     
-    <xsl:template match="dct:title | @dct:title" mode="gc:LabelMode">
+    <xsl:template match="dct:title | @dct:title" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="dct:description" mode="gc:DescriptionMode">
+    <xsl:template match="dct:description" mode="gc:description">
         <xsl:value-of select="."/>
     </xsl:template>
     

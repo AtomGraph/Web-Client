@@ -26,18 +26,16 @@ xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:doap="&doap;"
 exclude-result-prefixes="#all">
-
-    <xsl:template match="doap:name | doap:description" mode="gc:PropertyListMode"/>
     
-    <xsl:template match="doap:name | @doap:name" mode="gc:LabelMode">
+    <xsl:template match="doap:name | @doap:name" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="doap:description" mode="gc:DescriptionMode">
+    <xsl:template match="doap:description" mode="gc:description">
         <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource" mode="gc:InlineMode">
+    <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">
 	<a href="{.}">
 	    <xsl:value-of select="."/>
 	</a>

@@ -15,9 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc "http://graphity.org/gc#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
+    <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -27,9 +27,7 @@ xmlns:rdf="&rdf;"
 xmlns:skos="&skos;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="skos:prefLabel" mode="gc:PropertyListMode"/>
-
-    <xsl:template match="skos:prefLabel | @skos:prefLabel" mode="gc:LabelMode">
+    <xsl:template match="skos:prefLabel | @skos:prefLabel" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 

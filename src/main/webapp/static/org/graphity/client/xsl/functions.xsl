@@ -17,6 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY gc     "http://graphity.org/gc#">
+    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
@@ -31,10 +32,10 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:gc="&gc;"
+xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
@@ -55,6 +56,154 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
 
+    <!-- LABEL MODE -->
+
+    <xsl:template match="node()" mode="gc:label"/>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:label">
+        <xsl:variable name="labels" as="xs:string*">
+            <xsl:variable name="lang-labels" as="xs:string*">
+                <xsl:apply-templates select="*[lang($gp:lang)]" mode="#current"/>
+            </xsl:variable>
+            <xsl:choose>
+                <xsl:when test="not(empty($lang-labels))">
+                    <xsl:sequence select="$lang-labels"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:choose>
+            <xsl:when test="not(empty($labels))">
+                <xsl:value-of select="concat(upper-case(substring($labels[1], 1, 1)), substring($labels[1], 2))"/>
+            </xsl:when>
+            <xsl:when test="contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))">
+                <xsl:variable name="label" select="substring-after(@rdf:about, '#')"/>
+                <xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize(@rdf:about, '/')[last()]) &gt; 0">
+                <xsl:variable name="label" use-when="function-available('url:decode')" select="translate(url:decode(tokenize(@rdf:about, '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:variable name="label" use-when="not(function-available('url:decode'))" select="translate(tokenize(@rdf:about, '/')[last()], '_', ' ')"/>
+                <xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="@rdf:about | @rdf:nodeID"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- DESCRIPTION MODE -->
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:description"/>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:description">
+        <xsl:variable name="descriptions" as="xs:string*">
+            <xsl:variable name="lang-descriptions" as="xs:string*">
+                <xsl:apply-templates select="*[lang($gp:lang)]" mode="#current"/>
+            </xsl:variable>
+            <xsl:choose>
+                <xsl:when test="not(empty($lang-descriptions))">
+                    <xsl:sequence select="$lang-descriptions"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:if test="not(empty($descriptions))">
+            <xsl:copy-of select="$descriptions[1]"/>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- PROPERTY LABEL MODE -->
+        
+    <xsl:template match="node()" mode="gc:property-label"/>
+        
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:property-label">
+	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        
+        <xsl:choose>
+            <xsl:when test="key('resources', $this)">
+                <xsl:apply-templates select="key('resources', $this)" mode="gc:label"/>
+            </xsl:when>
+            <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
+                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="gc:label"/>
+            </xsl:when>
+            <xsl:when test="contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))">
+                <xsl:value-of select="substring-after(concat(namespace-uri(), local-name()), '#')"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
+                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>                    
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$this"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- OBJECT LABEL NODE -->
+    
+    <xsl:template match="node()" mode="gc:object-label"/>
+        
+    <xsl:template match="@rdf:resource | @rdf:nodeID | sparql:uri" mode="gc:object-label">
+        <xsl:choose>
+            <xsl:when test="key('resources', .)">
+                <xsl:apply-templates select="key('resources', .)" mode="gc:label"/>
+            </xsl:when>
+            <xsl:when test="doc-available(gc:document-uri(.)) and key('resources', ., document(gc:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'" >
+                <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="gc:label"/>
+            </xsl:when>
+            <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
+                <xsl:value-of select="substring-after(., '#')"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
+                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>                    
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="."/>
+            </xsl:otherwise>
+        </xsl:choose>        
+    </xsl:template>
+    
+    <!-- IMAGE MODE -->
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:image"/>
+
+    <!-- FUNCTIONS -->
+    
+    <xsl:function name="gc:label" as="xs:string?">
+	<xsl:param name="resource" as="element()"/>
+
+        <xsl:variable name="labels" as="xs:string*">
+            <xsl:apply-templates select="$resource" mode="gc:label"/>
+        </xsl:variable>
+        <xsl:sequence select="$labels[1]"/>
+    </xsl:function>
+
+    <xsl:function name="gc:description" as="xs:string?">
+	<xsl:param name="resource" as="element()"/>
+
+        <xsl:variable name="descriptions" as="xs:string*">
+            <xsl:apply-templates select="$resource" mode="gc:description"/>
+        </xsl:variable>
+        <xsl:sequence select="$descriptions[1]"/>
+    </xsl:function>
+
+    <xsl:function name="gc:property-label" as="xs:string?">
+	<xsl:param name="property" as="element()"/>
+	
+	<xsl:apply-templates select="$property" mode="gc:PropertyLabelMode"/>
+    </xsl:function>
+
+    <xsl:function name="gc:object-label" as="xs:string?">
+	<xsl:param name="object" as="attribute()"/>
+	
+	<xsl:apply-templates select="$object" mode="gc:ObjectLabelMode"/>
+    </xsl:function>
+
     <xsl:function name="gc:document-uri" as="xs:anyURI">
 	<xsl:param name="uri" as="xs:anyURI"/>
 	<xsl:choose>
@@ -72,36 +221,6 @@ exclude-result-prefixes="#all">
 	<xsl:param name="uri" as="xs:anyURI"/>
 	
 	<xsl:sequence select="substring-after($uri, '#')"/>
-    </xsl:function>
-
-    <xsl:function name="gc:label" as="xs:string?">
-	<xsl:param name="resource" as="element()"/>
-
-        <xsl:variable name="labels" as="xs:string*">
-            <xsl:apply-templates select="$resource" mode="gc:LabelMode"/>
-        </xsl:variable>
-        <xsl:sequence select="$labels[1]"/>
-    </xsl:function>
-
-    <xsl:function name="gc:description" as="xs:string?">
-	<xsl:param name="resource" as="element()"/>
-
-        <xsl:variable name="descriptions" as="xs:string*">
-            <xsl:apply-templates select="$resource" mode="gc:DescriptionMode"/>
-        </xsl:variable>
-        <xsl:sequence select="$descriptions[1]"/>
-    </xsl:function>
-
-    <xsl:function name="gc:property-label" as="xs:string?">
-	<xsl:param name="property" as="element()"/>
-	
-	<xsl:apply-templates select="$property" mode="gc:PropertyLabelMode"/>
-    </xsl:function>
-
-    <xsl:function name="gc:object-label" as="xs:string?">
-	<xsl:param name="object" as="attribute()"/>
-	
-	<xsl:apply-templates select="$object" mode="gc:ObjectLabelMode"/>
     </xsl:function>
 
     <xsl:function name="rdfs:domain" as="attribute()*">
@@ -261,6 +380,13 @@ exclude-result-prefixes="#all">
                 <xsl:sequence select="key('resources', $element/sp:elements/@rdf:nodeID, root($element))/gc:visit-elements(., $type)"/>
             </xsl:when>
         </xsl:choose>
+    </xsl:function>
+
+    <xsl:function name="gc:construct-doc" as="document-node()">
+        <xsl:param name="ontology" as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:anyURI"/>
+
+        <xsl:sequence select="mxw:getConstructedSource(mxw:new(), $ontology, $class)" xmlns:mxw="java:org.graphity.client.writer.ModelXSLTWriter"/>
     </xsl:function>
 
 </xsl:stylesheet>

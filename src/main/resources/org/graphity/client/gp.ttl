@@ -153,12 +153,6 @@
     rdfs:comment "Links page resource to its container resource" ;
     rdfs:isDefinedBy <#> .
 
-<#constructorOf> a owl:ObjectProperty ;
-    rdfs:domain <#Constructor> ;
-    rdfs:range <#Container> ;
-    rdfs:label "Links constructor resource to its container" ;
-    rdfs:isDefinedBy <#> .
-
 <#limit> a owl:DatatypeProperty ;
     rdfs:domain <#Page> ;
     rdfs:range xsd:long ;
@@ -570,13 +564,14 @@ WHERE {
 # ====
 
 <#ConstructMissingPropertyValue> a sp:Construct, sp:Query ; # <#Query> ;
-      sp:text """CONSTRUCT {
+      sp:text """PREFIX spin:	<http://spinrdf.org/spin#>
+CONSTRUCT {
     _:b0 a spin:ConstraintViolation .
     _:b0 spin:violationRoot ?this .
     _:b0 spin:violationPath ?arg1 .
 }
 WHERE {
-    NOT EXISTS {
+    FILTER NOT EXISTS {
         ?this ?arg1 ?arg2 .
     } 
 }""" .

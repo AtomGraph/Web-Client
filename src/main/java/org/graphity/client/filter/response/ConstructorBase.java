@@ -58,13 +58,13 @@ public class ConstructorBase
 {
     private static final Logger log = LoggerFactory.getLogger(ConstructorBase.class);
 
-    public void construct(OntClass forClass, Model targetModel)
+    public Resource construct(OntClass forClass, Model targetModel)
     {
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
         if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");
 
-        addInstance(forClass, SPIN.constructor, targetModel.createResource(), targetModel);
-        addClass(forClass, targetModel);
+        addClass(forClass, targetModel); // TO-DO: remove when classes and constraints are cached/dereferencable
+        return addInstance(forClass, SPIN.constructor, targetModel.createResource(), targetModel);
     }
 
     // workaround for SPIN API limitation: https://groups.google.com/d/msg/topbraid-users/AVXXEJdbQzk/w5NrJFs35-0J
@@ -109,7 +109,7 @@ public class ConstructorBase
         return fixedModel;
     }
     
-    public void addInstance(OntClass forClass, Property property, Resource instance, Model targetModel)
+    public Resource addInstance(OntClass forClass, Property property, Resource instance, Model targetModel)
     {
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
         if (property == null) throw new IllegalArgumentException("Property cannot be null");
@@ -172,7 +172,9 @@ public class ConstructorBase
         finally
         {
             superClassIt.close();
-        }        
+        }
+        
+        return instance;
     }
     
     public Statement getConstructorStmt(Resource cls, Property property)

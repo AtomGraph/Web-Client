@@ -17,30 +17,17 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://graphity.org/gc#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">    
+    <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
-xmlns:xhv="&xhv;"
+xmlns:skos="&skos;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <!--
-    <xsl:template match="xhv:prev[@rdf:resource]" mode="bs2:PaginationMode">
-        <a href="{@rdf:resource}" class="active">
-            &#8592; <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/>
-        </a>
-    </xsl:template>
-        
-    <xsl:template match="xhv:next[@rdf:resource]" mode="bs2:PaginationMode">
-        <a href="{@rdf:resource}">
-            <xsl:apply-templates select="key('resources', concat(namespace-uri(), local-name()), document(''))" mode="gc:LabelMode"/> &#8594;
-        </a>
-    </xsl:template>
-    -->
-    
+    <xsl:template match="skos:prefLabel" mode="bs2:PropertyList"/>
+
 </xsl:stylesheet>

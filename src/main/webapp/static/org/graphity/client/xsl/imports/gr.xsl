@@ -28,11 +28,11 @@ xmlns:rdf="&rdf;"
 xmlns:gr="&gr;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gr:name | @gr:name" mode="gc:LabelMode">
+    <xsl:template match="gr:name | @gr:name" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="gr:description" mode="gc:DescriptionMode">
+    <xsl:template match="gr:description" mode="gc:description">
         <xsl:value-of select="."/>
     </xsl:template>
 

@@ -25,18 +25,18 @@ xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdf:type" mode="gc:PropertyListMode"/>
-
-    <xsl:template match="rdf:type/@rdf:resource" priority="1" mode="gc:InlineMode">
+    <xsl:template match="rdf:type/@rdf:resource" priority="1">
 	<span title="{.}" class="btn btn-type">
             <xsl:next-match/>
         </span>
     </xsl:template>
 
-    <xsl:template match="rdf:type/@rdf:resource[. = $rdf:type]" priority="2" mode="gc:InlineMode">
+    <!--
+    <xsl:template match="rdf:type/@rdf:resource[. = $rdf:type]" priority="2" mode="xhtml:Anchor">
 	<span title="{.}" class="btn btn-type btn-primary">
             <xsl:next-match/>
         </span>
     </xsl:template>
+    -->
     
 </xsl:stylesheet>

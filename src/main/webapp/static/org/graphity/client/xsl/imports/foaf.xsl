@@ -23,12 +23,13 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="foaf:page/@rdf:resource | foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource" mode="gc:InlineMode">
+    <xsl:template match="foaf:page/@rdf:resource | foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource">
 	<a href="{.}">
 	    <xsl:choose>
 		<xsl:when test="starts-with(., 'http://')">
@@ -44,63 +45,61 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:mbox/@rdf:resource" mode="gc:InlineMode">
+    <xsl:template match="foaf:mbox/@rdf:resource">
 	<a href="{.}">
 	    <xsl:value-of select="substring-after(., 'mailto:')"/>
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:phone/@rdf:resource" mode="gc:InlineMode">
+    <xsl:template match="foaf:phone/@rdf:resource">
 	<a href="{.}">
 	    <xsl:value-of select="substring-after(., 'tel:')"/>
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="gc:PropertyListMode" priority="1"/>
-
-    <xsl:template match="foaf:img[../@rdf:about][@rdf:resource]" mode="gc:ImageMode" priority="3">
+    <xsl:template match="foaf:img[../@rdf:about][@rdf:resource]" mode="gc:image" priority="3">
 	<a href="{../@rdf:about}">
 	    <img src="{@rdf:resource}">
-		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:label"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:img[../@rdf:nodeID][@rdf:resource]" mode="gc:ImageMode" priority="3">
+    <xsl:template match="foaf:img[../@rdf:nodeID][@rdf:resource]" mode="gc:image" priority="3">
 	<img src="{@rdf:resource}">
-	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
+	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:label"/></xsl:attribute>
 	</img>
     </xsl:template>
 
-    <xsl:template match="foaf:depiction[../@rdf:about][@rdf:resource]" mode="gc:ImageMode" priority="2">
+    <xsl:template match="foaf:depiction[../@rdf:about][@rdf:resource]" mode="gc:image" priority="2">
 	<a href="{../@rdf:about}">
 	    <img src="{@rdf:resource}">
-		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:label"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:depiction[../@rdf:nodeID][@rdf:resource]" mode="gc:ImageMode" priority="2">
+    <xsl:template match="foaf:depiction[../@rdf:nodeID][@rdf:resource]" mode="gc:image" priority="2">
 	<img src="{@rdf:resource}">
-	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
+	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:label"/></xsl:attribute>
 	</img>
     </xsl:template>
 
-    <xsl:template match="foaf:logo[../@rdf:about][@rdf:resource]" mode="gc:ImageMode" priority="1">
+    <xsl:template match="foaf:logo[../@rdf:about][@rdf:resource]" mode="gc:image" priority="1">
 	<a href="{../@rdf:about}">
 	    <img src="{@rdf:resource}">
-		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:label"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="foaf:logo[../@rdf:nodeID][@rdf:resource]" mode="gc:ImageMode" priority="1">
+    <xsl:template match="foaf:logo[../@rdf:nodeID][@rdf:resource]" mode="gc:image" priority="1">
 	<img src="{@rdf:resource}">
-	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:LabelMode"/></xsl:attribute>
+	    <xsl:attribute name="alt"><xsl:apply-templates select=".." mode="gc:label"/></xsl:attribute>
 	</img>
     </xsl:template>
     
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="gc:InlineMode">
+    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
 	<a href="{.}">
 	    <img src="{.}">
 		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:ObjectLabelMode"/></xsl:attribute>
@@ -108,44 +107,43 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-
-    <xsl:template match="foaf:nick" mode="gc:LabelMode" priority="5">
+    <xsl:template match="foaf:nick" mode="gc:label" priority="5">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="foaf:name" mode="gc:LabelMode" priority="4">
+    <xsl:template match="foaf:name" mode="gc:label" priority="4">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="foaf:nick | @foaf:nick" mode="gc:LabelMode" priority="3">
+    <xsl:template match="foaf:nick | @foaf:nick" mode="gc:label" priority="3">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="foaf:firstName[../foaf:lastName]" mode="gc:LabelMode" priority="2">
+    <xsl:template match="foaf:firstName[../foaf:lastName]" mode="gc:label" priority="2">
 	<xsl:variable name="label" select="concat(., ' ', ../foaf:lastName[1])"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="foaf:lastName[../foaf:firstName]" mode="gc:LabelMode" priority="2">
+    <xsl:template match="foaf:lastName[../foaf:firstName]" mode="gc:label" priority="2">
 	<xsl:variable name="label" select="concat(../foaf:firstName[1], ' ', .)"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="foaf:givenName[../foaf:familyName]" mode="gc:LabelMode" priority="1.5">
+    <xsl:template match="foaf:givenName[../foaf:familyName]" mode="gc:label" priority="1.5">
 	<xsl:variable name="label" select="concat(., ' ', ../foaf:familyName[1])"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="foaf:familyName[../foaf:givenName]" mode="gc:LabelMode" priority="1.5">
+    <xsl:template match="foaf:familyName[../foaf:givenName]" mode="gc:label" priority="1.5">
 	<xsl:variable name="label" select="concat(../foaf:givenName[1], ' ', .)"/>
 	<xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
     </xsl:template>
 
-    <xsl:template match="foaf:familyName | @foaf:familyName" mode="gc:LabelMode" priority="1">
+    <xsl:template match="foaf:familyName | @foaf:familyName" mode="gc:label" priority="1">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="foaf:name | @foaf:name" mode="gc:LabelMode">
+    <xsl:template match="foaf:name | @foaf:name" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 

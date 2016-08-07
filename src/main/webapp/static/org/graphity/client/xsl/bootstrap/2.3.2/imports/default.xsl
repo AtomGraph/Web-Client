@@ -27,6 +27,7 @@ limitations under the License.
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
+    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -42,53 +43,50 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
+xmlns:foaf="&foaf;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
     <xsl:param name="gc:sitemap" as="document-node()?"/>
 
-    <!-- HEADER MODE -->
-    
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="bs2:HeaderMode">
-	<h2>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</h2>
+    <!-- PROPERTY LIST MODE -->
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:PropertyList">
+	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
+
+	<xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
+	    <dt>
+		<xsl:apply-templates select="."/>
+	    </dt>
+	</xsl:if>
+	<dd>
+	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+	</dd>
     </xsl:template>
 
-    <xsl:template match="@rdf:nodeID[../rdf:type/@rdf:resource = '&http;Response']" mode="bs2:HeaderMode" priority="1">
-        <div class="alert alert-error">
-            <h1>
-                <xsl:apply-templates select="." mode="gc:InlineMode"/>
-            </h1>
-        </div>
+    <xsl:template match="rdf:type[@rdf:resource] | foaf:primaryTopic[key('resources', (@rdf:resource, @rdf:nodeID))] | foaf:isPrimaryTopicOf[key('resources', (@rdf:resource, @rdf:nodeID))]" mode="bs2:FormControl" priority="1">
+        <xsl:apply-templates select="." mode="xhtml:Input">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="bs2:FormControl">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="bs2:FormControl">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
     </xsl:template>
 
-    <!-- LIST MODE -->
-    
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="bs2:ListMode">
-        <h2>
-            <xsl:apply-templates select="." mode="gc:InlineMode"/>
-        </h2>
-    </xsl:template>
-
-    <!-- GRID MODE -->
-    
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="bs2:GridMode">
-        <h2>
-            <xsl:apply-templates select="." mode="gc:InlineMode"/>
-        </h2>
-    </xsl:template>
-
-    <!-- EDIT MODE -->
+    <!-- FORM MODE -->
     
     <!-- @rdf:about | @rdf:nodeID -->
-    <xsl:template match="@rdf:*[local-name() = ('about', 'nodeID')]" mode="bs2:EditMode">
+    <xsl:template match="@rdf:*[local-name() = ('about', 'nodeID')]" mode="bs2:FormControl">
 	<xsl:param name="type" select="'hidden'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
@@ -96,7 +94,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- *[@rdf:about or @rdf:nodeID]/* -->
-    <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="bs2:EditMode">
+    <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="bs2:FormControl">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
         <xsl:param name="violations" as="element()*"/>
         <xsl:param name="error" select="$violations/spin:violationPath/@rdf:resource = $this" as="xs:boolean"/>
@@ -111,12 +109,12 @@ exclude-result-prefixes="#all">
 	    <xsl:if test="$error">
 		<xsl:attribute name="class">control-group error</xsl:attribute>
 	    </xsl:if>
-            <xsl:apply-templates select="." mode="gc:InputMode">
+            <xsl:apply-templates select="." mode="xhtml:Input">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
             <xsl:if test="$label">
                 <label class="control-label" for="{$for}" title="{$this}">
-                    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
+                    <xsl:apply-templates select="." mode="gc:property-label"/>
                 </label>
             </xsl:if>
             <xsl:if test="$cloneable">
@@ -142,14 +140,14 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="text()" mode="bs2:EditMode">
+    <xsl:template match="text()" mode="bs2:FormControl">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
@@ -159,7 +157,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="not($type = 'hidden') and $type-label">
             <xsl:choose>
                 <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                    <xsl:apply-templates select="../@rdf:datatype" mode="xhtml:Anchor"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="help-inline">Literal</span>
@@ -168,7 +166,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="text()[string-length(.) &gt; 50]" mode="bs2:EditMode">
+    <xsl:template match="text()[string-length(.) &gt; 50]" mode="bs2:FormControl">
 	<xsl:param name="name" select="'ol'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -201,7 +199,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="$type-label">
             <xsl:choose>
                 <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype" mode="gc:InlineMode"/>
+                    <xsl:apply-templates select="../@rdf:datatype" mode="xhtml:Anchor"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="help-inline">Literal</span>
@@ -210,15 +208,15 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <!--
-    <xsl:template match="@rdf:resource" mode="bs2:EditMode">
+    <!-- @rdf:resource, @rdf:nodeID -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControl">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
@@ -229,17 +227,16 @@ exclude-result-prefixes="#all">
             <span class="help-inline">Resource</span>
         </xsl:if>
     </xsl:template>
-    -->
 
     <!-- @xml:lang -->
-    <xsl:template match="@xml:*[local-name() = 'lang']" mode="bs2:EditMode">
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="bs2:FormControl">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" select="'input-mini'" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
@@ -252,14 +249,14 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- @rdf:datatype -->
-    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="bs2:EditMode">
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="bs2:FormControl">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>        
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
@@ -272,7 +269,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:* -->
-    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:EditMode" priority="1">
+    <!--
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControl" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -283,20 +281,19 @@ exclude-result-prefixes="#all">
         <xsl:variable name="resource" select="key('resources', .)"/>
 
 	<xsl:choose>
-            <!-- loop if node not visited already -->
 	    <xsl:when test="$resource and not(. = $traversed-ids)">
-                <xsl:apply-templates select="." mode="gc:InputMode">
+                <xsl:apply-templates select="." mode="xhtml:Input">
                     <xsl:with-param name="type" select="'hidden'"/>
                 </xsl:apply-templates>
 
-                <xsl:apply-templates select="$resource" mode="#current">
+                <xsl:apply-templates select="$resource" mode="bs2:Fieldset">
                     <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
                 </xsl:apply-templates>
-                <!-- restore subject context -->
+
                 <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
             </xsl:when>
 	    <xsl:otherwise>
-                <xsl:apply-templates select="." mode="gc:InputMode">
+                <xsl:apply-templates select="." mode="xhtml:Input">
                     <xsl:with-param name="type" select="$type"/>
                     <xsl:with-param name="id" select="$id"/>
                     <xsl:with-param name="class" select="$class"/>
@@ -309,27 +306,6 @@ exclude-result-prefixes="#all">
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>    
-
-    <!-- MEDIA TYPE SELECT MODE -->
-    
-    <!-- ideally should provide all serialization formats supported by Jena -->
-    <xsl:template match="@rdf:about" mode="bs2:MediaTypeSelectMode">
-	<a href="{.}?accept={encode-for-uri('application/rdf+xml')}" class="btn">RDF/XML</a>
-	<a href="{.}?accept={encode-for-uri('text/turtle')}" class="btn">Turtle</a>
-    </xsl:template>
-    
-    <!-- SIDEBAR NAV MODE -->
-    
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:SidebarNavMode"/>
-    
-    <xsl:template match="@rdf:nodeID | @rdf:resource" mode="bs2:SidebarNavMode">
-	<li>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
-	</li>
-    </xsl:template>
-    
-    <!-- INLINE PROPERTY LIST MODE -->
-    
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:InlinePropertyListMode"/>
+    -->
 
 </xsl:stylesheet>

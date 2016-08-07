@@ -29,7 +29,9 @@ xmlns:gp="&gp;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gp:slug/@rdf:datatype | gp:defaultLimit/@rdf:datatype | gp:defaultOffset/@rdf:datatype | gp:defaultOrderBy/@rdf:datatype | gp:defaultDesc/@rdf:datatype" mode="bs2:EditMode">
+    <xsl:template match="gp:slug" mode="bs2:PropertyList"/>
+    
+    <xsl:template match="gp:slug/@rdf:datatype | gp:defaultLimit/@rdf:datatype | gp:defaultOffset/@rdf:datatype | gp:defaultOrderBy/@rdf:datatype | gp:defaultDesc/@rdf:datatype" mode="bs2:FormControl">
         <xsl:next-match>
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:next-match>

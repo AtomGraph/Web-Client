@@ -23,21 +23,16 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <!--
-    <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource" mode="bs2:EditMode">
-	<input type="text" name="ol" id="{generate-id()}" value="{.}"/><br/>
-	<input type="file" name="ol" id="{generate-id()}"/><br/>
-	<img src="{.}" alt=""/>
-    </xsl:template
-    -->
+    <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="bs2:PropertyList"/>
 
-    <xsl:template match="foaf:primaryTopic | foaf:isPrimaryTopicOf" mode="bs2:EditMode">
+    <xsl:template match="foaf:primaryTopic | foaf:isPrimaryTopicOf" mode="bs2:FormControl">
         <xsl:apply-templates select="." mode="gc:InputMode">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
@@ -49,13 +44,13 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>        
     </xsl:template>
 
-    <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]"  mode="bs2:EditMode">
+    <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]" mode="bs2:FormControl">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:call-template name="gc:InputTemplate">
+        <xsl:call-template name="xhtml:Input">
             <xsl:with-param name="name" select="'ol'"/>
             <xsl:with-param name="type" select="'text'"/>
             <xsl:with-param name="id" select="$id"/>
@@ -68,13 +63,13 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="bs2:EditMode">
+    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="bs2:FormControl">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:call-template name="gc:InputTemplate">
+        <xsl:call-template name="xhtml:Input">
             <xsl:with-param name="name" select="'ol'"/>
             <xsl:with-param name="type" select="'text'"/>
             <xsl:with-param name="id" select="$id"/>

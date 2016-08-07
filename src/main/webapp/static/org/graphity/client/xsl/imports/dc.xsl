@@ -30,13 +30,11 @@ xmlns:rdf="&rdf;"
 xmlns:dc="&dc;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="dc:title | dc:description" mode="gc:PropertyListMode"/>
-
-    <xsl:template match="dc:title | @dc:title" mode="gc:LabelMode">
+    <xsl:template match="dc:title | @dc:title" mode="gc:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="dc:description" mode="gc:DescriptionMode">
+    <xsl:template match="dc:description" mode="gc:description">
         <xsl:value-of select="."/>
     </xsl:template>
 

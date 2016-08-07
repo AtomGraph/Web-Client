@@ -26,10 +26,14 @@ xmlns:rdf="&rdf;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="rdf:type" mode="bs2:PropertyList"/>
+
+    <!--
     <xsl:template match="@rdf:resource" mode="bs2:TypeListMode" priority="1">
         <li>
-	    <xsl:apply-templates select="." mode="gc:InlineMode"/>
+	    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
 	</li>
     </xsl:template>
+    -->
     
 </xsl:stylesheet>

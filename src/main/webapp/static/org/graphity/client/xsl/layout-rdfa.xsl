@@ -54,18 +54,18 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ListMode">
 	<div class="well" about="{@rdf:about}">
-            <xsl:apply-templates select="." mode="gc:ImageMode"/>
+            <xsl:apply-templates select="." mode="gc:image"/>
             
             <xsl:apply-templates select="." mode="bs2:ModeToggleMode"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 	    
-	    <xsl:apply-templates select="." mode="gc:DescriptionMode"/>
+	    <xsl:apply-templates select="." mode="gc:description"/>
 
 	    <xsl:apply-templates select="." mode="bs2:TypeListMode"/>            
 
 	    <xsl:if test="@rdf:nodeID">
-		<xsl:apply-templates select="." mode="gc:PropertyListMode"/>
+		<xsl:apply-templates select="." mode="bs2:PropertyList"/>
 	    </xsl:if>
 	</div>
 
@@ -86,19 +86,19 @@ exclude-result-prefixes="#all">
     
     <!-- INLINE LEVEL -->
     
-    <xsl:template match="@rdf:about" mode="gc:InlineMode">
+    <xsl:template match="@rdf:about" mode="xhtml:Anchor">
 	<a href="{.}" title="{.}" resource="{.}">
 	    <xsl:if test="substring-after(., concat($request-uri, '#'))">
 		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
 	    </xsl:if>
             <span property="http://purl.org/dc/terms/title">
-                <xsl:apply-templates select=".." mode="gc:LabelMode"/>
+                <xsl:apply-templates select=".." mode="gc:label"/>
             </span>
 	</a>
     </xsl:template>
 
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:InlineMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:Anchor">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
 	<span title="{$this}" property="{$this}">
@@ -107,14 +107,14 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object resource -->    
-    <xsl:template match="@rdf:resource | sparql:uri" mode="gc:InlineMode">
+    <xsl:template match="@rdf:resource | sparql:uri" mode="xhtml:Anchor">
 	<a href="{.}" title="{.}" resource="{.}">
             <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
 	</a>
     </xsl:template>
 	
     <!-- object blank node (avoid infinite loop) -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="gc:InlineMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="xhtml:Anchor">
 	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
 
 	<xsl:choose>
@@ -125,31 +125,31 @@ exclude-result-prefixes="#all">
 	    </xsl:when>
 	    <xsl:otherwise>
 		<span id="{.}" title="{.}">
-		    <xsl:apply-templates select="." mode="gc:LabelMode"/>
+		    <xsl:apply-templates select="." mode="gc:label"/>
 		</span>
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]" mode="gc:InlineMode">
+    <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]" mode="xhtml:Anchor">
 	<span title="{../@rdf:datatype | @datatype}" datatype="{../@rdf:datatype}">
 	    <xsl:value-of select="."/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1" mode="gc:InlineMode">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1" mode="xhtml:Anchor">
 	<span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
 	    <xsl:value-of select="format-number(., '#####.00')"/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="gc:InlineMode">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="xhtml:Anchor">
 	<span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
 	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
 	</span>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1" mode="gc:InlineMode">
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1" mode="xhtml:Anchor">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">

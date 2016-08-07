@@ -27,14 +27,8 @@ xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:gp="&gp;"
 exclude-result-prefixes="#all">
-
-    <xsl:preserve-space elements="gp:path gp:slug gp:uriTemplate gp:skolemTemplate gp:fragmentTemplate gp:defaultOrderBy"/>
-
-    <xsl:template match="gp:slug" mode="gc:PropertyListMode"/>
-        
-    <xsl:template match="gp:*" mode="gc:TablePredicateMode"/>
     
-    <xsl:template match="gp:uriTemplate/text() | gp:skolemTemplate/text()" mode="gc:InlineMode">
+    <xsl:template match="gp:uriTemplate/text() | gp:skolemTemplate/text()">
         <pre>
             <xsl:next-match/>
         </pre>
