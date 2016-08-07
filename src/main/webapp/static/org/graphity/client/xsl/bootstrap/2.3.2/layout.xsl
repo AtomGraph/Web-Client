@@ -1026,7 +1026,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
             
             <td>
-                QQ<xsl:apply-templates select="." mode="xhtml:Anchor"/>/QQ
+                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </td>
 
 	    <xsl:apply-templates select="$predicates" mode="gc:TableCellMode">

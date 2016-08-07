@@ -98,7 +98,7 @@ exclude-result-prefixes="#all">
     <!-- INLINE MODE -->
 
     <xsl:template match="*[key('resources-by-uri', @rdf:about)/@rdf:about]" mode="xhtml:Anchor" priority="1">
-	<a href="{key('resources-by-uri', .)/@rdf:about}" title="{@rdf:about}">
+	<a href="{key('resources-by-uri', @rdf:about)/@rdf:about}" title="{@rdf:about}">
 	    <xsl:apply-templates select="." mode="gc:label"/>
 	</a>
     </xsl:template>
