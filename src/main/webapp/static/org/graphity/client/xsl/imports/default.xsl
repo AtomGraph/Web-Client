@@ -50,6 +50,23 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="gc:uri/@rdf:resource"/>
 
+    <!-- LIST ITEM -->
+    
+    
+    <xsl:template match="*[*][@rdf:about]" mode="xhtml:ListItem">
+        <xsl:param name="active" as="xs:boolean?"/>
+        
+        <li>
+            <xsl:if test="$active">
+                <xsl:attribute name="class">active</xsl:attribute>
+            </xsl:if>
+
+            <a href="{@rdf:about}">
+                <xsl:apply-templates select="." mode="gc:label"/>
+            </a>
+        </li>
+    </xsl:template>
+    
     <!-- OPTION MODE -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Option">

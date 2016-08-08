@@ -46,7 +46,7 @@ exclude-result-prefixes="#all">
     <!-- BLOCK LEVEL -->
     
     <!-- subject -->
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ReadMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
         <div about="{@rdf:about}">
             <xsl:next-match/>
         </div>
@@ -56,7 +56,7 @@ exclude-result-prefixes="#all">
 	<div class="well" about="{@rdf:about}">
             <xsl:apply-templates select="." mode="gc:image"/>
             
-            <xsl:apply-templates select="." mode="bs2:ModeToggleMode"/>
+            <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 	    
@@ -119,7 +119,7 @@ exclude-result-prefixes="#all">
 
 	<xsl:choose>
 	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode" mode="bs2:ReadMode">
+		<xsl:apply-templates select="$bnode" mode="bs2:Block">
                     <xsl:with-param name="nested" select="true()"/>
                 </xsl:apply-templates>
 	    </xsl:when>

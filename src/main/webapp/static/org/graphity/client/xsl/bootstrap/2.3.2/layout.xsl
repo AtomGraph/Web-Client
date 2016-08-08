@@ -153,12 +153,15 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="/" mode="xhtml:Head">
         <head>
-            <xsl:apply-templates select="key('resources', $g:requestUri)" mode="xhtml:Title"/>
-
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-            <xsl:apply-templates select="." mode="xhtml:Style"/>
-            <xsl:apply-templates select="." mode="xhtml:Script"/>
+            <xsl:for-each select="key('resources', $g:requestUri)">
+                <xsl:apply-templates select="." mode="xhtml:Title"/>
+                
+                <xsl:apply-templates select="." mode="xhtml:Style"/>
+                
+                <xsl:apply-templates select="." mode="xhtml:Script"/>
+            </xsl:for-each>
         </head>
     </xsl:template>
     
@@ -270,11 +273,13 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
+    <!--
     <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="xhtml:Title" priority="1">
-        NOPE<xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+        <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))" mode="gc:label"/>
     </xsl:template>
+    -->
 
     <xsl:template match="*" mode="xhtml:Title">
         <title>
@@ -288,7 +293,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- STYLE MODE -->
-    <xsl:template match="/" mode="xhtml:Style">
+    <xsl:template match="*" mode="xhtml:Style">
 	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
 	<link href="{resolve-uri('static/org/graphity/client/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -296,7 +301,7 @@ exclude-result-prefixes="#all">
     
     <!-- SCRIPT MODE -->
 
-    <xsl:template match="/" mode="xhtml:Script">
+    <xsl:template match="*" mode="xhtml:Script">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
@@ -398,7 +403,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
         
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:ModeListItem">
+    <xsl:template match="*[gc:mode][@rdf:about]" mode="bs2:ModeListItem">
         <xsl:param name="active" as="xs:anyURI?"/>
         
         <li>
@@ -1159,19 +1164,19 @@ exclude-result-prefixes="#all">
     <!-- EDIT MODE -->
                 
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:EditForm" priority="2">
-        A<xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:EditForm" priority="1">
-        B<xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:EditForm" priority="1">
-        C<xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
+        <xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:EditForm" priority="1">
-        D<xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
+        <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:EditForm" priority="1"/>
