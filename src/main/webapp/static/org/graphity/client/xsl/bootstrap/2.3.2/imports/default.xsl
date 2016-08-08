@@ -70,10 +70,10 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
-        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="bs2:FormControl">
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
-        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="bs2:FormControl">
+        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
     </xsl:template>
@@ -157,7 +157,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="not($type = 'hidden') and $type-label">
             <xsl:choose>
                 <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype" mode="xhtml:Anchor"/>
+                    <xsl:apply-templates select="../@rdf:datatype"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="help-inline">Literal</span>
@@ -199,7 +199,7 @@ exclude-result-prefixes="#all">
         <xsl:if test="$type-label">
             <xsl:choose>
                 <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype" mode="xhtml:Anchor"/>
+                    <xsl:apply-templates select="../@rdf:datatype"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="help-inline">Literal</span>
@@ -286,7 +286,7 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="type" select="'hidden'"/>
                 </xsl:apply-templates>
 
-                <xsl:apply-templates select="$resource" mode="bs2:Fieldset">
+                <xsl:apply-templates select="$resource" mode="#current">
                     <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
                 </xsl:apply-templates>
 

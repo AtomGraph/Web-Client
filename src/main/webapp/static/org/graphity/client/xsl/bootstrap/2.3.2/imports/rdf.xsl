@@ -29,7 +29,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:type" mode="bs2:PropertyList"/>
 
     <!--
-    <xsl:template match="@rdf:resource" mode="bs2:TypeListMode" priority="1">
+    <xsl:template match="@rdf:resource" mode="bs2:TypeList" priority="1">
         <li>
 	    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
 	</li>

@@ -52,7 +52,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ListMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:BlockList">
 	<div class="well" about="{@rdf:about}">
             <xsl:apply-templates select="." mode="gc:image"/>
             
@@ -62,7 +62,7 @@ exclude-result-prefixes="#all">
 	    
 	    <xsl:apply-templates select="." mode="gc:description"/>
 
-	    <xsl:apply-templates select="." mode="bs2:TypeListMode"/>            
+	    <xsl:apply-templates select="." mode="bs2:TypeList"/>            
 
 	    <xsl:if test="@rdf:nodeID">
 		<xsl:apply-templates select="." mode="bs2:PropertyList"/>
@@ -76,7 +76,7 @@ exclude-result-prefixes="#all">
         -->
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeListMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline" rel="&rdf;type">
             <xsl:apply-templates select="rdf:type" mode="#current">
                 <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
@@ -102,14 +102,14 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
 	<span title="{$this}" property="{$this}">
-	    <xsl:apply-templates select="." mode="gc:PropertyLabelMode"/>
+	    <xsl:apply-templates select="." mode="gc:property-label"/>
 	</span>
     </xsl:template>
 
     <!-- object resource -->    
     <xsl:template match="@rdf:resource | sparql:uri" mode="xhtml:Anchor">
 	<a href="{.}" title="{.}" resource="{.}">
-            <xsl:apply-templates select="." mode="gc:ObjectLabelMode"/>
+            <xsl:apply-templates select="." mode="gc:object-label"/>
 	</a>
     </xsl:template>
 	

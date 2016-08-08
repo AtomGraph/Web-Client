@@ -195,13 +195,13 @@ exclude-result-prefixes="#all">
     <xsl:function name="gc:property-label" as="xs:string?">
 	<xsl:param name="property" as="element()"/>
 	
-	<xsl:apply-templates select="$property" mode="gc:PropertyLabelMode"/>
+	<xsl:apply-templates select="$property" mode="gc:property-label"/>
     </xsl:function>
 
     <xsl:function name="gc:object-label" as="xs:string?">
 	<xsl:param name="object" as="attribute()"/>
 	
-	<xsl:apply-templates select="$object" mode="gc:ObjectLabelMode"/>
+	<xsl:apply-templates select="$object" mode="gc:object-label"/>
     </xsl:function>
 
     <xsl:function name="gc:document-uri" as="xs:anyURI">

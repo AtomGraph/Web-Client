@@ -85,7 +85,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyOptionMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyOption">
         <xsl:param name="selected" as="xs:boolean?"/>
         <xsl:param name="disabled" as="xs:boolean?"/>
         <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
@@ -105,7 +105,7 @@ exclude-result-prefixes="#all">
     <!-- TABLE MODE -->
     
     <!--
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:TableMode">
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:Table">
 	<td>
 	    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
 	</td>
@@ -209,7 +209,7 @@ exclude-result-prefixes="#all">
     
     <!-- TABLE PREDICATE MODE -->
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TablePredicateMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TablePredicate">
         <xsl:sequence select="."/>
     </xsl:template>
 
@@ -221,7 +221,7 @@ exclude-result-prefixes="#all">
 	</th>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableCellMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableCell" priority="1">
         <xsl:param name="resource" as="element()"/>
         <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
         <xsl:variable name="predicate" select="$resource/*[concat(namespace-uri(), local-name()) = $this]"/>

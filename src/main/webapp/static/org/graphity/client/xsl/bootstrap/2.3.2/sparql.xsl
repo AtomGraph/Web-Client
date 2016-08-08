@@ -61,19 +61,19 @@ LIMIT 100</xsl:param>
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
-                    <xsl:apply-templates select="." mode="bs2:BreadCrumbMode"/>
+                    <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
 
                     <xsl:apply-templates select="." mode="bs2:Header"/>
 
-                    <xsl:apply-templates select="." mode="bs2:QueryFormMode"/>
+                    <xsl:apply-templates select="." mode="bs2:QueryForm"/>
 
                     <xsl:if test="$query">
-                        <xsl:apply-templates select="." mode="gc:QueryResultMode"/>
+                        <xsl:apply-templates select="." mode="gc:QueryResult"/>
                     </xsl:if>
                 </div>
 
 		<div class="span4">
-		    <xsl:apply-templates select="." mode="bs2:SidebarNavMode"/>
+		    <xsl:apply-templates select="." mode="bs2:PropertyNav"/>
 		</div>
 	    </div>
 	</div>
@@ -91,7 +91,7 @@ LIMIT 100</xsl:param>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
         
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:QueryFormMode">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -143,7 +143,7 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResultMode">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResult">
 	<xsl:param name="result-doc" select="document(concat($g:absolutePath, gc:query-string((), $query, key('resources', $g:requestUri)/gc:mode/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->

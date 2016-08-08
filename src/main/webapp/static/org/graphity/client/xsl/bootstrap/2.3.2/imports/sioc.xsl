@@ -23,6 +23,7 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
@@ -32,19 +33,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="sioc:avatar" mode="bs2:PropertyList" priority="1"/>
 
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:PropertyList"/>
-
-    <!--
-    <xsl:template match="sioc:*" mode="bs2:InlinePropertyListMode">
-        <dl class="pull-left" style="margin: 0; margin-right: 1em">
-            <dt>
-                <xsl:apply-templates select="."/>
-            </dt>
-            <dd>
-                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
-            </dd>
-        </dl>
-    </xsl:template>
-    -->
 
     <xsl:template match="sioc:content/text()" mode="bs2:FormControl">
 	<xsl:param name="name" select="'ol'" as="xs:string"/>
@@ -85,7 +73,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:FormControl">
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
         <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">

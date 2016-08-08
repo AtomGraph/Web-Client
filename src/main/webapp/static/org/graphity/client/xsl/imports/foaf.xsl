@@ -102,7 +102,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="foaf:img/@rdf:resource | foaf:depiction/@rdf:resource | foaf:thumbnail/@rdf:resource | foaf:logo/@rdf:resource">
 	<a href="{.}">
 	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:ObjectLabelMode"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:object-label"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>

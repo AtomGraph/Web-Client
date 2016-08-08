@@ -33,7 +33,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="foaf:img | foaf:depiction | foaf:logo" mode="bs2:PropertyList"/>
 
     <xsl:template match="foaf:primaryTopic | foaf:isPrimaryTopicOf" mode="bs2:FormControl">
-        <xsl:apply-templates select="." mode="gc:InputMode">
+        <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
         <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">

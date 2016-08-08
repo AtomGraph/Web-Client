@@ -332,7 +332,7 @@ exclude-result-prefixes="#all">
 
                                 <xsl:apply-templates select="." mode="bs2:PagerList"/>
 
-                                <xsl:apply-templates select="." mode="gc:ModeChoiceMode"/>
+                                <xsl:apply-templates select="." mode="gc:ModeChoice"/>
 
                                 <xsl:apply-templates select="." mode="bs2:PagerList"/>
                             </div>
@@ -348,12 +348,12 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoiceMode" priority="1">
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoice" priority="1">
         HELLO??<xsl:apply-templates select="key('resources-by-type', '&http;Response')" mode="bs2:Block"/>
     </xsl:template>
     -->
     
-    <xsl:template match="*" mode="gc:ModeChoiceMode">
+    <xsl:template match="*" mode="gc:ModeChoice">
         <xsl:choose>
             <xsl:when test="gc:forClass/@rdf:resource">
                 <xsl:apply-templates select="." mode="bs2:ConstructForm"/>
@@ -505,7 +505,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="bs2:ImageMode"/>
+            <xsl:apply-templates select="." mode="bs2:Image"/>
             
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
@@ -623,9 +623,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:ButtonMode" priority="1"/>
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:Button" priority="1"/>
 
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:ButtonMode" priority="2">
+    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:Button" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:label"/>
@@ -633,7 +633,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gc:forClass/@rdf:resource]" mode="bs2:ButtonMode" priority="2">
+    <xsl:template match="*[@rdf:about][gc:forClass/@rdf:resource]" mode="bs2:Button" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))"/>
@@ -646,7 +646,7 @@ exclude-result-prefixes="#all">
     
     <!-- IMAGE MODE -->
         
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ImageMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
         <xsl:variable name="images" as="element()*">
             <xsl:apply-templates mode="gc:image"/>
         </xsl:variable>
@@ -849,7 +849,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="bs2:ImageMode"/>
+            <xsl:apply-templates select="." mode="bs2:Image"/>
             
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
@@ -955,7 +955,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
             
 	    <div class="thumbnail">
-		<xsl:apply-templates select="." mode="bs2:ImageMode"/>
+		<xsl:apply-templates select="." mode="bs2:Image"/>
 		
 		<div class="caption">
                     <xsl:apply-templates select="." mode="bs2:Actions"/>
@@ -993,7 +993,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="predicates" as="element()*">
 	    <xsl:for-each-group select="key('resources-by-container', @rdf:about)/*" group-by="concat(namespace-uri(), local-name())">
 		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gp:lang}"/>
-		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicateMode"/>
+		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicate"/>
             </xsl:for-each-group>
 	</xsl:param>
 
@@ -1034,14 +1034,14 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </td>
 
-	    <xsl:apply-templates select="$predicates" mode="gc:TableCellMode">
+	    <xsl:apply-templates select="$predicates" mode="gc:TableCell">
                 <xsl:with-param name="resource" select="."/>
             </xsl:apply-templates>
 	</tr>
     </xsl:template>
 
     <!--
-    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]/*" mode="gc:TablePredicateMode" priority="1"/>
+    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]/*" mode="gc:TablePredicate" priority="1"/>
     -->
     
     <!-- MAP MODE -->
@@ -1064,13 +1064,13 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Map">
         <div id="map-canvas">
-            <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="bs2:MapItemMode"/>
+            <xsl:apply-templates select="key('resources-by-container', @rdf:about)" mode="bs2:MapItem"/>
         </div>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:MapItemMode"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:MapItem"/>
 
-    <xsl:template match="*[geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:MapItemMode" priority="1">
+    <xsl:template match="*[geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:MapItem" priority="1">
         <xsl:param name="nested" as="xs:boolean?"/>
 
         <script type="text/javascript">
@@ -1141,7 +1141,7 @@ exclude-result-prefixes="#all">
                 </xsl:for-each>
                 -->
                 
-                <xsl:apply-templates select="$resource" mode="bs2:Fieldset">
+                <xsl:apply-templates select="$resource" mode="bs2:FormControl">
                     <xsl:with-param name="template-doc" select="$template-doc"/>
                     <xsl:sort select="gc:label(.)"/>
                 </xsl:apply-templates>
@@ -1210,7 +1210,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <xsl:apply-templates select="." mode="bs2:Fieldset"/>
+            <xsl:apply-templates select="." mode="bs2:FormControl"/>
                 
             <xsl:apply-templates select="." mode="bs2:FormActions">
                 <xsl:with-param name="button-class" select="$button-class"/>
@@ -1218,7 +1218,7 @@ exclude-result-prefixes="#all">
         </form>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Fieldset">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
@@ -1241,14 +1241,14 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
 
-            <xsl:apply-templates select="$violations" mode="bs2:ViolationMode"/>
+            <xsl:apply-templates select="$violations" mode="bs2:Violation"/>
 
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="bs2:FormControl"/>
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
             <xsl:if test="not($template)">
                 <xsl:message>bs2:EditMode is active but spin:constructor is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
             </xsl:if>
-            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="bs2:FormControl">
+            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                 <xsl:sort select="gc:property-label(.)"/>
                 <xsl:with-param name="violations" select="$violations"/>
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
@@ -1258,9 +1258,9 @@ exclude-result-prefixes="#all">
 
     <!-- CONSTRAINT VIOLATION MODE -->
     
-    <xsl:template match="*" mode="bs2:ViolationMode"/>
+    <xsl:template match="*" mode="bs2:Violation"/>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:ViolationMode" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:Violation" priority="1">
 	<xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
 
         <div>
@@ -1289,7 +1289,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:InlinePropertyListMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:InlinePropertyList">
         <xsl:apply-templates mode="#current">
             <xsl:sort select="gc:label(.)" lang="{$gp:lang}"/>
         </xsl:apply-templates>

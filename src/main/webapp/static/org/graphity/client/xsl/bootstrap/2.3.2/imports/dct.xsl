@@ -32,7 +32,7 @@ xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <!--
-    <xsl:template match="dct:created | dct:modified | dct:issued" mode="bs2:InlinePropertyListMode">
+    <xsl:template match="dct:created | dct:modified | dct:issued" mode="bs2:InlinePropertyList">
         <dl class="pull-left" style="margin: 0; margin-right: 1em">
             <dt>
                 <xsl:apply-templates select="."/>
