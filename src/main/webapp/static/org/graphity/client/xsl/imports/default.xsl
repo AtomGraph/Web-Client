@@ -83,24 +83,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="gc:label"/>
         </option>
     </xsl:template>
-
-    <!--
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:PropertyOption">
-        <xsl:param name="selected" as="xs:boolean?"/>
-        <xsl:param name="disabled" as="xs:boolean?"/>
-        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
-
-        <option value="{$this}">
-            <xsl:if test="$selected">
-                <xsl:attribute name="selected">selected</xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$disabled">
-                <xsl:attribute name="disabled">disabled</xsl:attribute>
-            </xsl:if>
-            <xsl:apply-templates select="." mode="gc:property-label"/>
-        </option>
-    </xsl:template>
-    -->
     
     <!-- TABLE MODE -->
     
@@ -363,7 +345,6 @@ exclude-result-prefixes="#all">
 
     <!-- property -->
     <!-- *[@rdf:about or @rdf:nodeID]/* -->
-    <!--
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*" mode="xhtml:Input">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
 	<xsl:param name="id" as="xs:string?"/>
@@ -379,7 +360,6 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="value" select="concat(namespace-uri(), local-name())"/>
 	</xsl:call-template>
     </xsl:template>
-    -->
     
     <!-- object resource -->
     <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:resource -->

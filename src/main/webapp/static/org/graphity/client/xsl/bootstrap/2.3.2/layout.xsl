@@ -1125,27 +1125,25 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <fieldset>
-                <!--
-                <xsl:for-each select="key('resources', $forClass, $template-doc)">
-                    <legend>
-                        <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
-                        <xsl:text> </xsl:text>
-                        <xsl:apply-templates select="." mode="gc:label"/>
-                    </legend>
-                    <xsl:if test="gc:description(.)">
-                        <p class="text-info">
-                            <xsl:apply-templates select="." mode="gc:description"/>
-                        </p>
-                    </xsl:if>
-                </xsl:for-each>
-                -->
-                
-                <xsl:apply-templates select="$resource" mode="bs2:FormControl">
-                    <xsl:with-param name="template-doc" select="$template-doc"/>
-                    <xsl:sort select="gc:label(.)"/>
-                </xsl:apply-templates>
-            </fieldset>
+            <!--
+            <xsl:for-each select="key('resources', $forClass, $template-doc)">
+                <legend>
+                    <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+                    <xsl:text> </xsl:text>
+                    <xsl:apply-templates select="." mode="gc:label"/>
+                </legend>
+                <xsl:if test="gc:description(.)">
+                    <p class="text-info">
+                        <xsl:apply-templates select="." mode="gc:description"/>
+                    </p>
+                </xsl:if>
+            </xsl:for-each>
+            -->
+
+            <xsl:apply-templates select="$resource" mode="bs2:FormControl">
+                <xsl:with-param name="template-doc" select="$template-doc"/>
+                <xsl:sort select="gc:label(.)"/>
+            </xsl:apply-templates>
 
             <xsl:apply-templates select="." mode="bs2:FormActions">
                 <xsl:with-param name="button-class" select="$button-class"/>

@@ -81,7 +81,7 @@ exclude-result-prefixes="#all">
     <!-- FORM MODE -->
     
     <!-- @rdf:about | @rdf:nodeID -->
-    <xsl:template match="@rdf:*[local-name() = ('about', 'nodeID')]" mode="bs2:FormControl">
+    <xsl:template match="*[*]/@rdf:*[local-name() = ('about', 'nodeID')]" mode="bs2:FormControl">
 	<xsl:param name="type" select="'hidden'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
 	<xsl:param name="class" as="xs:string?"/>
@@ -269,7 +269,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:* -->
-    <!--
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControl" priority="1">
 	<xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
@@ -306,6 +305,5 @@ exclude-result-prefixes="#all">
 	    </xsl:otherwise>
 	</xsl:choose>
     </xsl:template>    
-    -->
 
 </xsl:stylesheet>
