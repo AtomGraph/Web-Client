@@ -52,7 +52,7 @@ exclude-result-prefixes="#all">
 
     <!-- LIST ITEM -->
     
-    
+    <!-- more like gc:ListItemAnchor?? -->
     <xsl:template match="*[*][@rdf:about]" mode="xhtml:ListItem">
         <xsl:param name="active" as="xs:boolean?"/>
         

@@ -88,8 +88,7 @@
     rdfs:label "Graph" ;
     rdfs:isDefinedBy <#> .
 
-# rename to #Delete?
-<#DeleteMode> rdfs:label "Delete" ;
+<#Delete> rdfs:label "Delete" ;
     rdfs:isDefinedBy <#> .
 
 <#Export> rdfs:label "Export" ;

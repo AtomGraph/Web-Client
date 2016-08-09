@@ -326,7 +326,7 @@ exclude-result-prefixes="#all">
                             <div class="span8">
                                 <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
 
-                                <xsl:apply-templates select="." mode="bs2:Header"/>
+                                <xsl:apply-templates select="." mode="bs2:PageHeader"/>
 
                                 <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
@@ -471,28 +471,32 @@ exclude-result-prefixes="#all">
         
     <!-- HEADER MODE -->
 
-    <!-- <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Header" priority="1"/> -->
+    <!-- <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:PageHeader" priority="1"/> -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:Header" priority="2">
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PageHeader" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:Header" priority="1">
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
         <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:Header" priority="1">
+    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
         <xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:Header" priority="1">
+    <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="bs2:Header" priority="1">
+    <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
         <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
     
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PageHeader">
+        <xsl:apply-templates select="." mode="bs2:Header"/>
+    </xsl:template>
+        
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Header">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" select="'well header'" as="xs:string?"/>
@@ -524,7 +528,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:Header" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:PageHeader" priority="1">
         <div class="alert alert-error">
             <h1>
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
@@ -572,7 +576,7 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
-                    <xsl:apply-templates select="key('resources', 'delete', document(''))" mode="gc:label"/>
+                    <xsl:apply-templates select="key('resources', '&gc;Delete', document('&gc;'))" mode="gc:label"/>
                 </button>
             </form>
         </div>
