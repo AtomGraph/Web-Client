@@ -146,39 +146,41 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="/">
 	<html xml:lang="{$gp:lang}">
-            <xsl:apply-templates select="." mode="xhtml:Head"/>
-            <xsl:apply-templates select="." mode="xhtml:Body"/>
-	</html>
-    </xsl:template>
-
-    <xsl:template match="/" mode="xhtml:Head">
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-            <xsl:for-each select="key('resources', $g:requestUri)">
-                <xsl:apply-templates select="." mode="xhtml:Title"/>
-                
-                <xsl:apply-templates select="." mode="xhtml:Style"/>
-                
-                <xsl:apply-templates select="." mode="xhtml:Script"/>
-            </xsl:for-each>
-        </head>
-    </xsl:template>
-    
-    <xsl:template match="/" mode="xhtml:Body">
-        <body>
-            <xsl:apply-templates select="." mode="bs2:NavBar"/>
-
             <xsl:variable name="grouped-rdf" as="document-node()">
                 <xsl:apply-templates select="." mode="gc:GroupTriples"/>
             </xsl:variable>
-            <xsl:apply-templates select="$grouped-rdf/rdf:RDF"/>
 
+            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response', $grouped-rdf), key('resources', $g:requestUri, $grouped-rdf))[1]" as="element()"/>
+            
+            <xsl:apply-templates select="$current" mode="xhtml:Head"/>
+            
+            <xsl:apply-templates select="$current" mode="xhtml:Body"/>
+	</html>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Head">
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+            <xsl:apply-templates select="." mode="xhtml:Title"/>
+
+            <xsl:apply-templates select="." mode="xhtml:Style"/>
+
+            <xsl:apply-templates select="." mode="xhtml:Script"/>
+        </head>
+    </xsl:template>
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Body">
+        <body>
+            <xsl:apply-templates select="." mode="bs2:NavBar"/>
+
+            <xsl:apply-templates select="."/>
+            
             <xsl:apply-templates select="." mode="bs2:Footer"/>
         </body>
     </xsl:template>
     
-    <xsl:template match="/" mode="bs2:NavBar">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:NavBar">
 	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
 		<div class="container-fluid">
@@ -240,7 +242,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
-    <xsl:template match="/" mode="bs2:Footer">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Footer">
         <div class="footer text-center">
             <p>
                 <hr/>
@@ -281,7 +283,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*" mode="xhtml:Title">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Title">
         <title>
             <xsl:if test="$g:baseUri">
                 <xsl:apply-templates select="key('resources', $g:baseUri, document($g:baseUri))" mode="gc:label"/>
@@ -293,7 +295,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- STYLE MODE -->
-    <xsl:template match="*" mode="xhtml:Style">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Style">
 	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
 	<link href="{resolve-uri('static/org/graphity/client/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -301,7 +303,7 @@ exclude-result-prefixes="#all">
     
     <!-- SCRIPT MODE -->
 
-    <xsl:template match="*" mode="xhtml:Script">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Script">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
@@ -313,16 +315,19 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
+
+    <!-- DEFAULT MODE -->
     
-    <xsl:template match="rdf:RDF">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
         <div class="container-fluid">
 	    <div class="row-fluid">
+                <!--
                 <xsl:choose>
                     <xsl:when test="key('resources-by-type', '&http;Response')">
                         <xsl:apply-templates select="key('resources-by-type', '&http;Response')" mode="bs2:BlockItem"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:for-each select="key('resources', $g:requestUri)">
+                        <xsl:for-each select="key('resources', $g:requestUri)"> -->
                             <div class="span8">
                                 <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
 
@@ -340,20 +345,20 @@ exclude-result-prefixes="#all">
                             <div class="span4">
                                 <xsl:apply-templates select="." mode="bs2:PropertyNav"/>
                             </div>
+                            <!--
                         </xsl:for-each>
                     </xsl:otherwise>
                 </xsl:choose>
+                -->
 	    </div>
 	</div>
     </xsl:template>
-
-    <!--
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoice" priority="1">
-        HELLO??<xsl:apply-templates select="key('resources-by-type', '&http;Response')" mode="bs2:Block"/>
-    </xsl:template>
-    -->
     
-    <xsl:template match="*" mode="gc:ModeChoice">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoice" priority="1">
+        <xsl:apply-templates select="." mode="bs2:BlockItem"/>
+    </xsl:template>
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeChoice">
         <xsl:choose>
             <xsl:when test="gc:forClass/@rdf:resource">
                 <xsl:apply-templates select="." mode="bs2:ConstructForm"/>
@@ -390,7 +395,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/gc:forClass]" mode="bs2:ModeList" priority="1"/>
     -->
                 
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:ModeList" priority="3">
+    <xsl:template match="*[*][gc:mode/@rdf:resource][gc:layoutOf/@rdf:resource]" mode="bs2:ModeList" priority="1">
         <xsl:if test="gc:mode/@rdf:resource">
             <ul class="nav nav-tabs">
                 <xsl:variable name="active" select="gc:mode/@rdf:resource" as="xs:anyURI"/>
@@ -402,6 +407,8 @@ exclude-result-prefixes="#all">
             </ul>
         </xsl:if>
     </xsl:template>
+        
+    <xsl:template match="*" mode="bs2:ModeList"/>
         
     <xsl:template match="*[gc:mode][@rdf:about]" mode="bs2:ModeListItem">
         <xsl:param name="active" as="xs:anyURI?"/>
@@ -419,8 +426,6 @@ exclude-result-prefixes="#all">
         
     <!-- BREADCRUMB MODE -->
 
-    <!-- <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:BreadCrumbList" priority="1"/> -->
-
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
@@ -436,13 +441,17 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="1">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
- 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:BreadCrumbList">
+
+    <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:BreadCrumbList" priority="1"/> -->
+  
+    <xsl:template match="*[*][@rdf:about]" mode="bs2:BreadCrumbList" priority="1">
         <ul class="breadcrumb">
             <xsl:apply-templates select="." mode="bs2:BreadCrumbListItem"/>
         </ul>
     </xsl:template>
 
+    <xsl:template match="*" mode="bs2:BreadCrumbList"/>
+        
     <xsl:template match="*[@rdf:about]" mode="bs2:BreadCrumbListItem">
         <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
 
@@ -469,7 +478,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
         
-    <!-- HEADER MODE -->
+    <!-- PAGE HEADER MODE -->
 
     <!-- <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:PageHeader" priority="1"/> -->
 
@@ -492,11 +501,23 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
         <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
-    
+
+    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:PageHeader" priority="1"/>
+
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PageHeader">
         <xsl:apply-templates select="." mode="bs2:Header"/>
     </xsl:template>
-        
+
+    <!-- HEADER MODE -->
+
+    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:Header" priority="1">
+        <div class="alert alert-error">
+            <h1>
+                <xsl:apply-templates select="." mode="gc:label"/>
+            </h1>
+        </div>
+    </xsl:template>
+
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Header">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" select="'well header'" as="xs:string?"/>
@@ -526,16 +547,6 @@ exclude-result-prefixes="#all">
 	    <xsl:apply-templates select="." mode="bs2:TypeList"/>
         </div>
     </xsl:template>
-
-    <!--
-    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:PageHeader" priority="1">
-        <div class="alert alert-error">
-            <h1>
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-            </h1>
-        </div>
-    </xsl:template>
-    -->
     
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
 
@@ -899,9 +910,18 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
-        <xsl:apply-templates select="." mode="bs2:Header"/>
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
 
-        <xsl:apply-templates select="." mode="bs2:PropertyList"/>
+            <xsl:apply-templates select="." mode="bs2:Header"/>
+
+            <xsl:apply-templates select="." mode="bs2:PropertyList"/>
+        </div>
     </xsl:template>
             
     <!-- GRID MODE -->
