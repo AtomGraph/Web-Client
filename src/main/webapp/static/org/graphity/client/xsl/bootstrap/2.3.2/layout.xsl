@@ -150,7 +150,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="gc:GroupTriples"/>
             </xsl:variable>
 
-            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response', $grouped-rdf), key('resources', $g:requestUri, $grouped-rdf))[1]" as="element()"/>
+            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response', $grouped-rdf)[not(key('resources', $g:requestUri, $grouped-rdf))], key('resources', $g:requestUri, $grouped-rdf))[1]" as="element()"/>
             
             <xsl:apply-templates select="$current" mode="xhtml:Head"/>
             
@@ -290,7 +290,7 @@ exclude-result-prefixes="#all">
                 <xsl:text> - </xsl:text>
             </xsl:if>
             
-            <xsl:apply-templates select="." mode="gc:label"/>            
+            <xsl:apply-templates select="." mode="gc:label"/>
         </title>
     </xsl:template>
 
@@ -402,7 +402,7 @@ exclude-result-prefixes="#all">
                 <xsl:for-each select="key('resources-by-layout-of', gc:layoutOf/@rdf:resource)">
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
                         <xsl:with-param name="active" select="$active"/>
-                    </xsl:apply-templates>                    
+                    </xsl:apply-templates>
                 </xsl:for-each>
             </ul>
         </xsl:if>
@@ -444,7 +444,7 @@ exclude-result-prefixes="#all">
 
     <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:BreadCrumbList" priority="1"/> -->
   
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:BreadCrumbList" priority="1">
+    <xsl:template match="*[*][@rdf:about]" mode="bs2:BreadCrumbList" priority="0.8">
         <ul class="breadcrumb">
             <xsl:apply-templates select="." mode="bs2:BreadCrumbListItem"/>
         </ul>
@@ -525,7 +525,7 @@ exclude-result-prefixes="#all">
         <div>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -644,7 +644,7 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
                 <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:label"/>
-            </a>                        
+            </a>
         </div>
     </xsl:template>
 
@@ -654,7 +654,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))"/>
                 <xsl:text> </xsl:text>
                 <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))" mode="gc:label"/>
-            </a>                        
+            </a>
         </div>
     </xsl:template>
     -->
@@ -712,7 +712,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
         <li>
-            <span title="{.}" class="btn btn-type">            
+            <span title="{.}" class="btn btn-type">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </span>
 	</li>
@@ -783,19 +783,23 @@ exclude-result-prefixes="#all">
                         <xsl:apply-templates select="key('resources', @rdf:resource | @rdf:nodeID)" mode="xhtml:ListItem"/>
                     </xsl:for-each>
                 </ul>
-            </div>                    
+            </div>
         </xsl:for-each-group>
     </xsl:template>
 
     <!-- PAGINATION MODE -->
-        
+
+    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:PagerList" priority="3"/>
+                
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PagerList" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*" mode="bs2:PagerList"/>
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PagerList" priority="1">
+        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    </xsl:template>
 
-    <xsl:template match="*[xhv:prev/@rdf:resource] | *[xhv:next/@rdf:resource]" mode="bs2:PagerList">
+    <xsl:template match="*[xhv:prev/@rdf:resource] | *[xhv:next/@rdf:resource]" mode="bs2:PagerList" priority="0.8">
         <ul class="pager">
             <li class="previous">
                 <xsl:choose>
@@ -830,6 +834,8 @@ exclude-result-prefixes="#all">
         </ul>
     </xsl:template>
 
+    <xsl:template match="*" mode="bs2:PagerList"/>
+
     <!-- LIST MODE -->
 
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:BlockList" priority="2">
@@ -859,7 +865,7 @@ exclude-result-prefixes="#all">
 	<div>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -962,7 +968,7 @@ exclude-result-prefixes="#all">
                     <xsl:copy-of select="current-group()"/>
                 </ul>
             </div>
-        </xsl:for-each-group>        
+        </xsl:for-each-group>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="bs2:GridListItem">
@@ -973,7 +979,7 @@ exclude-result-prefixes="#all">
 	<li>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -1126,7 +1132,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="template-doc" select="gc:construct-doc($gp:ontology, $forClass)" as="document-node()?"/>
-        <!-- <xsl:param name="template-doc" select="document(key('resources', $g:requestUri)/@rdf:about)" as="document-node()"/> -->
         <xsl:param name="resource" select="key('resources', gc:constructor/@rdf:nodeID)" as="element()" tunnel="yes"/>
         
         <form method="{$method}" action="{$action}">
@@ -1215,7 +1220,7 @@ exclude-result-prefixes="#all">
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -1252,7 +1257,7 @@ exclude-result-prefixes="#all">
         <fieldset>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -1288,7 +1293,7 @@ exclude-result-prefixes="#all">
         <div>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:apply-templates select="." mode="gc:label"/>
         </div>
     </xsl:template>

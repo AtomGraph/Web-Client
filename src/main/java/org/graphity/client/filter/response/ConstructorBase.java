@@ -20,11 +20,6 @@ import org.apache.jena.ontology.AllValuesFromRestriction;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -34,7 +29,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +57,6 @@ public class ConstructorBase
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
         if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");
 
-        addClass(forClass, targetModel); // TO-DO: remove when classes and constraints are cached/dereferencable
         return addInstance(forClass, SPIN.constructor, targetModel.createResource(), targetModel);
     }
 
@@ -192,37 +185,6 @@ public class ConstructorBase
         }
         
         return null;
-    }
-    
-    // TO-DO: this method should not be necessary when system ontologies/classes are dereferencable! -->
-    public void addClass(OntClass forClass, Model targetModel)
-    {
-        if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-        if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");    
-
-        String queryString = "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-"PREFIX  spin: <http://spinrdf.org/spin#>\n" +
-"\n" +
-"DESCRIBE ?Class ?Constraint\n" +
-"WHERE\n" +
-"  { ?Class rdfs:isDefinedBy ?Ontology\n" +
-"    OPTIONAL\n" +
-"      { ?Class spin:constraint ?Constraint }\n" +
-"  }";
-        
-        // the client needs at least labels and constraints
-        QuerySolutionMap qsm = new QuerySolutionMap();
-        qsm.add(RDFS.Class.getLocalName(), forClass);
-        Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
-        QueryExecution qex = QueryExecutionFactory.create(query, forClass.getOntModel());
-        try
-        {
-            targetModel.add(qex.execDescribe());
-        }
-        finally
-        {
-            qex.close();
-        }
     }
     
 }

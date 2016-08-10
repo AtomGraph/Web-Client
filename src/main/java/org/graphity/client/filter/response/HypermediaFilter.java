@@ -42,8 +42,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import org.apache.jena.iri.IRI;
 import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.riot.checker.CheckerIRI;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
+import org.apache.jena.vocabulary.RDFS;
 import org.graphity.client.exception.OntClassNotFoundException;
 import org.graphity.client.util.OntologyProvider;
 import org.graphity.client.vocabulary.GC;
@@ -90,12 +96,13 @@ public class HypermediaFilter implements ContainerResponseFilter
             {
                 OntClass forClass = ontModel.getOntClass(forClassIRI.toURI().toString());
                 if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassIRI + "' not found in sitemap");
+
+                // connects constructor state to its container                
+                state.addProperty(GC.constructorOf, getForClassBuilder(state, null).build());
                 
                 if (response.getStatusType().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                    state.addProperty(GC.constructor, addInstance(model, forClass)); // connects hypermedia resource to CONSTRUCTed template
-                
-                //state.addProperty(GC.constructorOf, getForClassBuilder(state, null).
-                //    build());
+                    // connects constructor state to CONSTRUCTed template
+                    state.addProperty(GC.constructor, addInstance(model, forClass));
             }
             else
             {
@@ -311,10 +318,42 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
     
-    public Resource addInstance(Model model, OntClass forClass)
+    public Resource addInstance(Model targetModel, OntClass forClass)
     {
         if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
-        return new ConstructorBase().construct(forClass, model);
+        addClass(forClass, targetModel); // TO-DO: remove when classes and constraints are cached/dereferencable
+        return new ConstructorBase().construct(forClass, targetModel);
+    }
+    
+    // TO-DO: this method should not be necessary when system ontologies/classes are dereferencable! -->
+    public void addClass(OntClass forClass, Model targetModel)
+    {
+        if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
+        if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");    
+
+        String queryString = "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+"PREFIX  spin: <http://spinrdf.org/spin#>\n" +
+"\n" +
+"DESCRIBE ?Class ?Constraint\n" +
+"WHERE\n" +
+"  { ?Class rdfs:isDefinedBy ?Ontology\n" +
+"    OPTIONAL\n" +
+"      { ?Class spin:constraint ?Constraint }\n" +
+"  }";
+        
+        // the client needs at least labels and constraints
+        QuerySolutionMap qsm = new QuerySolutionMap();
+        qsm.add(RDFS.Class.getLocalName(), forClass);
+        Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
+        QueryExecution qex = QueryExecutionFactory.create(query, forClass.getOntModel());
+        try
+        {
+            targetModel.add(qex.execDescribe());
+        }
+        finally
+        {
+            qex.close();
+        }
     }
     
 }
