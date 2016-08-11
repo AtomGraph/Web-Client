@@ -311,7 +311,7 @@ exclude-result-prefixes="#all">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode' or key('resources', $g:requestUri)/gc:forClass/@rdf:resource">
+        <xsl:if test="gc:mode/@rdf:resource = '&gc;EditMode' or gc:forClass/@rdf:resource">
             <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
@@ -360,9 +360,9 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeChoice">
         <xsl:choose>
-            <xsl:when test="gc:forClass/@rdf:resource">
-                <xsl:apply-templates select="." mode="bs2:ConstructForm"/>
-           </xsl:when>
+            <xsl:when test="gc:mode/@rdf:resource = '&gc;EditMode' or gc:forClass/@rdf:resource">
+                <xsl:apply-templates select="." mode="bs2:Form"/>
+            </xsl:when>
             <xsl:when test="gc:mode/@rdf:resource = '&gc;ListMode'">
                 <xsl:apply-templates select="." mode="bs2:BlockList"/>
             </xsl:when>
@@ -377,9 +377,6 @@ exclude-result-prefixes="#all">
             </xsl:when>
             <xsl:when test="gc:mode/@rdf:resource = '&gc;GraphMode'">
                 <xsl:apply-templates select="." mode="bs2:Graph"/>
-            </xsl:when>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;EditMode'">
-                <xsl:apply-templates select="." mode="bs2:EditForm"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="bs2:Block"/>
@@ -1120,9 +1117,9 @@ exclude-result-prefixes="#all">
         </script>
     </xsl:template>
 
-    <!-- CONSTRUCT MODE -->
-    
-    <xsl:template match="*[@rdf:about]" mode="bs2:ConstructForm">
+    <!-- FORM MODE -->
+
+    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:Form" priority="3">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="forClass" select="gc:forClass/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="action" select="$g:requestUri" as="xs:anyURI"/>
@@ -1154,20 +1151,7 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
-            <!--
-            <xsl:for-each select="key('resources', $forClass, $template-doc)">
-                <legend>
-                    <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
-                    <xsl:text> </xsl:text>
-                    <xsl:apply-templates select="." mode="gc:label"/>
-                </legend>
-                <xsl:if test="gc:description(.)">
-                    <p class="text-info">
-                        <xsl:apply-templates select="." mode="gc:description"/>
-                    </p>
-                </xsl:if>
-            </xsl:for-each>
-            -->
+            <xsl:apply-templates select="." mode="bs2:Legend"/>
 
             <xsl:apply-templates select="$resource" mode="bs2:FormControl">
                 <xsl:with-param name="template-doc" select="$template-doc"/>
@@ -1179,36 +1163,26 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
 	</form>
     </xsl:template>
-    
-    <xsl:template match="*[@rdf:about]" mode="bs2:FormActions">
-        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
-        
-        <div class="form-actions">
-            <button type="submit" class="{$button-class}">Save</button>
-        </div>
-    </xsl:template>
 
-    <!-- EDIT MODE -->
-                
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:EditForm" priority="2">
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:Form" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:EditForm" priority="1">
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:EditForm" priority="1">
+    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:EditForm" priority="1">
+    <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:EditForm" priority="1"/>
+    <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:Form" priority="1"/> -->
 
-    <xsl:template match="*[@rdf:about]" mode="bs2:EditForm">
+    <xsl:template match="*[@rdf:about]" mode="bs2:Form">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI(concat($g:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri('&gc;EditMode')))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
@@ -1237,12 +1211,41 @@ exclude-result-prefixes="#all">
 		<xsl:with-param name="type" select="'hidden'"/>
 	    </xsl:call-template>
 
+            <xsl:apply-templates select="." mode="bs2:Legend"/>
+
             <xsl:apply-templates select="." mode="bs2:FormControl"/>
                 
             <xsl:apply-templates select="." mode="bs2:FormActions">
                 <xsl:with-param name="button-class" select="$button-class"/>
             </xsl:apply-templates>
         </form>
+    </xsl:template>
+
+    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:Legend" priority="1">
+        <xsl:param name="forClass" select="gc:forClass/@rdf:resource" as="xs:anyURI"/>
+
+        <xsl:for-each select="key('resources', $forClass, $gc:sitemap)">
+            <legend>
+                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+                <xsl:text> </xsl:text>
+                <xsl:apply-templates select="." mode="gc:label"/>
+            </legend>
+            <xsl:if test="gc:description(.)">
+                <p class="text-info">
+                    <xsl:apply-templates select="." mode="gc:description"/>
+                </p>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="*" mode="bs2:Legend"/>
+
+    <xsl:template match="*[@rdf:about]" mode="bs2:FormActions">
+        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
+        
+        <div class="form-actions">
+            <button type="submit" class="{$button-class}">Save</button>
+        </div>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl">
@@ -1260,12 +1263,6 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:if test="$legend">
-                <legend>
-                    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-                </legend>
             </xsl:if>
 
             <xsl:apply-templates select="$violations" mode="bs2:Violation"/>

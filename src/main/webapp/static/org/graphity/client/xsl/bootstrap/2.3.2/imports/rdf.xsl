@@ -23,6 +23,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
@@ -35,5 +36,19 @@ exclude-result-prefixes="#all">
 	</li>
     </xsl:template>
     -->
-    
+
+    <!-- necessary for hiding class description, which addClass() added to the constructor document -->
+    <xsl:template match="rdf:type[key('resources', (@rdf:resource, @rdf:nodeID))]" mode="bs2:FormControl" priority="2">
+        <xsl:apply-templates select="." mode="xhtml:Input">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="traversed-ids" select="(., (@rdf:resource, @rdf:nodeID))" tunnel="yes"/>            
+        </xsl:apply-templates>
+        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
 </xsl:stylesheet>
