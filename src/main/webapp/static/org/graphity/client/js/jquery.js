@@ -25,7 +25,7 @@ $(document).ready(function()
 
     $(".btn-remove").on("click", onRemoveButtonClick);
 
-    $("div.btn-group:has(div.btn.dropdown-toggle)").on("click", function()
+    $(".btn-group:has(.btn.dropdown-toggle)").on("click", function()
     {
         $(this).toggleClass("open");
         
