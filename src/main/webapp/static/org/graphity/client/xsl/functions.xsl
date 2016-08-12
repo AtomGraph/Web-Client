@@ -382,7 +382,7 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:function>
 
-    <xsl:function name="gc:construct-doc" as="document-node()">
+    <xsl:function use-when="system-property('xsl:product-name') = 'SAXON'" name="gc:construct-doc" as="document-node()">
         <xsl:param name="ontology" as="xs:anyURI"/>
         <xsl:param name="class" as="xs:anyURI"/>
 

@@ -321,35 +321,23 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
         <div class="container-fluid">
 	    <div class="row-fluid">
-                <!--
-                <xsl:choose>
-                    <xsl:when test="key('resources-by-type', '&http;Response')">
-                        <xsl:apply-templates select="key('resources-by-type', '&http;Response')" mode="bs2:BlockItem"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:for-each select="key('resources', $g:requestUri)"> -->
-                            <div class="span8">
-                                <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
+                <div class="span8">
+                    <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
 
-                                <xsl:apply-templates select="." mode="bs2:PageHeader"/>
+                    <xsl:apply-templates select="." mode="bs2:PageHeader"/>
 
-                                <xsl:apply-templates select="." mode="bs2:ModeList"/>
+                    <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
-                                <xsl:apply-templates select="." mode="bs2:PagerList"/>
+                    <xsl:apply-templates select="." mode="bs2:PagerList"/>
 
-                                <xsl:apply-templates select="." mode="gc:ModeChoice"/>
+                    <xsl:apply-templates select="." mode="gc:ModeChoice"/>
 
-                                <xsl:apply-templates select="." mode="bs2:PagerList"/>
-                            </div>
+                    <xsl:apply-templates select="." mode="bs2:PagerList"/>
+                </div>
 
-                            <div class="span4">
-                                <xsl:apply-templates select="." mode="bs2:PropertyNav"/>
-                            </div>
-                            <!--
-                        </xsl:for-each>
-                    </xsl:otherwise>
-                </xsl:choose>
-                -->
+                <div class="span4">
+                    <xsl:apply-templates select="." mode="bs2:RightNav"/>
+                </div>
 	    </div>
 	</div>
     </xsl:template>
@@ -680,7 +668,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <!-- INLINE LIST MODE -->
+    <!-- TYPE MODE -->
 
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:TypeList" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
@@ -749,23 +737,23 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY NAV MODE -->
     
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PropertyNav" priority="2">
+    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:RightNav" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PropertyNav" priority="1">
+    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:RightNav" priority="1">
         <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:PropertyNav" priority="1">
+    <xsl:template match="*[key('resources', gp:pageOf/@rdf:resource)]" mode="bs2:RightNav" priority="1">
         <xsl:apply-templates select="key('resources', gp:pageOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:PropertyNav" priority="1">
+    <xsl:template match="*[key('resources', gp:viewOf/@rdf:resource)]" mode="bs2:RightNav" priority="1">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
     
-    <xsl:template match="*[*]" mode="bs2:PropertyNav">
+    <xsl:template match="*[*]" mode="bs2:RightNav">
         <xsl:for-each-group select="*[key('resources', @rdf:resource | @rdf:nodeID)]" group-by="concat(namespace-uri(), local-name())">
             <xsl:sort select="gc:property-label(.)" order="ascending" lang="{$gp:lang}"/>
 
