@@ -126,9 +126,9 @@ public class HypermediaFilter implements ContainerResponseFilter
                             response.setResponse(Response.seeOther(URI.create(defaultState.getURI())).build());
                             return response;
                         }
+                        
+                        addLayouts(getModeBuilder(state, null).build(), template);                        
                     }
-
-                    addLayouts(getModeBuilder(state, null).build(), template);
                 }
             }
             

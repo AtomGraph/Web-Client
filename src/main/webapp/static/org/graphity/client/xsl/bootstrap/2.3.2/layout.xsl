@@ -253,11 +253,11 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <!--
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="xhtml:Title" priority="1">
-	<xsl:apply-templates select="key('resources-by-type', '&http;Response')" mode="xhtml:Title"/>
+    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="xhtml:Title" priority="3">
+        <xsl:next-match>
+            <xsl:with-param name="forClass" select="gc:forClass/@rdf:resource" tunnel="yes"/>
+        </xsl:next-match>
     </xsl:template>
-    -->
     
     <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="xhtml:Title" priority="2">
         <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
@@ -275,15 +275,9 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', gp:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <!--
-    <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="xhtml:Title" priority="1">
-        <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
-        <xsl:text> </xsl:text>
-        <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))" mode="gc:label"/>
-    </xsl:template>
-    -->
-
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Title">
+        <xsl:param name="forClass" as="xs:anyURI?" tunnel="yes"/>
+        
         <title>
             <xsl:if test="$g:baseUri">
                 <xsl:apply-templates select="key('resources', $g:baseUri, document($g:baseUri))" mode="gc:label"/>
@@ -291,10 +285,18 @@ exclude-result-prefixes="#all">
             </xsl:if>
             
             <xsl:apply-templates select="." mode="gc:label"/>
+
+            <xsl:if test="$forClass">
+                <xsl:text> : </xsl:text>
+                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+                <xsl:text> </xsl:text>
+                <xsl:apply-templates select="key('resources', $forClass, document(gc:document-uri($forClass)))" mode="gc:label"/>
+            </xsl:if>
         </title>
     </xsl:template>
 
     <!-- STYLE MODE -->
+    
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Style">
 	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
