@@ -95,7 +95,7 @@ exclude-result-prefixes="#all">
 
     <!-- DESCRIPTION MODE -->
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:description"/>
+    <xsl:template match="node()" mode="gc:description"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:description">
         <xsl:variable name="descriptions" as="xs:string*">

@@ -1209,6 +1209,8 @@ exclude-result-prefixes="#all">
         </form>
     </xsl:template>
 
+    <!-- LEGEND -->
+    
     <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:Legend" priority="1">
         <xsl:param name="forClass" select="gc:forClass/@rdf:resource" as="xs:anyURI"/>
 
