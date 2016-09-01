@@ -3,50 +3,50 @@
     xmlns="http://java.sun.com/xml/ns/javaee"
     xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
-    id="graphity-client" version="3.0">
-    <display-name>Graphity Client</display-name>
+    id="atomgraph-client" version="3.0">
+    <display-name>AtomGraph Client</display-name>
     <description>Generic Linked Data client</description>
     <servlet>
         <servlet-name>client</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.graphity.client.Application</param-value>
+            <param-value>com.atomgraph.client.Application</param-value>
         </init-param>
         <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-	    <param-value>org.graphity.client.filter.request.PostReplaceFilter</param-value>
+	    <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
 	</init-param>
         <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>org.graphity.client.filter.response.SubjectRewriteFilter,org.graphity.client.filter.response.HypermediaFilter</param-value>
+            <param-value>com.atomgraph.client.filter.response.SubjectRewriteFilter,com.atomgraph.client.filter.response.HypermediaFilter</param-value>
 	</init-param>        
         <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/g#graphStore</param-name>
+            <param-name>http://atomgraph.com/core/ns#graphStore</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gc#stylesheet</param-name>
-            <param-value>static/org/graphity/client/xsl/bootstrap/2.3.2/layout.xsl</param-value>
+            <param-name>http://atomgraph.com/client/ns#stylesheet</param-name>
+            <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/g#resultLimit</param-name>
+            <param-name>http://atomgraph.com/core/ns#resultLimit</param-name>
             <param-value>100</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gc#cacheStylesheet</param-name>
+            <param-name>http://atomgraph.com/client/ns#cacheStylesheet</param-name>
             <param-value>false</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/g#cacheModelLoads</param-name>
+            <param-name>http://atomgraph.com/core/ns#cacheModelLoads</param-name>
             <param-value>true</param-value>
         </init-param>
         <init-param>
-            <param-name>http://graphity.org/gc#resolvingUncached</param-name>
+            <param-name>http://atomgraph.com/client/ns#resolvingUncached</param-name>
             <param-value>true</param-value>
         </init-param>       
     </servlet>

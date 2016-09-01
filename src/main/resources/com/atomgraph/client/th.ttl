@@ -1,0 +1,79 @@
+@base           <http://www.w3.org/ns/ldt/topic-hierarchy> .
+
+# @prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix http:   <http://www.w3.org/2011/http#> .
+@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix ldtc:	<http://www.w3.org/ns/ldt/core#> .
+@prefix ldtdh:	<http://www.w3.org/ns/ldt/document-hierarchy#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix spl:    <http://spinrdf.org/spl#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+<#> a owl:Ontology, ldt:Ontology ;
+    owl:imports ldtdh: ;
+    owl:versionInfo "1.1.4" ;
+    rdfs:label "Document hierarchy with topic resources" ;
+    dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/hierarchy#" ;
+    vann:preferredNamespacePrefix "ldth";
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
+
+# TEMPLATES
+
+<#Container> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf ldtdh:Container ;
+    ldt:query <#DescribeWithChildren> ;
+    rdfs:label "Container" ;
+    rdfs:comment "Container that can have other containers and items as children" ;
+    rdfs:isDefinedBy <#> .
+
+<#Document> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf ldtc:Document ;
+    ldt:query <#DescribeWithTopic> ;
+    ldt:update <#DeleteWithTopic> ;
+    spin:constructor <#DocumentConstructor> ;
+    rdfs:label "Document" ;
+    rdfs:comment "Generic document resource" ;
+    rdfs:isDefinedBy <#> .
+
+# QUERIES
+
+<#DescribeWithTopic> a sp:Describe, sp:Query ; # gp:Query  ;
+    sp:text """PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+DESCRIBE ?this ?primaryTopic
+WHERE
+  { ?this ?p ?o
+    OPTIONAL
+      { ?this foaf:primaryTopic ?primaryTopic }
+  }""" .
+    # rdfs:label "Describe with topic" ;
+    # rdfs:isDefinedBy <#> .
+
+<#DeleteWithTopic> a sp:DeleteWhere, sp:Update ; # <#Update> ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DELETE {
+    ?this ?p ?o .
+    ?primaryTopic ?p ?o .
+}
+WHERE {
+    {
+        ?this ?p ?o .
+    }
+    UNION
+    {
+        ?primaryTopic foaf:isPrimaryTopicOf ?this .
+        ?primaryTopic ?p ?o .
+    }
+}""" .
+    # rdfs:label "Delete with topic" ;
+    # rdfs:isDefinedBy <#> .

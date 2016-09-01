@@ -1,0 +1,95 @@
+@base           <http://atomgraph.com/client/ns> .
+
+# @prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix gp:     <http://graphity.org/gp#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+
+# ONTOLOGY
+
+<#> a owl:Ontology ;
+    rdfs:label "Graphity Client ontology" ;
+    owl:versionInfo "1.1.4" .
+
+# ANNOTATION PROPERTIES
+
+<#defaultMode> a owl:AnnotationProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Default mode" ;
+    rdfs:comment "Indicates RDF representation mode" ;
+    rdfs:isDefinedBy <#> .
+
+<#supportedMode> a owl:AnnotationProperty ;
+    rdfs:range <#Mode> ;
+    rdfs:label "Layout mode" ;
+    rdfs:isDefinedBy <#> .
+
+# PROPERTIES
+
+<#stylesheet> a owl:ObjectProperty ;
+    rdfs:domain gp:Application ;
+    rdfs:label "XSLT stylesheet" ;
+    rdfs:isDefinedBy <#> .
+
+<#layoutOf> a owl:ObjectProperty ;
+    rdfs:subPropertyOf dct:isVersionOf ;
+    rdfs:domain foaf:Document ;
+    rdfs:range foaf:Document ; # <#Layout> ?
+    rdfs:label "Layout of" ;
+    rdfs:isDefinedBy <#> .
+
+# CLASSES
+
+<#Mode> a owl:Class ;
+    rdfs:label "Class of layout modes" ;
+    rdfs:isDefinedBy <#> .
+
+<#PageMode> a owl:Class ;
+    rdfs:subClassOf <#Mode> ;
+    rdfs:label "Class of page layout modes" ;
+    rdfs:isDefinedBy <#> .
+
+# INDIVIDUALS
+
+# rename to #Create?
+<#ConstructMode> rdfs:label "Create" ;
+    rdfs:isDefinedBy <#> .
+
+<#ReadMode> a <#Mode>, <#PageMode> ;
+    rdfs:label "Properties" ;
+    rdfs:isDefinedBy <#> .
+
+<#EditMode> a <#Mode> ;
+    rdfs:label "Edit" ;
+    rdfs:isDefinedBy <#> .
+
+<#TableMode> a <#Mode>, <#PageMode> ;
+    rdfs:label "Table" ;
+    rdfs:isDefinedBy <#> .
+
+<#ListMode> a <#Mode>, <#PageMode> ;
+    rdfs:label "List" ;
+    rdfs:isDefinedBy <#> .
+
+<#GridMode> a <#Mode>, <#PageMode> ;
+    rdfs:label "Grid" ;
+    rdfs:isDefinedBy <#> .
+
+<#MapMode> a <#Mode>, <#PageMode> ;
+    rdfs:label "Map" ;
+    rdfs:isDefinedBy <#> .
+
+<#GraphMode> a <#Mode>, <#PageMode> ;
+    rdfs:label "Graph" ;
+    rdfs:isDefinedBy <#> .
+
+<#Delete> rdfs:label "Delete" ;
+    rdfs:isDefinedBy <#> .
+
+<#Export> rdfs:label "Export" ;
+    rdfs:isDefinedBy <#> .

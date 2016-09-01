@@ -48,13 +48,13 @@ Dependencies to other AtomGraph artifacts will be resolved automagically during 
 classes is attached, and you can address it as a separate artifact:
 
         <dependency>
-            <groupId>org.graphity</groupId>
+            <groupId>com.atomgraph</groupId>
             <artifactId>client</artifactId>
             <version>1.1.3</version>
             <classifier>classes</classifier>
         </dependency>
         <dependency>
-            <groupId>org.graphity</groupId>
+            <groupId>com.atomgraph</groupId>
             <artifactId>client</artifactId>
             <version>1.1.3</version>
             <type>war</type>

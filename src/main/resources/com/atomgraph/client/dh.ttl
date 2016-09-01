@@ -1,0 +1,141 @@
+@base           <http://www.w3.org/ns/ldt/document-hierarchy> .
+
+# @prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix http:   <http://www.w3.org/2011/http#> .
+@prefix ldtc:	<http://www.w3.org/ns/ldt/core#> .
+@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix spl:    <http://spinrdf.org/spl#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+<#> a owl:Ontology, ldt:Ontology ;
+    owl:imports ldtc:, sioc: ;
+    owl:versionInfo "1.1.4" ;
+    rdfs:label "Document hierarchy ontology" ;
+    dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/resource-hierarchy#" ;
+    vann:preferredNamespacePrefix "ldth";
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
+
+# PROPERTIES
+
+<#slug> a owl:DatatypeProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range xsd:string ;
+    rdfs:label "URI slug" ;
+    rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
+    rdfs:isDefinedBy <#> .
+
+<#pageOf> a owl:ObjectProperty ;
+    rdfs:subPropertyOf ldtc:viewOf ;
+    rdfs:domain <#Page> ;
+    rdfs:range <#Container> ;
+    rdfs:label "Page of container" ;
+    rdfs:comment "Links page resource to its container resource" ;
+    rdfs:isDefinedBy <#> .
+
+<#limit> a owl:DatatypeProperty ;
+    rdfs:domain <#Page> ;
+    rdfs:range xsd:long ;
+    rdfs:label "LIMIT modifier" ;
+    rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:limit ;
+    rdfs:isDefinedBy <#> .
+
+<#offset> a owl:DatatypeProperty ;
+    rdfs:domain <#Page> ;
+    rdfs:range xsd:long ;
+    rdfs:label "OFFSET modifier" ;
+    rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:offset ;
+    rdfs:isDefinedBy <#> .
+
+<#orderBy> a owl:DatatypeProperty ;
+    rdfs:domain <#Page> ;
+    rdfs:range xsd:long ;
+    rdfs:label "ORDER BY modifier" ;
+    rdfs:comment "SPIN expects an rdf:List of OrderByConditions for sp:orderBy" ;
+    rdfs:seeAlso sp:orderBy ;
+    rdfs:isDefinedBy <#> .
+
+# CLASSES
+
+<#Page> a rdfs:Class ;
+    rdfs:subClassOf ldtc:View ;
+    rdfs:label "Page resource" ;
+    rdfs:comment "A class of RDF resources that are container pages" ;
+    rdfs:isDefinedBy <#> .
+
+# TEMPLATES
+
+<#Container> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf ldtc:Document, sioc:Container ;
+    ldt:path "{path: .*}/" ;
+    ldt:skolemTemplate "{slug}/" ;
+    ldt:query <#DescribeWithChildren> ;
+    ldt:param [ a ldt:Argument ;
+        spl:predicate <#limit> ;
+        spl:valueType xsd:long ;
+        spl:optional true ;
+        ldt:tunnel true
+    ] , [ a ldt:Argument ;
+        spl:predicate <#offset> ;
+        spl:valueType xsd:long ;
+        spl:optional true ;
+        ldt:tunnel true
+    ] , [ a ldt:Argument ;
+        spl:predicate <#orderBy> ;
+        spl:valueType xsd:string ;
+        spl:optional true ;
+        ldt:tunnel true
+    ] , [ a ldt:Argument ;
+        spl:predicate <#desc> ;
+        spl:valueType xsd:boolean ;
+        spl:optional true ;
+        ldt:tunnel true
+    ] ;
+    rdfs:label "Container" ;
+    rdfs:comment "Container that can have other containers and items as children" ;
+    rdfs:isDefinedBy <#> .
+
+# CONSTRAINTS
+
+<#MissingSlug> a ldt:Constraint, ldt:MissingPropertyValue ;
+    rdfs:label "Missing ldt:slug" ;
+    sp:arg1 <#slug> ;
+    rdfs:isDefinedBy <#> .
+
+# QUERIES
+
+<#DescribeWithChildren> a sp:Describe, sp:Query ; # ldt:Query  ;
+    sp:text """PREFIX  sioc: <http://rdfs.org/sioc/ns#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+DESCRIBE ?this ?primaryTopic ?child ?childPrimaryTopic
+WHERE
+  { ?this ?p ?o
+    OPTIONAL
+      { ?this foaf:primaryTopic ?primaryTopic }
+    OPTIONAL
+      { { SELECT DISTINCT ?child ?childPrimaryTopic
+          WHERE
+            {   { ?child sioc:has_parent ?this }
+              UNION
+                { ?child sioc:has_container ?this }
+              OPTIONAL
+                { ?child foaf:primaryTopic ?childPrimaryTopic }
+            }
+        }
+      }
+  }""" .
+    # rdfs:label "Describe with children" ;
+    # rdfs:isDefinedBy <#> .

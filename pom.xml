@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.graphity</groupId>
+    <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
     <version>1.1.4-SNAPSHOT</version>
 
-    <name>Graphity Client</name>
+    <name>AtomGraph Client</name>
     <description>Generic Linked Data client</description>
-    <url>https://github.com/Graphity/graphity-client</url>
+    <url>https://github.com/AtomGraph/Web-Client</url>
 
     <packaging>${packaging.type}</packaging>
     <!-- <packaging>war</packaging> -->
@@ -15,13 +15,13 @@
     <developers>
         <developer>
             <id>pumba-lt</id>
-            <email>martynas@graphity.org</email>
+            <email>martynas@atomgraph.com</email>
             <roles>
                 <role>Developer</role>
                 <role>Founder</role>
             </roles>
-            <organization>Graphity</organization>
-            <organizationUrl>http://graphityhq.com</organizationUrl>
+            <organization>AtomGraph</organization>
+            <organizationUrl>http://atomgraph.com</organizationUrl>
         </developer>
     </developers>
     
@@ -40,9 +40,9 @@
     </properties>
  
     <scm>
-        <url>https://github.com/Graphity/graphity-client</url>
-        <connection>scm:git:git://github.com/Graphity/graphity-client.git</connection>
-        <developerConnection>scm:git:git@github.com:pumba-lt/graphity-client.git</developerConnection>
+        <url>https://github.com/AtomGraph/Web-Client</url>
+        <connection>scm:git:git://github.com/AtomGraph/Web-Client.git</connection>
+        <developerConnection>scm:git:git@github.com:AtomGraph/Web-Client.git</developerConnection>
     </scm>
   
     <repositories>
@@ -138,8 +138,8 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeGroupIds>org.graphity</includeGroupIds>
-                            <includes>**\/*.xsl,**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
+                            <includeGroupIds>com.atomgraph</includeGroupIds>
+                            <includes>**\/*.ttl,**\/*.rdf,**\/*.owl</includes>
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>
                         </configuration>
                     </execution>

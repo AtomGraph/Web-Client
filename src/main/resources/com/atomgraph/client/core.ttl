@@ -1,0 +1,95 @@
+@base           <http://www.w3.org/ns/ldt/core> .
+
+# @prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+<#> a owl:Ontology, ldt:Ontology ;
+    owl:imports ldt: ;
+    owl:versionInfo "1.1.4" ;
+    rdfs:label "Core LDT ontology" ;
+    dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/core#" ;
+    vann:preferredNamespacePrefix "ldtc";
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
+
+# PROPERTIES
+
+<#viewOf> a owl:ObjectProperty ;
+    rdfs:domain <#View> ;
+    rdfs:range <#Document> ;
+    rdfs:label "View of resource" ;
+    rdfs:comment "Links resource view to its resource" ;
+    rdfs:isDefinedBy <#> .
+
+# CLASSES
+
+<#View> a rdfs:Class ;
+    rdfs:subClassOf foaf:Document ;
+    rdfs:label "View resource" ;
+    rdfs:comment "A parameterized view of a resource" ;
+    rdfs:isDefinedBy <#> .
+
+# TEMPLATES
+
+<#Document> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf foaf:Document ;
+    ldt:path "{path: .*}" ;
+    <#skolemTemplate> "{slug}" ;
+    ldt:query <#Describe> ;
+    <#update> <#Delete> ;
+    spin:constructor <#DocumentConstructor> ;
+    rdfs:label "Document" ;
+    rdfs:comment "Generic document resource" ;
+    rdfs:isDefinedBy <#> .
+
+<#DocumentConstructor> a sp:Construct, sp:Query ; # ldt:Query ;
+  sp:text """
+      PREFIX ldt:      <http://www.w3.org/ns/ldt#>
+
+      CONSTRUCT {
+        ?this ldt:slug ?slug .
+      }
+      WHERE {
+        BIND (STRUUID() AS ?slug)
+}""" .
+    # rdfs:label "Document constructor" ;
+    # rdfs:isDefinedBy <#> .
+
+<#SPARQLEndpoint> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf foaf:Document ;
+    ldt:path "/sparql" ;
+    ldt:query <#Describe> ;
+    ldt:loadClass <java:com.atomgraph.processor.model.impl.SPARQLEndpointBase> ;
+    rdfs:label "SPARQL endpoint" ;
+    rdfs:isDefinedBy <#> .
+
+<#GraphStore> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf foaf:Document ;
+    ldt:path "/service" ;
+    ldt:query <#Describe> ;
+    rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy <#> .
+
+# QUERIES
+
+<#Describe> a sp:Describe, sp:Query ; # <#Query> ;
+    sp:text """DESCRIBE ?this""" .
+    # rdfs:label "Describe" ;
+    # rdfs:isDefinedBy <#> .
+
+<#Delete> a sp:DeleteWhere, sp:Update ; # <#Update> ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+DELETE WHERE {
+    ?this ?p ?o .
+}""" .
+    # rdfs:label "Delete" ;
+    # rdfs:isDefinedBy <#> .
