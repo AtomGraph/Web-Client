@@ -16,7 +16,6 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
-    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
     <!ENTITY g      "http://graphity.org/g#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
@@ -24,6 +23,7 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">    
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
@@ -32,20 +32,20 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:ldt="&ldt;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="gp:lang" select="'en'" as="xs:string"/>
+    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="gc:uri/@rdf:resource"/>
@@ -163,7 +163,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="text()[. castable as xs:date][../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1">
 	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $gp:lang, (), ())"/>
+	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
 	</span>
     </xsl:template>
 
@@ -171,7 +171,7 @@ exclude-result-prefixes="#all">
 	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
 	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
 	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $gp:lang, (), ())"/>
+	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
 	</span>
     </xsl:template>
 
@@ -220,14 +220,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
 
     <!-- apply properties that match lang() -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($gp:lang)]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
 	</td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($gp:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
 	<td>
 	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
 	</td>

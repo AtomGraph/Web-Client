@@ -17,7 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY gp     "http://graphity.org/gp#">
+    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -25,10 +25,10 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
-xmlns:gp="&gp;"
+xmlns:ldt="&ldt;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="gp:uriTemplate/text() | gp:skolemTemplate/text()">
+    <xsl:template match="ldt:path/text() | ldt:skolemTemplate/text()">
         <pre>
             <xsl:next-match/>
         </pre>

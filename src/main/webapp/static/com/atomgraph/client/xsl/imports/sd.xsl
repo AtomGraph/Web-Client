@@ -15,9 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc "http://atomgraph.com/client/ns#">
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY sd "http://www.w3.org/ns/sparql-service-description#">
+    <!ENTITY gc     "http://atomgraph.com/client/ns#">
+    <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"

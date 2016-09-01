@@ -16,7 +16,6 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
-    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
 ]>
@@ -25,7 +24,6 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:dct="&dct;"
 exclude-result-prefixes="#all">

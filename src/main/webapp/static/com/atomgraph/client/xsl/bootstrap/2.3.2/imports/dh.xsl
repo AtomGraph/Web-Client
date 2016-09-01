@@ -17,7 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY gp     "http://graphity.org/gp#">
+    <!ENTITY dh     "http://www.w3.org/ns/ldt/document-hierarchy#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -25,13 +25,13 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
-xmlns:gp="&gp;"
+xmlns:dh="&dh;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gp:slug" mode="bs2:PropertyList"/>
+    <xsl:template match="dh:slug" mode="bs2:PropertyList"/>
     
-    <xsl:template match="gp:slug/@rdf:datatype | gp:defaultLimit/@rdf:datatype | gp:defaultOffset/@rdf:datatype | gp:defaultOrderBy/@rdf:datatype | gp:defaultDesc/@rdf:datatype" mode="bs2:FormControl">
+    <xsl:template match="dh:slug/@rdf:datatype" mode="bs2:FormControl">
         <xsl:next-match>
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:next-match>

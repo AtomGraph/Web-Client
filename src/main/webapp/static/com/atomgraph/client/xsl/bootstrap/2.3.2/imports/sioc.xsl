@@ -15,7 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
@@ -24,7 +23,6 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:gc="&gc;"
 xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"

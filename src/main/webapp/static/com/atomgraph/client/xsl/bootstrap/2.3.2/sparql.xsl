@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY g      "http://graphity.org/g#">
+    <!ENTITY g      "http://atomgraph.com/core/ns#">
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
     <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">

@@ -17,11 +17,11 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
-    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
     <!ENTITY dc     "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
@@ -35,11 +35,11 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
+xmlns:ldt="&ldt;"
 xmlns:dc="&dc;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
@@ -63,7 +63,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:label">
         <xsl:variable name="labels" as="xs:string*">
             <xsl:variable name="lang-labels" as="xs:string*">
-                <xsl:apply-templates select="*[lang($gp:lang)]" mode="#current"/>
+                <xsl:apply-templates select="*[lang($ldt:lang)]" mode="#current"/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="not(empty($lang-labels))">
@@ -100,7 +100,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:description">
         <xsl:variable name="descriptions" as="xs:string*">
             <xsl:variable name="lang-descriptions" as="xs:string*">
-                <xsl:apply-templates select="*[lang($gp:lang)]" mode="#current"/>
+                <xsl:apply-templates select="*[lang($ldt:lang)]" mode="#current"/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="not(empty($lang-descriptions))">
