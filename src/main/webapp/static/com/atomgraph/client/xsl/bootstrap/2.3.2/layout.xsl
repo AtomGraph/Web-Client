@@ -302,7 +302,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Style">
 	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
-	<link href="{resolve-uri('static/org/graphity/client/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
     <!-- SCRIPT MODE -->
@@ -312,13 +312,13 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Script">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
-        <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/jquery.js', $gc:contextUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $gc:contextUri)}"></script>
         <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode' or key('resources', $g:requestUri)/gc:forClass/@rdf:resource">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
-            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/google-maps.js', $gc:contextUri)}"></script>
+            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $gc:contextUri)}"></script>
         </xsl:if>
         <xsl:if test="gc:mode/@rdf:resource = '&gc;EditMode' or gc:forClass/@rdf:resource">
-            <script type="text/javascript" src="{resolve-uri('static/org/graphity/client/js/UUID.js', $gc:contextUri)}"></script>
+            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $gc:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
 
