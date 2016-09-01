@@ -27,6 +27,7 @@ limitations under the License.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
+    <!ENTITY ldtc   "http://www.w3.org/ns/ldt/core#">    
     <!ENTITY dh     "http://www.w3.org/ns/ldt/document-hierarchy#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
@@ -49,6 +50,7 @@ xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:http="&http;"
 xmlns:ldt="&ldt;"
+xmlns:ldtc="&ldtc;"
 xmlns:dh="&dh;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
@@ -117,7 +119,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="dh:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-view-of" match="*[@rdf:about]" use="dh:viewOf/@rdf:resource"/>    
+    <xsl:key name="resources-by-view-of" match="*[@rdf:about]" use="ldtc:viewOf/@rdf:resource"/>    
     <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
@@ -216,9 +218,9 @@ exclude-result-prefixes="#all">
 
                         <xsl:if test="$g:baseUri">
                             <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                            <xsl:if test="key('resources-by-type', '&dh;SPARQLEndpoint', document($g:baseUri))">
+                            <xsl:if test="key('resources-by-type', '&ldtc;SPARQLEndpoint', document($g:baseUri))">
                                 <ul class="nav pull-right">
-                                    <xsl:apply-templates select="key('resources-by-type', '&dh;SPARQLEndpoint', document($g:baseUri))" mode="bs2:NavBarListItem">
+                                    <xsl:apply-templates select="key('resources-by-type', '&ldtc;SPARQLEndpoint', document($g:baseUri))" mode="bs2:NavBarListItem">
                                         <xsl:sort select="gc:label(.)" order="ascending" lang="{$ldt:lang}"/>
                                         <xsl:with-param name="space" select="$space"/>
                                     </xsl:apply-templates>
@@ -273,8 +275,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="xhtml:Title" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="xhtml:Title" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Title">
@@ -431,8 +433,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:BreadCrumbList" priority="1"/> -->
@@ -489,8 +491,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
@@ -694,8 +696,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:TypeList" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:TypeList" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
         
     <xsl:template match="*" mode="bs2:TypeList">
@@ -731,8 +733,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:PropertyList" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:PropertyList" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
@@ -765,8 +767,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:RightNav" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:RightNav" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
     
     <xsl:template match="*[*]" mode="bs2:RightNav">
@@ -853,8 +855,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:BlockList" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:BlockList" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="bs2:BlockList">
@@ -909,8 +911,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:Block" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:Block" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
@@ -951,8 +953,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:Grid" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:Grid" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="bs2:Grid">
@@ -1023,8 +1025,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="xhtml:Table" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="xhtml:Table" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] |  *[*][@rdf:nodeID]" mode="xhtml:Table">
@@ -1099,8 +1101,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:Map" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:Map" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Map">
@@ -1192,8 +1194,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <xsl:template match="*[key('resources', dh:viewOf/@rdf:resource)]" mode="bs2:Form" priority="1">
-        <xsl:apply-templates select="key('resources', dh:viewOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ldtc:viewOf/@rdf:resource)]" mode="bs2:Form" priority="1">
+        <xsl:apply-templates select="key('resources', ldtc:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'] | *[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:Form" priority="1"/> -->

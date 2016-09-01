@@ -40,16 +40,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIFactory;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolutionMap;
-import org.apache.jena.rdf.model.ResIterator;
-import org.apache.jena.riot.checker.CheckerIRI;
-import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.jena.vocabulary.RDFS;
 import com.atomgraph.client.exception.OntClassNotFoundException;
 import com.atomgraph.client.util.OntologyProvider;
@@ -94,23 +89,13 @@ public class HypermediaFilter implements ContainerResponseFilter
             OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
 
             long oldCount = model.size();
-            IRI forClassIRI = getForClassIRI(request, ontModel);            
-            if (forClassIRI != null)
+            if (requestUri.getPropertyResourceValue(GC.forClass) != null)
             {
-                OntClass forClass = ontModel.getOntClass(forClassIRI.toURI().toString());
-                if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassIRI + "' not found in sitemap");
+                String forClassURI = requestUri.getPropertyResourceValue(GC.forClass).getURI();
+                OntClass forClass = ontModel.getOntClass(forClassURI);
+                if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
 
-                ResIterator it = model.listResourcesWithProperty(GC.forClass);                
-                try
-                {
-                    Resource constructorRes = it.next();
-                    //requestUri.addProperty(GC.constructorOf, getForClassBuilder(requestUri, null).build()). // connects constructor state to its container
-                    constructorRes.addProperty(GC.constructor, addInstance(model, forClass)); // connects constructor state to CONSTRUCTed template
-                }
-                finally
-                {
-                    it.close();
-                }
+                requestUri.addProperty(GC.constructor, addInstance(model, forClass)); // connects constructor state to CONSTRUCTed template
             }
             else
             {
@@ -315,6 +300,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         return mode;
     }
 
+    /*
     public IRI getForClassIRI(ContainerRequest request, OntModel ontModel)
     {
 	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
@@ -332,6 +318,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         
         return null;
     }
+    */
     
     public Resource addInstance(Model targetModel, OntClass forClass)
     {

@@ -40,7 +40,7 @@
 
 # TEMPLATES
 
-<#Document> a rdfs:Class, ldt:Template ;
+<#Document> a rdfs:Class, owl:Class, ldt:Template ;
     rdfs:subClassOf foaf:Document ;
     ldt:path "{path: .*}" ;
     <#skolemTemplate> "{slug}" ;

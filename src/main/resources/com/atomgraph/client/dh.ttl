@@ -77,7 +77,7 @@
 
 # TEMPLATES
 
-<#Container> a rdfs:Class, ldt:Template ;
+<#Container> a rdfs:Class, owl:Class, ldt:Template ;
     rdfs:subClassOf ldtc:Document, sioc:Container ;
     ldt:path "{path: .*}/" ;
     ldt:skolemTemplate "{slug}/" ;
