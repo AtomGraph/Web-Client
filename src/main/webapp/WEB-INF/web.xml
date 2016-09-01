@@ -19,7 +19,7 @@
 	</init-param>
         <init-param>
 	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.atomgraph.client.filter.response.SubjectRewriteFilter,com.atomgraph.client.filter.response.HypermediaFilter</param-value>
+            <param-value>com.atomgraph.client.filter.response.URIRewriteFilter,com.atomgraph.client.filter.response.HypermediaFilter</param-value>
 	</init-param>        
         <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>

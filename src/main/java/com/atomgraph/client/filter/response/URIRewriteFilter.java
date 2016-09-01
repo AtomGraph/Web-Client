@@ -21,14 +21,11 @@ import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.util.ResourceUtils;
-import com.sun.jersey.api.uri.UriComponent;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import java.net.URI;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.vocabulary.GC;
 import com.atomgraph.core.util.StateBuilder;
@@ -40,9 +37,9 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
 @Provider
-public class SubjectRewriteFilter implements ContainerResponseFilter // extends ClientFilter 
+public class URIRewriteFilter implements ContainerResponseFilter // extends ClientFilter 
 {
-    private static final Logger log = LoggerFactory.getLogger(SubjectRewriteFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(URIRewriteFilter.class);
 
 
     @Override
@@ -74,6 +71,7 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
     
     public Model addStates(Resource baseUri, Model model)
     {
+        if (baseUri == null) throw new IllegalArgumentException("Resource cannot be null");
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
         
         ResIterator subjectIt = model.listSubjects();
@@ -82,9 +80,7 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
             while (subjectIt.hasNext())
             {
                 Resource resource = subjectIt.next();
-                if (resource.isURIResource())
-                    StateBuilder.fromResource(baseUri).
-                        property(GC.uri, resource).build();
+                if (resource.isURIResource()) addState(baseUri, resource);
             }
         }
         finally
@@ -99,8 +95,7 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
             {
                 RDFNode node = objectIt.next();
                 if (node.isURIResource())
-                    StateBuilder.fromResource(baseUri).
-                        property(GC.uri, node).build();
+                    addState(baseUri, node.asResource());
             }
         }
         finally
@@ -110,19 +105,14 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
         
         return model;
     }
-    
-    public void renameResource(Resource resource, ContainerRequest request, UriBuilder uriBuilder)
-    {
-        if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-        if (uriBuilder == null) throw new IllegalArgumentException("UriBuilder cannot be null");
 
-        if (resource.isURIResource())
-        {
-            URI newURI = uriBuilder.clone().queryParam(GC.uri.getLocalName(),
-                    UriComponent.encode(resource.getURI(), UriComponent.Type.UNRESERVED)).
-                    build();
-            ResourceUtils.renameResource(resource, newURI.toString());
-        }        
+    public void addState(Resource baseUri, Resource resource)
+    {
+        if (baseUri == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
+
+        StateBuilder.fromResource(baseUri).
+            property(GC.uri, resource).build();
     }
     
     public Model getModel(Object entity)
@@ -131,15 +121,5 @@ public class SubjectRewriteFilter implements ContainerResponseFilter // extends 
         
         return null;
     }
-
-    /*
-    @Override
-    public ClientResponse handle(ClientRequest request) throws ClientHandlerException
-    {
-        ClientResponse response = getNext().handle(request);
-        
-        return response;
-    }
-    */
     
 }
