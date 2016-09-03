@@ -17,13 +17,13 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY g      "http://atomgraph.com/core/ns#">
     <!ENTITY gc     "http://atomgraph.com/client/ns#">
-    <!ENTITY gp     "http://graphity.org/gp#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
+    <!ENTITY core   "http://www.w3.org/ns/ldt/core#">
     <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
@@ -34,12 +34,12 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:g="&g;"
 xmlns:gc="&gc;"
-xmlns:gp="&gp;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:sd="&sd;"
+xmlns:core="&core;"
 xmlns:void="&void;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
@@ -57,7 +57,7 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" priority="2">
+    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" priority="2">
 	<div class="container-fluid">
 	    <div class="row-fluid">
 		<div class="span8">
@@ -79,19 +79,19 @@ LIMIT 100</xsl:param>
 	</div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:Header" priority="1">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Header" priority="1">
         <xsl:apply-templates select="key('resources', $g:absolutePath)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:Style" priority="1">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Style" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
+    <xsl:template match="*[rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
         
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="bs2:QueryForm">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -143,7 +143,7 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&gp;SPARQLEndpoint']" mode="gc:QueryResult">
+    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="gc:QueryResult">
 	<xsl:param name="result-doc" select="document(concat($g:absolutePath, gc:query-string((), $query, key('resources', $g:requestUri)/gc:mode/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->

@@ -1,9 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/graphity-client">
-    <!--
-    <Parameter name="http://www.w3.org/ns/sparql-service-description#endpoint" value="http://graphity.dydra.com/graphity/client/sparql" override="false"/>
-    <Parameter name="http://jena.hpl.hp.com/Service#queryAuthUser" value="username" override="false"/>
-    <Parameter name="http://jena.hpl.hp.com/Service#queryAuthPwd" value="password" override="false"/>
-    <Parameter name="http://graphity.org/gs#preemptiveAuth" value="true" override="false"/>
-    -->
-</Context>
+<Context antiJARLocking="true" path="/atomgraph-client"/>

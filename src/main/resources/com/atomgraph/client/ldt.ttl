@@ -12,7 +12,7 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
-<#> a owl:Ontology, <#Ontology> ;
+<#> a owl:Ontology ;
     owl:imports sp:, spin:, foaf: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Linked Data Templates ontology" ;
@@ -172,7 +172,7 @@
       PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
       PREFIX owl:     <http://www.w3.org/2002/07/owl#>
       PREFIX spin:    <http://spinrdf.org/spin#>
-      PREFIX ldt:     <https://www.w3.org/ns/ldt#>
+      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
 
       CONSTRUCT {
           ?this rdfs:subClassOf [ a rdfs:Class ] ;
@@ -211,7 +211,7 @@
 <#QueryConstructor> a sp:Construct, sp:Query ; # <#Query> ;
   sp:text """
       PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX ldt:     <https://www.w3.org/ns/ldt#>
+      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
       PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
       PREFIX sp:      <http://spinrdf.org/sp#>
 
@@ -241,7 +241,7 @@
   sp:text """
       PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX ldt:     <https://www.w3.org/ns/ldt#>
+      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
       PREFIX sp:      <http://spinrdf.org/sp#>
 
       CONSTRUCT {
@@ -258,8 +258,32 @@
 <#Argument> a rdfs:Class ;
     rdfs:label "Template argument" ;
     rdfs:comment "Represents a template argument that has predicate, value type, default value etc." ;
+    spin:constructor <#ArgumentConstructor> ;
+    spin:constraint <#MissingRDFSLabel> ;
     rdfs:seeAlso spl:Argument ;
     rdfs:isDefinedBy <#> .
+
+<#ArgumentConstructor> a sp:Construct, sp:Query ; # <#Query> ;
+  sp:text """
+      PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
+      PREFIX sp:      <http://spinrdf.org/sp#>
+      PREFIX spl:     <http://spinrdf.org/spl#>
+
+      CONSTRUCT {
+          ?this rdfs:label [ a xsd:string ] ;
+              rdfs:comment [ a xsd:string ] ;
+              spl:predicate [ a rdf:Property ] ;
+              spl:valueType [ a rdfs:Resource ] ;
+              spl:optional [ a xsd:boolean ] ;
+              ldt:tunnel [ a xsd:boolean ] ;
+              rdfs:isDefinedBy [ a ldt:Ontology ] .
+      }
+      WHERE {}""" .
+    # rdfs:label "Update constructor" ;
+    # rdfs:isDefinedBy <#> .
 
 <#Constraint> a rdfs:Class ;
     <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
@@ -295,7 +319,7 @@
 <#CommandTemplateConstructor> a sp:Construct, sp:Query ; # <#Query> ;
   sp:text """
       PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX ldt:     <https://www.w3.org/ns/ldt#>
+      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
       PREFIX spin:    <http://spinrdf.org/spin#>
       PREFIX spl:     <http://spinrdf.org/spl#>
 
