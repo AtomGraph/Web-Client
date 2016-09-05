@@ -24,7 +24,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
@@ -48,13 +47,15 @@ import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.vocabulary.RDFS;
 import com.atomgraph.client.exception.OntClassNotFoundException;
 import com.atomgraph.client.util.OntologyProvider;
-import com.atomgraph.client.vocabulary.GC;
+import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
-import com.atomgraph.core.exception.ConfigurationException;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.util.StateBuilder;
+import org.apache.jena.ontology.OntResource;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.topbraid.spin.vocabulary.SPL;
 
 /**
  *
@@ -76,7 +77,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         Model model = getModel(response.getEntity());
         if (model == null) return response;
 
-        Resource requestUri = model.createResource(request.getRequestUri().toString()); //getState(request, model);
+        Resource requestUri = model.createResource(request.getRequestUri().toString());
 
         try
         {
@@ -89,13 +90,13 @@ public class HypermediaFilter implements ContainerResponseFilter
             OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
 
             long oldCount = model.size();
-            if (requestUri.getPropertyResourceValue(GC.forClass) != null)
+            if (requestUri.getPropertyResourceValue(AC.forClass) != null)
             {
-                String forClassURI = requestUri.getPropertyResourceValue(GC.forClass).getURI();
+                String forClassURI = requestUri.getPropertyResourceValue(AC.forClass).getURI();
                 OntClass forClass = ontModel.getOntClass(forClassURI);
                 if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
 
-                requestUri.addProperty(GC.constructor, addInstance(model, forClass)); // connects constructor state to CONSTRUCTed template
+                requestUri.addProperty(AC.constructor, addInstance(model, forClass)); // connects constructor state to CONSTRUCTed template
             }
             else
             {
@@ -107,24 +108,8 @@ public class HypermediaFilter implements ContainerResponseFilter
 
                 OntClass template = ontModel.getOntClass(typeHref.toString());
                 if (template == null) return response;
-
-                Resource defaultMode = template.getPropertyResourceValue(GC.defaultMode);
-                if (defaultMode != null)
-                {
-                    // transition to a URI of another application state (HATEOAS)
-                    Resource defaultState = StateBuilder.fromResource(requestUri).
-                        replaceProperty(GC.mode, defaultMode).
-                        build();
-                    if (!defaultState.equals(requestUri))
-                    {
-                        if (log.isDebugEnabled()) log.debug("Redirecting to a state transition URI: {}", defaultState.getURI());
-                        response.setResponse(Response.seeOther(URI.create(defaultState.getURI())).build());
-                        return response;
-                    }
-                }
-
-                // TO-DO: use all individuals of type gc:Mode?
-                addLayouts(StateBuilder.fromResource(requestUri).replaceProperty(GC.mode, null).build(), template);
+                
+                addLayouts(StateBuilder.fromResource(requestUri).replaceProperty(AC.mode, null).build(), template);
             }
             
             if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", requestUri.getURI(), model.size() - oldCount);
@@ -145,26 +130,6 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
 
-    /*
-    public StateBuilder getForClassBuilder(Resource resource, OntClass forClass)
-    {
-        if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
-
-        return StateBuilder.fromUri(resource.getURI(), resource.getModel()).
-            replaceProperty(GC.forClass, forClass);
-    }
-    
-    public StateBuilder getModeBuilder(StateBuilder sb, TemplateCall templateCall)
-    {
-        if (sb == null) throw new IllegalArgumentException("Resource cannot be null");
-        if (templateCall == null) throw new IllegalArgumentException("TemplateCall cannot be null");
-
-        if (templateCall.hasProperty(GC.mode)) sb.replaceProperty(GC.mode, templateCall.getProperty(GC.mode).getObject());
-        
-        return sb;
-    }
-    */
-
     public final Resource getResource(OntClass ontClass, AnnotationProperty property)
     {
         if (ontClass.hasProperty(property) && ontClass.getPropertyValue(property).isResource())
@@ -178,27 +143,47 @@ public class HypermediaFilter implements ContainerResponseFilter
         if (state == null) throw new IllegalArgumentException("Resource cannot be null");
         if (template == null) throw new IllegalArgumentException("OntClass cannot be null");
         
-        NodeIterator it = template.listPropertyValues(GC.supportedMode);
+        NodeIterator paramIt = template.listPropertyValues(LDT.param);
         try
         {
-            while (it.hasNext())
+            while (paramIt.hasNext())
             {
-                RDFNode supportedMode = it.next();
-                if (!supportedMode.isURIResource())
-                {
-                    if (log.isErrorEnabled()) log.error("Invalid Mode defined for template '{}' (gc:supportedMode)", template.getURI());
-                    throw new ConfigurationException("Invalid Mode defined for template '" + template.getURI() +"'");
-                }
+                RDFNode argNode = paramIt.next();
 
-                StateBuilder.fromResource(state).
-                    replaceProperty(GC.mode, supportedMode.asResource()).
-                    build().
-                    addProperty(GC.layoutOf, state);
+                if (argNode.isResource())
+                {
+                    Resource arg = argNode.asResource();
+                    if (arg.hasProperty(RDF.type, LDT.Argument) && arg.hasProperty(SPL.predicate, AC.mode) &&
+                            arg.hasProperty(SPL.valueType))
+                    {
+                        Resource valueType = arg.getPropertyResourceValue(SPL.valueType);
+                        if (valueType.canAs(OntClass.class)) // TO-DO: throw Exception otherwise
+                        {
+                            OntClass modeClass = valueType.as(OntClass.class);
+                            ExtendedIterator<? extends OntResource> modeIt = modeClass.listInstances();
+                            try
+                            {
+                                while (modeIt.hasNext())
+                                {
+                                    Resource mode = modeIt.next();
+                                    StateBuilder.fromResource(state).
+                                        replaceProperty(AC.mode, mode).
+                                        build().
+                                        addProperty(AC.layoutOf, state);                                
+                                }
+                            }
+                            finally
+                            {
+                                modeIt.close();
+                            }
+                        }
+                    }
+                }
             }
         }
         finally
         {
-            it.close();
+            paramIt.close();
         }
     }
 
@@ -271,55 +256,7 @@ public class HypermediaFilter implements ContainerResponseFilter
     {
         return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
     }
-  
-    public Resource getState(ContainerRequest request, Model model)
-    {
-	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
-        if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        
-        StateBuilder sb = StateBuilder.fromUri(request.getRequestUri(), model).
-            replaceProperty(GC.uri, model.createResource(request.getQueryParameters().getFirst(GC.uri.getLocalName())));
-        if (request.getQueryParameters().containsKey(GC.mode.getLocalName()))
-            sb.replaceProperty(GC.mode, model.createResource(request.getQueryParameters().getFirst(GC.mode.getLocalName())));
-        if (request.getQueryParameters().containsKey(GC.forClass.getLocalName()))
-            sb.replaceProperty(GC.forClass, model.createResource(request.getQueryParameters().getFirst(GC.forClass.getLocalName())));
-
-        return sb.build();
-    }
-
-    public Resource getMode(ContainerRequest request, OntClass template)
-    {
-	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
-        if (template == null) throw new IllegalArgumentException("OntClass cannot be null");
-
-        final Resource mode;
-        if (request.getQueryParameters().containsKey(GC.mode.getLocalName()))
-            mode = ResourceFactory.createResource(request.getQueryParameters().getFirst(GC.mode.getLocalName()));
-        else mode = getResource(template, GC.defaultMode);
-        
-        return mode;
-    }
-
-    /*
-    public IRI getForClassIRI(ContainerRequest request, OntModel ontModel)
-    {
-	if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
-	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
-
-        if (request.getQueryParameters().containsKey(GC.forClass.getLocalName()))
-        {
-            String classIRIStr = request.getQueryParameters().getFirst(GC.forClass.getLocalName());
-            IRI classIRI = IRIFactory.iriImplementation().create(classIRIStr);
-            // throws Exceptions on bad URIs:
-            CheckerIRI.iriViolations(classIRI, ErrorHandlerFactory.getDefaultErrorHandler());
-
-            return classIRI;
-        }
-        
-        return null;
-    }
-    */
-    
+      
     public Resource addInstance(Model targetModel, OntClass forClass)
     {
         if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);

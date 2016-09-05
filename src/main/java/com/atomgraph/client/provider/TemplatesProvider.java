@@ -40,7 +40,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
-import com.atomgraph.client.vocabulary.GC;
+import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.exception.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +71,8 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	super(Templates.class);
         this.servletConfig = servletConfig;
         
-        if (servletConfig.getInitParameter(GC.cacheStylesheet.getURI()) != null)
-            cacheStylesheet = Boolean.parseBoolean(servletConfig.getInitParameter(GC.cacheStylesheet.getURI()).toString());
+        if (servletConfig.getInitParameter(AC.cacheStylesheet.getURI()) != null)
+            cacheStylesheet = Boolean.parseBoolean(servletConfig.getInitParameter(AC.cacheStylesheet.getURI()).toString());
         else cacheStylesheet = false;
     }
 
@@ -148,7 +148,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 
     public Templates getTemplates(ServletConfig servletConfig) throws TransformerConfigurationException, IOException, URISyntaxException
     {
-        URI stylesheetURI = getStylesheetURI(servletConfig, GC.stylesheet);
+        URI stylesheetURI = getStylesheetURI(servletConfig, AC.stylesheet);
         if (stylesheetURI == null)
         {
             if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");

@@ -28,8 +28,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.util.DataManager;
-import com.atomgraph.client.vocabulary.GC;
-import com.atomgraph.core.vocabulary.AC;
+import com.atomgraph.client.vocabulary.AC;
+import com.atomgraph.core.vocabulary.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,9 +79,9 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     public DataManager getDataManager()
     {
         return getDataManager(LocationMapper.get(), ARQ.getContext(),
-                getBooleanParam(getServletConfig(), AC.cacheModelLoads),                
-                getBooleanParam(getServletConfig(), AC.preemptiveAuth),
-                getBooleanParam(getServletConfig(), GC.resolvingUncached)); // necessary?
+                getBooleanParam(getServletConfig(), A.cacheModelLoads),                
+                getBooleanParam(getServletConfig(), A.preemptiveAuth),
+                getBooleanParam(getServletConfig(), AC.resolvingUncached)); // necessary?
     }
     
     public boolean getBooleanParam(ServletConfig servletConfig, Property property)

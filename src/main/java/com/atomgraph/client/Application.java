@@ -42,12 +42,12 @@ import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.provider.ResultSetProvider;
 import com.atomgraph.core.provider.UpdateRequestReader;
 import com.atomgraph.client.util.DataManager;
-import com.atomgraph.client.vocabulary.GC;
+import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.provider.ClientProvider;
 import com.atomgraph.core.provider.ModelProvider;
 import com.atomgraph.core.provider.SPARQLEndpointOriginProvider;
 import com.atomgraph.core.provider.SPARQLEndpointProvider;
-import com.atomgraph.core.vocabulary.AC;
+import com.atomgraph.core.vocabulary.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,9 +119,9 @@ public class Application extends com.atomgraph.core.Application
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
         DataManager manager = new DataManager(mapper, new MediaTypesProvider().getMediaTypes(),
-                getBooleanParam(getServletConfig(), AC.cacheModelLoads),
-                getBooleanParam(getServletConfig(), AC.preemptiveAuth),
-                getBooleanParam(getServletConfig(), GC.resolvingUncached));
+                getBooleanParam(getServletConfig(), A.cacheModelLoads),
+                getBooleanParam(getServletConfig(), A.preemptiveAuth),
+                getBooleanParam(getServletConfig(), AC.resolvingUncached));
         FileManager.setStdLocators(manager);
         FileManager.setGlobalFileManager(manager);
 	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());

@@ -31,7 +31,7 @@
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/client/ns#stylesheet</param-name>
-            <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl</param-value>
+            <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/core.xsl</param-value>
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/core/ns#resultLimit</param-name>

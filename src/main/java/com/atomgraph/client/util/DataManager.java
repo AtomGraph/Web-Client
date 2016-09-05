@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import com.atomgraph.core.MediaType;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.ClientException;
+import com.sun.jersey.api.client.ClientHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +141,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                     
                     return getDefaultSource(); // return empty Model                    
                 }
-                catch (IllegalArgumentException | ClientException ex)
+                catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
                 {
                     if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
                     return getDefaultSource(); // return empty Model

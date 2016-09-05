@@ -27,7 +27,7 @@ import com.sun.jersey.spi.container.ContainerResponseFilter;
 import java.net.URI;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import com.atomgraph.client.vocabulary.GC;
+import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.util.StateBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +112,7 @@ public class URIRewriteFilter implements ContainerResponseFilter // extends Clie
         if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 
         StateBuilder.fromResource(baseUri).
-            property(GC.uri, resource).build();
+            property(AC.uri, resource).build();
     }
     
     public Model getModel(Object entity)

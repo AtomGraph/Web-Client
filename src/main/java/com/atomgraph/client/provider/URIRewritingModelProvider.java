@@ -28,7 +28,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-import com.atomgraph.client.vocabulary.GC;
+import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.provider.ModelProvider;
 import com.atomgraph.core.util.StateBuilder;
 
@@ -90,7 +90,7 @@ public class URIRewritingModelProvider extends ModelProvider
 	if (resource == null) throw new IllegalArgumentException("Resource cannot be null");
 
         return StateBuilder.fromUri(getUriInfo().getBaseUriBuilder().
-                queryParam(GC.uri.getLocalName(), resource.getURI()).
+                queryParam(AC.uri.getLocalName(), resource.getURI()).
                 build(),
             resource.getModel());
     }

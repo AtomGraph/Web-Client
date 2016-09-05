@@ -64,10 +64,10 @@ import com.atomgraph.client.filter.response.ConstructorBase;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.util.XSLTBuilder;
-import com.atomgraph.client.vocabulary.GC;
+import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
-import com.atomgraph.core.vocabulary.AC;
+import com.atomgraph.core.vocabulary.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +90,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     private final Map<Resource, MediaType> modeMediaTypeMap = new HashMap<>();
     
     {
-        modeMediaTypeMap.put(GC.EditMode, MediaType.TEXT_HTML_TYPE);
-        modeMediaTypeMap.put(GC.MapMode, MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(AC.EditMode, MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(AC.MapMode, MediaType.TEXT_HTML_TYPE);
     }
     
     @Context private UriInfo uriInfo;
@@ -242,8 +242,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public URI getMode()
     {
-        if (getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
-            return URI.create(getUriInfo().getQueryParameters().getFirst(GC.mode.getLocalName()));
+        if (getUriInfo().getQueryParameters().getFirst(AC.mode.getLocalName()) != null)
+            return URI.create(getUriInfo().getQueryParameters().getFirst(AC.mode.getLocalName()));
         
         return null;
     }
@@ -266,11 +266,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
     {        
-        bld.parameter("{" + AC.absolutePath.getNameSpace() + "}" + AC.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
-        parameter("{" + AC.requestUri.getNameSpace() + "}" + AC.requestUri.getLocalName(), getUriInfo().getRequestUri()).
-        parameter("{" + AC.method.getNameSpace() + "}" + AC.method.getLocalName(), getRequest().getMethod()).
-        parameter("{" + AC.httpHeaders.getNameSpace() + "}" + AC.httpHeaders.getLocalName(), headerMap.toString()).
-        parameter("{" + GC.contextUri.getNameSpace() + "}" + GC.contextUri.getLocalName(), getContextURI());
+        bld.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+        parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+        parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
+        parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
+        parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
      
         try
         {
@@ -278,9 +278,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             if (typeHref != null)
                 bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
-            URI baseHref = getLinkHref(headerMap, "Link", AC.baseUri.getURI()); // LDT.baseUri?
+            URI baseHref = getLinkHref(headerMap, "Link", A.baseUri.getURI()); // LDT.baseUri?
             if (baseHref != null)
-                bld.parameter("{" + AC.baseUri.getNameSpace() + "}" + AC.baseUri.getLocalName(), baseHref);
+                bld.parameter("{" + A.baseUri.getNameSpace() + "}" + A.baseUri.getLocalName(), baseHref);
             
             URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
             if (ontologyHref != null)                    
@@ -289,7 +289,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
                 OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
                 OntModel sitemap = getOntModel(ontologyHref.toString(), ontModelSpec);
-                bld.parameter("{" + GC.sitemap.getNameSpace() + "}" + GC.sitemap.getLocalName(), getSource(sitemap, true));
+                bld.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
             }
         }
         catch (URISyntaxException ex)
@@ -346,16 +346,16 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
         /*
         // map uri query param values to g:requestUri XSLT param values
-        if (uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName()) != null)
-	    bld.parameter("{" + AC.requestUri.getNameSpace() + "}" + AC.requestUri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GC.uri.getLocalName())));
+        if (uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName()) != null)
+	    bld.parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName())));
         */
 	if (uriInfo.getQueryParameters().getFirst(LDT.lang.getLocalName()) != null)
 	    bld.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(),
                 uriInfo.getQueryParameters().getFirst(LDT.lang.getLocalName()));
-	if (uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName()) != null)
-	    bld.parameter("{" + GC.endpointUri.getNameSpace() + "}" + GC.endpointUri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(GC.endpointUri.getLocalName())));
+	if (uriInfo.getQueryParameters().getFirst(AC.endpointUri.getLocalName()) != null)
+	    bld.parameter("{" + AC.endpointUri.getNameSpace() + "}" + AC.endpointUri.getLocalName(),
+                URI.create(uriInfo.getQueryParameters().getFirst(AC.endpointUri.getLocalName())));
         
         return bld;
     }
@@ -429,12 +429,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         Resource mode = null;
 
-        if (uriInfo.getQueryParameters().getFirst(GC.forClass.getLocalName()) != null)
-            mode = GC.EditMode; // this could be solved using a dummy gc:ConstructMode instead
+        if (uriInfo.getQueryParameters().getFirst(AC.forClass.getLocalName()) != null)
+            mode = AC.EditMode; // this could be solved using a dummy gc:ConstructMode instead
         else
         {
-            if (uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()) != null)
-                mode = ResourceFactory.createResource(uriInfo.getQueryParameters().getFirst(GC.mode.getLocalName()));
+            if (uriInfo.getQueryParameters().getFirst(AC.mode.getLocalName()) != null)
+                mode = ResourceFactory.createResource(uriInfo.getQueryParameters().getFirst(AC.mode.getLocalName()));
         }
         
         if (mode != null && getModeMediaTypeMap().containsKey(mode))
