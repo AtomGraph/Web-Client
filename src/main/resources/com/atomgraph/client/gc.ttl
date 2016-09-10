@@ -39,7 +39,7 @@
 <#layoutOf> a owl:ObjectProperty ;
     rdfs:subPropertyOf dct:isVersionOf ;
     rdfs:domain foaf:Document ;
-    rdfs:range foaf:Document ; # <#Layout> ?
+    rdfs:range foaf:Document ;
     rdfs:label "Layout of" ;
     rdfs:isDefinedBy <#> .
 
@@ -49,43 +49,50 @@
     rdfs:label "Class of layout modes" ;
     rdfs:isDefinedBy <#> .
 
-<#PageMode> a owl:Class ;
+<#DocumentMode> a owl:Class ;
     rdfs:subClassOf <#Mode> ;
-    rdfs:label "Class of page layout modes" ;
+    rdfs:label "Document layouts" ;
     rdfs:isDefinedBy <#> .
 
-# INDIVIDUALS
-
-# rename to #Create?
-<#ConstructMode> rdfs:label "Create" ;
+<#ContainerMode> a owl:Class ;
+    rdfs:subClassOf <#Mode> ;
+    rdfs:label "Container layouts" ;
     rdfs:isDefinedBy <#> .
 
-<#ReadMode> a <#Mode>, <#PageMode> ;
+# MODES
+
+<#ReadMode> a <#DocumentMode>, <#ContainerMode> ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy <#> .
 
-<#EditMode> a <#Mode> ;
+<#EditMode> a <#DocumentMode> ;
     rdfs:label "Edit" ;
     rdfs:isDefinedBy <#> .
 
-<#TableMode> a <#Mode>, <#PageMode> ;
+<#TableMode> a <#ContainerMode> ;
     rdfs:label "Table" ;
     rdfs:isDefinedBy <#> .
 
-<#ListMode> a <#Mode>, <#PageMode> ;
+<#ListMode> a <#ContainerMode> ;
     rdfs:label "List" ;
     rdfs:isDefinedBy <#> .
 
-<#GridMode> a <#Mode>, <#PageMode> ;
+<#GridMode> a <#ContainerMode> ;
     rdfs:label "Grid" ;
     rdfs:isDefinedBy <#> .
 
-<#MapMode> a <#Mode>, <#PageMode> ;
+<#MapMode> a <#DocumentMode>, <#ContainerMode> ;
     rdfs:label "Map" ;
     rdfs:isDefinedBy <#> .
 
-<#GraphMode> a <#Mode>, <#PageMode> ;
+<#GraphMode> a <#DocumentMode>, <#ContainerMode> ;
     rdfs:label "Graph" ;
+    rdfs:isDefinedBy <#> .
+
+# UI keywords
+
+# rename to #Create?
+<#ConstructMode> rdfs:label "Create" ;
     rdfs:isDefinedBy <#> .
 
 <#Delete> rdfs:label "Delete" ;
