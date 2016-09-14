@@ -16,14 +16,13 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
-    <!ENTITY g      "http://graphity.org/g#">
+    <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">    
+    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
@@ -31,8 +30,7 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:gc="&gc;"
-xmlns:g="&g;"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -48,11 +46,11 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="gc:uri/@rdf:resource"/>
+    <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="ac:uri/@rdf:resource"/>
 
     <!-- LIST ITEM -->
     
-    <!-- more like gc:ListItemAnchor?? -->
+    <!-- more like ac:ListItemAnchor?? -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:ListItem">
         <xsl:param name="active" as="xs:boolean?"/>
         
@@ -62,7 +60,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <a href="{@rdf:about}">
-                <xsl:apply-templates select="." mode="gc:label"/>
+                <xsl:apply-templates select="." mode="ac:label"/>
             </a>
         </li>
     </xsl:template>
@@ -80,14 +78,14 @@ exclude-result-prefixes="#all">
             <xsl:if test="$disabled">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
-            <xsl:apply-templates select="." mode="gc:label"/>
+            <xsl:apply-templates select="." mode="ac:label"/>
         </option>
     </xsl:template>
     
     <!-- TABLE MODE -->
     
     <!--
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="gc:Table">
+    <xsl:template match="@rdf:about | @rdf:nodeID" mode="ac:Table">
 	<td>
 	    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
 	</td>
@@ -98,25 +96,20 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[key('resources-by-uri', @rdf:about)/@rdf:about]" mode="xhtml:Anchor" priority="1">
 	<a href="{key('resources-by-uri', @rdf:about)/@rdf:about}" title="{@rdf:about}">
-	    <xsl:apply-templates select="." mode="gc:label"/>
+	    <xsl:apply-templates select="." mode="ac:label"/>
 	</a>
     </xsl:template>
     
     <!-- subject resource -->
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
 	<a href="{@rdf:about}" title="{@rdf:about}">
-            <!--
-	    <xsl:if test="substring-after(., concat($g:requestUri, '#'))">
-		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($g:requestUri, '#'))"/></xsl:attribute>
-	    </xsl:if>	
-            -->
-	    <xsl:apply-templates select="." mode="gc:label"/>
+	    <xsl:apply-templates select="." mode="ac:label"/>
 	</a>
     </xsl:template>
     
     <xsl:template match="*[@rdf:nodeID]" mode="xhtml:Anchor">
 	<span id="{@rdf:nodeID}" title="{@rdf:nodeID}">
-	    <xsl:apply-templates select="." mode="gc:label"/>
+	    <xsl:apply-templates select="." mode="ac:label"/>
 	</span>
     </xsl:template>
 
@@ -127,20 +120,20 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
 	<span title="{$this}">
-	    <xsl:apply-templates select="." mode="gc:property-label"/>
+	    <xsl:apply-templates select="." mode="ac:property-label"/>
 	</span>
     </xsl:template>
 
     <xsl:template match="@rdf:resource[key('resources-by-uri', .)/@rdf:about]" priority="1">
 	<a href="{key('resources-by-uri', .)/@rdf:about}" title="{.}">
-           <xsl:apply-templates select="." mode="gc:object-label"/>
+           <xsl:apply-templates select="." mode="ac:object-label"/>
 	</a>
     </xsl:template>
 
     <!-- object resource -->
     <xsl:template match="@rdf:resource | sparql:uri">
 	<a href="{.}" title="{.}">
-            <xsl:apply-templates select="." mode="gc:object-label"/>
+            <xsl:apply-templates select="." mode="ac:object-label"/>
 	</a>
     </xsl:template>
 
@@ -191,7 +184,7 @@ exclude-result-prefixes="#all">
     
     <!-- TABLE PREDICATE MODE -->
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TablePredicate">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:TablePredicate">
         <xsl:sequence select="."/>
     </xsl:template>
 
@@ -203,7 +196,7 @@ exclude-result-prefixes="#all">
 	</th>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:TableCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:TableCell" priority="1">
         <xsl:param name="resource" as="element()"/>
         <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
         <xsl:variable name="predicate" select="$resource/*[concat(namespace-uri(), local-name()) = $this]"/>

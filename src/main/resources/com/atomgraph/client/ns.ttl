@@ -1,4 +1,4 @@
-@base           <http://atomgraph.com/client/ns> .
+@base           <http://atomgraph.com/ns/client> .
 
 # @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .

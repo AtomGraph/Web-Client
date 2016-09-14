@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
+    <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
@@ -34,7 +34,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:url="&java;java.net.URLDecoder"
-xmlns:gc="&gc;"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
@@ -58,9 +58,9 @@ exclude-result-prefixes="#all">
 
     <!-- LABEL MODE -->
 
-    <xsl:template match="node()" mode="gc:label"/>
+    <xsl:template match="node()" mode="ac:label"/>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:label">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:label">
         <xsl:variable name="labels" as="xs:string*">
             <xsl:variable name="lang-labels" as="xs:string*">
                 <xsl:apply-templates select="*[lang($ldt:lang)]" mode="#current"/>
@@ -95,9 +95,9 @@ exclude-result-prefixes="#all">
 
     <!-- DESCRIPTION MODE -->
 
-    <xsl:template match="node()" mode="gc:description"/>
+    <xsl:template match="node()" mode="ac:description"/>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:description">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:description">
         <xsl:variable name="descriptions" as="xs:string*">
             <xsl:variable name="lang-descriptions" as="xs:string*">
                 <xsl:apply-templates select="*[lang($ldt:lang)]" mode="#current"/>
@@ -118,17 +118,17 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY LABEL MODE -->
         
-    <xsl:template match="node()" mode="gc:property-label"/>
+    <xsl:template match="node()" mode="ac:property-label"/>
         
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:property-label">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:property-label">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
         <xsl:choose>
             <xsl:when test="key('resources', $this)">
-                <xsl:apply-templates select="key('resources', $this)" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
-                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))">
                 <xsl:value-of select="substring-after(concat(namespace-uri(), local-name()), '#')"/>
@@ -145,15 +145,15 @@ exclude-result-prefixes="#all">
 
     <!-- OBJECT LABEL NODE -->
     
-    <xsl:template match="node()" mode="gc:object-label"/>
+    <xsl:template match="node()" mode="ac:object-label"/>
         
-    <xsl:template match="@rdf:resource | @rdf:nodeID | sparql:uri" mode="gc:object-label">
+    <xsl:template match="@rdf:resource | @rdf:nodeID | sparql:uri" mode="ac:object-label">
         <xsl:choose>
             <xsl:when test="key('resources', .)">
-                <xsl:apply-templates select="key('resources', .)" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', .)" mode="ac:label"/>
             </xsl:when>
-            <xsl:when test="doc-available(gc:document-uri(.)) and key('resources', ., document(gc:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'" >
-                <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="gc:label"/>
+            <xsl:when test="doc-available(ac:document-uri(.)) and key('resources', ., document(ac:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'" >
+                <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
                 <xsl:value-of select="substring-after(., '#')"/>
@@ -170,41 +170,41 @@ exclude-result-prefixes="#all">
     
     <!-- IMAGE MODE -->
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="gc:image"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:image"/>
 
     <!-- FUNCTIONS -->
     
-    <xsl:function name="gc:label" as="xs:string?">
+    <xsl:function name="ac:label" as="xs:string?">
 	<xsl:param name="resource" as="element()"/>
 
         <xsl:variable name="labels" as="xs:string*">
-            <xsl:apply-templates select="$resource" mode="gc:label"/>
+            <xsl:apply-templates select="$resource" mode="ac:label"/>
         </xsl:variable>
         <xsl:sequence select="$labels[1]"/>
     </xsl:function>
 
-    <xsl:function name="gc:description" as="xs:string?">
+    <xsl:function name="ac:description" as="xs:string?">
 	<xsl:param name="resource" as="element()"/>
 
         <xsl:variable name="descriptions" as="xs:string*">
-            <xsl:apply-templates select="$resource" mode="gc:description"/>
+            <xsl:apply-templates select="$resource" mode="ac:description"/>
         </xsl:variable>
         <xsl:sequence select="$descriptions[1]"/>
     </xsl:function>
 
-    <xsl:function name="gc:property-label" as="xs:string?">
+    <xsl:function name="ac:property-label" as="xs:string?">
 	<xsl:param name="property" as="element()"/>
 	
-	<xsl:apply-templates select="$property" mode="gc:property-label"/>
+	<xsl:apply-templates select="$property" mode="ac:property-label"/>
     </xsl:function>
 
-    <xsl:function name="gc:object-label" as="xs:string?">
+    <xsl:function name="ac:object-label" as="xs:string?">
 	<xsl:param name="object" as="attribute()"/>
 	
-	<xsl:apply-templates select="$object" mode="gc:object-label"/>
+	<xsl:apply-templates select="$object" mode="ac:object-label"/>
     </xsl:function>
 
-    <xsl:function name="gc:document-uri" as="xs:anyURI">
+    <xsl:function name="ac:document-uri" as="xs:anyURI">
 	<xsl:param name="uri" as="xs:anyURI"/>
 	<xsl:choose>
 	    <!-- strip trailing fragment identifier (#) -->
@@ -217,7 +217,7 @@ exclude-result-prefixes="#all">
 	</xsl:choose>
     </xsl:function>
 
-    <xsl:function name="gc:fragment-id" as="xs:string?">
+    <xsl:function name="ac:fragment-id" as="xs:string?">
 	<xsl:param name="uri" as="xs:anyURI"/>
 	
 	<xsl:sequence select="substring-after($uri, '#')"/>
@@ -226,16 +226,16 @@ exclude-result-prefixes="#all">
     <xsl:function name="rdfs:domain" as="attribute()*">
 	<xsl:param name="property-uri" as="xs:anyURI+"/>
 	<xsl:for-each select="$property-uri">
-	    <xsl:for-each select="document(gc:document-uri($property-uri))">
+	    <xsl:for-each select="document(ac:document-uri($property-uri))">
 		<xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
 	    </xsl:for-each>
 	</xsl:for-each>
     </xsl:function>
 
-    <xsl:function name="gc:inDomainOf" as="attribute()*">
+    <xsl:function name="ac:inDomainOf" as="attribute()*">
 	<xsl:param name="type-uri" as="xs:anyURI+"/>
 	<xsl:for-each select="$type-uri">
-	    <xsl:for-each select="document(gc:document-uri(.))">
+	    <xsl:for-each select="document(ac:document-uri(.))">
 		<xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
 	    </xsl:for-each>
 	</xsl:for-each>
@@ -244,7 +244,7 @@ exclude-result-prefixes="#all">
     <xsl:function name="rdfs:range" as="attribute()*">
 	<xsl:param name="property-uri" as="xs:anyURI+"/>
 	<xsl:for-each select="$property-uri">
-	    <xsl:for-each select="document(gc:document-uri($property-uri))">
+	    <xsl:for-each select="document(ac:document-uri($property-uri))">
 		<xsl:sequence select="key('resources', $property-uri)/rdfs:range/@rdf:resource"/>
 	    </xsl:for-each>
 	</xsl:for-each>
@@ -252,7 +252,7 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="rdfs:subClassOf" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:sequence select="rdfs:subClassOf($uri, document(gc:document-uri($uri)))"/>
+	<xsl:sequence select="rdfs:subClassOf($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="rdfs:subClassOf" as="attribute()*">
@@ -263,12 +263,12 @@ exclude-result-prefixes="#all">
 	</xsl:for-each>
     </xsl:function>
 
-    <xsl:function name="gc:superClassOf" as="attribute()*">
+    <xsl:function name="ac:superClassOf" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:sequence select="gc:superClassOf($uri, document(gc:document-uri($uri)))"/>
+	<xsl:sequence select="ac:superClassOf($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
-    <xsl:function name="gc:superClassOf" as="attribute()*">
+    <xsl:function name="ac:superClassOf" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
 	<xsl:param name="document" as="document-node()"/>
 	<xsl:for-each select="$document">
@@ -278,7 +278,7 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="skos:broader" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:sequence select="skos:broader($uri, document(gc:document-uri($uri)))"/>
+	<xsl:sequence select="skos:broader($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="skos:broader" as="attribute()*">
@@ -291,7 +291,7 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="skos:narrower" as="attribute()*">
 	<xsl:param name="uri" as="xs:anyURI+"/>
-	<xsl:sequence select="skos:narrower($uri, document(gc:document-uri($uri)))"/>
+	<xsl:sequence select="skos:narrower($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="skos:narrower" as="attribute()*">
@@ -313,7 +313,7 @@ exclude-result-prefixes="#all">
 	</xsl:if>
     </xsl:function>
 
-    <xsl:function name="gc:query-string" as="xs:string?">
+    <xsl:function name="ac:query-string" as="xs:string?">
 	<xsl:param name="offset" as="xs:integer?"/>
 	<xsl:param name="limit" as="xs:integer?"/>
 	<xsl:param name="order-by" as="xs:string?"/>
@@ -333,7 +333,7 @@ exclude-result-prefixes="#all">
 	</xsl:if>
     </xsl:function>
 
-    <xsl:function name="gc:query-string" as="xs:string?">
+    <xsl:function name="ac:query-string" as="xs:string?">
 	<xsl:param name="uri" as="xs:anyURI?"/>
 	<xsl:param name="mode" as="xs:anyURI?"/>
 
@@ -347,7 +347,7 @@ exclude-result-prefixes="#all">
 	</xsl:if>
     </xsl:function>
 
-    <xsl:function name="gc:query-string" as="xs:string?">
+    <xsl:function name="ac:query-string" as="xs:string?">
 	<xsl:param name="endpoint-uri" as="xs:anyURI?"/>
 	<xsl:param name="query" as="xs:string?"/>
 	<xsl:param name="mode" as="xs:anyURI?"/>
@@ -365,7 +365,7 @@ exclude-result-prefixes="#all">
 	</xsl:if>
     </xsl:function>
     
-    <xsl:function name="gc:visit-elements" as="element()*">
+    <xsl:function name="ac:visit-elements" as="element()*">
         <xsl:param name="element" as="element()"/>
         <xsl:param name="type" as="xs:string?"/>
         
@@ -374,15 +374,15 @@ exclude-result-prefixes="#all">
                 <xsl:sequence select="key('resources', $element/sp:query/(@rdf:resource, @rdf:nodeID), root($element))"/>
             </xsl:when>
             <xsl:when test="list:member($element, root($element))">
-                <xsl:sequence select="list:member($element, root($element))/gc:visit-elements(., $type)"/>
+                <xsl:sequence select="list:member($element, root($element))/ac:visit-elements(., $type)"/>
             </xsl:when>
             <xsl:when test="$element/sp:elements/@rdf:nodeID">
-                <xsl:sequence select="key('resources', $element/sp:elements/@rdf:nodeID, root($element))/gc:visit-elements(., $type)"/>
+                <xsl:sequence select="key('resources', $element/sp:elements/@rdf:nodeID, root($element))/ac:visit-elements(., $type)"/>
             </xsl:when>
         </xsl:choose>
     </xsl:function>
 
-    <xsl:function use-when="system-property('xsl:product-name') = 'SAXON'" name="gc:construct-doc" as="document-node()">
+    <xsl:function use-when="system-property('xsl:product-name') = 'SAXON'" name="ac:construct-doc" as="document-node()">
         <xsl:param name="ontology" as="xs:anyURI"/>
         <xsl:param name="class" as="xs:anyURI"/>
 

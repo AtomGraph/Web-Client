@@ -2,11 +2,7 @@
 
 [] lm:mapping
 
-   [ lm:name "http://atomgraph.com/client/ns#" ;                    lm:altName "com/atomgraph/client/gc.ttl" ] ,   
-   [ lm:name "http://www.w3.org/ns/ldt#" ;                          lm:altName "com/atomgraph/client/ldt.ttl" ] ,
-   [ lm:name "http://www.w3.org/ns/ldt/core#" ;                     lm:altName "com/atomgraph/client/core.ttl" ] ,
-   [ lm:name "http://www.w3.org/ns/ldt/document-hierarchy#" ;       lm:altName "com/atomgraph/client/dh.ttl" ] ,
-   [ lm:name "http://www.w3.org/ns/ldt/topic-hierarchy#" ;          lm:altName "com/atomgraph/client/th.ttl" ] ,
+   [ lm:name "http://atomgraph.com/ns/client#" ;                    lm:altName "com/atomgraph/client/ns.ttl" ] ,   
    [ lm:name "http://rdfs.org/sioc/ns#" ;			    lm:altName "com/atomgraph/client/sioc.owl" ] ,
    [ lm:name "http://rdfs.org/ns/void#" ;			    lm:altName "com/atomgraph/client/void.owl" ] ,
    [ lm:name "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ;	    lm:altName "com/atomgraph/client/rdf.owl" ] ,
@@ -17,6 +13,10 @@
    [ lm:name "http://www.w3.org/2006/time#" ;			    lm:altName "com/atomgraph/client/time.owl" ] ,
    [ lm:name "http://www.w3.org/2011/http#" ;			    lm:altName "com/atomgraph/client/http.owl" ] ,
    [ lm:name "http://www.w3.org/2011/http-statusCodes#" ;           lm:altName "com/atomgraph/client/http-statusCodes.rdf" ] ,
+   [ lm:name "http://www.w3.org/ns/ldt#" ;                          lm:altName "com/atomgraph/client/ldt.ttl" ] ,
+   [ lm:name "http://www.w3.org/ns/ldt/core#" ;                     lm:altName "com/atomgraph/client/core.ttl" ] ,
+   [ lm:name "http://www.w3.org/ns/ldt/document-hierarchy#" ;       lm:altName "com/atomgraph/client/dh.ttl" ] ,
+   [ lm:name "http://www.w3.org/ns/ldt/topic-hierarchy#" ;          lm:altName "com/atomgraph/client/th.ttl" ] ,
    [ lm:name "http://www.w3.org/ns/sparql-service-description#" ;   lm:altName "com/atomgraph/client/sparql-service.owl" ] ,
    [ lm:name "http://purl.org/dc/elements/1.1/" ;		    lm:altName "com/atomgraph/client/dcelements.rdf" ] ,
    [ lm:name "http://purl.org/dc/terms/" ;			    lm:altName "com/atomgraph/client/dcterms.rdf" ] ,
@@ -26,6 +26,7 @@
    [ lm:name "http://graph.facebook.com/schema/user#" ;		    lm:altName "com/atomgraph/client/gfb-user.owl" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;			    lm:altName "com/atomgraph/client/doap.owl" ] ,
 
+   [ lm:prefix "http://atomgraph.com/ns/client" ;                   lm:altName "com/atomgraph/client/ns.ttl" ] ,
    [ lm:prefix "http://rdfs.org/sioc/ns" ;			    lm:altName "com/atomgraph/client/sioc.owl" ] ,
    [ lm:prefix "http://rdfs.org/ns/void" ;			    lm:altName "com/atomgraph/client/void.owl" ] ,
    [ lm:prefix "http://www.w3.org/1999/02/22-rdf-syntax-ns" ;	    lm:altName "com/atomgraph/client/rdf.owl" ] ,
@@ -36,6 +37,10 @@
    [ lm:prefix "http://www.w3.org/2006/time" ;			    lm:altName "com/atomgraph/client/time.owl" ] ,
    [ lm:prefix "http://www.w3.org/2011/http" ;			    lm:altName "com/atomgraph/client/http.owl" ] ,
    [ lm:prefix "http://www.w3.org/2011/http-statusCodes" ;          lm:altName "com/atomgraph/client/http-statusCodes.rdf" ] ,
+   [ lm:prefix "http://www.w3.org/ns/ldt" ;                         lm:altName "com/atomgraph/client/ldt.ttl" ] ,
+   [ lm:prefix "http://www.w3.org/ns/ldt/core" ;                    lm:altName "com/atomgraph/client/core.ttl" ] ,
+   [ lm:prefix "http://www.w3.org/ns/ldt/document-hierarchy" ;      lm:altName "com/atomgraph/client/dh.ttl" ] ,
+   [ lm:prefix "http://www.w3.org/ns/ldt/topic-hierarchy" ;         lm:altName "com/atomgraph/client/th.ttl" ] ,
    [ lm:prefix "http://www.w3.org/ns/sparql-service-description" ;  lm:altName "com/atomgraph/client/sparql-service.owl" ] ,
    [ lm:prefix "http://purl.org/dc/elements/1.1/" ;		    lm:altName "com/atomgraph/client/dcelements.rdf" ] ,
    [ lm:prefix "http://purl.org/dc/terms/" ;			    lm:altName "com/atomgraph/client/dcterms.rdf" ] ,

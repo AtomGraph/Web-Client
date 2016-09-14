@@ -16,8 +16,8 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
-    <!ENTITY g      "http://atomgraph.com/core/ns#">
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
+    <!ENTITY a      "http://atomgraph.com/ns/core#">
+    <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -42,8 +42,8 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:g="&g;"
-xmlns:gc="&gc;"
+xmlns:a="&a;"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -97,16 +97,16 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
-    <xsl:param name="g:baseUri" as="xs:anyURI?"/>
-    <xsl:param name="g:requestUri" as="xs:anyURI?"/>
-    <xsl:param name="g:absolutePath" select="xs:anyURI(tokenize($g:requestUri,'\?')[1])" as="xs:anyURI?"/>
-    <xsl:param name="g:httpHeaders" as="xs:string"/>
+    <xsl:param name="ldt:baseUri" as="xs:anyURI?"/>
+    <xsl:param name="a:requestUri" as="xs:anyURI?"/>
+    <xsl:param name="a:absolutePath" select="xs:anyURI(tokenize($a:requestUri,'\?')[1])" as="xs:anyURI?"/>
+    <xsl:param name="a:httpHeaders" as="xs:string"/>
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-    <xsl:param name="gc:contextUri" as="xs:anyURI?"/>
-    <xsl:param name="gc:endpointUri" as="xs:anyURI?"/>
+    <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
+    <xsl:param name="ac:endpointUri" as="xs:anyURI?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
-    <xsl:param name="gc:sitemap" as="document-node()?"/>
+    <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="uri" as="xs:string?"/>
     <xsl:param name="query" as="xs:string?"/>
     <xsl:param name="label" as="xs:string?"/>
@@ -120,7 +120,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="dh:pageOf/@rdf:resource"/>
     <xsl:key name="resources-by-view-of" match="*[@rdf:about]" use="core:viewOf/@rdf:resource"/>    
-    <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="gc:layoutOf/@rdf:resource"/>
+    <xsl:key name="resources-by-layout-of" match="*[@rdf:about]" use="ac:layoutOf/@rdf:resource"/>
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
@@ -149,10 +149,10 @@ exclude-result-prefixes="#all">
     <xsl:template match="/">
 	<html xml:lang="{$ldt:lang}">
             <xsl:variable name="grouped-rdf" as="document-node()">
-                <xsl:apply-templates select="." mode="gc:GroupTriples"/>
+                <xsl:apply-templates select="." mode="ac:GroupTriples"/>
             </xsl:variable>
 
-            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response', $grouped-rdf)[not(key('resources', $g:requestUri, $grouped-rdf))], key('resources', $g:requestUri, $grouped-rdf))[1]" as="element()"/>
+            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response', $grouped-rdf)[not(key('resources', $a:requestUri, $grouped-rdf))], key('resources', $a:requestUri, $grouped-rdf))[1]" as="element()"/>
             
             <xsl:apply-templates select="$current" mode="xhtml:Head"/>
             
@@ -192,11 +192,11 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <xsl:if test="$g:baseUri">
-                        <a class="brand" href="{$g:baseUri}">
-                            <xsl:for-each select="key('resources', $g:baseUri, document($g:baseUri))">
+                    <xsl:if test="$ldt:baseUri">
+                        <a class="brand" href="{$ldt:baseUri}">
+                            <xsl:for-each select="key('resources', $ldt:baseUri, document($ldt:baseUri))">
                                 <img src="{foaf:logo/@rdf:resource}">
-                                    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:label"/></xsl:attribute>
+                                    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="ac:label"/></xsl:attribute>
                                 </img>
                             </xsl:for-each>
                         </a>
@@ -216,12 +216,12 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="$g:baseUri">
-                            <xsl:variable name="space" select="($g:requestUri, key('resources', $g:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                            <xsl:if test="key('resources-by-type', '&core;SPARQLEndpoint', document($g:baseUri))">
+                        <xsl:if test="$ldt:baseUri">
+                            <xsl:variable name="space" select="($a:requestUri, key('resources', $a:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                            <xsl:if test="key('resources-by-type', '&core;SPARQLEndpoint', document($ldt:baseUri))">
                                 <ul class="nav pull-right">
-                                    <xsl:apply-templates select="key('resources-by-type', '&core;SPARQLEndpoint', document($g:baseUri))" mode="bs2:NavBarListItem">
-                                        <xsl:sort select="gc:label(.)" order="ascending" lang="{$ldt:lang}"/>
+                                    <xsl:apply-templates select="key('resources-by-type', '&core;SPARQLEndpoint', document($ldt:baseUri))" mode="bs2:NavBarListItem">
+                                        <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}"/>
                                         <xsl:with-param name="space" select="$space"/>
                                     </xsl:apply-templates>
                                 </ul>
@@ -255,18 +255,18 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="xhtml:Title" priority="3">
+    <xsl:template match="*[ac:forClass/@rdf:resource]" mode="xhtml:Title" priority="3">
         <xsl:next-match>
-            <xsl:with-param name="forClass" select="gc:forClass/@rdf:resource" tunnel="yes"/>
+            <xsl:with-param name="forClass" select="ac:forClass/@rdf:resource" tunnel="yes"/>
         </xsl:next-match>
     </xsl:template>
     
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="xhtml:Title" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="xhtml:Title" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="xhtml:Title" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="xhtml:Title" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -283,18 +283,18 @@ exclude-result-prefixes="#all">
         <xsl:param name="forClass" as="xs:anyURI?" tunnel="yes"/>
         
         <title>
-            <xsl:if test="$g:baseUri">
-                <xsl:apply-templates select="key('resources', $g:baseUri, document($g:baseUri))" mode="gc:label"/>
+            <xsl:if test="$ldt:baseUri">
+                <xsl:apply-templates select="key('resources', $ldt:baseUri, document($ldt:baseUri))" mode="ac:label"/>
                 <xsl:text> - </xsl:text>
             </xsl:if>
             
-            <xsl:apply-templates select="." mode="gc:label"/>
+            <xsl:apply-templates select="." mode="ac:label"/>
 
             <xsl:if test="$forClass">
                 <xsl:text> : </xsl:text>
-                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
                 <xsl:text> </xsl:text>
-                <xsl:apply-templates select="key('resources', $forClass, document(gc:document-uri($forClass)))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', $forClass, document(ac:document-uri($forClass)))" mode="ac:label"/>
             </xsl:if>
         </title>
     </xsl:template>
@@ -302,9 +302,9 @@ exclude-result-prefixes="#all">
     <!-- STYLE MODE -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Style">
-	<link href="{resolve-uri('static/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
-    	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
-	<link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $gc:contextUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+    	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+	<link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
     <!-- SCRIPT MODE -->
@@ -312,15 +312,15 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="xhtml:Script" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Script">
-	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $gc:contextUri)}"></script>
-	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $gc:contextUri)}"></script>
-        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $gc:contextUri)}"></script>
-        <xsl:if test="key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;MapMode' or key('resources', $g:requestUri)/gc:forClass/@rdf:resource">
+	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}"></script>
+	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}"></script>
+        <xsl:if test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;MapMode' or key('resources', $a:requestUri)/ac:forClass/@rdf:resource">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
-            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $gc:contextUri)}"></script>
+            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="gc:mode/@rdf:resource = '&gc;EditMode' or gc:forClass/@rdf:resource">
-            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $gc:contextUri)}"></script>
+        <xsl:if test="ac:mode/@rdf:resource = '&ac;EditMode' or ac:forClass/@rdf:resource">
+            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
 
@@ -338,7 +338,7 @@ exclude-result-prefixes="#all">
 
                     <xsl:apply-templates select="." mode="bs2:PagerList"/>
 
-                    <xsl:apply-templates select="." mode="gc:ModeChoice"/>
+                    <xsl:apply-templates select="." mode="ac:ModeChoice"/>
 
                     <xsl:apply-templates select="." mode="bs2:PagerList"/>
                 </div>
@@ -350,28 +350,28 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
     
-    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="gc:ModeChoice" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:ModeChoice" priority="1">
         <xsl:apply-templates select="." mode="bs2:BlockItem"/>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="gc:ModeChoice">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:ModeChoice">
         <xsl:choose>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;EditMode' or gc:forClass/@rdf:resource">
+            <xsl:when test="ac:mode/@rdf:resource = '&ac;EditMode' or ac:forClass/@rdf:resource">
                 <xsl:apply-templates select="." mode="bs2:Form"/>
             </xsl:when>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;ListMode'">
+            <xsl:when test="ac:mode/@rdf:resource = '&ac;ListMode'">
                 <xsl:apply-templates select="." mode="bs2:BlockList"/>
             </xsl:when>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;TableMode'">
+            <xsl:when test="ac:mode/@rdf:resource = '&ac;TableMode'">
                 <xsl:apply-templates select="." mode="xhtml:Table"/>
             </xsl:when>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;GridMode'">
+            <xsl:when test="ac:mode/@rdf:resource = '&ac;GridMode'">
                 <xsl:apply-templates select="." mode="bs2:Grid"/>
             </xsl:when>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;MapMode'">
+            <xsl:when test="ac:mode/@rdf:resource = '&ac;MapMode'">
                 <xsl:apply-templates select="." mode="bs2:Map"/>
             </xsl:when>
-            <xsl:when test="gc:mode/@rdf:resource = '&gc;GraphMode'">
+            <xsl:when test="ac:mode/@rdf:resource = '&ac;GraphMode'">
                 <xsl:apply-templates select="." mode="bs2:Graph"/>
             </xsl:when>
             <xsl:otherwise>
@@ -385,14 +385,14 @@ exclude-result-prefixes="#all">
     <!--
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="2"/>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:requestUri)/gc:forClass]" mode="bs2:ModeList" priority="1"/>
+    <xsl:template match="rdf:RDF[key('resources', $a:requestUri)/ac:forClass]" mode="bs2:ModeList" priority="1"/>
     -->
                 
-    <xsl:template match="*[*][gc:mode/@rdf:resource][gc:layoutOf/@rdf:resource]" mode="bs2:ModeList" priority="1">
-        <xsl:if test="gc:mode/@rdf:resource">
+    <xsl:template match="*[*][ac:mode/@rdf:resource][ac:layoutOf/@rdf:resource]" mode="bs2:ModeList" priority="1">
+        <xsl:if test="ac:mode/@rdf:resource">
             <ul class="nav nav-tabs">
-                <xsl:variable name="active" select="gc:mode/@rdf:resource" as="xs:anyURI"/>
-                <xsl:for-each select="key('resources-by-layout-of', gc:layoutOf/@rdf:resource)">
+                <xsl:variable name="active" select="ac:mode/@rdf:resource" as="xs:anyURI"/>
+                <xsl:for-each select="key('resources-by-layout-of', ac:layoutOf/@rdf:resource)">
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
                         <xsl:with-param name="active" select="$active"/>
                     </xsl:apply-templates>
@@ -403,28 +403,28 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="*" mode="bs2:ModeList"/>
         
-    <xsl:template match="*[gc:mode][@rdf:about]" mode="bs2:ModeListItem">
+    <xsl:template match="*[ac:mode][@rdf:about]" mode="bs2:ModeListItem">
         <xsl:param name="active" as="xs:anyURI?"/>
         
         <li>
-            <xsl:if test="gc:mode/@rdf:resource = $active">
+            <xsl:if test="ac:mode/@rdf:resource = $active">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
             <a href="{@rdf:about}">
-                <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', ac:mode/@rdf:resource, document(ac:document-uri(ac:mode/@rdf:resource)))" mode="ac:label"/>
             </a>
         </li>
     </xsl:template>
         
     <!-- BREADCRUMB MODE -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:BreadCrumbList" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -477,12 +477,12 @@ exclude-result-prefixes="#all">
 
     <!-- <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:PageHeader" priority="1"/> -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PageHeader" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:PageHeader" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -495,8 +495,8 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="key('resources', core:viewOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:constructorOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
-        <xsl:apply-templates select="key('resources', gc:constructorOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:constructorOf/@rdf:resource)]" mode="bs2:PageHeader" priority="1">
+        <xsl:apply-templates select="key('resources', ac:constructorOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:PageHeader" priority="1"/>
@@ -510,7 +510,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:Header" priority="1">
         <div class="alert alert-error">
             <h1>
-                <xsl:apply-templates select="." mode="gc:label"/>
+                <xsl:apply-templates select="." mode="ac:label"/>
             </h1>
         </div>
     </xsl:template>
@@ -536,7 +536,7 @@ exclude-result-prefixes="#all">
             </h2>
             
             <p>
-                <xsl:apply-templates select="." mode="gc:description"/>
+                <xsl:apply-templates select="." mode="ac:description"/>
             </p>
 
             <xsl:apply-templates select="." mode="bs2:MediaTypeList"/>
@@ -566,9 +566,9 @@ exclude-result-prefixes="#all">
                     <a href="{@rdf:about}?accept={encode-for-uri('text/turtle')}">Turtle</a>
                 </li>
                 <!--
-                <xsl:if test="@rdf:about = $g:requestUri and $query-res/sp:text">
+                <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">
                     <li>
-                        <a href="{resolve-uri('sparql', $g:baseUri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
+                        <a href="{resolve-uri('sparql', $ldt:baseUri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
                     </li>
                 </xsl:if>
                 -->
@@ -582,42 +582,42 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[@rdf:about]" mode="bs2:Actions" priority="1">
         <div class="pull-right">
-            <form action="{gc:document-uri(@rdf:about)}?_method=DELETE" method="post">
+            <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
-                    <xsl:apply-templates select="key('resources', '&gc;Delete', document('&gc;'))" mode="gc:label"/>
+                    <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label"/>
                 </button>
             </form>
         </div>
 
-        <xsl:if test="key('resources-by-layout-of', key('resources', $g:requestUri)/gc:layoutOf/@rdf:resource)[gc:mode/@rdf:resource = '&gc;EditMode']/@rdf:about and not(key('resources', $g:requestUri)/gc:mode/@rdf:resource = '&gc;EditMode')">
+        <xsl:if test="key('resources-by-layout-of', key('resources', $a:requestUri)/ac:layoutOf/@rdf:resource)[ac:mode/@rdf:resource = '&ac;EditMode']/@rdf:about and not(key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;EditMode')">
             <div class="pull-right">
-                <a class="btn btn-primary" href="{key('resources-by-layout-of', key('resources', $g:requestUri)/gc:layoutOf/@rdf:resource)[gc:mode/@rdf:resource = '&gc;EditMode']/@rdf:about}">
-                    <xsl:apply-templates select="key('resources', '&gc;EditMode', document('&gc;'))" mode="gc:label"/>
+                <a class="btn btn-primary" href="{key('resources-by-layout-of', key('resources', $a:requestUri)/ac:layoutOf/@rdf:resource)[ac:mode/@rdf:resource = '&ac;EditMode']/@rdf:about}">
+                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
                 </a>
             </div>
         </xsl:if>
 
-        <xsl:if test="$gc:sitemap">
-            <xsl:variable name="resource" select="key('resources', $g:requestUri)" as="element()"/>
+        <xsl:if test="$ac:sitemap">
+            <xsl:variable name="resource" select="key('resources', $a:requestUri)" as="element()"/>
             
             <div class="btn-group pull-right">
                 <div class="btn dropdown-toggle">
-                    <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
                     <xsl:text> </xsl:text>
                     <span class="caret"></span>
                 </div>
 
                 <ul class="dropdown-menu">
-                    <xsl:variable name="classes" select="key('resources-by-defined-by', $ldt:ontology, $gc:sitemap)" as="element()*"/>
+                    <xsl:variable name="classes" select="key('resources-by-defined-by', $ldt:ontology, $ac:sitemap)" as="element()*"/>
                     <xsl:for-each select="$classes">
-                        <xsl:sort select="gc:label(.)"/>
+                        <xsl:sort select="ac:label(.)"/>
                         <li>
                             <xsl:variable name="query-string" as="xs:string?">
                                 <!-- query param order has to match HypermediaFilter's StateBuilder! -->
                                 <xsl:variable name="temp-string">
-                                    <xsl:if test="$resource/gc:mode/@rdf:resource">mode=<xsl:value-of select="encode-for-uri($resource/gc:mode/@rdf:resource)"/>&amp;</xsl:if>
+                                    <xsl:if test="$resource/ac:mode/@rdf:resource">mode=<xsl:value-of select="encode-for-uri($resource/ac:mode/@rdf:resource)"/>&amp;</xsl:if>
                                     <xsl:text>forClass=</xsl:text><xsl:value-of select="encode-for-uri(@rdf:about)"/><xsl:text>&amp;</xsl:text>
-                                    <xsl:if test="$resource/gc:uri/@rdf:resource">uri=<xsl:value-of select="encode-for-uri($resource/gc:uri/@rdf:resource)"/>&amp;</xsl:if>
+                                    <xsl:if test="$resource/ac:uri/@rdf:resource">uri=<xsl:value-of select="encode-for-uri($resource/ac:uri/@rdf:resource)"/>&amp;</xsl:if>
                                 </xsl:variable>
                                 <xsl:if test="string-length($temp-string) &gt; 1">
                                     <xsl:sequence select="concat('?', substring($temp-string, 1, string-length($temp-string) - 1))"/>
@@ -625,7 +625,7 @@ exclude-result-prefixes="#all">
                             </xsl:variable>
                             
                             <a href="{$query-string}" title="{@rdf:about}">
-                                <xsl:apply-templates select="." mode="gc:label"/>
+                                <xsl:apply-templates select="." mode="ac:label"/>
                             </a>
                         </li>
                     </xsl:for-each>
@@ -635,22 +635,22 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource]" mode="bs2:Button" priority="1"/>
+    <xsl:template match="*[@rdf:about][ac:mode/@rdf:resource]" mode="bs2:Button" priority="1"/>
 
-    <xsl:template match="*[@rdf:about][gc:mode/@rdf:resource = '&gc;EditMode']" mode="bs2:Button" priority="2">
+    <xsl:template match="*[@rdf:about][ac:mode/@rdf:resource = '&ac;EditMode']" mode="bs2:Button" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
-                <xsl:apply-templates select="key('resources', gc:mode/@rdf:resource, document(gc:document-uri(gc:mode/@rdf:resource)))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', ac:mode/@rdf:resource, document(ac:document-uri(ac:mode/@rdf:resource)))" mode="ac:label"/>
             </a>
         </div>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about][gc:forClass/@rdf:resource]" mode="bs2:Button" priority="2">
+    <xsl:template match="*[@rdf:about][ac:forClass/@rdf:resource]" mode="bs2:Button" priority="2">
         <div class="pull-right">
             <a class="btn btn-primary" href="{@rdf:about}">
-                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))"/>
+                <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))"/>
                 <xsl:text> </xsl:text>
-                <xsl:apply-templates select="key('resources', gc:forClass/@rdf:resource, document(gc:document-uri(gc:forClass/@rdf:resource)))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', ac:forClass/@rdf:resource, document(ac:document-uri(ac:forClass/@rdf:resource)))" mode="ac:label"/>
             </a>
         </div>
     </xsl:template>
@@ -660,7 +660,7 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
         <xsl:variable name="images" as="element()*">
-            <xsl:apply-templates mode="gc:image"/>
+            <xsl:apply-templates mode="ac:image"/>
         </xsl:variable>
         <xsl:if test="$images">
             <div class="carousel slide">
@@ -682,12 +682,12 @@ exclude-result-prefixes="#all">
     
     <!-- TYPE MODE -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:TypeList" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:TypeList" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:TypeList" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:TypeList" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -703,8 +703,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="bs2:TypeList">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="gc:object-label(.)" order="ascending" lang="{$ldt:lang}"/>                
-                <xsl:apply-templates select="key('resources', ., document(gc:document-uri(.)))" mode="bs2:TypeListItem"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>                
+                <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
             </xsl:for-each>
         </ul>
     </xsl:template>
@@ -719,12 +719,12 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY LIST MODE -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PropertyList" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:PropertyList" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PropertyList" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:PropertyList" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -740,7 +740,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
         <xsl:variable name="properties" as="element()*">
             <xsl:apply-templates mode="#current">
-                <xsl:sort select="gc:property-label(.)" data-type="text" order="ascending" lang="{$ldt:lang}"/>
+                <xsl:sort select="ac:property-label(.)" data-type="text" order="ascending" lang="{$ldt:lang}"/>
             </xsl:apply-templates>
         </xsl:variable>
 
@@ -753,12 +753,12 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY NAV MODE -->
     
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:RightNav" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:RightNav" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:RightNav" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:RightNav" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -773,7 +773,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*]" mode="bs2:RightNav">
         <xsl:for-each-group select="*[key('resources', @rdf:resource | @rdf:nodeID)]" group-by="concat(namespace-uri(), local-name())">
-            <xsl:sort select="gc:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
+            <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
 
             <div class="well sidebar-nav">
                 <h2 class="nav-header">
@@ -782,7 +782,7 @@ exclude-result-prefixes="#all">
 
                 <ul class="nav nav-pills nav-stacked">
                     <xsl:for-each select="current-group()">
-                        <xsl:sort select="gc:object-label(@rdf:resource | @rdf:nodeID)" order="ascending" lang="{$ldt:lang}"/>
+                        <xsl:sort select="ac:object-label(@rdf:resource | @rdf:nodeID)" order="ascending" lang="{$ldt:lang}"/>
                         <xsl:apply-templates select="key('resources', @rdf:resource | @rdf:nodeID)" mode="xhtml:ListItem"/>
                     </xsl:for-each>
                 </ul>
@@ -792,14 +792,14 @@ exclude-result-prefixes="#all">
 
     <!-- PAGINATION MODE -->
 
-    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:PagerList" priority="3"/>
+    <xsl:template match="*[ac:forClass/@rdf:resource]" mode="bs2:PagerList" priority="3"/>
                 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:PagerList" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:PagerList" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:PagerList" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:PagerList" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <xsl:template match="*[xhv:prev/@rdf:resource] | *[xhv:next/@rdf:resource]" mode="bs2:PagerList" priority="0.8">
@@ -808,13 +808,13 @@ exclude-result-prefixes="#all">
                 <xsl:choose>
                     <xsl:when test="xhv:prev">
                         <a href="{xhv:prev/@rdf:resource}" class="active">
-                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="gc:label"/>
+                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>
                         </a>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="class">previous disabled</xsl:attribute>
                         <a>
-                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;prev', document(''))" mode="gc:label"/>
+                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;prev', document(''))" mode="ac:label"/>
                         </a>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -823,13 +823,13 @@ exclude-result-prefixes="#all">
                 <xsl:choose>
                     <xsl:when test="xhv:next"> <!--  and $count &gt;= dh:limit -->
                         <a href="{xhv:next/@rdf:resource}" class="active">
-                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="gc:label"/>  &#8594;
+                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>  &#8594;
                         </a>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="class">next disabled</xsl:attribute>
                         <a>
-                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="gc:label"/> &#8594;
+                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/> &#8594;
                         </a>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -841,12 +841,12 @@ exclude-result-prefixes="#all">
 
     <!-- LIST MODE -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:BlockList" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:BlockList" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:BlockList" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:BlockList" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -884,7 +884,7 @@ exclude-result-prefixes="#all">
             </h2>
 
             <p>	    
-                <xsl:apply-templates select="." mode="gc:description"/>
+                <xsl:apply-templates select="." mode="ac:description"/>
             </p>
 
 	    <xsl:apply-templates select="." mode="bs2:TypeList"/>
@@ -897,12 +897,12 @@ exclude-result-prefixes="#all">
         
     <!-- READ MODE -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:Block" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:Block" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:Block" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:Block" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -939,12 +939,12 @@ exclude-result-prefixes="#all">
             
     <!-- GRID MODE -->
     
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:Grid" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:Grid" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:Grid" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:Grid" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -971,7 +971,7 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
-            <xsl:sort select="gc:label(.)" lang="{$ldt:lang}"/>
+            <xsl:sort select="ac:label(.)" lang="{$ldt:lang}"/>
             <div class="row-fluid">
                 <ul class="thumbnails">
                     <xsl:copy-of select="current-group()"/>
@@ -1003,7 +1003,7 @@ exclude-result-prefixes="#all">
                         <xsl:apply-templates select="." mode="xhtml:Anchor"/>
                     </h2>
 
-		    <xsl:apply-templates select="." mode="gc:description"/>
+		    <xsl:apply-templates select="." mode="ac:description"/>
 		</div>
 	    </div>
 	</li>
@@ -1011,12 +1011,12 @@ exclude-result-prefixes="#all">
 
     <!-- TABLE MODE -->
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="xhtml:Table" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="xhtml:Table" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="xhtml:Table" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="xhtml:Table" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -1033,8 +1033,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
 	<xsl:param name="predicates" as="element()*">
 	    <xsl:for-each-group select="key('resources-by-container', @rdf:about)/*" group-by="concat(namespace-uri(), local-name())">
-		<xsl:sort select="gc:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
-		<xsl:apply-templates select="current-group()[1]" mode="gc:TablePredicate"/>
+		<xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
+		<xsl:apply-templates select="current-group()[1]" mode="ac:TablePredicate"/>
             </xsl:for-each-group>
 	</xsl:param>
 
@@ -1045,7 +1045,7 @@ exclude-result-prefixes="#all">
             <thead>
 		<tr>
 		    <th>
-			<xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="gc:label"/>
+			<xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label"/>
 		    </th>
 		    <xsl:apply-templates select="$predicates" mode="xhtml:TableHeaderCell"/>
 		</tr>
@@ -1075,24 +1075,24 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </td>
 
-	    <xsl:apply-templates select="$predicates" mode="gc:TableCell">
+	    <xsl:apply-templates select="$predicates" mode="ac:TableCell">
                 <xsl:with-param name="resource" select="."/>
             </xsl:apply-templates>
 	</tr>
     </xsl:template>
 
     <!--
-    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]/*" mode="gc:TablePredicate" priority="1"/>
+    <xsl:template match="*[key('resources', foaf:primaryTopic/(@rdf:resource, @rdf:nodeID))]/*" mode="ac:TablePredicate" priority="1"/>
     -->
     
     <!-- MAP MODE -->
     
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:Map" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:Map" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:Map" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:Map" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -1124,7 +1124,7 @@ exclude-result-prefixes="#all">
                     var marker = new google.maps.Marker({
                         position: latLng,
                         map: map,
-                        title: "]]><xsl:apply-templates select="." mode="gc:label"/><![CDATA["
+                        title: "]]><xsl:apply-templates select="." mode="ac:label"/><![CDATA["
                     });
                 }
 
@@ -1135,17 +1135,17 @@ exclude-result-prefixes="#all">
 
     <!-- FORM MODE -->
 
-    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:Form" priority="3">
+    <xsl:template match="*[ac:forClass/@rdf:resource]" mode="bs2:Form" priority="3">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="forClass" select="gc:forClass/@rdf:resource" as="xs:anyURI"/>
-        <xsl:param name="action" select="$g:requestUri" as="xs:anyURI"/>
+        <xsl:param name="forClass" select="ac:forClass/@rdf:resource" as="xs:anyURI"/>
+        <xsl:param name="action" select="$a:requestUri" as="xs:anyURI"/>
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <xsl:param name="template-doc" select="gc:construct-doc($ldt:ontology, $forClass)" as="document-node()?"/>
-        <xsl:param name="resource" select="key('resources', gc:constructor/@rdf:nodeID)" as="element()" tunnel="yes"/>
+        <xsl:param name="template-doc" select="ac:construct-doc($ldt:ontology, $forClass)" as="document-node()?"/>
+        <xsl:param name="resource" select="key('resources', ac:constructor/@rdf:nodeID)" as="element()" tunnel="yes"/>
         
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -1161,7 +1161,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
+            <xsl:comment>This form uses RDF/POST encodina: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="xhtml:Input">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
@@ -1171,7 +1171,7 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="$resource" mode="bs2:FormControl">
                 <xsl:with-param name="template-doc" select="$template-doc"/>
-                <xsl:sort select="gc:label(.)"/>
+                <xsl:sort select="ac:label(.)"/>
             </xsl:apply-templates>
 
             <xsl:apply-templates select="." mode="bs2:FormActions">
@@ -1180,12 +1180,12 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:layoutOf/@rdf:resource)]" mode="bs2:Form" priority="2">
-        <xsl:apply-templates select="key('resources', gc:layoutOf/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="bs2:Form" priority="2">
+        <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[key('resources', gc:uri/@rdf:resource)]" mode="bs2:Form" priority="1">
-        <xsl:apply-templates select="key('resources', gc:uri/@rdf:resource)" mode="#current"/>
+    <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="bs2:Form" priority="1">
+        <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
     </xsl:template>
 
     <!--
@@ -1202,7 +1202,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="bs2:Form">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="action" select="xs:anyURI(concat($g:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri('&gc;EditMode')))" as="xs:anyURI"/>
+        <xsl:param name="action" select="xs:anyURI(concat($a:absolutePath, '?_method=PUT&amp;mode=', encode-for-uri('&ac;EditMode')))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
@@ -1223,7 +1223,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
+            <xsl:comment>This form uses RDF/POST encodina: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
 	    <xsl:call-template name="xhtml:Input">
 		<xsl:with-param name="name" select="'rdf'"/>
 		<xsl:with-param name="type" select="'hidden'"/>
@@ -1241,18 +1241,18 @@ exclude-result-prefixes="#all">
 
     <!-- LEGEND -->
     
-    <xsl:template match="*[gc:forClass/@rdf:resource]" mode="bs2:Legend" priority="1">
-        <xsl:param name="forClass" select="gc:forClass/@rdf:resource" as="xs:anyURI"/>
+    <xsl:template match="*[ac:forClass/@rdf:resource]" mode="bs2:Legend" priority="1">
+        <xsl:param name="forClass" select="ac:forClass/@rdf:resource" as="xs:anyURI"/>
 
-        <xsl:for-each select="key('resources', $forClass, $gc:sitemap)">
+        <xsl:for-each select="key('resources', $forClass, $ac:sitemap)">
             <legend>
-                <xsl:apply-templates select="key('resources', '&gc;ConstructMode', document('&gc;'))" mode="gc:label"/>
+                <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
                 <xsl:text> </xsl:text>
-                <xsl:apply-templates select="." mode="gc:label"/>
+                <xsl:apply-templates select="." mode="ac:label"/>
             </legend>
-            <xsl:if test="gc:description(.)">
+            <xsl:if test="ac:description(.)">
                 <p class="text-info">
-                    <xsl:apply-templates select="." mode="gc:description"/>
+                    <xsl:apply-templates select="." mode="ac:description"/>
                 </p>
             </xsl:if>
         </xsl:for-each>
@@ -1293,7 +1293,7 @@ exclude-result-prefixes="#all">
                 <xsl:message>bs2:EditMode is active but spin:constructor is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
             </xsl:if>
             <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
-                <xsl:sort select="gc:property-label(.)"/>
+                <xsl:sort select="ac:property-label(.)"/>
                 <xsl:with-param name="violations" select="$violations"/>
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
             </xsl:apply-templates>
@@ -1311,7 +1311,7 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
-            <xsl:apply-templates select="." mode="gc:label"/>
+            <xsl:apply-templates select="." mode="ac:label"/>
         </div>
     </xsl:template>
     
@@ -1335,7 +1335,7 @@ exclude-result-prefixes="#all">
     <!--
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:InlinePropertyList">
         <xsl:apply-templates mode="#current">
-            <xsl:sort select="gc:label(.)" lang="{$ldt:lang}"/>
+            <xsl:sort select="ac:label(.)" lang="{$ldt:lang}"/>
         </xsl:apply-templates>
     </xsl:template>
     -->
@@ -1352,7 +1352,7 @@ exclude-result-prefixes="#all">
 	    </xsl:when>
 	    <xsl:otherwise>
 		<span id="{.}" title="{.}">
-		    <xsl:apply-templates select="." mode="gc:label"/>
+		    <xsl:apply-templates select="." mode="ac:label"/>
 		</span>
 	    </xsl:otherwise>
 	</xsl:choose>

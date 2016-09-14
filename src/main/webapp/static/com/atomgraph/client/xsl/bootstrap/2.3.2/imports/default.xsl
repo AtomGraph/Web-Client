@@ -16,8 +16,8 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
-    <!ENTITY g      "http://atomgraph.com/core/ns#">
+    <!ENTITY ac     "http://atomgraph.com/ns/client#">
+    <!ENTITY g      "http://atomgraph.com/ns/core#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
@@ -33,7 +33,7 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:gc="&gc;"
+xmlns:ac="&ac;"
 xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -48,7 +48,7 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="gc:sitemap" as="document-node()?"/>
+    <xsl:param name="ac:sitemap" as="document-node()?"/>
 
     <!-- PROPERTY LIST MODE -->
 
@@ -100,7 +100,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="label" select="true()" as="xs:boolean"/>
         <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
-        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and (if ($gc:sitemap) then (key('resources', key('resources', ../rdf:type/@rdf:resource, $gc:sitemap)/spin:constraint/(@rdf:resource|@rdf:nodeID), $gc:sitemap)[rdf:type/@rdf:resource = '&ldt;MissingPropertyValue'][sp:arg1/@rdf:resource = $this]) else true())" as="xs:boolean"/>
+        <xsl:param name="required" select="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this]) and (if ($ac:sitemap) then (key('resources', key('resources', ../rdf:type/@rdf:resource, $ac:sitemap)/spin:constraint/(@rdf:resource|@rdf:nodeID), $ac:sitemap)[rdf:type/@rdf:resource = '&ldt;MissingPropertyValue'][sp:arg1/@rdf:resource = $this]) else true())" as="xs:boolean"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
 
@@ -113,7 +113,7 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
             <xsl:if test="$label">
                 <label class="control-label" for="{$for}" title="{$this}">
-                    <xsl:apply-templates select="." mode="gc:property-label"/>
+                    <xsl:apply-templates select="." mode="ac:property-label"/>
                 </label>
             </xsl:if>
             <xsl:if test="$cloneable">

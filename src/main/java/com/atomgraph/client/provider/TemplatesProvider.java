@@ -151,8 +151,8 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         URI stylesheetURI = getStylesheetURI(servletConfig, AC.stylesheet);
         if (stylesheetURI == null)
         {
-            if (log.isErrorEnabled()) log.error("XSLT stylesheet (gc:stylesheet) not configured");
-            throw new ConfigurationException("XSLT stylesheet (gc:stylesheet) not configured");
+            if (log.isErrorEnabled()) log.error("XSLT stylesheet (ac:stylesheet) not configured");
+            throw new ConfigurationException("XSLT stylesheet (ac:stylesheet) not configured");
         }
 
         return getTemplates(stylesheetURI, getTemplatesCache());
@@ -160,7 +160,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     
     /**
      * Returns configured XSLT stylesheet resource.
-     * Uses <code>gc:stylesheet</code> servlet parameter value from web.xml as stylesheet location.
+     * Uses <code>ac:stylesheet</code> servlet parameter value from web.xml as stylesheet location.
      * 
      * @param servletConfig
      * @param property

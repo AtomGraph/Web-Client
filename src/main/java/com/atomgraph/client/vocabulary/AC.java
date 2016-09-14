@@ -37,7 +37,7 @@ public final class AC
     private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
     
     /** <p>The namespace of the vocabulary as a string</p> */
-    public static final String NS = "http://atomgraph.com/client/ns#";
+    public static final String NS = "http://atomgraph.com/ns/client#";
     
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */

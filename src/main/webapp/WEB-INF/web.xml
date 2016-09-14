@@ -26,27 +26,27 @@
             <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/core/ns#graphStore</param-name>
+            <param-name>http://atomgraph.com/ns/core#graphStore</param-name>
             <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/client/ns#stylesheet</param-name>
+            <param-name>http://atomgraph.com/ns/client#stylesheet</param-name>
             <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/core.xsl</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/core/ns#resultLimit</param-name>
+            <param-name>http://atomgraph.com/ns/core#resultLimit</param-name>
             <param-value>100</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/client/ns#cacheStylesheet</param-name>
+            <param-name>http://atomgraph.com/ns/client#cacheStylesheet</param-name>
             <param-value>false</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/core/ns#cacheModelLoads</param-name>
+            <param-name>http://atomgraph.com/ns/core#cacheModelLoads</param-name>
             <param-value>true</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/client/ns#resolvingUncached</param-name>
+            <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
             <param-value>true</param-value>
         </init-param>       
     </servlet>

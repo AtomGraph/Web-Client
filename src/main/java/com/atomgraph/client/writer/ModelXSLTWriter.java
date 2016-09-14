@@ -278,9 +278,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             if (typeHref != null)
                 bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
-            URI baseHref = getLinkHref(headerMap, "Link", A.baseUri.getURI()); // LDT.baseUri?
+            URI baseHref = getLinkHref(headerMap, "Link", LDT.baseUri.getURI()); // LDT.baseUri?
             if (baseHref != null)
-                bld.parameter("{" + A.baseUri.getNameSpace() + "}" + A.baseUri.getLocalName(), baseHref);
+                bld.parameter("{" + LDT.baseUri.getNameSpace() + "}" + LDT.baseUri.getLocalName(), baseHref);
             
             URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
             if (ontologyHref != null)                    
@@ -430,7 +430,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         Resource mode = null;
 
         if (uriInfo.getQueryParameters().getFirst(AC.forClass.getLocalName()) != null)
-            mode = AC.EditMode; // this could be solved using a dummy gc:ConstructMode instead
+            mode = AC.EditMode; // this could be solved using a dummy ac:ConstructMode instead
         else
         {
             if (uriInfo.getQueryParameters().getFirst(AC.mode.getLocalName()) != null)

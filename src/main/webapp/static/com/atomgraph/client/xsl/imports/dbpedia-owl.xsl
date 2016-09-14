@@ -15,14 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc             "http://atomgraph.com/client/ns#">
+    <!ENTITY ac             "http://atomgraph.com/ns/client#">
     <!ENTITY rdf            "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY dbpedia-owl    "http://dbpedia.org/ontology/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:gc="&gc;"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
 exclude-result-prefixes="#all">
@@ -46,12 +46,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
 	<a href="{.}">
 	    <img src="{.}">
-		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="gc:object-label"/></xsl:attribute>
+		<xsl:attribute name="alt"><xsl:apply-templates select="." mode="ac:object-label"/></xsl:attribute>
 	    </img>
 	</a>
     </xsl:template>
 
-    <xsl:template match="dbpedia-owl:abstract" mode="gc:description">
+    <xsl:template match="dbpedia-owl:abstract" mode="ac:description">
         <xsl:value-of select="."/>
     </xsl:template>
 

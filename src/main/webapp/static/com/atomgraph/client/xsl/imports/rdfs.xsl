@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
+    <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
@@ -25,16 +25,16 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:gc="&gc;"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdfs:label | @rdfs:label" mode="gc:label">
+    <xsl:template match="rdfs:label | @rdfs:label" mode="ac:label">
 	<xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment" mode="gc:description">
+    <xsl:template match="rdfs:comment" mode="ac:description">
         <xsl:value-of select="."/>
     </xsl:template>
     

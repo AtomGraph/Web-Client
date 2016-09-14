@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
-    <!ENTITY gc     "http://atomgraph.com/client/ns#">
+    <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
@@ -29,7 +29,7 @@ limitations under the License.
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:gc="&gc;"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
@@ -54,13 +54,13 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:BlockList">
 	<div class="well" about="{@rdf:about}">
-            <xsl:apply-templates select="." mode="gc:image"/>
+            <xsl:apply-templates select="." mode="ac:image"/>
             
             <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
 	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 	    
-	    <xsl:apply-templates select="." mode="gc:description"/>
+	    <xsl:apply-templates select="." mode="ac:description"/>
 
 	    <xsl:apply-templates select="." mode="bs2:TypeList"/>            
 
@@ -79,7 +79,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline" rel="&rdf;type">
             <xsl:apply-templates select="rdf:type" mode="#current">
-                <xsl:sort select="gc:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
+                <xsl:sort select="ac:object-label(@rdf:resource)" data-type="text" order="ascending" lang="{$lang}"/>
             </xsl:apply-templates>
         </ul>
     </xsl:template>
@@ -92,7 +92,7 @@ exclude-result-prefixes="#all">
 		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
 	    </xsl:if>
             <span property="http://purl.org/dc/terms/title">
-                <xsl:apply-templates select=".." mode="gc:label"/>
+                <xsl:apply-templates select=".." mode="ac:label"/>
             </span>
 	</a>
     </xsl:template>
@@ -102,14 +102,14 @@ exclude-result-prefixes="#all">
 	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
 	<span title="{$this}" property="{$this}">
-	    <xsl:apply-templates select="." mode="gc:property-label"/>
+	    <xsl:apply-templates select="." mode="ac:property-label"/>
 	</span>
     </xsl:template>
 
     <!-- object resource -->    
     <xsl:template match="@rdf:resource | sparql:uri" mode="xhtml:Anchor">
 	<a href="{.}" title="{.}" resource="{.}">
-            <xsl:apply-templates select="." mode="gc:object-label"/>
+            <xsl:apply-templates select="." mode="ac:object-label"/>
 	</a>
     </xsl:template>
 	
@@ -125,7 +125,7 @@ exclude-result-prefixes="#all">
 	    </xsl:when>
 	    <xsl:otherwise>
 		<span id="{.}" title="{.}">
-		    <xsl:apply-templates select="." mode="gc:label"/>
+		    <xsl:apply-templates select="." mode="ac:label"/>
 		</span>
 	    </xsl:otherwise>
 	</xsl:choose>
