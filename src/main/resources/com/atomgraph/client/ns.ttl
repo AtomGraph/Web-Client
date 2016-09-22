@@ -13,23 +13,22 @@
 # ONTOLOGY
 
 <#> a owl:Ontology ;
-    rdfs:label "Graphity Client ontology" ;
+    rdfs:label "Atomgraph Client ontology" ;
     owl:versionInfo "1.1.4" .
 
-# ANNOTATION PROPERTIES
+# PROPERTIES
 
-<#defaultMode> a owl:AnnotationProperty ;
-    rdfs:range <#Mode> ;
-    rdfs:label "Default mode" ;
-    rdfs:comment "Indicates RDF representation mode" ;
-    rdfs:isDefinedBy <#> .
-
-<#supportedMode> a owl:AnnotationProperty ;
+<#mode> a owl:ObjectProperty ;
+    rdfs:domain foaf:Document ;
     rdfs:range <#Mode> ;
     rdfs:label "Layout mode" ;
     rdfs:isDefinedBy <#> .
 
-# PROPERTIES
+<#accept> a owl:ObjectProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range xsd:string ;
+    rdfs:label "Accept media type" ;
+    rdfs:isDefinedBy <#> .
 
 <#stylesheet> a owl:ObjectProperty ;
     rdfs:domain ldt:Application ;

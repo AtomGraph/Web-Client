@@ -152,37 +152,53 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="ac:GroupTriples"/>
             </xsl:variable>
 
-            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response', $grouped-rdf)[not(key('resources', $a:requestUri, $grouped-rdf))], key('resources', $a:requestUri, $grouped-rdf))[1]" as="element()"/>
+            <xsl:apply-templates select="$grouped-rdf/rdf:RDF" mode="xhtml:Head"/>
             
-            <xsl:apply-templates select="$current" mode="xhtml:Head"/>
-            
-            <xsl:apply-templates select="$current" mode="xhtml:Body"/>
+            <xsl:apply-templates select="$grouped-rdf/rdf:RDF" mode="xhtml:Body"/>
 	</html>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Head">
+    <xsl:template match="rdf:RDF" mode="xhtml:Head">
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-            <xsl:apply-templates select="." mode="xhtml:Title"/>
+            <title>
+                <xsl:if test="$ldt:baseUri">
+                    <xsl:apply-templates select="key('resources', $ldt:baseUri, document($ldt:baseUri))" mode="ac:label"/>
+                    <xsl:text> - </xsl:text>
+                </xsl:if>
 
+                <xsl:variable name="current" select="(key('resources-by-type', '&http;Response')[not(key('resources', $a:requestUri))], key('resources', $a:requestUri))[1]" as="element()"/>
+                <xsl:apply-templates select="$current" mode="xhtml:Title"/>
+
+                <!--
+                <xsl:if test="$forClass">
+                    <xsl:text> : </xsl:text>
+                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
+                    <xsl:text> </xsl:text>
+                    <xsl:apply-templates select="key('resources', $forClass, document(ac:document-uri($forClass)))" mode="ac:label"/>
+                </xsl:if>
+                -->
+            </title>
+            
             <xsl:apply-templates select="." mode="xhtml:Style"/>
 
             <xsl:apply-templates select="." mode="xhtml:Script"/>
         </head>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Body">
+    <xsl:template match="rdf:RDF" mode="xhtml:Body">
         <body>
             <xsl:apply-templates select="." mode="bs2:NavBar"/>
 
-            <xsl:apply-templates select="."/>
+            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response')[not(key('resources', $a:requestUri))], key('resources', $a:requestUri))[1]" as="element()"/>
+            <xsl:apply-templates select="$current"/>
             
             <xsl:apply-templates select="." mode="bs2:Footer"/>
         </body>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:NavBar">
+    <xsl:template match="rdf:RDF" mode="bs2:NavBar">
 	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
 		<div class="container-fluid">
@@ -244,7 +260,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Footer">
+    <xsl:template match="rdf:RDF" mode="bs2:Footer">
         <div class="footer text-center">
             <p>
                 <hr/>
@@ -255,11 +271,13 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!--
     <xsl:template match="*[ac:forClass/@rdf:resource]" mode="xhtml:Title" priority="3">
         <xsl:next-match>
             <xsl:with-param name="forClass" select="ac:forClass/@rdf:resource" tunnel="yes"/>
         </xsl:next-match>
     </xsl:template>
+    -->
     
     <xsl:template match="*[key('resources', ac:layoutOf/@rdf:resource)]" mode="xhtml:Title" priority="2">
         <xsl:apply-templates select="key('resources', ac:layoutOf/@rdf:resource)" mode="#current"/>
@@ -280,28 +298,14 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Title">
-        <xsl:param name="forClass" as="xs:anyURI?" tunnel="yes"/>
+        <!-- <xsl:param name="forClass" as="xs:anyURI?" tunnel="yes"/> -->
         
-        <title>
-            <xsl:if test="$ldt:baseUri">
-                <xsl:apply-templates select="key('resources', $ldt:baseUri, document($ldt:baseUri))" mode="ac:label"/>
-                <xsl:text> - </xsl:text>
-            </xsl:if>
-            
-            <xsl:apply-templates select="." mode="ac:label"/>
-
-            <xsl:if test="$forClass">
-                <xsl:text> : </xsl:text>
-                <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
-                <xsl:text> </xsl:text>
-                <xsl:apply-templates select="key('resources', $forClass, document(ac:document-uri($forClass)))" mode="ac:label"/>
-            </xsl:if>
-        </title>
+        <xsl:apply-templates select="." mode="ac:label"/>
     </xsl:template>
 
     <!-- STYLE MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Style">
+    <xsl:template match="rdf:RDF" mode="xhtml:Style">
 	<link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
 	<link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -309,17 +313,17 @@ exclude-result-prefixes="#all">
     
     <!-- SCRIPT MODE -->
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="xhtml:Script" priority="1"/>
+    <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response'][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="xhtml:Script" priority="1"/> -->
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Script">
+    <xsl:template match="rdf:RDF" mode="xhtml:Script">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}"></script>
-        <xsl:if test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;MapMode' or key('resources', $a:requestUri)/ac:forClass/@rdf:resource">
+        <xsl:if test="key('resources', $a:requestUri)[ac:mode/@rdf:resource = '&ac;MapMode' or ac:forClass/@rdf:resource]">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}"></script>
         </xsl:if>
-        <xsl:if test="ac:mode/@rdf:resource = '&ac;EditMode' or ac:forClass/@rdf:resource">
+        <xsl:if test="key('resources', $a:requestUri)[ac:mode/@rdf:resource = '&ac;EditMode' or ac:forClass/@rdf:resource]">
             <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
