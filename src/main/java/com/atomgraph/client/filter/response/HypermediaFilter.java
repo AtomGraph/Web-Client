@@ -21,8 +21,6 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.NodeIterator;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
@@ -35,7 +33,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
@@ -50,12 +47,8 @@ import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
-import com.atomgraph.core.util.StateBuilder;
-import org.apache.jena.ontology.OntResource;
-import org.apache.jena.util.iterator.ExtendedIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.topbraid.spin.vocabulary.SPL;
 
 /**
  *
@@ -79,47 +72,36 @@ public class HypermediaFilter implements ContainerResponseFilter
 
         Resource requestUri = model.createResource(request.getRequestUri().toString());
 
-        try
-        {
-            MultivaluedMap<String, Object> headerMap = response.getHttpHeaders();
-            URI ontologyHref = getOntologyURI(headerMap);
-            URI typeHref = getTypeURI(headerMap);
-            if (ontologyHref == null || typeHref == null) return response;
-
-            OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));            
-            OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
-
-            long oldCount = model.size();
-            if (requestUri.getPropertyResourceValue(AC.forClass) != null)
+        if (request.getQueryParameters().getFirst(AC.forClass.getLocalName()) != null)
+        {        
+            try
             {
+                MultivaluedMap<String, Object> headerMap = response.getHttpHeaders();
+                URI ontologyHref = getOntologyURI(headerMap);
+                URI typeHref = getTypeURI(headerMap);
+                if (ontologyHref == null || typeHref == null) return response;
+
+                OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));            
+                OntModel ontModel = getOntModel(ontologyHref.toString(), ontModelSpec);
+
+                long oldCount = model.size();
+
                 String forClassURI = requestUri.getPropertyResourceValue(AC.forClass).getURI();
                 OntClass forClass = ontModel.getOntClass(forClassURI);
                 if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
 
+                // TO-DO: check if Rules still necessary or does SPIN handle spin:constructor inheritance
                 requestUri.addProperty(AC.constructor, addInstance(model, forClass)); // connects constructor state to CONSTRUCTed template
+
+                if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", requestUri.getURI(), model.size() - oldCount);
+                response.setEntity(model);
             }
-            else
+            catch (URISyntaxException ex)
             {
-                // layout modes only apply to XHTML media type
-                if (response.getMediaType() == null ||
-                        !(response.getMediaType().isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE) ||
-                        response.getMediaType().isCompatible(MediaType.TEXT_HTML_TYPE)))
-                    return response;
-
-                OntClass template = ontModel.getOntClass(typeHref.toString());
-                if (template == null) return response;
-                
-                addLayouts(StateBuilder.fromResource(requestUri).replaceProperty(AC.mode, null).build(), template);
+                return response;
             }
-            
-            if (log.isDebugEnabled()) log.debug("Added HATEOAS transitions to the response RDF Model for resource: {} # of statements: {}", requestUri.getURI(), model.size() - oldCount);
-            response.setEntity(model);
         }
-        catch (URISyntaxException ex)
-        {
-            return response;
-        }
-
+        
         return response;
     }
     
@@ -138,55 +120,6 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
     
-    public void addLayouts(Resource state, OntClass template)
-    {
-        if (state == null) throw new IllegalArgumentException("Resource cannot be null");
-        if (template == null) throw new IllegalArgumentException("OntClass cannot be null");
-        
-        NodeIterator paramIt = template.listPropertyValues(LDT.param);
-        try
-        {
-            while (paramIt.hasNext())
-            {
-                RDFNode argNode = paramIt.next();
-
-                if (argNode.isResource())
-                {
-                    Resource arg = argNode.asResource();
-                    if (arg.hasProperty(RDF.type, LDT.Argument) && arg.hasProperty(SPL.predicate, AC.mode) &&
-                            arg.hasProperty(SPL.valueType))
-                    {
-                        Resource valueType = arg.getPropertyResourceValue(SPL.valueType);
-                        if (valueType.canAs(OntClass.class)) // TO-DO: throw Exception otherwise
-                        {
-                            OntClass modeClass = valueType.as(OntClass.class);
-                            ExtendedIterator<? extends OntResource> modeIt = modeClass.listInstances();
-                            try
-                            {
-                                while (modeIt.hasNext())
-                                {
-                                    Resource mode = modeIt.next();
-                                    StateBuilder.fromResource(state).
-                                        replaceProperty(AC.mode, mode).
-                                        build().
-                                        addProperty(AC.layoutOf, state);                                
-                                }
-                            }
-                            finally
-                            {
-                                modeIt.close();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        finally
-        {
-            paramIt.close();
-        }
-    }
-
     public URI getTypeURI(MultivaluedMap<String, Object> headerMap) throws URISyntaxException
     {
         return getLinkHref(headerMap, "Link", RDF.type.getLocalName());

@@ -35,12 +35,12 @@
     rdfs:label "XSLT stylesheet" ;
     rdfs:isDefinedBy <#> .
 
-<#layoutOf> a owl:ObjectProperty ;
-    rdfs:subPropertyOf dct:isVersionOf ;
-    rdfs:domain foaf:Document ;
-    rdfs:range foaf:Document ;
-    rdfs:label "Layout of" ;
-    rdfs:isDefinedBy <#> .
+#<#layoutOf> a owl:ObjectProperty ;
+#    rdfs:subPropertyOf dct:isVersionOf ;
+#    rdfs:domain foaf:Document ;
+#    rdfs:range foaf:Document ;
+#    rdfs:label "Layout of" ;
+#    rdfs:isDefinedBy <#> .
 
 # CLASSES
 

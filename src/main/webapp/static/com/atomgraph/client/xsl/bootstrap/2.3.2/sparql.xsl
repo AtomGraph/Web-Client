@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY g      "http://atomgraph.com/ns/core#">
+    <!ENTITY a      "http://atomgraph.com/ns/core#">
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -32,7 +32,7 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:g="&g;"
+xmlns:a="&a;"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -57,33 +57,17 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" priority="2">
-	<div class="container-fluid">
-	    <div class="row-fluid">
-		<div class="span8">
-                    <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
+    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Main" priority="2">
+        <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
 
-                    <xsl:apply-templates select="." mode="bs2:Header"/>
+        <xsl:apply-templates select="." mode="bs2:QueryForm"/>
 
-                    <xsl:apply-templates select="." mode="bs2:QueryForm"/>
-
-                    <xsl:if test="$query">
-                        <xsl:apply-templates select="." mode="ac:QueryResult"/>
-                    </xsl:if>
-                </div>
-
-		<div class="span4">
-		    <xsl:apply-templates select="." mode="bs2:PropertyNav"/>
-		</div>
-	    </div>
-	</div>
+        <xsl:if test="$query">
+            <xsl:apply-templates select="." mode="ac:QueryResult"/>
+        </xsl:if>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Header" priority="1">
-        <xsl:apply-templates select="key('resources', $g:absolutePath)" mode="#current"/>
-    </xsl:template>
-
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Style" priority="1">
+    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="xhtml:Style" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -91,7 +75,7 @@ LIMIT 100</xsl:param>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
         
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:QueryForm">
+    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -134,8 +118,8 @@ LIMIT 100</xsl:param>
                 </script>
 
                 <div class="form-actions">
-                    <xsl:if test="key('resources', $g:requestUri)/ac:mode/@rdf:resource">
-                        <input type="hidden" name="mode" value="{key('resources', $g:requestUri)/ac:mode/@rdf:resource}"/>
+                    <xsl:if test="key('resources', $a:requestUri)/ac:mode/@rdf:resource">
+                        <input type="hidden" name="mode" value="{key('resources', $a:requestUri)/ac:mode/@rdf:resource}"/>
                     </xsl:if>
                     <button type="submit" class="btn btn-primary">Query</button>
                 </div>
@@ -143,8 +127,8 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$g:absolutePath][key('resources', $g:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="ac:QueryResult">
-	<xsl:param name="result-doc" select="document(concat($g:absolutePath, ac:query-string((), $query, key('resources', $g:requestUri)/ac:mode/@rdf:resource, ())))"/>
+    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="ac:QueryResult">
+	<xsl:param name="result-doc" select="document(concat($a:absolutePath, ac:query-string((), $query, key('resources', $a:requestUri)/ac:mode/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
@@ -152,27 +136,27 @@ LIMIT 100</xsl:param>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
-                    <xsl:when test="key('resources', $g:requestUri)/ac:mode/@rdf:resource = '&ac;ListMode'">
+                    <xsl:when test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;ListMode'">
                         <xsl:apply-templates select="*" mode="bs2:BlockList">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', $g:requestUri)/ac:mode/@rdf:resource = '&ac;TableMode'">
+                    <xsl:when test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;TableMode'">
                         <xsl:apply-templates select="." mode="xhtml:Table">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', $g:requestUri)/ac:mode/@rdf:resource = '&ac;GridMode'">
+                    <xsl:when test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;GridMode'">
                         <xsl:apply-templates select="." mode="bs2:Grid">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', $g:requestUri)/ac:mode/@rdf:resource = '&ac;MapMode'">
+                    <xsl:when test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;MapMode'">
                         <xsl:apply-templates select="." mode="bs2:Map">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', $g:requestUri)/ac:mode/@rdf:resource = '&ac;EditMode'">
+                    <xsl:when test="key('resources', $a:requestUri)/ac:mode/@rdf:resource = '&ac;EditMode'">
                         <xsl:apply-templates select="." mode="bs2:EditForm">
                             <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
                         </xsl:apply-templates>                            

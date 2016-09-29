@@ -72,7 +72,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         this.servletConfig = servletConfig;
         
         if (servletConfig.getInitParameter(AC.cacheStylesheet.getURI()) != null)
-            cacheStylesheet = Boolean.parseBoolean(servletConfig.getInitParameter(AC.cacheStylesheet.getURI()).toString());
+            cacheStylesheet = Boolean.parseBoolean(servletConfig.getInitParameter(AC.cacheStylesheet.getURI()));
         else cacheStylesheet = false;
     }
 

@@ -612,7 +612,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
         <li>
-            <span title="{.}" class="btn btn-type">
+            <span title="{@rdf:about}" class="btn btn-type">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </span>
 	</li>
@@ -1139,7 +1139,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
             <xsl:if test="not($template)">
-                <xsl:message>bs2:EditMode is active but spin:constructor is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
+                <xsl:message>spin:constructor is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>'</xsl:message>
             </xsl:if>
             <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                 <xsl:sort select="ac:property-label(.)"/>
