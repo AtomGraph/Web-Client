@@ -978,6 +978,10 @@ exclude-result-prefixes="#all">
 
     <!-- FORM MODE -->
 
+    <xsl:template match="rdf:RDF" mode="bs2:Form">
+        <xsl:apply-templates select="key('resources', $a:requestUri)" mode="#current"/>
+    </xsl:template>
+
     <xsl:template match="*[ac:forClass/@rdf:resource]" mode="bs2:Form" priority="3">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="forClass" select="ac:forClass/@rdf:resource" as="xs:anyURI"/>
