@@ -17,12 +17,12 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology, ldt:Ontology ;
-    owl:imports core:, sioc: ;
+    owl:imports core:, sioc:, sp:, spin: ;
     owl:versionInfo "1.1.4" ;
-    rdfs:label "Document hierarchy ontology" ;
+    rdfs:label "Document hierarchy" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/resource-hierarchy#" ;
-    vann:preferredNamespacePrefix "ldth";
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/document-hierarchy#" ;
+    vann:preferredNamespacePrefix "dh";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
 # PROPERTIES
@@ -77,30 +77,30 @@
 # TEMPLATES
 
 <#Container> a rdfs:Class, owl:Class, ldt:Template ;
-    rdfs:subClassOf core:Document, sioc:Container ;
+    rdfs:subClassOf <#Document>, sioc:Container ;
     ldt:path "{path: .*}/" ;
     ldt:skolemTemplate "{slug}/" ;
     ldt:query <#DescribeWithChildren> ;
     ldt:param [ a ldt:Argument ;
+        rdfs:label "Limit" ;
         spl:predicate <#limit> ;
         spl:valueType xsd:long ;
-        spl:optional true ;
-        ldt:tunnel true
+        spl:optional true
     ] , [ a ldt:Argument ;
+        rdfs:label "Offset" ;
         spl:predicate <#offset> ;
         spl:valueType xsd:long ;
-        spl:optional true ;
-        ldt:tunnel true
+        spl:optional true
     ] , [ a ldt:Argument ;
+        rdfs:label "Order by" ;
         spl:predicate <#orderBy> ;
         spl:valueType xsd:string ;
-        spl:optional true ;
-        ldt:tunnel true
+        spl:optional true
     ] , [ a ldt:Argument ;
+        rdfs:label "Descending order?" ;
         spl:predicate <#desc> ;
         spl:valueType xsd:boolean ;
-        spl:optional true ;
-        ldt:tunnel true
+        spl:optional true
     ] ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
@@ -108,7 +108,10 @@
 
 <#Document> a rdfs:Class, owl:Class, ldt:Template ;
     rdfs:subClassOf core:Document ;
+    rdfs:label "Document" ;
+    ldt:skolemTemplate "{slug}" ;
     spin:constructor <#DocumentConstructor> ;
+    spin:constraint <#MissingSlug> ;
     rdfs:isDefinedBy <#> .
 
 # CONSTRAINTS

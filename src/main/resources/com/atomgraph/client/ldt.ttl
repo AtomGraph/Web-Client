@@ -10,10 +10,9 @@
 @prefix spl:    <http://spinrdf.org/spl#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix vann:	<http://purl.org/vocab/vann/> .
-@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin:, foaf: ;
+    owl:imports sp:, spin: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Linked Data Templates ontology" ;
     rdfs:comment "Must be imported and reused by LDT applications" ;
@@ -24,6 +23,12 @@
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
 # SYSTEM PROPERTIES
+
+<#baseUri> a owl:ObjectProperty, owl:InverseFunctionalProperty ;
+    rdfs:domain <#Application> ;
+    rdfs:label "Application base URI" ;
+    rdfs:comment "Base URI uniquely identifies the application" ;
+    rdfs:isDefinedBy <#> .
 
 <#ontology> a owl:ObjectProperty ;
     rdfs:domain <#Application> ;
@@ -116,16 +121,6 @@
     rdfs:range rdf:langString ;
     rdfs:label "Content language" ;
     rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
-    rdfs:isDefinedBy <#> .
-
-# Argument
-
-<#tunnel> a owl:AnnotationProperty ;
-    rdfs:domain <#Argument> ;
-    rdfs:range xsd:boolean ;
-    rdfs:label "Tunnel argument" ;
-    rdfs:comment "Template subclasses inherit tunnel parameters" ;
-    rdfs:seeAlso <https://www.w3.org/TR/xslt20/#tunnel-params> ;
     rdfs:isDefinedBy <#> .
 
 # CLASSES
@@ -278,7 +273,6 @@
               spl:predicate [ a rdf:Property ] ;
               spl:valueType [ a rdfs:Resource ] ;
               spl:optional [ a xsd:boolean ] ;
-              ldt:tunnel [ a xsd:boolean ] ;
               rdfs:isDefinedBy [ a ldt:Ontology ] .
       }
       WHERE {}""" .
