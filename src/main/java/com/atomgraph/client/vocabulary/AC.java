@@ -77,9 +77,9 @@ public final class AC
 
     public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
 
-    public static final ObjectProperty constructor = m_model.createObjectProperty( NS + "constructor" );
+    // public static final ObjectProperty constructor = m_model.createObjectProperty( NS + "constructor" );
     
-    public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
+    // public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
     
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 

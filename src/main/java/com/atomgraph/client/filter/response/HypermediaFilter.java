@@ -18,7 +18,6 @@ package com.atomgraph.client.filter.response;
 
 import org.apache.jena.ontology.AnnotationProperty;
 import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -34,7 +33,6 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
@@ -42,9 +40,6 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.vocabulary.RDFS;
-import com.atomgraph.client.exception.OntClassNotFoundException;
-import com.atomgraph.client.util.OntologyProvider;
-import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
 import org.slf4j.Logger;
@@ -62,6 +57,7 @@ public class HypermediaFilter implements ContainerResponseFilter
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response)
     {
+        /*
         if (request == null) throw new IllegalArgumentException("ContainerRequest cannot be null");
         if (response == null) throw new IllegalArgumentException("ContainerResponse cannot be null");
 
@@ -101,6 +97,7 @@ public class HypermediaFilter implements ContainerResponseFilter
                 return response;
             }
         }
+*/
         
         return response;
     }
@@ -185,6 +182,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         return null;
     }
     
+    /*
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
         return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
@@ -196,6 +194,7 @@ public class HypermediaFilter implements ContainerResponseFilter
         addClass(forClass, targetModel); // TO-DO: remove when classes and constraints are cached/dereferencable
         return new ConstructorBase().construct(forClass, targetModel);
     }
+    */
     
     // TO-DO: this method should not be necessary when system ontologies/classes are dereferencable! -->
     public void addClass(OntClass forClass, Model targetModel)

@@ -51,16 +51,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.iri.IRI;
 import org.apache.jena.iri.IRIFactory;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFWriter;
 import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.checker.CheckerIRI;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
-import com.atomgraph.client.exception.OntClassNotFoundException;
-import com.atomgraph.client.filter.response.ConstructorBase;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.util.XSLTBuilder;
@@ -429,7 +425,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         Resource mode = null;
 
-        if (uriInfo.getQueryParameters().getFirst(AC.forClass.getLocalName()) != null)
+        // TODO: improve dh:forClass handling
+        if (uriInfo.getQueryParameters().getFirst("forClass") != null)
             mode = AC.EditMode; // this could be solved using a dummy ac:ConstructMode instead
         else
         {
@@ -454,6 +451,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return classIRI;
     }
 
+    /*
     public Source getConstructedSource(URI ontologyURI, URI forClassURI) throws URISyntaxException
     {
 	if (ontologyURI == null) throw new IllegalArgumentException("Ontology URI cannot be null");
@@ -468,5 +466,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         new ConstructorBase().construct(forClass, model);
         return getSource(model);
     }
+    */
 
 }
