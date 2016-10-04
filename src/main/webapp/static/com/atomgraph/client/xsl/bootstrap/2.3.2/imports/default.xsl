@@ -65,6 +65,7 @@ exclude-result-prefixes="#all">
 	</dd>
     </xsl:template>
 
+    <!--
     <xsl:template match="rdf:type[@rdf:resource] | foaf:primaryTopic[key('resources', (@rdf:resource, @rdf:nodeID))] | foaf:isPrimaryTopicOf[key('resources', (@rdf:resource, @rdf:nodeID))]" mode="bs2:FormControl" priority="1">
         <xsl:apply-templates select="." mode="xhtml:Input">
             <xsl:with-param name="type" select="'hidden'"/>
@@ -76,6 +77,7 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:apply-templates>
     </xsl:template>
+    -->
 
     <!-- FORM MODE -->
     

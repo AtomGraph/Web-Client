@@ -451,21 +451,4 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return classIRI;
     }
 
-    /*
-    public Source getConstructedSource(URI ontologyURI, URI forClassURI) throws URISyntaxException
-    {
-	if (ontologyURI == null) throw new IllegalArgumentException("Ontology URI cannot be null");
-	if (forClassURI == null) throw new IllegalArgumentException("Class URI cannot be null");
-
-        Model model = ModelFactory.createDefaultModel();
-        OntModelSpec ontModelSpec = getOntModelSpec(null);
-        OntModel ontModel = getOntModel(ontologyURI.toString(), ontModelSpec);
-        OntClass forClass = ontModel.getOntClass(checkURI(forClassURI.toString()).toURI().toString());
-        if (forClass == null) throw new OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
-        
-        new ConstructorBase().construct(forClass, model);
-        return getSource(model);
-    }
-    */
-
 }

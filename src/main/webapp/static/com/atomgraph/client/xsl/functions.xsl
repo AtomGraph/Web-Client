@@ -382,13 +382,4 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:function>
 
-    <!--
-    <xsl:function use-when="system-property('xsl:product-name') = 'SAXON'" name="ac:construct-doc" as="document-node()">
-        <xsl:param name="ontology" as="xs:anyURI"/>
-        <xsl:param name="class" as="xs:anyURI"/>
-
-        <xsl:sequence select="mxw:getConstructedSource(mxw:new(), $ontology, $class)" xmlns:mxw="java:com.atomgraph.client.writer.ModelXSLTWriter"/>
-    </xsl:function>
-    -->
-
 </xsl:stylesheet>
