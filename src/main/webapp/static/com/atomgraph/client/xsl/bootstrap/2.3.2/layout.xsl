@@ -167,7 +167,7 @@ exclude-result-prefixes="#all">
                     <xsl:text> - </xsl:text>
                 </xsl:if>
 
-                <xsl:variable name="current" select="(key('resources-by-type', '&http;Response')[not(key('resources', $a:requestUri))], key('resources', $a:requestUri))[1]" as="element()"/>
+                <xsl:variable name="current" select="(key('resources-by-type', '&http;Response')[not(key('resources', $a:requestUri))], key('resources', $a:requestUri))[1]" as="element()?"/>
                 <xsl:apply-templates select="$current" mode="xhtml:Title"/>
 
                 <!--
@@ -326,12 +326,6 @@ exclude-result-prefixes="#all">
 
     <!-- MAIN MODE -->
     
-	<!--
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Main" priority="1">
-        <xsl:apply-templates select="key('resources-by-type', '&http;Response')" mode="bs2:Block"/>
-    </xsl:template>
-	-->
-
     <xsl:template match="rdf:RDF" mode="bs2:Main">
         <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
 
@@ -369,8 +363,6 @@ exclude-result-prefixes="#all">
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-
-    <xsl:template match="*[rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="#all"/>
     
     <!-- MODE SELECT MODE -->
 
@@ -449,10 +441,20 @@ exclude-result-prefixes="#all">
     <!-- HEADER MODE -->
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:Header" priority="1">
-        <div class="alert alert-error">
-            <h1>
+        <xsl:param name="id" select="generate-id()" as="xs:string?"/>
+        <xsl:param name="class" select="'alert alert-error well'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
+            <h2>
                 <xsl:apply-templates select="." mode="ac:label"/>
-            </h1>
+            </h2>
         </div>
     </xsl:template>
 
@@ -738,7 +740,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="1"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:BlockList">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
@@ -816,7 +818,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="1"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="1"/>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="bs2:Grid">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
