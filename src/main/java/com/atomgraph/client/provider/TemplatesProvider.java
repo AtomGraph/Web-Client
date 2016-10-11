@@ -152,7 +152,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         if (stylesheetURI == null)
         {
             if (log.isErrorEnabled()) log.error("XSLT stylesheet (ac:stylesheet) not configured");
-            throw new ConfigurationException("XSLT stylesheet (ac:stylesheet) not configured");
+            throw new ConfigurationException(AC.stylesheet);
         }
 
         return getTemplates(stylesheetURI, getTemplatesCache());

@@ -18,9 +18,6 @@ package com.atomgraph.client;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -62,9 +59,17 @@ public class LinkedDataClient
             }
             */
         }
-
-        return builder.accept(acceptedTypes).
-            get(ClientResponse.class);
+        
+        ClientResponse response = null;
+        try
+        {
+            return builder.accept(acceptedTypes).
+                get(ClientResponse.class);
+        }
+        finally
+        {
+            if (response != null) response.close();
+        }
     }
     
     public WebResource getWebResource()

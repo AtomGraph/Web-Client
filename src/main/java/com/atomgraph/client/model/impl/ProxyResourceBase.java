@@ -162,8 +162,16 @@ public class ProxyResourceBase
         if (authHeaders != null && !authHeaders.isEmpty())
             builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
 
-        return builder.accept(mediaTypes).
-                get(ClientResponse.class);        
+        ClientResponse response = null;
+        try
+        {
+            return builder.accept(mediaTypes).
+                get(ClientResponse.class);
+        }
+        finally
+        {
+            if (response != null) response.close();
+        }
     }
     
     /**
@@ -176,62 +184,70 @@ public class ProxyResourceBase
     @GET
     public Response get()
     {                
-        ClientResponse resp = getClientResponse(getWebResource(), getHttpHeaders(),
+        ClientResponse resp = null;
+        try
+        {
+            resp = getClientResponse(getWebResource(), getHttpHeaders(),
                 com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE, com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
 
-        /*
-        if (resp.getStatusInfo().getFamily().equals(Status.Family.REDIRECTION))
-            // redirect to Location
-            if (resp.getHeaders().containsKey(HttpHeaders.LOCATION))
-            {
-                URI location = URI.create(resp.getHeaders().getFirst(HttpHeaders.LOCATION));
-                // TO-DO: use StateBuilder?
-                UriBuilder uriBuilder = getUriInfo().getBaseUriBuilder().
-                        queryParam(GC.uri.getLocalName(), location);
-                if (getMediaType() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMediaType());
-                if (getMode() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMode());
-                if (getForClass() != null) uriBuilder.queryParam(GC.forClass.getLocalName(), getForClass());
-                
-                return Response.seeOther(uriBuilder.build()).build();
-            }
-        */
-        
-        if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
-        {
-            // forward WWW-Authenticate response header
-            if (resp.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
-            {
-                Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, resp.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
-                String realm = null;
-                for (HeaderElement element : wwwAuthHeader.getElements())
-                    if (element.getName().equals("Basic realm")) realm = element.getValue();
+            /*
+            if (resp.getStatusInfo().getFamily().equals(Status.Family.REDIRECTION))
+                // redirect to Location
+                if (resp.getHeaders().containsKey(HttpHeaders.LOCATION))
+                {
+                    URI location = URI.create(resp.getHeaders().getFirst(HttpHeaders.LOCATION));
+                    // TO-DO: use StateBuilder?
+                    UriBuilder uriBuilder = getUriInfo().getBaseUriBuilder().
+                            queryParam(GC.uri.getLocalName(), location);
+                    if (getMediaType() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMediaType());
+                    if (getMode() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMode());
+                    if (getForClass() != null) uriBuilder.queryParam(GC.forClass.getLocalName(), getForClass());
 
-                // TO-DO: improve handling of missing realm
-                if (realm != null) throw new AuthenticationException("Login is required", realm);
+                    return Response.seeOther(uriBuilder.build()).build();
+                }
+            */
+
+            if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+            {
+                // forward WWW-Authenticate response header
+                if (resp.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
+                {
+                    Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, resp.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
+                    String realm = null;
+                    for (HeaderElement element : wwwAuthHeader.getElements())
+                        if (element.getName().equals("Basic realm")) realm = element.getValue();
+
+                    // TO-DO: improve handling of missing realm
+                    if (realm != null) throw new AuthenticationException("Login is required", realm);
+                }
+
+                throw new ClientErrorException(resp);
             }
 
-            throw new ClientErrorException(resp);
+            if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
+            Model description = resp.getEntity(Model.class);
+
+            com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
+            ResponseBuilder bld = response.getResponseBuilder(description,
+                    response.getVariantListBuilder(getMediaTypes().getWritable(Model.class), new ArrayList(), new ArrayList()).
+                            add().build());
+
+            // move headers to HypermediaFilter?
+            if (resp.getHeaders().get("Link") != null)
+                for (String linkValue : resp.getHeaders().get("Link"))
+                    bld.header("Link", linkValue);
+            if (resp.getHeaders().get("Rules") != null)
+                for (String linkValue : resp.getHeaders().get("Rules"))
+                    bld.header("Rules", linkValue);
+
+            if (getMediaType() != null) bld.type(getMediaType()); // should do RDF export
+
+            return bld.build();
         }
-
-        if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
-        Model description = resp.getEntity(Model.class);
-
-        com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-        ResponseBuilder bld = response.getResponseBuilder(description,
-                response.getVariantListBuilder(getMediaTypes().getWritable(Model.class), new ArrayList(), new ArrayList()).
-                        add().build());
-        
-        // move headers to HypermediaFilter?
-        if (resp.getHeaders().get("Link") != null)
-            for (String linkValue : resp.getHeaders().get("Link"))
-                bld.header("Link", linkValue);
-        if (resp.getHeaders().get("Rules") != null)
-            for (String linkValue : resp.getHeaders().get("Rules"))
-                bld.header("Rules", linkValue);
-        
-        if (getMediaType() != null) bld.type(getMediaType()); // should do RDF export
-        
-        return bld.build();
+        finally
+        {
+            if (resp != null) resp.close();
+        }
     }
 
     @POST

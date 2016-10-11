@@ -45,8 +45,6 @@ import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.provider.ClientProvider;
 import com.atomgraph.core.provider.ModelProvider;
-import com.atomgraph.core.provider.SPARQLEndpointOriginProvider;
-import com.atomgraph.core.provider.SPARQLEndpointProvider;
 import com.atomgraph.core.vocabulary.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +78,6 @@ public class Application extends com.atomgraph.core.Application
 	classes.add(ProxyResourceBase.class);
 
 	singletons.add(new ModelProvider());
-        singletons.add(new SPARQLEndpointOriginProvider());
-        singletons.add(new SPARQLEndpointProvider());
-        
 	singletons.add(new ResultSetProvider());
 	singletons.add(new QueryParamProvider());
 	singletons.add(new UpdateRequestReader());
