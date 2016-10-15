@@ -216,14 +216,9 @@ public class HypermediaFilter implements ContainerResponseFilter
         QuerySolutionMap qsm = new QuerySolutionMap();
         qsm.add(RDFS.Class.getLocalName(), forClass);
         Query query = new ParameterizedSparqlString(queryString, qsm).asQuery();
-        QueryExecution qex = QueryExecutionFactory.create(query, forClass.getOntModel());
-        try
+        try (QueryExecution qex = QueryExecutionFactory.create(query, forClass.getOntModel()))
         {
             targetModel.add(qex.execDescribe());
-        }
-        finally
-        {
-            qex.close();
         }
     }
     

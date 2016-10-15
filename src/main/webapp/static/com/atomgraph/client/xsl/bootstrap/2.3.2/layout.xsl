@@ -315,7 +315,7 @@ exclude-result-prefixes="#all">
 	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}"></script>
 	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}"></script>
-        <xsl:if test="key('resources', $a:requestUri)[ac:mode/@rdf:resource = '&ac;MapMode' or dh:forClass/@rdf:resource]">
+        <xsl:if test="key('resources', $a:requestUri)[ac:mode/@rdf:resource = '&ac;MapMode']">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
             <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}"></script>
         </xsl:if>
@@ -978,17 +978,7 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', $a:requestUri)/dh:forClass/@rdf:resource]" mode="bs2:Form" priority="1.5">
-		<xsl:variable name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
-		<xsl:variable name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
-
-		<xsl:apply-templates select="." mode="bs2:FormControl">
-			<xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
-			<xsl:sort select="ac:label(.)"/>
-		</xsl:apply-templates>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Form" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', $a:requestUri)/dh:forClass/@rdf:resource] | *[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:param name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
 
@@ -1001,8 +991,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="bs2:Form"/>
     
     <!-- LEGEND -->
-    
-    <xsl:template match="*[dh:forClass/@rdf:resource]" mode="bs2:Legend" priority="1">
+
+    <xsl:template match="rdf:RDF" mode="bs2:Legend" priority="2">
+        <xsl:apply-templates mode="#current"/>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about = $a:requestUri][dh:forClass/@rdf:resource]" mode="bs2:Legend" priority="1">
         <xsl:param name="forClass" select="dh:forClass/@rdf:resource" as="xs:anyURI"/>
 
         <xsl:for-each select="key('resources', $forClass, $ac:sitemap)">
@@ -1019,8 +1013,16 @@ exclude-result-prefixes="#all">
         </xsl:for-each>
     </xsl:template>
 
+    <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Legend">
+        <legend>
+            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+        </legend>
+    </xsl:template>
+
     <xsl:template match="*" mode="bs2:Legend"/>
 
+    <!-- FORM ACTIONS -->
+    
     <xsl:template match="rdf:RDF" mode="bs2:FormActions">
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         
