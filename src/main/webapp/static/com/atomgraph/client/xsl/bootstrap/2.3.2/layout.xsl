@@ -422,10 +422,12 @@ exclude-result-prefixes="#all">
                 </xsl:apply-templates>
             </xsl:when>
             <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource">
-                <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
-                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current">
-                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-                </xsl:apply-templates>
+                <xsl:if test="doc-available((sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)[1])">
+                    <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
+                    <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current">
+                        <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                    </xsl:apply-templates>
+                </xsl:if>
             </xsl:when>
         </xsl:choose>
         

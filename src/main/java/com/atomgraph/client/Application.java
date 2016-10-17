@@ -84,7 +84,7 @@ public class Application extends com.atomgraph.core.Application
         singletons.add(new MediaTypesProvider());
         singletons.add(new DataManagerProvider());
         singletons.add(new ClientProvider());
-        singletons.add(new com.atomgraph.core.provider.DataManagerProvider());
+        singletons.add(new com.atomgraph.core.provider.DataManagerProvider(servletConfig));
 	singletons.add(new NotFoundExceptionMapper());
         singletons.add(new ClientErrorExceptionMapper());
 	singletons.add(new UniformInterfaceExceptionMapper());
@@ -100,10 +100,9 @@ public class Application extends com.atomgraph.core.Application
      * @see com.atomgraph.processor.locator
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/FileManager.html">FileManager</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/LocationMapper.html">LocationMapper</a>
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/util/Locator.html">Locator</a>
-     * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/sparql/util/Context.html">Context</a>
      */
     @PostConstruct
+    @Override
     public void init()
     {
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
@@ -113,8 +112,9 @@ public class Application extends com.atomgraph.core.Application
 	LocationMapper.setGlobalLocationMapper(mapper);
 	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, new MediaTypesProvider().getMediaTypes(),
-                getBooleanParam(getServletConfig(), A.cacheModelLoads),
+        DataManager manager = new DataManager(mapper,
+                new ClientProvider().getClient(),                
+                new MediaTypesProvider().getMediaTypes(),
                 getBooleanParam(getServletConfig(), A.preemptiveAuth),
                 getBooleanParam(getServletConfig(), AC.resolvingUncached));
         FileManager.setStdLocators(manager);

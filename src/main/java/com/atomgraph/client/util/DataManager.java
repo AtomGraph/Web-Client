@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import com.atomgraph.core.MediaType;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.ClientException;
+import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +52,10 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     protected boolean resolvingMapped = true;
     protected boolean resolvingSPARQL = true;
             
-    public DataManager(LocationMapper mapper, MediaTypes mediaTypes,
-            boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
+    public DataManager(LocationMapper mapper, Client client, MediaTypes mediaTypes,
+            boolean preemptiveAuth, boolean resolvingUncached)
     {
-	super(mapper, mediaTypes, cacheModelLoads, preemptiveAuth);
+	super(mapper, client, mediaTypes, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
         List<javax.ws.rs.core.MediaType> acceptedTypeList = new ArrayList();

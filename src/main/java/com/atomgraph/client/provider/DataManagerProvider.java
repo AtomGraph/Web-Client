@@ -16,20 +16,14 @@
  */
 package com.atomgraph.client.provider;
 
-import org.apache.jena.query.ARQ;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.util.FileManager;
-import org.apache.jena.util.LocationMapper;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
-import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.util.DataManager;
-import com.atomgraph.client.vocabulary.AC;
-import com.atomgraph.core.vocabulary.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,17 +38,10 @@ import org.slf4j.LoggerFactory;
 public class DataManagerProvider extends PerRequestTypeInjectableProvider<Context, DataManager> implements ContextResolver<DataManager>
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
-
-    @Context ServletConfig servletConfig;
     
     public DataManagerProvider()
     {
         super(DataManager.class);
-    }
-
-    public ServletConfig getServletConfig()
-    {
-        return servletConfig;
     }
 
     @Override
@@ -78,27 +65,7 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 
     public DataManager getDataManager()
     {
-        return getDataManager(LocationMapper.get(), ARQ.getContext(),
-                getBooleanParam(getServletConfig(), A.cacheModelLoads),                
-                getBooleanParam(getServletConfig(), A.preemptiveAuth),
-                getBooleanParam(getServletConfig(), AC.resolvingUncached)); // necessary?
-    }
-    
-    public boolean getBooleanParam(ServletConfig servletConfig, Property property)
-    {
-	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
-	if (property == null) throw new IllegalArgumentException("Property cannot be null");
-
-        boolean value = false;
-        if (servletConfig.getInitParameter(property.getURI()) != null)
-            value = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()));
-        return value;
-    }
-    
-    public DataManager getDataManager(LocationMapper mapper, org.apache.jena.sparql.util.Context context, 
-            boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
-    {
-        return (DataManager)FileManager.get();
+        return (DataManager)FileManager.get(); // set by Application
     }
 
 }
