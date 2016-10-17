@@ -162,7 +162,7 @@ exclude-result-prefixes="#all">
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
             <title>
-                <xsl:if test="$ldt:baseUri">
+                <xsl:if test="doc-available($ldt:baseUri)">
                     <xsl:apply-templates select="key('resources', $ldt:baseUri, document($ldt:baseUri))" mode="ac:label"/>
                     <xsl:text> - </xsl:text>
                 </xsl:if>
@@ -697,39 +697,39 @@ exclude-result-prefixes="#all">
     </xsl:template>
 	-->
 
-    <xsl:template match="*[@rdf:about = $a:requestUri]" mode="bs2:PagerList">
+    <xsl:template match="*[@rdf:about = $a:requestUri][xhv:prev or xhv:next]" mode="bs2:PagerList">
         <ul class="pager">
-			<li class="previous">
-				<xsl:choose>
-					<xsl:when test="xhv:prev">
-						<a href="{xhv:prev/@rdf:resource}" class="active">
-							&#8592; <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>
-						</a>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:attribute name="class">previous disabled</xsl:attribute>
-						<a>
-							&#8592; <xsl:apply-templates select="key('resources', '&xhv;prev', document(''))" mode="ac:label"/>
-						</a>
-					</xsl:otherwise>
-				</xsl:choose>
-			</li>
-			<li class="next">
-				<xsl:choose>
-					<xsl:when test="xhv:next"> <!--  and $count &gt;= dh:limit -->
-						<a href="{xhv:next/@rdf:resource}" class="active">
-							<xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>  &#8594;
-						</a>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:attribute name="class">next disabled</xsl:attribute>
-						<a>
-							<xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/> &#8594;
-						</a>
-					</xsl:otherwise>
-				</xsl:choose>
-			</li>
-		</ul>
+            <li class="previous">
+                <xsl:choose>
+                    <xsl:when test="xhv:prev">
+                        <a href="{xhv:prev/@rdf:resource}" class="active">
+                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>
+                        </a>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="class">previous disabled</xsl:attribute>
+                        <a>
+                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;prev', document(''))" mode="ac:label"/>
+                        </a>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </li>
+            <li class="next">
+                <xsl:choose>
+                    <xsl:when test="xhv:next"> <!--  and $count &gt;= dh:limit -->
+                        <a href="{xhv:next/@rdf:resource}" class="active">
+                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>  &#8594;
+                        </a>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="class">next disabled</xsl:attribute>
+                        <a>
+                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/> &#8594;
+                        </a>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </li>
+        </ul>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:PagerList"/>
