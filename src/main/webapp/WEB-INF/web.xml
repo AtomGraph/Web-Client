@@ -42,10 +42,6 @@
             <param-value>false</param-value>
         </init-param>
         <init-param>
-            <param-name>http://atomgraph.com/ns/core#cacheModelLoads</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
             <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
             <param-value>true</param-value>
         </init-param>       

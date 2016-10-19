@@ -260,9 +260,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public XSLTBuilder getXSLTBuilder(XSLTBuilder bld, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
-    {        
-        bld.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+    public XSLTBuilder getXSLTBuilder(XSLTBuilder builder, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
+    {
+	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");	
+	if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");	
+        
+        builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
         parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getUriInfo().getRequestUri()).
         parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
         parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
@@ -272,20 +275,20 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         {
             URI typeHref = getLinkHref(headerMap, "Link", RDF.type.getLocalName());
             if (typeHref != null)
-                bld.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
+                builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
             URI baseHref = getLinkHref(headerMap, "Link", LDT.baseUri.getURI()); // LDT.baseUri?
             if (baseHref != null)
-                bld.parameter("{" + LDT.baseUri.getNameSpace() + "}" + LDT.baseUri.getLocalName(), baseHref);
+                builder.parameter("{" + LDT.baseUri.getNameSpace() + "}" + LDT.baseUri.getLocalName(), baseHref);
             
             URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
             if (ontologyHref != null)                    
             {
-                bld.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);            
+                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);            
 
                 OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
                 OntModel sitemap = getOntModel(ontologyHref.toString(), ontModelSpec);
-                bld.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
+                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
             }
         }
         catch (URISyntaxException ex)
@@ -294,7 +297,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
 	
         Object query = headerMap.getFirst("Query");
-	if (query != null) bld.parameter("{http://spinrdf.org/spin#}query", query.toString());
+	if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
 
         // workaround for Google Maps and Saxon-CE
         // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
@@ -313,13 +316,13 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	if (contentType != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
-	    bld.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
+	    builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
 	}
 	Object contentLanguage = headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
 	if (contentLanguage != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
-	    bld.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), contentLanguage.toString());
+	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), contentLanguage.toString());
 	}
 
         // pass HTTP query parameters into XSLT
@@ -327,17 +330,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         while (paramIt.hasNext())
         {
             Entry<String, List<String>> entry = paramIt.next();
-            bld.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
+            builder.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
             if (log.isDebugEnabled()) log.debug("Setting XSLT param \"{}\" from HTTP query string with value: {}", entry.getKey(), entry.getValue().get(0));
         }
 
         // override the reserved parameters that need special types
-	return setQueryParameters(bld, getUriInfo());
+	return setQueryParameters(builder, getUriInfo());
     }
 
-    public XSLTBuilder setQueryParameters(XSLTBuilder bld, UriInfo uriInfo)
+    public XSLTBuilder setQueryParameters(XSLTBuilder builder, UriInfo uriInfo)
     {
-	if (bld == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
+	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
 
         /*
@@ -347,13 +350,13 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 URI.create(uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName())));
         */
 	if (uriInfo.getQueryParameters().getFirst(LDT.lang.getLocalName()) != null)
-	    bld.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(),
+	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(),
                 uriInfo.getQueryParameters().getFirst(LDT.lang.getLocalName()));
 	if (uriInfo.getQueryParameters().getFirst(AC.endpointUri.getLocalName()) != null)
-	    bld.parameter("{" + AC.endpointUri.getNameSpace() + "}" + AC.endpointUri.getLocalName(),
+	    builder.parameter("{" + AC.endpointUri.getNameSpace() + "}" + AC.endpointUri.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(AC.endpointUri.getLocalName())));
         
-        return bld;
+        return builder;
     }
 
     public OntModel getSitemap(MultivaluedMap<String, Object> headerMap, String ontologyURI)
@@ -423,6 +426,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public MediaType getCustomMediaType(UriInfo uriInfo)
     {
+	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+        
         Resource mode = null;
 
         // TODO: improve dh:forClass handling

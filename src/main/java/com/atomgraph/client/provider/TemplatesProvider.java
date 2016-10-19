@@ -16,18 +16,14 @@
  */
 package com.atomgraph.client.provider;
 
-import org.apache.jena.rdf.model.Property;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -42,6 +38,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.exception.ConfigurationException;
+import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +56,9 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     private static final Logger log = LoggerFactory.getLogger(TemplatesProvider.class);
 
     private final ServletConfig servletConfig;
-    private final Map<URI, Templates> templatesCache = new HashMap<>();
+    private final URI stylesheetURI;
     private final boolean cacheStylesheet;
+    private Templates templatesCache;
 
     /**
      * 
@@ -70,6 +68,22 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     {
 	super(Templates.class);
         this.servletConfig = servletConfig;
+
+        Object stylesheetURIParam = servletConfig.getInitParameter(AC.stylesheet.getURI());
+        if (stylesheetURIParam == null)
+        {
+            if (log.isErrorEnabled()) log.error("XSLT stylesheet (ac:stylesheet) not configured");
+            throw new ConfigurationException(AC.stylesheet);
+        }
+        try
+        {
+            stylesheetURI = new URI(stylesheetURIParam.toString());
+        }
+        catch (URISyntaxException ex)
+        {
+    	    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
+	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+        }
         
         if (servletConfig.getInitParameter(AC.cacheStylesheet.getURI()) != null)
             cacheStylesheet = Boolean.parseBoolean(servletConfig.getInitParameter(AC.cacheStylesheet.getURI()));
@@ -81,11 +95,11 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         return servletConfig;
     }
     
-    protected Map<URI, Templates> getTemplatesCache()
+    public URI getStylesheetURI()
     {
-        return templatesCache;
+        return stylesheetURI;
     }
-    
+        
     public boolean cacheStylesheet()
     {
         return cacheStylesheet;
@@ -99,25 +113,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	    @Override
 	    public Templates getValue()
 	    {
-                try
-                {
-                    return getTemplates(getServletConfig());
-                }
-                catch (TransformerConfigurationException ex)
-                {
-                    if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);
-                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-                }
-                catch (IOException ex)
-                {
-                    if (log.isErrorEnabled()) log.error("XSLT stylesheet not found or error reading it", ex);
-                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-                }
-                catch (URISyntaxException ex)
-                {
-                    if (log.isErrorEnabled()) log.error("XSLT stylesheet URI error", ex);
-                    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-                }
+                return getTemplates();
 	    }
 	};
     }
@@ -125,9 +121,24 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     @Override
     public Templates getContext(Class<?> type)
     {
+        return getTemplates();
+    }
+
+    protected Templates getTemplatesCache()
+    {
+        return templatesCache;
+    }
+    
+    public Templates getTemplates()
+    {
         try
-        {
-            return getTemplates(getServletConfig());
+        {            
+            if (cacheStylesheet() && getTemplatesCache() != null) return getTemplatesCache();
+
+            templatesCache = getTemplates(getSource(getServletConfig().getServletContext(),
+                    getStylesheetURI().toString()));
+            
+            return getTemplatesCache();
         }
         catch (TransformerConfigurationException ex)
         {
@@ -145,88 +156,16 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
-    public Templates getTemplates(ServletConfig servletConfig) throws TransformerConfigurationException, IOException, URISyntaxException
-    {
-        URI stylesheetURI = getStylesheetURI(servletConfig, AC.stylesheet);
-        if (stylesheetURI == null)
-        {
-            if (log.isErrorEnabled()) log.error("XSLT stylesheet (ac:stylesheet) not configured");
-            throw new ConfigurationException(AC.stylesheet);
-        }
-
-        return getTemplates(stylesheetURI, getTemplatesCache());
-    }
     
-    /**
-     * Returns configured XSLT stylesheet resource.
-     * Uses <code>ac:stylesheet</code> servlet parameter value from web.xml as stylesheet location.
-     * 
-     * @param servletConfig
-     * @param property
-     * @return stylesheet URI
-     * @throws URISyntaxException 
-     */
-    public URI getStylesheetURI(ServletConfig servletConfig, Property property) throws URISyntaxException
-    {
-	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
-	if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        
-        Object stylesheetURI = servletConfig.getInitParameter(property.getURI());
-        if (stylesheetURI != null) return new URI(stylesheetURI.toString());
-        
-        return null;
-    }
-    
-    /**
-     * Get compiled XSLT stylesheet. First look in the cache, if it's enabled; otherwise read from file.
-     * 
-     * @param stylesheetURI
-     * @param templatesCache
-     * @return XSLT builder object
-     * @throws java.io.IOException
-     * @throws java.net.URISyntaxException
-     * @throws javax.xml.transform.TransformerConfigurationException
-     */
-    public Templates getTemplates(URI stylesheetURI, Map<URI, Templates> templatesCache) throws IOException, URISyntaxException, TransformerConfigurationException
-    {
-        if (cacheStylesheet())
-        {
-            // create cache entry if it does not exist
-            if (!templatesCache.containsKey(stylesheetURI))
-                templatesCache.put(stylesheetURI, getTemplates(getSource(stylesheetURI)));
-
-            return templatesCache.get(stylesheetURI);
-        }
-        else
-            return getTemplates(getSource(stylesheetURI));
-    }
-    
-    public Templates getTemplates(Source source) throws IOException, URISyntaxException, TransformerConfigurationException, MalformedURLException
+    public Templates getTemplates(Source source) throws TransformerConfigurationException
     {
         return ((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(source);
-    }
-    
-    /**
-     * Converts stylesheet resource into XML source.
-     * 
-     * @param stylesheetURI stylesheet URI
-     * @return stylesheet XML source
-     * @throws FileNotFoundException
-     * @throws URISyntaxException
-     * @throws MalformedURLException 
-     */
-    public Source getSource(URI stylesheetURI) throws IOException, URISyntaxException
-    {
-	if (stylesheetURI == null) throw new IllegalArgumentException("Stylesheet URI name cannot be null");	
-
-        if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", stylesheetURI);            
-        return getSource(stylesheetURI.toString());
     }
 
     /**
      * Provides XML source from filename
      * 
+     * @param servletContext
      * @param filename stylesheet filename
      * @return XML source
      * @throws FileNotFoundException
@@ -234,12 +173,13 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
      * @throws java.net.MalformedURLException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      */
-    public Source getSource(String filename) throws URISyntaxException, IOException
+    public Source getSource(ServletContext servletContext, String filename) throws URISyntaxException, IOException
     {
-	if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
+	if (servletContext == null) throw new IllegalArgumentException("servletContext name cannot be null");	
+        if (filename == null) throw new IllegalArgumentException("XML file name cannot be null");	
 
-        if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", getServletConfig().getServletContext().getResourcePaths("/"), filename);
-        URL xsltUrl = getServletConfig().getServletContext().getResource(filename);
+        if (log.isDebugEnabled()) log.debug("Resource paths used to load Source: {} from filename: {}", servletContext.getResourcePaths("/"), filename);
+        URL xsltUrl = servletContext.getResource(filename);
 	if (xsltUrl == null) throw new FileNotFoundException("File '" + filename + "' not found");
 	String xsltUri = xsltUrl.toURI().toString();
 	if (log.isDebugEnabled()) log.debug("XSLT stylesheet URI: {}", xsltUri);
