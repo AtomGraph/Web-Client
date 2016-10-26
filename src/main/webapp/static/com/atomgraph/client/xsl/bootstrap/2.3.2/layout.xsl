@@ -980,7 +980,7 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', $a:requestUri)/dh:forClass/@rdf:resource] | *[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Form" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', $a:requestUri)/dh:forClass/@rdf:resource][not(@rdf:about = $a:absolutePath)] | *[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:param name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
 
