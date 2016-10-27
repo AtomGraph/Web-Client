@@ -162,16 +162,8 @@ public class ProxyResourceBase
         if (authHeaders != null && !authHeaders.isEmpty())
             builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
 
-        ClientResponse response = null;
-        try
-        {
-            return builder.accept(mediaTypes).
+        return builder.accept(mediaTypes).
                 get(ClientResponse.class);
-        }
-        finally
-        {
-            if (response != null) response.close();
-        }
     }
     
     /**

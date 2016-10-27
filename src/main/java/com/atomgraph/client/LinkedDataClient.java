@@ -60,16 +60,8 @@ public class LinkedDataClient
             */
         }
         
-        ClientResponse response = null;
-        try
-        {
-            return builder.accept(acceptedTypes).
-                get(ClientResponse.class);
-        }
-        finally
-        {
-            if (response != null) response.close();
-        }
+        return builder.accept(acceptedTypes).
+            get(ClientResponse.class);
     }
     
     public WebResource getWebResource()

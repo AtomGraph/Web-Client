@@ -128,16 +128,25 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 try
                 {                    
                     if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
-                    ClientResponse cr = load(uri.toString());
+                    ClientResponse cr = null;
                     
-                    if (cr.hasEntity())
+                    try
                     {
-                        if (cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) || 
-                                cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
-                            return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
+                        cr = load(uri.toString());
+                        
+                        if (cr.hasEntity())
+                        {
+                            if (cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) || 
+                                    cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
+                                return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
 
-                        // by default, try to read Model
-                        return getSource(cr.getEntity(Model.class), uri.toString());
+                            // by default, try to read Model
+                            return getSource(cr.getEntity(Model.class), uri.toString());
+                        }
+                    }
+                    finally
+                    {
+                        if (cr != null) cr.close();
                     }
                     
                     return getDefaultSource(); // return empty Model                    
