@@ -161,24 +161,7 @@ exclude-result-prefixes="#all">
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-            <title>
-                <xsl:if test="doc-available($ldt:baseUri)">
-                    <xsl:apply-templates select="key('resources', $ldt:baseUri, document($ldt:baseUri))" mode="ac:label"/>
-                    <xsl:text> - </xsl:text>
-                </xsl:if>
-
-                <xsl:variable name="current" select="(key('resources-by-type', '&http;Response')[not(key('resources', $a:requestUri))], key('resources', $a:requestUri))[1]" as="element()?"/>
-                <xsl:apply-templates select="$current" mode="xhtml:Title"/>
-
-                <!--
-                <xsl:if test="$forClass">
-                    <xsl:text> : </xsl:text>
-                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
-                    <xsl:text> </xsl:text>
-                    <xsl:apply-templates select="key('resources', $forClass, document(ac:document-uri($forClass)))" mode="ac:label"/>
-                </xsl:if>
-                -->
-            </title>
+            <xsl:apply-templates select="." mode="xhtml:Title"/>
             
             <xsl:apply-templates select="." mode="xhtml:Style"/>
 
@@ -279,6 +262,15 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!-- TITLE -->
+    
+    <xsl:template match="rdf:RDF" mode="xhtml:Title">
+        <title>
+            <xsl:variable name="current" select="(key('resources-by-type', '&http;Response')[not(key('resources', $a:requestUri))], key('resources', $a:requestUri))[1]" as="element()?"/>
+            <xsl:apply-templates select="$current" mode="#current"/>
+        </title>
+    </xsl:template>
+
     <!--
     <xsl:template match="*[dh:forClass/@rdf:resource]" mode="xhtml:Title" priority="3">
         <xsl:next-match>
@@ -296,8 +288,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Title">
-        <!-- <xsl:param name="forClass" as="xs:anyURI?" tunnel="yes"/> -->
-        
         <xsl:apply-templates select="." mode="ac:label"/>
     </xsl:template>
 
