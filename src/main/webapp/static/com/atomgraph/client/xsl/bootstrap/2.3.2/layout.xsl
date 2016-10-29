@@ -354,22 +354,22 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
     
-    <!-- MODE SELECT MODE -->
+    <!-- MODE LIST -->
 
     <xsl:template match="rdf:RDF" mode="bs2:ModeList">
-        <xsl:apply-templates mode="#current"/>
+        <ul class="nav nav-tabs">
+			<xsl:apply-templates mode="#current"/>
+		</ul>
     </xsl:template>
                 
     <xsl:template match="*[*][ac:mode/@rdf:resource][core:viewOf/@rdf:resource]" mode="bs2:ModeList" priority="1">
-        <ul class="nav nav-tabs">
-            <xsl:variable name="active" select="ac:mode/@rdf:resource" as="xs:anyURI"/>
-            <xsl:for-each select="key('resources-by-type', key('resources', ac:mode/@rdf:resource, document('&ac;'))/rdf:type/@rdf:resource, document('&ac;'))">
-                <xsl:sort select="@rdf:about | @rdf:nodeID"/>
-                <xsl:apply-templates select="." mode="bs2:ModeListItem">
-                    <xsl:with-param name="active" select="$active"/>
-                </xsl:apply-templates>
-            </xsl:for-each>
-        </ul>
+		<xsl:variable name="active" select="ac:mode/@rdf:resource" as="xs:anyURI"/>
+		<xsl:for-each select="key('resources-by-type', key('resources', ac:mode/@rdf:resource, document('&ac;'))/rdf:type/@rdf:resource, document('&ac;'))">
+			<xsl:sort select="@rdf:about | @rdf:nodeID"/>
+			<xsl:apply-templates select="." mode="bs2:ModeListItem">
+				<xsl:with-param name="active" select="$active"/>
+			</xsl:apply-templates>
+		</xsl:for-each>
     </xsl:template>
         
     <xsl:template match="*" mode="bs2:ModeList"/>
@@ -481,18 +481,16 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
-
-    <xsl:template match="*" mode="bs2:MediaTypeList"/>
         
-    <xsl:template match="*[@rdf:about]" mode="bs2:MediaTypeList" priority="1">
+    <xsl:template match="rdf:RDF" mode="bs2:MediaTypeList" priority="1">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{@rdf:about}?accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
+                    <a href="{$a:absolutePath}?accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
                 </li>
                 <li>
-                    <a href="{@rdf:about}?accept={encode-for-uri('text/turtle')}">Turtle</a>
+                    <a href="{$a:absolutePath}?accept={encode-for-uri('text/turtle')}">Turtle</a>
                 </li>
                 <!--
                 <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">
@@ -507,9 +505,11 @@ exclude-result-prefixes="#all">
 
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
-    <xsl:template match="*" mode="bs2:Actions"/>
+    <xsl:template match="rdf:RDF" mode="bs2:Actions">
+		<xsl:apply-templates mode="#current"/>
+	</xsl:template>
     
-    <xsl:template match="*[@rdf:about]" mode="bs2:Actions" priority="1">
+    <xsl:template match="*[@rdf:about = $a:absolutePath]" mode="bs2:Actions" priority="1">
         <div class="pull-right">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
@@ -563,6 +563,8 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
+    <xsl:template match="*" mode="bs2:Actions"/>
+
     <!-- IMAGE MODE -->
         
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
