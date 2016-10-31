@@ -424,7 +424,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
     }
 
-    public MediaType getCustomMediaType(UriInfo uriInfo)
+    public MediaType getCustomMediaType(UriInfo uriInfo) // TO-DO: refactor based on Model and state?
     {
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         
