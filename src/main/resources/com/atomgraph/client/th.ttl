@@ -38,11 +38,11 @@
     rdfs:comment "Container that can have other containers and items as children" ;
     rdfs:isDefinedBy <#> .
 
-<#Document> a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf dh:Document ;
+<#Item> a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf dh:Item ;
     ldt:query <#DescribeWithTopic> ;
     ldt:update <#DeleteWithTopic> ;
-    rdfs:label "Document" ;
+    rdfs:label "Item" ;
     rdfs:comment "Leaf-child of a container" ;
     rdfs:isDefinedBy <#> .
 

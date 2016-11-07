@@ -27,6 +27,12 @@
 
 # PROPERTIES
 
+<#forClass> a owl:ObjectProperty ;
+    rdfs:range rdfs:Class ;
+    rdfs:label "Constructor class" ;
+    rdfs:comment "Links constructor resource to the constructed class" ;
+    rdfs:isDefinedBy <#> .
+
 <#slug> a owl:DatatypeProperty ;
     rdfs:domain foaf:Document ;
     rdfs:range xsd:string ;
@@ -77,11 +83,16 @@
 # TEMPLATES
 
 <#Container> a rdfs:Class, owl:Class, ldt:Template ;
-    rdfs:subClassOf <#Document>, sioc:Container ;
+    rdfs:subClassOf core:Document, sioc:Container ;
     ldt:path "{path: .*}/" ;
     ldt:skolemTemplate "{slug}/" ;
     ldt:query <#DescribeWithChildren> ;
     ldt:param [ a ldt:Argument ;
+        rdfs:label "Constructor class" ;
+        spl:predicate <#forClass> ;
+        spl:valueType rdfs:Class ;
+        spl:optional true
+    ] , [ a ldt:Argument ;
         rdfs:label "Limit" ;
         spl:predicate <#limit> ;
         spl:valueType xsd:long ;
@@ -102,12 +113,14 @@
         spl:valueType xsd:boolean ;
         spl:optional true
     ] ;
+    spin:constructor <#DocumentConstructor> ;
+    spin:constraint <#MissingSlug> ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
     rdfs:isDefinedBy <#> .
 
-<#Document> a rdfs:Class, owl:Class, ldt:Template ;
-    rdfs:subClassOf core:Document ;
+<#Item> a rdfs:Class, owl:Class, ldt:Template ;
+    rdfs:subClassOf core:Document, sioc:Item ;
     rdfs:label "Document" ;
     ldt:skolemTemplate "{slug}" ;
     spin:constructor <#DocumentConstructor> ;
