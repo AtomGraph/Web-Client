@@ -39,13 +39,14 @@ import com.atomgraph.client.provider.MediaTypesProvider;
 import com.atomgraph.client.provider.TemplatesProvider;
 import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
-import com.atomgraph.core.provider.ResultSetProvider;
-import com.atomgraph.core.provider.UpdateRequestReader;
+import com.atomgraph.core.io.ResultSetProvider;
+import com.atomgraph.core.io.UpdateRequestReader;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.provider.ClientProvider;
-import com.atomgraph.core.provider.ModelProvider;
+import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.vocabulary.A;
+import org.apache.jena.rdf.model.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,23 +75,26 @@ public class Application extends com.atomgraph.core.Application
     public Application(@Context ServletConfig servletConfig)
     {
         super(servletConfig);
-        
-	classes.add(ProxyResourceBase.class);
+                
+	// initialize mapping for locally stored vocabularies
+	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3"); // check if file exists?
+	LocationMapper.setGlobalLocationMapper(mapper);
+	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-	singletons.add(new ModelProvider());
-	singletons.add(new ResultSetProvider());
-	singletons.add(new QueryParamProvider());
-	singletons.add(new UpdateRequestReader());
-        singletons.add(new MediaTypesProvider());
-        singletons.add(new DataManagerProvider());
-        singletons.add(new ClientProvider());
-        singletons.add(new com.atomgraph.core.provider.DataManagerProvider(servletConfig));
-	singletons.add(new NotFoundExceptionMapper());
-        singletons.add(new ClientErrorExceptionMapper());
-	singletons.add(new UniformInterfaceExceptionMapper());
-	singletons.add(new ClientHandlerExceptionMapper());
-        singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-	singletons.add(new TemplatesProvider(servletConfig)); // loads XSLT stylesheet
+        DataManager manager = new DataManager(mapper,
+                new ClientProvider().getClient(),                
+                new MediaTypesProvider().getMediaTypes(),
+                getBooleanParam(servletConfig, A.preemptiveAuth),
+                getBooleanParam(servletConfig, AC.resolvingUncached));
+        FileManager.setStdLocators(manager);
+        FileManager.setGlobalFileManager(manager);
+	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
+
+        OntDocumentManager.getInstance().setFileManager(FileManager.get());
+	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
+
+        // register plain RDF/XML writer as default
+        RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
     }
 
     /**
@@ -105,27 +109,35 @@ public class Application extends com.atomgraph.core.Application
     @Override
     public void init()
     {
-        if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", getClasses(), getSingletons());
+	classes.add(ProxyResourceBase.class);
+
+	singletons.add(new ModelProvider());
+	singletons.add(new ResultSetProvider());
+	singletons.add(new QueryParamProvider());
+	singletons.add(new UpdateRequestReader());
+        singletons.add(new MediaTypesProvider());
+        singletons.add(new DataManagerProvider());
+        singletons.add(new ClientProvider());
+        singletons.add(new com.atomgraph.core.provider.DataManagerProvider(getServletConfig()));
+	singletons.add(new NotFoundExceptionMapper());
+        singletons.add(new ClientErrorExceptionMapper());
+	singletons.add(new UniformInterfaceExceptionMapper());
+	singletons.add(new ClientHandlerExceptionMapper());
+        singletons.add(new ModelXSLTWriter()); // writes XHTML responses
+	singletons.add(new TemplatesProvider(getServletConfig())); // loads XSLT stylesheet
         
-	// initialize mapping for locally stored vocabularies
-	LocationMapper mapper = new PrefixMapper("prefix-mapping.n3"); // check if file exists?
-	LocationMapper.setGlobalLocationMapper(mapper);
-	if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
+        if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);        
+    }
 
-        DataManager manager = new DataManager(mapper,
-                new ClientProvider().getClient(),                
-                new MediaTypesProvider().getMediaTypes(),
-                getBooleanParam(getServletConfig(), A.preemptiveAuth),
-                getBooleanParam(getServletConfig(), AC.resolvingUncached));
-        FileManager.setStdLocators(manager);
-        FileManager.setGlobalFileManager(manager);
-	if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
+    public final boolean getBooleanParam(ServletConfig servletConfig, Property property)
+    {
+	if (servletConfig == null) throw new IllegalArgumentException("ServletConfig cannot be null");
+	if (property == null) throw new IllegalArgumentException("Property cannot be null");
 
-        OntDocumentManager.getInstance().setFileManager(FileManager.get());
-	if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
-
-        // register plain RDF/XML writer as default
-        RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
+        boolean value = false;
+        if (servletConfig.getInitParameter(property.getURI()) != null)
+            value = Boolean.parseBoolean(servletConfig.getInitParameter(property.getURI()));
+        return value;
     }
     
     /**

@@ -501,6 +501,8 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <xsl:template match="*" mode="bs2:MediaTypeList"/>
+
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Actions">
@@ -675,7 +677,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[dh:forClass/@rdf:resource]" mode="bs2:PagerList" priority="1"/>
+    <xsl:template match="*[dh:forClass/@rdf:resource]" mode="bs2:PagerList" priority="2"/>
 
 	<!--
     <xsl:template match="*[dh:pageOf/@rdf:resource]" mode="bs2:PagerList" priority="3">
@@ -689,7 +691,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 	-->
 
-    <xsl:template match="*[@rdf:about = $a:requestUri][xhv:prev or xhv:next]" mode="bs2:PagerList">
+    <xsl:template match="*[@rdf:about = $a:requestUri][xhv:prev or xhv:next]" mode="bs2:PagerList" priority="1">
         <ul class="pager">
             <li class="previous">
                 <xsl:choose>
@@ -768,9 +770,7 @@ exclude-result-prefixes="#all">
         
     <!-- READ MODE -->
 
-    <!-- <xsl:template match="*[key('resources-by-container', @rdf:about)]" mode="bs2:Block" priority="1"/> -->
-
-    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource]" mode="bs2:Block" priority="1"/>
+    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Block" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>

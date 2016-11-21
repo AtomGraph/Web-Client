@@ -47,7 +47,7 @@ import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
 import com.atomgraph.core.exception.NotFoundException;
-import com.atomgraph.core.provider.ModelProvider;
+import com.atomgraph.core.io.ModelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -140,14 +140,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(model, baos, null);
             
-            synchronized (this)
-            {                
-                getXSLTBuilder(XSLTBuilder.fromStylesheet(stylesheet).document(new ByteArrayInputStream(baos.toByteArray())),
-                        headerMap).
-                    resolver(getDataManager()).
-                    result(new StreamResult(entityStream)).
-                    transform();
-            }
+            getXSLTBuilder(XSLTBuilder.fromStylesheet(stylesheet).document(new ByteArrayInputStream(baos.toByteArray())),
+                    headerMap).
+                resolver(getDataManager()).
+                result(new StreamResult(entityStream)).
+                transform();
 	}
 	catch (TransformerException ex)
 	{

@@ -37,7 +37,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import com.atomgraph.core.provider.ModelProvider;
+import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.client.util.XSLTBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
