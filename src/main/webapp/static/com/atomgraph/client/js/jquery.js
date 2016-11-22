@@ -3,6 +3,13 @@ var onRemoveButtonClick = function()
     return $(this).parent().parent().parent().remove();
 };
 
+var onDropdownClick = function()
+{
+    $(this).toggleClass("open");
+
+    return true;
+};
+    
 $(document).ready(function()
 {
 
@@ -25,12 +32,7 @@ $(document).ready(function()
 
     $(".btn-remove").on("click", onRemoveButtonClick);
 
-    $(".btn-group:has(.btn.dropdown-toggle)").on("click", function()
-    {
-        $(this).toggleClass("open");
-        
-        return true;
-    });
+    $(".btn-group:has(.btn.dropdown-toggle)").on("click", onDropdownClick);
 
     $(".btn-add").on("click", function()
     {
