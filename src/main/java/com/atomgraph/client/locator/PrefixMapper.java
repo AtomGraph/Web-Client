@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.locator;
 
+import java.io.IOException;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.shared.JenaException;
 import org.apache.jena.util.FileManager;
@@ -256,9 +257,14 @@ public class PrefixMapper extends LocationMapper
             Model model = ModelFactory.createDefaultModel() ;
             model.read(in, uriConfig, syntax) ;
             processConfig(model) ;
-        } catch (JenaException ex)
+            in.close();
+        }
+        catch (JenaException ex)
         {
             LoggerFactory.getLogger(LocationMapper.class).warn("Error in configuration file: "+ex.getMessage()) ;
+        } catch (IOException ex)
+        {
+            LoggerFactory.getLogger(LocationMapper.class).warn("Error reading configuration: "+ex.getMessage()) ;
         }
     }
     

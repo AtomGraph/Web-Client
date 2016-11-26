@@ -34,6 +34,7 @@ import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.ClientException;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,69 +108,78 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
      * 
      * @param uri document URI
      * @return XML source
+     * @throws javax.xml.transform.TransformerException
      */
-    public Source resolve(URI uri)
+    public Source resolve(URI uri) throws TransformerException
     {
         if (uri == null) throw new IllegalArgumentException("URI cannot be null");
         if (!uri.isAbsolute()) throw new IllegalArgumentException("URI to be resolved must be absolute");
 
         Model model = getFromCache(uri.toString());
-        if (model == null) // URI not cached, 
+        try
         {
-            if (log.isDebugEnabled()) log.debug("No cached Model for URI: {}", uri);
-
-            if (isResolvingMapped() && isMapped(uri.toString()))
+            if (model == null) // URI not cached, 
             {
-                if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
-                return getSource(loadModel(uri.toString()), uri.toString());
-            }
-            
-            if (resolvingUncached(uri.toString()))
-                try
-                {                    
-                    if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
-                    ClientResponse cr = null;
-                    
-                    try
-                    {
-                        cr = load(uri.toString());
-                        
-                        if (cr.hasEntity())
-                        {
-                            if (cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) || 
-                                    cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
-                                return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
+                if (log.isDebugEnabled()) log.debug("No cached Model for URI: {}", uri);
 
-                            // by default, try to read Model
-                            return getSource(cr.getEntity(Model.class), uri.toString());
-                        }
-                    }
-                    finally
-                    {
-                        if (cr != null) cr.close();
-                    }
-                    
-                    return getDefaultSource(); // return empty Model                    
-                }
-                catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
+                if (isResolvingMapped() && isMapped(uri.toString()))
                 {
-                    if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
+                    if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
+                    return getSource(loadModel(uri.toString()), uri.toString());
+                }
+
+                if (resolvingUncached(uri.toString()))
+                    try
+                    {                    
+                        if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
+                        ClientResponse cr = null;
+
+                        try
+                        {
+                            cr = load(uri.toString());
+
+                            if (cr.hasEntity())
+                            {
+                                if (cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) || 
+                                        cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
+                                    return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
+
+                                // by default, try to read Model
+                                return getSource(cr.getEntity(Model.class), uri.toString());
+                            }
+                        }
+                        finally
+                        {
+                            if (cr != null) cr.close();
+                        }
+
+                        return getDefaultSource(); // return empty Model                    
+                    }
+                    catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
+                    {
+                        if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
+                        return getDefaultSource(); // return empty Model
+                    }
+                else
+                {
+                    if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
                     return getDefaultSource(); // return empty Model
                 }
+            }
             else
             {
-                if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
-                return getDefaultSource(); // return empty Model
+                if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
+                return getSource(model, uri.toString());
             }
         }
-        else
+        catch (IOException ex)
         {
-            if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
-            return getSource(model, uri.toString());
-        }
+            if (log.isErrorEnabled()) log.error("Error resolving Source for URI: {}", uri);            
+            throw new TransformerException(ex);
+        }        
     }
     
-    protected Source getDefaultSource()
+    protected Source getDefaultSource() throws IOException
     {
 	return getSource(ModelFactory.createDefaultModel(), null);
     }
@@ -180,17 +190,17 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
      * @param model RDF model
      * @param systemId system ID (usually origin URI) of the source
      * @return XML source
+     * @throws java.io.IOException
      */
-    public Source getSource(Model model, String systemId)
+    public Source getSource(Model model, String systemId) throws IOException
     {
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
-	
-	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	model.write(stream);
-
-	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
+	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            model.write(stream);
+            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
+        }
     }
 
     /**
@@ -199,17 +209,17 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
      * @param results SPARQL XML results
      * @param systemId system ID (usually origin URI) of the source
      * @return XML source
+     * @throws java.io.IOException
      */
-    public Source getSource(ResultSet results, String systemId)
+    public Source getSource(ResultSet results, String systemId) throws IOException
     {
 	if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());
-	
-	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	ResultSetFormatter.outputAsXML(stream, results);
-	
-	if (log.isDebugEnabled()) log.debug("SPARQL XML result bytes written: {}", stream.toByteArray().length);
-	
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
+	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            ResultSetFormatter.outputAsXML(stream, results);
+            if (log.isDebugEnabled()) log.debug("SPARQL XML result bytes written: {}", stream.toByteArray().length);
+            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
+        }
     }
  
     public javax.ws.rs.core.MediaType[] getAcceptedMediaTypes()

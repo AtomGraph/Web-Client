@@ -130,10 +130,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
 	if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
-	try
+	try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
 	{
             Templates stylesheet = getTemplates();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             
             //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
             RDFWriter writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
@@ -177,30 +176,34 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	return -1;
     }
     
-    public Source getSource(Model model)
+    public Source getSource(Model model) throws IOException
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 	
-	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	model.write(stream, RDFLanguages.RDFXML.getName(), null);
+	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            model.write(stream, RDFLanguages.RDFXML.getName(), null);
 
-	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
+            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+        }
     }
     
-    public Source getSource(OntModel ontModel, boolean writeAll)
+    public Source getSource(OntModel ontModel, boolean writeAll) throws IOException
     {
 	if (!writeAll) return getSource(ontModel);
 	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");	
 	
 	if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
 	
-	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	ontModel.writeAll(stream, Lang.RDFXML.getName(), null);
+	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            ontModel.writeAll(stream, Lang.RDFXML.getName(), null);
 
-	if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-	return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));	
+            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+        }
     }
     
     public UriInfo getUriInfo()
@@ -257,7 +260,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public XSLTBuilder getXSLTBuilder(XSLTBuilder builder, MultivaluedMap<String, Object> headerMap) throws TransformerConfigurationException
+    public XSLTBuilder getXSLTBuilder(XSLTBuilder builder, MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
 	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");	
 	if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");	
@@ -291,6 +294,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         catch (URISyntaxException ex)
         {
             if (log.isErrorEnabled()) log.error("'Link' response header contains invalid URI: {}", headerMap.getFirst("Link"));
+            throw new TransformerException(ex);
+        }
+        catch (IOException ex)
+        {
+            if (log.isErrorEnabled()) log.error("Error reading Source stream");
+            throw new TransformerException(ex);
         }
 	
         Object query = headerMap.getFirst("Query");

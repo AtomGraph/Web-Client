@@ -82,9 +82,8 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     @Override
     public void writeTo(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	try
+	try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
 	{
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    ResultSetFormatter.outputAsXML(baos, results);
 	    
 	    // create XSLTBuilder per request output to avoid document() caching

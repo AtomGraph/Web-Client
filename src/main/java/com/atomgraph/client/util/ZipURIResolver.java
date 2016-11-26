@@ -51,7 +51,7 @@ public class ZipURIResolver implements URIResolver
     {
 	if (log.isDebugEnabled()) log.debug("Resolving href: {} base: {}", href, base);
 
-	try
+	try // with resources?
 	{
 	    // set system ID?
 	    return new StreamSource(getZipFile().getInputStream(getZipFile().getEntry(href)));
