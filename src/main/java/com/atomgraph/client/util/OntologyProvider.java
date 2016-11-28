@@ -62,10 +62,9 @@ public class OntologyProvider
         // lock and clone the model to avoid ConcurrentModificationExceptions
         ontModel.enterCriticalSection(Lock.READ);
         try
-        {
-            OntModel clonedModel = ModelFactory.createOntologyModel(ontModelSpec, ontModel.getBaseModel());        
-            if (log.isDebugEnabled()) log.debug("Sitemap model size: {}", clonedModel.size());
-            return clonedModel;
+        {            
+            return ModelFactory.createOntologyModel(ontModelSpec,
+                    ModelFactory.createUnion(ModelFactory.createDefaultModel(), ontModel.getBaseModel()));
         }
         finally
         {

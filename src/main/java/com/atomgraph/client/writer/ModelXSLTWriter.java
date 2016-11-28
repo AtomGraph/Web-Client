@@ -286,9 +286,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             {
                 builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);            
 
-                OntModelSpec ontModelSpec = getOntModelSpec(getRules(headerMap, "Rules"));
-                OntModel sitemap = getOntModel(ontologyHref.toString(), ontModelSpec);
-                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
+                // TO-DO: remove from the Client writer?
+                OntModel ontModel = getOntModel(headerMap, ontologyHref.toString());
+                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(ontModel, true));
             }
         }
         catch (URISyntaxException ex)
@@ -350,7 +350,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
 
         /*
-        // map uri query param values to g:requestUri XSLT param values
+        // map uri query param values to a:requestUri XSLT param values
         if (uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName()) != null)
 	    bld.parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(),
                 URI.create(uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName())));
@@ -365,7 +365,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return builder;
     }
 
-    public OntModel getSitemap(MultivaluedMap<String, Object> headerMap, String ontologyURI)
+    public OntModel getOntModel(MultivaluedMap<String, Object> headerMap, String ontologyURI)
     {
         return getOntModel(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
     }
