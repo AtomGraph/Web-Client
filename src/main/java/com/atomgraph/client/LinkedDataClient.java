@@ -16,52 +16,140 @@
 
 package com.atomgraph.client;
 
+import com.atomgraph.core.MediaType;
+import com.atomgraph.core.MediaTypes;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import java.util.Iterator;
+import java.util.Map;
+import org.apache.jena.rdf.model.Model;
 
 /**
- *
+ * Linked Data client.
+ * 
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
 public class LinkedDataClient
 {
 
     private final WebResource webResource;
+    private final MediaTypes mediaTypes;
     
-    protected LinkedDataClient(WebResource webResource)
+    protected LinkedDataClient(WebResource webResource, MediaTypes mediaTypes)
     {
         if (webResource == null) throw new IllegalArgumentException("WebResource cannot be null");
+        if (mediaTypes == null) throw new IllegalArgumentException("MediaTypes cannot be null");
         
-        this.webResource = webResource;        
+        this.webResource = webResource;
+        this.mediaTypes = mediaTypes;
     }
     
-    public static LinkedDataClient create(WebResource webResource)
+    public static LinkedDataClient create(WebResource webResource, MediaTypes mediaTypes)
     {
-        return new LinkedDataClient(webResource);
+        return new LinkedDataClient(webResource, mediaTypes);
     }
     
-    public ClientResponse get(MultivaluedMap<String, Object> headers, MediaType... acceptedTypes)
+    protected WebResource.Builder setHeaders(WebResource.Builder builder, Map<String, Object> headers)
+    {
+	if (builder == null) throw new IllegalArgumentException("WebResource.Builder must be not null");
+	if (headers == null) throw new IllegalArgumentException("Map<String, Object> must be not null");
+
+        Iterator<Map.Entry<String, Object>> it = headers.entrySet().iterator();
+        while (it.hasNext())
+        {
+            Map.Entry<String, Object> entry = it.next();
+            builder.header(entry.getKey(), entry.getValue());
+        }
+        
+        return builder;
+    }
+    
+    public ClientResponse get(javax.ws.rs.core.MediaType[] acceptedTypes)
+    {
+        return get(acceptedTypes, null);
+    }
+    
+    public ClientResponse get(javax.ws.rs.core.MediaType[] acceptedTypes, Map<String, Object> headers)
     {
         if (acceptedTypes == null) throw new IllegalArgumentException("MediaType... cannot be null");
 
-        WebResource.Builder builder = getWebResource().getRequestBuilder();
-        
-        if (headers != null)
-        {
-            /*
-            Iterator<Entry<String, Object>> it = headers.entrySet().iterator();
-            while (it.hasNext())
-            {
-                Entry<String, Object> header = it.next();
-                builder.header(header.getKey(), header.getValue());
-            }
-            */
-        }
+        WebResource.Builder builder = getWebResource().getRequestBuilder();        
+        if (headers != null) setHeaders(builder, headers);
         
         return builder.accept(acceptedTypes).
             get(ClientResponse.class);
+    }
+    
+    public Model get()
+    {
+        return get(getReadableMediaTypes(Model.class)).getEntity(Model.class);
+    }
+    
+    public ClientResponse post(MediaType contentType, Model model)
+    {
+        if (contentType == null) throw new IllegalArgumentException("MediaType cannot be null");
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        
+        return getWebResource().
+            type(contentType).
+            post(ClientResponse.class, model);
+    }
+    
+    public void post(Model model)
+    {
+        ClientResponse cr = null;
+        
+        try
+        {
+            cr = post(getDefaultMediaType(), model);
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
+    }
+    
+    public ClientResponse put(MediaType contentType, Model model)
+    {
+        if (contentType == null) throw new IllegalArgumentException("MediaType cannot be null");
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        
+        return getWebResource().
+            type(contentType).
+            put(ClientResponse.class, model);
+    }
+    
+    public void put(Model model)
+    {
+        ClientResponse cr = null;
+        
+        try
+        {
+            cr = put(getDefaultMediaType(), model);
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
+    }
+
+    public ClientResponse delete(boolean dummy) // dummy param to avoid method clash
+    {
+        return getWebResource().delete(ClientResponse.class);
+    }
+    
+    public void delete()
+    {
+        ClientResponse cr = null;
+        
+        try
+        {
+            cr = delete(true);
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
     }
     
     public WebResource getWebResource()
@@ -69,4 +157,19 @@ public class LinkedDataClient
         return webResource;
     }
     
+    public MediaTypes getMediaTypes()
+    {
+        return mediaTypes;
+    }
+    
+    public javax.ws.rs.core.MediaType[] getReadableMediaTypes(Class clazz)
+    {
+        return getMediaTypes().getReadable(clazz).toArray(new javax.ws.rs.core.MediaType[0]);
+    }
+
+    public MediaType getDefaultMediaType()
+    {
+        return MediaType.TEXT_NTRIPLES_TYPE;
+    }
+
 }

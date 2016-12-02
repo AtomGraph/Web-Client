@@ -99,7 +99,7 @@ public class ProxyResourceBase
         Client client = Client.create(cc);
         //client.setFollowRedirects(false);
         webResource = client.resource(uri);
-        linkedDataClient = LinkedDataClient.create(webResource);
+        linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
     }
     
     public HttpHeaders getHttpHeaders()
