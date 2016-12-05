@@ -5,6 +5,7 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
 @prefix spl:    <http://spinrdf.org/spl#> .
@@ -12,7 +13,7 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 
 <#> a owl:Ontology ;
-    owl:imports sp:, spin: ;
+    owl:imports sp:, spin:, sd: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Linked Data Templates ontology" ;
     rdfs:comment "Must be imported and reused by LDT applications" ;
@@ -24,17 +25,24 @@
 
 # SYSTEM PROPERTIES
 
-<#baseUri> a owl:ObjectProperty, owl:InverseFunctionalProperty ;
+<#baseUri> a owl:ObjectProperty, owl:FunctionalProperty, owl:InverseFunctionalProperty ;
     rdfs:domain <#Application> ;
     rdfs:label "Application base URI" ;
     rdfs:comment "Base URI uniquely identifies the application" ;
     rdfs:isDefinedBy <#> .
 
-<#ontology> a owl:ObjectProperty ;
+<#ontology> a owl:ObjectProperty, owl:FunctionalProperty ;
     rdfs:domain <#Application> ;
     rdfs:range <#Ontology> ;
     rdfs:label "Application ontology" ;
     rdfs:comment "OWL ontology with resource classes (templates)" ;
+    rdfs:isDefinedBy <#> .
+
+<#service> a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain <#Application> ;
+    rdfs:range sd:Service ;
+    rdfs:label "SPARQL service" ;
+    rdfs:comment "Service implementing SPARQL Protocol and Graph Store Protocol" ;
     rdfs:isDefinedBy <#> .
 
 # ANNOTATION PROPERTIES
@@ -133,7 +141,7 @@
 
 <#Application> a rdfs:Class ;
     rdfs:label "LDT application" ;
-    rdfs:comment "Declarative Linked Data application" ;
+    rdfs:comment "Declarative Linked Data application which structure is defined by its ontology and data is access via its SPARQL service" ;
     rdfs:isDefinedBy <#> .
 
 <#Ontology> a rdfs:Class ;
@@ -146,231 +154,22 @@
     rdfs:subClassOf rdfs:Class ;
     rdfs:label "Resource template" ;
     rdfs:comment "A class of RDF resources that share the same URI template and SPARQL query template" ;
-    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
-    <#fragmentTemplate> "this" ;
-    spin:constructor <#TemplateConstructor> ;
-    spin:constraint <#MissingRDFSLabel> , <#MissingRDFSisDefinedBy> ,
-        [ a <#MissingPropertyValue> ;
-            rdfs:label "Missing ldt:path" ;
-	    sp:arg1 <#path>
-	] ,
-        [ a <#MissingPropertyValue> ;
-            rdfs:label "Missing ldt:query" ;
-	    sp:arg1 <#query>
-	] ;
     rdfs:isDefinedBy <#> .
-
-<#TemplateConstructor> a sp:Construct, sp:Query ; # <#Query> ;
-  sp:text """
-      PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
-      PREFIX owl:     <http://www.w3.org/2002/07/owl#>
-      PREFIX spin:    <http://spinrdf.org/spin#>
-      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
-
-      CONSTRUCT {
-          ?this rdfs:subClassOf [ a rdfs:Class ] ;
-              rdfs:label [ a xsd:string ] ;
-              ldt:path [ a xsd:string ] ;
-              ldt:skolemTemplate [ a xsd:string ] ;
-              ldt:fragmentTemplate [ a xsd:string ] ;
-              ldt:query [ a ldt:Query ] ;
-              ldt:update [ a ldt:Delete ] ;
-              ldt:param [ a ldt:Argument ] ;
-              ldt:cacheControl "no-cache" ;
-              ldt:loadClass [ a rdfs:Resource ] ;
-              spin:constraint [ a rdfs:Resource ] ;
-              spin:constructor [ a spin:Rule ] ;
-              rdfs:isDefinedBy [ a ldt:Ontology ] .
-      }
-      WHERE {}""" .
-    # rdfs:label "Template constructor" ;
-    # rdfs:isDefinedBy <#> .
 
 <#Query> a rdfs:Class ;
     rdfs:subClassOf sp:Query, [ a owl:Class ;
         owl:unionOf (sp:Describe sp:Construct)
     ] ;
-    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
-    <#fragmentTemplate> "this" ;
-    spin:constructor <#QueryConstructor> ;
-    spin:constraint <#MissingRDFSLabel>,
-        [ a <#MissingPropertyValue> ;
-            rdfs:label "Missing sp:text" ;
-	    sp:arg1 sp:text
-	] ;
     rdfs:label "Query" ;
     rdfs:isDefinedBy <#> .
 
-<#QueryConstructor> a sp:Construct, sp:Query ; # <#Query> ;
-  sp:text """
-      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
-      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
-      PREFIX sp:      <http://spinrdf.org/sp#>
-
-      CONSTRUCT {
-          ?this rdfs:label [ a xsd:string ] ;
-              sp:text "DESCRIBE ?this" .
-              # rdfs:isDefinedBy [ a ldt:Ontology ] .
-      }
-      WHERE {}""" .
-    # rdfs:label "Query constructor" ;
-    # rdfs:isDefinedBy <#> .
-
 <#Update> a rdfs:Class ;
     rdfs:subClassOf sp:Update ;
-    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
-    <#fragmentTemplate> "this" ;
-    spin:constructor <#UpdateConstructor> ;
-    spin:constraint <#MissingRDFSLabel> ,
-        [ a <#MissingPropertyValue> ;
-            rdfs:label "Missing sp:text" ;
-	    sp:arg1 sp:text
-	] ;
     rdfs:label "Update" ;
     rdfs:isDefinedBy <#> .
-
-<#UpdateConstructor> a sp:Construct, sp:Query ; # <#Query> ;
-  sp:text """
-      PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
-      PREFIX sp:      <http://spinrdf.org/sp#>
-
-      CONSTRUCT {
-          ?this # a sp:Modify ;
-              rdfs:label [ a xsd:string ] ;
-              rdfs:comment [ a xsd:string ] ;
-              sp:text "DELETE\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}\\r\\nINSERT\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}\\r\\nWHERE\\r\\n{\\r\\n  ?s ?p ?o\\r\\n}" ;
-              rdfs:isDefinedBy [ a ldt:Ontology ] .
-      }
-      WHERE {}""" .
-    # rdfs:label "Update constructor" ;
-    # rdfs:isDefinedBy <#> .
 
 <#Argument> a rdfs:Class ;
     rdfs:label "Template argument" ;
     rdfs:comment "Represents a template argument that has predicate, value type, default value etc." ;
-    spin:constructor <#ArgumentConstructor> ;
-    spin:constraint <#MissingRDFSLabel> ;
     rdfs:seeAlso spl:Argument ;
     rdfs:isDefinedBy <#> .
-
-<#ArgumentConstructor> a sp:Construct, sp:Query ; # <#Query> ;
-  sp:text """
-      PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
-      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
-      PREFIX sp:      <http://spinrdf.org/sp#>
-      PREFIX spl:     <http://spinrdf.org/spl#>
-
-      CONSTRUCT {
-          ?this rdfs:label [ a xsd:string ] ;
-              rdfs:comment [ a xsd:string ] ;
-              spl:predicate [ a rdf:Property ] ;
-              spl:valueType [ a rdfs:Resource ] ;
-              spl:optional [ a xsd:boolean ] ;
-              rdfs:isDefinedBy [ a ldt:Ontology ] .
-      }
-      WHERE {}""" .
-    # rdfs:label "Update constructor" ;
-    # rdfs:isDefinedBy <#> .
-
-<#Constraint> a rdfs:Class ;
-    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
-    <#fragmentTemplate> "this" ;
-    spin:constructor <#ConstraintConstructor> ;
-    spin:constraint <#MissingRDFSLabel> ;
-    rdfs:label "Constraint" ;
-    rdfs:isDefinedBy <#> .
-
-<#ConstraintConstructor> a sp:Construct, sp:Query ; # <#Query> ;
-  sp:text """
-      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX sp:      <http://spinrdf.org/sp#>
-
-      CONSTRUCT {
-          ?this rdfs:label [ a xsd:string ] ;
-            sp:arg1 [ a rdfs:Resource ] ;
-            sp:arg2 [ a rdfs:Resource ] .
-      }
-      WHERE {}""" .
-    # rdfs:label "Constraint constructor" ;
-    # rdfs:isDefinedBy <#> .
-
-<#CommandTemplate> a rdfs:Class ;
-    rdfs:subClassOf spin:Template ;
-    <#skolemTemplate> "{isPrimaryTopicOf.slug}" ;
-    <#fragmentTemplate> "this" ;
-    spin:constructor <#CommandTemplateConstructor> ;
-    spin:constraint <#MissingRDFSLabel> ;
-    rdfs:label "Command template" ;
-    rdfs:isDefinedBy <#> .
-
-<#CommandTemplateConstructor> a sp:Construct, sp:Query ; # <#Query> ;
-  sp:text """
-      PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX ldt:     <http://www.w3.org/ns/ldt#>
-      PREFIX spin:    <http://spinrdf.org/spin#>
-      PREFIX spl:     <http://spinrdf.org/spl#>
-
-      CONSTRUCT {
-          ?this rdfs:label [ a xsd:string ] ;
-            spin:body [ a ldt:Query ] ;
-            spin:labelTemplate [ a xsd:string ] ;
-            spin:constraint [ a spl:Argument ;
-                spl:predicate [ a rdfs:Resource ] ;
-                spl:valueType [ a rdfs:Resource ]
-            ] .
-      }
-      WHERE {}""" .
-    # rdfs:label "Query template constructor" ;
-    # rdfs:isDefinedBy <#> .
-
-# SPIN TEMPLATES
-
-<#MissingPropertyValue> a rdfs:Class, spin:Template, <#CommandTemplate> ;
-    rdfs:subClassOf <#Constraint> ;
-    rdfs:label "Missing property value" ;
-    spin:body <#ConstructMissingPropertyValue> ;
-    spin:labelTemplate "Instance does not have a mandatory RDF property {?arg1} with optional value {?arg2}" ;
-    spin:constraint [ a spl:Argument ;
-        spl:predicate sp:arg1 ;
-        spl:valueType rdf:Property
-    ] , [ a spl:Argument ;
-        spl:predicate sp:arg2 ;
-        spl:optional true
-    ] ;
-    rdfs:isDefinedBy <#> .
-
-# CONSTRAINTS
-
-<#MissingRDFSLabel> a <#Constraint>, <#MissingPropertyValue> ;
-    rdfs:label "Missing rdfs:label" ;
-    sp:arg1 rdfs:label ;
-    rdfs:isDefinedBy <#> .
-
-<#MissingRDFSisDefinedBy> a <#Constraint>, <#MissingPropertyValue> ;
-    rdfs:label "Missing rdfs:isDefinedBy" ;
-    sp:arg1 rdfs:isDefinedBy ;
-    rdfs:isDefinedBy <#> .
-
-# QUERIES
-
-<#ConstructMissingPropertyValue> a sp:Construct, sp:Query ; # <#Query> ;
-      sp:text """PREFIX spin:	<http://spinrdf.org/spin#>
-CONSTRUCT {
-    _:b0 a spin:ConstraintViolation .
-    _:b0 spin:violationRoot ?this .
-    _:b0 spin:violationPath ?arg1 .
-}
-WHERE {
-    FILTER NOT EXISTS {
-        ?this ?arg1 ?arg2 .
-    }
-}""" .
-    # rdfs:label "Construct missing property value" ;
-    # rdfs:isDefinedBy <#> .
