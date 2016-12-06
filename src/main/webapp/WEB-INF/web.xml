@@ -44,7 +44,7 @@
         <init-param>
             <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
             <param-value>true</param-value>
-        </init-param>       
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>default</servlet-name>

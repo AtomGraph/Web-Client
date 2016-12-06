@@ -107,6 +107,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:sitemap" as="document-node()?"/>
+    <xsl:param name="ac:googleMapsKey" select="'AIzaSyCH3HJfcksUM1CRXgjokG0wJMHrrzWc_fs'" as="xs:string"/>
     <xsl:param name="uri" as="xs:string?"/>
     <xsl:param name="query" as="xs:string?"/>
     <xsl:param name="label" as="xs:string?"/>
@@ -307,7 +308,7 @@ exclude-result-prefixes="#all">
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}"></script>
         <xsl:if test="key('resources', $a:requestUri)[ac:mode/@rdf:resource = '&ac;MapMode']">
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"/>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}"/>
             <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}"></script>
         </xsl:if>
     </xsl:template>
