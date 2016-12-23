@@ -58,6 +58,11 @@
     rdfs:label "Container layouts" ;
     rdfs:isDefinedBy <#> .
 
+<#ModalMode> a owl:Class ;
+    rdfs:subClassOf <#Mode> ;
+    rdfs:label "Modal layout" ;
+    rdfs:isDefinedBy <#> .
+
 # MODES
 
 <#ReadMode> a <#DocumentMode>, <#ContainerMode> ;

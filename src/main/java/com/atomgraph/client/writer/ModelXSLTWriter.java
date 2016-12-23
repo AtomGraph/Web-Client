@@ -20,7 +20,6 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
@@ -36,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
@@ -62,6 +60,7 @@ import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
+import com.atomgraph.client.vocabulary.LDTDH;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import org.slf4j.Logger;
@@ -139,8 +138,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(model, baos, null);
             
-            getXSLTBuilder(XSLTBuilder.fromStylesheet(stylesheet).document(new ByteArrayInputStream(baos.toByteArray())),
-                    headerMap).
+            setParameters(XSLTBuilder.fromStylesheet(stylesheet).document(new ByteArrayInputStream(baos.toByteArray())),
+                    getState(model, getRequestURI()), headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
                 transform();
@@ -174,6 +173,19 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
 	return -1;
+    }
+    
+    public URI getRequestURI()
+    {
+        return getUriInfo().getRequestUri();
+    }
+    
+    public Resource getState(Model model, URI requestURI)
+    {
+	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
+	if (requestURI == null) throw new IllegalArgumentException("URI cannot be null");	
+        
+        return model.createResource(requestURI.toString());
     }
     
     public Source getSource(Model model) throws IOException
@@ -236,14 +248,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return modeMediaTypeMap;
     }
     
-    public URI getMode()
-    {
-        if (getUriInfo().getQueryParameters().getFirst(AC.mode.getLocalName()) != null)
-            return URI.create(getUriInfo().getQueryParameters().getFirst(AC.mode.getLocalName()));
-        
-        return null;
-    }
-    
     public URI getContextURI()
     {
         return URI.create(getHttpServletRequest().getRequestURL().toString()).
@@ -260,13 +264,14 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public XSLTBuilder getXSLTBuilder(XSLTBuilder builder, MultivaluedMap<String, Object> headerMap) throws TransformerException
+    public XSLTBuilder setParameters(XSLTBuilder builder, Resource state, MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
-	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");	
-	if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");	
+	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
+	if (state == null) throw new IllegalArgumentException("Resource cannot be null");        
+	if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
         builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
-        parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getUriInfo().getRequestUri()).
+        parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
         parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
         parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
         parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
@@ -309,7 +314,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
         // https://saxonica.plan.io/issues/1447
         // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-        MediaType customMediaType = getCustomMediaType(getUriInfo());
+        MediaType customMediaType = getCustomMediaType(state);
         if (customMediaType != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
@@ -331,6 +336,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), contentLanguage.toString());
 	}
 
+        /*
         // pass HTTP query parameters into XSLT
 	Iterator<Entry<String, List<String>>> paramIt = getUriInfo().getQueryParameters().entrySet().iterator();
         while (paramIt.hasNext())
@@ -341,30 +347,29 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
 
         // override the reserved parameters that need special types
-	return setQueryParameters(builder, getUriInfo());
-    }
-
-    public XSLTBuilder setQueryParameters(XSLTBuilder builder, UriInfo uriInfo)
-    {
-	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo name cannot be null");
-
-        /*
-        // map uri query param values to a:requestUri XSLT param values
-        if (uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName()) != null)
-	    bld.parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(AC.uri.getLocalName())));
+	return setQueryParameters(builder);
         */
-	if (uriInfo.getQueryParameters().getFirst(LDT.lang.getLocalName()) != null)
-	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(),
-                uriInfo.getQueryParameters().getFirst(LDT.lang.getLocalName()));
-	if (uriInfo.getQueryParameters().getFirst(AC.endpointUri.getLocalName()) != null)
-	    builder.parameter("{" + AC.endpointUri.getNameSpace() + "}" + AC.endpointUri.getLocalName(),
-                URI.create(uriInfo.getQueryParameters().getFirst(AC.endpointUri.getLocalName())));
         
         return builder;
     }
 
+    /*    
+    public XSLTBuilder setQueryParameters(XSLTBuilder builder, Resource state)
+    {
+	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
+	if (state == null) throw new IllegalArgumentException("Resource cannot be null");        
+
+	if (state.hasProperty(LDT.lang))
+	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(),
+                state.getProperty(LDT.lang).getString());
+	if (state.hasProperty(AC.endpointUri))
+	    builder.parameter("{" + AC.endpointUri.getNameSpace() + "}" + AC.endpointUri.getLocalName(),
+                URI.create(state.getPropertyResourceValue(AC.endpointUri).getURI()));
+        
+        return builder;
+    }
+    */
+    
     public OntModel getOntModel(MultivaluedMap<String, Object> headerMap, String ontologyURI)
     {
         return getOntModel(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
@@ -430,20 +435,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
     }
 
-    public MediaType getCustomMediaType(UriInfo uriInfo) // TO-DO: refactor based on Model and state?
+    public MediaType getCustomMediaType(Resource state)
     {
-	if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+	if (state == null) throw new IllegalArgumentException("Resource cannot be null");
         
         Resource mode = null;
 
-        // TODO: improve dh:forClass handling
-        if (uriInfo.getQueryParameters().getFirst("forClass") != null)
+        if (state.hasProperty(LDTDH.forClass))
             mode = AC.EditMode; // this could be solved using a dummy ac:ConstructMode instead
         else
-        {
-            if (uriInfo.getQueryParameters().getFirst(AC.mode.getLocalName()) != null)
-                mode = ResourceFactory.createResource(uriInfo.getQueryParameters().getFirst(AC.mode.getLocalName()));
-        }
+            if (state.hasProperty(AC.mode))
+                mode = state.getPropertyResourceValue(AC.mode);
         
         if (mode != null && getModeMediaTypeMap().containsKey(mode))
              return getModeMediaTypeMap().get(mode);

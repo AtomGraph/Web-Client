@@ -45,6 +45,7 @@ import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.provider.ClientProvider;
 import com.atomgraph.core.io.ModelProvider;
+import com.atomgraph.core.mapper.AuthenticationExceptionMapper;
 import com.atomgraph.core.vocabulary.A;
 import org.apache.jena.rdf.model.Property;
 import org.slf4j.Logger;
@@ -123,6 +124,7 @@ public class Application extends com.atomgraph.core.Application
         singletons.add(new ClientErrorExceptionMapper());
 	singletons.add(new UniformInterfaceExceptionMapper());
 	singletons.add(new ClientHandlerExceptionMapper());
+	singletons.add(new AuthenticationExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
 	singletons.add(new TemplatesProvider(getServletConfig())); // loads XSLT stylesheet
         

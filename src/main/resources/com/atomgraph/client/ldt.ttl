@@ -126,9 +126,10 @@
 
 <#lang> a owl:AnnotationProperty, <#InheritedProperty> ;
     rdfs:domain <#Template> ;
-    rdfs:range rdf:langString ;
+    rdfs:range rdf:List ;
     rdfs:label "Content language" ;
-    rdfs:seeAlso <http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal> ;
+    rdfs:comment "List of  BCP 47 language tags" ;
+    rdfs:seeAlso <https://www.w3.org/International/articles/language-tags/> ;
     rdfs:isDefinedBy <#> .
 
 # CLASSES

@@ -597,8 +597,10 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="bs2:TypeList">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>                
-                <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
+                <xsl:if test="doc-available(ac:document-uri(.))">
+                    <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
+                </xsl:if>
             </xsl:for-each>
         </ul>
     </xsl:template>
@@ -783,7 +785,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="1"/>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]" mode="bs2:Grid">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Grid">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
         <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
@@ -872,13 +874,13 @@ exclude-result-prefixes="#all">
 
     <!-- MAP MODE -->
 
-    <xsl:template match="rdf:RDF" mode="bs2:Map" priority="1">
+    <xsl:template match="rdf:RDF" mode="bs2:Map">
         <div id="map-canvas">
             <xsl:apply-templates mode="#current"/>
         </div>
     </xsl:template>
 
-    <xsl:template match="*[geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:Map" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID][geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:Map" priority="1">
         <xsl:param name="nested" as="xs:boolean?"/>
 
         <script type="text/javascript">
@@ -941,7 +943,8 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', $a:requestUri)/dh:forClass/@rdf:resource][not(@rdf:about = $a:absolutePath)] | *[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Form" priority="1">
+    <!-- carefully select the blank node with the template of the constructed class - with properties & not the container -->
+    <xsl:template match="*[* except rdf:type][rdf:type/@rdf:resource = key('resources', $a:requestUri)/dh:forClass/@rdf:resource][not(@rdf:about = $a:absolutePath)] | *[@rdf:about = $a:absolutePath][not(key('resources', $a:requestUri)/dh:forClass/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:param name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
 
