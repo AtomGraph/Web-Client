@@ -50,19 +50,16 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="ac:sitemap" as="document-node()?"/>
 
-    <!-- PROPERTY LIST MODE -->
+    <!-- PROPERTY LIST -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:PropertyList">
 	<xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
 	<xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
-	    <dt>
-		<xsl:apply-templates select="."/>
-	    </dt>
+            <xsl:apply-templates select="." mode="xhtml:DefinitionTerm"/>
 	</xsl:if>
-	<dd>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
-	</dd>
+        
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription"/>
     </xsl:template>
 
     <!--
@@ -79,7 +76,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     -->
 
-    <!-- FORM MODE -->
+    <!-- FORM -->
     
     <!-- @rdf:about | @rdf:nodeID -->
     <xsl:template match="*[*]/@rdf:*[local-name() = ('about', 'nodeID')]" mode="bs2:FormControl">

@@ -48,21 +48,18 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="ac:uri/@rdf:resource"/>
 
-    <!-- LIST ITEM -->
+    <!-- DEFINITIONS -->
     
-    <!-- more like ac:ListItemAnchor?? -->
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:ListItem">
-        <xsl:param name="active" as="xs:boolean?"/>
-        
-        <li>
-            <xsl:if test="$active">
-                <xsl:attribute name="class">active</xsl:attribute>
-            </xsl:if>
-
-            <a href="{@rdf:about}">
-                <xsl:apply-templates select="." mode="ac:label"/>
-            </a>
-        </li>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:DefinitionTerm">
+        <dt>
+            <xsl:apply-templates select="."/>
+        </dt>
+    </xsl:template>
+    
+    <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription">
+        <dd>
+	    <xsl:apply-templates select="."/>
+	</dd>
     </xsl:template>
     
     <!-- OPTION MODE -->
@@ -81,16 +78,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="ac:label"/>
         </option>
     </xsl:template>
-    
-    <!-- TABLE MODE -->
-    
-    <!--
-    <xsl:template match="@rdf:about | @rdf:nodeID" mode="ac:Table">
-	<td>
-	    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-	</td>
-    </xsl:template>
-    -->
 
     <!-- INLINE MODE -->
 

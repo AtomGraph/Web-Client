@@ -353,6 +353,20 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
     
+    <!-- LIST -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:List">
+        <xsl:param name="active" as="xs:boolean?"/>
+        
+        <li>
+            <xsl:if test="$active">
+                <xsl:attribute name="class">active</xsl:attribute>
+            </xsl:if>
+
+            <xsl:apply-templates select="."  mode="xhtml:Anchor"/>
+        </li>
+    </xsl:template>
+    
     <!-- MODE LIST -->
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="1"/>
@@ -649,7 +663,7 @@ exclude-result-prefixes="#all">
                 <ul class="nav nav-pills nav-stacked">
                     <xsl:for-each select="current-group()">
                         <xsl:sort select="ac:object-label(@rdf:resource | @rdf:nodeID)" order="ascending" lang="{$ldt:lang}"/>
-                        <xsl:apply-templates select="key('resources', @rdf:resource | @rdf:nodeID)" mode="xhtml:ListItem"/>
+                        <xsl:apply-templates select="key('resources', @rdf:resource | @rdf:nodeID)" mode="bs2:List"/>
                     </xsl:for-each>
                 </ul>
             </div>
@@ -707,9 +721,9 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="1"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="2"/>
 
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:BlockList">
+    <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" select="'well'" as="xs:string?"/>
 
@@ -741,6 +755,8 @@ exclude-result-prefixes="#all">
 	</div>
     </xsl:template>
         
+    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>
+
     <!-- READ MODE -->
 
     <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Block" priority="1"/>
@@ -783,9 +799,9 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="1"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="2"/>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Grid">
+    <xsl:template match="*[*][@rdf:about]" mode="bs2:Grid" priority="1">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
         <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
@@ -813,6 +829,8 @@ exclude-result-prefixes="#all">
 	    </div>
 	</li>
     </xsl:template>
+
+    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:Grid"/>
 
     <!-- TABLE MODE -->
 
@@ -845,9 +863,9 @@ exclude-result-prefixes="#all">
         </table>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="1"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Table">
+    <xsl:template match="*[*][@rdf:about]" mode="xhtml:Table" priority="1">
         <xsl:param name="id" select="generate-id()" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*" tunnel="yes"/>
@@ -869,6 +887,8 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
 	</tr>
     </xsl:template>
+
+    <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/>
 
     <xsl:template match="ac:* | core:* | dh:* | xhv:*" mode="ac:TablePredicate" priority="1"/>
 
