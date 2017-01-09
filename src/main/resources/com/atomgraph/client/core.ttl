@@ -96,14 +96,14 @@
 # QUERIES
 
 <#Describe> a sp:Describe, sp:Query ; # <#Query> ;
-    sp:text """DESCRIBE ?this""" .
-    # rdfs:label "Describe" ;
-    # rdfs:isDefinedBy <#> .
+    sp:text """DESCRIBE ?this""" ;
+    rdfs:label "Describe" ;
+    rdfs:isDefinedBy <#> .
 
 <#Delete> a sp:DeleteWhere, sp:Update ; # <#Update> ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DELETE WHERE {
     ?this ?p ?o .
-}""" .
-    # rdfs:label "Delete" ;
-    # rdfs:isDefinedBy <#> .
+}""" ;
+    rdfs:label "Delete" ;
+    rdfs:isDefinedBy <#> .
