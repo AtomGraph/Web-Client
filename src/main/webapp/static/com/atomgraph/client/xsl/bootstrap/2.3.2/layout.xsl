@@ -108,9 +108,9 @@ exclude-result-prefixes="#all">
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCH3HJfcksUM1CRXgjokG0wJMHrrzWc_fs'" as="xs:string"/>
-    <xsl:param name="uri" as="xs:string?"/>
-    <xsl:param name="query" as="xs:string?"/>
-    <xsl:param name="label" as="xs:string?"/>
+    <xsl:param name="uri" select="key('resources', $a:requestUri)/ac:uri" as="xs:string?"/>
+    <xsl:param name="query" select="key('resources', $a:requestUri)/core:query" as="xs:string?"/>
+    <xsl:param name="label" select="key('resources', $a:requestUri)/rdfs:label" as="xs:string?"/>
     
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
     
@@ -178,7 +178,7 @@ exclude-result-prefixes="#all">
                 <div class="row-fluid">
                     <xsl:apply-templates select="." mode="bs2:Main"/>
 
-                    <xsl:apply-templates select="." mode="bs2:RightNav"/>
+                    <xsl:apply-templates select="." mode="bs2:Right"/>
                 </div>
             </div>
     
@@ -653,9 +653,9 @@ exclude-result-prefixes="#all">
 
     <!-- RIGHT NAV MODE -->
     
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:RightNav" priority="1"/>
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Right" priority="1"/>
     
-    <xsl:template match="rdf:RDF" mode="bs2:RightNav">
+    <xsl:template match="rdf:RDF" mode="bs2:Right">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span4'" as="xs:string?"/>
         
@@ -671,7 +671,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
         
-    <xsl:template match="*[@rdf:about][@rdf:about = $a:absolutePath]" mode="bs2:RightNav" priority="1">
+    <xsl:template match="*[@rdf:about][@rdf:about = $a:absolutePath]" mode="bs2:Right" priority="1">
         <xsl:for-each-group select="*[key('resources', @rdf:resource | @rdf:nodeID)]" group-by="concat(namespace-uri(), local-name())">
             <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
 
@@ -690,7 +690,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:RightNav"/>
+    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
     
     <!-- PAGINATION MODE -->
 

@@ -67,6 +67,8 @@ LIMIT 100</xsl:param>
         </xsl:if>
     </xsl:template>
 
+    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Right" priority="2"/>
+
     <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="xhtml:Style" priority="1">
         <xsl:next-match/>
         
