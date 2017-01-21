@@ -117,13 +117,20 @@ exclude-result-prefixes="#all">
 	</a>
     </xsl:template>
 
-    <!-- object resource -->
+    <!-- object URI resource -->
     <xsl:template match="@rdf:resource | sparql:uri">
 	<a href="{.}" title="{.}">
             <xsl:apply-templates select="." mode="ac:object-label"/>
 	</a>
     </xsl:template>
 
+    <!-- object blank node -->
+    <xsl:template match="@rdf:nodeID">
+	<a href="#{.}" title="{.}">
+            <xsl:apply-templates select="." mode="ac:object-label"/>
+	</a>
+    </xsl:template>
+    
     <!-- object literal -->
     <xsl:template match="text()">
 	<xsl:value-of select="."/>

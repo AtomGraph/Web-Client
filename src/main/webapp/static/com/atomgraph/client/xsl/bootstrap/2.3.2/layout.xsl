@@ -857,6 +857,7 @@ exclude-result-prefixes="#all">
     <!-- TABLE MODE -->
 
     <xsl:template match="rdf:RDF" mode="xhtml:Table">
+        <xsl:param name="id" as="xs:string?"/>        
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
             <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
@@ -866,6 +867,9 @@ exclude-result-prefixes="#all">
         </xsl:param>
 
         <table>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>            
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
