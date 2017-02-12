@@ -860,11 +860,12 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>        
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
-            <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
+            <xsl:for-each-group select="key('resources-by-container', $a:absolutePath)/*" group-by="concat(namespace-uri(), local-name())">
                 <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:apply-templates select="current-group()[1]" mode="ac:TablePredicate"/>
+                <xsl:sequence select="current-group()[1]"/>
             </xsl:for-each-group>
         </xsl:param>
+        <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
 
         <table>
             <xsl:if test="$id">
@@ -875,9 +876,12 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <thead>
                 <tr>
-                    <th>
-                        <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label"/>
-                    </th>
+                    <xsl:if test="$anchor-column">
+                        <th>
+                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label"/>
+                        </th>
+                    </xsl:if>
+                    
                     <xsl:apply-templates select="$predicates" mode="xhtml:TableHeaderCell"/>
                 </tr>
             </thead>
@@ -889,12 +893,13 @@ exclude-result-prefixes="#all">
         </table>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
     
     <xsl:template match="*[*][@rdf:about]" mode="xhtml:Table" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*" tunnel="yes"/>
+        <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
 
 	<tr>
             <xsl:if test="$id">
@@ -903,20 +908,28 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
-            
-            <td>
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-            </td>
 
-	    <xsl:apply-templates select="$predicates" mode="ac:TableCell">
-                <xsl:with-param name="resource" select="."/>
-            </xsl:apply-templates>
+            <xsl:if test="$anchor-column">
+                <td>
+                    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+                </td>
+            </xsl:if>
+            
+            <xsl:variable name="resource" select="." as="element()"/>
+            <xsl:for-each select="$predicates">
+                <xsl:choose>
+                    <xsl:when test="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]">
+                        <xsl:apply-templates select="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]" mode="xhtml:TableDataCell"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <td></td>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
 	</tr>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/>
-
-    <xsl:template match="ac:* | core:* | dh:* | xhv:*" mode="ac:TablePredicate" priority="1"/>
 
     <!-- MAP MODE -->
 

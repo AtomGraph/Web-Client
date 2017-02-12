@@ -63,6 +63,7 @@ import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.client.vocabulary.LDTDH;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -323,17 +324,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
 	}
         
-	Object contentType = headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
+	MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
 	if (contentType != null)
 	{
 	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
 	    builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
 	}
-	Object contentLanguage = headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
-	if (contentLanguage != null)
+	Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+	if (locale != null)
 	{
-	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", contentLanguage.toString());
-	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), contentLanguage.toString());
+	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
+	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
 	}
 
         /*

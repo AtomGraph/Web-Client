@@ -190,6 +190,7 @@ exclude-result-prefixes="#all">
 	</th>
     </xsl:template>
 
+    <!--
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:TableCell" priority="1">
         <xsl:param name="resource" as="element()"/>
         <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
@@ -203,7 +204,8 @@ exclude-result-prefixes="#all">
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-
+    -->
+    
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
 
     <!-- apply properties that match lang() -->
