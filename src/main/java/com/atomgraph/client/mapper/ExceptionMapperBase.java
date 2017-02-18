@@ -46,7 +46,6 @@ abstract public class ExceptionMapperBase
 
     @Context private Request request;
     @Context private Providers providers;
-    //@Context private MediaTypes mediaTypes;
     
     public Resource toResource(Exception ex, Response.Status status, Resource statusResource)
     {

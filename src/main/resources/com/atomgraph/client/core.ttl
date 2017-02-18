@@ -40,7 +40,7 @@
 
 # TEMPLATES
 
-<#Document> a rdfs:Class, owl:Class, ldt:Template ;
+<#Document> a rdfs:Class, ldt:Template ;
     rdfs:subClassOf foaf:Document ;
     ldt:path "{path: .*}" ;
     ldt:query <#Describe> ;
@@ -53,22 +53,7 @@
     rdfs:subClassOf foaf:Document ;
     ldt:path "/sparql" ;
     ldt:query <#Describe> ;
-    ldt:param [ a ldt:Argument ;
-        rdfs:label "Query string" ;
-        spl:predicate <#query> ;
-        spl:valueType xsd:string ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Default graph URI" ;
-        spl:predicate <#default-graph-uri> ;
-        spl:valueType rdfs:Resource ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Named graph URI" ;
-        spl:predicate <#named-graph-uri> ;
-        spl:valueType rdfs:Resource ;
-        spl:optional true
-    ] ;
+    ldt:param  <#Query>, <#DefaultGraphURI>, <#NamedGraphURI> ;
     # using-graph-uri - POST only
     # using-named-graph-uri - POST only
     ldt:loadClass <java:com.atomgraph.processor.model.impl.SPARQLEndpointBase> ;
@@ -79,18 +64,45 @@
     rdfs:subClassOf foaf:Document ;
     ldt:path "/service" ;
     ldt:query <#Describe> ;
-    ldt:param [ a ldt:Argument ;
-        rdfs:label "Default graph" ;
-        spl:predicate <#default> ;
-        spl:valueType xsd:boolean ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Graph URI" ;
-        spl:predicate <#graph> ;
-        spl:valueType rdfs:Resource ;
-        spl:optional true
-    ] ;
+    ldt:param <#Default>, <#Graph> ;
     rdfs:label "Graph Store" ;
+    rdfs:isDefinedBy <#> .
+
+# PARAMETERS
+
+<#Query> a ldt:Parameter ;
+    rdfs:label "Query string" ;
+    spl:predicate <#query> ;
+    spl:valueType xsd:string ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#DefaultGraphURI> a ldt:Parameter ;
+    rdfs:label "Default graph URI" ;
+    spl:predicate <#default-graph-uri> ;
+    spl:valueType rdfs:Resource ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#NamedGraphURI> a ldt:Parameter ;
+    rdfs:label "Named graph URI" ;
+    spl:predicate <#named-graph-uri> ;
+    spl:valueType rdfs:Resource ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#Default> a ldt:Parameter ;
+    rdfs:label "Default graph" ;
+    spl:predicate <#default> ;
+    spl:valueType xsd:boolean ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#Graph> a ldt:Parameter ;
+    rdfs:label "Graph URI" ;
+    spl:predicate <#graph> ;
+    spl:valueType rdfs:Resource ;
+    spl:optional true ;
     rdfs:isDefinedBy <#> .
 
 # QUERIES

@@ -87,32 +87,7 @@
     ldt:path "{path: .*}/" ;
     ldt:skolemTemplate "{slug}/" ;
     ldt:query <#DescribeWithChildren> ;
-    ldt:param [ a ldt:Argument ;
-        rdfs:label "Constructor class" ;
-        spl:predicate <#forClass> ;
-        spl:valueType rdfs:Class ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Limit" ;
-        spl:predicate <#limit> ;
-        spl:valueType xsd:long ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Offset" ;
-        spl:predicate <#offset> ;
-        spl:valueType xsd:long ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Order by" ;
-        spl:predicate <#orderBy> ;
-        spl:valueType xsd:string ;
-        spl:optional true
-    ] , [ a ldt:Argument ;
-        rdfs:label "Descending order?" ;
-        spl:predicate <#desc> ;
-        spl:valueType xsd:boolean ;
-        spl:optional true
-    ] ;
+    ldt:param <#ForClass>, <#Limit>, <#Offset>, <#OrderBy>, <#Desc> ;
     spin:constructor <#DocumentConstructor> ;
     spin:constraint <#MissingSlug> ;
     rdfs:label "Container" ;
@@ -125,6 +100,43 @@
     ldt:skolemTemplate "{slug}" ;
     spin:constructor <#DocumentConstructor> ;
     spin:constraint <#MissingSlug> ;
+    rdfs:isDefinedBy <#> .
+
+# ARGUMENTS
+
+<#ForClass> a ldt:Parameter ;
+    rdfs:label "Constructor class" ;
+    spl:predicate <#forClass> ;
+    spl:valueType rdfs:Class ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#Limit> a ldt:Parameter ;
+    rdfs:label "Limit" ;
+    spl:predicate <#limit> ;
+    spl:valueType xsd:long ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#Offset> a ldt:Parameter ;
+    rdfs:label "Offset" ;
+    spl:predicate <#offset> ;
+    spl:valueType xsd:long ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#OrderBy> a ldt:Parameter ;
+    rdfs:label "Order by" ;
+    spl:predicate <#orderBy> ;
+    spl:valueType xsd:string ;
+    spl:optional true ;
+    rdfs:isDefinedBy <#> .
+
+<#Desc> a ldt:Parameter ;
+    rdfs:label "Descending order?" ;
+    spl:predicate <#desc> ;
+    spl:valueType xsd:boolean ;
+    spl:optional true ;
     rdfs:isDefinedBy <#> .
 
 # CONSTRAINTS
@@ -152,9 +164,9 @@ WHERE
             }
         }
       }
-  }""" .
-    # rdfs:label "Describe with children" ;
-    # rdfs:isDefinedBy <#> .
+  }""" ;
+    rdfs:label "Describe with children" ;
+    rdfs:isDefinedBy <#> .
 
 <#DocumentConstructor> a sp:Construct, sp:Query ; # ldt:Query ;
   sp:text """
@@ -165,6 +177,6 @@ WHERE
       }
       WHERE {
         BIND (STRUUID() AS ?slug)
-}""" .
-    # rdfs:label "Document constructor" ;
-    # rdfs:isDefinedBy <#> .
+}""" ;
+    rdfs:label "Document constructor" ;
+    rdfs:isDefinedBy <#> .
