@@ -45,6 +45,18 @@
     rdfs:comment "Service implementing SPARQL Protocol and Graph Store Protocol" ;
     rdfs:isDefinedBy <#> .
 
+<#arg> a owl:ObjectProperty ;
+    rdfs:domain <#View> ;
+    rdfs:label "Argument" ;
+    rdfs:comment "Template call argument" ;
+    rdfs:isDefinedBy <#> .
+
+<#paramName> a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "Parameter name" ;
+    rdfs:comment "Local name of the parameter property" ;
+    rdfs:isDefinedBy <#> .
+
 # ANNOTATION PROPERTIES
 
 # Class
@@ -95,9 +107,9 @@
 
 <#param> a owl:AnnotationProperty ;
     rdfs:domain <#Template> ;
-    rdfs:range <#Argument> ;
-    rdfs:label "Argument" ;
-    rdfs:comment "Template argument" ;
+    rdfs:range <#Parameter> ;
+    rdfs:label "Parameter" ;
+    rdfs:comment "Template parameter" ;
     rdfs:seeAlso spin:constraint ;
     rdfs:isDefinedBy <#> .
 
@@ -169,8 +181,8 @@
     rdfs:label "Update" ;
     rdfs:isDefinedBy <#> .
 
-<#Argument> a rdfs:Class ;
-    rdfs:label "Template argument" ;
-    rdfs:comment "Represents a template argument that has predicate, value type, default value etc." ;
+<#Parameter> a rdfs:Class ;
+    rdfs:label "Parameter" ;
+    rdfs:comment "Represents a parameter that has predicate, value type, default value etc." ;
     rdfs:seeAlso spl:Argument ;
     rdfs:isDefinedBy <#> .

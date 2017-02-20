@@ -33,8 +33,7 @@ limitations under the License.
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
-    <!ENTITY spl	"http://spinrdf.org/spl#">
-	<!ENTITY dqc    "http://semwebquality.org/ontologies/dq-constraints#">
+    <!ENTITY spl    "http://spinrdf.org/spl#">
     <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
     <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
@@ -783,7 +782,7 @@ exclude-result-prefixes="#all">
 
     <!-- READ MODE -->
 
-    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Block" priority="1"/>
+    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource] | *[@rdf:nodeID = key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID]" mode="bs2:Block" priority="1"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
         <xsl:param name="id" as="xs:string?"/>
