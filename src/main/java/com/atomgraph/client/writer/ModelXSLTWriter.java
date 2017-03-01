@@ -61,9 +61,13 @@ import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.client.vocabulary.LDTDH;
+import com.atomgraph.client.vocabulary.SPL;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.Locale;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -336,40 +340,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
 	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
 	}
-
-        /*
-        // pass HTTP query parameters into XSLT
-	Iterator<Entry<String, List<String>>> paramIt = getUriInfo().getQueryParameters().entrySet().iterator();
-        while (paramIt.hasNext())
-        {
-            Entry<String, List<String>> entry = paramIt.next();
-            builder.parameter(entry.getKey(), entry.getValue().get(0)); // set string value
-            if (log.isDebugEnabled()) log.debug("Setting XSLT param \"{}\" from HTTP query string with value: {}", entry.getKey(), entry.getValue().get(0));
-        }
-
-        // override the reserved parameters that need special types
-	return setQueryParameters(builder);
-        */
         
         return builder;
     }
-
-    /*    
-    public XSLTBuilder setQueryParameters(XSLTBuilder builder, Resource state)
-    {
-	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
-	if (state == null) throw new IllegalArgumentException("Resource cannot be null");        
-
-	if (state.hasProperty(LDT.lang))
-	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(),
-                state.getProperty(LDT.lang).getString());
-	if (state.hasProperty(AC.endpointUri))
-	    builder.parameter("{" + AC.endpointUri.getNameSpace() + "}" + AC.endpointUri.getLocalName(),
-                URI.create(state.getPropertyResourceValue(AC.endpointUri).getURI()));
-        
-        return builder;
-    }
-    */
     
     public OntModel getOntModel(MultivaluedMap<String, Object> headerMap, String ontologyURI)
     {
@@ -442,11 +415,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         
         Resource mode = null;
 
-        if (state.hasProperty(LDTDH.forClass))
+        if (getArgument(state, LDTDH.forClass) != null)
             mode = AC.EditMode; // this could be solved using a dummy ac:ConstructMode instead
         else
-            if (state.hasProperty(AC.mode))
-                mode = state.getPropertyResourceValue(AC.mode);
+            if (getArgument(state, AC.mode) != null)
+                mode = getArgument(state, AC.mode).getProperty(RDF.value).getResource();
         
         if (mode != null && getModeMediaTypeMap().containsKey(mode))
              return getModeMediaTypeMap().get(mode);
@@ -454,6 +427,30 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return null;
     }
 
+    public Resource getArgument(Resource state, Property predicate)
+    {
+	if (state == null) throw new IllegalArgumentException("Resource cannot be null");
+	if (predicate == null) throw new IllegalArgumentException("Property cannot be null");
+        
+        StmtIterator it = state.listProperties(LDT.arg);
+        
+        try
+        {
+            while (it.hasNext())
+            {
+                Statement stmt = it.next();
+                Resource arg = stmt.getObject().asResource();
+                if (arg.getProperty(SPL.predicate).getResource().equals(predicate)) return arg;
+            }
+        }
+        finally
+        {
+            it.close();
+        }
+        
+        return null;
+    }
+    
     public IRI checkURI(String classIRIStr)
     {
 	if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");

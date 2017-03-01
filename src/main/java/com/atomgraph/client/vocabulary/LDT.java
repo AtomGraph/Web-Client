@@ -17,6 +17,7 @@
 package com.atomgraph.client.vocabulary;
 
 import org.apache.jena.ontology.AnnotationProperty;
+import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -49,7 +50,11 @@ public final class LDT
 
     public static final OntClass Application = m_model.createClass( NS + "Application" );
 
+    public static final OntClass Ontology = m_model.createClass( NS + "Ontology" );
+
     public static final OntClass Template = m_model.createClass( NS + "Template" );
+
+    public static final OntClass Parameter = m_model.createClass( NS + "Parameter" );
 
     public static final OntClass TemplateCall = m_model.createClass( NS + "TemplateCall" );
 
@@ -58,6 +63,12 @@ public final class LDT
     public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
 
     public static final ObjectProperty ontology = m_model.createObjectProperty( NS + "ontology" );
+
+    public static final ObjectProperty service = m_model.createObjectProperty( NS + "service" );
+
+    public static final ObjectProperty arg = m_model.createObjectProperty( NS + "arg" );
+    
+    public static final DatatypeProperty paramName = m_model.createDatatypeProperty( NS + "paramName" );    
 
     public static final AnnotationProperty template = m_model.createAnnotationProperty( NS + "template" );
     
@@ -68,8 +79,6 @@ public final class LDT
     public static final AnnotationProperty path = m_model.createAnnotationProperty( NS + "path" );
 
     public static final AnnotationProperty priority = m_model.createAnnotationProperty( NS + "priority" );
-
-    public static final AnnotationProperty tunnel = m_model.createAnnotationProperty( NS + "tunnel" );
 
     public static final AnnotationProperty skolemTemplate = m_model.createAnnotationProperty( NS + "skolemTemplate" );
 

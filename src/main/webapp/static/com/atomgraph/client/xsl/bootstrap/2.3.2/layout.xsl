@@ -108,7 +108,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:sitemap" as="document-node()?"/>
-    <xsl:param name="ac:googleMapsKey" select="'AIzaSyCH3HJfcksUM1CRXgjokG0wJMHrrzWc_fs'" as="xs:string"/>
+    <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
     <xsl:param name="uri" select="key('resources', $a:requestUri)/ac:uri" as="xs:string?"/>
     <xsl:param name="query" select="key('resources', $a:requestUri)/core:query" as="xs:string?"/>
     <xsl:param name="label" select="key('resources', $a:requestUri)/rdfs:label" as="xs:string?"/>
