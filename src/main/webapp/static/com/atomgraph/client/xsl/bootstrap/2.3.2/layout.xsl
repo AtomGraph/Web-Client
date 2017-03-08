@@ -109,9 +109,9 @@ exclude-result-prefixes="#all">
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
-    <xsl:param name="uri" select="key('resources', $a:requestUri)/ac:uri" as="xs:string?"/>
-    <xsl:param name="query" select="key('resources', $a:requestUri)/core:query" as="xs:string?"/>
-    <xsl:param name="label" select="key('resources', $a:requestUri)/rdfs:label" as="xs:string?"/>
+    <xsl:param name="uri" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;uri']/rdf:value/@rdf:resource" as="xs:string?"/>
+    <xsl:param name="query" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&core;query']/rdf:value" as="xs:string?"/>
+    <xsl:param name="label" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&rdfs;label']/rdf:value" as="xs:string?"/>
     
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
     
@@ -222,7 +222,7 @@ exclude-result-prefixes="#all">
                         </form>
 
                         <xsl:if test="$ldt:baseUri">
-                            <xsl:variable name="space" select="($a:requestUri, key('resources', $a:requestUri)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
+                            <xsl:variable name="space" select="($a:absolutePath, key('resources', $a:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
                             <xsl:if test="key('resources-by-type', '&core;SPARQLEndpoint', document($ldt:baseUri))">
                                 <ul class="nav pull-right">
                                     <xsl:apply-templates select="key('resources-by-type', '&core;SPARQLEndpoint', document($ldt:baseUri))" mode="bs2:NavBarListItem">
