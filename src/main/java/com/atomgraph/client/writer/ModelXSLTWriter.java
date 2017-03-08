@@ -193,7 +193,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return model.createResource(requestURI.toString());
     }
     
-    public Source getSource(Model model) throws IOException
+    public static Source getSource(Model model) throws IOException
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
 	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
@@ -207,7 +207,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
     
-    public Source getSource(OntModel ontModel, boolean writeAll) throws IOException
+    public static Source getSource(OntModel ontModel, boolean writeAll) throws IOException
     {
 	if (!writeAll) return getSource(ontModel);
 	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");	
