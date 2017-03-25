@@ -372,7 +372,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="."  mode="xhtml:Anchor"/>
+            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
         </li>
     </xsl:template>
     
@@ -1004,7 +1004,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- carefully select the blank node with the template of the constructed class - with properties & not the container -->
-    <xsl:template match="*[* except rdf:type][rdf:type/@rdf:resource = key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource][not(@rdf:about = $a:absolutePath)] | *[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Form" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource][not(@rdf:about = $a:absolutePath)] | *[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:param name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
 

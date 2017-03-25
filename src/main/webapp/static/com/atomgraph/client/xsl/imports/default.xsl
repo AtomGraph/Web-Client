@@ -275,6 +275,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="style" as="xs:string?"/>
 	<xsl:param name="disabled" as="xs:boolean?"/>
+	<xsl:param name="title" as="xs:string?"/>        
         <xsl:param name="value" as="xs:string?"/>
 
         <input type="{$type}" name="{$name}">
@@ -290,6 +291,9 @@ exclude-result-prefixes="#all">
             <xsl:if test="$disabled">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
             <xsl:if test="$value">
                 <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
             </xsl:if>
@@ -303,6 +307,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'su'"/>
@@ -310,6 +315,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -321,6 +327,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'sb'"/>
@@ -328,6 +335,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -339,6 +347,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'pu'"/>
@@ -346,6 +355,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="concat(namespace-uri(), local-name())"/>
 	</xsl:call-template>
     </xsl:template>
@@ -357,6 +367,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'ou'"/>
@@ -364,6 +375,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -375,6 +387,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'ob'"/>
@@ -382,6 +395,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -393,6 +407,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'ol'"/>
@@ -400,6 +415,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -411,6 +427,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'lt'"/>
@@ -418,6 +435,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>
@@ -429,6 +447,7 @@ exclude-result-prefixes="#all">
 	<xsl:param name="id" as="xs:string?"/>
 	<xsl:param name="class" as="xs:string?"/>
 	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+	<xsl:param name="title" as="xs:string?"/>
 
 	<xsl:call-template name="xhtml:Input">
 	    <xsl:with-param name="name" select="'ll'"/>
@@ -436,6 +455,7 @@ exclude-result-prefixes="#all">
 	    <xsl:with-param name="id" select="$id"/>
 	    <xsl:with-param name="class" select="$class"/>
 	    <xsl:with-param name="disabled" select="$disabled"/>
+	    <xsl:with-param name="title" select="$title"/>
 	    <xsl:with-param name="value" select="."/>
 	</xsl:call-template>
     </xsl:template>

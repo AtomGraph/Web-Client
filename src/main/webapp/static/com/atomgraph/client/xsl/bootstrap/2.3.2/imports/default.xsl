@@ -287,7 +287,9 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
                 </xsl:apply-templates>
 
-                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current"/>
+                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current">
+                    <xsl:with-param name="type" select="'hidden'"/>
+                </xsl:apply-templates>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="xhtml:Input">
