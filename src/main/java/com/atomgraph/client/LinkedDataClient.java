@@ -20,6 +20,8 @@ import com.atomgraph.core.MediaType;
 import com.atomgraph.core.MediaTypes;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.ClientFilter;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
@@ -62,6 +64,15 @@ public class LinkedDataClient
         }
         
         return builder;
+    }
+    
+    public LinkedDataClient addFilter(ClientFilter authFilter)
+    {
+        if (authFilter == null) throw new IllegalArgumentException("ClientFilter cannot be null");
+
+        getWebResource().addFilter(authFilter);
+
+        return this;
     }
     
     public ClientResponse get(javax.ws.rs.core.MediaType[] acceptedTypes)
@@ -152,9 +163,14 @@ public class LinkedDataClient
         }
     }
     
-    public WebResource getWebResource()
+    protected WebResource getWebResource()
     {
         return webResource;
+    }
+    
+    public URI getWebResourceURI()
+    {
+        return getWebResource().getURI();
     }
     
     public MediaTypes getMediaTypes()

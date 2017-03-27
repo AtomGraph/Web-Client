@@ -85,7 +85,7 @@
 <#Container> a rdfs:Class, owl:Class, ldt:Template ;
     rdfs:subClassOf core:Document, sioc:Container ;
     ldt:path "{path: .*}/" ;
-    ldt:skolemTemplate "{slug}/" ;
+    ldt:segment "{slug}/" ;
     ldt:query <#DescribeWithChildren> ;
     ldt:param <#ForClass>, <#Limit>, <#Offset>, <#OrderBy>, <#Desc> ;
     spin:constructor <#DocumentConstructor> ;
@@ -97,7 +97,7 @@
 <#Item> a rdfs:Class, owl:Class, ldt:Template ;
     rdfs:subClassOf core:Document, sioc:Item ;
     rdfs:label "Document" ;
-    ldt:skolemTemplate "{slug}" ;
+    ldt:segment "{slug}" ;
     spin:constructor <#DocumentConstructor> ;
     spin:constraint <#MissingSlug> ;
     rdfs:isDefinedBy <#> .
@@ -141,7 +141,7 @@
 
 # CONSTRAINTS
 
-<#MissingSlug> a ldt:Constraint, ldt:MissingPropertyValue ;
+<#MissingSlug> a <#MissingPropertyValue> ;
     rdfs:label "Missing dh:slug" ;
     sp:arg1 <#slug> ;
     rdfs:isDefinedBy <#> .
@@ -179,4 +179,34 @@ WHERE
         BIND (STRUUID() AS ?slug)
 }""" ;
     rdfs:label "Document constructor" ;
+    rdfs:isDefinedBy <#> .
+
+<#ConstructMissingPropertyValue> a sp:Construct ; # ldt:Query ;
+      sp:text """PREFIX spin:	<http://spinrdf.org/spin#>
+CONSTRUCT {
+    _:b0 a spin:ConstraintViolation .
+    _:b0 spin:violationRoot ?this .
+    _:b0 spin:violationPath ?arg1 .
+}
+WHERE {
+    FILTER NOT EXISTS {
+        ?this ?arg1 ?arg2 .
+    }
+}""" ;
+    rdfs:label "Construct missing property value" ;
+    rdfs:isDefinedBy <#> .
+
+# SPIN TEMPLATES
+
+<#MissingPropertyValue> a spin:Template ;
+    rdfs:label "Missing property value" ;
+    spin:body <#ConstructMissingPropertyValue> ;
+    spin:labelTemplate "Instance does not have a mandatory RDF property {?arg1} with optional value {?arg2}" ;
+    spin:constraint [ a spl:Argument ;
+        spl:predicate sp:arg1 ;
+        spl:valueType rdf:Property
+    ] , [ a spl:Argument ;
+        spl:predicate sp:arg2 ;
+        spl:optional true
+    ] ;
     rdfs:isDefinedBy <#> .
