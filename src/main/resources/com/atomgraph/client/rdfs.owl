@@ -96,7 +96,7 @@
   <rdfs:isDefinedBy rdf:resource="http://www.w3.org/2000/01/rdf-schema#"/>
   <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#seeAlso"/>
   <rdfs:label>isDefinedBy</rdfs:label>
-  <rdfs:comment>The defininition of the subject resource.</rdfs:comment>
+  <rdfs:comment>The definition of the subject resource.</rdfs:comment>
   <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
   <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
 </rdf:Property>
