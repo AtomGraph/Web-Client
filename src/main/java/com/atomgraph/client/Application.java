@@ -54,6 +54,7 @@ import java.net.URL;
 import javax.servlet.ServletContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.jena.query.Dataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ public class Application extends com.atomgraph.core.Application
     public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException
     {
         this(
-            servletConfig.getInitParameter(A.dataset.getURI()) != null ? servletConfig.getInitParameter(A.dataset.getURI()) : null,
+            servletConfig.getInitParameter(A.dataset.getURI()) != null ? getDataset(servletConfig.getInitParameter(A.dataset.getURI()), null) : null,
             servletConfig.getInitParameter(SD.endpoint.getURI()) != null ? servletConfig.getInitParameter(SD.endpoint.getURI()) : null,
             servletConfig.getInitParameter(A.graphStore.getURI()) != null ? servletConfig.getInitParameter(A.graphStore.getURI()) : null,
             servletConfig.getInitParameter(org.apache.jena.sparql.engine.http.Service.queryAuthUser.getSymbol()) != null ? servletConfig.getInitParameter(org.apache.jena.sparql.engine.http.Service.queryAuthUser.getSymbol()) : null,
@@ -96,10 +97,10 @@ public class Application extends com.atomgraph.core.Application
         );
     }
     
-    public Application(final String datasetLocation, final String endpointURI, final String graphStoreURI, final String authUser, final String authPwd, final boolean preemptiveAuth,
+    public Application(final Dataset dataset, final String endpointURI, final String graphStoreURI, final String authUser, final String authPwd, final boolean preemptiveAuth,
             final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
     {
-        super(datasetLocation, endpointURI, graphStoreURI, authUser, authPwd, preemptiveAuth);
+        super(dataset, endpointURI, graphStoreURI, authUser, authPwd, preemptiveAuth);
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
         
