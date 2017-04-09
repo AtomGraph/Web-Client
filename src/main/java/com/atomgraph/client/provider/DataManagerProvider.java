@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @see com.atomgraph.client.util.DataManager
  */
 @Provider
+@Deprecated
 public class DataManagerProvider extends PerRequestTypeInjectableProvider<Context, DataManager> implements ContextResolver<DataManager>
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);

@@ -33,8 +33,6 @@ import com.atomgraph.client.mapper.NotFoundExceptionMapper;
 import com.atomgraph.client.mapper.jersey.ClientHandlerExceptionMapper;
 import com.atomgraph.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import com.atomgraph.client.model.impl.ProxyResourceBase;
-import com.atomgraph.client.provider.DataManagerProvider;
-import com.atomgraph.client.provider.MediaTypesProvider;
 import com.atomgraph.client.provider.TemplatesProvider;
 import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
@@ -42,16 +40,21 @@ import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestReader;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.vocabulary.AC;
+import static com.atomgraph.core.Application.getClient;
 import com.atomgraph.core.provider.ClientProvider;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.mapper.AuthenticationExceptionMapper;
+import com.atomgraph.core.provider.MediaTypesProvider;
 import com.atomgraph.core.vocabulary.A;
 import com.atomgraph.core.vocabulary.SD;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.CacheControl;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.query.Dataset;
@@ -90,17 +93,22 @@ public class Application extends com.atomgraph.core.Application
             servletConfig.getInitParameter(A.graphStore.getURI()) != null ? servletConfig.getInitParameter(A.graphStore.getURI()) : null,
             servletConfig.getInitParameter(org.apache.jena.sparql.engine.http.Service.queryAuthUser.getSymbol()) != null ? servletConfig.getInitParameter(org.apache.jena.sparql.engine.http.Service.queryAuthUser.getSymbol()) : null,
             servletConfig.getInitParameter(org.apache.jena.sparql.engine.http.Service.queryAuthPwd.getSymbol()) != null ? servletConfig.getInitParameter(org.apache.jena.sparql.engine.http.Service.queryAuthPwd.getSymbol()) : null,
+            new MediaTypes(), getClient(new DefaultClientConfig()),
+            servletConfig.getInitParameter(A.maxGetRequestSize.getURI()) != null ? Integer.parseInt(servletConfig.getInitParameter(A.maxGetRequestSize.getURI())) : null,            
             servletConfig.getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getInitParameter(A.preemptiveAuth.getURI())) : false,
+            servletConfig.getInitParameter(A.cacheControl.getURI()) != null ? CacheControl.valueOf(servletConfig.getInitParameter(A.cacheControl.getURI())) : null,
             getSource(servletConfig.getServletContext(), servletConfig.getInitParameter(AC.stylesheet.getURI()) != null ? servletConfig.getInitParameter(AC.stylesheet.getURI()) : null),
             servletConfig.getInitParameter(AC.cacheStylesheet.getURI()) != null ? Boolean.parseBoolean(servletConfig.getInitParameter(AC.cacheStylesheet.getURI())) : false,
             servletConfig.getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getInitParameter(AC.resolvingUncached.getURI())) : null
         );
     }
     
-    public Application(final Dataset dataset, final String endpointURI, final String graphStoreURI, final String authUser, final String authPwd, final boolean preemptiveAuth,
+    public Application(final Dataset dataset, final String endpointURI, final String graphStoreURI, final String authUser, final String authPwd,
+            final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize, final boolean preemptiveAuth, final CacheControl cacheControl,
             final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
     {
-        super(dataset, endpointURI, graphStoreURI, authUser, authPwd, preemptiveAuth);
+        super(dataset, endpointURI, graphStoreURI, authUser, authPwd, 
+                mediaTypes, client, maxGetRequestSize, preemptiveAuth, cacheControl);
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
         
@@ -109,7 +117,7 @@ public class Application extends com.atomgraph.core.Application
         LocationMapper.setGlobalLocationMapper(mapper);
         if (log.isDebugEnabled()) log.debug("LocationMapper.get(): {}", LocationMapper.get());
 
-        DataManager manager = new DataManager(mapper, new ClientProvider().getClient(), new MediaTypesProvider().getMediaTypes(), preemptiveAuth, resolvingUncached);
+        DataManager manager = new DataManager(mapper, client, mediaTypes, preemptiveAuth, resolvingUncached);
         FileManager.setStdLocators(manager);
         FileManager.setGlobalFileManager(manager);
         if (log.isDebugEnabled()) log.debug("FileManager.get(): {}", FileManager.get());
@@ -139,10 +147,10 @@ public class Application extends com.atomgraph.core.Application
         singletons.add(new ResultSetProvider());
         singletons.add(new QueryParamProvider());
         singletons.add(new UpdateRequestReader());
-        singletons.add(new MediaTypesProvider());
-        singletons.add(new DataManagerProvider());
-        singletons.add(new ClientProvider());
-        singletons.add(new com.atomgraph.core.provider.DataManagerProvider(isPreemptiveAuth()));
+        singletons.add(new MediaTypesProvider(getMediaTypes()));
+        //singletons.add(new DataManagerProvider());
+        singletons.add(new ClientProvider(getClient()));
+        singletons.add(new com.atomgraph.core.provider.DataManagerProvider(getDataManager()));
         singletons.add(new NotFoundExceptionMapper());
         singletons.add(new ClientErrorExceptionMapper());
         singletons.add(new UniformInterfaceExceptionMapper());
@@ -153,7 +161,7 @@ public class Application extends com.atomgraph.core.Application
         
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);        
     }
-
+    
     public Source getStylesheet()
     {
         return stylesheet;
