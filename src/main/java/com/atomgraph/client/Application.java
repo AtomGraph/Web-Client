@@ -108,7 +108,7 @@ public class Application extends com.atomgraph.core.Application
             final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
     {
         super(dataset, endpointURI, graphStoreURI, authUser, authPwd, 
-                mediaTypes, client, maxGetRequestSize, preemptiveAuth, cacheControl);
+                mediaTypes, client, maxGetRequestSize, preemptiveAuth);
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
         
