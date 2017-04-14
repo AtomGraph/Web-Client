@@ -38,12 +38,16 @@
             <param-value>100</param-value>
         </init-param>
         <init-param>
+            <param-name>http://atomgraph.com/ns/client#prefixMapping</param-name>
+            <param-value>prefix-mapping.n3</param-value>
+        </init-param>
+        <init-param>
             <param-name>http://atomgraph.com/ns/client#cacheStylesheet</param-name>
             <param-value>false</param-value>
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
-            <param-value>true</param-value>
+            <param-value>false</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

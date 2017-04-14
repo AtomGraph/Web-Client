@@ -70,9 +70,7 @@ public final class AC
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
     public static final ObjectProperty sitemap = m_model.createObjectProperty( NS + "sitemap" );
-    
-    public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
-    
+        
     public static final ObjectProperty layoutOf = m_model.createObjectProperty( NS + "layoutOf" );
 
     public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
@@ -86,11 +84,17 @@ public final class AC
     public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );
 
     public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
-
+    
+    public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
+    
+    // CONFIG
+    
+    public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
+    
     public static final DatatypeProperty cacheStylesheet = m_model.createDatatypeProperty( NS + "cacheStylesheet" );
     
     public static final DatatypeProperty resolvingUncached = m_model.createDatatypeProperty( NS + "resolvingUncached" );    
     
-    public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
+    public static final DatatypeProperty prefixMapping = m_model.createDatatypeProperty( NS + "prefixMapping" );
     
 }

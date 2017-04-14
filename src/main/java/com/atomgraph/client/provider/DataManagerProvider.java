@@ -16,7 +16,6 @@
  */
 package com.atomgraph.client.provider;
 
-import org.apache.jena.util.FileManager;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
@@ -35,14 +34,17 @@ import org.slf4j.LoggerFactory;
  * @see com.atomgraph.client.util.DataManager
  */
 @Provider
-@Deprecated
 public class DataManagerProvider extends PerRequestTypeInjectableProvider<Context, DataManager> implements ContextResolver<DataManager>
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
     
-    public DataManagerProvider()
+    private final DataManager dataManager;
+    
+    public DataManagerProvider(final DataManager dataManager)
     {
         super(DataManager.class);
+        
+        this.dataManager = dataManager;
     }
 
     @Override
@@ -64,9 +66,13 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
 	return getDataManager();
     }
 
+    /**
+     * Returns default data manager instance.
+     * @return data manager instance
+     */
     public DataManager getDataManager()
     {
-        return (DataManager)FileManager.get(); // set by Application
+        return dataManager;
     }
 
 }

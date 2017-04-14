@@ -225,12 +225,14 @@ public class ProxyResourceBase
                             add().build());
 
             // move headers to HypermediaFilter?
+            /*
             if (resp.getHeaders().get("Link") != null)
                 for (String linkValue : resp.getHeaders().get("Link"))
                     bld.header("Link", linkValue);
             if (resp.getHeaders().get("Rules") != null)
                 for (String linkValue : resp.getHeaders().get("Rules"))
                     bld.header("Rules", linkValue);
+            */
 
             if (getMediaType() != null) bld.type(getMediaType()); // should do RDF export
 
