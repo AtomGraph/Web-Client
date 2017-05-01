@@ -34,7 +34,7 @@ public class LDTDH
     private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
     
     /** <p>The namespace of the vocabulary as a string</p> */
-    public static final String NS = "http://www.w3.org/ns/ldt/document-hierarchy#";
+    public static final String NS = "http://www.w3.org/ns/ldt/document-hierarchy/domain#";
     
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */
@@ -52,7 +52,7 @@ public class LDTDH
 
     public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
 
-    public static final ObjectProperty constructor = m_model.createObjectProperty( NS + "constructor" );
+    public static final ObjectProperty instance = m_model.createObjectProperty( NS + "instance" );
 
     public static final ObjectProperty pageOf = m_model.createObjectProperty( NS + "pageOf" );
 

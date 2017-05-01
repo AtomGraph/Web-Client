@@ -27,8 +27,9 @@ limitations under the License.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
-    <!ENTITY core   "http://www.w3.org/ns/ldt/core#">
-    <!ENTITY dh     "http://www.w3.org/ns/ldt/document-hierarchy#">
+    <!ENTITY core   "http://www.w3.org/ns/ldt/core/domain#">
+    <!ENTITY dh     "http://www.w3.org/ns/ldt/document-hierarchy/domain#">
+    <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
     <!ENTITY sp     "http://spinrdf.org/sp#">
@@ -563,7 +564,7 @@ exclude-result-prefixes="#all">
                 </div>
 
                 <ul class="dropdown-menu">
-                    <xsl:variable name="classes" select="key('resources-by-defined-by', $ldt:ontology, $ac:sitemap)" as="element()*"/>
+                    <xsl:variable name="classes" select="key('resources-by-type', '&rdfs;Class', $ac:sitemap)[not(rdf:type/@rdf:resource = '&ldt;Template')][not(starts-with(@rdf:about, '&ldt;'))][not(starts-with(@rdf:about, '&sp;'))][not(starts-with(@rdf:about, '&spin;'))][not(starts-with(@rdf:about, '&foaf;'))][not(starts-with(@rdf:about, '&sd;'))]" as="element()*"/>
                     <xsl:for-each select="$classes">
                         <xsl:sort select="ac:label(.)"/>
                         <li>

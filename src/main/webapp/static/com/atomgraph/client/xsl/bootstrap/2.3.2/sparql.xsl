@@ -24,7 +24,7 @@ limitations under the License.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY ldt    "http://www.w3.org/ns/ldt#">    
-    <!ENTITY core   "http://www.w3.org/ns/ldt/core#">
+    <!ENTITY core   "http://www.w3.org/ns/ldt/core/domain#">
     <!ENTITY spl    "http://spinrdf.org/spl#">    
     <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">

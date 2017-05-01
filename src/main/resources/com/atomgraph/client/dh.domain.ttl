@@ -1,0 +1,116 @@
+@base           <http://www.w3.org/ns/ldt/document-hierarchy/domain> .
+
+@prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix cd:	<http://www.w3.org/ns/ldt/core/domain#> .
+@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spin:	<http://spinrdf.org/spin#> .
+@prefix spl:    <http://spinrdf.org/spl#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+: a owl:Ontology ;
+    owl:imports foaf:, sioc:, sp: ;
+    owl:versionInfo "1.1.4" ;
+    rdfs:label "Document hierarchy" ;
+    dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/document-hierarchy/domain#" ;
+    vann:preferredNamespacePrefix "dh";
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
+
+# PROPERTIES
+
+:forClass a owl:ObjectProperty ;
+    rdfs:range rdfs:Class ;
+    rdfs:label "Instance class" ;
+    rdfs:comment "The class which instance is constructed" ;
+    rdfs:isDefinedBy : .
+
+:instance a owl:ObjectProperty ;
+    rdfs:label "Class instance" ;
+    rdfs:comment "Links to the constructed instance" ;
+    rdfs:isDefinedBy : .
+
+:slug a owl:DatatypeProperty ;
+    rdfs:domain foaf:Document ;
+    rdfs:range xsd:string ;
+    rdfs:label "URI slug" ;
+    rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
+    rdfs:isDefinedBy : .
+
+:pageOf a owl:ObjectProperty ;
+    rdfs:subPropertyOf cd:viewOf ;
+    rdfs:domain :Page ;
+    rdfs:range :Container ;
+    rdfs:label "Page of container" ;
+    rdfs:comment "Links page resource to its container resource" ;
+    rdfs:isDefinedBy : .
+
+:limit a owl:DatatypeProperty ;
+    rdfs:domain :Page ;
+    rdfs:range xsd:long ;
+    rdfs:label "LIMIT modifier" ;
+    rdfs:comment "Sets sp:limit value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:limit ;
+    rdfs:isDefinedBy : .
+
+:offset a owl:DatatypeProperty ;
+    rdfs:domain :Page ;
+    rdfs:range xsd:long ;
+    rdfs:label "OFFSET modifier" ;
+    rdfs:comment "Sets sp:offset value for the first sp:Select subquery" ;
+    rdfs:seeAlso sp:offset ;
+    rdfs:isDefinedBy : .
+
+:orderBy a owl:DatatypeProperty ;
+    rdfs:domain :Page ;
+    rdfs:range xsd:long ;
+    rdfs:label "ORDER BY modifier" ;
+    rdfs:comment "SPIN expects an rdf:List of OrderByConditions for sp:orderBy" ;
+    rdfs:seeAlso sp:orderBy ;
+    rdfs:isDefinedBy : .
+
+# CLASSES
+
+:Container a rdfs:Class ;
+    rdfs:subClassOf foaf:Document, sioc:Container ;
+    ldt:segment "{slug}/" ;
+    spin:constructor :DocumentConstructor ;
+    rdfs:label "Container" ;
+    rdfs:comment "Container that can have other containers and items as children" ;
+    rdfs:isDefinedBy : .
+
+:Page a rdfs:Class ;
+    rdfs:subClassOf cd:View ;
+    rdfs:label "Page" ;
+    rdfs:comment "A class of RDF resources that are container pages" ;
+    rdfs:isDefinedBy : .
+
+:Item a rdfs:Class ;
+    rdfs:subClassOf foaf:Document, sioc:Item ;
+    ldt:segment "{slug}" ;
+    rdfs:label "Document" ;
+    spin:constructor :DocumentConstructor ;
+    rdfs:isDefinedBy : .
+
+# QUERIES
+
+:DocumentConstructor a sp:Construct, sp:Query ;
+  sp:text """
+      PREFIX dh:      <http://www.w3.org/ns/ldt/document-hierarchy/domain#>
+
+      CONSTRUCT {
+        ?this dh:slug ?slug .
+      }
+      WHERE {
+        BIND (STRUUID() AS ?slug)
+}""" ;
+    rdfs:label "Document constructor" ;
+    rdfs:isDefinedBy : .

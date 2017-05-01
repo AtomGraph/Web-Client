@@ -1,6 +1,6 @@
-@base           <http://www.w3.org/ns/ldt/core> .
+@base           <http://www.w3.org/ns/ldt/core/templates> .
 
-# @prefix :	<#> .
+@prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
@@ -12,110 +12,89 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
-<#> a owl:Ontology, ldt:Ontology ;
-    owl:imports ldt:, sp: ;
+: a ldt:Ontology ;
+    owl:imports ldt: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Core LDT ontology" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/core#" ;
-    vann:preferredNamespacePrefix "ldtc";
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/core/templates#" ;
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
-
-# PROPERTIES
-
-<#viewOf> a owl:ObjectProperty ;
-    rdfs:domain <#View> ;
-    rdfs:range <#Document> ;
-    rdfs:label "View of resource" ;
-    rdfs:comment "Links resource view to its resource" ;
-    rdfs:isDefinedBy <#> .
-
-# CLASSES
-
-<#View> a rdfs:Class ;
-    rdfs:subClassOf foaf:Document ;
-    rdfs:label "View resource" ;
-    rdfs:comment "A parameterized view of a resource" ;
-    rdfs:isDefinedBy <#> .
 
 # TEMPLATES
 
-<#Document> a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf foaf:Document ;
+:Document a rdfs:Class, ldt:Template ;
     ldt:path "{path: .*}" ;
-    ldt:query <#Describe> ;
-    ldt:update <#Delete> ;
+    ldt:query :Describe ;
+    ldt:update :Delete ;
     rdfs:label "Document" ;
     rdfs:comment "Generic document resource" ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#SPARQLEndpoint> a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf foaf:Document ;
+:SPARQLEndpoint a rdfs:Class, ldt:Template ;
     ldt:path "/sparql" ;
-    ldt:query <#Describe> ;
-    ldt:param  <#Query>, <#DefaultGraphURI>, <#NamedGraphURI> ;
+    ldt:query :Describe ;
+    ldt:param  :Query, :DefaultGraphURI, :NamedGraphURI ;
     # using-graph-uri - POST only
     # using-named-graph-uri - POST only
-    ldt:loadClass <java:com.atomgraph.processor.model.impl.SPARQLEndpointBase> ;
+    # ldt:loadClass <java:com.atomgraph.processor.model.impl.SPARQLEndpointBase> ;
     rdfs:label "SPARQL endpoint" ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#GraphStore> a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf foaf:Document ;
+:GraphStore a rdfs:Class, ldt:Template ;
     ldt:path "/service" ;
-    ldt:query <#Describe> ;
-    ldt:param <#Default>, <#Graph> ;
+    ldt:query :Describe ;
+    ldt:param :Default, :Graph ;
     rdfs:label "Graph Store" ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
 # PARAMETERS
 
-<#Query> a ldt:Parameter ;
+:Query a ldt:Parameter ;
     rdfs:label "Query string" ;
     spl:predicate <#query> ;
     spl:valueType xsd:string ;
     spl:optional true ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#DefaultGraphURI> a ldt:Parameter ;
+:DefaultGraphURI a ldt:Parameter ;
     rdfs:label "Default graph URI" ;
     spl:predicate <#default-graph-uri> ;
     spl:valueType rdfs:Resource ;
     spl:optional true ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#NamedGraphURI> a ldt:Parameter ;
+:NamedGraphURI a ldt:Parameter ;
     rdfs:label "Named graph URI" ;
     spl:predicate <#named-graph-uri> ;
     spl:valueType rdfs:Resource ;
     spl:optional true ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#Default> a ldt:Parameter ;
+:Default a ldt:Parameter ;
     rdfs:label "Default graph" ;
     spl:predicate <#default> ;
     spl:valueType xsd:boolean ;
     spl:optional true ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#Graph> a ldt:Parameter ;
+:Graph a ldt:Parameter ;
     rdfs:label "Graph URI" ;
     spl:predicate <#graph> ;
     spl:valueType rdfs:Resource ;
     spl:optional true ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
 # QUERIES
 
-<#Describe> a sp:Describe, sp:Query ; # <#Query> ;
+:Describe a sp:Describe, sp:Query ;
     sp:text """DESCRIBE ?this""" ;
     rdfs:label "Describe" ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .
 
-<#Delete> a sp:DeleteWhere, sp:Update ; # <#Update> ;
+:Delete a sp:DeleteWhere, sp:Update ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DELETE WHERE {
     ?this ?p ?o .
 }""" ;
     rdfs:label "Delete" ;
-    rdfs:isDefinedBy <#> .
+    rdfs:isDefinedBy : .

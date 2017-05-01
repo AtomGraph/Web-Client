@@ -1,0 +1,94 @@
+@base           <http://www.w3.org/ns/ldt/document-hierarchy/templates> .
+
+@prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix ct:	<http://www.w3.org/ns/ldt/core/templates#> .
+@prefix dh:	<http://www.w3.org/ns/ldt/document-hierarchy/domain#> .
+@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
+@prefix sp:	<http://spinrdf.org/sp#> .
+@prefix spl:    <http://spinrdf.org/spl#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
+@prefix vann:	<http://purl.org/vocab/vann/> .
+@prefix sioc:	<http://rdfs.org/sioc/ns#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+: a ldt:Ontology ;
+    owl:imports ct:, sp: ;
+    owl:versionInfo "1.1.4" ;
+    rdfs:label "Document hierarchy templates" ;
+    dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
+    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/document-hierarchy/templates#" ;
+    vann:preferredNamespacePrefix "dht";
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
+
+:Container a rdfs:Class, ldt:Template ;
+    rdfs:subClassOf ct:Document ;
+    ldt:path "{path: .*}/" ;
+    ldt:query :DescribeWithChildren ;
+    ldt:param :ForClass, :Limit, :Offset, :OrderBy, :Desc ;
+    rdfs:label "Container" ;
+    rdfs:comment "Matches URIs with trailing slash" ;
+    rdfs:isDefinedBy : .
+
+# ARGUMENTS
+
+:ForClass a ldt:Parameter ;
+    rdfs:label "Constructor class" ;
+    spl:predicate dh:forClass ;
+    spl:valueType rdfs:Class ;
+    spl:optional true ;
+    rdfs:isDefinedBy : .
+
+:Limit a ldt:Parameter ;
+    rdfs:label "Limit" ;
+    spl:predicate dh:limit ;
+    spl:valueType xsd:long ;
+    spl:optional true ;
+    rdfs:isDefinedBy : .
+
+:Offset a ldt:Parameter ;
+    rdfs:label "Offset" ;
+    spl:predicate dh:offset ;
+    spl:valueType xsd:long ;
+    spl:optional true ;
+    rdfs:isDefinedBy : .
+
+:OrderBy a ldt:Parameter ;
+    rdfs:label "Order by" ;
+    spl:predicate dh:orderBy ;
+    spl:valueType xsd:string ;
+    spl:optional true ;
+    rdfs:isDefinedBy : .
+
+:Desc a ldt:Parameter ;
+    rdfs:label "Descending order?" ;
+    spl:predicate dh:desc ;
+    spl:valueType xsd:boolean ;
+    spl:optional true ;
+    rdfs:isDefinedBy : .
+
+# QUERIES
+
+:DescribeWithChildren a sp:Describe, sp:Query ;
+    sp:text """PREFIX  sioc: <http://rdfs.org/sioc/ns#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+DESCRIBE ?this ?child
+WHERE
+  { ?this ?p ?o
+    OPTIONAL
+      { { SELECT DISTINCT ?child
+          WHERE
+            {   { ?child sioc:has_parent ?this }
+              UNION
+                { ?child sioc:has_container ?this }
+            }
+        }
+      }
+  }""" ;
+    rdfs:label "Describe with children" ;
+    rdfs:isDefinedBy : .
