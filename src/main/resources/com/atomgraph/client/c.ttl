@@ -35,3 +35,15 @@
     rdfs:label "View resource" ;
     rdfs:comment "A parameterized view of a resource" ;
     rdfs:isDefinedBy : .
+
+:SPARQLEndpoint a rdfs:Class ;
+    foaf:subClassOf foaf:Document ;
+    rdfs:label "SPARQL endpoint" ;
+    rdfs:comment "A resource that implements SPARQL 1.1 Protocol" ;
+    rdfs:isDefinedBy : .
+
+:GraphStore a rdfs:Class ;
+    foaf:subClassOf foaf:Document ;
+    rdfs:label "Graph Store" ;
+    rdfs:comment "A resource that implements SPARQL 1.1 Graph Store Protocol" ;
+    rdfs:isDefinedBy : .

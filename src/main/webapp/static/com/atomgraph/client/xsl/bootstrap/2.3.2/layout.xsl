@@ -1004,8 +1004,16 @@ exclude-result-prefixes="#all">
 	</form>
     </xsl:template>
 
+    <!-- construct mode -->
     <!-- carefully select the blank node with the template of the constructed class - with properties & not the container -->
-    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource][not(@rdf:about = $a:absolutePath)] | *[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Form" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource][not(@rdf:about = $a:absolutePath)]" mode="bs2:Form" priority="1">
+        <xsl:apply-templates select="." mode="bs2:FormControl">
+            <xsl:sort select="ac:label(.)"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <!-- edit mode -->
+    <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:param name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
         <xsl:param name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
 
@@ -1014,7 +1022,7 @@ exclude-result-prefixes="#all">
             <xsl:sort select="ac:label(.)"/>
         </xsl:apply-templates>
     </xsl:template>
-
+    
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Form"/>
     
     <!-- LEGEND -->
@@ -1063,8 +1071,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
         <xsl:param name="violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="template-doc" as="document-node()?" tunnel="yes"/>
-        <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
+        <xsl:param name="template-doc" select="root(.)" as="document-node()?" tunnel="yes"/>
+        <xsl:param name="template" select="key('resources', key('resources', $a:requestUri, $template-doc)/dh:instance/@rdf:nodeID, $template-doc)" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:*" as="xs:string*" tunnel="yes"/>
 
         <fieldset>
