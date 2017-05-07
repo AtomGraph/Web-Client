@@ -36,17 +36,19 @@ public class OntologyProvider
     /**
      * Loads ontology by URI.
      * 
+     * @param manager
      * @param ontologyURI ontology location
      * @param ontModelSpec ontology model specification
      * @return ontology model
      */
-    public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
+    public OntModel getOntModel(OntDocumentManager manager, String ontologyURI, OntModelSpec ontModelSpec)
     {
+        if (manager == null) throw new IllegalArgumentException("OntDocumentManager cannot be null");        
         if (ontologyURI == null) throw new IllegalArgumentException("URI cannot be null");
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");        
         if (log.isDebugEnabled()) log.debug("Loading sitemap ontology from URI: {}", ontologyURI);
 
-        OntModel ontModel = OntDocumentManager.getInstance().getOntology(ontologyURI, ontModelSpec);
+        OntModel ontModel = manager.getOntology(ontologyURI, ontModelSpec);
         
         // explicitly loading owl:imports -- workaround for Jena bug: https://issues.apache.org/jira/browse/JENA-1210
         ontModel.enterCriticalSection(Lock.WRITE);

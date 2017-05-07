@@ -65,6 +65,7 @@ import com.atomgraph.client.vocabulary.SPL;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.Locale;
+import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -406,7 +407,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
-        return new OntologyProvider().getOntModel(ontologyURI, ontModelSpec);
+        return new OntologyProvider().getOntModel(OntDocumentManager.getInstance(), ontologyURI, ontModelSpec);
     }
 
     public MediaType getCustomMediaType(Resource state)
