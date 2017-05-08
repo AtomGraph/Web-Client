@@ -24,7 +24,7 @@ limitations under the License.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY ldt    "http://www.w3.org/ns/ldt#">    
-    <!ENTITY core   "http://www.w3.org/ns/ldt/core/domain#">
+    <!ENTITY c      "http://www.w3.org/ns/ldt/core/domain#">
     <!ENTITY spl    "http://spinrdf.org/spl#">    
     <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
@@ -42,7 +42,7 @@ xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:sd="&sd;"
 xmlns:ldt="&ldt;"
-xmlns:core="&core;"
+xmlns:core="&c;"
 xmlns:spl="&spl;"
 xmlns:void="&void;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
@@ -61,27 +61,37 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Main" priority="2">
-        <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
+    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:Main" priority="2">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" select="'span4'" as="xs:string?"/>
+        
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
+            <xsl:apply-templates select="." mode="bs2:QueryForm"/>
 
-        <xsl:apply-templates select="." mode="bs2:QueryForm"/>
-
-        <xsl:if test="$query">
-            <xsl:apply-templates select="." mode="ac:QueryResult"/>
-        </xsl:if>
+            <xsl:if test="$query">
+                <xsl:apply-templates select="." mode="ac:QueryResult"/>
+            </xsl:if>
+        </div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:Right" priority="2"/>
+    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:Right" priority="2"/>
 
-    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="xhtml:Style" priority="1">
+    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="xhtml:Style" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
+    <xsl:template match="*[rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
         
-    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="bs2:QueryForm">
+    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -133,7 +143,7 @@ LIMIT 100</xsl:param>
 	</form>            
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&core;SPARQLEndpoint']" mode="ac:QueryResult">
+    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="ac:QueryResult">
 	<xsl:param name="result-doc" select="document(concat($a:absolutePath, ac:query-string((), $query, key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->

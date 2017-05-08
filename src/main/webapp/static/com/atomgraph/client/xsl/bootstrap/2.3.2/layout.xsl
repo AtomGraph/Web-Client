@@ -27,7 +27,8 @@ limitations under the License.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
-    <!ENTITY core   "http://www.w3.org/ns/ldt/core/domain#">
+    <!ENTITY c      "http://www.w3.org/ns/ldt/core/domain#">
+    <!ENTITY ct     "http://www.w3.org/ns/ldt/core/templates#">    
     <!ENTITY dh     "http://www.w3.org/ns/ldt/document-hierarchy/domain#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
@@ -51,7 +52,7 @@ xmlns:owl="&owl;"
 xmlns:sparql="&sparql;"
 xmlns:http="&http;"
 xmlns:ldt="&ldt;"
-xmlns:core="&core;"
+xmlns:core="&c;"
 xmlns:dh="&dh;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
@@ -111,7 +112,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
     <xsl:param name="uri" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;uri']/rdf:value/@rdf:resource" as="xs:string?"/>
-    <xsl:param name="query" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&core;query']/rdf:value" as="xs:string?"/>
+    <xsl:param name="query" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ct;query']/rdf:value" as="xs:string?"/>
     <xsl:param name="label" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&rdfs;label']/rdf:value" as="xs:string?"/>
     
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
@@ -224,9 +225,9 @@ exclude-result-prefixes="#all">
 
                         <xsl:if test="$ldt:baseUri">
                             <xsl:variable name="space" select="($a:absolutePath, key('resources', $a:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                            <xsl:if test="key('resources-by-type', '&core;SPARQLEndpoint', document($ldt:baseUri))">
+                            <xsl:if test="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:baseUri))">
                                 <ul class="nav pull-right">
-                                    <xsl:apply-templates select="key('resources-by-type', '&core;SPARQLEndpoint', document($ldt:baseUri))" mode="bs2:NavBarListItem">
+                                    <xsl:apply-templates select="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:baseUri))" mode="bs2:NavBarListItem">
                                         <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}"/>
                                         <xsl:with-param name="space" select="$space"/>
                                     </xsl:apply-templates>
@@ -745,7 +746,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
         <xsl:param name="id" as="xs:string?"/>
@@ -823,7 +824,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about]" mode="bs2:Grid" priority="1">
         <xsl:param name="id" as="xs:string?"/>
@@ -895,7 +896,7 @@ exclude-result-prefixes="#all">
         </table>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&core;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
     
     <xsl:template match="*[*][@rdf:about]" mode="xhtml:Table" priority="1">
         <xsl:param name="id" as="xs:string?"/>
