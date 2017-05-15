@@ -57,7 +57,8 @@ public class URIRewriteFilter implements ContainerResponseFilter // extends Clie
         if (model == null) return response;
 
         //response.setEntity(rewrite(model, request, getBaseUriBuilder(request)), Model.class);
-        response.setEntity(addStates(model.createResource(getBaseUri(request).toString()), model), Model.class);
+        if (getBaseUri(request) != null)
+            response.setEntity(addStates(model.createResource(getBaseUri(request).toString()), model), Model.class);
         
         return response;
     }

@@ -46,8 +46,8 @@ import com.atomgraph.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
-import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.io.ModelProvider;
+import com.atomgraph.core.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,18 +57,16 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
 @Path("/")
-public class ProxyResourceBase
+public class ProxyResourceBase implements Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
-    private final UriInfo uriInfo;
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
-    private final MediaType mediaType;
+    private final MediaType[] acceptable;
     private final WebResource webResource;
     private final LinkedDataClient linkedDataClient;
-    private final URI mode, forClass;
     
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -78,21 +76,19 @@ public class ProxyResourceBase
      * @param httpHeaders HTTP headers
      * @param mediaTypes supported media types
      * @param uri RDF resource URI
-     * @param mediaType response media type
+     * @param accept response media type
      * @param mode layout mode
      * @param forClass instance class
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
-            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType mediaType, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass)
+            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass)
     {
-        if (uri == null) throw new NotFoundException("Resource URI not supplied");        
-        this.uriInfo = uriInfo;
+        if (uri == null) uri = uriInfo.getRequestUri();
         this.request = request;
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
-        this.mediaType = mediaType;
-        this.mode = mode;
-        this.forClass = forClass;
+        if (accept == null) this.acceptable = httpHeaders.getAcceptableMediaTypes().toArray(new MediaType[0]);
+        else this.acceptable = new MediaType[]{accept}; // overrides Accept value
 
         ClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new ModelProvider());
@@ -100,6 +96,12 @@ public class ProxyResourceBase
         //client.setFollowRedirects(false);
         webResource = client.resource(uri);
         linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
+    }
+    
+    @Override
+    public URI getURI()
+    {
+        return getWebResource().getURI();
     }
     
     public HttpHeaders getHttpHeaders()
@@ -113,19 +115,14 @@ public class ProxyResourceBase
      * 
      * @return media type parsed from query param
      */
-    public MediaType getMediaType()
+    public MediaType[] getAcceptable()
     {
-	return mediaType;
+	return acceptable;
     }
     
     public WebResource getWebResource()
     {
         return webResource;
-    }
-
-    public UriInfo getUriInfo()
-    {
-        return uriInfo;
     }
 
     public Request getRequest()
@@ -138,22 +135,12 @@ public class ProxyResourceBase
         return mediaTypes;
     }
     
-    public URI getMode()
-    {
-        return mode;
-    }
-    
-    public URI getForClass()
-    {
-        return forClass;
-    }
-
     public LinkedDataClient getLinkedDataClient()
     {
         return linkedDataClient;
     }
     
-    public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders, MediaType... mediaTypes)
+    public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
     {
         WebResource.Builder builder = webResource.getRequestBuilder();
 
@@ -162,7 +149,7 @@ public class ProxyResourceBase
         if (authHeaders != null && !authHeaders.isEmpty())
             builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
 
-        return builder.accept(mediaTypes).
+        return builder.accept(getAcceptable()).
                 get(ClientResponse.class);
     }
     
@@ -174,37 +161,20 @@ public class ProxyResourceBase
      * @return response
      */
     @GET
+    @Override
     public Response get()
     {                
-        ClientResponse resp = null;
+        ClientResponse cr = null;
         try
         {
-            resp = getClientResponse(getWebResource(), getHttpHeaders(),
-                com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE, com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
+            cr = getClientResponse(getWebResource(), getHttpHeaders());
 
-            /*
-            if (resp.getStatusInfo().getFamily().equals(Status.Family.REDIRECTION))
-                // redirect to Location
-                if (resp.getHeaders().containsKey(HttpHeaders.LOCATION))
-                {
-                    URI location = URI.create(resp.getHeaders().getFirst(HttpHeaders.LOCATION));
-                    // TO-DO: use StateBuilder?
-                    UriBuilder uriBuilder = getUriInfo().getBaseUriBuilder().
-                            queryParam(GC.uri.getLocalName(), location);
-                    if (getMediaType() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMediaType());
-                    if (getMode() != null) uriBuilder.queryParam(GC.accept.getLocalName(), getMode());
-                    if (getForClass() != null) uriBuilder.queryParam(GC.forClass.getLocalName(), getForClass());
-
-                    return Response.seeOther(uriBuilder.build()).build();
-                }
-            */
-
-            if (resp.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+            if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
             {
                 // forward WWW-Authenticate response header
-                if (resp.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
+                if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
                 {
-                    Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, resp.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
+                    Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, cr.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
                     String realm = null;
                     for (HeaderElement element : wwwAuthHeader.getElements())
                         if (element.getName().equals("Basic realm")) realm = element.getValue();
@@ -213,14 +183,14 @@ public class ProxyResourceBase
                     if (realm != null) throw new AuthenticationException("Login is required", realm);
                 }
 
-                throw new ClientErrorException(resp);
+                throw new ClientErrorException(cr);
             }
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
-            Model description = resp.getEntity(Model.class);
+            Model description = cr.getEntity(Model.class);
 
             com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-            ResponseBuilder bld = response.getResponseBuilder(description,
+            ResponseBuilder rb = response.getResponseBuilder(description,
                     response.getVariantListBuilder(getMediaTypes().getWritable(Model.class), new ArrayList(), new ArrayList()).
                             add().build());
 
@@ -234,23 +204,32 @@ public class ProxyResourceBase
                     bld.header("Rules", linkValue);
             */
 
-            if (getMediaType() != null) bld.type(getMediaType()); // should do RDF export
-
-            return bld.build();
+            return rb.build();
         }
         finally
         {
-            if (resp != null) resp.close();
+            if (cr != null) cr.close();
         }
     }
 
     @POST
-    public Model post(Model model)
+    @Override
+    public Response post(Model model)
     {
         if (log.isDebugEnabled()) log.debug("POSTing Model to URI: {}", getWebResource().getURI());
-        return getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
-                post(Model.class, model);
-
+        ClientResponse cr = null;
+        try
+        {
+            cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
+                post(ClientResponse.class, model);
+            ResponseBuilder rb = Response.status(cr.getStatusInfo());
+            if (cr.hasEntity()) rb.entity(cr.getEntityInputStream());
+            return rb.build();
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
     }
 
     /**
@@ -260,18 +239,42 @@ public class ProxyResourceBase
      * @return response
      */
     @PUT
-    public Model put(Model model)
+    @Override
+    public Response put(Model model)
     {
         if (log.isDebugEnabled()) log.debug("PUTting Model to URI: {}", getWebResource().getURI());
-        return getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
-            put(Model.class, model);
+        ClientResponse cr = null;
+        try
+        {
+            cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
+                put(ClientResponse.class, model);
+            ResponseBuilder rb = Response.status(cr.getStatusInfo());
+            if (cr.hasEntity()) rb.entity(cr.getEntityInputStream());
+            return rb.build();
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
     }
     
     @DELETE
-    public void delete()
+    @Override
+    public Response delete()
     {
         if (log.isDebugEnabled()) log.debug("DELETEing Model from URI: {}", getWebResource().getURI());
-        getWebResource().delete();
+        ClientResponse cr = null;
+        try
+        {
+            cr = getWebResource().delete(ClientResponse.class);
+            ResponseBuilder rb = Response.status(cr.getStatusInfo());
+            if (cr.hasEntity()) rb.entity(cr.getEntityInputStream());
+            return rb.build();
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
     }
 
 }
