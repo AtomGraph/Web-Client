@@ -24,7 +24,6 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -87,7 +86,7 @@ public class ProxyResourceBase implements Resource
         this.request = request;
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
-        if (accept == null) this.acceptable = httpHeaders.getAcceptableMediaTypes().toArray(new MediaType[0]);
+        if (accept == null) this.acceptable = mediaTypes.getReadable(Model.class).toArray(new MediaType[0]);
         else this.acceptable = new MediaType[]{accept}; // overrides Accept value
 
         ClientConfig cc = new DefaultClientConfig();
@@ -142,14 +141,8 @@ public class ProxyResourceBase implements Resource
     
     public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
     {
-        WebResource.Builder builder = webResource.getRequestBuilder();
-
-        // forward Authorization request header
-        List<String> authHeaders = httpHeaders.getRequestHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeaders != null && !authHeaders.isEmpty())
-            builder = getWebResource().header(HttpHeaders.AUTHORIZATION, authHeaders.get(0));
-
-        return builder.accept(getAcceptable()).
+        return webResource.getRequestBuilder().
+                accept(getAcceptable()).
                 get(ClientResponse.class);
     }
     
