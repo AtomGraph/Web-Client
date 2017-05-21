@@ -46,7 +46,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="resources-by-uri" match="*[@rdf:about]" use="ac:uri/@rdf:resource"/>
 
     <!-- DEFINITIONS -->
     
@@ -81,11 +80,13 @@ exclude-result-prefixes="#all">
 
     <!-- INLINE MODE -->
 
+    <!--
     <xsl:template match="*[key('resources-by-uri', @rdf:about)/@rdf:about]" mode="xhtml:Anchor" priority="1">
 	<a href="{key('resources-by-uri', @rdf:about)/@rdf:about}" title="{@rdf:about}">
 	    <xsl:apply-templates select="." mode="ac:label"/>
 	</a>
     </xsl:template>
+    -->
     
     <!-- subject resource -->
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
@@ -111,11 +112,13 @@ exclude-result-prefixes="#all">
 	</span>
     </xsl:template>
 
+    <!--
     <xsl:template match="@rdf:resource[key('resources-by-uri', .)/@rdf:about]" priority="1">
 	<a href="{key('resources-by-uri', .)/@rdf:about}" title="{.}">
            <xsl:apply-templates select="." mode="ac:object-label"/>
 	</a>
     </xsl:template>
+    -->
 
     <!-- object URI resource -->
     <xsl:template match="@rdf:resource | sparql:uri">

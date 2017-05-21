@@ -130,7 +130,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="restrictions-by-container" match="*[rdf:type/@rdf:resource = '&owl;Restriction'][owl:onProperty/@rdf:resource = ('&sioc;has_parent', '&sioc;has_container')]" use="owl:allValuesFrom/@rdf:resource"/>
 
     <rdf:Description rdf:about="">
-	<foaf:maker rdf:resource="http://atomgraph.com/#company"/>
+        <foaf:maker rdf:resource="http://atomgraph.com/#company"/>
     </rdf:Description>
 
     <rdf:Description rdf:about="http://atomgraph.com/#company">
@@ -138,19 +138,19 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <rdf:Description rdf:about="&xhv;prev">
-	<rdfs:label xml:lang="en">Previous</rdfs:label>
+        <rdfs:label xml:lang="en">Previous</rdfs:label>
     </rdf:Description>
 
     <rdf:Description rdf:about="&xhv;next">
-	<rdfs:label xml:lang="en">Next</rdfs:label>
+        <rdfs:label xml:lang="en">Next</rdfs:label>
     </rdf:Description>
 
     <rdf:Description rdf:nodeID="delete">
-	<rdfs:label xml:lang="en">Delete</rdfs:label>
+        <rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
 
     <xsl:template match="/">
-	<html xml:lang="{$ldt:lang}">
+        <html xml:lang="{$ldt:lang}">
             <xsl:variable name="grouped-rdf" as="document-node()">
                 <xsl:apply-templates select="." mode="ac:GroupTriples"/>
             </xsl:variable>
@@ -158,7 +158,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="$grouped-rdf/rdf:RDF" mode="xhtml:Head"/>
             
             <xsl:apply-templates select="$grouped-rdf/rdf:RDF" mode="xhtml:Body"/>
-	</html>
+        </html>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="xhtml:Head">
@@ -190,9 +190,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="bs2:NavBar">
-	<div class="navbar navbar-fixed-top">
-	    <div class="navbar-inner">
-		<div class="container-fluid">
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
                     <button class="btn btn-navbar" onclick="if ($('#collapsing-top-navbar').hasClass('in')) $('#collapsing-top-navbar').removeClass('collapse in').height(0); else $('#collapsing-top-navbar').addClass('collapse in').height('auto');">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -207,7 +207,7 @@ exclude-result-prefixes="#all">
                                 </img>
                             </xsl:for-each>
                         </a>
-                    </xsl:if>                    
+                    </xsl:if>
 
                     <div id="collapsing-top-navbar" class="nav-collapse collapse">
                         <form action="" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
@@ -235,11 +235,77 @@ exclude-result-prefixes="#all">
                             </xsl:if>
                         </xsl:if>
                     </div>
-		</div>
-	    </div>
-	</div>
+                </div>
+            </div>
+
+            <xsl:apply-templates select="." mode="bs2:ActionBar"/>
+        </div>
+    </xsl:template>    
+
+    <xsl:template match="rdf:RDF" mode="bs2:ActionBar">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" select="'navbar-inner action-bar'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <xsl:apply-templates select="." mode="bs2:ActionBarLeft"/>
+
+                    <xsl:apply-templates select="." mode="bs2:ActionBarMain"/>
+                    
+                    <xsl:apply-templates select="." mode="bs2:ActionBarRight"/>
+                </div>
+            </div>
+        </div>
     </xsl:template>
     
+    <xsl:template match="rdf:RDF" mode="bs2:ActionBarLeft">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" select="'span2'" as="xs:string?"/>
+        
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
+            <xsl:apply-templates select="." mode="bs2:Create"/>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="rdf:RDF" mode="bs2:ActionBarMain">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" select="'span10'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
+            <xsl:apply-templates select="." mode="bs2:MediaTypeList"/>
+
+            <xsl:apply-templates select="." mode="bs2:NavBarActions"/>
+
+            <xsl:apply-templates select="." mode="bs2:ModeList"/>
+
+            <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="rdf:RDF" mode="bs2:ActionBarRight"/>
+
     <xsl:template match="*[@rdf:about]" mode="bs2:NavBarListItem">
         <xsl:param name="space" as="xs:anyURI*"/>
         <li>
@@ -294,16 +360,16 @@ exclude-result-prefixes="#all">
     <!-- STYLE MODE -->
     
     <xsl:template match="rdf:RDF" mode="xhtml:Style">
-	<link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
-    	<link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
-	<link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
     <!-- SCRIPT MODE -->
 
     <xsl:template match="rdf:RDF" mode="xhtml:Script">
-	<script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}"></script>
-	<script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}"></script>
         <xsl:if test="key('resources', $a:requestUri)[key('resources', ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;MapMode']">
@@ -325,10 +391,6 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
-
-            <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
-
-            <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
             <xsl:apply-templates select="." mode="bs2:PagerList"/>
 
@@ -378,42 +440,76 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
+    <!-- NAVBAR ACTIONS -->
+    
+    <xsl:template match="rdf:RDF" mode="bs2:NavBarActions">
+        <xsl:apply-templates mode="#current"/>
+    </xsl:template>
+    
+    <xsl:template match="*[@rdf:about = $a:absolutePath]" mode="bs2:NavBarActions" priority="1">
+        <div class="pull-right">
+            <form action="{@rdf:about}?_method=DELETE" method="post">
+                <button class="btn btn-delete" type="submit">
+                    <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label"/>
+                </button>
+            </form>
+        </div>
+
+        <xsl:if test="not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode')">
+            <div class="pull-right">
+                <a class="btn" href="{@rdf:about}{ac:query-string((), xs:anyURI('&ac;EditMode'))}">
+                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
+                </a>
+            </div>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:NavBarActions"/>
+    
+    <!-- CREATE -->
+    
+    <xsl:template match="rdf:RDF" mode="bs2:Create"/>
+
     <!-- MODE LIST -->
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="1"/>
 
     <xsl:template match="rdf:RDF" mode="bs2:ModeList">
-        <ul class="nav nav-tabs">
-            <xsl:apply-templates mode="#current"/>
-        </ul>
+        <div class="btn-group pull-right">
+            <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document('&ac;')))}">
+                <xsl:apply-templates select="key('resources', '&ac;Mode', document('&ac;'))" mode="ac:label"/>
+                <xsl:text> </xsl:text>
+                <span class="caret"></span>
+            </button>
+
+            <ul class="dropdown-menu">
+                <xsl:variable name="active" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource" as="xs:anyURI?"/>
+                <xsl:for-each select="key('resources-by-type', ('&ac;Mode'), document('&ac;'))">
+                    <xsl:sort select="ac:label(.)"/>
+                    <xsl:apply-templates select="." mode="bs2:ModeListItem">
+                        <xsl:with-param name="active" select="$active"/>
+                    </xsl:apply-templates>
+                </xsl:for-each>
+            </ul>
+        </div>
     </xsl:template>
                 
-    <xsl:template match="*[*][key('resources', ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource][core:viewOf/@rdf:resource]" mode="bs2:ModeList" priority="1">
-        <xsl:variable name="active" select="key('resources', ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource" as="xs:anyURI"/>
-        <xsl:for-each select="key('resources-by-type', key('resources', $active, document('&ac;'))/rdf:type/@rdf:resource, document('&ac;'))">
-            <xsl:sort select="@rdf:about | @rdf:nodeID"/>
-            <xsl:apply-templates select="." mode="bs2:ModeListItem">
-                <xsl:with-param name="active" select="$active"/>
-            </xsl:apply-templates>
-        </xsl:for-each>
-    </xsl:template>
-        
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ModeList"/>
-        
     <xsl:template match="*[@rdf:about]" mode="bs2:ModeListItem">
-        <xsl:param name="active" as="xs:anyURI?"/>
+        <xsl:param name="active" as="xs:anyURI*"/>
         
         <li>
             <xsl:if test="@rdf:about = $active">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <a href="?mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
+            <a href="{$a:absolutePath}?mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
                 <xsl:apply-templates select="." mode="ac:label"/>
             </a>
         </li>
     </xsl:template>
-        
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ModeList"/>
+
     <!-- BREADCRUMB MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:BreadCrumbList">
@@ -594,7 +690,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Actions"/>
 
     <!-- IMAGE MODE -->
-        
+
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
         <xsl:variable name="images" as="element()*">
             <xsl:apply-templates mode="ac:image"/>
@@ -635,7 +731,7 @@ exclude-result-prefixes="#all">
             <span title="{@rdf:about}" class="btn btn-type">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </span>
-	</li>
+        </li>
     </xsl:template>
 
     <!-- PROPERTY LIST MODE -->
@@ -752,7 +848,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'well'" as="xs:string?"/>
 
-	<div>
+        <div>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
             </xsl:if>
@@ -772,12 +868,12 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="ac:description"/>
             </p>
 
-	    <xsl:apply-templates select="." mode="bs2:TypeList"/>
+            <xsl:apply-templates select="." mode="bs2:TypeList"/>
 
-	    <xsl:if test="@rdf:nodeID">
-		<xsl:apply-templates select="." mode="bs2:PropertyList"/>
-	    </xsl:if>
-	</div>
+            <xsl:if test="@rdf:nodeID">
+                <xsl:apply-templates select="." mode="bs2:PropertyList"/>
+            </xsl:if>
+        </div>
     </xsl:template>
         
     <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>
@@ -807,7 +903,7 @@ exclude-result-prefixes="#all">
     <!-- GRID MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Grid">
-	<xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
+        <xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
 
         <xsl:variable name="thumbnail-items" as="element()*">
             <xsl:apply-templates mode="#current">
@@ -830,29 +926,29 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
         <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
-	
-	<li>
+
+        <li>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
-            
-	    <div class="thumbnail">
-		<xsl:apply-templates select="." mode="bs2:Image"/>
-		
-		<div class="caption">
+
+            <div class="thumbnail">
+                <xsl:apply-templates select="." mode="bs2:Image"/>
+
+                <div class="caption">
                     <xsl:apply-templates select="." mode="bs2:Actions"/>
 
                     <h2>
                         <xsl:apply-templates select="." mode="xhtml:Anchor"/>
                     </h2>
 
-		    <xsl:apply-templates select="." mode="ac:description"/>
-		</div>
-	    </div>
-	</li>
+                    <xsl:apply-templates select="." mode="ac:description"/>
+                </div>
+            </div>
+        </li>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:Grid"/>
@@ -904,7 +1000,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="predicates" as="element()*" tunnel="yes"/>
         <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
 
-	<tr>
+        <tr>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
             </xsl:if>            
@@ -929,7 +1025,7 @@ exclude-result-prefixes="#all">
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-	</tr>
+        </tr>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/>
@@ -990,10 +1086,10 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
-	    <xsl:call-template name="xhtml:Input">
-		<xsl:with-param name="name" select="'rdf'"/>
-		<xsl:with-param name="type" select="'hidden'"/>
-	    </xsl:call-template>
+            <xsl:call-template name="xhtml:Input">
+                <xsl:with-param name="name" select="'rdf'"/>
+                <xsl:with-param name="type" select="'hidden'"/>
+            </xsl:call-template>
 
             <xsl:apply-templates select="." mode="bs2:Legend"/>
 
@@ -1015,11 +1111,8 @@ exclude-result-prefixes="#all">
 
     <!-- edit mode -->
     <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Form" priority="1">
-        <xsl:param name="forClass" select="rdf:type/@rdf:resource" as="xs:anyURI"/>
-        <xsl:param name="template-doc" select="document(resolve-uri(concat('?forClass=', encode-for-uri($forClass)), $a:absolutePath))" as="document-node()?"/>
-
         <xsl:apply-templates select="." mode="bs2:FormControl">
-            <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/>
+            <!-- <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/> -->
             <xsl:sort select="ac:label(.)"/>
         </xsl:apply-templates>
     </xsl:template>
@@ -1049,7 +1142,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Legend">
+    <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Legend" priority="1">
         <legend>
             <xsl:apply-templates select="." mode="xhtml:Anchor"/>
         </legend>
@@ -1116,37 +1209,37 @@ exclude-result-prefixes="#all">
     
     <!-- remove spaces -->
     <xsl:template match="text()" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
 
         <xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'ol'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="value" select="normalize-space(.)"/>
-	</xsl:call-template>
+            <xsl:with-param name="name" select="'ol'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="value" select="normalize-space(.)"/>
+        </xsl:call-template>
     </xsl:template>
     
     <!-- object blank node (avoid infinite loop) -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="xhtml:Anchor">
-	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
 
-	<xsl:choose>
-	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode" mode="bs2:Block">
+        <xsl:choose>
+            <xsl:when test="$bnode">
+                <xsl:apply-templates select="$bnode" mode="bs2:Block">
                     <xsl:with-param name="nested" select="true()"/>
                 </xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<span id="{.}" title="{.}">
-		    <xsl:apply-templates select="." mode="ac:label"/>
-		</span>
-	    </xsl:otherwise>
-	</xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <span id="{.}" title="{.}">
+                    <xsl:apply-templates select="." mode="ac:label"/>
+                </span>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
             
 </xsl:stylesheet>
