@@ -100,7 +100,7 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
-    <xsl:param name="ldt:baseUri" as="xs:anyURI?"/>
+    <xsl:param name="ldt:base" as="xs:anyURI?"/>
     <xsl:param name="a:requestUri" as="xs:anyURI?"/>
     <xsl:param name="a:absolutePath" select="xs:anyURI(tokenize($a:requestUri,'\?')[1])" as="xs:anyURI?"/>
     <xsl:param name="a:httpHeaders" as="xs:string"/>
@@ -199,9 +199,9 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <xsl:if test="$ldt:baseUri">
-                        <a class="brand" href="{$ldt:baseUri}">
-                            <xsl:for-each select="key('resources', $ldt:baseUri, document($ldt:baseUri))">
+                    <xsl:if test="$ldt:base">
+                        <a class="brand" href="{$ldt:base}">
+                            <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
                                 <img src="{foaf:logo/@rdf:resource}">
                                     <xsl:attribute name="alt"><xsl:apply-templates select="." mode="ac:label"/></xsl:attribute>
                                 </img>
@@ -223,11 +223,11 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="$ldt:baseUri">
+                        <xsl:if test="$ldt:base">
                             <xsl:variable name="space" select="($a:absolutePath, key('resources', $a:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                            <xsl:if test="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:baseUri))">
+                            <xsl:if test="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:base))">
                                 <ul class="nav pull-right">
-                                    <xsl:apply-templates select="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:baseUri))" mode="bs2:NavBarListItem">
+                                    <xsl:apply-templates select="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:base))" mode="bs2:NavBarListItem">
                                         <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}"/>
                                         <xsl:with-param name="space" select="$space"/>
                                     </xsl:apply-templates>
@@ -617,7 +617,7 @@ exclude-result-prefixes="#all">
                 <!--
                 <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">
                     <li>
-                        <a href="{resolve-uri('sparql', $ldt:baseUri)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
+                        <a href="{resolve-uri('sparql', $ldt:base)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
                     </li>
                 </xsl:if>
                 -->

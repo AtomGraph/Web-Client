@@ -60,7 +60,7 @@ public final class LDT
 
     public static final OntClass Argument = m_model.createClass( NS + "Argument" );
 
-    public static final ObjectProperty baseUri = m_model.createObjectProperty( NS + "baseUri" );
+    public static final ObjectProperty base = m_model.createObjectProperty( NS + "base" );
 
     public static final ObjectProperty ontology = m_model.createObjectProperty( NS + "ontology" );
 

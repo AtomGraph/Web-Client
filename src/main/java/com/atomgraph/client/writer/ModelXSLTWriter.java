@@ -288,9 +288,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             if (typeHref != null)
                 builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
-            URI baseHref = getLinkHref(headerMap, "Link", LDT.baseUri.getURI()); // LDT.baseUri?
+            URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI()); // LDT.base?
             if (baseHref != null)
-                builder.parameter("{" + LDT.baseUri.getNameSpace() + "}" + LDT.baseUri.getLocalName(), baseHref);
+                builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
             
             URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
             if (ontologyHref != null)                    
