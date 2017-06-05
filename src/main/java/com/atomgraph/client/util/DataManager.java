@@ -29,9 +29,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-import com.atomgraph.core.MediaType;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.ClientException;
+import com.atomgraph.core.io.ModelProvider;
+import com.atomgraph.core.io.ResultSetProvider;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
@@ -140,12 +141,11 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
 
                             if (cr.hasEntity())
                             {
-                                if (cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE) || 
-                                        cr.getType().isCompatible(MediaType.APPLICATION_SPARQL_RESULTS_JSON_TYPE))
+                                if (ResultSetProvider.isResultSetType(cr.getType()))
                                     return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
 
-                                // by default, try to read Model
-                                return getSource(cr.getEntity(Model.class), uri.toString());
+                                if (ModelProvider.isModelType(cr.getType()))
+                                    return getSource(cr.getEntity(Model.class), uri.toString());
                             }
                         }
                         finally

@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -65,6 +64,7 @@ import com.atomgraph.client.vocabulary.SPL;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.Locale;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Statement;
@@ -98,7 +98,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     @Context private UriInfo uriInfo;
     @Context private Request request;
     @Context private HttpHeaders httpHeaders;
-    @Context private ServletConfig servletConfig;
     @Context private Providers providers;
     @Context private HttpServletRequest httpServletRequest;
     
@@ -125,6 +124,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	return cr.getContext(DataManager.class);
     }
     
+    public SAXTransformerFactory getTransformerFactory()
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+    }
+    
     public ModelXSLTWriter()
     {
         this.templates = null;
@@ -144,7 +148,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(model, baos, null);
             
-            setParameters(XSLTBuilder.fromStylesheet(stylesheet).document(new ByteArrayInputStream(baos.toByteArray())),
+            setParameters(XSLTBuilder.newInstance(getTransformerFactory()).
+                stylesheet(stylesheet).
+                document(new ByteArrayInputStream(baos.toByteArray())),
                     getState(model, getRequestURI()), headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
@@ -162,7 +168,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         model.write(baos, RDFLanguages.RDFXML.getName(), null);
 
-        XSLTBuilder.fromStylesheet(getTemplates()).
+        XSLTBuilder.newInstance(getTransformerFactory()).
+            stylesheet(getTemplates()).
             document(new ByteArrayInputStream(baos.toByteArray())).
             resolver(getDataManager()).
             result(new StreamResult(entityStream)).
@@ -239,11 +246,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	return httpHeaders;
     }
 
-    public ServletConfig getServletConfig()
-    {
-        return servletConfig;
-    }
-
     public HttpServletRequest getHttpServletRequest()
     {
         return httpServletRequest;
@@ -288,7 +290,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             if (typeHref != null)
                 builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
-            URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI()); // LDT.base?
+            URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI());
             if (baseHref != null)
                 builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
             

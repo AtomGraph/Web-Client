@@ -71,10 +71,11 @@ public class JSONLDWriter implements WriterGraphRIOT
         
         try
         {
-            XSLTBuilder.fromStylesheet(getTemplates()).
+            XSLTBuilder.newInstance(getTransformerFactory()).
+                stylesheet(getTemplates()).
                 document(new ByteArrayInputStream(baos.toByteArray())).
                 result(new StreamResult(out)).
-                transform();                    
+                transform();
         }
         catch (TransformerException ex)
         {
@@ -98,6 +99,11 @@ public class JSONLDWriter implements WriterGraphRIOT
     public Templates getTemplates()
     {
         return templates;
+    }
+    
+    public SAXTransformerFactory getTransformerFactory()
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
     }
     
 }

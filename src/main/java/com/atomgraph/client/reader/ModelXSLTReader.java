@@ -39,6 +39,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.client.util.XSLTBuilder;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,10 +190,16 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
 
     public XSLTBuilder getXSLTBuilder(Source doc, URI base, OutputStream baos) throws TransformerConfigurationException
     {
-	return XSLTBuilder.fromStylesheet(getStylesheet()).
+	return XSLTBuilder.newInstance(getTransformerFactory()).
+        stylesheet(getStylesheet()).
 	    resolver(getURIResolver()).
 	    document(doc).
-	    parameter("base-uri", base).
 	    result(new StreamResult(baos));
     }
+    
+    public SAXTransformerFactory getTransformerFactory()
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+    }
+    
 }

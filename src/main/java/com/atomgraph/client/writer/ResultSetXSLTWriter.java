@@ -32,6 +32,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import com.atomgraph.client.util.XSLTBuilder;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +99,11 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
 	}
     }
 
+    public SAXTransformerFactory getTransformerFactory()
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+    }
+    
     public URIResolver getURIResolver()
     {
 	return resolver;
@@ -109,7 +116,8 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
 
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {
-	return XSLTBuilder.fromStylesheet(getStylesheet()).
+	return XSLTBuilder.newInstance(getTransformerFactory()).
+            stylesheet(getStylesheet()).
 	    resolver(getURIResolver()).
 	    document(is).
 	    result(new StreamResult(os));

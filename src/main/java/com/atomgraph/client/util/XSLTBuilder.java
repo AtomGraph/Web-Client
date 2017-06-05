@@ -43,71 +43,24 @@ public class XSLTBuilder
 {
     private static final Logger log = LoggerFactory.getLogger(XSLTBuilder.class) ;
 
-    private Source doc = null;
-    private final SAXTransformerFactory factory = (SAXTransformerFactory)TransformerFactory.newInstance();
-    private Templates templates = null;
-    private URIResolver resolver = null;
+    private final SAXTransformerFactory factory;
     private final Map<String, Object> parameters = new HashMap<>();
     private final Map<String, String> outputProperties = new HashMap<>();
+    private Templates templates = null;
+    private URIResolver resolver = null;
+    private Source doc = null;
     private Result result = null;
     
-    protected XSLTBuilder()
+    protected XSLTBuilder(SAXTransformerFactory factory)
     {
+        if (factory == null) throw new IllegalStateException("SAXTransformerFactory cannot be null");
+        
+        this.factory = factory;
     }
     
-    public static XSLTBuilder newInstance()
+    public static XSLTBuilder newInstance(SAXTransformerFactory factory)
     {
-	return new XSLTBuilder();
-    }
-
-    public static XSLTBuilder fromStylesheet(Source xslt) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(xslt);
-    }
-
-    public static XSLTBuilder fromStylesheet(Templates xslt) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(xslt);
-    }
-    
-    public static XSLTBuilder fromStylesheet(Node n) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new DOMSource(n));
-    }
-
-    public static XSLTBuilder fromStylesheet(Node n, String systemId) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new DOMSource(n, systemId));
-    }
-
-    public static XSLTBuilder fromStylesheet(File file) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new StreamSource(file));
-    }
-
-    public static XSLTBuilder fromStylesheet(InputStream is) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new StreamSource(is));
-    }
-
-    public static XSLTBuilder fromStylesheet(InputStream is, String systemId) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new StreamSource(is, systemId));
-    }
-
-    public static XSLTBuilder fromStylesheet(Reader reader) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new StreamSource(reader));
-    }
-
-    public static XSLTBuilder fromStylesheet(Reader reader, String systemId) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new StreamSource(reader, systemId));
-    }
-
-    public static XSLTBuilder fromStylesheet(String systemId) throws TransformerConfigurationException
-    {
-	return newInstance().stylesheet(new StreamSource(systemId));
+	return new XSLTBuilder(factory);
     }
 
     public XSLTBuilder document(Source doc)

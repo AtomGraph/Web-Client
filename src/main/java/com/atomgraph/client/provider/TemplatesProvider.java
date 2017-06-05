@@ -114,7 +114,12 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     
     public Templates getTemplates(Source source) throws TransformerConfigurationException
     {
-        return ((SAXTransformerFactory)TransformerFactory.newInstance()).newTemplates(source);
+        return getTransformerFactory().newTemplates(source);
     }
-       
+
+    public SAXTransformerFactory getTransformerFactory()
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+    }
+    
 }
