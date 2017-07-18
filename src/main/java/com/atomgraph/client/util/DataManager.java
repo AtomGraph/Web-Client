@@ -36,6 +36,11 @@ import com.atomgraph.core.io.ResultSetProvider;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
+import java.io.InputStream;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,17 +92,55 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     @Override
     public Source resolve(String href, String base) throws TransformerException
     {
-	if (!href.isEmpty() && URI.create(href).isAbsolute())
-	{
-	    if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
-	    URI uri = URI.create(base).resolve(href);
-            return resolve(uri);
-	}
-	else
-	{
-	    if (log.isDebugEnabled()) log.debug("Stylesheet self-referencing its doc - let the processor handle resolving");
-	    return null;
-	}
+        URI baseURI = URI.create(base);
+        URI uri = href.isEmpty() ? baseURI : baseURI.resolve(href);
+        
+        if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
+            {
+            // TO-DO: unify both cases
+            // requesting RDF
+            if (!href.isEmpty() && URI.create(href).isAbsolute())
+            {
+                if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
+                //URI uri = baseURI.resolve(href);
+                return resolve(uri);
+            }
+            // requesting XML
+            else
+            {
+                if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
+                // empty href means stylesheet is referencing itself: document('')
+                //URI uri = href.isEmpty() ? baseURI : baseURI.resolve(href);
+
+                ClientResponse cr = null;
+                try
+                {
+                    cr = getClient().resource(uri).
+                        accept(MediaType.TEXT_XML_TYPE, MediaType.WILDCARD_TYPE).
+                        get(ClientResponse.class);
+
+                    if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                        throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
+
+                    // buffer the stylesheet stream so we can close ClientResponse
+                    try (InputStream is = cr.getEntityInputStream())
+                    {
+                        byte[] bytes = IOUtils.toByteArray(is);
+                        return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
+                    }
+                }
+                catch (IOException ex)
+                {
+                    throw new WebApplicationException(ex);
+                }
+                finally
+                {
+                    if (cr != null) cr.close();
+                }
+            }
+        }
+        
+        return null;
     }
 
     /**

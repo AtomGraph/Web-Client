@@ -60,6 +60,8 @@ import org.apache.jena.query.Dataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static com.atomgraph.core.Application.getClient;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 
 /**
  * AtomGraph Client JAX-RS application base class.
@@ -162,7 +164,8 @@ public class Application extends com.atomgraph.core.Application
         singletons.add(new ClientHandlerExceptionMapper());
         singletons.add(new AuthenticationExceptionMapper());
         singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-        singletons.add(new TemplatesProvider(getStylesheet(), isCacheStylesheet())); // loads XSLT stylesheet
+        singletons.add(new TemplatesProvider(((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)),
+                getDataManager(), getStylesheet(), isCacheStylesheet())); // loads XSLT stylesheet
         
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);        
     }

@@ -207,7 +207,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- blank nodes that only have rdf:type xsd:string and no other properties become literal inputs -->
-    <xsl:template match="*[@rdf:*[local-name() = 'nodeID']]/*/@rdf:*[local-name() = 'nodeID'][key('resources', .)[not(* except rdf:type[@rdf:resource = '&xsd;string'])]]" mode="bs2:FormControl" priority="2">
+    <xsl:template match="*[@rdf:*[local-name() = 'nodeID']]/*/@rdf:*[local-name() = 'nodeID'][key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="bs2:FormControl" priority="2">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:param name="class" as="xs:string?"/>

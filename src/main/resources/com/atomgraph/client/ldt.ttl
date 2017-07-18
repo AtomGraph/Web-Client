@@ -27,15 +27,15 @@
 
 :base a owl:ObjectProperty, owl:FunctionalProperty ;
     rdfs:domain :Application ;
-    rdfs:label "Application base URI" ;
+    rdfs:label "Base URI" ;
     rdfs:comment "Base URI uniquely identifies the application" ;
     rdfs:isDefinedBy : .
 
 :ontology a owl:ObjectProperty, owl:FunctionalProperty ;
     rdfs:domain :Application ;
     rdfs:range :Ontology ;
-    rdfs:label "Application ontology" ;
-    rdfs:comment "OWL ontology with resource classes (templates)" ;
+    rdfs:label "Ontology" ;
+    rdfs:comment "Application ontology with domain classes and LDT templates" ;
     rdfs:isDefinedBy : .
 
 :service a owl:ObjectProperty, owl:FunctionalProperty ;

@@ -27,7 +27,7 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,20 +45,27 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 
     private static final Logger log = LoggerFactory.getLogger(TemplatesProvider.class);
 
+    private final SAXTransformerFactory transformerFactory;
     private final Source stylesheet;
     private final Boolean cacheStylesheet;
     private Templates templatesCache;
 
     /**
      * Creates provider from stylesheet
+     * @param transformerFactory SAX transformer factory
+     * @param uriResolver URI resolver
      * @param stylesheet stylesheet source
      * @param cacheStylesheet true if the processor should cache stylesheet
      */
-    public TemplatesProvider(final Source stylesheet, final boolean cacheStylesheet)
+    public TemplatesProvider(final SAXTransformerFactory transformerFactory, final URIResolver uriResolver,
+            final Source stylesheet, final boolean cacheStylesheet)
     {
 	super(Templates.class);
+        this.transformerFactory = transformerFactory;
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
+        
+        this.transformerFactory.setURIResolver(uriResolver);
     }
         
     public boolean isCacheStylesheet()
@@ -119,7 +126,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
 
     public SAXTransformerFactory getTransformerFactory()
     {
-        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+        return transformerFactory;
     }
     
 }

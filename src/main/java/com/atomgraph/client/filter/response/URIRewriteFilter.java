@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
 @Provider
+@Deprecated
 public class URIRewriteFilter implements ContainerResponseFilter // extends ClientFilter 
 {
     private static final Logger log = LoggerFactory.getLogger(URIRewriteFilter.class);
