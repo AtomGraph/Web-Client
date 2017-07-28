@@ -80,9 +80,9 @@ public final class LDT
 
     public static final AnnotationProperty priority = m_model.createAnnotationProperty( NS + "priority" );
 
-    public static final AnnotationProperty skolemTemplate = m_model.createAnnotationProperty( NS + "skolemTemplate" );
+    public static final AnnotationProperty segment = m_model.createAnnotationProperty( NS + "segment" );
 
-    public static final AnnotationProperty fragmentTemplate = m_model.createAnnotationProperty( NS + "fragmentTemplate" );
+    public static final AnnotationProperty fragment = m_model.createAnnotationProperty( NS + "fragment" );
 
     public static final AnnotationProperty param = m_model.createAnnotationProperty( NS + "param" );
     
