@@ -1,4 +1,4 @@
-@base           <http://www.w3.org/ns/ldt/topic-hierarchy/templates> .
+@base           <https://www.w3.org/ns/ldt/topic-hierarchy/templates> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,10 +6,10 @@
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
 @prefix http:   <http://www.w3.org/2011/http#> .
-@prefix ldt:	<http://www.w3.org/ns/ldt#> .
-@prefix ct:	<http://www.w3.org/ns/ldt/core/templates#> .
-@prefix dht:	<http://www.w3.org/ns/ldt/document-hierarchy/templates#> .
-@prefix dh:	<http://www.w3.org/ns/ldt/document-hierarchy/domain#> .
+@prefix ldt:	<https://www.w3.org/ns/ldt#> .
+@prefix ct:	<https://www.w3.org/ns/ldt/core/templates#> .
+@prefix dht:	<https://www.w3.org/ns/ldt/document-hierarchy/templates#> .
+@prefix dh:	<https://www.w3.org/ns/ldt/document-hierarchy/domain#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spl:    <http://spinrdf.org/spl#> .
@@ -24,7 +24,7 @@
     rdfs:label "Topic hierarchy" ;
     rdfs:comment "Document hierarchy with topic resources" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/topic-hierarchy/templates#" ;
+    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/topic-hierarchy/templates#" ;
     vann:preferredNamespacePrefix "tht";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 

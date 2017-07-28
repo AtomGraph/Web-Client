@@ -1,11 +1,11 @@
-@base           <http://www.w3.org/ns/ldt/core/templates> .
+@base           <https://www.w3.org/ns/ldt/core/templates> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix ldt:	<https://www.w3.org/ns/ldt#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spl:	<http://spinrdf.org/spl#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
@@ -17,7 +17,7 @@
     owl:versionInfo "1.1.4" ;
     rdfs:label "Core LDT ontology" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/core/templates#" ;
+    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/core/templates#" ;
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
 # TEMPLATES

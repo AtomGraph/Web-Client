@@ -24,7 +24,7 @@ limitations under the License.
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">

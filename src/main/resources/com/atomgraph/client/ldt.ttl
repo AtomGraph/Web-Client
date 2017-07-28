@@ -1,4 +1,4 @@
-@base           <http://www.w3.org/ns/ldt> .
+@base           <https://www.w3.org/ns/ldt> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -19,7 +19,7 @@
     rdfs:comment "Must be imported and reused by LDT applications" ;
     dct:created "2012-10-26T01:04:00+03:00"^^xsd:dateTime ;
     dct:modified "2012-12-19T02:29:00+03:00"^^xsd:dateTime, "2013-03-09T12:33:00+03:00"^^xsd:dateTime, "2014-08-24T02:04:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt#" ;
+    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt#" ;
     vann:preferredNamespacePrefix "ldt";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 

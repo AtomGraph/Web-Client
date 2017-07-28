@@ -21,7 +21,7 @@ limitations under the License.
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY dc     "http://purl.org/dc/elements/1.1/">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">

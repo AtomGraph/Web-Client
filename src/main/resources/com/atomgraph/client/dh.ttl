@@ -1,12 +1,12 @@
-@base           <http://www.w3.org/ns/ldt/document-hierarchy/domain> .
+@base           <https://www.w3.org/ns/ldt/document-hierarchy/domain> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix cd:	<http://www.w3.org/ns/ldt/core/domain#> .
-@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix cd:	<https://www.w3.org/ns/ldt/core/domain#> .
+@prefix ldt:	<https://www.w3.org/ns/ldt#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spin:	<http://spinrdf.org/spin#> .
@@ -21,7 +21,7 @@
     owl:versionInfo "1.1.4" ;
     rdfs:label "Document hierarchy" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/document-hierarchy/domain#" ;
+    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/document-hierarchy/domain#" ;
     vann:preferredNamespacePrefix "dh";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
@@ -104,7 +104,7 @@
 
 :DocumentConstructor a sp:Construct, sp:Query ;
   sp:text """
-      PREFIX dh:      <http://www.w3.org/ns/ldt/document-hierarchy/domain#>
+      PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
 
       CONSTRUCT {
         ?this dh:slug ?slug .

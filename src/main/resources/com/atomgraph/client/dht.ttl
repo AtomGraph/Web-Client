@@ -1,13 +1,13 @@
-@base           <http://www.w3.org/ns/ldt/document-hierarchy/templates> .
+@base           <https://www.w3.org/ns/ldt/document-hierarchy/templates> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix ct:	<http://www.w3.org/ns/ldt/core/templates#> .
-@prefix dh:	<http://www.w3.org/ns/ldt/document-hierarchy/domain#> .
-@prefix ldt:	<http://www.w3.org/ns/ldt#> .
+@prefix ct:	<https://www.w3.org/ns/ldt/core/templates#> .
+@prefix dh:	<https://www.w3.org/ns/ldt/document-hierarchy/domain#> .
+@prefix ldt:	<https://www.w3.org/ns/ldt#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
 @prefix spl:    <http://spinrdf.org/spl#> .
@@ -21,7 +21,7 @@
     owl:versionInfo "1.1.4" ;
     rdfs:label "Document hierarchy templates" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "http://www.w3.org/ns/ldt/document-hierarchy/templates#" ;
+    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/document-hierarchy/templates#" ;
     vann:preferredNamespacePrefix "dht";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 

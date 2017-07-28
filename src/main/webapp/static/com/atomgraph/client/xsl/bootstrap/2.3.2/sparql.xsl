@@ -23,8 +23,8 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">    
-    <!ENTITY c      "http://www.w3.org/ns/ldt/core/domain#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">    
+    <!ENTITY c      "https://www.w3.org/ns/ldt/core/domain#">
     <!ENTITY spl    "http://spinrdf.org/spl#">    
     <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
@@ -154,32 +154,32 @@ LIMIT 100</xsl:param>
                 <xsl:choose>
                     <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;ListMode'">
                         <xsl:apply-templates select="*" mode="bs2:BlockList">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
+                            <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;TableMode'">
                         <xsl:apply-templates select="." mode="xhtml:Table">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
+                            <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;GridMode'">
                         <xsl:apply-templates select="." mode="bs2:Grid">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
+                            <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>-->
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;MapMode'">
                         <xsl:apply-templates select="." mode="bs2:Map">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
+                            <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode'">
                         <xsl:apply-templates select="." mode="bs2:EditForm">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
+                            <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>                            
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:apply-templates select="." mode="bs2:Block">
-                            <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>
+                            <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:otherwise>
                 </xsl:choose>

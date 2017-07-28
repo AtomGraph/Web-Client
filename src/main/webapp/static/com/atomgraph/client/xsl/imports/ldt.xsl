@@ -17,7 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"

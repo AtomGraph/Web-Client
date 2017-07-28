@@ -26,10 +26,10 @@ limitations under the License.
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
-    <!ENTITY c      "http://www.w3.org/ns/ldt/core/domain#">
-    <!ENTITY ct     "http://www.w3.org/ns/ldt/core/templates#">    
-    <!ENTITY dh     "http://www.w3.org/ns/ldt/document-hierarchy/domain#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
+    <!ENTITY c      "https://www.w3.org/ns/ldt/core/domain#">
+    <!ENTITY ct     "https://www.w3.org/ns/ldt/core/templates#">    
+    <!ENTITY dh     "https://www.w3.org/ns/ldt/document-hierarchy/domain#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">

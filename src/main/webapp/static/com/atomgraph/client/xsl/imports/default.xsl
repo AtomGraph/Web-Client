@@ -22,7 +22,7 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldt    "http://www.w3.org/ns/ldt#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
