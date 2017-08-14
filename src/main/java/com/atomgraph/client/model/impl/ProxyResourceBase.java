@@ -41,10 +41,11 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeader;
-import com.atomgraph.client.LinkedDataClient;
+import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
+import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.model.Resource;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class ProxyResourceBase implements Resource
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass)
     {
-        if (uri == null) uri = uriInfo.getRequestUri();
+        if (uri == null) throw new NotFoundException("Resource URI not supplied");
         this.request = request;
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
@@ -119,7 +120,7 @@ public class ProxyResourceBase implements Resource
 	return acceptable;
     }
     
-    public WebResource getWebResource()
+    public final WebResource getWebResource()
     {
         return webResource;
     }
