@@ -38,9 +38,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.message.BasicHeader;
 import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.core.MediaTypes;
@@ -168,13 +165,15 @@ public class ProxyResourceBase implements Resource
                 // forward WWW-Authenticate response header
                 if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
                 {
-                    Header wwwAuthHeader = new BasicHeader(HttpHeaders.WWW_AUTHENTICATE, cr.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE));
-                    String realm = null;
-                    for (HeaderElement element : wwwAuthHeader.getElements())
-                        if (element.getName().equals("Basic realm")) realm = element.getValue();
-
-                    // TO-DO: improve handling of missing realm
-                    if (realm != null) throw new AuthenticationException("Login is required", realm);
+                    String header = cr.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE);
+                    if (header.contains("Basic realm="))
+                    {
+                        int realmStart = header.indexOf("\"") + 1;
+                        int realmEnd = header.lastIndexOf("\"");
+                        
+                        String realm = header.substring(realmStart, realmEnd);
+                        throw new AuthenticationException("Login is required", realm);
+                    }
                 }
 
                 throw new ClientErrorException(cr);
