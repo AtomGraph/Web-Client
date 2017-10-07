@@ -944,8 +944,9 @@ exclude-result-prefixes="#all">
                     <h2>
                         <xsl:apply-templates select="." mode="xhtml:Anchor"/>
                     </h2>
-
-                    <xsl:apply-templates select="." mode="ac:description"/>
+                    <p>
+                        <xsl:apply-templates select="." mode="ac:description"/>
+                    </p>
                 </div>
             </div>
         </li>
@@ -956,7 +957,7 @@ exclude-result-prefixes="#all">
     <!-- TABLE MODE -->
 
     <xsl:template match="rdf:RDF" mode="xhtml:Table">
-        <xsl:param name="id" as="xs:string?"/>        
+        <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
             <xsl:for-each-group select="key('resources-by-container', $a:absolutePath)/*" group-by="concat(namespace-uri(), local-name())">
@@ -969,7 +970,7 @@ exclude-result-prefixes="#all">
         <table>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
@@ -1003,7 +1004,7 @@ exclude-result-prefixes="#all">
         <tr>
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>            
+            </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
