@@ -104,13 +104,14 @@
 
 :DocumentConstructor a sp:Construct, sp:Query ;
   sp:text """
+      PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
       PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
 
       CONSTRUCT {
-        ?this dh:slug ?slug .
+        ?this dh:slug [ a xsd:string ] . # ?slug .
       }
       WHERE {
-        BIND (STRUUID() AS ?slug)
+        # BIND (STRUUID() AS ?slug)
 }""" ;
     rdfs:label "Document constructor" ;
     rdfs:isDefinedBy : .

@@ -1113,7 +1113,6 @@ exclude-result-prefixes="#all">
     <!-- edit mode -->
     <xsl:template match="*[@rdf:about = $a:absolutePath][not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource)]" mode="bs2:Form" priority="1">
         <xsl:apply-templates select="." mode="bs2:FormControl">
-            <!-- <xsl:with-param name="template-doc" select="$template-doc" tunnel="yes"/> -->
             <xsl:sort select="ac:label(.)"/>
         </xsl:apply-templates>
     </xsl:template>
