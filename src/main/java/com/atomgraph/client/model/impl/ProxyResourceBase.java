@@ -58,6 +58,14 @@ public class ProxyResourceBase implements Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
 
+    public static final ClientConfig CLIENT_CONFIG;
+    
+    static 
+    {
+        CLIENT_CONFIG = new DefaultClientConfig();
+        CLIENT_CONFIG.getSingletons().add(new ModelProvider());
+    }
+    
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
@@ -80,6 +88,13 @@ public class ProxyResourceBase implements Resource
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass)
     {
+        this(uriInfo, request, httpHeaders, mediaTypes, uri, accept, mode, forClass, Client.create(CLIENT_CONFIG));
+    }
+    
+    protected ProxyResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, MediaTypes mediaTypes,
+            URI uri, MediaType accept, URI mode, URI forClass,
+            Client client)
+    {
         if (uri == null) throw new NotFoundException("Resource URI not supplied");
         this.request = request;
         this.httpHeaders = httpHeaders;
@@ -87,9 +102,6 @@ public class ProxyResourceBase implements Resource
         if (accept == null) this.acceptable = mediaTypes.getReadable(Model.class).toArray(new MediaType[0]);
         else this.acceptable = new MediaType[]{accept}; // overrides Accept value
 
-        ClientConfig cc = new DefaultClientConfig();
-        cc.getSingletons().add(new ModelProvider());
-        Client client = Client.create(cc);
         //client.setFollowRedirects(false);
         webResource = client.resource(uri);
         linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
