@@ -15,7 +15,7 @@
 : a ldt:Ontology ;
     owl:imports ldt:, sp: ;
     owl:versionInfo "1.1.4" ;
-    rdfs:label "Core LDT ontology" ;
+    rdfs:label "Core LDT templates" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/core/templates#" ;
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
@@ -36,7 +36,6 @@
     ldt:param  :Query, :DefaultGraphURI, :NamedGraphURI ;
     # using-graph-uri - POST only
     # using-named-graph-uri - POST only
-    # ldt:loadClass <java:com.atomgraph.processor.model.impl.SPARQLEndpointBase> ;
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy : .
 
@@ -87,14 +86,17 @@
 # QUERIES
 
 :Describe a sp:Describe, sp:Query ;
-    sp:text """DESCRIBE ?this""" ;
+    sp:text """DESCRIBE ?this
+WHERE {
+    ?this ?p ?o
+}""" ;
     rdfs:label "Describe" ;
     rdfs:isDefinedBy : .
 
 :Delete a sp:DeleteWhere, sp:Update ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DELETE WHERE {
-    ?this ?p ?o .
+    ?this ?p ?o
 }""" ;
     rdfs:label "Delete" ;
     rdfs:isDefinedBy : .
