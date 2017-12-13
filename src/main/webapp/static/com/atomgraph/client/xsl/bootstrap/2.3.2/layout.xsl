@@ -475,6 +475,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="1"/>
 
     <xsl:template match="rdf:RDF" mode="bs2:ModeList">
+        <xsl:param name="modes" select="key('resources-by-type', ('&ac;Mode'), document('&ac;'))" as="element()*"/>
+        
         <div class="btn-group pull-right">
             <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document('&ac;')))}">
                 <xsl:apply-templates select="key('resources', '&ac;Mode', document('&ac;'))" mode="ac:label"/>
@@ -484,7 +486,7 @@ exclude-result-prefixes="#all">
 
             <ul class="dropdown-menu">
                 <xsl:variable name="active" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource" as="xs:anyURI?"/>
-                <xsl:for-each select="key('resources-by-type', ('&ac;Mode'), document('&ac;'))">
+                <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
                         <xsl:with-param name="active" select="$active"/>
