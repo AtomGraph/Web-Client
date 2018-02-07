@@ -71,14 +71,14 @@
     rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html> ;
     rdfs:isDefinedBy : .
 
-:segment a owl:AnnotationProperty, :InheritedProperty ;
-    # rdfs:domain rdfs:Class ;
-    # rdfs:range xsd:string ;
-    rdfs:label "Segment template" ;
-    rdfs:comment "Parent-relative URI template for blank node skolemization (JAX-RS syntax)" ;
-    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html>,
-        <http://www.w3.org/TR/rdf11-concepts/#section-skolemization> ;
-    rdfs:isDefinedBy : .
+#:segment a owl:AnnotationProperty, :InheritedProperty ;
+#    # rdfs:domain rdfs:Class ;
+#    # rdfs:range xsd:string ;
+#    rdfs:label "Segment template" ;
+#    rdfs:comment "Parent-relative URI template for blank node skolemization (JAX-RS syntax)" ;
+#    rdfs:seeAlso <http://docs.oracle.com/cd/E19798-01/821-1841/6nmq2cp26/index.html>,
+#        <http://www.w3.org/TR/rdf11-concepts/#section-skolemization> ;
+#    rdfs:isDefinedBy : .
 
 :fragment a owl:AnnotationProperty, :InheritedProperty ;
     # rdfs:domain rdfs:Class ;

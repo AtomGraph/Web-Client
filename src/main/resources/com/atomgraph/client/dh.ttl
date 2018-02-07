@@ -81,7 +81,8 @@
 
 :Container a rdfs:Class ;
     rdfs:subClassOf foaf:Document, sioc:Container ;
-    ldt:segment "{slug}/" ;
+    # ldt:segment "{slug}/" ;
+    ldt:path "{slug}/" ;
     spin:constructor :DocumentConstructor ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
@@ -95,7 +96,8 @@
 
 :Item a rdfs:Class ;
     rdfs:subClassOf foaf:Document, sioc:Item ;
-    ldt:segment "{slug}" ;
+    # ldt:segment "{slug}" ;
+    ldt:path "{slug}" ;
     rdfs:label "Document" ;
     spin:constructor :DocumentConstructor ;
     rdfs:isDefinedBy : .
