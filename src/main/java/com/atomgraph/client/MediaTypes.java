@@ -51,7 +51,12 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
     
     public MediaTypes()
     {
-        super(READABLE, WRITABLE);
+        this(READABLE, WRITABLE);
+    }
+    
+    public MediaTypes(Map<Class, List<javax.ws.rs.core.MediaType>> readable, Map<Class, List<javax.ws.rs.core.MediaType>> writable)
+    {
+        super(readable, writable);
     }
     
 }
