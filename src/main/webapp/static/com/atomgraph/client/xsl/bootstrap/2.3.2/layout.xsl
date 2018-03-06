@@ -1127,7 +1127,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:requestUri][key('resources', ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource]" mode="bs2:Legend" priority="1">
+    <xsl:template match="*[@rdf:about = $a:requestUri][$ac:sitemap][key('resources', ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource]" mode="bs2:Legend" priority="1">
         <xsl:param name="forClass" select="key('resources', ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource" as="xs:anyURI"/>
 
         <xsl:for-each select="key('resources', $forClass, $ac:sitemap)">
