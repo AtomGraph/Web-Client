@@ -12,7 +12,7 @@ What AWC provides for users as out-of-the-box generic features:
 * loading RDF data from remote Linked Data sources
 * HTTP content negotiation and caching
 
-What GC can be quickly extended to do:
+What AWC can be quickly extended to do:
 * render custom layouts/designs by overriding XSLT templates
 * store RDF data directly from HTML forms into the triplestore
 * control RDF input quality with SPARQL-based constraints
