@@ -19,7 +19,7 @@ limitations under the License.
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
@@ -57,8 +57,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription">
         <dd>
-	    <xsl:apply-templates select="."/>
-	</dd>
+            <xsl:apply-templates select="."/>
+        </dd>
     </xsl:template>
     
     <!-- OPTION MODE -->
@@ -82,87 +82,87 @@ exclude-result-prefixes="#all">
 
     <!--
     <xsl:template match="*[key('resources-by-uri', @rdf:about)/@rdf:about]" mode="xhtml:Anchor" priority="1">
-	<a href="{key('resources-by-uri', @rdf:about)/@rdf:about}" title="{@rdf:about}">
-	    <xsl:apply-templates select="." mode="ac:label"/>
-	</a>
+        <a href="{key('resources-by-uri', @rdf:about)/@rdf:about}" title="{@rdf:about}">
+            <xsl:apply-templates select="." mode="ac:label"/>
+        </a>
     </xsl:template>
     -->
     
     <!-- subject resource -->
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
-	<a href="{@rdf:about}" title="{@rdf:about}">
-	    <xsl:apply-templates select="." mode="ac:label"/>
-	</a>
+        <a href="{@rdf:about}" title="{@rdf:about}">
+            <xsl:apply-templates select="." mode="ac:label"/>
+        </a>
     </xsl:template>
     
     <xsl:template match="*[@rdf:nodeID]" mode="xhtml:Anchor">
-	<span id="{@rdf:nodeID}" title="{@rdf:nodeID}">
-	    <xsl:apply-templates select="." mode="ac:label"/>
-	</span>
+        <span id="{@rdf:nodeID}" title="{@rdf:nodeID}">
+            <xsl:apply-templates select="." mode="ac:label"/>
+        </span>
     </xsl:template>
 
     <!-- DEFAULT MODE -->
     
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
-	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
-	<span title="{$this}">
-	    <xsl:apply-templates select="." mode="ac:property-label"/>
-	</span>
+        <span title="{$this}">
+            <xsl:apply-templates select="." mode="ac:property-label"/>
+        </span>
     </xsl:template>
 
     <!--
     <xsl:template match="@rdf:resource[key('resources-by-uri', .)/@rdf:about]" priority="1">
-	<a href="{key('resources-by-uri', .)/@rdf:about}" title="{.}">
+        <a href="{key('resources-by-uri', .)/@rdf:about}" title="{.}">
            <xsl:apply-templates select="." mode="ac:object-label"/>
-	</a>
+        </a>
     </xsl:template>
     -->
 
     <!-- object URI resource -->
     <xsl:template match="@rdf:resource | sparql:uri">
-	<a href="{.}" title="{.}">
+        <a href="{.}" title="{.}">
             <xsl:apply-templates select="." mode="ac:object-label"/>
-	</a>
+        </a>
     </xsl:template>
 
     <!-- object blank node -->
     <xsl:template match="@rdf:nodeID">
-	<a href="#{.}" title="{.}">
+        <a href="#{.}" title="{.}">
             <xsl:apply-templates select="." mode="ac:object-label"/>
-	</a>
+        </a>
     </xsl:template>
     
     <!-- object literal -->
     <xsl:template match="text()">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]">
-	<span title="{../@rdf:datatype | @datatype}">
-	    <xsl:value-of select="."/>
-	</span>
+        <span title="{../@rdf:datatype | @datatype}">
+            <xsl:value-of select="."/>
+        </span>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1">
-	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-number(., '#####.00')"/>
-	</span>
+        <span title="{../@rdf:datatype}">
+            <xsl:value-of select="format-number(., '#####.00')"/>
+        </span>
     </xsl:template>
 
     <xsl:template match="text()[. castable as xs:date][../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1">
-	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
-	</span>
+        <span title="{../@rdf:datatype}">
+            <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
+        </span>
     </xsl:template>
 
     <xsl:template match="text()[. castable as xs:dateTime][../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1">
-	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
-	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-	<span title="{../@rdf:datatype}">
-	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
-	</span>
+        <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
+        <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
+        <span title="{../@rdf:datatype}">
+            <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
+        </span>
     </xsl:template>
 
     <!-- @rdf:datatype -->
@@ -188,9 +188,9 @@ exclude-result-prefixes="#all">
     <!-- TABLE -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableHeaderCell">
-	<th>
+        <th>
             <xsl:apply-templates select="."/>
-	</th>
+        </th>
     </xsl:template>
 
     <!--
@@ -213,73 +213,74 @@ exclude-result-prefixes="#all">
 
     <!-- apply properties that match lang() -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
-	<td>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
-	</td>
+        <td>
+            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+        </td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
-	<td>
-	    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
-	</td>
+        <td>
+            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+        </td>
     </xsl:template>
 
     <xsl:template match="sparql:sparql" mode="xhtml:Table">
-	<table class="table table-bordered table-striped">
-	    <xsl:apply-templates mode="#current"/>
-	</table>
+        <table class="table table-bordered table-striped">
+            <xsl:apply-templates mode="#current"/>
+        </table>
     </xsl:template>
     
     <xsl:template match="sparql:head" mode="xhtml:Table">
-	<thead>
-	    <tr>
-		<xsl:apply-templates mode="#current"/>
-	    </tr>
-	</thead>
+        <thead>
+            <tr>
+                <xsl:apply-templates mode="#current"/>
+            </tr>
+        </thead>
     </xsl:template>
 
     <xsl:template match="sparql:variable" mode="xhtml:Table">
-	<th>
-	    <xsl:value-of select="@name"/>
-	</th>
+        <th>
+            <xsl:value-of select="@name"/>
+        </th>
     </xsl:template>
 
     <xsl:template match="sparql:results" mode="xhtml:Table">
-	<tbody>
-	    <xsl:apply-templates mode="#current"/>
-	</tbody>
+        <tbody>
+            <xsl:apply-templates mode="#current"/>
+        </tbody>
     </xsl:template>
 
     <xsl:template match="sparql:result" mode="xhtml:Table">
-	<tr>
-	    <xsl:apply-templates mode="#current"/>
-	</tr>
+        <tr>
+            <xsl:apply-templates mode="#current"/>
+        </tr>
     </xsl:template>
 
     <xsl:template match="sparql:binding" mode="xhtml:Table">
-	<td>
-	    <xsl:apply-templates mode="#current"/>
-	</td>
+        <td>
+            <xsl:apply-templates mode="#current"/>
+        </td>
     </xsl:template>
     
     <xsl:template match="sparql:uri" mode="xhtml:Table">
-	<a href="{.}" title="{.}">
-	    <xsl:value-of select="."/>
-	</a>
+        <a href="{.}" title="{.}">
+            <xsl:value-of select="."/>
+        </a>
     </xsl:template>
 
     <!-- INPUT MODE -->
     
     <xsl:template name="xhtml:Input">
-	<xsl:param name="name" as="xs:string"/>
-	<xsl:param name="type" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="style" as="xs:string?"/>
-	<xsl:param name="disabled" as="xs:boolean?"/>
-	<xsl:param name="title" as="xs:string?"/>        
+        <xsl:param name="name" as="xs:string"/>
+        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="style" as="xs:string?"/>
+        <xsl:param name="disabled" as="xs:boolean?"/>
+        <xsl:param name="title" as="xs:string?"/>
         <xsl:param name="value" as="xs:string?"/>
+        <xsl:param name="checked" as="xs:boolean?"/>
 
         <input type="{$type}" name="{$name}">
             <xsl:if test="$id">
@@ -300,167 +301,170 @@ exclude-result-prefixes="#all">
             <xsl:if test="$value">
                 <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
             </xsl:if>
+            <xsl:if test="$checked">
+                <xsl:attribute name="checked">checked</xsl:attribute>
+            </xsl:if>
         </input>
     </xsl:template>
 
     <!-- subject resource -->
     <!-- @rdf:about -->
     <xsl:template match="@rdf:*[local-name() = 'about']" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'su'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'su'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
     <!-- subject blank node -->
     <!-- @rdf:nodeID -->
     <xsl:template match="@rdf:*[local-name() = 'nodeID']" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'sb'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'sb'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
     <!-- property -->
     <!-- *[@rdf:about or @rdf:nodeID]/* -->
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'pu'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="concat(namespace-uri(), local-name())"/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'pu'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="concat(namespace-uri(), local-name())"/>
+        </xsl:call-template>
     </xsl:template>
     
     <!-- object resource -->
     <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:resource -->
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = 'resource']" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'ou'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'ou'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
     <!-- object blank node -->
     <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID -->
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = 'nodeID']" mode="xhtml:Input" priority="1">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'ob'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'ob'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
     <!-- object literal -->
     <!-- *[@rdf:about or @rdf:nodeID]/*/text() -->
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/text()" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'ol'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'ol'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
     <!-- datatype -->
     <!-- @rdf:datatype -->
     <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'lt'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'lt'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
     <!-- language tag -->
     <!-- @xml:lang -->
     <xsl:template match="@xml:*[local-name() = 'lang']" mode="xhtml:Input">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
-	<xsl:param name="id" as="xs:string?"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="disabled" select="false()" as="xs:boolean"/>
-	<xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="title" as="xs:string?"/>
 
-	<xsl:call-template name="xhtml:Input">
-	    <xsl:with-param name="name" select="'ll'"/>
-	    <xsl:with-param name="type" select="$type"/>
-	    <xsl:with-param name="id" select="$id"/>
-	    <xsl:with-param name="class" select="$class"/>
-	    <xsl:with-param name="disabled" select="$disabled"/>
-	    <xsl:with-param name="title" select="$title"/>
-	    <xsl:with-param name="value" select="."/>
-	</xsl:call-template>
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'ll'"/>
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="value" select="."/>
+        </xsl:call-template>
     </xsl:template>
 
 </xsl:stylesheet>
