@@ -34,7 +34,7 @@
     rdfs:comment "Matches URIs with trailing slash" ;
     rdfs:isDefinedBy : .
 
-# ARGUMENTS
+# PARAMETERS
 
 :ForClass a ldt:Parameter ;
     rdfs:label "Constructor class" ;
