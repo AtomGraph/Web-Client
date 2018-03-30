@@ -880,7 +880,7 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>
 
-    <!-- READ MODE -->
+    <!-- BLOCK MODE -->
 
     <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource] | *[@rdf:nodeID = key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID]" mode="bs2:Block" priority="1"/>
 
@@ -901,7 +901,23 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:PropertyList"/>
         </div>
     </xsl:template>
-            
+
+    <!-- inline blank node resource if there is only one property having it as object -->
+    <xsl:template match="@rdf:nodeID[key('resources', .)][count(key('predicates-by-object', .)) = 1]" priority="1">
+        <xsl:apply-templates select="key('resources', .)" mode="bs2:Block">
+            <xsl:with-param name="display" select="true()"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
+    <!-- hide inlined blank node resources from the main block flow -->
+    <xsl:template match="*[*][key('resources', @rdf:nodeID)][count(key('predicates-by-object', @rdf:nodeID)) = 1]" mode="bs2:Block" priority="1">
+        <xsl:param name="display" select="false()" as="xs:boolean"/>
+        
+        <xsl:if test="$display">
+            <xsl:next-match/>
+        </xsl:if>
+    </xsl:template>
+     
     <!-- GRID MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Grid">
