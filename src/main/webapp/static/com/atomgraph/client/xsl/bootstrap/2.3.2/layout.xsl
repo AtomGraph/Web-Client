@@ -887,7 +887,7 @@ exclude-result-prefixes="#all">
 
     <!-- BLOCK MODE -->
 
-    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource] | *[@rdf:nodeID = key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID]" mode="bs2:Block" priority="1"/>
+    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource] | *[@rdf:nodeID = key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID]" mode="bs2:Block" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
         <xsl:param name="id" as="xs:string?"/>
@@ -930,7 +930,7 @@ exclude-result-prefixes="#all">
 
         <xsl:variable name="thumbnail-items" as="element()*">
             <xsl:apply-templates mode="#current">
-                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>                
+                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
@@ -1010,7 +1010,7 @@ exclude-result-prefixes="#all">
             </thead>
             <tbody>
                 <xsl:apply-templates mode="#current">
-                    <xsl:with-param name="predicates" select="$predicates" tunnel="yes"/>                    
+                    <xsl:with-param name="predicates" select="$predicates" tunnel="yes"/>
                 </xsl:apply-templates>
             </tbody>
         </table>
