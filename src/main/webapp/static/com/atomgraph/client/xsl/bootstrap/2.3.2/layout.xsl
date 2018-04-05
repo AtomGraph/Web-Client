@@ -717,7 +717,7 @@ exclude-result-prefixes="#all">
     
     <!-- TYPE MODE -->
         
-    <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
@@ -732,6 +732,8 @@ exclude-result-prefixes="#all">
             </xsl:for-each>
         </ul>
     </xsl:template>
+
+    <xsl:template match="*" mode="bs2:TypeList"/>
 
     <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
         <li>
