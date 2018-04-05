@@ -717,13 +717,18 @@ exclude-result-prefixes="#all">
     
     <!-- TYPE MODE -->
         
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:TypeList">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:if test="doc-available(ac:document-uri(.))">
-                    <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
-                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="doc-available(ac:document-uri(.))">
+                        <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="."/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:for-each>
         </ul>
     </xsl:template>
