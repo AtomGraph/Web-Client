@@ -380,6 +380,22 @@ exclude-result-prefixes="#all">
 
     <!-- MAIN MODE -->
     
+    <xsl:template match="rdf:RDF[not(key('resources', $a:absolutePath))][key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Main" priority="1">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" select="'span12'" as="xs:string?"/>
+        
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+        
+            <xsl:apply-templates mode="bs2:Block"/>
+        </div>
+    </xsl:template>
+    
     <xsl:template match="rdf:RDF" mode="bs2:Main">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span8'" as="xs:string?"/>
