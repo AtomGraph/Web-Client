@@ -70,26 +70,29 @@ public final class LDT
     
     public static final DatatypeProperty paramName = m_model.createDatatypeProperty( NS + "paramName" );    
 
-    public static final AnnotationProperty template = m_model.createAnnotationProperty( NS + "template" );
+    // "extends" is a reserved keyword in Java, obviously
+    public static final ObjectProperty extends_ = m_model.createObjectProperty( NS + "extends" );
+
+    public static final DatatypeProperty path = m_model.createDatatypeProperty( NS + "path" );
     
-    public static final AnnotationProperty query = m_model.createAnnotationProperty( NS + "query" );
+    public static final ObjectProperty query = m_model.createObjectProperty( NS + "query" );
 
-    public static final AnnotationProperty update = m_model.createAnnotationProperty( NS + "update" );
+    public static final ObjectProperty update = m_model.createObjectProperty( NS + "update" );
 
-    public static final AnnotationProperty path = m_model.createAnnotationProperty( NS + "path" );
+    public static final DatatypeProperty match = m_model.createDatatypeProperty( NS + "match" );
 
-    public static final AnnotationProperty priority = m_model.createAnnotationProperty( NS + "priority" );
+    public static final DatatypeProperty priority = m_model.createDatatypeProperty( NS + "priority" );
 
-    public static final AnnotationProperty segment = m_model.createAnnotationProperty( NS + "segment" );
+    public static final DatatypeProperty segment = m_model.createDatatypeProperty( NS + "segment" );
 
-    public static final AnnotationProperty fragment = m_model.createAnnotationProperty( NS + "fragment" );
+    public static final DatatypeProperty fragment = m_model.createDatatypeProperty( NS + "fragment" );
 
-    public static final AnnotationProperty param = m_model.createAnnotationProperty( NS + "param" );
+    public static final ObjectProperty param = m_model.createObjectProperty( NS + "param" );
     
-    public static final AnnotationProperty loadClass = m_model.createAnnotationProperty( NS + "loadClass" );
+    public static final ObjectProperty loadClass = m_model.createObjectProperty( NS + "loadClass" );
 
-    public static final AnnotationProperty cacheControl = m_model.createAnnotationProperty( NS + "cacheControl" );
+    public static final DatatypeProperty cacheControl = m_model.createDatatypeProperty( NS + "cacheControl" );
     
-    public static final AnnotationProperty lang = m_model.createAnnotationProperty( NS + "lang" );
+    public static final ObjectProperty lang = m_model.createObjectProperty( NS + "lang" );
     
 }
