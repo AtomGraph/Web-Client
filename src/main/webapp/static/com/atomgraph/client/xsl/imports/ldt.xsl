@@ -28,7 +28,7 @@ xmlns:rdf="&rdf;"
 xmlns:ldt="&ldt;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="ldt:path/text() | ldt:skolemTemplate/text()">
+    <xsl:template match="ldt:match/text() | ldt:path/text()">
         <pre>
             <xsl:next-match/>
         </pre>

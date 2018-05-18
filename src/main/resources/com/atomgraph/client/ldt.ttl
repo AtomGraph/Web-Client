@@ -181,7 +181,6 @@
     rdfs:isDefinedBy : .
 
 :Template a rdfs:Class ;
-    rdfs:subClassOf rdfs:Class ;
     rdfs:label "Resource template" ;
     rdfs:comment "A class of RDF resources that share the same URI template and SPARQL query template" ;
     rdfs:isDefinedBy : .
