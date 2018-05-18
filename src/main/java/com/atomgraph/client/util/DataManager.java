@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
-public class DataManager extends com.atomgraph.core.util.jena.DataManager implements URIResolver
+public class DataManager extends com.atomgraph.core.util.jena.DataManager implements URIResolver // net.sf.saxon.NonDelegatingURIResolver ?
 {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
