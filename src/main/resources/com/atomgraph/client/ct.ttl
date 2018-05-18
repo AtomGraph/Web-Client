@@ -22,16 +22,16 @@
 
 # TEMPLATES
 
-:Document a rdfs:Class, ldt:Template ;
-    ldt:path "{path: .*}" ;
+:Document a ldt:Template ;
+    ldt:match "{path: .*}" ;
     ldt:query :Describe ;
     ldt:update :Delete ;
     rdfs:label "Document" ;
     rdfs:comment "Generic document resource" ;
     rdfs:isDefinedBy : .
 
-:SPARQLEndpoint a rdfs:Class, ldt:Template ;
-    ldt:path "/sparql" ;
+:SPARQLEndpoint a ldt:Template ;
+    ldt:match "/sparql" ;
     ldt:query :Describe ;
     ldt:param  :Query, :DefaultGraphURI, :NamedGraphURI ;
     # using-graph-uri - POST only
@@ -39,8 +39,8 @@
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy : .
 
-:GraphStore a rdfs:Class, ldt:Template ;
-    ldt:path "/service" ;
+:GraphStore a ldt:Template ;
+    ldt:match "/service" ;
     ldt:query :Describe ;
     ldt:param :Default, :Graph ;
     rdfs:label "Graph Store" ;
@@ -83,7 +83,7 @@
     spl:optional true ;
     rdfs:isDefinedBy : .
 
-# QUERIES
+# COMMANDS
 
 :Describe a sp:Describe, sp:Query ;
     sp:text """DESCRIBE ?this
@@ -94,8 +94,7 @@ WHERE {
     rdfs:isDefinedBy : .
 
 :Delete a sp:DeleteWhere, sp:Update ;
-      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-DELETE WHERE {
+      sp:text """DELETE WHERE {
     ?this ?p ?o
 }""" ;
     rdfs:label "Delete" ;

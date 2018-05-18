@@ -21,7 +21,7 @@
 : a ldt:Ontology ;
     owl:imports dht:, sp: ;
     owl:versionInfo "1.1.4" ;
-    rdfs:label "Topic hierarchy" ;
+    rdfs:label "Topic hierarchy templates" ;
     rdfs:comment "Document hierarchy with topic resources" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/topic-hierarchy/templates#" ;
@@ -30,21 +30,21 @@
 
 # TEMPLATES
 
-:Container a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf dht:Container ;
+:Container a ldt:Template ;
+    ldt:extends dht:Container ;
     ldt:query :DescribeWithChildrenTopics ;
     ldt:update :DeleteWithTopic ;
     rdfs:label "Container" ;
     rdfs:isDefinedBy : .
 
-:Item a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf ct:Document ;
+:Item a ldt:Template ;
+    ldt:extends ct:Document ;
     ldt:query :DescribeWithTopic ;
     ldt:update :DeleteWithTopic ;
     rdfs:label "Item" ;
     rdfs:isDefinedBy : .
 
-# QUERIES
+# COMMANDS
 
 :DescribeWithChildrenTopics a sp:Describe, sp:Query ;
     sp:text """PREFIX  sioc: <http://rdfs.org/sioc/ns#>

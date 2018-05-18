@@ -25,9 +25,9 @@
     vann:preferredNamespacePrefix "dht";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
-:Container a rdfs:Class, ldt:Template ;
-    rdfs:subClassOf ct:Document ;
-    ldt:path "{path: .*}/" ;
+:Container a ldt:Template ;
+    ldt:extends ct:Document ;
+    ldt:match "{path: .*}/" ;
     ldt:query :DescribeWithChildren ;
     ldt:param :ForClass, :Limit, :Offset, :OrderBy, :Desc ;
     rdfs:label "Container" ;
