@@ -149,9 +149,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             writer.write(model, baos, null);
             
             setParameters(XSLTBuilder.newInstance(getTransformerFactory()).
-                stylesheet(stylesheet).
-                document(new ByteArrayInputStream(baos.toByteArray())),
-                    getState(model, getRequestURI()), headerMap).
+                    stylesheet(stylesheet).
+                    document(new ByteArrayInputStream(baos.toByteArray())),
+                    getState(model, getAbsolutePath(), getRequestURI()),
+                    headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
                 transform();
@@ -188,15 +189,21 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	return -1;
     }
     
+    public URI getAbsolutePath()
+    {
+        return getUriInfo().getAbsolutePath();
+    }
+    
     public URI getRequestURI()
     {
         return getUriInfo().getRequestUri();
     }
     
-    public Resource getState(Model model, URI requestURI)
+    public Resource getState(Model model, URI absolutePath, URI requestURI)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
-	if (requestURI == null) throw new IllegalArgumentException("URI cannot be null");	
+	if (absolutePath == null) throw new IllegalArgumentException("URI cannot be null");	
+        if (requestURI == null) throw new IllegalArgumentException("URI cannot be null");	
         
         return model.createResource(requestURI.toString());
     }
@@ -278,7 +285,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 	if (state == null) throw new IllegalArgumentException("Resource cannot be null");        
 	if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
-        builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getUriInfo().getAbsolutePath()).
+        builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
         parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
         parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
         parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
