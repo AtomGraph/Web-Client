@@ -151,7 +151,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             setParameters(XSLTBuilder.newInstance(getTransformerFactory()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
-                    getState(model, getAbsolutePath(), getRequestURI()),
+                    getState(model),
                     headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
@@ -199,13 +199,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getUriInfo().getRequestUri();
     }
     
-    public Resource getState(Model model, URI absolutePath, URI requestURI)
+    public Resource getState(Model model)
     {
 	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
-	if (absolutePath == null) throw new IllegalArgumentException("URI cannot be null");	
-        if (requestURI == null) throw new IllegalArgumentException("URI cannot be null");	
         
-        return model.createResource(requestURI.toString());
+        return model.createResource(getRequestURI().toString());
     }
     
     public static Source getSource(Model model) throws IOException
