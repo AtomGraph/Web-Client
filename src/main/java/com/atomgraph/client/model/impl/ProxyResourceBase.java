@@ -225,10 +225,11 @@ public class ProxyResourceBase implements Resource
         ClientResponse cr = null;
         try
         {
-            cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
+            cr = webResource.type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
+                accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
                 post(ClientResponse.class, model);
-            ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntityInputStream());
+            Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
+            if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
             return rb.build();
         }
         finally
@@ -252,9 +253,10 @@ public class ProxyResourceBase implements Resource
         try
         {
             cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
+                accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
                 put(ClientResponse.class, model);
             ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntityInputStream());
+            if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
             return rb.build();
         }
         finally
@@ -271,9 +273,11 @@ public class ProxyResourceBase implements Resource
         ClientResponse cr = null;
         try
         {
-            cr = getWebResource().delete(ClientResponse.class);
+            cr = getWebResource().
+                accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+                delete(ClientResponse.class);
             ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntityInputStream());
+            if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
             return rb.build();
         }
         finally
