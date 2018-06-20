@@ -302,10 +302,11 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
 
             InputStream is = cr.getEntityInputStream();
+            byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse
             if (cr.getType() != null && cr.getType().getParameters().containsKey("charset"))
-                return new InputStreamReader(is, cr.getType().getParameters().get("charset")); // extract response content charset
+                return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getType().getParameters().get("charset")); // extract response content charset
             else
-                return new InputStreamReader(is);
+                return new InputStreamReader(new ByteArrayInputStream(bytes));
         }
         catch (IOException ex)
         {
