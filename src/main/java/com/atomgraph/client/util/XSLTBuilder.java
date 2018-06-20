@@ -41,14 +41,15 @@ import org.w3c.dom.Node;
  */
 public class XSLTBuilder
 {
+    
     private static final Logger log = LoggerFactory.getLogger(XSLTBuilder.class) ;
 
     private final SAXTransformerFactory factory;
     private final Map<String, Object> parameters = new HashMap<>();
     private final Map<String, String> outputProperties = new HashMap<>();
     private Templates templates = null;
-    private URIResolver resolver = null;
-    private Source doc = null;
+    private URIResolver uriResolver = null;
+    private Source source = null;
     private Result result = null;
     
     protected XSLTBuilder(SAXTransformerFactory factory)
@@ -66,7 +67,7 @@ public class XSLTBuilder
     public XSLTBuilder document(Source doc)
     {
 	if (log.isTraceEnabled()) log.trace("Loading document Source with system ID: {}", doc.getSystemId());
-	this.doc = doc;
+	this.source = doc;
 	return this;
     }
 
@@ -120,7 +121,6 @@ public class XSLTBuilder
 
     public XSLTBuilder stylesheet(File stylesheet) throws TransformerConfigurationException
     {
-        //long lastModified = stylesheet.lastModified();
         return stylesheet(new StreamSource(stylesheet));
     }
     
@@ -142,10 +142,10 @@ public class XSLTBuilder
 	return this;
     }
     
-    public XSLTBuilder resolver(URIResolver resolver)
+    public XSLTBuilder resolver(URIResolver uriResolver)
     {
-	if (log.isTraceEnabled()) log.trace("Setting URIResolver: {}", resolver);
-        this.resolver = resolver;
+	if (log.isTraceEnabled()) log.trace("Setting URIResolver: {}", uriResolver);
+        this.uriResolver = uriResolver;
 	return this;
     }
 
@@ -156,13 +156,13 @@ public class XSLTBuilder
 	return this;
     }
     
-    public void transform() throws TransformerException
+    protected Transformer getTransformer(Templates templates, Result result, URIResolver uriResolver, Map<String, Object> parameters, Map<String, String> outputProperties) throws TransformerConfigurationException
     {
-        TransformerHandler handler = factory.newTransformerHandler(templates);
+        TransformerHandler handler = getSAXTransformerFactory().newTransformerHandler(templates);
         handler.setResult(result);
         
 	Transformer transformer = handler.getTransformer();
-        transformer.setURIResolver(resolver);
+        transformer.setURIResolver(uriResolver);
         
         Iterator<Entry<String, Object>> paramIt = parameters.entrySet().iterator();
         while (paramIt.hasNext())
@@ -178,21 +178,58 @@ public class XSLTBuilder
             transformer.setOutputProperty(outputProperty.getKey(), outputProperty.getValue());
         }
         
-	if (log.isTraceEnabled())
-	{
-	    log.trace("TransformerHandler: {}", handler);
-	    log.trace("Transformer: {}", transformer);
-	    log.trace("Document: {}", doc);
-	    log.trace("Result: {}", result);
-	}
-        
-	transformer.transform(doc, result);
+        return transformer;
+    }
+    
+    protected Transformer getTransformer() throws TransformerConfigurationException
+    {
+        return getTransformer(getTemplates(), getResult(), getURIResolver(), getParameters(), getOutputProperties());
+    }
+    
+    public void transform() throws TransformerException
+    {       
+	getTransformer().transform(getSource(), getResult());
     }
 
     public XSLTBuilder result(Result result) throws TransformerConfigurationException
     {
 	this.result = result;
 	return this;
+    }
+    
+    protected SAXTransformerFactory getSAXTransformerFactory()
+    {
+        return factory;
+    }
+    
+    protected Templates getTemplates()
+    {
+        return templates;
+    }
+    
+    protected Result getResult()
+    {
+        return result;
+    }
+    
+    protected URIResolver getURIResolver()
+    {
+        return uriResolver;
+    }
+    
+    protected Map<String, Object> getParameters()
+    {
+        return parameters;
+    }
+    
+    protected Map<String, String> getOutputProperties()
+    {
+        return outputProperties;
+    }
+    
+    protected Source getSource()
+    {
+        return source;
     }
     
 }

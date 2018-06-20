@@ -65,6 +65,7 @@ import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.Locale;
 import javax.xml.transform.sax.SAXTransformerFactory;
+import net.sf.saxon.trans.UnparsedTextURIResolver;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Statement;
@@ -148,7 +149,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(model, baos, null);
             
-            setParameters(XSLTBuilder.newInstance(getTransformerFactory()).
+            setParameters(com.atomgraph.client.util.saxon.XSLTBuilder.newInstance(getTransformerFactory()).
+                    resolver((UnparsedTextURIResolver)getDataManager()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
                     getState(model),

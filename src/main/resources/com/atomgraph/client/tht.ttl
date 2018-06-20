@@ -82,7 +82,7 @@ WHERE
     rdfs:label "Describe with topic" ;
     rdfs:isDefinedBy : .
 
-:DeleteWithTopic a sp:DeleteWhere, sp:Update ; # <#Update> ;
+:DeleteWithTopic a sp:DeleteWhere, sp:Update ;
       sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 DELETE {
     ?this ?p ?o .

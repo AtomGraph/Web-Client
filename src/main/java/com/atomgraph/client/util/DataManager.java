@@ -37,9 +37,14 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.trans.UnparsedTextURIResolver;
+import net.sf.saxon.trans.XPathException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
-public class DataManager extends com.atomgraph.core.util.jena.DataManager implements URIResolver // net.sf.saxon.NonDelegatingURIResolver ?
+public class DataManager extends com.atomgraph.core.util.jena.DataManager implements URIResolver, UnparsedTextURIResolver // net.sf.saxon.NonDelegatingURIResolver ?
 {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
@@ -283,6 +288,33 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     public boolean isResolvingMapped()
     {
         return resolvingMapped;
+    }
+   
+    @Override
+    public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
+    {
+        ClientResponse cr = null;
+        try
+        {
+            cr = getClient().resource(uri).get(ClientResponse.class);
+
+            if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
+
+            InputStream is = cr.getEntityInputStream();
+            if (cr.getType() != null && cr.getType().getParameters().containsKey("charset"))
+                return new InputStreamReader(is, cr.getType().getParameters().get("charset")); // extract response content charset
+            else
+                return new InputStreamReader(is);
+        }
+        catch (IOException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
     }
     
 }

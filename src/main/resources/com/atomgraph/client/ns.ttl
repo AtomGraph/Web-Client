@@ -80,7 +80,7 @@
     rdfs:label "Map" ;
     rdfs:isDefinedBy : .
 
-<#GraphMode> a :Mode, :DocumentMode, :ContainerMode ;
+:GraphMode a :Mode, :DocumentMode, :ContainerMode ;
     rdfs:label "Graph" ;
     rdfs:isDefinedBy : .
 
