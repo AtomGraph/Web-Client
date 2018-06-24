@@ -1158,7 +1158,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Form"/>
+    <!-- <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Form"/> -->
     
     <!-- LEGEND -->
 
