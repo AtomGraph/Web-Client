@@ -20,8 +20,6 @@ import org.apache.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.net.URI;
 import java.util.ArrayList;
 import javax.ws.rs.DELETE;
@@ -43,7 +41,6 @@ import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
 import com.atomgraph.core.exception.NotFoundException;
-import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,14 +54,6 @@ import org.slf4j.LoggerFactory;
 public class ProxyResourceBase implements Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
-
-    public static final ClientConfig CLIENT_CONFIG;
-    
-    static 
-    {
-        CLIENT_CONFIG = new DefaultClientConfig();
-        CLIENT_CONFIG.getSingletons().add(new ModelProvider());
-    }
     
     private final Request request;
     private final HttpHeaders httpHeaders;
@@ -84,16 +73,11 @@ public class ProxyResourceBase implements Resource
      * @param accept response media type
      * @param mode layout mode
      * @param forClass instance class
+     * @param client
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
-            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass)
-    {
-        this(uriInfo, request, httpHeaders, mediaTypes, uri, accept, mode, forClass, Client.create(CLIENT_CONFIG));
-    }
-    
-    protected ProxyResourceBase(UriInfo uriInfo, Request request, HttpHeaders httpHeaders, MediaTypes mediaTypes,
-            URI uri, MediaType accept, URI mode, URI forClass,
-            Client client)
+            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass,
+            @Context Client client)
     {
         if (uri == null) throw new NotFoundException("Resource URI not supplied");
         this.request = request;
