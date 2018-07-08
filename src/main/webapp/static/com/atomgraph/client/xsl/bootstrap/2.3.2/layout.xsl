@@ -955,10 +955,12 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="bs2:Grid">
         <xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
-
+        <xsl:param name="sort-property" as="xs:anyURI?"/>
+        
         <xsl:variable name="thumbnail-items" as="element()*">
             <xsl:apply-templates mode="#current">
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
+                <xsl:sort select="if ($sort-property) then *[concat(namespace-uri(), local-name()) = $sort-property]/(text(), @rdf:resource, @rdf:nodeID) else ac:label(.)"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
@@ -970,7 +972,7 @@ exclude-result-prefixes="#all">
             </div>
         </xsl:for-each-group>
     </xsl:template>
-
+    
     <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about]" mode="bs2:Grid" priority="1">
