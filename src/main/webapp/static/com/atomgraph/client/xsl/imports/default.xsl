@@ -90,13 +90,31 @@ exclude-result-prefixes="#all">
     
     <!-- subject resource -->
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
-        <a href="{@rdf:about}" title="{@rdf:about}">
+        <xsl:param name="href" select="@rdf:about" as="xs:anyURI"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
+        
+        <a href="{$href}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:apply-templates select="." mode="ac:label"/>
         </a>
     </xsl:template>
     
     <xsl:template match="*[@rdf:nodeID]" mode="xhtml:Anchor">
-        <span id="{@rdf:nodeID}" title="{@rdf:nodeID}">
+        <xsl:param name="id" select="@rdf:nodeID" as="xs:string"/>
+        <xsl:param name="title" select="@rdf:nodeID" as="xs:string?"/>
+
+        <span id="{$id}">
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+
             <xsl:apply-templates select="." mode="ac:label"/>
         </span>
     </xsl:template>
