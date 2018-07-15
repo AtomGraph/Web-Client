@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.exception.ClientErrorException;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  *
@@ -32,9 +33,12 @@ public class ClientErrorExceptionMapper extends ExceptionMapperBase implements E
     @Override
     public Response toResponse(ClientErrorException ex)
     {
+        Resource exRes = toResource(ex, Response.Status.fromStatusCode(ex.getClientResponse().getStatus()), null);
+        
+        if (ex.getModel() != null) exRes.getModel().add(ex.getModel()); // tunnel exception Model, e.g. with RequestAccess
+        
         return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(toResource(ex, Response.Status.fromStatusCode(ex.getClientResponse().getStatus()), null).
-                getModel(), getVariants()).
+            getResponseBuilder(exRes.getModel(), getVariants()).
             status(ex.getClientResponse().getStatus()).
             build();
     }

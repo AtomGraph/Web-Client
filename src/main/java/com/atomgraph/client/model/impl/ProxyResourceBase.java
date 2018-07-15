@@ -172,7 +172,10 @@ public class ProxyResourceBase implements Resource
                     }
                 }
 
-                throw new ClientErrorException(cr);
+                if (cr.hasEntity())
+                    throw new ClientErrorException(cr, cr.getEntity(Model.class));
+                else 
+                    throw new ClientErrorException(cr);
             }
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
