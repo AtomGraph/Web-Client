@@ -60,16 +60,15 @@ import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.client.vocabulary.LDTDH;
-import com.atomgraph.client.vocabulary.SPL;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
 import org.apache.jena.ontology.OntDocumentManager;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +87,21 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 {
     private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
+    private static final Set<String> NAMESPACES;
+    static
+    {
+        NAMESPACES = new HashSet<>();
+        NAMESPACES.add(AC.NS);
+    }
+    
     private final Templates templates;
-    private final Map<Resource, MediaType> modeMediaTypeMap = new HashMap<>();
+    private final Map<Resource, MediaType> modeMediaTypeMap = new HashMap<>(); // would String not suffice as the key?
     
     {
         modeMediaTypeMap.put(AC.EditMode, MediaType.TEXT_HTML_TYPE);
         modeMediaTypeMap.put(AC.MapMode, MediaType.TEXT_HTML_TYPE);
     }
-    
+
     @Context private UriInfo uriInfo;
     @Context private Request request;
     @Context private HttpHeaders httpHeaders;
@@ -110,8 +116,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      */
     public ModelXSLTWriter(Templates templates)
     {
-	if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
-	this.templates = templates;
+        if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
+        this.templates = templates;
     }
 
     public Providers getProviders()
@@ -121,8 +127,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public DataManager getDataManager()
     {
-	ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
-	return cr.getContext(DataManager.class);
+        ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+        return cr.getContext(DataManager.class);
     }
     
     public SAXTransformerFactory getTransformerFactory()
@@ -138,10 +144,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     @Override
     public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException
     {
-	if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
+        if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
-	try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
-	{
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
             Templates stylesheet = getTemplates();
             
             //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
@@ -153,17 +159,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                     resolver((UnparsedTextURIResolver)getDataManager()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
-                    getState(model),
+                    //getState(model),
                     headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
                 transform();
-	}
-	catch (TransformerException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR); // TO-DO: make Mapper
-	}
+        }
+        catch (TransformerException ex)
+        {
+            if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
+            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR); // TO-DO: make Mapper
+        }
     }
 
     public void write(Model model, OutputStream entityStream) throws TransformerException
@@ -176,7 +182,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             document(new ByteArrayInputStream(baos.toByteArray())).
             resolver(getDataManager()).
             result(new StreamResult(entityStream)).
-            transform();        
+            transform();
     }
     
     @Override
@@ -188,7 +194,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     @Override
     public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	return -1;
+        return -1;
     }
     
     public URI getAbsolutePath()
@@ -201,19 +207,19 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getUriInfo().getRequestUri();
     }
     
-    public Resource getState(Model model)
-    {
-	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
-        
-        return model.createResource(getRequestURI().toString());
-    }
+//    public Resource getState(Model model)
+//    {
+//        if (model == null) throw new IllegalArgumentException("Model cannot be null");	
+//        
+//        return model.createResource(getRequestURI().toString());
+//    }
     
     public static Source getSource(Model model) throws IOException
     {
-	if (model == null) throw new IllegalArgumentException("Model cannot be null");	
-	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
-	
-	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");	
+        if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
+
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
             model.write(stream, RDFLanguages.RDFXML.getName(), null);
 
@@ -224,12 +230,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public static Source getSource(OntModel ontModel, boolean writeAll) throws IOException
     {
-	if (!writeAll) return getSource(ontModel);
-	if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");	
-	
-	if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
-	
-	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        if (!writeAll) return getSource(ontModel);
+        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");	
+
+        if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
+
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
             ontModel.writeAll(stream, Lang.RDFXML.getName(), null);
 
@@ -240,7 +246,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public UriInfo getUriInfo()
     {
-	return uriInfo;
+        return uriInfo;
     }
 
     public Request getRequest()
@@ -250,7 +256,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public HttpHeaders getHttpHeaders()
     {
-	return httpHeaders;
+        return httpHeaders;
     }
 
     public HttpServletRequest getHttpServletRequest()
@@ -279,11 +285,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public XSLTBuilder setParameters(XSLTBuilder builder, Resource state, MultivaluedMap<String, Object> headerMap) throws TransformerException
+    public XSLTBuilder setParameters(XSLTBuilder builder, MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
-	if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
-	if (state == null) throw new IllegalArgumentException("Resource cannot be null");        
-	if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
+        if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
+        if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
         builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
         parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
@@ -293,16 +298,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      
         try
         {
+            Resource mode = getMode(getUriInfo(), getSupportedNamespaces());
+            if (mode != null) builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), mode.getURI());
+            
             URI typeHref = getLinkHref(headerMap, "Link", RDF.type.getLocalName());
-            if (typeHref != null)
-                builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
+            if (typeHref != null) builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
 
             URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI());
-            if (baseHref != null)
-                builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
+            if (baseHref != null) builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
             
             URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
-            if (ontologyHref != null)                    
+            if (ontologyHref != null)
             {
                 builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);            
 
@@ -321,48 +327,53 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             if (log.isErrorEnabled()) log.error("Error reading Source stream");
             throw new TransformerException(ex);
         }
-	
+
         Object query = headerMap.getFirst("Query");
-	if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
+        if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
 
         // workaround for Google Maps and Saxon-CE
         // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
         // https://saxonica.plan.io/issues/1447
         // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-        MediaType customMediaType = getCustomMediaType(state);
+        MediaType customMediaType = getCustomMediaType(getMode(getUriInfo(), getSupportedNamespaces()));
         if (customMediaType != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
+        {
+            if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
             List<Object> contentTypes = new ArrayList();
             contentTypes.add(customMediaType);
             headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
-	}
+        }
         
-	MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
-	if (contentType != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
-	    builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
-	}
-	Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
-	if (locale != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
-	    builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
-	}
+    MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
+    if (contentType != null)
+    {
+        if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
+        builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
+    }
+    Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+    if (locale != null)
+    {
+        if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
+        builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
+    }
         
         return builder;
     }
     
+    public Set<String> getSupportedNamespaces()
+    {
+        return NAMESPACES;
+    }
+    
     public OntModel getOntModel(MultivaluedMap<String, Object> headerMap, String ontologyURI)
     {
-        return getOntModel(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));        
+        return getOntModel(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));
     }
     
     public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, String rel) throws URISyntaxException
     {
-	if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
-	if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
+        if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
+        if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
         if (rel == null) throw new IllegalArgumentException("Property Map cannot be null");
         
         List<Object> links = headerMap.get(headerName);
@@ -405,8 +416,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public String getRulesString(MultivaluedMap<String, Object> headerMap, String headerName)
     {
-	if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
-	if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
+        if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
+        if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
 
         Object rules = headerMap.getFirst(headerName);
         if (rules != null) return rules.toString();
@@ -419,51 +430,58 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return new OntologyProvider().getOntModel(OntDocumentManager.getInstance(), ontologyURI, ontModelSpec);
     }
 
-    public MediaType getCustomMediaType(Resource state)
+    public MediaType getCustomMediaType(Resource mode)
     {
-	if (state == null) throw new IllegalArgumentException("Resource cannot be null");
+        if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
         
-        Resource mode = null;
+        if (getUriInfo().getQueryParameters().containsKey(LDTDH.forClass.getLocalName())&& getModeMediaTypeMap().containsKey(AC.EditMode))
+            return getModeMediaTypeMap().get(AC.EditMode); // this could be solved using a dummy ac:ConstructMode instead.
 
-        if (getArgument(state, LDTDH.forClass) != null)
-            mode = AC.EditMode; // this could be solved using a dummy ac:ConstructMode instead
-        else
-            if (getArgument(state, AC.mode) != null)
-                mode = getArgument(state, AC.mode).getProperty(RDF.value).getResource();
-        
-        if (mode != null && getModeMediaTypeMap().containsKey(mode))
-             return getModeMediaTypeMap().get(mode);
-         
+        if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
+
         return null;
     }
-
-    public Resource getArgument(Resource state, Property predicate)
+    
+    public Resource getMode(UriInfo uriInfo, Set<String> namespaces) // mode is a client parameter, no need to parse hypermedia state here
     {
-	if (state == null) throw new IllegalArgumentException("Resource cannot be null");
-	if (predicate == null) throw new IllegalArgumentException("Property cannot be null");
-        
-        StmtIterator it = state.listProperties(LDT.arg);
-        
-        try
+        List<String> modeParamValues = uriInfo.getQueryParameters().get(AC.mode.getLocalName());
+        for (String modeParamValue : modeParamValues)
         {
-            while (it.hasNext())
-            {
-                Statement stmt = it.next();
-                Resource arg = stmt.getObject().asResource();
-                if (arg.getProperty(SPL.predicate).getResource().equals(predicate)) return arg;
-            }
-        }
-        finally
-        {
-            it.close();
+            Resource paramMode = ResourceFactory.createResource(modeParamValue);
+            if (namespaces.contains(paramMode.getNameSpace()) && getModeMediaTypeMap().containsKey(paramMode)) // only consider values from the client namespace
+                return paramMode;
         }
         
         return null;
     }
     
+//    public Resource getArgument(Resource state, Property predicate)
+//    {
+//        if (state == null) throw new IllegalArgumentException("Resource cannot be null");
+//        if (predicate == null) throw new IllegalArgumentException("Property cannot be null");
+//        
+//        StmtIterator it = state.listProperties(LDT.arg);
+//        
+//        try
+//        {
+//            while (it.hasNext())
+//            {
+//                Statement stmt = it.next();
+//                Resource arg = stmt.getObject().asResource();
+//                if (arg.getProperty(SPL.predicate).getResource().equals(predicate)) return arg;
+//            }
+//        }
+//        finally
+//        {
+//            it.close();
+//        }
+//        
+//        return null;
+//    }
+    
     public IRI checkURI(String classIRIStr)
     {
-	if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");
+        if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");
 
         IRI classIRI = IRIFactory.iriImplementation().create(classIRIStr);
         // throws Exceptions on bad URIs:
