@@ -38,10 +38,15 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
+import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
 import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.model.Resource;
+import com.atomgraph.core.util.Link;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,13 +192,23 @@ public class ProxyResourceBase implements Resource
                             add().build());
 
             // move headers to HypermediaFilter?
+            if (cr.getHeaders().get("Link") != null)
+                for (String linkValue : cr.getHeaders().get("Link"))
+                {
+                    try
+                    {
+                        Link link = Link.valueOf(linkValue);
+                        if (link.getRel().equals(LDT.ontology.getURI()) || link.getRel().equals(LDT.base.getURI())) // only recognized relationships are forwarded
+                            rb.header("Link", linkValue);
+                    } catch (URISyntaxException ex)
+                    {
+                        if (log.isErrorEnabled()) log.debug("Could parse Link URI: {}", ex.getInput());
+                    }
+                }
             /*
-            if (resp.getHeaders().get("Link") != null)
-                for (String linkValue : resp.getHeaders().get("Link"))
-                    bld.header("Link", linkValue);
             if (resp.getHeaders().get("Rules") != null)
                 for (String linkValue : resp.getHeaders().get("Rules"))
-                    bld.header("Rules", linkValue);
+                    rb.header("Rules", linkValue);
             */
 
             return rb.build();
