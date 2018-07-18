@@ -315,7 +315,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
             if (mode != null)
             {
-                builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), mode.getURI());
+                builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), URI.create(mode.getURI()));
                 
                 // workaround for Google Maps and Saxon-CE
                 // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
