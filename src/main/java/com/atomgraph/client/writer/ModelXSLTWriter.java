@@ -23,7 +23,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
-import org.apache.jena.vocabulary.RDF;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -207,16 +206,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getUriInfo().getRequestUri();
     }
     
-//    public Resource getState(Model model)
-//    {
-//        if (model == null) throw new IllegalArgumentException("Model cannot be null");	
-//        
-//        return model.createResource(getRequestURI().toString());
-//    }
-    
     public static Source getSource(Model model) throws IOException
     {
-        if (model == null) throw new IllegalArgumentException("Model cannot be null");	
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
         if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
@@ -231,7 +223,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     public static Source getSource(OntModel ontModel, boolean writeAll) throws IOException
     {
         if (!writeAll) return getSource(ontModel);
-        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");	
+        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
 
         if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
 
@@ -298,7 +290,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      
         try
         {
-            Resource mode = getMode(getUriInfo(), getSupportedNamespaces());
+            URI templateHref = getLinkHref(headerMap, "Link", LDT.template.getLocalName());
+            builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateHref);
+                    
+            Resource mode = getMode(getUriInfo(), getSupportedNamespaces()); // check if mode URL parameter is provided
+            if (mode == null && templateHref != null) // if not, attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
+            {
+                OntModel sitemap = getOntDocumentManager().getOntology(templateHref.toString(), OntModelSpec.OWL_MEM);
+                Resource template = sitemap.getResource(templateHref.toString()); // matched template
+                mode = template.getPropertyResourceValue(AC.mode);
+            }
+            
             if (mode != null)
             {
                 builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), mode.getURI());
@@ -317,9 +319,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 }
             }
             
-            URI typeHref = getLinkHref(headerMap, "Link", RDF.type.getLocalName());
-            if (typeHref != null) builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
-
             URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI());
             if (baseHref != null) builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
             
@@ -366,6 +365,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     public Set<String> getSupportedNamespaces()
     {
         return NAMESPACES;
+    }
+    
+    public OntDocumentManager getOntDocumentManager()
+    {
+        return OntDocumentManager.getInstance();
     }
     
     public OntModel getOntModel(MultivaluedMap<String, Object> headerMap, String ontologyURI)
