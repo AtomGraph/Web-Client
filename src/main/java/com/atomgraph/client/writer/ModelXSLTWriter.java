@@ -290,17 +290,29 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      
         try
         {
-            URI templateHref = getLinkHref(headerMap, "Link", LDT.template.getLocalName());
+            Resource mode = getMode(getUriInfo(), getSupportedNamespaces()); // check if explicit mode URL parameter is provided
+
+            URI templateHref = getLinkHref(headerMap, "Link", LDT.template.getURI());
             builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateHref);
-                    
-            Resource mode = getMode(getUriInfo(), getSupportedNamespaces()); // check if mode URL parameter is provided
-            if (mode == null && templateHref != null) // if not, attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
-            {
-                OntModel sitemap = getOntDocumentManager().getOntology(templateHref.toString(), OntModelSpec.OWL_MEM);
-                Resource template = sitemap.getResource(templateHref.toString()); // matched template
-                mode = template.getPropertyResourceValue(AC.mode);
-            }
+
+            URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI());
+            if (baseHref != null) builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
             
+            URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
+            if (ontologyHref != null)
+            {
+                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);
+
+                OntModel sitemap = getOntModel(headerMap, ontologyHref.toString());
+                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
+                
+                if (mode == null && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
+                {
+                    Resource template = sitemap.getResource(templateHref.toString()); // matched template
+                    mode = template.getPropertyResourceValue(AC.mode);
+                }
+            }
+
             if (mode != null)
             {
                 builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), mode.getURI());
@@ -318,20 +330,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                     headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
                 }
             }
-            
-            URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI());
-            if (baseHref != null) builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
-            
-            URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
-            if (ontologyHref != null)
-            {
-                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);
 
-                // TO-DO: remove from the Client writer?
-                OntModel ontModel = getOntModel(headerMap, ontologyHref.toString());
-                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(ontModel, true));
-            }
-            
             Object query = headerMap.getFirst("Query");
             if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
 
@@ -434,7 +433,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
     {
-        return new OntologyProvider().getOntModel(OntDocumentManager.getInstance(), ontologyURI, ontModelSpec);
+        return new OntologyProvider().getOntModel(getOntDocumentManager(), ontologyURI, ontModelSpec);
     }
 
     public MediaType getCustomMediaType(Resource mode)
