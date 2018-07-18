@@ -455,8 +455,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             {
                 Resource paramMode = ResourceFactory.createResource(modeParamValue);
                 // only consider values from the known namespaces
-                if (namespaces.contains(paramMode.getNameSpace()) && getModeMediaTypeMap().containsKey(paramMode))
-                    return paramMode;
+                if (namespaces.contains(paramMode.getNameSpace())) return paramMode;
             }
         }
         
