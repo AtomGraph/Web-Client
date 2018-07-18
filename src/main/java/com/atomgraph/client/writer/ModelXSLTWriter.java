@@ -444,12 +444,17 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public Resource getMode(UriInfo uriInfo, Set<String> namespaces) // mode is a client parameter, no need to parse hypermedia state here
     {
-        List<String> modeParamValues = uriInfo.getQueryParameters().get(AC.mode.getLocalName());
-        for (String modeParamValue : modeParamValues)
+        if (uriInfo.getQueryParameters().containsKey(AC.mode.getLocalName()))
         {
-            Resource paramMode = ResourceFactory.createResource(modeParamValue);
-            if (namespaces.contains(paramMode.getNameSpace()) && getModeMediaTypeMap().containsKey(paramMode)) // only consider values from the client namespace
-                return paramMode;
+            // matching parameter names not to namespace URIs, but to local names instead!
+            List<String> modeParamValues = uriInfo.getQueryParameters().get(AC.mode.getLocalName());
+            for (String modeParamValue : modeParamValues)
+            {
+                Resource paramMode = ResourceFactory.createResource(modeParamValue);
+                // only consider values from the known namespaces
+                if (namespaces.contains(paramMode.getNameSpace()) && getModeMediaTypeMap().containsKey(paramMode))
+                    return paramMode;
+            }
         }
         
         return null;
