@@ -299,7 +299,23 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         try
         {
             Resource mode = getMode(getUriInfo(), getSupportedNamespaces());
-            if (mode != null) builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), mode.getURI());
+            if (mode != null)
+            {
+                builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), mode.getURI());
+                
+                // workaround for Google Maps and Saxon-CE
+                // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
+                // https://saxonica.plan.io/issues/1447
+                // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
+                MediaType customMediaType = getCustomMediaType(mode);
+                if (customMediaType != null)
+                {
+                    if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
+                    List<Object> contentTypes = new ArrayList();
+                    contentTypes.add(customMediaType);
+                    headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
+                }
+            }
             
             URI typeHref = getLinkHref(headerMap, "Link", RDF.type.getLocalName());
             if (typeHref != null) builder.parameter("{" + RDF.type.getNameSpace() + "}" + RDF.type.getLocalName(), typeHref);
@@ -310,12 +326,30 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
             if (ontologyHref != null)
             {
-                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);            
+                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);
 
                 // TO-DO: remove from the Client writer?
                 OntModel ontModel = getOntModel(headerMap, ontologyHref.toString());
                 builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(ontModel, true));
             }
+            
+            Object query = headerMap.getFirst("Query");
+            if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
+
+            MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
+            if (contentType != null)
+            {
+                if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
+                builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
+            }
+            Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+            if (locale != null)
+            {
+                if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
+                builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
+            }
+
+            return builder;
         }
         catch (URISyntaxException ex)
         {
@@ -327,37 +361,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             if (log.isErrorEnabled()) log.error("Error reading Source stream");
             throw new TransformerException(ex);
         }
-
-        Object query = headerMap.getFirst("Query");
-        if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
-
-        // workaround for Google Maps and Saxon-CE
-        // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
-        // https://saxonica.plan.io/issues/1447
-        // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-        MediaType customMediaType = getCustomMediaType(getMode(getUriInfo(), getSupportedNamespaces()));
-        if (customMediaType != null)
-        {
-            if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
-            List<Object> contentTypes = new ArrayList();
-            contentTypes.add(customMediaType);
-            headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
-        }
-        
-    MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
-    if (contentType != null)
-    {
-        if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
-        builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
-    }
-    Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
-    if (locale != null)
-    {
-        if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
-        builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
-    }
-        
-        return builder;
     }
     
     public Set<String> getSupportedNamespaces()

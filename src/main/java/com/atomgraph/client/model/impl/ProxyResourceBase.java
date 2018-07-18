@@ -200,7 +200,8 @@ public class ProxyResourceBase implements Resource
                         Link link = Link.valueOf(linkValue);
                         if (link.getRel().equals(LDT.ontology.getURI()) || link.getRel().equals(LDT.base.getURI())) // only recognized relationships are forwarded
                             rb.header("Link", linkValue);
-                    } catch (URISyntaxException ex)
+                    }
+                    catch (URISyntaxException ex)
                     {
                         if (log.isErrorEnabled()) log.debug("Could parse Link URI: {}", ex.getInput());
                     }
