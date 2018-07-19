@@ -19,6 +19,7 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 
 /**
  *
@@ -41,5 +42,7 @@ public class SPL
     }
     
     public static final ObjectProperty predicate = m_model.createObjectProperty( NS + "predicate" );
+
+    public static final Property defaultValue = m_model.createProperty( NS + "defaultValue" );
 
 }

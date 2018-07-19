@@ -55,10 +55,12 @@ import org.apache.jena.riot.checker.CheckerIRI;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.OntologyProvider;
+import com.atomgraph.client.util.Template;
 import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.client.vocabulary.LDTDH;
+import com.atomgraph.client.vocabulary.SPL;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.HashSet;
@@ -308,8 +310,13 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 
                 if (mode == null && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
                 {
-                    Resource template = sitemap.getResource(templateHref.toString()); // matched template
-                    mode = template.getPropertyResourceValue(AC.mode);
+                    Template template = new Template(sitemap.getResource(templateHref.toString()));
+                    Map<Resource, Resource> params = template.getParameters();
+                    if (params.containsKey(AC.mode))
+                    {
+                        Resource param = params.get(AC.mode);
+                        mode = param.getPropertyResourceValue(SPL.defaultValue);
+                    }
                 }
             }
 
