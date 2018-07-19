@@ -76,14 +76,14 @@ public class Template
         }
 
         // walk recursively up the super-template chain (if any)
-        StmtIterator extendsIt = getTemplate().listProperties(LDT.extends_);
+        StmtIterator extendsIt = template.listProperties(LDT.extends_);
         try
         {
             while(extendsIt.hasNext())
             {
                 Statement stmt = extendsIt.next();
                 if (!stmt.getObject().isResource())
-                    throw new OntologyException(getTemplate(), LDT.extends_, "Value is not a resource");
+                    throw new OntologyException(template, LDT.extends_, "Value is not a resource");
                 
                 Resource superTemplate = stmt.getResource();
                 params.putAll(getParameters(superTemplate, params));
