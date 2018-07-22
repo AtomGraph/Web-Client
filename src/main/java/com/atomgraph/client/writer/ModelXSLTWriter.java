@@ -474,30 +474,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return null;
     }
     
-//    public Resource getArgument(Resource state, Property predicate)
-//    {
-//        if (state == null) throw new IllegalArgumentException("Resource cannot be null");
-//        if (predicate == null) throw new IllegalArgumentException("Property cannot be null");
-//        
-//        StmtIterator it = state.listProperties(LDT.arg);
-//        
-//        try
-//        {
-//            while (it.hasNext())
-//            {
-//                Statement stmt = it.next();
-//                Resource arg = stmt.getObject().asResource();
-//                if (arg.getProperty(SPL.predicate).getResource().equals(predicate)) return arg;
-//            }
-//        }
-//        finally
-//        {
-//            it.close();
-//        }
-//        
-//        return null;
-//    }
-    
     public IRI checkURI(String classIRIStr)
     {
         if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");
