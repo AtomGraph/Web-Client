@@ -446,9 +446,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     public MediaType getCustomMediaType(Resource mode)
     {
         if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
-        
-        if (getUriInfo().getQueryParameters().containsKey(LDTDH.forClass.getLocalName())&& getModeMediaTypeMap().containsKey(AC.EditMode))
-            return getModeMediaTypeMap().get(AC.EditMode); // this could be solved using a dummy ac:ConstructMode instead.
+
 
         if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
 
@@ -457,6 +455,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public Resource getMode(UriInfo uriInfo, Set<String> namespaces) // mode is a client parameter, no need to parse hypermedia state here
     {
+        if (uriInfo.getQueryParameters().containsKey(LDTDH.forClass.getLocalName())) return AC.EditMode;
+        
         if (uriInfo.getQueryParameters().containsKey(AC.mode.getLocalName()))
         {
             // matching parameter names not to namespace URIs, but to local names instead!
