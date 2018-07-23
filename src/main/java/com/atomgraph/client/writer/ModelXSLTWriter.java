@@ -320,26 +320,20 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 }
             }
 
-            if (mode != null)
-            {
-                builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), URI.create(mode.getURI()));
-                
-                // workaround for Google Maps and Saxon-CE
-                // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
-                // https://saxonica.plan.io/issues/1447
-                // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-                MediaType customMediaType = getCustomMediaType(mode);
-                if (customMediaType != null)
-                {
-                    if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
-                    List<Object> contentTypes = new ArrayList();
-                    contentTypes.add(customMediaType);
-                    headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
-                }
-            }
+            if (mode != null) builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), URI.create(mode.getURI()));
 
-            Object query = headerMap.getFirst("Query");
-            if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
+            // workaround for Google Maps and Saxon-CE
+            // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
+            // https://saxonica.plan.io/issues/1447
+            // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
+            MediaType customMediaType = getCustomMediaType(mode);
+            if (customMediaType != null)
+            {
+                if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
+                List<Object> contentTypes = new ArrayList();
+                contentTypes.add(customMediaType);
+                headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
+            }
 
             MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
             if (contentType != null)
@@ -354,6 +348,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
             }
 
+            Object query = headerMap.getFirst("Query");
+            if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
+            
             return builder;
         }
         catch (URISyntaxException ex)
@@ -445,11 +442,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public MediaType getCustomMediaType(Resource mode)
     {
-        if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
+        /// if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
 
         if (getUriInfo().getQueryParameters().containsKey(LDTDH.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
 
-        if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
+        if (mode != null && getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
 
         return null;
     }
