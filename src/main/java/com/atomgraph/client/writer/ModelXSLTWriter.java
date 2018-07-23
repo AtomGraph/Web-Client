@@ -447,6 +447,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
 
+        if (getUriInfo().getQueryParameters().containsKey(LDTDH.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
+
         if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
 
         return null;
@@ -461,8 +463,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (namespaces == null) throw new IllegalArgumentException("Namespace Set cannot be null");
-
-        if (uriInfo.getQueryParameters().containsKey(LDTDH.forClass.getLocalName())) return AC.EditMode;
         
         if (uriInfo.getQueryParameters().containsKey(AC.mode.getLocalName()))
         {
