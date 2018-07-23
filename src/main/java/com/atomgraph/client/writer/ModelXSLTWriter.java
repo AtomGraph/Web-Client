@@ -96,11 +96,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     }
     
     private final Templates templates;
-    private final Map<Resource, MediaType> modeMediaTypeMap = new HashMap<>(); // would String not suffice as the key?
+    private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>(); // would String not suffice as the key?
     
     {
-        modeMediaTypeMap.put(AC.EditMode, MediaType.TEXT_HTML_TYPE);
-        modeMediaTypeMap.put(AC.MapMode, MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(URI.create(AC.EditMode.getURI()), MediaType.TEXT_HTML_TYPE);
+        modeMediaTypeMap.put(URI.create(AC.MapMode.getURI()), MediaType.TEXT_HTML_TYPE);
     }
 
     @Context private UriInfo uriInfo;
@@ -258,7 +258,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return httpServletRequest;
     }
 
-    public Map<Resource, MediaType> getModeMediaTypeMap()
+    public Map<URI, MediaType> getModeMediaTypeMap()
     {
         return modeMediaTypeMap;
     }
@@ -292,7 +292,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      
         try
         {
-            Resource mode = getMode(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
+            List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
 
             URI templateHref = getLinkHref(headerMap, "Link", LDT.template.getURI());
             builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateHref);
@@ -308,25 +308,25 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 OntModel sitemap = getOntModel(headerMap, ontologyHref.toString());
                 builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
                 
-                if (mode == null && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
+                if (modes.isEmpty() && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
                 {
                     Template template = new Template(sitemap.getResource(templateHref.toString()));
                     Map<Resource, Resource> params = template.getParameters();
                     if (params.containsKey(AC.mode))
                     {
                         Resource param = params.get(AC.mode);
-                        mode = param.getPropertyResourceValue(SPL.defaultValue);
+                        modes.add(URI.create(param.getPropertyResourceValue(SPL.defaultValue).getURI()));
                     }
                 }
             }
 
-            if (mode != null) builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), URI.create(mode.getURI()));
+            builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), modes);
 
             // workaround for Google Maps and Saxon-CE
             // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
             // https://saxonica.plan.io/issues/1447
             // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-            MediaType customMediaType = getCustomMediaType(mode);
+            MediaType customMediaType = getCustomMediaType(modes);
             if (customMediaType != null)
             {
                 if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
@@ -440,26 +440,29 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return new OntologyProvider().getOntModel(getOntDocumentManager(), ontologyURI, ontModelSpec);
     }
 
-    public MediaType getCustomMediaType(Resource mode)
+    public MediaType getCustomMediaType(List<URI> modes)
     {
         /// if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
 
         if (getUriInfo().getQueryParameters().containsKey(LDTDH.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
 
-        if (mode != null && getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
+        for (URI mode : modes)
+            if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
 
         return null;
     }
     
-    public Resource getMode(Set<String> namespaces)
+    public List<URI> getModes(Set<String> namespaces)
     {
-        return getMode(getUriInfo(), namespaces);
+        return getModes(getUriInfo(), namespaces);
     }
     
-    public Resource getMode(UriInfo uriInfo, Set<String> namespaces) // mode is a client parameter, no need to parse hypermedia state here
+    public List<URI> getModes(UriInfo uriInfo, Set<String> namespaces) // mode is a client parameter, no need to parse hypermedia state here
     {
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (namespaces == null) throw new IllegalArgumentException("Namespace Set cannot be null");
+        
+        List<URI> modes = new ArrayList<>();
         
         if (uriInfo.getQueryParameters().containsKey(AC.mode.getLocalName()))
         {
@@ -469,11 +472,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             {
                 Resource paramMode = ResourceFactory.createResource(modeParamValue);
                 // only consider values from the known namespaces
-                if (namespaces.contains(paramMode.getNameSpace())) return paramMode;
+                if (namespaces.contains(paramMode.getNameSpace())) modes.add(URI.create(modeParamValue));
             }
         }
         
-        return null;
+        return modes;
     }
     
     public IRI checkURI(String classIRIStr)
