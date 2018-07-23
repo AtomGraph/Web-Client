@@ -292,7 +292,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      
         try
         {
-            Resource mode = getMode(getUriInfo(), getSupportedNamespaces()); // check if explicit mode URL parameter is provided
+            Resource mode = getMode(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
 
             URI templateHref = getLinkHref(headerMap, "Link", LDT.template.getURI());
             builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateHref);
@@ -450,6 +450,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
 
         return null;
+    }
+    
+    public Resource getMode(Set<String> namespaces)
+    {
+        return getMode(getUriInfo(), namespaces);
     }
     
     public Resource getMode(UriInfo uriInfo, Set<String> namespaces) // mode is a client parameter, no need to parse hypermedia state here
