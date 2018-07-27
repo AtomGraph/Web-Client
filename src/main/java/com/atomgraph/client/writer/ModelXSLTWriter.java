@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.writer;
 
+import com.atomgraph.client.exception.OntologyException;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
@@ -55,12 +56,10 @@ import org.apache.jena.riot.checker.CheckerIRI;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.OntologyProvider;
-import com.atomgraph.client.util.Template;
 import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.client.vocabulary.LDTDH;
-import com.atomgraph.client.vocabulary.SPL;
 import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.HashSet;
@@ -70,6 +69,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -310,12 +311,31 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 
                 if (modes.isEmpty() && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
                 {
-                    Template template = new Template(sitemap.getResource(templateHref.toString()));
-                    Map<Resource, Resource> params = template.getParameters();
-                    if (params.containsKey(AC.mode))
+//                    Template template = new Template(sitemap.getResource(templateHref.toString()));
+//                    Map<Resource, Resource> params = template.getParameters();
+//                    if (params.containsKey(AC.mode))
+//                    {
+//                        Resource param = params.get(AC.mode);
+//                        modes.add(URI.create(param.getPropertyResourceValue(SPL.defaultValue).getURI()));
+//                    }
+                    Resource template = sitemap.getResource(templateHref.toString());
+                    
+                    StmtIterator it = template.listProperties(AC.mode);
+                    try
                     {
-                        Resource param = params.get(AC.mode);
-                        modes.add(URI.create(param.getPropertyResourceValue(SPL.defaultValue).getURI()));
+                        while (it.hasNext())
+                        {
+                            Statement modeStmt = it.next();
+                            
+                            if (!modeStmt.getObject().isURIResource())
+                                throw new OntologyException(template, AC.mode, "Value is not a URI resource");
+
+                            modes.add(URI.create(modeStmt.getResource().getURI()));
+                        }
+                    }
+                    finally
+                    {
+                        it.close();
                     }
                 }
             }

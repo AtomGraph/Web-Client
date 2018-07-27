@@ -29,6 +29,7 @@ import org.apache.jena.rdf.model.StmtIterator;
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  * @see com.atomgraph.processor.model.impl.TemplateImpl
  */
+@Deprecated
 public class Template
 {
     
