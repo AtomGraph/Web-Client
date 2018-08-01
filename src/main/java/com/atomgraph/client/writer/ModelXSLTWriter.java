@@ -65,6 +65,7 @@ import com.atomgraph.core.vocabulary.A;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
 import org.apache.jena.ontology.OntDocumentManager;
@@ -209,6 +210,24 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getUriInfo().getRequestUri();
     }
     
+    public URI getURI()
+    {
+        if (getUriInfo().getQueryParameters().containsKey(AC.uri.getLocalName()))
+        {
+            String uri = getUriInfo().getQueryParameters().getFirst(AC.uri.getLocalName()); // external URI resource
+            try
+            {
+                return new URI(uri);
+            }
+            catch (URISyntaxException ex)
+            {
+                throw new WebApplicationException(ex, BAD_REQUEST);
+            }
+        }
+        
+        return getRequestURI();
+    }
+    
     public static Source getSource(Model model) throws IOException
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
@@ -285,11 +304,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
-        builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
-        parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
-        parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
-        parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
-        parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
+        builder.parameter("{" + AC.uri.getNameSpace() + "}" + AC.uri.getLocalName(), getURI()).
+            parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
+            parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
+            parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
+            parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
+            parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
      
         try
         {
@@ -311,13 +331,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 
                 if (modes.isEmpty() && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
                 {
-//                    Template template = new Template(sitemap.getResource(templateHref.toString()));
-//                    Map<Resource, Resource> params = template.getParameters();
-//                    if (params.containsKey(AC.mode))
-//                    {
-//                        Resource param = params.get(AC.mode);
-//                        modes.add(URI.create(param.getPropertyResourceValue(SPL.defaultValue).getURI()));
-//                    }
                     Resource template = sitemap.getResource(templateHref.toString());
                     
                     StmtIterator it = template.listProperties(AC.mode);

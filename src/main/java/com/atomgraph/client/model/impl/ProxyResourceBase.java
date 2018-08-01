@@ -45,8 +45,6 @@ import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.Link;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
