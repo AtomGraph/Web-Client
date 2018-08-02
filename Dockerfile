@@ -17,6 +17,7 @@ WORKDIR /usr/local/tomcat/webapps/
 
 RUN rm -rf * # remove Tomcat's default webapps
 
-COPY --from=maven /usr/src/app/target/$VERSION.war ROOT.war
+# copy exploded WAR folder from the maven stage
+COPY --from=maven /usr/src/app/target/$VERSION/ ROOT/
 
 CMD ["catalina.sh", "run"]
