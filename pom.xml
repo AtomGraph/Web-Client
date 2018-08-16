@@ -4,13 +4,12 @@
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
     <version>1.1.4-SNAPSHOT</version>
+    <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Client</name>
     <description>Generic Linked Data client</description>
     <url>https://github.com/AtomGraph/Web-Client</url>
-
-    <packaging>${packaging.type}</packaging>
-    <!-- <packaging>war</packaging> -->
+    <inceptionYear>2010</inceptionYear>
 
     <developers>
         <developer>
