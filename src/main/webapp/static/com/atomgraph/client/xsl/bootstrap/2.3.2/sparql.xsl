@@ -134,8 +134,8 @@ LIMIT 100</xsl:param>
                 </script>
 
                 <div class="form-actions">
-                    <xsl:if test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource">
-                        <input type="hidden" name="mode" value="{key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource}"/>
+                    <xsl:if test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource">
+                        <input type="hidden" name="mode" value="{key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource}"/>
                     </xsl:if>
                     <button type="submit" class="btn btn-primary">Query</button>
                 </div>
@@ -144,7 +144,7 @@ LIMIT 100</xsl:param>
     </xsl:template>
 
     <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="ac:QueryResult">
-	<xsl:param name="result-doc" select="document(concat($a:absolutePath, ac:query-string((), $query, key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource, ())))"/>
+	<xsl:param name="result-doc" select="document(concat($a:absolutePath, ac:query-string((), $query, key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource, ())))"/>
 
 	<!-- result of CONSTRUCT or DESCRIBE -->
 	<xsl:if test="$result-doc/rdf:RDF">
@@ -152,27 +152,27 @@ LIMIT 100</xsl:param>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;ListMode'">
+                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;ListMode'">
                         <xsl:apply-templates select="*" mode="bs2:BlockList">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;TableMode'">
+                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;TableMode'">
                         <xsl:apply-templates select="." mode="xhtml:Table">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;GridMode'">
+                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;GridMode'">
                         <xsl:apply-templates select="." mode="bs2:Grid">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>-->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;MapMode'">
+                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;MapMode'">
                         <xsl:apply-templates select="." mode="bs2:Map">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:nodeID)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode'">
+                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode'">
                         <xsl:apply-templates select="." mode="bs2:EditForm">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>                            
