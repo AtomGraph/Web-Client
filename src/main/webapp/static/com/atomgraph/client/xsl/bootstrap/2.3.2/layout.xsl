@@ -616,7 +616,7 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="." mode="bs2:MediaTypeList"/>
 
-	    <xsl:apply-templates select="." mode="bs2:TypeList"/>
+            <xsl:apply-templates select="." mode="bs2:TypeList"/>
         </div>
     </xsl:template>
     
@@ -867,7 +867,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ldt:paramName] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:BlockList" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
         <xsl:param name="id" as="xs:string?"/>
@@ -889,7 +889,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </h2>
 
-            <p>	    
+            <p>
                 <xsl:apply-templates select="." mode="ac:description"/>
             </p>
 
@@ -905,7 +905,7 @@ exclude-result-prefixes="#all">
 
     <!-- BLOCK MODE -->
 
-    <xsl:template match="*[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[core:stateOf/@rdf:resource] | *[dh:pageOf/@rdf:resource] | *[@rdf:nodeID = key('resources', $a:requestUri)/ldt:arg/@rdf:resource]" mode="bs2:Block" priority="2"/>
+    <xsl:template match="*[ldt:paramName] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[core:stateOf/@rdf:resource] | *[dh:pageOf/@rdf:resource] | *[@rdf:nodeID = key('resources', $a:requestUri)/ldt:arg/@rdf:resource]" mode="bs2:Block" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
         <xsl:param name="id" as="xs:string?"/>
@@ -973,7 +973,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each-group>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ldt:paramName] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="bs2:Grid" priority="2"/>
 
     <xsl:template match="*[*][@rdf:about]" mode="bs2:Grid" priority="1">
         <xsl:param name="id" as="xs:string?"/>
@@ -1046,7 +1046,7 @@ exclude-result-prefixes="#all">
         </table>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
+    <xsl:template match="*[@rdf:about = $a:absolutePath] | *[rdf:type/@rdf:resource = '&c;SPARQLEndpoint'] | *[ldt:paramName] | *[ac:uri/@rdf:resource] | *[core:viewOf/@rdf:resource] | *[dh:pageOf/@rdf:resource]" mode="xhtml:Table" priority="2"/>
     
     <xsl:template match="*[*][@rdf:about]" mode="xhtml:Table" priority="1">
         <xsl:param name="id" as="xs:string?"/>
