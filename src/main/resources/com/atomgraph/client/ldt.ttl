@@ -162,13 +162,13 @@
     rdfs:isDefinedBy : .
 
 :Application a rdfs:Class ;
-    rdfs:label "LDT application" ;
+    rdfs:label "Application" ;
     rdfs:comment "Declarative Linked Data application which structure is defined by its ontology and data is access via its SPARQL service" ;
     rdfs:isDefinedBy : .
 
 :Ontology a rdfs:Class ;
     rdfs:subClassOf owl:Ontology ;
-    rdfs:label "LDT ontology" ;
+    rdfs:label "Ontology" ;
     rdfs:comment "Ontology annotated with Linked Data Templates" ;
     rdfs:isDefinedBy : .
 
