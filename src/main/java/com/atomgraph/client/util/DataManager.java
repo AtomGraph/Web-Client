@@ -67,13 +67,13 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     public DataManager(LocationMapper mapper, Client client, MediaTypes mediaTypes,
             boolean preemptiveAuth, boolean resolvingUncached)
     {
-	super(mapper, client, mediaTypes, preemptiveAuth);
+        super(mapper, client, mediaTypes, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
         List<javax.ws.rs.core.MediaType> acceptedTypeList = new ArrayList();
         acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
         acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
-        acceptedTypes = acceptedTypeList.toArray(new javax.ws.rs.core.MediaType[acceptedTypeList.size()]);        
+        acceptedTypes = acceptedTypeList.toArray(new javax.ws.rs.core.MediaType[acceptedTypeList.size()]);
     }
 
     public ClientResponse load(String filenameOrURI)
@@ -83,8 +83,8 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     
     public boolean isMapped(String filenameOrURI)
     {
-	String mappedURI = mapURI(filenameOrURI);
-	return (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:"));
+        String mappedURI = mapURI(filenameOrURI);
+        return (!mappedURI.equals(filenameOrURI) && !mappedURI.startsWith("http:"));
     }
     
     /**
@@ -179,7 +179,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
 
                 if (resolvingUncached(uri.toString()))
                     try
-                    {                    
+                    {
                         if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
                         ClientResponse cr = null;
 
@@ -201,7 +201,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                             if (cr != null) cr.close();
                         }
 
-                        return getDefaultSource(); // return empty Model                    
+                        return getDefaultSource(); // return empty Model
                     }
                     catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
                     {
@@ -222,14 +222,14 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         }
         catch (IOException ex)
         {
-            if (log.isErrorEnabled()) log.error("Error resolving Source for URI: {}", uri);            
+            if (log.isErrorEnabled()) log.error("Error resolving Source for URI: {}", uri);
             throw new TransformerException(ex);
         }        
     }
     
     protected Source getDefaultSource() throws IOException
     {
-	return getSource(ModelFactory.createDefaultModel(), null);
+        return getSource(ModelFactory.createDefaultModel(), null);
     }
     
     /**
@@ -242,8 +242,8 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
      */
     public Source getSource(Model model, String systemId) throws IOException
     {
-	if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
-	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
             model.write(stream);
             if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
@@ -261,8 +261,8 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
      */
     public Source getSource(ResultSet results, String systemId) throws IOException
     {
-	if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());
-	try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
             ResultSetFormatter.outputAsXML(stream, results);
             if (log.isDebugEnabled()) log.debug("SPARQL XML result bytes written: {}", stream.toByteArray().length);
@@ -277,7 +277,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     
     public boolean resolvingUncached(String filenameOrURI)
     {
-	return resolvingUncached;
+        return resolvingUncached;
     }
     
     public boolean isResolvingSPARQL()
