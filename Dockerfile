@@ -1,5 +1,7 @@
 FROM maven:3.5.4-jdk-8 as maven
 
+### Build AtomGraph Web-Client
+
 RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
@@ -8,6 +10,7 @@ COPY . /usr/src/app
 
 RUN mvn -Pstandalone clean install
 
+### Deploy Processor webapp on Tomcat
 
 FROM tomcat:8.0.52-jre8
 
