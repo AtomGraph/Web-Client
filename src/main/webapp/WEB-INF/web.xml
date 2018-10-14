@@ -14,20 +14,20 @@
             <param-value>com.atomgraph.client.Application</param-value>
         </init-param>
         <init-param>
-	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-	    <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
-	</init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
+        </init-param>
         <init-param>
-	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>com.atomgraph.client.filter.response.URIRewriteFilter</param-value>
-	</init-param>        
+        </init-param>
         <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
-            <param-value>http://graphity.dydra.com/graphity/client/sparql</param-value>
+            <param-value>http://atomgraph.dydra.com/graphity/client/sparql</param-value>
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/ns/core#graphStore</param-name>
-            <param-value>http://graphity.dydra.com/graphity/client/service</param-value>
+            <param-value>http://atomgraph.dydra.com/graphity/client/service</param-value>
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/ns/client#stylesheet</param-name>
@@ -53,7 +53,7 @@
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>client</servlet-name>
         <url-pattern>/*</url-pattern>
