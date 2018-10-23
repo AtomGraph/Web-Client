@@ -100,18 +100,32 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         URI baseURI = URI.create(base);
         URI uri = href.isEmpty() ? baseURI : baseURI.resolve(href);
         
-        if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
+        if (isResolvingMapped() && isMapped(uri.toString())) // read mapped URIs (such as system ontologies) from a file
+        {
+            try
             {
-            // TO-DO: unify both cases
-            // requesting RDF
-            if (!href.isEmpty() && URI.create(href).isAbsolute())
-            {
-                if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
-                //URI uri = baseURI.resolve(href);
-                return resolve(uri);
+                if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
+                return getSource(loadModel(uri.toString()), uri.toString());
             }
-            // requesting XML
-            else
+            catch (IOException ex)
+            {
+                if (log.isWarnEnabled()) log.warn("Could not read Model from mapped URI: {}", uri);
+                throw new TransformerException(ex);
+            }
+        }
+                
+        if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
+        {
+//            // TO-DO: unify both cases
+//            // requesting RDF
+//            if (!href.isEmpty() && URI.create(href).isAbsolute())
+//            {
+//                if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
+//                //URI uri = baseURI.resolve(href);
+//                return resolve(uri);
+//            }
+//            // requesting XML
+//            else
             {
                 if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
                 // empty href means stylesheet is referencing itself: document('')
@@ -159,78 +173,78 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
      * @return XML source
      * @throws javax.xml.transform.TransformerException
      */
-    public Source resolve(URI uri) throws TransformerException
-    {
-        if (uri == null) throw new IllegalArgumentException("URI cannot be null");
-        if (!uri.isAbsolute()) throw new IllegalArgumentException("URI to be resolved must be absolute");
-
-        Model model = getFromCache(uri.toString());
-        try
-        {
-            if (model == null) // URI not cached, 
-            {
-                if (log.isDebugEnabled()) log.debug("No cached Model for URI: {}", uri);
-
-                if (isResolvingMapped() && isMapped(uri.toString()))
-                {
-                    if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
-                    return getSource(loadModel(uri.toString()), uri.toString());
-                }
-
-                if (resolvingUncached(uri.toString()))
-                    try
-                    {
-                        if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
-                        ClientResponse cr = null;
-
-                        try
-                        {
-                            cr = load(uri.toString());
-
-                            if (cr.hasEntity())
-                            {
-                                if (ResultSetProvider.isResultSetType(cr.getType()))
-                                    return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
-
-                                if (ModelProvider.isModelType(cr.getType()))
-                                    return getSource(cr.getEntity(Model.class), uri.toString());
-                            }
-                        }
-                        finally
-                        {
-                            if (cr != null) cr.close();
-                        }
-
-                        return getDefaultSource(); // return empty Model
-                    }
-                    catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
-                    {
-                        if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
-                        return getDefaultSource(); // return empty Model
-                    }
-                else
-                {
-                    if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
-                    return getDefaultSource(); // return empty Model
-                }
-            }
-            else
-            {
-                if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
-                return getSource(model, uri.toString());
-            }
-        }
-        catch (IOException ex)
-        {
-            if (log.isErrorEnabled()) log.error("Error resolving Source for URI: {}", uri);
-            throw new TransformerException(ex);
-        }        
-    }
-    
-    protected Source getDefaultSource() throws IOException
-    {
-        return getSource(ModelFactory.createDefaultModel(), null);
-    }
+//    public Source resolve(URI uri) throws TransformerException
+//    {
+//        if (uri == null) throw new IllegalArgumentException("URI cannot be null");
+//        if (!uri.isAbsolute()) throw new IllegalArgumentException("URI to be resolved must be absolute");
+//
+//        Model model = getFromCache(uri.toString());
+//        try
+//        {
+//            if (model == null) // URI not cached, 
+//            {
+//                if (log.isDebugEnabled()) log.debug("No cached Model for URI: {}", uri);
+//
+//                if (isResolvingMapped() && isMapped(uri.toString()))
+//                {
+//                    if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
+//                    return getSource(loadModel(uri.toString()), uri.toString());
+//                }
+//
+//                if (resolvingUncached(uri.toString()))
+//                    try
+//                    {
+//                        if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
+//                        ClientResponse cr = null;
+//
+//                        try
+//                        {
+//                            cr = load(uri.toString());
+//
+//                            if (cr.hasEntity())
+//                            {
+//                                if (ResultSetProvider.isResultSetType(cr.getType()))
+//                                    return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
+//
+//                                if (ModelProvider.isModelType(cr.getType()))
+//                                    return getSource(cr.getEntity(Model.class), uri.toString());
+//                            }
+//                        }
+//                        finally
+//                        {
+//                            if (cr != null) cr.close();
+//                        }
+//
+//                        return getDefaultSource(); // return empty Model
+//                    }
+//                    catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
+//                    {
+//                        if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
+//                        return getDefaultSource(); // return empty Model
+//                    }
+//                else
+//                {
+//                    if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
+//                    return getDefaultSource(); // return empty Model
+//                }
+//            }
+//            else
+//            {
+//                if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
+//                return getSource(model, uri.toString());
+//            }
+//        }
+//        catch (IOException ex)
+//        {
+//            if (log.isErrorEnabled()) log.error("Error resolving Source for URI: {}", uri);
+//            throw new TransformerException(ex);
+//        }        
+//    }
+//    
+//    protected Source getDefaultSource() throws IOException
+//    {
+//        return getSource(ModelFactory.createDefaultModel(), null);
+//    }
     
     /**
      * Serializes RDF model to XML source.

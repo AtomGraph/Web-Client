@@ -113,7 +113,7 @@ public class ProxyResourceBase implements Resource
      */
     public MediaType[] getAcceptable()
     {
-	return acceptable;
+        return acceptable;
     }
     
     public final WebResource getWebResource()
@@ -153,7 +153,7 @@ public class ProxyResourceBase implements Resource
     @GET
     @Override
     public Response get()
-    {                
+    {
         ClientResponse cr = null;
         try
         {

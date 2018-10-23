@@ -60,7 +60,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     public TemplatesProvider(final SAXTransformerFactory transformerFactory, final URIResolver uriResolver,
             final Source stylesheet, final boolean cacheStylesheet)
     {
-	super(Templates.class);
+        super(Templates.class);
         this.transformerFactory = transformerFactory;
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
@@ -76,14 +76,14 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     @Override
     public Injectable<Templates> getInjectable(ComponentContext cc, Context a)
     {
-	return new Injectable<Templates>()
-	{
-	    @Override
-	    public Templates getValue()
-	    {
+        return new Injectable<Templates>()
+        {
+            @Override
+            public Templates getValue()
+            {
                 return getTemplates();
-	    }
-	};
+            }
+        };
     }
 
     @Override
@@ -105,7 +105,7 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
     public Templates getTemplates()
     {
         try
-        {            
+        {
             if (isCacheStylesheet() && getTemplatesCache() != null) return getTemplatesCache();
 
             templatesCache = getTemplates(getStylesheet());
@@ -114,8 +114,8 @@ public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context,
         }
         catch (TransformerConfigurationException ex)
         {
-	    if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            if (log.isErrorEnabled()) log.error("XSLT transformer not configured property", ex);
+            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
     
