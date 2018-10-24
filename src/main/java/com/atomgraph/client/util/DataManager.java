@@ -56,8 +56,9 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
 
     private final javax.ws.rs.core.MediaType[] acceptedTypes;
     private final boolean resolvingUncached;
-    protected boolean resolvingMapped = true;
-    protected boolean resolvingSPARQL = true;
+    private final boolean resolvingMapped = true;
+    private final boolean resolvingSPARQL = true;
+    private final MediaType[] acceptableXMLMediaTypes;
             
     public DataManager(LocationMapper mapper, Client client, MediaTypes mediaTypes,
             boolean preemptiveAuth, boolean resolvingUncached)
@@ -65,10 +66,18 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         super(mapper, client, mediaTypes, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
-        List<javax.ws.rs.core.MediaType> acceptedTypeList = new ArrayList();
+        List<MediaType> acceptedTypeList = new ArrayList();
         acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
         acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
-        acceptedTypes = acceptedTypeList.toArray(new javax.ws.rs.core.MediaType[acceptedTypeList.size()]);
+        acceptedTypes = acceptedTypeList.toArray(new MediaType[acceptedTypeList.size()]);
+        
+        List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
+        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
+        acceptableXMLMediaTypeList.add(MediaType.TEXT_XML_TYPE);
+        acceptableXMLMediaTypeList.add(MediaType.APPLICATION_XML_TYPE);
+        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/xml;q=0.9"));
+        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/*;q=0.8"));
+        acceptableXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
     }
 
     public ClientResponse load(String filenameOrURI)
@@ -117,7 +126,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
             try
             {
                 cr = getClient().resource(uri).
-                    accept(MediaType.TEXT_XML_TYPE, MediaType.APPLICATION_XML_TYPE, MediaType.valueOf("*/xml;q=0.9"), MediaType.valueOf("*/*;q=0.8")).
+                    accept(getAcceptableXMLMediaTypes()).
                     get(ClientResponse.class);
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
@@ -144,6 +153,11 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         return null;
     }
 
+    public MediaType[] getAcceptableXMLMediaTypes()
+    {
+        return acceptableXMLMediaTypes;
+    }
+    
     /**
      * Resolves URI to RDF/XML.
      * Ignored extensions are rejected. Cached copy is returned, if it exists.
