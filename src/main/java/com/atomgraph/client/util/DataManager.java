@@ -18,7 +18,6 @@ package com.atomgraph.client.util;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.util.LocationMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.ByteArrayInputStream;
@@ -30,11 +29,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import com.atomgraph.core.MediaTypes;
-import com.atomgraph.core.exception.ClientException;
-import com.atomgraph.core.io.ModelProvider;
-import com.atomgraph.core.io.ResultSetProvider;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -116,46 +111,33 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 
         if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
         {
-//            // TO-DO: unify both cases
-//            // requesting RDF
-//            if (!href.isEmpty() && URI.create(href).isAbsolute())
-//            {
-//                if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
-//                //URI uri = baseURI.resolve(href);
-//                return resolve(uri);
-//            }
-//            // requesting XML
-//            else
+            if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
+
+            ClientResponse cr = null;
+            try
             {
-                if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
-                // empty href means stylesheet is referencing itself: document('')
-                //URI uri = href.isEmpty() ? baseURI : baseURI.resolve(href);
+                cr = getClient().resource(uri).
+                    accept(MediaType.TEXT_XML_TYPE, MediaType.APPLICATION_XML_TYPE, MediaType.valueOf("*/xml;q=0.9"), MediaType.valueOf("*/*;q=0.8")).
+                    get(ClientResponse.class);
 
-                ClientResponse cr = null;
-                try
-                {
-                    cr = getClient().resource(uri).
-                        accept(MediaType.TEXT_XML_TYPE, MediaType.WILDCARD_TYPE).
-                        get(ClientResponse.class);
+                if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                    throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
 
-                    if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                        throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
-
-                    // buffer the stylesheet stream so we can close ClientResponse
-                    try (InputStream is = cr.getEntityInputStream())
-                    {
-                        byte[] bytes = IOUtils.toByteArray(is);
-                        return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
-                    }
-                }
-                catch (IOException ex)
+                // buffer the stylesheet stream so we can close ClientResponse
+                try (InputStream is = cr.getEntityInputStream())
                 {
-                    throw new WebApplicationException(ex);
+                    byte[] bytes = IOUtils.toByteArray(is);
+                    return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
                 }
-                finally
-                {
-                    if (cr != null) cr.close();
-                }
+            }
+            catch (IOException ex)
+            {
+                if (log.isWarnEnabled()) log.warn("Could not read Model from URI: {}", uri);
+                throw new TransformerException(ex);
+            }
+            finally
+            {
+                if (cr != null) cr.close();
             }
         }
         
