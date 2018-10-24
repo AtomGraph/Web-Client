@@ -125,9 +125,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
             ClientResponse cr = null;
             try
             {
-                cr = getClient().resource(uri).
-                    accept(getAcceptableXMLMediaTypes()).
-                    get(ClientResponse.class);
+                cr = get(uri.toString(), getAcceptableXMLMediaTypes());
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
