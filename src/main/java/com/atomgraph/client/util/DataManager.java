@@ -128,7 +128,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 cr = get(uri.toString(), getAcceptableXMLMediaTypes());
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                    throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
+                    throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
 
                 // buffer the stylesheet stream so we can close ClientResponse
                 try (InputStream is = cr.getEntityInputStream())
@@ -139,7 +139,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
             }
             catch (IOException ex)
             {
-                if (log.isWarnEnabled()) log.warn("Could not read Model from URI: {}", uri);
+                if (log.isWarnEnabled()) log.warn("Could not read XML document from URI: {}", uri);
                 throw new TransformerException(ex);
             }
             finally
@@ -151,94 +151,33 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         return null;
     }
 
-    public MediaType[] getAcceptableXMLMediaTypes()
+    @Override
+    public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
     {
-        return acceptableXMLMediaTypes;
+        ClientResponse cr = null;
+        try
+        {
+            cr = getClient().resource(uri).get(ClientResponse.class);
+
+            if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
+
+            InputStream is = cr.getEntityInputStream();
+            byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse
+            if (cr.getType() != null && cr.getType().getParameters().containsKey("charset"))
+                return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getType().getParameters().get("charset")); // extract response content charset
+            else
+                return new InputStreamReader(new ByteArrayInputStream(bytes));
+        }
+        catch (IOException ex)
+        {
+            throw new WebApplicationException(ex);
+        }
+        finally
+        {
+            if (cr != null) cr.close();
+        }
     }
-    
-    /**
-     * Resolves URI to RDF/XML.
-     * Ignored extensions are rejected. Cached copy is returned, if it exists.
-     * Further processing tries to decode a SPARQL query from the query string, and executes it on the endpoint.
-     * If there is no query, attempting to load RDF model from URI.
-     * Finally the model is serialized as RDF/XML.
-     * 
-     * @param uri document URI
-     * @return XML source
-     * @throws javax.xml.transform.TransformerException
-     */
-//    public Source resolve(URI uri) throws TransformerException
-//    {
-//        if (uri == null) throw new IllegalArgumentException("URI cannot be null");
-//        if (!uri.isAbsolute()) throw new IllegalArgumentException("URI to be resolved must be absolute");
-//
-//        Model model = getFromCache(uri.toString());
-//        try
-//        {
-//            if (model == null) // URI not cached, 
-//            {
-//                if (log.isDebugEnabled()) log.debug("No cached Model for URI: {}", uri);
-//
-//                if (isResolvingMapped() && isMapped(uri.toString()))
-//                {
-//                    if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
-//                    return getSource(loadModel(uri.toString()), uri.toString());
-//                }
-//
-//                if (resolvingUncached(uri.toString()))
-//                    try
-//                    {
-//                        if (log.isTraceEnabled()) log.trace("Loading data for URI: {}", uri);
-//                        ClientResponse cr = null;
-//
-//                        try
-//                        {
-//                            cr = load(uri.toString());
-//
-//                            if (cr.hasEntity())
-//                            {
-//                                if (ResultSetProvider.isResultSetType(cr.getType()))
-//                                    return getSource(cr.getEntity(ResultSetRewindable.class), uri.toString());
-//
-//                                if (ModelProvider.isModelType(cr.getType()))
-//                                    return getSource(cr.getEntity(Model.class), uri.toString());
-//                            }
-//                        }
-//                        finally
-//                        {
-//                            if (cr != null) cr.close();
-//                        }
-//
-//                        return getDefaultSource(); // return empty Model
-//                    }
-//                    catch (IllegalArgumentException | ClientException | ClientHandlerException ex)
-//                    {
-//                        if (log.isWarnEnabled()) log.warn("Could not read Model or ResultSet from URI: {}", uri);
-//                        return getDefaultSource(); // return empty Model
-//                    }
-//                else
-//                {
-//                    if (log.isDebugEnabled()) log.debug("Defaulting to empty Model for URI: {}", uri);
-//                    return getDefaultSource(); // return empty Model
-//                }
-//            }
-//            else
-//            {
-//                if (log.isDebugEnabled()) log.debug("Cached Model for URI: {}", uri);
-//                return getSource(model, uri.toString());
-//            }
-//        }
-//        catch (IOException ex)
-//        {
-//            if (log.isErrorEnabled()) log.error("Error resolving Source for URI: {}", uri);
-//            throw new TransformerException(ex);
-//        }        
-//    }
-//    
-//    protected Source getDefaultSource() throws IOException
-//    {
-//        return getSource(ModelFactory.createDefaultModel(), null);
-//    }
     
     /**
      * Serializes RDF model to XML source.
@@ -297,33 +236,10 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     {
         return resolvingMapped;
     }
-   
-    @Override
-    public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
-    {
-        ClientResponse cr = null;
-        try
-        {
-            cr = getClient().resource(uri).get(ClientResponse.class);
-
-            if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
-
-            InputStream is = cr.getEntityInputStream();
-            byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse
-            if (cr.getType() != null && cr.getType().getParameters().containsKey("charset"))
-                return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getType().getParameters().get("charset")); // extract response content charset
-            else
-                return new InputStreamReader(new ByteArrayInputStream(bytes));
-        }
-        catch (IOException ex)
-        {
-            throw new WebApplicationException(ex);
-        }
-        finally
-        {
-            if (cr != null) cr.close();
-        }
-    }
     
+    public MediaType[] getAcceptableXMLMediaTypes()
+    {
+        return acceptableXMLMediaTypes;
+    }
+
 }
