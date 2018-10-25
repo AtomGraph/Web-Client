@@ -160,7 +160,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
             cr = getClient().resource(uri).get(ClientResponse.class);
 
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                throw new IOException("XSLT stylesheet could not be successfully loaded over HTTP");
+                throw new IOException("Unparsed text could not be successfully loaded over HTTP");
 
             InputStream is = cr.getEntityInputStream();
             byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse

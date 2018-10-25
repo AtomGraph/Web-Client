@@ -121,7 +121,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="node()" mode="ac:property-label"/>
         
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:property-label">
-	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
         <xsl:choose>
             <xsl:when test="key('resources', $this)">
@@ -165,7 +165,7 @@ exclude-result-prefixes="#all">
             <xsl:otherwise>
                 <xsl:value-of select="."/>
             </xsl:otherwise>
-        </xsl:choose>        
+        </xsl:choose>
     </xsl:template>
     
     <!-- IMAGE MODE -->
@@ -175,7 +175,7 @@ exclude-result-prefixes="#all">
     <!-- FUNCTIONS -->
     
     <xsl:function name="ac:label" as="xs:string?">
-	<xsl:param name="resource" as="element()"/>
+        <xsl:param name="resource" as="element()"/>
 
         <xsl:variable name="labels" as="xs:string*">
             <xsl:apply-templates select="$resource" mode="ac:label"/>
@@ -184,7 +184,7 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="ac:description" as="xs:string?">
-	<xsl:param name="resource" as="element()"/>
+        <xsl:param name="resource" as="element()"/>
 
         <xsl:variable name="descriptions" as="xs:string*">
             <xsl:apply-templates select="$resource" mode="ac:description"/>
@@ -193,176 +193,176 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="ac:property-label" as="xs:string?">
-	<xsl:param name="property" as="element()"/>
-	
-	<xsl:apply-templates select="$property" mode="ac:property-label"/>
+        <xsl:param name="property" as="element()"/>
+        
+        <xsl:apply-templates select="$property" mode="ac:property-label"/>
     </xsl:function>
 
     <xsl:function name="ac:object-label" as="xs:string?">
-	<xsl:param name="object" as="attribute()"/>
-	
-	<xsl:apply-templates select="$object" mode="ac:object-label"/>
+        <xsl:param name="object" as="attribute()"/>
+        
+        <xsl:apply-templates select="$object" mode="ac:object-label"/>
     </xsl:function>
 
     <xsl:function name="ac:document-uri" as="xs:anyURI">
-	<xsl:param name="uri" as="xs:anyURI"/>
-	<xsl:choose>
-	    <!-- strip trailing fragment identifier (#) -->
-	    <xsl:when test="contains($uri, '#')">
-		<xsl:sequence select="xs:anyURI(substring-before($uri, '#'))"/>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<xsl:sequence select="$uri"/>
-	    </xsl:otherwise>
-	</xsl:choose>
+        <xsl:param name="uri" as="xs:anyURI"/>
+        <xsl:choose>
+            <!-- strip trailing fragment identifier (#) -->
+            <xsl:when test="contains($uri, '#')">
+                <xsl:sequence select="xs:anyURI(substring-before($uri, '#'))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$uri"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <xsl:function name="ac:fragment-id" as="xs:string?">
-	<xsl:param name="uri" as="xs:anyURI"/>
-	
-	<xsl:sequence select="substring-after($uri, '#')"/>
+        <xsl:param name="uri" as="xs:anyURI"/>
+        
+        <xsl:sequence select="substring-after($uri, '#')"/>
     </xsl:function>
 
     <xsl:function name="rdfs:domain" as="attribute()*">
-	<xsl:param name="property-uri" as="xs:anyURI*"/>
-	<xsl:for-each select="$property-uri">
-	    <xsl:for-each select="document(ac:document-uri($property-uri))">
-		<xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
-	    </xsl:for-each>
-	</xsl:for-each>
+        <xsl:param name="property-uri" as="xs:anyURI*"/>
+        <xsl:for-each select="$property-uri">
+            <xsl:for-each select="document(ac:document-uri($property-uri))">
+                <xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
+            </xsl:for-each>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="ac:inDomainOf" as="attribute()*">
-	<xsl:param name="type-uri" as="xs:anyURI*"/>
-	<xsl:for-each select="$type-uri">
-	    <xsl:for-each select="document(ac:document-uri(.))">
-		<xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
-	    </xsl:for-each>
-	</xsl:for-each>
+        <xsl:param name="type-uri" as="xs:anyURI*"/>
+        <xsl:for-each select="$type-uri">
+            <xsl:for-each select="document(ac:document-uri(.))">
+                <xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
+            </xsl:for-each>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="rdfs:range" as="attribute()*">
-	<xsl:param name="property-uri" as="xs:anyURI*"/>
-	<xsl:for-each select="$property-uri">
-	    <xsl:for-each select="document(ac:document-uri($property-uri))">
-		<xsl:sequence select="key('resources', $property-uri)/rdfs:range/@rdf:resource"/>
-	    </xsl:for-each>
-	</xsl:for-each>
+        <xsl:param name="property-uri" as="xs:anyURI*"/>
+        <xsl:for-each select="$property-uri">
+            <xsl:for-each select="document(ac:document-uri($property-uri))">
+                <xsl:sequence select="key('resources', $property-uri)/rdfs:range/@rdf:resource"/>
+            </xsl:for-each>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="rdfs:subClassOf" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:sequence select="rdfs:subClassOf($uri, document(ac:document-uri($uri)))"/>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:sequence select="rdfs:subClassOf($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="rdfs:subClassOf" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:for-each select="$document">
-	    <xsl:sequence select="key('resources', $uri)/rdfs:subClassOf/@rdf:resource"/>
-	</xsl:for-each>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:param name="document" as="document-node()"/>
+        <xsl:for-each select="$document">
+            <xsl:sequence select="key('resources', $uri)/rdfs:subClassOf/@rdf:resource"/>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="ac:superClassOf" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:sequence select="ac:superClassOf($uri, document(ac:document-uri($uri)))"/>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:sequence select="ac:superClassOf($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="ac:superClassOf" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:for-each select="$document">
-	    <xsl:sequence select="key('resources-by-subclass', $uri)/@rdf:about"/>
-	</xsl:for-each>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:param name="document" as="document-node()"/>
+        <xsl:for-each select="$document">
+            <xsl:sequence select="key('resources-by-subclass', $uri)/@rdf:about"/>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="skos:broader" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:sequence select="skos:broader($uri, document(ac:document-uri($uri)))"/>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:sequence select="skos:broader($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="skos:broader" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:for-each select="$document">
-	    <xsl:sequence select="key('resources', $uri)/skos:broader/@rdf:resource | key('resources-by-narrower', $uri)/@rdf:about"/>
-	</xsl:for-each>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:param name="document" as="document-node()"/>
+        <xsl:for-each select="$document">
+            <xsl:sequence select="key('resources', $uri)/skos:broader/@rdf:resource | key('resources-by-narrower', $uri)/@rdf:about"/>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="skos:narrower" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:sequence select="skos:narrower($uri, document(ac:document-uri($uri)))"/>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:sequence select="skos:narrower($uri, document(ac:document-uri($uri)))"/>
     </xsl:function>
 
     <xsl:function name="skos:narrower" as="attribute()*">
-	<xsl:param name="uri" as="xs:anyURI*"/>
-	<xsl:param name="document" as="document-node()"/>
-	<xsl:for-each select="$document">
-	    <xsl:sequence select="key('resources', $uri)/skos:narrower/@rdf:resource | key('resources-by-broader', $uri)/@rdf:about"/>
-	</xsl:for-each>
+        <xsl:param name="uri" as="xs:anyURI*"/>
+        <xsl:param name="document" as="document-node()"/>
+        <xsl:for-each select="$document">
+            <xsl:sequence select="key('resources', $uri)/skos:narrower/@rdf:resource | key('resources-by-broader', $uri)/@rdf:about"/>
+        </xsl:for-each>
     </xsl:function>
 
     <xsl:function name="list:member" as="node()*">
-	<xsl:param name="list" as="node()?"/>
-	<xsl:param name="document" as="document-node()"/>
+        <xsl:param name="list" as="node()?"/>
+        <xsl:param name="document" as="document-node()"/>
 
-	<xsl:if test="$list">
-	    <xsl:sequence select="key('resources', $list/rdf:first/@rdf:resource, $document) | key('resources', $list/rdf:first/@rdf:nodeID, $document)"/>
+        <xsl:if test="$list">
+            <xsl:sequence select="key('resources', $list/rdf:first/@rdf:resource, $document) | key('resources', $list/rdf:first/@rdf:nodeID, $document)"/>
 
-	    <xsl:sequence select="list:member(key('resources', $list/rdf:rest/@rdf:resource, $document), $document) | list:member(key('resources', $list/rdf:rest/@rdf:nodeID, $document), $document)"/>
-	</xsl:if>
+            <xsl:sequence select="list:member(key('resources', $list/rdf:rest/@rdf:resource, $document), $document) | list:member(key('resources', $list/rdf:rest/@rdf:nodeID, $document), $document)"/>
+        </xsl:if>
     </xsl:function>
 
     <xsl:function name="ac:query-string" as="xs:string?">
-	<xsl:param name="offset" as="xs:integer?"/>
-	<xsl:param name="limit" as="xs:integer?"/>
-	<xsl:param name="order-by" as="xs:string?"/>
-	<xsl:param name="desc" as="xs:boolean?"/>
-	<xsl:param name="mode" as="xs:anyURI?"/>
-	
-	<xsl:variable name="query-string">
-	    <xsl:if test="not(empty($offset))">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
-	    <xsl:if test="not(empty($limit))">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
+        <xsl:param name="offset" as="xs:integer?"/>
+        <xsl:param name="limit" as="xs:integer?"/>
+        <xsl:param name="order-by" as="xs:string?"/>
+        <xsl:param name="desc" as="xs:boolean?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
+        
+        <xsl:variable name="query-string">
+            <xsl:if test="not(empty($offset))">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($limit))">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
             <xsl:if test="not(empty($order-by))">orderBy=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
-	    <xsl:if test="$desc">desc=true&amp;</xsl:if>
-	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-	</xsl:variable>
-	
-	<xsl:if test="string-length($query-string) &gt; 1">
-	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-	</xsl:if>
+            <xsl:if test="$desc">desc=true&amp;</xsl:if>
+            <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+        </xsl:variable>
+        
+        <xsl:if test="string-length($query-string) &gt; 1">
+            <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
+        </xsl:if>
     </xsl:function>
 
     <xsl:function name="ac:query-string" as="xs:string?">
-	<xsl:param name="uri" as="xs:anyURI?"/>
-	<xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="uri" as="xs:anyURI?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
 
-	<xsl:variable name="query-string">
-	    <xsl:if test="not(empty($uri))">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
-	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-	</xsl:variable>
-	
-	<xsl:if test="string-length($query-string) &gt; 1">
-	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-	</xsl:if>
+        <xsl:variable name="query-string">
+            <xsl:if test="not(empty($uri))">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+        </xsl:variable>
+        
+        <xsl:if test="string-length($query-string) &gt; 1">
+            <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
+        </xsl:if>
     </xsl:function>
 
     <xsl:function name="ac:query-string" as="xs:string?">
-	<xsl:param name="endpoint-uri" as="xs:anyURI?"/>
-	<xsl:param name="query" as="xs:string?"/>
-	<xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="endpoint-uri" as="xs:anyURI?"/>
+        <xsl:param name="query" as="xs:string?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
         <xsl:param name="accept" as="xs:string?"/>
 
-	<xsl:variable name="query-string">
-	    <xsl:if test="not(empty($endpoint-uri))">endpointUri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
-	    <xsl:if test="not(empty($query))">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
-	    <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-	    <xsl:if test="not(empty($accept))">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
+        <xsl:variable name="query-string">
+            <xsl:if test="not(empty($endpoint-uri))">endpointUri=<xsl:value-of select="encode-for-uri($endpoint-uri)"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($query))">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
+            <xsl:if test="not(empty($accept))">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
         </xsl:variable>
-	
-	<xsl:if test="string-length($query-string) &gt; 1">
-	    <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-	</xsl:if>
+        
+        <xsl:if test="string-length($query-string) &gt; 1">
+            <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
+        </xsl:if>
     </xsl:function>
     
     <xsl:function name="ac:visit-elements" as="element()*">
