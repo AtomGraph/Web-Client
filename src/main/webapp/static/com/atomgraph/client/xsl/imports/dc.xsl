@@ -29,7 +29,7 @@ xmlns:dc="&dc;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="dc:title | @dc:title" mode="ac:label">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="dc:description" mode="ac:description">

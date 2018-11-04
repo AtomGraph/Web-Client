@@ -28,7 +28,7 @@ xmlns:doap="&doap;"
 exclude-result-prefixes="#all">
     
     <xsl:template match="doap:name | @doap:name" mode="ac:label">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="doap:description" mode="ac:description">
@@ -36,9 +36,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">
-	<a href="{.}">
-	    <xsl:value-of select="."/>
-	</a>
+        <a href="{.}">
+            <xsl:value-of select="."/>
+        </a>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -31,7 +31,7 @@ exclude-result-prefixes="#all">
     <xsl:preserve-space elements="dct:title dct:description"/>
     
     <xsl:template match="dct:title | @dct:title" mode="ac:label">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="dct:description" mode="ac:description">

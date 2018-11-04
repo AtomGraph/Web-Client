@@ -61,62 +61,62 @@ public class XSLTBuilder
     
     public static XSLTBuilder newInstance(SAXTransformerFactory factory)
     {
-	return new XSLTBuilder(factory);
+        return new XSLTBuilder(factory);
     }
 
     public XSLTBuilder document(Source doc)
     {
-	if (log.isTraceEnabled()) log.trace("Loading document Source with system ID: {}", doc.getSystemId());
-	this.source = doc;
-	return this;
+        if (log.isTraceEnabled()) log.trace("Loading document Source with system ID: {}", doc.getSystemId());
+        this.source = doc;
+        return this;
     }
 
     public XSLTBuilder document(Node n)
     {
-	document(new DOMSource(n));
-	return this;
+        document(new DOMSource(n));
+        return this;
     }
 
     public XSLTBuilder document(Node n, String systemId)
     {
-	document(new DOMSource(n, systemId));
-	return this;
+        document(new DOMSource(n, systemId));
+        return this;
     }
 
     public XSLTBuilder document(File file)
     {
-	document(new StreamSource(file));
-	return this;
+        document(new StreamSource(file));
+        return this;
     }
 
     public XSLTBuilder document(InputStream is)
     {
-	document(new StreamSource(is));
-	return this;
+        document(new StreamSource(is));
+        return this;
     }
 
     public XSLTBuilder document(InputStream is, String systemId)
     {
-	document(new StreamSource(is, systemId));
-	return this;
+        document(new StreamSource(is, systemId));
+        return this;
     }
 
     public XSLTBuilder document(Reader reader)
     {
-	document(new StreamSource(reader));
-	return this;
+        document(new StreamSource(reader));
+        return this;
     }
 
     public XSLTBuilder document(Reader reader, String systemId)
     {
-	document(new StreamSource(reader, systemId));
-	return this;
+        document(new StreamSource(reader, systemId));
+        return this;
     }
 
     public XSLTBuilder document(String systemId)
     {
-	document(new StreamSource(systemId));
-	return this;
+        document(new StreamSource(systemId));
+        return this;
     }
 
     public XSLTBuilder stylesheet(File stylesheet) throws TransformerConfigurationException
@@ -132,28 +132,28 @@ public class XSLTBuilder
     public XSLTBuilder stylesheet(Templates templates) throws TransformerConfigurationException            
     {
         this.templates = templates;
-	return this;
+        return this;
     }
 
     public XSLTBuilder parameter(String name, Object value)
     {
-	if (log.isTraceEnabled()) log.trace("Setting transformer parameter {} with value {}", name, value);
+        if (log.isTraceEnabled()) log.trace("Setting transformer parameter {} with value {}", name, value);
         parameters.put(name, value);
-	return this;
+        return this;
     }
     
     public XSLTBuilder resolver(URIResolver uriResolver)
     {
-	if (log.isTraceEnabled()) log.trace("Setting URIResolver: {}", uriResolver);
+        if (log.isTraceEnabled()) log.trace("Setting URIResolver: {}", uriResolver);
         this.uriResolver = uriResolver;
-	return this;
+        return this;
     }
 
     public XSLTBuilder outputProperty(String name, String value)
     {
-	if (log.isTraceEnabled()) log.trace("Setting transformer OutputProperty {} with value {}", name, value);
-	outputProperties.put(name, value);
-	return this;
+        if (log.isTraceEnabled()) log.trace("Setting transformer OutputProperty {} with value {}", name, value);
+        outputProperties.put(name, value);
+        return this;
     }
     
     protected Transformer getTransformer(Templates templates, Result result, URIResolver uriResolver, Map<String, Object> parameters, Map<String, String> outputProperties) throws TransformerConfigurationException
@@ -161,7 +161,7 @@ public class XSLTBuilder
         TransformerHandler handler = getSAXTransformerFactory().newTransformerHandler(templates);
         handler.setResult(result);
         
-	Transformer transformer = handler.getTransformer();
+        Transformer transformer = handler.getTransformer();
         transformer.setURIResolver(uriResolver);
         
         Iterator<Entry<String, Object>> paramIt = parameters.entrySet().iterator();
@@ -188,13 +188,13 @@ public class XSLTBuilder
     
     public void transform() throws TransformerException
     {       
-	getTransformer().transform(getSource(), getResult());
+        getTransformer().transform(getSource(), getResult());
     }
 
     public XSLTBuilder result(Result result) throws TransformerConfigurationException
     {
-	this.result = result;
-	return this;
+        this.result = result;
+        return this;
     }
     
     protected SAXTransformerFactory getSAXTransformerFactory()

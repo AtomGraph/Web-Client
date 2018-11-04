@@ -33,11 +33,11 @@ exclude-result-prefixes="#all">
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:PropertyList"/>
 
     <xsl:template match="sioc:content/text()" mode="bs2:FormControl">
-	<xsl:param name="name" select="'ol'" as="xs:string"/>
+        <xsl:param name="name" select="'ol'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-	<xsl:param name="class" as="xs:string?"/>
-	<xsl:param name="style" as="xs:string?"/>
-	<xsl:param name="value" select="." as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="style" as="xs:string?"/>
+        <xsl:param name="value" select="." as="xs:string?"/>
         <xsl:param name="rows" select="10" as="xs:integer?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         

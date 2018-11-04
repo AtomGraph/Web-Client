@@ -209,12 +209,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         return getUriInfo().getRequestUri();
     }
-    
-    public URI getURI()
+
+    public URI getURIParam(String name)
     {
-        if (getUriInfo().getQueryParameters().containsKey(AC.uri.getLocalName()))
+        if (getUriInfo().getQueryParameters().containsKey(name))
         {
-            String uri = getUriInfo().getQueryParameters().getFirst(AC.uri.getLocalName()); // external URI resource
+            String uri = getUriInfo().getQueryParameters().getFirst(name);
             try
             {
                 return new URI(uri);
@@ -225,7 +225,25 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             }
         }
         
-        return getRequestURI();
+        return null;
+    }
+
+    public URI getURI()
+    {
+        return getURIParam(AC.uri.getLocalName());
+    }
+
+    public URI getEndpointURI()
+    {
+        return getURIParam(AC.endpoint.getLocalName());
+    }
+
+    public String getQuery()
+    {
+        if (getUriInfo().getQueryParameters().containsKey(AC.query.getLocalName()))
+            return getUriInfo().getQueryParameters().getFirst(AC.query.getLocalName());
+        
+        return null;
     }
     
     public static Source getSource(Model model) throws IOException
@@ -304,13 +322,16 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
-        builder.parameter("{" + AC.uri.getNameSpace() + "}" + AC.uri.getLocalName(), getURI()).
-            parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
+        builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
             parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
             parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
             parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
             parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
      
+        if (getURI() != null) builder.parameter("{" + AC.uri.getNameSpace() + "}" + AC.uri.getLocalName(), getURI());
+        if (getEndpointURI() != null) builder.parameter("{" + AC.endpoint.getNameSpace() + "}" + AC.endpoint.getLocalName(), getEndpointURI());
+        if (getQuery() != null) builder.parameter("{" + AC.query.getNameSpace() + "}" + AC.query.getLocalName(), getQuery());
+        
         try
         {
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided

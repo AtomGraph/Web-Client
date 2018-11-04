@@ -43,9 +43,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]" mode="bs2:FormControl">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-	<xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:call-template name="xhtml:Input">
@@ -62,9 +62,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="bs2:FormControl">
-	<xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-	<xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:call-template name="xhtml:Input">

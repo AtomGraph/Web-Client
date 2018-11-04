@@ -53,21 +53,21 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:BlockList">
-	<div class="well" about="{@rdf:about}">
+        <div class="well" about="{@rdf:about}">
             <xsl:apply-templates select="." mode="ac:image"/>
             
             <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
-	    <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-	    
-	    <xsl:apply-templates select="." mode="ac:description"/>
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+            
+            <xsl:apply-templates select="." mode="ac:description"/>
 
-	    <xsl:apply-templates select="." mode="bs2:TypeList"/>            
+            <xsl:apply-templates select="." mode="bs2:TypeList"/>            
 
-	    <xsl:if test="@rdf:nodeID">
-		<xsl:apply-templates select="." mode="bs2:PropertyList"/>
-	    </xsl:if>
-	</div>
+            <xsl:if test="@rdf:nodeID">
+                <xsl:apply-templates select="." mode="bs2:PropertyList"/>
+            </xsl:if>
+        </div>
 
         <!--
         <div about="{@rdf:about}">
@@ -87,74 +87,74 @@ exclude-result-prefixes="#all">
     <!-- INLINE LEVEL -->
     
     <xsl:template match="@rdf:about" mode="xhtml:Anchor">
-	<a href="{.}" title="{.}" resource="{.}">
-	    <xsl:if test="substring-after(., concat($request-uri, '#'))">
-		<xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
-	    </xsl:if>
+        <a href="{.}" title="{.}" resource="{.}">
+            <xsl:if test="substring-after(., concat($request-uri, '#'))">
+                <xsl:attribute name="id"><xsl:value-of select="substring-after(., concat($request-uri, '#'))"/></xsl:attribute>
+            </xsl:if>
             <span property="http://purl.org/dc/terms/title">
                 <xsl:apply-templates select=".." mode="ac:label"/>
             </span>
-	</a>
+        </a>
     </xsl:template>
 
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:Anchor">
-	<xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
         
-	<span title="{$this}" property="{$this}">
-	    <xsl:apply-templates select="." mode="ac:property-label"/>
-	</span>
+        <span title="{$this}" property="{$this}">
+            <xsl:apply-templates select="." mode="ac:property-label"/>
+        </span>
     </xsl:template>
 
     <!-- object resource -->    
     <xsl:template match="@rdf:resource | sparql:uri" mode="xhtml:Anchor">
-	<a href="{.}" title="{.}" resource="{.}">
+        <a href="{.}" title="{.}" resource="{.}">
             <xsl:apply-templates select="." mode="ac:object-label"/>
-	</a>
+        </a>
     </xsl:template>
-	
+        
     <!-- object blank node (avoid infinite loop) -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="xhtml:Anchor">
-	<xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
 
-	<xsl:choose>
-	    <xsl:when test="$bnode">
-		<xsl:apply-templates select="$bnode" mode="bs2:Block">
+        <xsl:choose>
+            <xsl:when test="$bnode">
+                <xsl:apply-templates select="$bnode" mode="bs2:Block">
                     <xsl:with-param name="nested" select="true()"/>
                 </xsl:apply-templates>
-	    </xsl:when>
-	    <xsl:otherwise>
-		<span id="{.}" title="{.}">
-		    <xsl:apply-templates select="." mode="ac:label"/>
-		</span>
-	    </xsl:otherwise>
-	</xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <span id="{.}" title="{.}">
+                    <xsl:apply-templates select="." mode="ac:label"/>
+                </span>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]" mode="xhtml:Anchor">
-	<span title="{../@rdf:datatype | @datatype}" datatype="{../@rdf:datatype}">
-	    <xsl:value-of select="."/>
-	</span>
+        <span title="{../@rdf:datatype | @datatype}" datatype="{../@rdf:datatype}">
+            <xsl:value-of select="."/>
+        </span>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1" mode="xhtml:Anchor">
-	<span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
-	    <xsl:value-of select="format-number(., '#####.00')"/>
-	</span>
+        <span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
+            <xsl:value-of select="format-number(., '#####.00')"/>
+        </span>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1" mode="xhtml:Anchor">
-	<span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
-	    <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
-	</span>
+        <span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
+            <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $lang, (), ())"/>
+        </span>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1" mode="xhtml:Anchor">
-	<!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
-	<!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-	<span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
-	    <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $lang, (), ())"/>
-	</span>
+        <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
+        <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
+        <span title="{../@rdf:datatype}" datatype="{../@rdf:datatype}">
+            <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $lang, (), ())"/>
+        </span>
     </xsl:template>
 
 </xsl:stylesheet>

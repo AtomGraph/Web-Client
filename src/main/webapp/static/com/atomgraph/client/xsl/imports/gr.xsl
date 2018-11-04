@@ -29,7 +29,7 @@ xmlns:gr="&gr;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="gr:name | @gr:name" mode="ac:label">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="gr:description" mode="ac:description">

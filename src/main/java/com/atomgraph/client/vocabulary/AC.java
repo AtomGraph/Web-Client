@@ -17,7 +17,6 @@
 
 package com.atomgraph.client.vocabulary;
 
-import org.apache.jena.ontology.AnnotationProperty;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
@@ -62,29 +61,19 @@ public final class AC
     public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
 
     public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
-    
-    public static final AnnotationProperty supportedMode = m_model.createAnnotationProperty( NS + "supportedMode" );
 
-    public static final AnnotationProperty defaultMode = m_model.createAnnotationProperty( NS + "defaultMode" );
-    
+    public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
+
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
     public static final ObjectProperty sitemap = m_model.createObjectProperty( NS + "sitemap" );
-        
-    public static final ObjectProperty layoutOf = m_model.createObjectProperty( NS + "layoutOf" );
 
-    public static final ObjectProperty constructorOf = m_model.createObjectProperty( NS + "constructorOf" );
-
-    // public static final ObjectProperty constructor = m_model.createObjectProperty( NS + "constructor" );
-    
-    // public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
-    
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 
-    public static final ObjectProperty endpointUri = m_model.createObjectProperty( NS + "endpointUri" );
+    public static final ObjectProperty endpoint = m_model.createObjectProperty( NS + "endpoint" );
 
-    public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
-    
+    public static final DatatypeProperty query = m_model.createDatatypeProperty( NS + "query" );
+   
     public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
     
     // CONFIG
@@ -93,7 +82,7 @@ public final class AC
     
     public static final DatatypeProperty cacheStylesheet = m_model.createDatatypeProperty( NS + "cacheStylesheet" );
     
-    public static final DatatypeProperty resolvingUncached = m_model.createDatatypeProperty( NS + "resolvingUncached" );    
+    public static final DatatypeProperty resolvingUncached = m_model.createDatatypeProperty( NS + "resolvingUncached" );
     
     public static final DatatypeProperty prefixMapping = m_model.createDatatypeProperty( NS + "prefixMapping" );
     

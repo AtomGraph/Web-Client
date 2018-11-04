@@ -29,13 +29,13 @@ xmlns:sioc="&sioc;"
 exclude-result-prefixes="#all">
     
     <xsl:template match="sioc:name | @sioc:name" mode="ac:label">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="sioc:email/@rdf:resource">
-	<a href="{.}">
-	    <xsl:value-of select="substring-after(., 'mailto:')"/>
-	</a>
+        <a href="{.}">
+            <xsl:value-of select="substring-after(., 'mailto:')"/>
+        </a>
     </xsl:template>
 
     <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="ac:TablePredicate"/>

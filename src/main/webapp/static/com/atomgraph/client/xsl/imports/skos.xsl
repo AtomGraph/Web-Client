@@ -28,7 +28,7 @@ xmlns:skos="&skos;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="skos:prefLabel | @skos:prefLabel" mode="ac:label">
-	<xsl:value-of select="."/>
+        <xsl:value-of select="."/>
     </xsl:template>
 
 </xsl:stylesheet>

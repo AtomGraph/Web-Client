@@ -45,6 +45,8 @@ import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.Link;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,7 @@ public class ProxyResourceBase implements Resource
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
-    private final MediaType[] acceptable;
+    private final MediaType accept;
     private final WebResource webResource;
     private final LinkedDataClient linkedDataClient;
     
@@ -73,21 +75,20 @@ public class ProxyResourceBase implements Resource
      * @param httpHeaders HTTP headers
      * @param mediaTypes supported media types
      * @param uri RDF resource URI
+     * @param endpoint SPARQL endpoint URI
      * @param accept response media type
      * @param mode layout mode
-     * @param forClass instance class
      * @param client
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
-            @QueryParam("uri") URI uri, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode, @QueryParam("forClass") URI forClass,
+            @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
             @Context Client client)
     {
-        if (uri == null) throw new NotFoundException("Resource URI not supplied");
+        if (uri == null) throw new NotFoundException("Resource URI not supplied"); // TO-DO: BadRequestException
         this.request = request;
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
-        if (accept == null) this.acceptable = mediaTypes.getReadable(Model.class).toArray(new MediaType[0]);
-        else this.acceptable = new MediaType[]{accept}; // overrides Accept value
+        this.accept = accept;
 
         //client.setFollowRedirects(false);
         webResource = client.resource(uri);
@@ -111,9 +112,9 @@ public class ProxyResourceBase implements Resource
      * 
      * @return media type parsed from query param
      */
-    public MediaType[] getAcceptable()
+    public MediaType getAcceptMediaType()
     {
-        return acceptable;
+        return accept;
     }
     
     public final WebResource getWebResource()
@@ -139,8 +140,21 @@ public class ProxyResourceBase implements Resource
     public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
     {
         return webResource.getRequestBuilder().
-                accept(getAcceptable()).
+                accept(getReadableMediaTypes().toArray(new MediaType[getReadableMediaTypes().size()])).
                 get(ClientResponse.class);
+    }
+    
+    public List<MediaType> getReadableMediaTypes()
+    {
+        return getMediaTypes().getReadable(Model.class);
+    }
+    
+    public List<MediaType> getWritableMediaTypes()
+    {
+        // restrict writable MediaTypes to the requested one (usually by RDF export feature)
+        if (getAcceptMediaType() != null) return Arrays.asList(getAcceptMediaType());
+
+        return getMediaTypes().getWritable(Model.class);
     }
     
     /**
@@ -186,7 +200,7 @@ public class ProxyResourceBase implements Resource
 
             com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
             ResponseBuilder rb = response.getResponseBuilder(description,
-                    response.getVariantListBuilder(getMediaTypes().getWritable(Model.class), new ArrayList(), new ArrayList()).
+                    response.getVariantListBuilder(getWritableMediaTypes(), new ArrayList(), new ArrayList()).
                             add().build());
 
             // move headers to HypermediaFilter?

@@ -30,8 +30,8 @@ exclude-result-prefixes="#all">
     <!--
     <xsl:template match="@rdf:resource" mode="bs2:TypeList" priority="1">
         <li>
-	    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-	</li>
+            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+        </li>
     </xsl:template>
     -->
 

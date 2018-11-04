@@ -53,6 +53,11 @@
     rdfs:label "Modal mode" ;
     rdfs:isDefinedBy : .
 
+:QueryEditorMode a owl:Class ;
+    rdfs:subClassOf :Mode ;
+    rdfs:label "Query editor mode" ;
+    rdfs:isDefinedBy : .
+
 # MODES
 
 :ReadMode a :Mode, :DocumentMode, :ContainerMode ;

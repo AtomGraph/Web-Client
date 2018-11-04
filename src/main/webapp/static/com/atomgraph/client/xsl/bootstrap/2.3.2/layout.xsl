@@ -74,6 +74,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="../../group-sort-triples.xsl"/>
     <xsl:import href="../../functions.xsl"/>
     <xsl:import href="../../imports/default.xsl"/>
+    <xsl:import href="../../imports/external.xsl"/>
     <xsl:import href="../../imports/dbpedia-owl.xsl"/>
     <xsl:import href="../../imports/dc.xsl"/>
     <xsl:import href="../../imports/dct.xsl"/>
@@ -106,13 +107,15 @@ exclude-result-prefixes="#all">
     <xsl:param name="a:httpHeaders" as="xs:string"/>
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
-    <xsl:param name="ac:endpointUri" as="xs:anyURI?"/>
+    <xsl:param name="ac:uri" as="xs:anyURI?"/>
+    <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
+    <xsl:param name="ac:mode" as="xs:anyURI*"/>
+    <xsl:param name="ac:query" as="xs:string?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
-    <xsl:param name="uri" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;uri']/rdf:value/@rdf:resource" as="xs:string?"/>
-    <xsl:param name="query" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ct;query']/rdf:value" as="xs:string?"/>
+    <xsl:param name="uri" select="$ac:uri" as="xs:string?"/>
     <xsl:param name="label" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&rdfs;label']/rdf:value" as="xs:string?"/>
     
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
@@ -123,7 +126,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-container" match="*[@rdf:about] | *[@rdf:nodeID]" use="sioc:has_parent/@rdf:resource | sioc:has_container/@rdf:resource"/>
     <xsl:key name="resources-by-page-of" match="*[@rdf:about]" use="dh:pageOf/@rdf:resource"/>
-    <xsl:key name="resources-by-view-of" match="*[@rdf:about]" use="core:viewOf/@rdf:resource"/>    
+    <xsl:key name="resources-by-view-of" match="*[@rdf:about]" use="core:viewOf/@rdf:resource"/>
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
@@ -223,17 +226,11 @@ exclude-result-prefixes="#all">
                             </div>
                         </form>
 
-                        <xsl:if test="$ldt:base">
-                            <xsl:variable name="space" select="($a:absolutePath, key('resources', $a:absolutePath)/sioc:has_container/@rdf:resource)" as="xs:anyURI*"/>
-                            <xsl:if test="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:base))">
-                                <ul class="nav pull-right">
-                                    <xsl:apply-templates select="key('resources-by-type', '&c;SPARQLEndpoint', document($ldt:base))" mode="bs2:NavBarListItem">
-                                        <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}"/>
-                                        <xsl:with-param name="space" select="$space"/>
-                                    </xsl:apply-templates>
-                                </ul>
-                            </xsl:if>
-                        </xsl:if>
+                        <ul class="nav pull-right">
+                            <li>
+                                <a href="?uri={encode-for-uri($ac:uri)}&amp;mode={encode-for-uri('&ac;QueryEditorMode')}">Query editor</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -418,22 +415,22 @@ exclude-result-prefixes="#all">
             
     <xsl:template match="rdf:RDF" mode="ac:ModeChoice">
         <xsl:choose>
-            <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode' or key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource">
+            <xsl:when test="$ac:mode = '&ac;EditMode' or key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource">
                 <xsl:apply-templates select="." mode="bs2:Form"/>
             </xsl:when>
-            <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;ListMode'">
+            <xsl:when test="$ac:mode = '&ac;ListMode'">
                 <xsl:apply-templates select="." mode="bs2:BlockList"/>
             </xsl:when>
-            <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;TableMode'">
+            <xsl:when test="$ac:mode = '&ac;TableMode'">
                 <xsl:apply-templates select="." mode="xhtml:Table"/>
             </xsl:when>
-            <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;GridMode'">
+            <xsl:when test="$ac:mode = '&ac;GridMode'">
                 <xsl:apply-templates select="." mode="bs2:Grid"/>
             </xsl:when>
-            <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;MapMode'">
+            <xsl:when test="$ac:mode = '&ac;MapMode'">
                 <xsl:apply-templates select="." mode="bs2:Map"/>
             </xsl:when>
-            <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;GraphMode'">
+            <xsl:when test="$ac:mode = '&ac;GraphMode'">
                 <xsl:apply-templates select="." mode="bs2:Graph"/>
             </xsl:when>
             <xsl:otherwise>
@@ -471,7 +468,7 @@ exclude-result-prefixes="#all">
             </form>
         </div>
 
-        <xsl:if test="not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode')">
+        <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
                 <a class="btn" href="{@rdf:about}{ac:query-string((), xs:anyURI('&ac;EditMode'))}">
                     <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
@@ -501,7 +498,7 @@ exclude-result-prefixes="#all">
             </button>
 
             <ul class="dropdown-menu">
-                <xsl:variable name="active" select="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource" as="xs:anyURI?"/>
+                <xsl:variable name="active" select="$ac:mode" as="xs:anyURI?"/>
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
@@ -520,7 +517,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <a href="{$a:absolutePath}?mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
+            <a href="{$a:absolutePath}?uri={$uri}&amp;mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
                 <xsl:apply-templates select="." mode="ac:label"/>
             </a>
         </li>
@@ -627,10 +624,10 @@ exclude-result-prefixes="#all">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{$a:absolutePath}?accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
+                    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
                 </li>
                 <li>
-                    <a href="{$a:absolutePath}?accept={encode-for-uri('text/turtle')}">Turtle</a>
+                    <a href="?uri={encode-for-uri($uri)}&amp;accept={encode-for-uri('text/turtle')}">Turtle</a>
                 </li>
                 <!--
                 <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">
@@ -660,7 +657,7 @@ exclude-result-prefixes="#all">
             </form>
         </div>
 
-        <xsl:if test="key('resources-by-view-of', key('resources', $a:requestUri)/core:viewOf/@rdf:resource)[key('resources', ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode']/@rdf:about and not(key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode')">
+        <xsl:if test="key('resources-by-view-of', key('resources', $a:requestUri)/core:viewOf/@rdf:resource)[key('resources', ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode']/@rdf:about and not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
                 <a class="btn btn-primary" href="{key('resources-by-view-of', key('resources', $a:requestUri)/core:viewOf/@rdf:resource)[key('resources', ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode']/@rdf:about}">
                     <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>

@@ -15,11 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
+    <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -28,14 +29,30 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
+xmlns:owl="&owl;"
+xmlns:xsd="&xsd;"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdfs:label | @rdfs:label" mode="ac:label">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
+        <xsl:param name="href" select="xs:anyURI(concat('?uri=', encode-for-uri(@rdf:about)))" as="xs:anyURI"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <xsl:next-match>
+            <xsl:with-param name="href" select="$href"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:next-match>
     </xsl:template>
-
-    <xsl:template match="rdfs:comment" mode="ac:description">
-        <xsl:value-of select="."/>
+    
+    <xsl:template match="@rdf:resource">
+        <a href="?uri={encode-for-uri(.)}" title="{.}">
+            <xsl:apply-templates select="." mode="ac:object-label"/>
+        </a>
     </xsl:template>
     
 </xsl:stylesheet>

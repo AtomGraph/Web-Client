@@ -61,9 +61,9 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:Main" priority="2">
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="bs2:Main" priority="2">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span4'" as="xs:string?"/>
+        <xsl:param name="class" select="'span8'" as="xs:string?"/>
         
         <div>
             <xsl:if test="$id">
@@ -73,25 +73,25 @@ LIMIT 100</xsl:param>
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:apply-templates select="." mode="bs2:QueryForm"/>
+            <xsl:call-template name="bs2:QueryForm"/>
 
-            <xsl:if test="$query">
-                <xsl:apply-templates select="." mode="ac:QueryResult"/>
+            <xsl:if test="$ac:query">
+                <xsl:call-template name="ac:QueryResult"/>
             </xsl:if>
         </div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:Right" priority="2"/>
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="bs2:Right" priority="2"/>
 
-    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="xhtml:Style" priority="1">
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="xhtml:Style" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/>
+    <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/> -->
         
-    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:QueryForm">
+    <xsl:template name="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -115,10 +115,17 @@ LIMIT 100</xsl:param>
             </xsl:if>
         
             <fieldset>
+                <label>Endpoint</label>
+                <input type="text" name="endpoint">
+                    <xsl:if test="$ac:endpoint">
+                        <xsl:attribute name="endpoint" select="$ac:endpoint"/>
+                    </xsl:if>
+                </input>
+        
                 <textarea id="query-string" name="query" class="span12" rows="15">
                     <xsl:choose>
-                        <xsl:when test="$query">
-                            <xsl:value-of select="$query"/>
+                        <xsl:when test="$ac:query">
+                            <xsl:value-of select="$ac:query"/>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="$default-query"/>
@@ -134,48 +141,52 @@ LIMIT 100</xsl:param>
                 </script>
 
                 <div class="form-actions">
-                    <xsl:if test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource">
-                        <input type="hidden" name="mode" value="{key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource}"/>
+                    <xsl:if test="$ac:uri">
+                        <input type="hidden" name="uri" value="{$ac:uri}"/>
                     </xsl:if>
+                    <xsl:if test="$ac:mode">
+                        <input type="hidden" name="mode" value="{$ac:mode}"/>
+                    </xsl:if>
+                    
                     <button type="submit" class="btn btn-primary">Query</button>
                 </div>
             </fieldset>
-	</form>            
+        </form>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$a:absolutePath][key('resources', $a:absolutePath)/rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="ac:QueryResult">
-	<xsl:param name="result-doc" select="document(concat($a:absolutePath, ac:query-string((), $query, key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource, ())))"/>
+    <xsl:template name="ac:QueryResult">
+        <xsl:param name="result-doc" select="document(concat($ac:endpoint, '?query=', encode-for-uri($ac:query)))"/>
 
-	<!-- result of CONSTRUCT or DESCRIBE -->
-	<xsl:if test="$result-doc/rdf:RDF">
+        <!-- result of CONSTRUCT or DESCRIBE -->
+        <xsl:if test="$result-doc/rdf:RDF">
             <xsl:apply-templates select="." mode="bs2:ModeList"/>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;ListMode'">
+                    <xsl:when test="$ac:mode = '&ac;ListMode'">
                         <xsl:apply-templates select="*" mode="bs2:BlockList">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;TableMode'">
+                    <xsl:when test="$ac:mode = '&ac;TableMode'">
                         <xsl:apply-templates select="." mode="xhtml:Table">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;GridMode'">
+                    <xsl:when test="$ac:mode = '&ac;GridMode'">
                         <xsl:apply-templates select="." mode="bs2:Grid">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>-->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;MapMode'">
+                    <xsl:when test="$ac:mode = '&ac;MapMode'">
                         <xsl:apply-templates select="." mode="bs2:Map">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
-                    <xsl:when test="key('resources', key('resources', $a:requestUri)/ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&ac;mode']/rdf:value/@rdf:resource = '&ac;EditMode'">
+                    <xsl:when test="$ac:mode = '&ac;EditMode'">
                         <xsl:apply-templates select="." mode="bs2:EditForm">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
-                        </xsl:apply-templates>                            
+                        </xsl:apply-templates>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:apply-templates select="." mode="bs2:Block">
@@ -184,12 +195,12 @@ LIMIT 100</xsl:param>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-	</xsl:if>
+        </xsl:if>
         
-	<!-- result of SELECT or ASK -->
-	<xsl:if test="$result-doc/sparql:sparql">
-	    <xsl:apply-templates select="$result-doc/sparql:sparql" mode="xhtml:Table"/>
-	</xsl:if>
+        <!-- result of SELECT or ASK -->
+        <xsl:if test="$result-doc/sparql:sparql">
+            <xsl:apply-templates select="$result-doc/sparql:sparql" mode="xhtml:Table"/>
+        </xsl:if>
     </xsl:template>
     
 </xsl:stylesheet>
