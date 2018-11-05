@@ -131,9 +131,21 @@ exclude-result-prefixes="#all">
     
     <!-- property -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
-        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="concat(namespace-uri(), local-name())" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
         
-        <span title="{$this}">
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:apply-templates select="." mode="ac:property-label"/>
         </span>
     </xsl:template>
@@ -148,14 +160,44 @@ exclude-result-prefixes="#all">
 
     <!-- object URI resource -->
     <xsl:template match="@rdf:resource | sparql:uri">
-        <a href="{.}" title="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <a href="{$href}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:apply-templates select="." mode="ac:object-label"/>
         </a>
     </xsl:template>
 
     <!-- object blank node -->
     <xsl:template match="@rdf:nodeID">
-        <a href="#{.}" title="{.}">
+        <xsl:param name="href" select="xs:anyURI(concat('#', .))" as="xs:anyURI"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <a href="{$href}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:apply-templates select="." mode="ac:object-label"/>
         </a>
     </xsl:template>
@@ -166,41 +208,125 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype] | sparql:literal[@datatype]">
-        <span title="{../@rdf:datatype | @datatype}">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="../@rdf:datatype | @datatype" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:value-of select="."/>
         </span>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype = '&xsd;float'] | text()[../@rdf:datatype = '&xsd;double'] | sparql:literal[@datatype = '&xsd;float'] | sparql:literal[@datatype = '&xsd;double']" priority="1">
-        <span title="{../@rdf:datatype}">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="../@rdf:datatype" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:value-of select="format-number(., '#####.00')"/>
         </span>
     </xsl:template>
 
     <xsl:template match="text()[. castable as xs:date][../@rdf:datatype = '&xsd;date'] | sparql:literal[@datatype = '&xsd;date']" priority="1">
-        <span title="{../@rdf:datatype}">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="../@rdf:datatype" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
         </span>
     </xsl:template>
 
     <xsl:template match="text()[. castable as xs:dateTime][../@rdf:datatype = '&xsd;dateTime'] | sparql:literal[@datatype = '&xsd;dateTime']" priority="1">
-        <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
-        <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-        <span title="{../@rdf:datatype}">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="../@rdf:datatype" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
+            <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
+            <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
             <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
         </span>
     </xsl:template>
 
     <!-- @rdf:datatype -->
     <xsl:template match="@rdf:*[local-name() = 'datatype'][starts-with(., '&xsd;')]" priority="1">
-        <span class="help-inline" title="{.}">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
+        <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
+        
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             xsd:<xsl:value-of select="substring-after(., '&xsd;')"/>
         </span>
     </xsl:template>
 
     <!-- @rdf:datatype -->
     <xsl:template match="@rdf:*[local-name() = 'datatype']">
-        <span class="help-inline" title="{.}">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
+        <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
+        
+        <span>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:value-of select="."/>
         </span>
     </xsl:template>

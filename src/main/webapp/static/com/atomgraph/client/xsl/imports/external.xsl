@@ -50,9 +50,17 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:resource">
-        <a href="?uri={encode-for-uri(.)}" title="{.}">
-            <xsl:apply-templates select="." mode="ac:object-label"/>
-        </a>
+        <xsl:param name="href" select="xs:anyURI(concat('?uri=', encode-for-uri(if (contains(., '#')) then substring-before(., '#') else .), if (substring-after(., '#')) then concat('#', substring-after(., '#')) else ()))" as="xs:anyURI"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        
+        <xsl:next-match>
+            <xsl:with-param name="href" select="$href"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:next-match>
     </xsl:template>
     
 </xsl:stylesheet>

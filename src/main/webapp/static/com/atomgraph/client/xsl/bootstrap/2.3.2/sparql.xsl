@@ -89,8 +89,6 @@ LIMIT 100</xsl:param>
         <link href="{resolve-uri('static/css/yasqe.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
-    <!-- <xsl:template match="*[rdf:type/@rdf:resource = '&c;SPARQLEndpoint']" mode="bs2:ModeList" priority="1"/> -->
-        
     <xsl:template name="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
