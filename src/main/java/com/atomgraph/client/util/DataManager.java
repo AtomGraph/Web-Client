@@ -70,13 +70,16 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
         acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(new MediaType[acceptedTypeList.size()]);
-        
+
+        Map<String, String> q08 = new HashMap<>();
+        q08.put("q", "0.8");
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
-        acceptableXMLMediaTypeList.add(MediaType.TEXT_XML_TYPE);
-        acceptableXMLMediaTypeList.add(MediaType.APPLICATION_XML_TYPE);
-        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/xml;q=0.9"));
-        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/*;q=0.8"));
+        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE);
+        acceptableXMLMediaTypeList.add(new MediaType(MediaType.TEXT_XML_TYPE.getType(), MediaType.TEXT_XML_TYPE.getSubtype(), q08));
+        acceptableXMLMediaTypeList.add(new MediaType(MediaType.APPLICATION_XML_TYPE.getType(), MediaType.APPLICATION_XML_TYPE.getSubtype(), q08));
+        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/xml;q=0.6"));
+        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/*;q=0.2"));
         acceptableXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
     }
 
