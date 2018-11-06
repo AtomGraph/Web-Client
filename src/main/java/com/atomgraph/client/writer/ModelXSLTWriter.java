@@ -210,11 +210,14 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getUriInfo().getRequestUri();
     }
 
-    public URI getURIParam(String name)
+    public URI getURIParam(UriInfo uriInfo, String name)
     {
-        if (getUriInfo().getQueryParameters().containsKey(name))
+        if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
+        if (name == null) throw new IllegalArgumentException("String cannot be null");
+
+        if (uriInfo.getQueryParameters().containsKey(name))
         {
-            String uri = getUriInfo().getQueryParameters().getFirst(name);
+            String uri = uriInfo.getQueryParameters().getFirst(name);
             try
             {
                 return new URI(uri);
@@ -230,12 +233,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public URI getURI()
     {
-        return getURIParam(AC.uri.getLocalName());
+        return getURIParam(getUriInfo(), AC.uri.getLocalName());
     }
 
     public URI getEndpointURI()
     {
-        return getURIParam(AC.endpoint.getLocalName());
+        return getURIParam(getUriInfo(), AC.endpoint.getLocalName());
     }
 
     public String getQuery()
