@@ -54,11 +54,11 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    private final javax.ws.rs.core.MediaType[] acceptedTypes;
+    //private final javax.ws.rs.core.MediaType[] acceptedTypes;
+    private final MediaType[] acceptedXMLMediaTypes;
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
     private final boolean resolvingSPARQL = true;
-    private final MediaType[] acceptedXMLMediaTypes;
             
     public DataManager(LocationMapper mapper, Client client, MediaTypes mediaTypes,
             boolean preemptiveAuth, boolean resolvingUncached)
@@ -66,19 +66,14 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         super(mapper, client, mediaTypes, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
-        List<MediaType> acceptedTypeList = new ArrayList();
-        acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
-        acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
-        acceptedTypes = acceptedTypeList.toArray(new MediaType[acceptedTypeList.size()]);
+//        List<MediaType> acceptedTypeList = new ArrayList();
+//        acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
+//        acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
+//        acceptedTypes = acceptedTypeList.toArray(new MediaType[acceptedTypeList.size()]);
 
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
-//        Map<String, String> q08 = new HashMap<>();
-//        q08.put("q", "0.8");
-//        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
-//        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE);
-        acceptableXMLMediaTypeList.add(MediaType.TEXT_XML_TYPE);
-        acceptableXMLMediaTypeList.add(MediaType.APPLICATION_XML_TYPE);
-        acceptableXMLMediaTypeList.add(MediaType.valueOf("application/xhtml+xml;q=0.3"));
+        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
+        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE);
         acceptableXMLMediaTypeList.add(MediaType.valueOf("*/*;q=0.2"));
         acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
     }
@@ -220,10 +215,10 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         }
     }
  
-    public javax.ws.rs.core.MediaType[] getAcceptedMediaTypes()
-    {
-        return acceptedTypes;
-    }
+//    public javax.ws.rs.core.MediaType[] getAcceptedMediaTypes()
+//    {
+//        return acceptedTypes;
+//    }
     
     public boolean resolvingUncached(String filenameOrURI)
     {
