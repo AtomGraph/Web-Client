@@ -58,7 +58,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
     private final boolean resolvingSPARQL = true;
-    private final MediaType[] acceptableXMLMediaTypes;
+    private final MediaType[] acceptedXMLMediaTypes;
             
     public DataManager(LocationMapper mapper, Client client, MediaTypes mediaTypes,
             boolean preemptiveAuth, boolean resolvingUncached)
@@ -71,16 +71,16 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(new MediaType[acceptedTypeList.size()]);
 
-        Map<String, String> q08 = new HashMap<>();
-        q08.put("q", "0.8");
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
-        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
-        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE);
-        acceptableXMLMediaTypeList.add(new MediaType(MediaType.TEXT_XML_TYPE.getType(), MediaType.TEXT_XML_TYPE.getSubtype(), q08));
-        acceptableXMLMediaTypeList.add(new MediaType(MediaType.APPLICATION_XML_TYPE.getType(), MediaType.APPLICATION_XML_TYPE.getSubtype(), q08));
-        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/xml;q=0.6"));
+//        Map<String, String> q08 = new HashMap<>();
+//        q08.put("q", "0.8");
+//        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_RDF_XML_TYPE);
+//        acceptableXMLMediaTypeList.add(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE);
+        acceptableXMLMediaTypeList.add(MediaType.TEXT_XML_TYPE);
+        acceptableXMLMediaTypeList.add(MediaType.APPLICATION_XML_TYPE);
+        acceptableXMLMediaTypeList.add(MediaType.valueOf("application/xhtml+xml;q=0.3"));
         acceptableXMLMediaTypeList.add(MediaType.valueOf("*/*;q=0.2"));
-        acceptableXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
+        acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
     }
 
     public ClientResponse load(String filenameOrURI)
@@ -128,7 +128,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
             ClientResponse cr = null;
             try
             {
-                cr = get(uri.toString(), getAcceptableXMLMediaTypes());
+                cr = get(uri.toString(), getAcceptedXMLMediaTypes());
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
@@ -240,9 +240,9 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         return resolvingMapped;
     }
     
-    public MediaType[] getAcceptableXMLMediaTypes()
+    public MediaType[] getAcceptedXMLMediaTypes()
     {
-        return acceptableXMLMediaTypes;
+        return acceptedXMLMediaTypes;
     }
 
 }
