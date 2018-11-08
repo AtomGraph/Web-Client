@@ -73,7 +73,13 @@ LIMIT 100</xsl:param>
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:call-template name="bs2:QueryForm"/>
+            <xsl:call-template name="bs2:QueryForm">
+                <xsl:with-param name="uri" select="$ac:uri"/>
+                <xsl:with-param name="mode" select="$ac:mode"/>
+                <xsl:with-param name="endpoint" select="$ac:endpoint"/>
+                <xsl:with-param name="query" select="$ac:query"/>
+                <xsl:with-param name="default-query" select="$default-query"/>
+            </xsl:call-template>
 
             <xsl:if test="$ac:query">
                 <xsl:call-template name="ac:QueryResult"/>
@@ -96,7 +102,11 @@ LIMIT 100</xsl:param>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
-        <!-- <xsl:param name="query-string" as="xs:string?"/> -->
+        <xsl:param name="uri" as="xs:anyURI?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="endpoint" as="xs:anyURI?"/>
+        <xsl:param name="query" as="xs:string?"/>
+        <xsl:param name="default-query" as="xs:string?"/>
         
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
@@ -115,15 +125,15 @@ LIMIT 100</xsl:param>
             <fieldset>
                 <label for="endpoint-uri">Endpoint</label>
                 <input type="text" id="endpoint-uri" name="endpoint">
-                    <xsl:if test="$ac:endpoint">
-                        <xsl:attribute name="endpoint" select="$ac:endpoint"/>
+                    <xsl:if test="$endpoint">
+                        <xsl:attribute name="endpoint" select="$endpoint"/>
                     </xsl:if>
                 </input>
         
                 <textarea id="query-string" name="query" class="span12" rows="15">
                     <xsl:choose>
-                        <xsl:when test="$ac:query">
-                            <xsl:value-of select="$ac:query"/>
+                        <xsl:when test="$query">
+                            <xsl:value-of select="$query"/>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="$default-query"/>
@@ -139,11 +149,11 @@ LIMIT 100</xsl:param>
                 </script>
 
                 <div class="form-actions">
-                    <xsl:if test="$ac:uri">
-                        <input type="hidden" name="uri" value="{$ac:uri}"/>
+                    <xsl:if test="$uri">
+                        <input type="hidden" name="uri" value="{$uri}"/>
                     </xsl:if>
-                    <xsl:if test="$ac:mode">
-                        <input type="hidden" name="mode" value="{$ac:mode}"/>
+                    <xsl:if test="$mode">
+                        <input type="hidden" name="mode" value="{$mode}"/>
                     </xsl:if>
                     
                     <button type="submit" class="btn btn-primary">Query</button>
