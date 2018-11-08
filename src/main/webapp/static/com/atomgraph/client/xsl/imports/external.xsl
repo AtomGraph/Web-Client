@@ -19,8 +19,9 @@ limitations under the License.
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -29,8 +30,9 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
+xmlns:owl="&owl;"
+xmlns:sparql="&sparql;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
