@@ -49,7 +49,7 @@ exclude-result-prefixes="#all">
         </xsl:next-match>
     </xsl:template>
     
-    <xsl:template match="@rdf:resource">
+    <xsl:template match="@rdf:resource | sparql:uri">
         <xsl:param name="href" select="xs:anyURI(concat('?uri=', encode-for-uri(if (contains(., '#')) then substring-before(., '#') else .), if (substring-after(., '#')) then concat('#', substring-after(., '#')) else ()))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
