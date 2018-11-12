@@ -47,6 +47,7 @@ import com.atomgraph.core.util.Link;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,7 @@ public class ProxyResourceBase implements Resource
     private final MediaType accept;
     private final WebResource webResource;
     private final LinkedDataClient linkedDataClient;
+    private final HttpServletRequest httpServletRequest;
     
     /**
      * JAX-RS compatible resource constructor with injected initialization objects.
@@ -78,11 +80,12 @@ public class ProxyResourceBase implements Resource
      * @param endpoint SPARQL endpoint URI
      * @param accept response media type
      * @param mode layout mode
-     * @param client
+     * @param client HTTP client
+     * @param httpServletRequest HTTP request
      */
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
-            @Context Client client)
+            @Context Client client, @Context HttpServletRequest httpServletRequest)
     {
         if (uri == null) throw new NotFoundException("Resource URI not supplied"); // TO-DO: BadRequestException
         this.request = request;
@@ -93,48 +96,13 @@ public class ProxyResourceBase implements Resource
         //client.setFollowRedirects(false);
         webResource = client.resource(uri);
         linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
+        this.httpServletRequest = httpServletRequest;
     }
     
     @Override
     public URI getURI()
     {
         return getWebResource().getURI();
-    }
-    
-    public HttpHeaders getHttpHeaders()
-    {
-        return httpHeaders;
-    }
-    
-    /**
-     * Returns media type requested by the client ("accept" query string parameter).
-     * This mechanism overrides the normally used content negotiation.
-     * 
-     * @return media type parsed from query param
-     */
-    public MediaType getAcceptMediaType()
-    {
-        return accept;
-    }
-    
-    public final WebResource getWebResource()
-    {
-        return webResource;
-    }
-
-    public Request getRequest()
-    {
-        return request;
-    }
-    
-    public MediaTypes getMediaTypes()
-    {
-        return mediaTypes;
-    }
-    
-    public LinkedDataClient getLinkedDataClient()
-    {
-        return linkedDataClient;
     }
     
     public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
@@ -210,19 +178,14 @@ public class ProxyResourceBase implements Resource
                     try
                     {
                         Link link = Link.valueOf(linkValue);
-                        if (link.getRel().equals(LDT.ontology.getURI()) || link.getRel().equals(LDT.base.getURI())) // only recognized relationships are forwarded
-                            rb.header("Link", linkValue);
+                        if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getRel());
+                        if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getRel());
                     }
                     catch (URISyntaxException ex)
                     {
                         if (log.isErrorEnabled()) log.debug("Could parse Link URI: {}", ex.getInput());
                     }
                 }
-            /*
-            if (resp.getHeaders().get("Rules") != null)
-                for (String linkValue : resp.getHeaders().get("Rules"))
-                    rb.header("Rules", linkValue);
-            */
 
             return rb.build();
         }
@@ -300,5 +263,46 @@ public class ProxyResourceBase implements Resource
             if (cr != null) cr.close();
         }
     }
+    
+    public HttpHeaders getHttpHeaders()
+    {
+        return httpHeaders;
+    }
+    
+    /**
+     * Returns media type requested by the client ("accept" query string parameter).
+     * This mechanism overrides the normally used content negotiation.
+     * 
+     * @return media type parsed from query param
+     */
+    public MediaType getAcceptMediaType()
+    {
+        return accept;
+    }
+    
+    public final WebResource getWebResource()
+    {
+        return webResource;
+    }
 
+    public Request getRequest()
+    {
+        return request;
+    }
+    
+    public MediaTypes getMediaTypes()
+    {
+        return mediaTypes;
+    }
+    
+    public LinkedDataClient getLinkedDataClient()
+    {
+        return linkedDataClient;
+    }
+    
+    public HttpServletRequest getHttpServletRequest()
+    {
+        return httpServletRequest;
+    }
+    
 }

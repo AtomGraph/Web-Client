@@ -91,7 +91,10 @@ import javax.ws.rs.core.UriBuilder;
  *
  * @see com.sun.jersey.api.container.filter
  */
-public class PostReplaceFilter implements ContainerRequestFilter {
+public class PostReplaceFilter implements ContainerRequestFilter
+{
+    
+    public static final String METHOD_PARAM = "_method";
 
     /**
      * Property that may contain a comma-separated list of the configuration flags to be set on this filter. {@link ConfigFlag} enum lists the allowed config flags.
@@ -219,13 +222,13 @@ public class PostReplaceFilter implements ContainerRequestFilter {
         }
 
         String header = getParamValue(ConfigFlag.HEADER, request.getRequestHeaders(), "X-HTTP-Method-Override");
-        String query = getParamValue(ConfigFlag.QUERY, request.getQueryParameters(), "_method");
+        String query = getParamValue(ConfigFlag.QUERY, request.getQueryParameters(), METHOD_PARAM);
 
         String override;
         if (header == null) {
             override = query;
-            URI originalRequestUri = request.getRequestUriBuilder().replaceQueryParam("_method", null).build();
-            request.setUris(request.getBaseUri(), originalRequestUri);            
+            URI originalRequestUri = request.getRequestUriBuilder().replaceQueryParam(METHOD_PARAM, null).build();
+            request.setUris(request.getBaseUri(), originalRequestUri);
         } else {
             override = header;
             if (query != null && !query.equals(header)) {

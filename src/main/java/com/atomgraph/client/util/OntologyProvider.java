@@ -43,9 +43,9 @@ public class OntologyProvider
      */
     public OntModel getOntModel(OntDocumentManager manager, String ontologyURI, OntModelSpec ontModelSpec)
     {
-        if (manager == null) throw new IllegalArgumentException("OntDocumentManager cannot be null");        
+        if (manager == null) throw new IllegalArgumentException("OntDocumentManager cannot be null");
         if (ontologyURI == null) throw new IllegalArgumentException("URI cannot be null");
-        if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");        
+        if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
         if (log.isDebugEnabled()) log.debug("Loading sitemap ontology from URI: {}", ontologyURI);
 
         OntModel ontModel = manager.getOntology(ontologyURI, ontModelSpec);

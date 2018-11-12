@@ -6,6 +6,14 @@
     id="atomgraph-client" version="3.0">
     <display-name>AtomGraph Client</display-name>
     <description>Generic Linked Data client</description>
+    <context-param>
+        <param-name>http://atomgraph.com/ns/client#sitemapRules</param-name>
+        <param-value><![CDATA[
+[inhClass: (?class rdf:type <http://www.w3.org/2000/01/rdf-schema#Class>), (?class ?p ?o), (?p rdf:type <https://www.w3.org/ns/ldt#InheritedProperty>), (?subClass rdfs:subClassOf ?class), (?subClass rdf:type <http://www.w3.org/2000/01/rdf-schema#Class>), noValue(?subClass ?p) -> (?subClass ?p ?o) ]
+[inhTemplate: (?template rdf:type <https://www.w3.org/ns/ldt#Template>), (?template ?p ?o), (?p rdf:type <https://www.w3.org/ns/ldt#InheritedProperty>), (?subTemplate <https://www.w3.org/ns/ldt#extends> ?template), (?subTemplate rdf:type <https://www.w3.org/ns/ldt#Template>), noValue(?subTemplate ?p) -> (?subTemplate ?p ?o) ]
+[rdfs9: (?x rdfs:subClassOf ?y), (?a rdf:type ?x) -> (?a rdf:type ?y)]
+]]></param-value>
+    </context-param>
     <servlet>
         <servlet-name>client</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -18,10 +26,6 @@
             <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
         </init-param>
         <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.atomgraph.client.filter.response.URIRewriteFilter</param-value>
-        </init-param>
-        <init-param>
             <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
             <param-value>http://atomgraph.dydra.com/graphity/client/sparql</param-value>
         </init-param>
@@ -31,7 +35,7 @@
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/ns/client#stylesheet</param-name>
-            <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl</param-value>
+            <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/external.xsl</param-value>
         </init-param>
         <init-param>
             <param-name>http://atomgraph.com/ns/core#resultLimit</param-name>
