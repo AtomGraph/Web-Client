@@ -178,8 +178,9 @@ public class ProxyResourceBase implements Resource
                     try
                     {
                         Link link = Link.valueOf(linkValue);
-                        if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getRel());
-                        if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getRel());
+                        if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getHref());
+                        if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getHref());
+                        if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getHref());
                     }
                     catch (URISyntaxException ex)
                     {

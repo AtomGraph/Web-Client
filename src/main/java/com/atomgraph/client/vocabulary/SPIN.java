@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Martynas Jusevičius <martynas@atomgraph.com>.
+ * Copyright 2018 Martynas Jusevičius <martynas@atomgraph.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,34 @@
  */
 package com.atomgraph.client.vocabulary;
 
-import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResourceFactory;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
-public class SPL
+public class SPIN
 {
-    
+
+    public final static String THIS_VAR_NAME = "this";
+
     /** <p>The RDF model that holds the vocabulary terms</p> */
     private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
     
     /** <p>The namespace of the vocabulary as a string</p> */
-    public static final String NS = "http://spinrdf.org/spl#";
+    public static final String NS = "http://spinrdf.org/spin#";
     
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */
     public static String getURI()
     {
-	return NS;
+        return NS;
     }
     
-    public static final ObjectProperty predicate = m_model.createObjectProperty( NS + "predicate" );
-
-    public static final Property defaultValue = m_model.createProperty( NS + "defaultValue" );
+    public final static Property constructor = ResourceFactory.createProperty(NS + "constructor");
 
 }

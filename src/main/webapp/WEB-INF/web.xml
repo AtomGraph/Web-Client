@@ -26,14 +26,6 @@
             <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
         </init-param>
         <init-param>
-            <param-name>http://www.w3.org/ns/sparql-service-description#endpoint</param-name>
-            <param-value>http://atomgraph.dydra.com/graphity/client/sparql</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://atomgraph.com/ns/core#graphStore</param-name>
-            <param-value>http://atomgraph.dydra.com/graphity/client/service</param-value>
-        </init-param>
-        <init-param>
             <param-name>http://atomgraph.com/ns/client#stylesheet</param-name>
             <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/external.xsl</param-value>
         </init-param>

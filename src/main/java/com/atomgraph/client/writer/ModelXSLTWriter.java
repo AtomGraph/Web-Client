@@ -17,13 +17,11 @@
 package com.atomgraph.client.writer;
 
 import com.atomgraph.client.exception.OntologyException;
+import com.atomgraph.client.util.Constructor;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.reasoner.Reasoner;
-import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
-import org.apache.jena.reasoner.rulesys.Rule;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -32,7 +30,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +57,6 @@ import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.client.vocabulary.LDTDH;
-import com.atomgraph.core.util.Link;
 import com.atomgraph.core.vocabulary.A;
 import java.util.HashSet;
 import java.util.Locale;
@@ -68,7 +64,9 @@ import java.util.Set;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -110,6 +108,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     @Context private HttpHeaders httpHeaders;
     @Context private Providers providers;
     @Context private HttpServletRequest httpServletRequest;
+    @Context private Application application;
     
     /**
      * Constructs from XSLT builder.
@@ -121,22 +120,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
         this.templates = templates;
-    }
-
-    public Providers getProviders()
-    {
-        return providers;
-    }
-
-    public DataManager getDataManager()
-    {
-        ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
-        return cr.getContext(DataManager.class);
-    }
-    
-    public SAXTransformerFactory getTransformerFactory()
-    {
-        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
     }
     
     public ModelXSLTWriter()
@@ -279,31 +262,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
     
-    public UriInfo getUriInfo()
-    {
-        return uriInfo;
-    }
-
-    public Request getRequest()
-    {
-        return request;
-    }
-    
-    public HttpHeaders getHttpHeaders()
-    {
-        return httpHeaders;
-    }
-
-    public HttpServletRequest getHttpServletRequest()
-    {
-        return httpServletRequest;
-    }
-
-    public Map<URI, MediaType> getModeMediaTypeMap()
-    {
-        return modeMediaTypeMap;
-    }
-    
     public URI getContextURI()
     {
         return URI.create(getHttpServletRequest().getRequestURL().toString()).
@@ -339,44 +297,60 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         {
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
 
-            URI templateHref = getLinkHref(headerMap, "Link", LDT.template.getURI());
-            builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateHref);
-
-            URI baseHref = getLinkHref(headerMap, "Link", LDT.base.getURI());
-            if (baseHref != null) builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseHref);
-            
-            URI ontologyHref = getLinkHref(headerMap, "Link", LDT.ontology.getURI());
-            if (ontologyHref != null)
+            URI ontologyURI = (URI)getHttpServletRequest().getAttribute(LDT.ontology.getURI());
+            if (ontologyURI != null)
             {
-                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyHref);
+                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyURI);
 
-                OntModel sitemap = getOntModel(headerMap, ontologyHref.toString());
+                OntModel sitemap = getOntModel(ontologyURI.toString());
                 builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
-                
-                if (modes.isEmpty() && templateHref != null) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
-                {
-                    Resource template = sitemap.getResource(templateHref.toString());
-                    
-                    StmtIterator it = template.listProperties(AC.mode);
-                    try
-                    {
-                        while (it.hasNext())
-                        {
-                            Statement modeStmt = it.next();
-                            
-                            if (!modeStmt.getObject().isURIResource())
-                                throw new OntologyException(template, AC.mode, "Value is not a URI resource");
 
-                            modes.add(URI.create(modeStmt.getResource().getURI()));
-                        }
-                    }
-                    finally
+                URI baseURI = (URI)getHttpServletRequest().getAttribute(LDT.base.getURI());
+                if (baseURI != null)
+                {
+                    builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseURI);
+
+                    String forClassURI = getUriInfo().getQueryParameters().getFirst("forClass");
+                    if (forClassURI != null)
                     {
-                        it.close();
+                        OntClass forClass = sitemap.getOntClass(forClassURI);
+
+                        if (forClass == null) throw new WebApplicationException(Response.Status.BAD_REQUEST); // OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
+                        // connects instance state to CONSTRUCTed template
+                        Resource instance = addInstance(ModelFactory.createDefaultModel(), forClass, baseURI.toString());
+                        builder.parameter("{" + AC.instance.getNameSpace() + "}" + AC.instance.getLocalName(), getSource(instance.getModel()));
+                    }
+                }
+
+                URI templateURI = (URI)getHttpServletRequest().getAttribute(LDT.template.getURI());
+                if (templateURI != null)
+                {
+                    builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateURI);
+                    if (modes.isEmpty()) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
+                    {
+                        Resource template = sitemap.getResource(templateURI.toString());
+
+                        StmtIterator it = template.listProperties(AC.mode);
+                        try
+                        {
+                            while (it.hasNext())
+                            {
+                                Statement modeStmt = it.next();
+
+                                if (!modeStmt.getObject().isURIResource())
+                                    throw new OntologyException(template, AC.mode, "Value is not a URI resource");
+
+                                modes.add(URI.create(modeStmt.getResource().getURI()));
+                            }
+                        }
+                        finally
+                        {
+                            it.close();
+                        }
                     }
                 }
             }
-
+            
             builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), modes);
 
             // workaround for Google Maps and Saxon-CE
@@ -410,11 +384,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             
             return builder;
         }
-        catch (URISyntaxException ex)
-        {
-            if (log.isErrorEnabled()) log.error("'Link' response header contains invalid URI: {}", headerMap.getFirst("Link"));
-            throw new TransformerException(ex);
-        }
         catch (IOException ex)
         {
             if (log.isErrorEnabled()) log.error("Error reading Source stream");
@@ -432,64 +401,9 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return OntDocumentManager.getInstance();
     }
     
-    public OntModel getOntModel(MultivaluedMap<String, Object> headerMap, String ontologyURI)
+    public OntModel getOntModel(String ontologyURI)
     {
-        return getOntModel(ontologyURI, getOntModelSpec(getRules(headerMap, "Rules")));
-    }
-    
-    public URI getLinkHref(MultivaluedMap<String, Object> headerMap, String headerName, String rel) throws URISyntaxException
-    {
-        if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
-        if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
-        if (rel == null) throw new IllegalArgumentException("Property Map cannot be null");
-        
-        List<Object> links = headerMap.get(headerName);
-        if (links != null)
-        {
-            Iterator<Object> it = links.iterator();
-            while (it.hasNext())
-            {
-                String linkHeader = it.next().toString();
-                Link link = Link.valueOf(linkHeader);
-                if (link.getRel().equals(rel)) return link.getHref();
-            }
-        }
-        
-        return null;
-    }
-
-    public OntModelSpec getOntModelSpec(List<Rule> rules)
-    {
-        OntModelSpec ontModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
-        
-        if (rules != null)
-        {
-            Reasoner reasoner = new GenericRuleReasoner(rules);
-            //reasoner.setDerivationLogging(true);
-            //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
-            ontModelSpec.setReasoner(reasoner);
-        }
-        
-        return ontModelSpec;
-    }
-    
-    public final List<Rule> getRules(MultivaluedMap<String, Object> headerMap, String headerName)
-    {
-        String rules = getRulesString(headerMap, headerName);
-        if (rules == null) return null;
-        
-        return Rule.parseRules(rules);
-    }
-    
-    public String getRulesString(MultivaluedMap<String, Object> headerMap, String headerName)
-    {
-        if (headerMap == null) throw new IllegalArgumentException("Header Map cannot be null");
-        if (headerName == null) throw new IllegalArgumentException("String header name cannot be null");
-
-        Object rules = headerMap.getFirst(headerName);
-        if (rules != null) return rules.toString();
-        
-        return null;
+        return getOntModel(ontologyURI, getApplication().getOntModelSpec());
     }
     
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
@@ -547,4 +461,57 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return classIRI;
     }
 
+    public Resource addInstance(Model targetModel, OntClass forClass, String baseURI)
+    {
+        if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
+        return new Constructor().construct(forClass, targetModel, baseURI);
+    }
+    
+    
+    public UriInfo getUriInfo()
+    {
+        return uriInfo;
+    }
+
+    public Request getRequest()
+    {
+        return request;
+    }
+    
+    public HttpHeaders getHttpHeaders()
+    {
+        return httpHeaders;
+    }
+
+    public HttpServletRequest getHttpServletRequest()
+    {
+        return httpServletRequest;
+    }
+
+    public Map<URI, MediaType> getModeMediaTypeMap()
+    {
+        return modeMediaTypeMap;
+    }
+    
+    public com.atomgraph.client.Application getApplication()
+    {
+        return (com.atomgraph.client.Application)application;
+    }
+ 
+    public Providers getProviders()
+    {
+        return providers;
+    }
+
+    public DataManager getDataManager()
+    {
+        ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+        return cr.getContext(DataManager.class);
+    }
+    
+    public SAXTransformerFactory getTransformerFactory()
+    {
+        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+    }
+    
 }

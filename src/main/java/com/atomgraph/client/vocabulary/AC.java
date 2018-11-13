@@ -75,7 +75,9 @@ public final class AC
     public static final DatatypeProperty query = m_model.createDatatypeProperty( NS + "query" );
    
     public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
-    
+
+    public static final DatatypeProperty instance = m_model.createDatatypeProperty( NS + "instance" );
+
     // CONFIG
     
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
@@ -86,4 +88,6 @@ public final class AC
     
     public static final DatatypeProperty prefixMapping = m_model.createDatatypeProperty( NS + "prefixMapping" );
     
+    public static final DatatypeProperty sitemapRules = m_model.createDatatypeProperty( NS + "sitemapRules" );
+
 }
