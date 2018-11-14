@@ -7,6 +7,26 @@
     <display-name>AtomGraph Client</display-name>
     <description>Generic Linked Data client</description>
     <context-param>
+        <param-name>http://atomgraph.com/ns/client#stylesheet</param-name>
+        <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/external.xsl</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://atomgraph.com/ns/core#resultLimit</param-name>
+        <param-value>100</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://atomgraph.com/ns/client#prefixMapping</param-name>
+        <param-value>prefix-mapping.n3</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://atomgraph.com/ns/client#cacheStylesheet</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
         <param-name>http://atomgraph.com/ns/client#sitemapRules</param-name>
         <param-value><![CDATA[
 [inhClass: (?class rdf:type <http://www.w3.org/2000/01/rdf-schema#Class>), (?class ?p ?o), (?p rdf:type <https://www.w3.org/ns/ldt#InheritedProperty>), (?subClass rdfs:subClassOf ?class), (?subClass rdf:type <http://www.w3.org/2000/01/rdf-schema#Class>), noValue(?subClass ?p) -> (?subClass ?p ?o) ]
@@ -24,26 +44,6 @@
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
             <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://atomgraph.com/ns/client#stylesheet</param-name>
-            <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/external.xsl</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://atomgraph.com/ns/core#resultLimit</param-name>
-            <param-value>100</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://atomgraph.com/ns/client#prefixMapping</param-name>
-            <param-value>prefix-mapping.n3</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://atomgraph.com/ns/client#cacheStylesheet</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
-            <param-value>false</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
