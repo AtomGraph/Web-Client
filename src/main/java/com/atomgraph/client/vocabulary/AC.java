@@ -76,6 +76,8 @@ public final class AC
    
     public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
 
+    public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
+
     public static final DatatypeProperty instance = m_model.createDatatypeProperty( NS + "instance" );
 
     // CONFIG

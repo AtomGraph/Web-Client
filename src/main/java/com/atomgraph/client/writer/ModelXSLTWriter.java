@@ -56,7 +56,6 @@ import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
-import com.atomgraph.client.vocabulary.LDTDH;
 import com.atomgraph.core.vocabulary.A;
 import java.util.HashSet;
 import java.util.Locale;
@@ -310,7 +309,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 {
                     builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseURI);
 
-                    String forClassURI = getUriInfo().getQueryParameters().getFirst("forClass");
+                    String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
                     if (forClassURI != null)
                     {
                         OntClass forClass = sitemap.getOntClass(forClassURI);
@@ -415,7 +414,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         /// if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
 
-        if (getUriInfo().getQueryParameters().containsKey(LDTDH.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
+        if (getUriInfo().getQueryParameters().containsKey(AC.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
 
         for (URI mode : modes)
             if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
