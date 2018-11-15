@@ -402,7 +402,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     
     public OntModel getOntModel(String ontologyURI)
     {
-        return getOntModel(ontologyURI, getApplication().getOntModelSpec());
+        return getOntModel(ontologyURI, getOntModelSpec());
     }
     
     public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
@@ -412,7 +412,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public MediaType getCustomMediaType(List<URI> modes)
     {
-        /// if (mode == null) throw new IllegalArgumentException("Mode Resource cannot be null");
+        if (modes == null) throw new IllegalArgumentException("List<URI> cannot be null");
 
         if (getUriInfo().getQueryParameters().containsKey(AC.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
 
@@ -491,8 +491,13 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     {
         return modeMediaTypeMap;
     }
+
+    private OntModelSpec getOntModelSpec()
+    {
+        return getSystem().getOntModelSpec();
+    }
     
-    public com.atomgraph.client.Application getApplication()
+    private com.atomgraph.client.Application getSystem()
     {
         return (com.atomgraph.client.Application)application;
     }
