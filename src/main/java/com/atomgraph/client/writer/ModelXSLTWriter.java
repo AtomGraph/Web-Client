@@ -492,7 +492,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return modeMediaTypeMap;
     }
 
-    private OntModelSpec getOntModelSpec()
+    public OntModelSpec getOntModelSpec()
     {
         return getSystem().getOntModelSpec();
     }
