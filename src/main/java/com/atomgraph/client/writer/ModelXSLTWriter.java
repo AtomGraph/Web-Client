@@ -315,7 +315,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                         OntClass forClass = sitemap.getOntClass(forClassURI);
 
                         if (forClass == null) throw new WebApplicationException(Response.Status.BAD_REQUEST); // OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
-                        // connects instance state to CONSTRUCTed template
+                        builder.parameter("{" + AC.forClass.getNameSpace() + "}" + AC.forClass.getLocalName(), forClass);
+
                         Resource instance = addInstance(ModelFactory.createDefaultModel(), forClass, baseURI.toString());
                         builder.parameter("{" + AC.instance.getNameSpace() + "}" + AC.instance.getLocalName(), getSource(instance.getModel()));
                     }
