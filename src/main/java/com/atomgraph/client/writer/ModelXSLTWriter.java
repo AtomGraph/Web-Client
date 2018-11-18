@@ -95,6 +95,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     }
     
     private final Templates templates;
+    private final OntModelSpec ontModelSpec;
     private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>(); // would String not suffice as the key?
     
     {
@@ -112,18 +113,16 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     /**
      * Constructs from XSLT builder.
      * 
-     * @param templates
+     * @param templates compiled XSLT stylesheet
+     * @param ontModelSpec ontology model specification
      * @see com.atomgraph.client.util.XSLTBuilder
      */
-    public ModelXSLTWriter(Templates templates)
+    public ModelXSLTWriter(Templates templates, OntModelSpec ontModelSpec)
     {
         if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
+        if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
         this.templates = templates;
-    }
-    
-    public ModelXSLTWriter()
-    {
-        this.templates = null;
+        this.ontModelSpec = ontModelSpec;
     }
     
     @Override
@@ -495,7 +494,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
 
     public OntModelSpec getOntModelSpec()
     {
-        return getSystem().getOntModelSpec();
+        return ontModelSpec;
     }
     
     private com.atomgraph.client.Application getSystem()

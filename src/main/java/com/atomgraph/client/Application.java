@@ -65,6 +65,8 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.util.List;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import org.apache.jena.ontology.OntModelSpec;
@@ -92,6 +94,7 @@ public class Application extends javax.ws.rs.core.Application
     private final Source stylesheet;
     private final Boolean cacheStylesheet;
     private final OntModelSpec ontModelSpec;
+    private final Templates templates;
     private final Set<Class<?>> classes = new HashSet<>();
     private final Set<Object> singletons = new HashSet<>();
 
@@ -100,8 +103,9 @@ public class Application extends javax.ws.rs.core.Application
      * @param servletConfig
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
+     * @throws javax.xml.transform.TransformerConfigurationException XSLT stylesheet error
      */
-    public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException
+    public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException, TransformerConfigurationException
     {
         this(new MediaTypes(), getClient(new DefaultClientConfig()),
             servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI()) != null ? Integer.parseInt(servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI())) : null,
@@ -119,7 +123,7 @@ public class Application extends javax.ws.rs.core.Application
     }
     
     public Application(final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize, final boolean preemptiveAuth,
-            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached, final String rulesString)
+            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached, final String rulesString) throws TransformerConfigurationException
     {
         this.mediaTypes = mediaTypes;
         this.client = client;
@@ -147,6 +151,10 @@ public class Application extends javax.ws.rs.core.Application
         RDFParserRegistry.registerLangTriples(RDFLanguages.RDFPOST, new RDFPostReaderFactory());
         // register plain RDF/XML writer as default
         RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
+        
+        SAXTransformerFactory transformerFactory = ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+        transformerFactory.setURIResolver(dataManager);
+        this.templates = transformerFactory.newTemplates(stylesheet);
     }
 
     /**
@@ -175,9 +183,9 @@ public class Application extends javax.ws.rs.core.Application
         singletons.add(new UniformInterfaceExceptionMapper());
         singletons.add(new ClientHandlerExceptionMapper());
         singletons.add(new AuthenticationExceptionMapper());
-        singletons.add(new ModelXSLTWriter()); // writes XHTML responses
-        singletons.add(new TemplatesProvider(((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)),
-                getDataManager(), getStylesheet(), isCacheStylesheet())); // loads XSLT stylesheet
+        singletons.add(new ModelXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
+//        singletons.add(new TemplatesProvider(((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)),
+//                getDataManager(), getStylesheet(), isCacheStylesheet())); // loads XSLT stylesheet
         
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
     }
@@ -256,7 +264,12 @@ public class Application extends javax.ws.rs.core.Application
     {
         return ontModelSpec;
     }
-    
+
+    public Templates getTemplates()
+    {
+        return templates;
+    }
+
     /**
      * Provides JAX-RS root resource classes.
      *
@@ -264,6 +277,7 @@ public class Application extends javax.ws.rs.core.Application
      * @see <a
      * href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getClasses()">Application.getClasses()</a>
      */
+    @Override
     public Set<Class<?>> getClasses()
     {
         return classes;
@@ -275,6 +289,7 @@ public class Application extends javax.ws.rs.core.Application
      * @return set of singleton objects
      * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getSingletons()">Application.getSingletons()</a>
      */
+    @Override
     public Set<Object> getSingletons()
     {
         return singletons;

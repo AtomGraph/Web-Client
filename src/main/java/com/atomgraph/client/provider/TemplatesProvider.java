@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @see com.atomgraph.client.util.XSLTBuilder
  */
 @Provider
+@Deprecated
 public class TemplatesProvider extends PerRequestTypeInjectableProvider<Context, Templates> implements ContextResolver<Templates>
 {
 
