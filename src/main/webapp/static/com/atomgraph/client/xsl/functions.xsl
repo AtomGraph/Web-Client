@@ -56,6 +56,16 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
 
+    <!-- INSTANCE CONSTRUCTOR -->
+    
+    <xsl:function use-when="system-property('xsl:product-name') = 'SAXON'" name="ac:construct-doc" as="document-node()?">
+        <xsl:param name="ontology" as="xs:anyURI"/>
+        <xsl:param name="classes" as="xs:anyURI*"/>
+        <xsl:param name="base" as="xs:anyURI"/>
+
+        <xsl:sequence select="mxw:getConstructedSource($ontology, $classes, $base)" xmlns:mxw="com.atomgraph.client.writer.ModelXSLTWriter"/>
+    </xsl:function>
+    
     <!-- LABEL MODE -->
 
     <xsl:template match="node()" mode="ac:label"/>

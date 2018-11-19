@@ -64,6 +64,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.util.List;
+import javax.ws.rs.WebApplicationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
@@ -104,7 +105,7 @@ public class Application extends javax.ws.rs.core.Application
      * @throws java.io.IOException
      * @throws javax.xml.transform.TransformerConfigurationException XSLT stylesheet error
      */
-    public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException, TransformerConfigurationException
+    public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException
     {
         this(new MediaTypes(), getClient(new DefaultClientConfig()),
             servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI()) != null ? Integer.parseInt(servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI())) : null,
@@ -122,7 +123,7 @@ public class Application extends javax.ws.rs.core.Application
     }
     
     public Application(final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize, final boolean preemptiveAuth,
-            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached, final String rulesString) throws TransformerConfigurationException
+            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached, final String rulesString)
     {
         this.mediaTypes = mediaTypes;
         this.client = client;
@@ -153,7 +154,15 @@ public class Application extends javax.ws.rs.core.Application
         
         SAXTransformerFactory transformerFactory = ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
         transformerFactory.setURIResolver(dataManager);
-        this.templates = transformerFactory.newTemplates(stylesheet);
+        try
+        {
+            this.templates = transformerFactory.newTemplates(stylesheet);
+        }
+        catch (TransformerConfigurationException ex)
+        {
+            if (log.isErrorEnabled()) log.error("System XSLT stylesheet error: {}", ex);
+            throw new WebApplicationException(ex);
+        }
     }
 
     /**

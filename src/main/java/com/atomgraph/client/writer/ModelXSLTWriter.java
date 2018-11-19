@@ -316,8 +316,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                         if (forClass == null) throw new WebApplicationException(Response.Status.BAD_REQUEST); // OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
                         builder.parameter("{" + AC.forClass.getNameSpace() + "}" + AC.forClass.getLocalName(), URI.create(forClass.getURI()));
 
-                        Resource instance = addInstance(ModelFactory.createDefaultModel(), forClass, baseURI.toString());
-                        builder.parameter("{" + AC.instance.getNameSpace() + "}" + AC.instance.getLocalName(), getSource(instance.getModel()));
+//                        Resource instance = addInstance(ModelFactory.createDefaultModel(), forClass, baseURI.toString());
+//                        builder.parameter("{" + AC.instance.getNameSpace() + "}" + AC.instance.getLocalName(), getSource(instance.getModel()));
                     }
                 }
 
@@ -460,12 +460,29 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return classIRI;
     }
 
-    public Resource addInstance(Model targetModel, OntClass forClass, String baseURI)
+    public static Source getConstructedSource(URI ontologyURI, List<URI> classURIs, URI baseURI) throws URISyntaxException, IOException, TransformerException
     {
-        if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
-        return new Constructor().construct(forClass, targetModel, baseURI);
+        if (ontologyURI == null) throw new IllegalArgumentException("Ontology URI cannot be null");
+        if (classURIs == null) throw new IllegalArgumentException("Class URIs cannot be null");
+        if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
+
+        OntModel ontModel = OntDocumentManager.getInstance().getOntology(ontologyURI.toString(), OntModelSpec.OWL_MEM);
+        Model instances = ModelFactory.createDefaultModel();
+
+        for (URI classURI : classURIs)
+        {
+            OntClass forClass = ontModel.getOntClass(checkURI(classURI.toString()).toURI().toString());
+            if (forClass != null) new Constructor().construct(forClass, instances, baseURI.toString());
+        }
+
+        return getSource(instances);
     }
     
+//    public Resource addInstance(Model targetModel, OntClass forClass, String baseURI)
+//    {
+//        if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
+//        return new Constructor().construct(forClass, targetModel, baseURI);
+//    }
     
     public UriInfo getUriInfo()
     {

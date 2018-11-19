@@ -109,7 +109,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:uri" as="xs:anyURI?"/>
     <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
     <xsl:param name="ac:forClass" as="xs:anyURI?"/>
-    <xsl:param name="ac:instance" as="document-node()?"/>
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
     <xsl:param name="ac:query" as="xs:string?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
@@ -418,8 +417,8 @@ exclude-result-prefixes="#all">
             
     <xsl:template match="rdf:RDF" mode="ac:ModeChoice">
         <xsl:choose>
-            <xsl:when test="$ac:instance">
-                <xsl:apply-templates select="$ac:instance" mode="bs2:Form"/>
+            <xsl:when test="$ac:forClass">
+                <xsl:apply-templates select="ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base)" mode="bs2:Form"/>
             </xsl:when>
             <xsl:when test="$ac:mode = '&ac;EditMode'">
                 <xsl:apply-templates select="." mode="bs2:Form"/>
@@ -787,7 +786,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[$ac:instance]" mode="bs2:PagerList" priority="2"/>
+    <xsl:template match="*[$ac:forClass]" mode="bs2:PagerList" priority="2"/>
 
     <xsl:template match="*[@rdf:about = $a:requestUri][xhv:prev or xhv:next]" mode="bs2:PagerList" priority="1">
         <ul class="pager">
