@@ -417,10 +417,7 @@ exclude-result-prefixes="#all">
             
     <xsl:template match="rdf:RDF" mode="ac:ModeChoice">
         <xsl:choose>
-            <xsl:when test="$ac:forClass">
-                <xsl:apply-templates select="ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base)" mode="bs2:Form"/>
-            </xsl:when>
-            <xsl:when test="$ac:mode = '&ac;EditMode'">
+            <xsl:when test="$ac:mode = '&ac;EditMode' or $ac:forClass">
                 <xsl:apply-templates select="." mode="bs2:Form"/>
             </xsl:when>
             <xsl:when test="$ac:mode = '&ac;ListMode'">
@@ -1111,7 +1108,14 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="." mode="bs2:Legend"/>
 
-            <xsl:apply-templates mode="#current"/>
+            <xsl:choose>
+                <xsl:when test="$ac:forClass and not(key('resources-by-type', '&spin;ConstraintViolation'))">
+                    <xsl:apply-templates select="ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base)/rdf:RDF/*" mode="#current"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
 
             <xsl:apply-templates select="." mode="bs2:FormActions">
                 <xsl:with-param name="button-class" select="$button-class"/>

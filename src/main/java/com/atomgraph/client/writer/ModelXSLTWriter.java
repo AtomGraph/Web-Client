@@ -478,12 +478,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getSource(instances);
     }
     
-//    public Resource addInstance(Model targetModel, OntClass forClass, String baseURI)
-//    {
-//        if (log.isDebugEnabled()) log.debug("Invoking constructor on class: {}", forClass);
-//        return new Constructor().construct(forClass, targetModel, baseURI);
-//    }
-    
     public UriInfo getUriInfo()
     {
         return uriInfo;
