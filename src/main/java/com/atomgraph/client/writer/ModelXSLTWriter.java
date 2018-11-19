@@ -449,7 +449,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return modes;
     }
     
-    public IRI checkURI(String classIRIStr)
+    public static IRI checkURI(String classIRIStr)
     {
         if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");
 
@@ -495,11 +495,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     public OntModelSpec getOntModelSpec()
     {
         return ontModelSpec;
-    }
-    
-    private com.atomgraph.client.Application getSystem()
-    {
-        return (com.atomgraph.client.Application)application;
     }
  
     public Providers getProviders()

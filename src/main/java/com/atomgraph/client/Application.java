@@ -34,7 +34,6 @@ import com.atomgraph.client.mapper.jersey.ClientHandlerExceptionMapper;
 import com.atomgraph.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import com.atomgraph.client.model.impl.ProxyResourceBase;
 import com.atomgraph.client.provider.DataManagerProvider;
-import com.atomgraph.client.provider.TemplatesProvider;
 import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
