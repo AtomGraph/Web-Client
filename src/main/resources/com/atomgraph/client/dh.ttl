@@ -27,17 +27,6 @@
 
 # PROPERTIES
 
-:forClass a owl:ObjectProperty ;
-    rdfs:range rdfs:Class ;
-    rdfs:label "Instance class" ;
-    rdfs:comment "The class which instance is constructed" ;
-    rdfs:isDefinedBy : .
-
-:instance a owl:ObjectProperty ;
-    rdfs:label "Class instance" ;
-    rdfs:comment "Links to the constructed instance" ;
-    rdfs:isDefinedBy : .
-
 :slug a owl:DatatypeProperty ;
     rdfs:domain foaf:Document ;
     rdfs:range xsd:string ;

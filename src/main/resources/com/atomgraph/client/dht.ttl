@@ -29,19 +29,12 @@
     ldt:extends ct:Document ;
     ldt:match "{path: .*}/" ;
     ldt:query :DescribeWithChildren ;
-    ldt:param :ForClass, :Limit, :Offset, :OrderBy, :Desc ;
+    ldt:param :Limit, :Offset, :OrderBy, :Desc ;
     rdfs:label "Container" ;
     rdfs:comment "Matches URIs with trailing slash" ;
     rdfs:isDefinedBy : .
 
 # PARAMETERS
-
-:ForClass a ldt:Parameter ;
-    rdfs:label "Constructor class" ;
-    spl:predicate dh:forClass ;
-    spl:valueType rdfs:Class ;
-    spl:optional true ;
-    rdfs:isDefinedBy : .
 
 :Limit a ldt:Parameter ;
     rdfs:label "Limit" ;
