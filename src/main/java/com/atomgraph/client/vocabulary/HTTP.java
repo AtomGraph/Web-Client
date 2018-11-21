@@ -43,7 +43,7 @@ public class HTTP
      *  @see #NS */
     public static String getURI()
     {
-	return NS;
+        return NS;
     }
     
     /** <p>The namespace of the vocabulary as a resource</p> */

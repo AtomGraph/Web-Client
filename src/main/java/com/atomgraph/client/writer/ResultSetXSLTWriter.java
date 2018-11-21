@@ -63,10 +63,10 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
      */
     public ResultSetXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
     {
-	if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
-	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-	this.stylesheet = stylesheet;
-	this.resolver = resolver;
+        if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
+        if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
+        this.stylesheet = stylesheet;
+        this.resolver = resolver;
     }
     
     @Override
@@ -78,25 +78,25 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     @Override
     public long getSize(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-	return -1;
+        return -1;
     }
 
     @Override
     public void writeTo(ResultSet results, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException, WebApplicationException
     {
-	try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
-	{
-	    ResultSetFormatter.outputAsXML(baos, results);
-	    
-	    // create XSLTBuilder per request output to avoid document() caching
-	    getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
-		    headerMap, entityStream).transform();
-	}
-	catch (TransformerException ex)
-	{
-	    log.error("XSLT transformation failed", ex);
-	    throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-	}
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
+            ResultSetFormatter.outputAsXML(baos, results);
+            
+            // create XSLTBuilder per request output to avoid document() caching
+            getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
+                    headerMap, entityStream).transform();
+        }
+        catch (TransformerException ex)
+        {
+            log.error("XSLT transformation failed", ex);
+            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public SAXTransformerFactory getTransformerFactory()
@@ -106,20 +106,20 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     
     public URIResolver getURIResolver()
     {
-	return resolver;
+        return resolver;
     }
 
     public Source getStylesheet()
     {
-	return stylesheet;
+        return stylesheet;
     }
 
     public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
     {
-	return XSLTBuilder.newInstance(getTransformerFactory()).
+        return XSLTBuilder.newInstance(getTransformerFactory()).
             stylesheet(getStylesheet()).
-	    resolver(getURIResolver()).
-	    document(is).
-	    result(new StreamResult(os));
+            resolver(getURIResolver()).
+            document(is).
+            result(new StreamResult(os));
     }
 }

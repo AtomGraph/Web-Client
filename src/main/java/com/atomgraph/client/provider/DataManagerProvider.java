@@ -50,20 +50,20 @@ public class DataManagerProvider extends PerRequestTypeInjectableProvider<Contex
     @Override
     public Injectable<DataManager> getInjectable(ComponentContext cc, Context a)
     {
-	return new Injectable<DataManager>()
-	{
-	    @Override
-	    public DataManager getValue()
-	    {
-		return getDataManager();
-	    }
-	};
+        return new Injectable<DataManager>()
+        {
+            @Override
+            public DataManager getValue()
+            {
+                return getDataManager();
+            }
+        };
     }
 
     @Override
     public DataManager getContext(Class<?> type)
     {
-	return getDataManager();
+        return getDataManager();
     }
 
     /**

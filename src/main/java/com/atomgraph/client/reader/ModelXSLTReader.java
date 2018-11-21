@@ -72,16 +72,16 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
      */
     public ModelXSLTReader(Source stylesheet, URIResolver resolver)
     {
-	if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
-	if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-	this.stylesheet = stylesheet;
-	this.resolver = resolver;
+        if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
+        if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
+        this.stylesheet = stylesheet;
+        this.resolver = resolver;
     }
 
     @Override
     public void read(Model model, Reader reader, String base)
     {
-	throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     public void read(Model model, InputStream in, URI base)
@@ -93,14 +93,14 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
         {
             getXSLTBuilder(doc, base, baos).transform();
         }
-	catch (TransformerConfigurationException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("Error in GRDDL XSLT transformer config", ex);
-	}
-	catch (TransformerException ex)
-	{
-	    if (log.isErrorEnabled()) log.error("Error in GRDDL XSLT transformation", ex);
-	}
+        catch (TransformerConfigurationException ex)
+        {
+            if (log.isErrorEnabled()) log.error("Error in GRDDL XSLT transformer config", ex);
+        }
+        catch (TransformerException ex)
+        {
+            if (log.isErrorEnabled()) log.error("Error in GRDDL XSLT transformation", ex);
+        }
         
         model.read(new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray())), base.toString());
     }
@@ -108,7 +108,7 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
     @Override
     public void read(Model model, InputStream in, String base)
     {
-	read(model, in, URI.create(base));
+        read(model, in, URI.create(base));
     }
 
     @Override
@@ -146,55 +146,55 @@ public class ModelXSLTReader extends ModelProvider implements RDFReader
     @Override
     public Object setProperty(String string, Object o)
     {
-	return null;
+        return null;
     }
 
     @Override
     public RDFErrorHandler setErrorHandler(RDFErrorHandler errHandler)
     {
-	RDFErrorHandler old = errorHandler ;
-	errorHandler = errHandler ;
-	return old ;
+        RDFErrorHandler old = errorHandler ;
+        errorHandler = errHandler ;
+        return old ;
     }
 
     @Override
     public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, javax.ws.rs.core.MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
-	if (log.isTraceEnabled()) log.trace("Reading model with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
-	
-	Model model = ModelFactory.createDefaultModel();
-	read(model, entityStream, getUriInfo().getAbsolutePath()); // extract base URI from UriInfo?
+        if (log.isTraceEnabled()) log.trace("Reading model with HTTP headers: {} MediaType: {}", httpHeaders, mediaType);
+        
+        Model model = ModelFactory.createDefaultModel();
+        read(model, entityStream, getUriInfo().getAbsolutePath()); // extract base URI from UriInfo?
 
-	return model;
+        return model;
     }
 
     public URIResolver getURIResolver()
     {
-	return resolver;
+        return resolver;
     }
 
     public Source getStylesheet()
     {
-	return stylesheet;
+        return stylesheet;
     }
 
     public UriInfo getUriInfo()
     {
-	return uriInfo;
+        return uriInfo;
     }
 
     public HttpHeaders getHttpHeaders()
     {
-	return httpHeaders;
+        return httpHeaders;
     }
 
     public XSLTBuilder getXSLTBuilder(Source doc, URI base, OutputStream baos) throws TransformerConfigurationException
     {
-	return XSLTBuilder.newInstance(getTransformerFactory()).
+        return XSLTBuilder.newInstance(getTransformerFactory()).
         stylesheet(getStylesheet()).
-	    resolver(getURIResolver()).
-	    document(doc).
-	    result(new StreamResult(baos));
+            resolver(getURIResolver()).
+            document(doc).
+            result(new StreamResult(baos));
     }
     
     public SAXTransformerFactory getTransformerFactory()

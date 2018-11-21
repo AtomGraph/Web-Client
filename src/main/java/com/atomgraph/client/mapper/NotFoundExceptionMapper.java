@@ -34,11 +34,11 @@ public class NotFoundExceptionMapper extends ExceptionMapperBase implements Exce
     @Override
     public Response toResponse(NotFoundException ex)
     {
-	return Response.status(Response.Status.NOT_FOUND).
+        return Response.status(Response.Status.NOT_FOUND).
                 entity(toResource(ex, Response.Status.NOT_FOUND,
                         ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#NotFound")).
                     getModel()).
-		build();
+                build();
     }
     
 }

@@ -45,7 +45,7 @@ public class PrefixMapper extends LocationMapper
 
     public PrefixMapper()
     {
-	if (log.isDebugEnabled()) log.debug("PrefixMapper()");
+        if (log.isDebugEnabled()) log.debug("PrefixMapper()");
     }
 
     public PrefixMapper(String config)
@@ -55,18 +55,18 @@ public class PrefixMapper extends LocationMapper
     
     public PrefixMapper(LocationMapper locMapper)
     {
-	super(locMapper);
+        super(locMapper);
     }
 
     public PrefixMapper(PrefixMapper prefixMapper)
     {
-	super(prefixMapper);
+        super(prefixMapper);
         altPrefixLocations.putAll(prefixMapper.altPrefixLocations);
     }
     
     public void addAltPrefixEntry(String uriPrefix, String alt)
     {
-	if (log.isDebugEnabled()) log.debug("PrefixMapper.addAltPrefixEntry({}, {})", uriPrefix, alt);
+        if (log.isDebugEnabled()) log.debug("PrefixMapper.addAltPrefixEntry({}, {})", uriPrefix, alt);
         altPrefixLocations.put(uriPrefix, alt);
     }
 
@@ -79,39 +79,39 @@ public class PrefixMapper extends LocationMapper
 
     public String getPrefix(String uri)
     {
-	String prefix = null;
-	
+        String prefix = null;
+        
         for (Iterator<String> iter = listAltPrefixEntries(); iter.hasNext();)
         {
             String candPrefix = iter.next() ;
-	    // make sure we get the longest matching prefix
+            // make sure we get the longest matching prefix
             if (uri.startsWith(candPrefix) &&
-		    (prefix == null || candPrefix.length() > prefix.length()))
-		prefix = candPrefix;
+                    (prefix == null || candPrefix.length() > prefix.length()))
+                prefix = candPrefix;
         }
-	
-	return prefix;
+        
+        return prefix;
     }
     
     @Override
     public String altMapping(String uri, String otherwise)
     {
-	if (log.isDebugEnabled()) log.debug("PrefixMapper.altMapping({}, {})", uri, otherwise);
+        if (log.isDebugEnabled()) log.debug("PrefixMapper.altMapping({}, {})", uri, otherwise);
 
-	String altEntry = getAltEntry(uri);
+        String altEntry = getAltEntry(uri);
         if (altEntry != null) 
-	{
-	    if (log.isDebugEnabled()) log.debug("Returning existing altName mapping: {} for URI: {}", altEntry, uri);
+        {
+            if (log.isDebugEnabled()) log.debug("Returning existing altName mapping: {} for URI: {}", altEntry, uri);
             return altEntry;
-	}
-	
-	String prefix = getPrefix(uri);
-	String prefixAltEntry = getPrefixAltEntry(prefix);
-	if (prefix != null && prefixAltEntry != null)
-	{
-	    if (log.isDebugEnabled()) log.debug("Returning existing altName mapping: {} for prefix: {}", prefixAltEntry, prefix);
-	    return getPrefixAltEntry(prefix);
-	}
+        }
+        
+        String prefix = getPrefix(uri);
+        String prefixAltEntry = getPrefixAltEntry(prefix);
+        if (prefix != null && prefixAltEntry != null)
+        {
+            if (log.isDebugEnabled()) log.debug("Returning existing altName mapping: {} for prefix: {}", prefixAltEntry, prefix);
+            return getPrefixAltEntry(prefix);
+        }
         
         return super.altMapping(uri, otherwise);
     }
@@ -142,7 +142,7 @@ public class PrefixMapper extends LocationMapper
             model.add(e, LocationMappingVocab.prefix, k) ;
             model.add(e, LocationMappingVocab.altPrefix, v) ;
         }
-	
+        
         for ( Iterator<String> iter = listAltPrefixEntries() ; iter.hasNext() ; )
         {
             Resource r = model.createResource() ;
@@ -191,22 +191,22 @@ public class PrefixMapper extends LocationMapper
                 {
                     String prefix = mapping.getRequiredProperty(LocationMappingVocab.prefix)
                                         .getString() ;
-		    
-		    if (mapping.hasProperty(LocationMappingVocab.altPrefix))
-		    {
-			String altPrefix = mapping.getRequiredProperty(LocationMappingVocab.altPrefix)
-					    .getString() ;
-			addAltPrefix(prefix, altPrefix) ;
-			if (log.isDebugEnabled()) log.debug("Prefix mapping: "+prefix+" => "+altPrefix) ;
-		    }
-		    
-		    if (mapping.hasProperty(LocationMappingVocab.altName))
-		    {
-			String altName = mapping.getRequiredProperty(LocationMappingVocab.altName)
-					    .getString() ;
-			addAltPrefixEntry(prefix, altName) ;
-			log.debug("Prefix/name mapping: "+prefix+" => "+altName) ;			
-		    }
+                    
+                    if (mapping.hasProperty(LocationMappingVocab.altPrefix))
+                    {
+                        String altPrefix = mapping.getRequiredProperty(LocationMappingVocab.altPrefix)
+                                            .getString() ;
+                        addAltPrefix(prefix, altPrefix) ;
+                        if (log.isDebugEnabled()) log.debug("Prefix mapping: "+prefix+" => "+altPrefix) ;
+                    }
+                    
+                    if (mapping.hasProperty(LocationMappingVocab.altName))
+                    {
+                        String altName = mapping.getRequiredProperty(LocationMappingVocab.altName)
+                                            .getString() ;
+                        addAltPrefixEntry(prefix, altName) ;
+                        log.debug("Prefix/name mapping: "+prefix+" => "+altName) ;
+                    }
                 } catch (JenaException ex)
                 {
                     if (log.isWarnEnabled()) log.warn("Error processing prefix mapping: "+ex.getMessage()) ;
@@ -271,15 +271,15 @@ public class PrefixMapper extends LocationMapper
     @Override
     public String toString()
     {
-	String s = super.toString();
-	
+        String s = super.toString();
+        
         for ( Iterator<String> iter = listAltPrefixEntries() ; iter.hasNext() ; )
         {
             String k = iter.next() ;
             String v = getPrefixAltEntry(k) ;
             s = s+"(Prefix:"+k+"=>"+v+") " ;
         }
-	
+        
         return s ;
     }
 }

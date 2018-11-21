@@ -45,14 +45,14 @@ public class XSLTBuilder extends com.atomgraph.client.util.XSLTBuilder
     
     public static XSLTBuilder newInstance(SAXTransformerFactory factory)
     {
-	return new XSLTBuilder(factory);
+        return new XSLTBuilder(factory);
     }
     
     public XSLTBuilder resolver(UnparsedTextURIResolver textResolver)
     {
-	if (log.isTraceEnabled()) log.trace("Setting UnparsedTextURIResolver: {}", textResolver);
+        if (log.isTraceEnabled()) log.trace("Setting UnparsedTextURIResolver: {}", textResolver);
         this.textResolver = textResolver;
-	return this;
+        return this;
     }
     
     protected Transformer getTransformer(Templates templates, Result result, URIResolver uriResolver, Map<String, Object> parameters, Map<String, String> outputProperties, UnparsedTextURIResolver textResolver) throws TransformerConfigurationException

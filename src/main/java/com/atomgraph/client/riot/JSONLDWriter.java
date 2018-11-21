@@ -58,8 +58,8 @@ public class JSONLDWriter implements WriterGraphRIOT
     
     public JSONLDWriter(Templates templates)
     {
-	if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
-	this.templates = templates;
+        if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
+        this.templates = templates;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class JSONLDWriter implements WriterGraphRIOT
         }
         catch (TransformerException ex)
         {
-            if (log.isDebugEnabled()) log.debug("Writing JSON-LD stream failed: {}", ex);            
+            if (log.isDebugEnabled()) log.debug("Writing JSON-LD stream failed: {}", ex);
             throw new RiotException(ex);
         }
     }

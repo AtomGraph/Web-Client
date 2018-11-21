@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.writer;
 
+import com.atomgraph.client.exception.OntClassNotFoundException;
 import com.atomgraph.client.exception.OntologyException;
 import com.atomgraph.client.util.Constructor;
 import org.apache.jena.ontology.OntModel;
@@ -313,11 +314,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                     {
                         OntClass forClass = sitemap.getOntClass(forClassURI);
 
-                        if (forClass == null) throw new WebApplicationException(Response.Status.BAD_REQUEST); // OntClassNotFoundException("OntClass '" + forClassURI + "' not found in sitemap");
+                        if (forClass == null) throw new OntClassNotFoundException(forClassURI);
                         builder.parameter("{" + AC.forClass.getNameSpace() + "}" + AC.forClass.getLocalName(), URI.create(forClass.getURI()));
-
-//                        Resource instance = addInstance(ModelFactory.createDefaultModel(), forClass, baseURI.toString());
-//                        builder.parameter("{" + AC.instance.getNameSpace() + "}" + AC.instance.getLocalName(), getSource(instance.getModel()));
                     }
                 }
 

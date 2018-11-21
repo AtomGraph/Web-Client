@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Martynas Jusevičius <martynas@atomgraph.com>.
+ * Copyright 2018 Martynas Jusevičius <martynas@atomgraph.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atomgraph.client.mapper;
+package com.atomgraph.client.exception;
 
 /**
  *
  * @author Martynas Jusevičius <martynas@atomgraph.com>
  */
-public class TransformerExceptionMapper extends RuntimeException
+public class OntClassNotFoundException extends RuntimeException
 {
+    
+    public OntClassNotFoundException(String classURI)
+    {
+        super("Class '" + classURI + "' not found in ontology");
+    }
     
 }

@@ -29,7 +29,7 @@ public class OntologyException extends RuntimeException
     
     public OntologyException(Resource root, Property property, String message)
     {
-        super("[" + root.getURI() + "][" + property.getURI() + "] " + message);
+        super("[" + root.getURI() + "]" + property != null ? "[" + property.getURI() + "] " : "" + message);
         this.root = root;
     }
     

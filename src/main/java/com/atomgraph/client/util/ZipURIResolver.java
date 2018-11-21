@@ -38,7 +38,7 @@ public class ZipURIResolver implements URIResolver
     
     public ZipURIResolver(ZipFile zipFile)
     {
-	this.zipFile = zipFile;
+        this.zipFile = zipFile;
     }
 
     public ZipFile getZipFile()
@@ -49,19 +49,19 @@ public class ZipURIResolver implements URIResolver
     @Override
     public Source resolve(String href, String base) throws TransformerException
     {
-	if (log.isDebugEnabled()) log.debug("Resolving href: {} base: {}", href, base);
+        if (log.isDebugEnabled()) log.debug("Resolving href: {} base: {}", href, base);
 
-	try // with resources?
-	{
-	    // set system ID?
-	    return new StreamSource(getZipFile().getInputStream(getZipFile().getEntry(href)));
-	}
-	catch (IOException ex)
-	{
-	    if (log.isDebugEnabled()) log.debug("Error resolving from ZipFile", ex);
-	}
-	
-	return null;
+        try // with resources?
+        {
+            // set system ID?
+            return new StreamSource(getZipFile().getInputStream(getZipFile().getEntry(href)));
+        }
+        catch (IOException ex)
+        {
+            if (log.isDebugEnabled()) log.debug("Error resolving from ZipFile", ex);
+        }
+        
+        return null;
     }
     
 }

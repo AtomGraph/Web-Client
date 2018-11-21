@@ -49,9 +49,9 @@ abstract public class ExceptionMapperBase
     
     public Resource toResource(Exception ex, Response.Status status, Resource statusResource)
     {
-	if (ex == null) throw new IllegalArgumentException("Exception cannot be null");
-	if (status == null) throw new IllegalArgumentException("Response.Status cannot be null");
-	//if (statusResource == null) throw new IllegalArgumentException("Status Resource cannot be null");
+        if (ex == null) throw new IllegalArgumentException("Exception cannot be null");
+        if (status == null) throw new IllegalArgumentException("Response.Status cannot be null");
+        //if (statusResource == null) throw new IllegalArgumentException("Status Resource cannot be null");
 
         Resource resource = ModelFactory.createDefaultModel().createResource().
                 addProperty(RDF.type, HTTP.Response).
@@ -66,8 +66,8 @@ abstract public class ExceptionMapperBase
     
     public MediaTypes getMediaTypes()
     {
-	ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
-	return cr.getContext(MediaTypes.class);
+        ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
+        return cr.getContext(MediaTypes.class);
     }
     
     public List<Variant> getVariants()
