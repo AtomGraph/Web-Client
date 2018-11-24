@@ -41,8 +41,6 @@ exclude-result-prefixes="xs">
         <xsl:key name="properties" match="*[@rdf:about or @rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
 
         <!-- 
-        http://dbpedia.org/sparql/?query=PREFIX+rdf%3A+<http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23>%0D%0APREFIX+rdfs%3A+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%0D%0APREFIX+owl%3A+<http%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23>%0D%0APREFIX+xsd%3A+<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%0D%0A%0D%0ASELECT+DISTINCT+*%0D%0AWHERE%0D%0A{%0D%0A%09%3Fcompany+rdfs%3Alabel+%3Flabel+.%0D%0A%09%3Fcompany+<http%3A%2F%2Fdbpedia.org%2Fontology%2FnumberOfEmployees>+%3Femployees+.%0D%0A%09%3Fcompany+<http%3A%2F%2Fdbpedia.org%2Fontology%2Frevenue>+%3Frevenue%0D%0A%09FILTER+(DATATYPE(%3Frevenue)+%3D+<http%3A%2F%2Fdbpedia.org%2Fontology%2Feuro>)%0D%0A%09FILTER+(xsd%3Ainteger(%3Frevenue)+>+10000000000)%0D%0A%09FILTER+(xsd%3Ainteger(%3Femployees)+>+0)%0D%0A%09FILTER+(LANG(%3Flabel)+%3D+'en')%0D%0A}%0D%0A%23+ORDER+BY+DESC(xsd%3Ainteger(%3Frevenue))+DESC(xsd%3Ainteger(%3Femployees))%0D%0A&format=application/sparql-results+xml
-
         http://code.google.com/apis/visualization/documentation/reference.html#dataparam
         http://code.google.com/apis/visualization/documentation/dev/implementing_data_source.html#responseformat
 
@@ -59,17 +57,11 @@ exclude-result-prefixes="xs">
 
         -->
 
-<!--
-        <xsl:template match="/">
-                <xsl:apply-templates mode="sparql2wire"/>
-        </xsl:template>
--->
-
-        <xsl:template match="/" mode="sparql2wire">
-                <xsl:apply-templates mode="sparql2wire"/>
+        <xsl:template match="/" mode="ac:DataTable">
+                <xsl:apply-templates mode="ac:DataTable"/>
         </xsl:template>
         
-        <xsl:template match="rdf:RDF" mode="sparql2wire">
+        <xsl:template match="rdf:RDF" mode="ac:DataTable">
 {
         "cols": [
                 { 
@@ -80,20 +72,20 @@ exclude-result-prefixes="xs">
                 <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
                         <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text"/>
 
-                        <xsl:apply-templates select="current-group()[1]" mode="sparql2wire-cols"/>
+                        <xsl:apply-templates select="current-group()[1]" mode="ac:DataTableColumns"/>
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
 
                 </xsl:for-each-group>
         ],
-        "rows": [ <xsl:apply-templates mode="sparql2wire"/> ]
+        "rows": [ <xsl:apply-templates mode="ac:DataTable"/> ]
 }
         </xsl:template>
 
         <!--  DATA TABLE HEADER -->
         <!-- properties -->
 
-        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="sparql2wire-cols">
+        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTableColumns">
                         {
                                 "id": "<xsl:value-of select="generate-id()"/>",
                                 "label": "<xsl:value-of select="concat(namespace-uri(), local-name())"/>",
@@ -111,11 +103,11 @@ exclude-result-prefixes="xs">
         <!--  DATA TABLE ROW -->
         <!-- subject -->
 
-        <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="sparql2wire">
+        <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:DataTable">
         {
                 "c": [
                 {
-                    "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="sparql2wire"/>
+                    "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="ac:DataTable"/>
                 },
                 <xsl:variable name="subject" select="."/>
                 <xsl:for-each-group select="/rdf:RDF/*/*" group-by="concat(namespace-uri(), local-name())">
@@ -123,7 +115,7 @@ exclude-result-prefixes="xs">
                     
                     <xsl:choose>
                             <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()]">
-                                <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()][1]" mode="sparql2wire"/>
+                                <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()][1]" mode="ac:DataTable"/>
                             </xsl:when>
                             <xsl:otherwise>
                             { "v": null }    
@@ -134,7 +126,7 @@ exclude-result-prefixes="xs">
                     </xsl:if>
                 </xsl:for-each-group> ]
 
-                <!-- "c": [ <xsl:apply-templates mode="sparql2wire"/> ] -->
+                <!-- "c": [ <xsl:apply-templates mode="ac:DataTable"/> ] -->
         }
         <xsl:if test="position() != last()">,
         </xsl:if>
@@ -143,23 +135,23 @@ exclude-result-prefixes="xs">
         <!--  DATA TABLE CELLS -->
         <!-- properties -->
 
-        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="sparql2wire">
+        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTable">
                         {
-                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="sparql2wire"/>
+                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="ac:DataTable"/>
                         }
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
         </xsl:template>
         
         <!--
-        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="sparql2wire">
+        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTable">
                 <xsl:param name="subject"/>
                 <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
 
                 <xsl:choose>
                         <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = $this]">
                         {
-                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="sparql2wire"/>
+                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="ac:DataTable"/>
                         }
                         </xsl:when>
                         <xsl:otherwise>
@@ -172,23 +164,23 @@ exclude-result-prefixes="xs">
         </xsl:template>
         -->
         
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;boolean']" mode="sparql2wire">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;boolean']" mode="ac:DataTable">
                 <xsl:value-of select="."/>
         </xsl:template>
 
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;integer'] | text()[../@rdf:datatype = '&xsd;decimal'] | text()[../@rdf:datatype = '&xsd;double'] | text()[../@rdf:datatype = '&xsd;float']" mode="sparql2wire">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;integer'] | text()[../@rdf:datatype = '&xsd;decimal'] | text()[../@rdf:datatype = '&xsd;double'] | text()[../@rdf:datatype = '&xsd;float']" mode="ac:DataTable">
                 <xsl:value-of select="."/>
         </xsl:template>
 
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;date']" mode="sparql2wire">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;date']" mode="ac:DataTable">
                 new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>)
         </xsl:template>
 
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime']" mode="sparql2wire">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime']" mode="ac:DataTable">
                 new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
         </xsl:template>
 
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;time']" mode="sparql2wire">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;time']" mode="ac:DataTable">
                 [ <xsl:value-of select="substring(., 1, 2)" />, <xsl:value-of select="substring(., 4, 2)" />, <xsl:value-of select="substring(., 7, 2)" />
                 <xsl:if test="contains(., '.')">
                     , <xsl:value-of select="substring(substring-after(., '.'), 1, 3)" />
@@ -196,7 +188,7 @@ exclude-result-prefixes="xs">
                 ]
         </xsl:template>
 
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;string'] | text()" mode="sparql2wire">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;string'] | text()" mode="ac:DataTable">
                 <xsl:text>"</xsl:text>
             <!-- <xsl:value-of select='replace(., "'", "\\'" )' /> -->
                 <!-- <xsl:value-of select="replace(., '&quot;', '\\&quot;')"/> -->
@@ -205,13 +197,11 @@ exclude-result-prefixes="xs">
                 <xsl:text>"</xsl:text>
         </xsl:template>
 
-        <xsl:template match="node()[../@rdf:parseType = 'Literal']" mode="sparql2wire">
+        <xsl:template match="node()[../@rdf:parseType = 'Literal']" mode="ac:DataTable">
                 <xsl:if test="position() = 1">
                     <xsl:text>"</xsl:text>
                 </xsl:if>
-            <!-- <xsl:value-of select='replace(., "'", "\\'" )' /> -->
 
-                <!-- <xsl:value-of select="replace(., '&quot;', '\\&quot;')"/> -->
                 <xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>
                 
                 <xsl:if test="position() = last()">
@@ -219,11 +209,11 @@ exclude-result-prefixes="xs">
                 </xsl:if>
         </xsl:template>
 
-        <xsl:template match="@rdf:about | @rdf:resource" mode="sparql2wire">
+        <xsl:template match="@rdf:about | @rdf:resource" mode="ac:DataTable">
                 '&lt;a href=&quot;<xsl:value-of select="."/>&quot;&gt;<xsl:value-of select="."/>&lt;/a&gt;'
         </xsl:template>
 
-        <xsl:template match="@rdf:nodeID" mode="sparql2wire">
+        <xsl:template match="@rdf:nodeID" mode="ac:DataTable">
                 "<xsl:value-of select="."/>"
         </xsl:template>
 

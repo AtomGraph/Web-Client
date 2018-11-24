@@ -49,10 +49,10 @@ exclude-result-prefixes="xs">
         <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     
     <xsl:template match="/">
-        <xsl:apply-templates mode="ac:JSONLDMode"/>
+        <xsl:apply-templates mode="ac:JSON-LD"/>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF" mode="ac:JSONLDMode">
+    <xsl:template match="rdf:RDF" mode="ac:JSON-LD">
         <xsl:variable name="resources" as="xs:string*">
             <!-- do not process blank nodes that are triple objects-->
             <xsl:apply-templates select="*[@rdf:about or count(key('predicates-by-object', @rdf:nodeID)) &gt; 1]" mode="#current"/>
@@ -62,7 +62,7 @@ exclude-result-prefixes="xs">
     </xsl:template>
 
     <!-- resource description -->
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:JSONLDMode">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:JSON-LD">
         <xsl:variable name="context" as="xs:string">
             <xsl:variable name="prefixes" as="xs:string*">
                 <xsl:for-each-group select="*" group-by="substring-before(name(), ':')">
@@ -79,7 +79,7 @@ exclude-result-prefixes="xs">
                         </xsl:if>
                     </xsl:for-each-group>
                 </xsl:variable>
-                <xsl:apply-templates select="." mode="ac:JSONLDContextMode"/>
+                <xsl:apply-templates select="." mode="ac:JSON-LDContext"/>
             </xsl:variable>
 
             <xsl:sequence select="concat('&quot;@context&quot;: { ', string-join($prefixes, ', '),
@@ -122,11 +122,11 @@ exclude-result-prefixes="xs">
     </xsl:template>
     
     <!-- property -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/rdf:type" mode="ac:JSONLDMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/rdf:type" mode="ac:JSON-LD" priority="1">
         <xsl:sequence select="concat('&quot;', @rdf:resource, '&quot;')"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:JSONLDMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:JSON-LD">
         <xsl:choose>
             <xsl:when test="node() | @rdf:resource | @rdf:nodeID">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
@@ -137,30 +137,30 @@ exclude-result-prefixes="xs">
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="text()" mode="ac:JSONLDMode">
+    <xsl:template match="text()" mode="ac:JSON-LD">
         <xsl:sequence select="concat('&quot;', ac:escape-json(.), '&quot;')"/>
     </xsl:template>
 
-    <xsl:template match="text()[../@rdf:datatype or ../@xml:lang]" mode="ac:JSONLDMode" priority="1">
+    <xsl:template match="text()[../@rdf:datatype or ../@xml:lang]" mode="ac:JSON-LD" priority="1">
         <xsl:variable name="datatype-or-lang" as="xs:string?">
             <xsl:apply-templates select="../@rdf:datatype | ../@xml:lang" mode="#current"/>
         </xsl:variable>
         <xsl:sequence select="concat('{ &quot;@value&quot;: &quot;', ac:escape-json(.), '&quot;, ', $datatype-or-lang, ' }')"/>
     </xsl:template>
 
-    <xsl:template match="@rdf:about" mode="ac:JSONLDMode">
+    <xsl:template match="@rdf:about" mode="ac:JSON-LD">
         <xsl:sequence select="concat('&quot;@id&quot;: &quot;', ., '&quot;')"/>
     </xsl:template>
 
-    <xsl:template match="@rdf:resource" mode="ac:JSONLDMode">
+    <xsl:template match="@rdf:resource" mode="ac:JSON-LD">
         <xsl:sequence select="concat('{ &quot;@id&quot;: &quot;', ., '&quot; }')"/>
     </xsl:template>
 
-    <xsl:template match="@rdf:nodeID" mode="ac:JSONLDMode">
+    <xsl:template match="@rdf:nodeID" mode="ac:JSON-LD">
         <xsl:sequence select="concat('&quot;@id&quot;: &quot;_:', ., '&quot;')"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="ac:JSONLDMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="ac:JSON-LD">
         <xsl:variable name="bnode" as="xs:string">
             <xsl:next-match/>
         </xsl:variable>
@@ -168,7 +168,7 @@ exclude-result-prefixes="xs">
         <xsl:sequence select="concat('{ ', $bnode, ' }')"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[count(key('predicates-by-object', .)) &lt;= 1]" mode="ac:JSONLDMode" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[count(key('predicates-by-object', .)) &lt;= 1]" mode="ac:JSON-LD" priority="1">
         <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
         <xsl:variable name="bnode" select="key('resources', .)"/>
                
@@ -185,21 +185,21 @@ exclude-result-prefixes="xs">
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="@rdf:datatype" mode="ac:JSONLDMode">
+    <xsl:template match="@rdf:datatype" mode="ac:JSON-LD">
         <xsl:sequence select="concat('&quot;@type&quot;: &quot;', ., '&quot;')"/>
     </xsl:template>
 
-    <xsl:template match="@xml:lang" mode="ac:JSONLDMode">
+    <xsl:template match="@xml:lang" mode="ac:JSON-LD">
         <xsl:sequence select="concat('&quot;@language&quot;: &quot;', ., '&quot;')"/>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:JSONLDContextMode">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:JSON-LDContext">
         <xsl:sequence select="concat('&quot;', local-name(), '&quot; : { &quot;@id&quot;: &quot;', name(), '&quot; }')"/>
     </xsl:template>
 
-    <xsl:template match="rdf:type[@rdf:resource]" mode="ac:JSONLDContextMode" priority="1"/>
+    <xsl:template match="rdf:type[@rdf:resource]" mode="ac:JSON-LDContext" priority="1"/>
 
-    <xsl:template match="text()" mode="ac:JSONLDContextMode"/>
+    <xsl:template match="text()" mode="ac:JSON-LDContext"/>
 
     <xsl:function name="ac:escape-json" as="xs:string?">
         <xsl:param name="string" as="xs:string?"/>
