@@ -61,7 +61,6 @@ import com.atomgraph.core.vocabulary.A;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
 import org.apache.jena.ontology.OntClass;
@@ -192,33 +191,23 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return getUriInfo().getRequestUri();
     }
 
-    public URI getURIParam(UriInfo uriInfo, String name)
+    public URI getURIParam(UriInfo uriInfo, String name) throws URISyntaxException
     {
         if (uriInfo == null) throw new IllegalArgumentException("UriInfo cannot be null");
         if (name == null) throw new IllegalArgumentException("String cannot be null");
 
         if (uriInfo.getQueryParameters().containsKey(name))
-        {
-            String uri = uriInfo.getQueryParameters().getFirst(name);
-            try
-            {
-                return new URI(uri);
-            }
-            catch (URISyntaxException ex)
-            {
-                throw new WebApplicationException(ex, BAD_REQUEST);
-            }
-        }
+            return new URI(uriInfo.getQueryParameters().getFirst(name));
         
         return null;
     }
 
-    public URI getURI()
+    public URI getURI() throws URISyntaxException
     {
         return getURIParam(getUriInfo(), AC.uri.getLocalName());
     }
 
-    public URI getEndpointURI()
+    public URI getEndpointURI() throws URISyntaxException
     {
         return getURIParam(getUriInfo(), AC.endpoint.getLocalName());
     }
@@ -288,12 +277,12 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
             parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
      
-        if (getURI() != null) builder.parameter("{" + AC.uri.getNameSpace() + "}" + AC.uri.getLocalName(), getURI());
-        if (getEndpointURI() != null) builder.parameter("{" + AC.endpoint.getNameSpace() + "}" + AC.endpoint.getLocalName(), getEndpointURI());
-        if (getQuery() != null) builder.parameter("{" + AC.query.getNameSpace() + "}" + AC.query.getLocalName(), getQuery());
-        
         try
         {
+            if (getURI() != null) builder.parameter("{" + AC.uri.getNameSpace() + "}" + AC.uri.getLocalName(), getURI());
+            if (getEndpointURI() != null) builder.parameter("{" + AC.endpoint.getNameSpace() + "}" + AC.endpoint.getLocalName(), getEndpointURI());
+            if (getQuery() != null) builder.parameter("{" + AC.query.getNameSpace() + "}" + AC.query.getLocalName(), getQuery());
+
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
 
             URI ontologyURI = (URI)getHttpServletRequest().getAttribute(LDT.ontology.getURI());
@@ -384,6 +373,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         catch (IOException ex)
         {
             if (log.isErrorEnabled()) log.error("Error reading Source stream");
+            throw new TransformerException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            if (log.isErrorEnabled()) log.error("URI syntax exception");
             throw new TransformerException(ex);
         }
     }

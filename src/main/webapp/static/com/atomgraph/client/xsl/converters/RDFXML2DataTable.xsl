@@ -55,27 +55,51 @@ exclude-result-prefixes="xs">
         -->
 
         <xsl:template match="/" mode="ac:DataTable">
-                <xsl:apply-templates mode="ac:DataTable"/>
+                <xsl:apply-templates mode="#current"/>
         </xsl:template>
         
         <xsl:template match="rdf:RDF" mode="ac:DataTable">
+            <xsl:param name="x-property" as="xs:anyURI?" tunnel="yes"/>
+            <xsl:param name="y-property" as="xs:anyURI?" tunnel="yes"/>
 {
         "cols": [
-                { 
-                        "id": "<xsl:value-of select="generate-id()"/>",
-                        "label": "Resource",
-                        "type": "string"
-                },
-                <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
+                <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
+                <xsl:if test="not($x-property)">
+                    { 
+                            "id": "<xsl:value-of select="generate-id()"/>",
+                            "type": "string"
+                    },
+                </xsl:if>
+                <xsl:variable name="properties" as="element()*">
+                    <xsl:choose>
+                        <xsl:when test="$x-property and $y-property">
+                            <xsl:sequence select="*/*[concat(namespace-uri(), local-name()) = $x-property]"/>
+                            <xsl:sequence select="*/*[concat(namespace-uri(), local-name()) = $y-property]"/>
+                        </xsl:when>
+                        <xsl:when test="$y-property">
+                            <xsl:sequence select="*/*[concat(namespace-uri(), local-name()) = $y-property]"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:sequence select="*/*"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <xsl:for-each-group select="$properties" group-by="concat(namespace-uri(), local-name())">
                         <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text"/>
 
-                        <xsl:apply-templates select="current-group()[1]" mode="ac:DataTableColumns"/>
+                        <xsl:apply-templates select="current-group()[1]" mode="ac:DataTableColumns">
+                            <xsl:with-param name="properties" select="$properties"/>
+                        </xsl:apply-templates>
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
 
                 </xsl:for-each-group>
         ],
-        "rows": [ <xsl:apply-templates mode="ac:DataTable"/> ]
+        "rows": [
+                <xsl:apply-templates mode="#current">
+                    <xsl:with-param name="properties" select="$properties"/>
+                </xsl:apply-templates>
+                ]
 }
         </xsl:template>
 
@@ -83,15 +107,17 @@ exclude-result-prefixes="xs">
         <!-- properties -->
 
         <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTableColumns">
+            <xsl:param name="properties" as="element()*"/>
+
                         {
                                 "id": "<xsl:value-of select="generate-id()"/>",
                                 "label": "<xsl:value-of select="concat(namespace-uri(), local-name())"/>",
-                                "type": "string"
-                                <!--"<xsl:choose>
-                                        <xsl:when test="every $literal in key('binding-by-name', @name)/sparql:literal satisfies number($literal)">number</xsl:when>
-                                        <xsl:when test="every $literal in key('binding-by-name', @name)/sparql:literal satisfies ($literal castable as xs:dateTime)">date</xsl:when>
-                                        <xsl:when test="every $literal in key('binding-by-name', @name)/sparql:literal satisfies ($literal castable as xs:time)">timeofday</xsl:when>
-                                        <xsl:otherwise>string</xsl:otherwise></xsl:choose>" -->
+                                "type":
+                                "<xsl:choose>
+                                        <xsl:when test="every $property in $properties satisfies number($property)">number</xsl:when>
+                                        <xsl:when test="every $property in $properties satisfies ($property castable as xs:dateTime)">date</xsl:when>
+                                        <xsl:when test="every $property in $properties satisfies ($property castable as xs:time)">timeofday</xsl:when>
+                                        <xsl:otherwise>string</xsl:otherwise></xsl:choose>"
                         }
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
@@ -101,18 +127,24 @@ exclude-result-prefixes="xs">
         <!-- subject -->
 
         <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:DataTable">
+            <xsl:param name="x-property" as="xs:anyURI?" tunnel="yes"/>
+            <xsl:param name="properties" as="element()*"/>
+
         {
                 "c": [
-                {
-                    "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="ac:DataTable"/>
-                },
+                <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
+                <xsl:if test="not($x-property)">
+                    {
+                        "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+                    },
+                </xsl:if>
                 <xsl:variable name="subject" select="."/>
-                <xsl:for-each-group select="/rdf:RDF/*/*" group-by="concat(namespace-uri(), local-name())">
+                <xsl:for-each-group select="../*/*[concat(namespace-uri(), local-name()) = $properties/concat(namespace-uri(), local-name())]" group-by="concat(namespace-uri(), local-name())">
                     <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text"/>
                     
                     <xsl:choose>
                             <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()]">
-                                <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()][1]" mode="ac:DataTable"/>
+                                <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()][1]" mode="#current"/>
                             </xsl:when>
                             <xsl:otherwise>
                             { "v": null }    
@@ -122,8 +154,6 @@ exclude-result-prefixes="xs">
                     <xsl:if test="position() != last()">        ,
                     </xsl:if>
                 </xsl:for-each-group> ]
-
-                <!-- "c": [ <xsl:apply-templates mode="ac:DataTable"/> ] -->
         }
         <xsl:if test="position() != last()">,
         </xsl:if>
@@ -134,32 +164,11 @@ exclude-result-prefixes="xs">
 
         <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTable">
                         {
-                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="ac:DataTable"/>
+                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
                         }
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
         </xsl:template>
-        
-        <!--
-        <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTable">
-                <xsl:param name="subject"/>
-                <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
-
-                <xsl:choose>
-                        <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = $this]">
-                        {
-                                "v": <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="ac:DataTable"/>
-                        }
-                        </xsl:when>
-                        <xsl:otherwise>
-                        { "v": null }    
-                        </xsl:otherwise>
-                </xsl:choose>
-                
-                <xsl:if test="position() != count($subject/*)">        ,
-                </xsl:if>
-        </xsl:template>
-        -->
         
         <xsl:template match="text()[../@rdf:datatype = '&xsd;boolean']" mode="ac:DataTable">
                 <xsl:value-of select="."/>

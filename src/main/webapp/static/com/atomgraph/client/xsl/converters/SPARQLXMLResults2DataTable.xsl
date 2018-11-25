@@ -57,13 +57,13 @@ exclude-result-prefixes="#all">
         -->
 
         <xsl:template match="/" mode="ac:DataTable">
-                <xsl:apply-templates mode="ac:DataTable"/>
+                <xsl:apply-templates mode="#current"/>
         </xsl:template>
         
         <xsl:template match="sparql:sparql" mode="ac:DataTable">
 {
-        "cols": [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="ac:DataTable"/> ],
-        "rows": [ <xsl:apply-templates select="sparql:results/sparql:result" mode="ac:DataTable"/> ]
+        "cols": [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="#current"/> ],
+        "rows": [ <xsl:apply-templates select="sparql:results/sparql:result" mode="#current"/> ]
 }
         </xsl:template>
 
@@ -89,7 +89,7 @@ exclude-result-prefixes="#all">
 
         <xsl:template match="sparql:result" mode="ac:DataTable">
         {
-                "c": [ <xsl:apply-templates mode="ac:DataTable"/> ]
+                "c": [ <xsl:apply-templates mode="#current"/> ]
         }
         <xsl:if test="position() != last()">,
         </xsl:if>
@@ -99,7 +99,7 @@ exclude-result-prefixes="#all">
 
         <xsl:template match="sparql:binding" mode="ac:DataTable">
                         {
-                                "v": <xsl:apply-templates mode="ac:DataTable"/>
+                                "v": <xsl:apply-templates mode="#current"/>
                         }
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
