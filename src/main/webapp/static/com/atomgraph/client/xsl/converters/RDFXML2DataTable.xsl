@@ -186,10 +186,7 @@ exclude-result-prefixes="xs">
         </xsl:template>
 
         <xsl:template match="text()[../@rdf:datatype = '&xsd;string'] | text()" mode="ac:DataTable">
-                <xsl:text>"</xsl:text>
-                <xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>
-                
-                <xsl:text>"</xsl:text>
+                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>"
         </xsl:template>
 
         <xsl:template match="node()[../@rdf:parseType = 'Literal']" mode="ac:DataTable">
@@ -204,11 +201,7 @@ exclude-result-prefixes="xs">
                 </xsl:if>
         </xsl:template>
 
-        <xsl:template match="@rdf:about | @rdf:resource" mode="ac:DataTable">
-                "&lt;a href=\"<xsl:value-of select="."/>\"&gt;<xsl:value-of select="."/>&lt;/a&gt;"
-        </xsl:template>
-
-        <xsl:template match="@rdf:nodeID" mode="ac:DataTable">
+        <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:DataTable">
                 "<xsl:value-of select="."/>"
         </xsl:template>
 
