@@ -136,7 +136,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
         <xsl:template match="sparql:uri" mode="ac:DataTable">
-                '<a href="{.}"><xsl:value-of select="."/></a>'
+                "&lt;a href=\"<xsl:value-of select="."/>\"&gt;<xsl:value-of select="."/>&lt;/a&gt;"
         </xsl:template>
 
         <xsl:template match="sparql:bnode" mode="ac:DataTable">
