@@ -77,8 +77,8 @@ exclude-result-prefixes="#all">
                                 "<xsl:choose>
                                         <xsl:when test="key('binding-by-name', @name)/sparql:uri">string</xsl:when>
                                         <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies $datatype = ('&xsd;integer', '&xsd;decimal', '&xsd;double', '&xsd;float')">number</xsl:when>
-                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies ($datatype = ('&xsd;dateTime', '&xsd;date'))">date</xsl:when>
-                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies ($datatype = '&xsd;time')">timeofday</xsl:when>
+                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies $datatype = ('&xsd;dateTime', '&xsd;date')">date</xsl:when>
+                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies $datatype = '&xsd;time'">timeofday</xsl:when>
                                         <xsl:otherwise>string</xsl:otherwise></xsl:choose>"
                         }
                 <xsl:if test="position() != last()">        ,

@@ -61,6 +61,33 @@ exclude-result-prefixes="xs">
         <xsl:template match="rdf:RDF" mode="ac:DataTable">
             <xsl:param name="x-property" as="xs:anyURI?" tunnel="yes"/>
             <xsl:param name="y-property" as="xs:anyURI?" tunnel="yes"/>
+            <xsl:param name="properties" as="element()*">
+                <xsl:choose>
+                    <xsl:when test="$x-property and $y-property">
+                        <xsl:for-each-group select="*/*[concat(namespace-uri(), local-name()) = $x-property][1]" group-by="concat(namespace-uri(), local-name())">
+                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+                            <xsl:sequence select="current-group()[1]"/>
+                        </xsl:for-each-group>
+                        <xsl:for-each-group select="*/*[concat(namespace-uri(), local-name()) = $y-property][1]" group-by="concat(namespace-uri(), local-name())">
+                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+                            <xsl:sequence select="current-group()[1]"/>
+                        </xsl:for-each-group>
+                    </xsl:when>
+                    <xsl:when test="$y-property">
+                        <xsl:for-each-group select="*/*[concat(namespace-uri(), local-name()) = $y-property][1]" group-by="concat(namespace-uri(), local-name())">
+                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+                            <xsl:sequence select="current-group()[1]"/>
+                        </xsl:for-each-group>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
+                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+                            <xsl:sequence select="current-group()[1]"/>
+                        </xsl:for-each-group>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:param>
+
 {
         "cols": [
                 <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
@@ -70,30 +97,13 @@ exclude-result-prefixes="xs">
                             "type": "string"
                     },
                 </xsl:if>
-                <xsl:variable name="properties" as="element()*">
-                    <xsl:choose>
-                        <xsl:when test="$x-property and $y-property">
-                            <xsl:sequence select="*/*[concat(namespace-uri(), local-name()) = $x-property]"/>
-                            <xsl:sequence select="*/*[concat(namespace-uri(), local-name()) = $y-property]"/>
-                        </xsl:when>
-                        <xsl:when test="$y-property">
-                            <xsl:sequence select="*/*[concat(namespace-uri(), local-name()) = $y-property]"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:sequence select="*/*"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:variable>
-                <xsl:for-each-group select="$properties" group-by="concat(namespace-uri(), local-name())">
-                        <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text"/>
 
-                        <xsl:apply-templates select="current-group()[1]" mode="ac:DataTableColumns">
-                            <xsl:with-param name="properties" select="$properties"/>
-                        </xsl:apply-templates>
-                <xsl:if test="position() != last()">        ,
-                </xsl:if>
-
-                </xsl:for-each-group>
+                <xsl:for-each select="$properties">
+                        <xsl:apply-templates select="." mode="ac:DataTableColumns"/>
+                        
+                        <xsl:if test="position() != last()">        ,
+                        </xsl:if>
+                </xsl:for-each>
         ],
         "rows": [
                 <xsl:apply-templates mode="#current">
@@ -107,16 +117,15 @@ exclude-result-prefixes="xs">
         <!-- properties -->
 
         <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTableColumns">
-            <xsl:param name="properties" as="element()*"/>
 
                         {
                                 "id": "<xsl:value-of select="generate-id()"/>",
                                 "label": "<xsl:value-of select="concat(namespace-uri(), local-name())"/>",
                                 "type":
                                 "<xsl:choose>
-                                        <xsl:when test="every $property in $properties satisfies number($property)">number</xsl:when>
-                                        <xsl:when test="every $property in $properties satisfies ($property castable as xs:dateTime)">date</xsl:when>
-                                        <xsl:when test="every $property in $properties satisfies ($property castable as xs:time)">timeofday</xsl:when>
+                                        <xsl:when test="count(../../*/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())][@rdf:datatype = ('&xsd;integer', '&xsd;decimal', '&xsd;double', '&xsd;float')]) = count(../../*/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())])">number</xsl:when>
+                                        <xsl:when test="count(../../*/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())][@rdf:datatype = ('&xsd;dateTime', '&xsd;date')]) = count(../../*/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())])">date</xsl:when>
+                                        <xsl:when test="count(../../*/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())][@rdf:datatype = ('&xsd;time')]) = count(../../*/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())])">timeofday</xsl:when>
                                         <xsl:otherwise>string</xsl:otherwise></xsl:choose>"
                         }
                 <xsl:if test="position() != last()">        ,
@@ -128,6 +137,7 @@ exclude-result-prefixes="xs">
 
         <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:DataTable">
             <xsl:param name="x-property" as="xs:anyURI?" tunnel="yes"/>
+            <xsl:param name="y-property" as="xs:anyURI?" tunnel="yes"/>
             <xsl:param name="properties" as="element()*"/>
 
         {
@@ -138,25 +148,25 @@ exclude-result-prefixes="xs">
                         "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
                     },
                 </xsl:if>
-                <xsl:variable name="subject" select="."/>
-                <xsl:for-each-group select="../*/*[concat(namespace-uri(), local-name()) = $properties/concat(namespace-uri(), local-name())]" group-by="concat(namespace-uri(), local-name())">
-                    <xsl:sort select="concat(namespace-uri(), local-name())" data-type="text"/>
-                    
-                    <xsl:choose>
-                            <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()]">
-                                <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current-grouping-key()][1]" mode="#current"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                            { "v": null }    
-                            </xsl:otherwise>
-                    </xsl:choose>
 
+                <xsl:variable name="subject" select="."/>
+                <xsl:for-each select="$properties">
+                    <xsl:choose>
+                        <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]">
+                            <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]" mode="#current"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            { "v": null }    
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    
                     <xsl:if test="position() != last()">        ,
                     </xsl:if>
-                </xsl:for-each-group> ]
+                </xsl:for-each>
+                ]
         }
-        <xsl:if test="position() != last()">,
-        </xsl:if>
+            <xsl:if test="position() != last()">,
+            </xsl:if>
         </xsl:template>
 
         <!--  DATA TABLE CELLS -->
