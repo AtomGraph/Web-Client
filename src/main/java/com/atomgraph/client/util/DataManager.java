@@ -88,8 +88,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         Map<String, String> q04 = new HashMap<>();
         q04.put("q", "0.4");
         acceptableXMLMediaTypeList.add(new MediaType(MediaType.TEXT_XML_TYPE.getType(), MediaType.TEXT_XML_TYPE.getSubtype(), q04));
-        //acceptableXMLMediaTypeList.add(MediaType.valueOf("application/xhtml+xml;q=0.3"));
-        acceptableXMLMediaTypeList.add(MediaType.valueOf("*/*;q=0.2"));
+
         acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
     }
 
