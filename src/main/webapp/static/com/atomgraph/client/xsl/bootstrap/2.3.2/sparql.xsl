@@ -124,7 +124,7 @@ LIMIT 100</xsl:param>
         
             <fieldset>
                 <label for="endpoint-uri">Endpoint</label>
-                <input type="text" id="endpoint-uri" name="endpoint">
+                <input type="text" id="endpoint-uri" name="endpoint" class="input-xxlarge">
                     <xsl:if test="$endpoint">
                         <xsl:attribute name="value" select="$endpoint"/>
                     </xsl:if>

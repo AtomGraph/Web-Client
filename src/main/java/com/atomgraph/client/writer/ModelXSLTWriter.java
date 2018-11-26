@@ -108,7 +108,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     @Context private HttpHeaders httpHeaders;
     @Context private Providers providers;
     @Context private HttpServletRequest httpServletRequest;
-    @Context private Application application;
+    //@Context private Application application;
     
     /**
      * Constructs from XSLT builder.

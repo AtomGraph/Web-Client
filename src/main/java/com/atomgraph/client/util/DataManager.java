@@ -141,12 +141,18 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
 
-                // buffer the stylesheet stream so we can close ClientResponse
-                try (InputStream is = cr.getEntityInputStream())
+                if (isAcceptedXMLMediaType(cr.getType())) // response content type is an acceptable XML format
                 {
-                    byte[] bytes = IOUtils.toByteArray(is);
-                    return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
+                    // buffer the stylesheet stream so we can close ClientResponse
+                    try (InputStream is = cr.getEntityInputStream())
+                    {
+                        byte[] bytes = IOUtils.toByteArray(is);
+                        return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
+                    }
                 }
+                
+                if (log.isWarnEnabled()) log.warn("MediaType {} not accepted", cr.getType());
+                throw new IOException("MediaType '" + cr.getType() + "' not accepted");
             }
             catch (IOException ex)
             {
@@ -228,6 +234,14 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         }
     }
  
+    public boolean isAcceptedXMLMediaType(MediaType mediaType)
+    {
+        for (MediaType accepted : getAcceptedMediaTypes())
+            if (accepted.isCompatible(mediaType)) return true;
+        
+        return false;
+    }
+    
     public javax.ws.rs.core.MediaType[] getAcceptedMediaTypes()
     {
         return acceptedTypes;
