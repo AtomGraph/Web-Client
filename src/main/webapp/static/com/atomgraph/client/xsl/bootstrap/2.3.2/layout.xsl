@@ -500,7 +500,7 @@ exclude-result-prefixes="#all">
             </button>
 
             <ul class="dropdown-menu">
-                <xsl:variable name="active" select="$ac:mode" as="xs:anyURI?"/>
+                <xsl:variable name="active" select="$ac:mode[1]" as="xs:anyURI?"/> <!-- multiple modes can be present; selecting first as a workaround -->
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">

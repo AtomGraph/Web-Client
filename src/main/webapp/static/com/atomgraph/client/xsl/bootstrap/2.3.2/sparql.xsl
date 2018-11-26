@@ -103,7 +103,7 @@ LIMIT 100</xsl:param>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="uri" as="xs:anyURI?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="mode" as="xs:anyURI*"/>
         <xsl:param name="endpoint" as="xs:anyURI?"/>
         <xsl:param name="query" as="xs:string?"/>
         <xsl:param name="default-query" as="xs:string?"/>
@@ -152,9 +152,9 @@ LIMIT 100</xsl:param>
                     <xsl:if test="$uri">
                         <input type="hidden" name="uri" value="{$uri}"/>
                     </xsl:if>
-                    <xsl:if test="$mode">
-                        <input type="hidden" name="mode" value="{$mode}"/>
-                    </xsl:if>
+                    <xsl:for-each select="$mode">
+                        <input type="hidden" name="mode" value="{.}"/>
+                    </xsl:for-each>
                     
                     <button type="submit" class="btn btn-primary">Query</button>
                 </div>
