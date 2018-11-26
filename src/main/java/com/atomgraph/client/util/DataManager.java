@@ -143,7 +143,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
 
-                if (isAcceptedXMLMediaType(cr.getType())) // response content type is an acceptable XML format
+                if (isAcceptedMediaType(cr.getType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
                 {
                     // buffer the stylesheet stream so we can close ClientResponse
                     try (InputStream is = cr.getEntityInputStream())
@@ -236,9 +236,9 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         }
     }
  
-    public boolean isAcceptedXMLMediaType(MediaType mediaType)
+    public boolean isAcceptedMediaType(MediaType mediaType, MediaType[] mediaTypes)
     {
-        for (MediaType accepted : getAcceptedMediaTypes())
+        for (MediaType accepted : mediaTypes)
             if (accepted.isCompatible(mediaType)) return true;
         
         return false;
