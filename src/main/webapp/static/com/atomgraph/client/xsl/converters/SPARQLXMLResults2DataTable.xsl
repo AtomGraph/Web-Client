@@ -130,7 +130,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;string'] | sparql:literal" mode="ac:DataTable">
-                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''),'&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>"</xsl:text>
+                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''),'&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>"
         </xsl:template>
 
         <xsl:template match="sparql:uri | sparql:bnode" mode="ac:DataTable">
