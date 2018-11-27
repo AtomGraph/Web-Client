@@ -114,11 +114,11 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;date']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>)
+                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.) - 1"/>, <xsl:value-of select="date:day-in-month(.)"/>)
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
+                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.) - 1"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;time']" mode="ac:DataTable">

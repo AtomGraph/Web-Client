@@ -189,11 +189,11 @@ exclude-result-prefixes="xs">
         </xsl:template>
 
         <xsl:template match="text()[../@rdf:datatype = '&xsd;date']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>)
+                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.) - 1"/>, <xsl:value-of select="date:day-in-month(.)"/>)
         </xsl:template>
 
         <xsl:template match="text()[../@rdf:datatype = '&xsd;dateTime']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.)"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
+                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.) - 1"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
         </xsl:template>
 
         <xsl:template match="text()[../@rdf:datatype = '&xsd;time']" mode="ac:DataTable">
