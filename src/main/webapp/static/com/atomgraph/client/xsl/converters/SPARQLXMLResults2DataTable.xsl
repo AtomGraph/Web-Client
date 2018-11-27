@@ -61,9 +61,29 @@ exclude-result-prefixes="#all">
         </xsl:template>
         
         <xsl:template match="sparql:sparql" mode="ac:DataTable">
+            <xsl:param name="x-var-name" as="xs:string?" tunnel="yes"/>
+            <xsl:param name="y-var-name" as="xs:string?" tunnel="yes"/>
+            <xsl:param name="variables" as="element()*">
+                <xsl:choose>
+                    <xsl:when test="$x-var-name and $y-var-name">
+                        <xsl:sequence select="sparql:head/sparql:variable[@name = $x-var-name]"/>
+                        <xsl:sequence select="sparql:head/sparql:variable[@name = $y-var-name]"/>
+                    </xsl:when>
+                    <xsl:when test="$y-var-name">
+                        <xsl:sequence select="sparql:head/sparql:variable[@name = $y-var-name]"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:sequence select="sparql:head/sparql:variable"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:param>
 {
-        "cols": [ <xsl:apply-templates select="sparql:head/sparql:variable" mode="#current"/> ],
-        "rows": [ <xsl:apply-templates select="sparql:results/sparql:result" mode="#current"/> ]
+        "cols": [ <xsl:apply-templates select="$variables" mode="#current"/> ],
+        "rows": [
+            <xsl:apply-templates select="sparql:results/sparql:result" mode="#current">
+                <xsl:with-param name="variables" select="$variables"/>
+            </xsl:apply-templates>
+        ]
 }
         </xsl:template>
 
@@ -88,8 +108,24 @@ exclude-result-prefixes="#all">
         <!--  DATA TABLE ROW -->
 
         <xsl:template match="sparql:result" mode="ac:DataTable">
+            <xsl:param name="variables" as="element()*"/>
+
         {
-                "c": [ <xsl:apply-templates mode="#current"/> ]
+               "c": [ 
+ 
+            <xsl:variable name="result" select="."/>
+            <xsl:for-each select="$variables">
+                <xsl:choose>
+                    <xsl:when test="$result/sparql:binding[@name = current()/@name]">
+                        <xsl:apply-templates select="$result/sparql:binding[@name = current()/@name]" mode="#current"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        { "v": null }    
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            
+                ]
         }
         <xsl:if test="position() != last()">,
         </xsl:if>
