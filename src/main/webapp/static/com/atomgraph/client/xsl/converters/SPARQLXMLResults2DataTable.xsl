@@ -95,10 +95,9 @@ exclude-result-prefixes="#all">
                                 "label": "<xsl:value-of select="@name"/>",
                                 "type":
                                 "<xsl:choose>
-                                        <xsl:when test="key('binding-by-name', @name)/sparql:uri">string</xsl:when>
-                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies $datatype = ('&xsd;integer', '&xsd;decimal', '&xsd;double', '&xsd;float')">number</xsl:when>
-                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies $datatype = ('&xsd;dateTime', '&xsd;date')">date</xsl:when>
-                                        <xsl:when test="every $datatype in key('binding-by-name', @name)/sparql:literal/@datatype satisfies $datatype = '&xsd;time'">timeofday</xsl:when>
+                                        <xsl:when test="count(key('binding-by-name', @name)/sparql:literal) = count(key('binding-by-name', @name)/sparql:literal[@datatype = ('&xsd;integer', '&xsd;decimal', '&xsd;double', '&xsd;float')])">number</xsl:when>
+                                        <xsl:when test="count(key('binding-by-name', @name)/sparql:literal) = count(key('binding-by-name', @name)/sparql:literal[@datatype = ('&xsd;dateTime', '&xsd;date')])">date</xsl:when>
+                                        <xsl:when test="count(key('binding-by-name', @name)/sparql:literal) = count(key('binding-by-name', @name)/sparql:literal[@datatype = ('&xsd;time')])">timeofday</xsl:when>
                                         <xsl:otherwise>string</xsl:otherwise></xsl:choose>"
                         }
                 <xsl:if test="position() != last()">        ,
@@ -116,13 +115,16 @@ exclude-result-prefixes="#all">
             <xsl:variable name="result" select="."/>
             <xsl:for-each select="$variables">
                 <xsl:choose>
-                    <xsl:when test="$result/sparql:binding[@name = current()/@name]">
-                        <xsl:apply-templates select="$result/sparql:binding[@name = current()/@name]" mode="#current"/>
+                    <xsl:when test="key('binding-by-name', @name)">
+                        <xsl:apply-templates select="key('binding-by-name', @name)" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        { "v": null }    
+                        { "v": null }
                     </xsl:otherwise>
                 </xsl:choose>
+
+                <xsl:if test="position() != last()">        ,
+                </xsl:if>
             </xsl:for-each>
             
                 ]
