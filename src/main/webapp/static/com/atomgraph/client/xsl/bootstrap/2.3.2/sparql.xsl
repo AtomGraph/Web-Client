@@ -152,6 +152,9 @@ LIMIT 100</xsl:param>
                     <xsl:if test="$uri">
                         <input type="hidden" name="uri" value="{$uri}"/>
                     </xsl:if>
+                    <xsl:if test="$endpoint">
+                        <input type="hidden" name="endpoint" value="{$endpoint}"/>
+                    </xsl:if>
                     <xsl:for-each select="$mode">
                         <input type="hidden" name="mode" value="{.}"/>
                     </xsl:for-each>
