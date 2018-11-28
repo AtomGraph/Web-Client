@@ -115,11 +115,11 @@ exclude-result-prefixes="#all">
             <xsl:variable name="result" select="."/>
             <xsl:for-each select="$variables">
                 <xsl:choose>
-                    <xsl:when test="key('binding-by-name', @name)">
-                        <xsl:apply-templates select="key('binding-by-name', @name)" mode="#current"/>
+                    <xsl:when test="$result/sparql:binding[@name = current()/@name]">
+                        <xsl:apply-templates select="$result/sparql:binding[@name = current()/@name]" mode="#current"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        { "v": null }
+                        { "v": null }    
                     </xsl:otherwise>
                 </xsl:choose>
 
