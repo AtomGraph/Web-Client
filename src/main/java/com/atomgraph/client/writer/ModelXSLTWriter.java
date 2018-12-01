@@ -365,8 +365,8 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                 builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
             }
 
-            Object query = headerMap.getFirst("Query");
-            if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
+//            Object query = headerMap.getFirst("Query");
+//            if (query != null) builder.parameter("{http://spinrdf.org/spin#}query", query.toString());
             
             return builder;
         }

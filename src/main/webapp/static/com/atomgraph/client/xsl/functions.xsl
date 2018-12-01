@@ -391,5 +391,17 @@ exclude-result-prefixes="#all">
             </xsl:when>
         </xsl:choose>
     </xsl:function>
+    
+    <xsl:template name="ac:escape-json">
+        <xsl:param name="string" as="xs:string?"/>
+        <xsl:variable name="string" select="replace($string, '\\', '\\\\')"/>
+        <xsl:variable name="string" select="replace($string, '&quot;', '\\&quot;')"/>
+        <xsl:variable name="string" select="replace($string, '''', '\\''')"/>
+        <xsl:variable name="string" select="replace($string, '&#09;', '\\t')"/>
+        <xsl:variable name="string" select="replace($string, '&#10;', '\\n')"/>
+        <xsl:variable name="string" select="replace($string, '&#13;', '\\r')"/>
+
+        <xsl:value-of select="$string"/>
+    </xsl:template>
 
 </xsl:stylesheet>

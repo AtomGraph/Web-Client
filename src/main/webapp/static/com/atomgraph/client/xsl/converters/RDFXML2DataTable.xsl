@@ -59,25 +59,17 @@ exclude-result-prefixes="xs">
         </xsl:template>
         
         <xsl:template match="rdf:RDF" mode="ac:DataTable">
-            <xsl:param name="x-property" as="xs:anyURI?" tunnel="yes"/>
-            <xsl:param name="y-property" as="xs:anyURI?" tunnel="yes"/>
+            <xsl:param name="property-uris" as="xs:anyURI*" tunnel="yes"/>
             <xsl:param name="properties" as="element()*">
                 <xsl:choose>
-                    <xsl:when test="$x-property and $y-property">
-                        <xsl:for-each-group select="*/*[concat(namespace-uri(), local-name()) = $x-property][1]" group-by="concat(namespace-uri(), local-name())">
-                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-                            <xsl:sequence select="current-group()[1]"/>
-                        </xsl:for-each-group>
-                        <xsl:for-each-group select="*/*[concat(namespace-uri(), local-name()) = $y-property][1]" group-by="concat(namespace-uri(), local-name())">
-                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-                            <xsl:sequence select="current-group()[1]"/>
-                        </xsl:for-each-group>
-                    </xsl:when>
-                    <xsl:when test="$y-property">
-                        <xsl:for-each-group select="*/*[concat(namespace-uri(), local-name()) = $y-property][1]" group-by="concat(namespace-uri(), local-name())">
-                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-                            <xsl:sequence select="current-group()[1]"/>
-                        </xsl:for-each-group>
+                    <xsl:when test="not(empty($property-uris))">
+                        <xsl:variable name="current" select="."/>
+                        <xsl:for-each select="$property-uris">
+                            <xsl:for-each-group select="$current/*/*[concat(namespace-uri(), local-name()) = current()][1]" group-by="concat(namespace-uri(), local-name())">
+                                <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
+                                <xsl:sequence select="current-group()[1]"/>
+                            </xsl:for-each-group>
+                        </xsl:for-each>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
@@ -91,7 +83,7 @@ exclude-result-prefixes="xs">
 {
         "cols": [
                 <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
-                <xsl:if test="not($x-property)">
+                <xsl:if test="empty($properties)">
                     { 
                             "id": "<xsl:value-of select="generate-id()"/>",
                             "type": "string"
@@ -136,14 +128,12 @@ exclude-result-prefixes="xs">
         <!-- subject -->
 
         <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:DataTable">
-            <xsl:param name="x-property" as="xs:anyURI?" tunnel="yes"/>
-            <xsl:param name="y-property" as="xs:anyURI?" tunnel="yes"/>
             <xsl:param name="properties" as="element()*"/>
 
         {
                 "c": [
                 <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
-                <xsl:if test="not($x-property)">
+                <xsl:if test="empty($properties)">
                     {
                         "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
                     },

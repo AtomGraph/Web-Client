@@ -61,16 +61,14 @@ exclude-result-prefixes="#all">
         </xsl:template>
         
         <xsl:template match="sparql:sparql" mode="ac:DataTable">
-            <xsl:param name="x-var-name" as="xs:string?" tunnel="yes"/>
-            <xsl:param name="y-var-name" as="xs:string?" tunnel="yes"/>
+            <xsl:param name="var-names" as="xs:string*" tunnel="yes"/>
             <xsl:param name="variables" as="element()*">
                 <xsl:choose>
-                    <xsl:when test="$x-var-name and $y-var-name">
-                        <xsl:sequence select="sparql:head/sparql:variable[@name = $x-var-name]"/>
-                        <xsl:sequence select="sparql:head/sparql:variable[@name = $y-var-name]"/>
-                    </xsl:when>
-                    <xsl:when test="$y-var-name">
-                        <xsl:sequence select="sparql:head/sparql:variable[@name = $y-var-name]"/>
+                    <xsl:when test="not(empty($var-names))">
+                        <xsl:variable name="current" select="."/>
+                        <xsl:for-each select="$var-names">
+                            <xsl:sequence select="$current/sparql:head/sparql:variable[@name = current()]"/>
+                        </xsl:for-each>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:sequence select="sparql:head/sparql:variable"/>
