@@ -153,7 +153,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 }
                 
                 if (log.isWarnEnabled()) log.warn("MediaType {} not accepted", cr.getType());
-                throw new IOException("MediaType '" + cr.getType() + "' not accepted");
+                return new StreamSource(); // return empty source
             }
             catch (IOException ex)
             {
