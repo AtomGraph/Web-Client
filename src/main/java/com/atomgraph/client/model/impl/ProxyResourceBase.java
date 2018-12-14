@@ -94,6 +94,17 @@ public class ProxyResourceBase implements Resource
         this.accept = accept;
 
         //client.setFollowRedirects(false);
+        if (!uri.getFragment().isEmpty())
+            try
+            {
+                // strip #fragment as we don't want to use it in the request to server
+                uri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), null);
+            }
+            catch (URISyntaxException ex)
+            {
+                // should not happen
+            }
+        
         webResource = client.resource(uri);
         linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
         this.httpServletRequest = httpServletRequest;
