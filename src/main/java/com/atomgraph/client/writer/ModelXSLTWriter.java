@@ -303,7 +303,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                     {
                         OntClass forClass = sitemap.getOntClass(forClassURI);
 
-                        if (forClass == null) throw new OntClassNotFoundException(forClassURI);
+                        if (forClass == null) throw new OntClassNotFoundException(forClassURI); // do we need this check here?
                         builder.parameter("{" + AC.forClass.getNameSpace() + "}" + AC.forClass.getLocalName(), URI.create(forClass.getURI()));
                     }
                 }
@@ -452,7 +452,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         return classIRI;
     }
 
-    public static Source getConstructedSource(URI ontologyURI, List<URI> classURIs, URI baseURI) throws URISyntaxException, IOException, TransformerException
+    public static Source getConstructedSource(URI ontologyURI, List<URI> classURIs, URI baseURI) throws URISyntaxException, IOException
     {
         if (ontologyURI == null) throw new IllegalArgumentException("Ontology URI cannot be null");
         if (classURIs == null) throw new IllegalArgumentException("Class URIs cannot be null");
@@ -464,7 +464,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         for (URI classURI : classURIs)
         {
             OntClass forClass = ontModel.getOntClass(checkURI(classURI.toString()).toURI().toString());
-            if (forClass != null) new Constructor().construct(forClass, instances, baseURI.toString());
+            if (forClass != null) new Constructor().construct(forClass, instances, baseURI.toString()); // TO-DO: else throw error?
         }
 
         return getSource(instances);
