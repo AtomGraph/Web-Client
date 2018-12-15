@@ -42,6 +42,7 @@ import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
 import com.atomgraph.core.exception.NotFoundException;
+import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.Link;
 import java.net.URISyntaxException;
@@ -174,6 +175,8 @@ public class ProxyResourceBase implements Resource
                     throw new ClientErrorException(cr);
             }
 
+            cr.getHeaders().putSingle(ModelProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to ModelProvider
+            
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
             Model description = cr.getEntity(Model.class);
 
