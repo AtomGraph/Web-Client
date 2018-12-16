@@ -95,7 +95,7 @@ public class ProxyResourceBase implements Resource
         this.accept = accept;
 
         //client.setFollowRedirects(false);
-        if (!uri.getFragment().isEmpty())
+        if (uri.getFragment() != null)
             try
             {
                 // strip #fragment as we don't want to use it in the request to server
