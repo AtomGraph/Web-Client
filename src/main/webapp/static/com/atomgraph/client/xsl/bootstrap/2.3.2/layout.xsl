@@ -202,7 +202,7 @@ exclude-result-prefixes="#all">
                         <span class="icon-bar"></span>
                     </button>
 
-                    <xsl:if test="$ldt:base">
+                    <xsl:if test="$ldt:base and doc-available($ldt:base)">
                         <a class="brand" href="{$ldt:base}">
                             <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
                                 <img src="{foaf:logo/@rdf:resource}">

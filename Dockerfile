@@ -1,12 +1,24 @@
 FROM maven:3.5.4-jdk-8 as maven
 
+### Clone and build AtomGraph core (2.0.1-SNAPSHOT is not on Maven central)
+
+RUN mkdir -p /usr/src/Core
+
+WORKDIR /usr/src
+
+RUN git clone https://github.com/AtomGraph/Core.git
+
+WORKDIR /usr/src/Core
+
+RUN mvn clean install
+
 ### Build AtomGraph Web-Client
 
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /usr/src/Web-Client
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/Web-Client
 
-COPY . /usr/src/app
+COPY . /usr/src/Web-Client
 
 RUN mvn -Pstandalone clean install
 
@@ -21,6 +33,6 @@ WORKDIR /usr/local/tomcat/webapps/
 RUN rm -rf * # remove Tomcat's default webapps
 
 # copy exploded WAR folder from the maven stage
-COPY --from=maven /usr/src/app/target/$VERSION/ ROOT/
+COPY --from=maven /usr/src/Web-Client/target/$VERSION/ ROOT/
 
 CMD ["catalina.sh", "run"]

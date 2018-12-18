@@ -116,11 +116,11 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         URI baseURI = URI.create(base);
         URI uri = href.isEmpty() ? baseURI : baseURI.resolve(href);
         
-        if (isResolvingMapped() && isMapped(uri.toString())) // read mapped URIs (such as system ontologies) from a file
+        if (hasCachedModel(uri.toString()) || (isResolvingMapped() && isMapped(uri.toString()))) // read mapped URIs (such as system ontologies) from a file
         {
             try
             {
-                if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
+                if (log.isDebugEnabled()) log.debug("hasCachedModel({}): {} isMapped({}): {}", uri, hasCachedModel(uri.toString()), uri, isMapped(uri.toString()));
                 return getSource(loadModel(uri.toString()), uri.toString());
             }
             catch (IOException ex)
@@ -133,27 +133,26 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
         {
             if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
-
+            
             ClientResponse cr = null;
             try
             {
+                if (!resolvingUncached(uri.toString()))
+                    throw new IOException("Dereferencing uncached URIs is disabled");
+
                 cr = get(uri.toString(), getAcceptedXMLMediaTypes());
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
+                if (!isAcceptedMediaType(cr.getType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
+                    throw new IOException("MediaType '" + cr.getType() +"' is not accepted");
 
-                if (isAcceptedMediaType(cr.getType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
+                // buffer the stream so we can close ClientResponse
+                try (InputStream is = cr.getEntityInputStream())
                 {
-                    // buffer the stylesheet stream so we can close ClientResponse
-                    try (InputStream is = cr.getEntityInputStream())
-                    {
-                        byte[] bytes = IOUtils.toByteArray(is);
-                        return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
-                    }
+                    byte[] bytes = IOUtils.toByteArray(is);
+                    return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
                 }
-                
-                if (log.isWarnEnabled()) log.warn("MediaType {} not accepted", cr.getType());
-                return new StreamSource(); // return empty source
             }
             catch (IOException ex)
             {
