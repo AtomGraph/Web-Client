@@ -58,7 +58,6 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     private final MediaType[] acceptedXMLMediaTypes;
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
-    private final boolean resolvingSPARQL = true;
             
     public DataManager(LocationMapper mapper, Client client, MediaTypes mediaTypes,
             boolean preemptiveAuth, boolean resolvingUncached)
@@ -250,11 +249,6 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     public boolean resolvingUncached(String filenameOrURI)
     {
         return resolvingUncached;
-    }
-    
-    public boolean isResolvingSPARQL()
-    {
-        return resolvingSPARQL;
     }
     
     public boolean isResolvingMapped()
