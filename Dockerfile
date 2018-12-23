@@ -1,4 +1,4 @@
-FROM maven:3.5.4-jdk-8 as maven
+FROM maven:3.5.3-jdk-8 as maven
 
 ### Clone and build AtomGraph core (2.0.1-SNAPSHOT is not on Maven central)
 
