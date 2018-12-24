@@ -1,8 +1,6 @@
 FROM maven:3.5.3-jdk-8 as maven
 
-### Clone and build AtomGraph core (2.0.1-SNAPSHOT is not on Maven central)
-
-RUN mkdir -p /usr/src/Core
+### Clone and build AtomGraph Core (2.0.1-SNAPSHOT is not on Maven central)
 
 WORKDIR /usr/src
 
@@ -13,8 +11,6 @@ WORKDIR /usr/src/Core
 RUN mvn clean install
 
 ### Build AtomGraph Web-Client
-
-RUN mkdir -p /usr/src/Web-Client
 
 WORKDIR /usr/src/Web-Client
 

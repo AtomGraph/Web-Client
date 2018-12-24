@@ -103,7 +103,6 @@ public class Application extends javax.ws.rs.core.Application
      * @param servletConfig
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
-     * @throws javax.xml.transform.TransformerConfigurationException XSLT stylesheet error
      */
     public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException
     {
@@ -192,12 +191,9 @@ public class Application extends javax.ws.rs.core.Application
         singletons.add(new ClientHandlerExceptionMapper());
         singletons.add(new AuthenticationExceptionMapper());
         singletons.add(new ModelXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
-//        singletons.add(new TemplatesProvider(((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)),
-//                getDataManager(), getStylesheet(), isCacheStylesheet())); // loads XSLT stylesheet
         
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
     }
-
         
     /**
      * Provides XML source from filename
