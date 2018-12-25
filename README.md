@@ -1,29 +1,20 @@
-AtomGraph Web-Client is a Java client for AtomGraph Processor Linked Data applications. If you have a triplestore with RDF
-data that you want to publish and/or build an end-user application on it, or would like to explore Linked Open
-Data, Client provides the components you need. It is stable yet actively maintained software, conveniently available on
-Maven as a single dependency for your project.
+AtomGraph Web-Client is a Linked Data web client. If you have a triplestore with RDF data that you want to publish
+and/or build an end-user application on it, or would like to explore Linked Open Data, Web-Client provides the components you need.
+
+Web-Client renders (X)HTML user interface by transforming ["plain" RDF/XML](https://jena.apache.org/documentation/io/rdf-output.html#rdfxml) (without nested resource descriptions)
+using [XSLT 2.0](https://www.w3.org/TR/xslt20/) stylesheets.
+
+![AtomGraph Web-Client screenshot](https://raw.github.com/AtomGraph/Web-Client/master/screenshot.jpg)
+
+Features
+========
 
 What AWC provides for users as out-of-the-box generic features:
-* declarative control of published data using URI and SPARQL templates
-* multilingual, responsive user interface built with Twitter Bootstrap
-* multiple rendering modes (currently item/list/table)
-* pagination on container resources
-* SPARQL endpoint with interactive results
 * loading RDF data from remote Linked Data sources
-* HTTP content negotiation and caching
-
-What AWC can be quickly extended to do:
-* render custom layouts/designs by overriding XSLT templates
-* store RDF data directly from HTML forms into the triplestore
-* control RDF input quality with SPARQL-based constraints
-* search by dynamically adding filters to the query
-* faceted browsing by dynamically binding variable values in the query
-* SPARQL result visualizations using different JavaScript APIs
-* ordering pages by property columns
-
-AtomGraph's direct use of semantic technologies results in extemely extensible and flexible design and leads the
-way towards declarative Web development. You can forget all about broken hyperlinks and concentrate on building
-great apps on quality data.
+* multilingual, responsive user interface built with Twitter Bootstrap (currently [2.3.2](https://getbootstrap.com/2.3.2/))
+* multiple RDF rendering modes (currently item/list/table/map)
+* RDF editing mode based on [RDF/POST](http://www.lsrn.org/semweb/rdfpost.html) encoding
+* SPARQL endpoint with interactive results
 
 Getting started
 ===============
@@ -41,7 +32,21 @@ Usage
 Docker
 ------
 
-    docker run -p 8081:8080 atomgraph/web-client
+Processor is available from Docker Hub as [`atomgraph/web-client](https://hub.docker.com/r/atomgraph/web-client/) image.
+It accepts the following environment variables (that become webapp context parameters):
+
+<dl>
+    <dt><code>STYLESHEET</code></dt>
+    <dd>Custom XSLT stylesheet</dd>
+    <dd>URI, optional</dd>
+    <dt><code>RESOLVING_UNCACHED</code></dt>
+    <dd>If `true`, the stylesheet will attempt to load RDF resources by dereferencing URIs in the main data to improve the UX</dd>
+    <dd>boolean, optional</dd>
+</dl>
+
+Run Web-Client with the [default XSLT stylesheet](blob/master/src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
+
+    docker run -p 8080:8080 atomgraph/web-client
 
 Maven
 -----

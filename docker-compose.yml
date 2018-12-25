@@ -1,8 +1,0 @@
-version: "3"
-services:
-  web-client:
-    image: atomgraph/web-client
-    ports:
-      - 8080:8080
-    volumes:
-      - ./src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2:/usr/local/tomcat/webapps/ROOT/static/com/atomgraph/client/xsl/bootstrap/2.3.2
