@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2012 Martynas Jusevičius <martynas@atomgraph.com>
+Copyright 2018 Martynas Jusevičius <martynas@atomgraph.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY schema "https://schema.org/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -25,14 +25,14 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:rdfs="&rdfs;"
+xmlns:schema="&schema;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdfs:label | @rdfs:label" mode="ac:label">
+    <xsl:template match="schema:name | @schema:name" mode="ac:label">
         <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment" mode="ac:description">
+    <xsl:template match="schema:description" mode="ac:description">
         <xsl:value-of select="."/>
     </xsl:template>
     

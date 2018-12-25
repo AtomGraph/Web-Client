@@ -32,60 +32,28 @@ Getting started
 * [installing Web-Client](../../wiki/Installation)
 * [extending Web-Client](../../wiki/Extending-Web-Client)
 * [configuring Web-Client](../../wiki/Configuration)
-* [JavaDoc](http://graphity.github.io/graphity-client/apidocs)
 
 For full documentation, see the [wiki index](../../wiki).
+
+Usage
+=====
+
+Docker
+------
+
+    docker run -p 8081:8080 atomgraph/web-client
 
 Maven
 -----
 
-AtomGraph artifacts [`graphity-client`](http://search.maven.org/#browse%7C-605419744), [`graphity-processor`](http://search.maven.org/#browse%7C2124019457)
-and [`graphity-core`](http://search.maven.org/#browse%7C57568460) are released on Maven under the
-[`org.graphity`](http://search.maven.org/#browse%7C1400901156) group ID.
-
-You should choose AtomGraph Web-Client as it includes both XSLT and Linked Data functionality, making it useful for end-user as well as server applications.
-Dependencies to other AtomGraph artifacts will be resolved automagically during the Maven build process. GC is released as WAR by default, but the JAR with
-classes is attached, and you can address it as a separate artifact:
-
-        <dependency>
-            <groupId>com.atomgraph</groupId>
-            <artifactId>client</artifactId>
-            <version>1.1.3</version>
-            <classifier>classes</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.atomgraph</groupId>
-            <artifactId>client</artifactId>
-            <version>1.1.3</version>
-            <type>war</type>
-        </dependency>
-
-See more about [installation](../../wiki/Installation).
-
-No permanent storage!
----------------------
-
-AtomGraph Client does *not* include permanent RDF storage. By default it is configured to read the dataset from a file, therefore creating/updating data will have no effect.
-
-In order to store data permanently, you need to set up a [triplestore](http://en.wikipedia.org/wiki/Triplestore) and configure the webapp with its SPARQL endpoint.
-For open-source, we recommend trying Jena's [TDB](http://jena.apache.org/documentation/tdb/); for commercial, see [Dydra](http://dydra.com).
-
-Demonstration
-=============
-
-![AtomGraph Web-Client screenshot](https://raw.github.com/AtomGraph/Web-Client/master/screenshot.jpg)
-
-An instance of AtomGraph Web-Client runs for demonstration purposes on [Linked Data Hub](http://linkeddatahub.com).
-See the DBPedia Linked Data description of Sir [Tim Berners-Lee](http://linkeddatahub.com/?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FTim_Berners-Lee).
-
-_Note: the server is not production-grade and DBPedia is often unstable._
+Web-Client will be released on Maven central when it reaches the 2.1 version.
 
 Support
 =======
 
 Please [report issues](../../issues) if you've encountered a bug or have a feature request.
 
-Commercial AtomGraph consulting, development, and support are available from [AtomGraph](http://atomgraph.com).
+Commercial AtomGraph consulting, development, and support are available from [AtomGraph](https://atomgraph.com).
 
 Community
 =========
