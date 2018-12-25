@@ -32,7 +32,7 @@ Usage
 Docker
 ------
 
-Processor is available from Docker Hub as [`atomgraph/web-client](https://hub.docker.com/r/atomgraph/web-client/) image.
+Processor is available from Docker Hub as [`atomgraph/web-client`](https://hub.docker.com/r/atomgraph/web-client/) image.
 It accepts the following environment variables (that become webapp context parameters):
 
 <dl>
@@ -40,8 +40,8 @@ It accepts the following environment variables (that become webapp context param
     <dd>Custom XSLT stylesheet</dd>
     <dd>URI, optional</dd>
     <dt><code>RESOLVING_UNCACHED</code></dt>
-    <dd>If `true`, the stylesheet will attempt to load RDF resources by dereferencing URIs in the main data to improve the UX</dd>
-    <dd>boolean, optional</dd>
+    <dd>If <code>true</code>, the stylesheet will attempt to load RDF resources by dereferencing URIs in the main data to improve the UX</dd>
+    <dd><code>true</code>/<code>false</code>, optional</dd>
 </dl>
 
 Run Web-Client with the [default XSLT stylesheet](blob/master/src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
