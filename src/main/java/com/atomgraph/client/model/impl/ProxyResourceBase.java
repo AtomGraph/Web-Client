@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
+import com.atomgraph.client.filter.RedirectFilter;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
@@ -94,7 +95,7 @@ public class ProxyResourceBase implements Resource
         this.mediaTypes = mediaTypes;
         this.accept = accept;
 
-        //client.setFollowRedirects(false);
+        // client.setFollowRedirects(true); // doesn't work: https://stackoverflow.com/questions/29955951/jersey-is-not-following-302-redirects/29957936
         if (uri.getFragment() != null)
             try
             {
@@ -107,6 +108,7 @@ public class ProxyResourceBase implements Resource
             }
         
         webResource = client.resource(uri);
+        webResource.addFilter(new RedirectFilter());
         linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
         this.httpServletRequest = httpServletRequest;
     }
