@@ -30,6 +30,7 @@ import org.apache.jena.riot.RDFWriterRegistry;
 import com.atomgraph.client.locator.PrefixMapper;
 import com.atomgraph.client.mapper.ClientErrorExceptionMapper;
 import com.atomgraph.client.mapper.NotFoundExceptionMapper;
+import com.atomgraph.client.mapper.RiotExceptionMapper;
 import com.atomgraph.client.mapper.jersey.ClientHandlerExceptionMapper;
 import com.atomgraph.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import com.atomgraph.client.model.impl.ProxyResourceBase;
@@ -186,6 +187,7 @@ public class Application extends javax.ws.rs.core.Application
         singletons.add(new ClientProvider(getClient()));
         singletons.add(new com.atomgraph.core.provider.DataManagerProvider(getDataManager()));
         singletons.add(new NotFoundExceptionMapper());
+        singletons.add(new RiotExceptionMapper());
         singletons.add(new ClientErrorExceptionMapper());
         singletons.add(new UniformInterfaceExceptionMapper());
         singletons.add(new ClientHandlerExceptionMapper());

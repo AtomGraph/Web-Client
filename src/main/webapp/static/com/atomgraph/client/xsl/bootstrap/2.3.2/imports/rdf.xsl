@@ -25,15 +25,7 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdf:type" mode="bs2:PropertyList"/>
-
-    <!--
-    <xsl:template match="@rdf:resource" mode="bs2:TypeList" priority="1">
-        <li>
-            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-        </li>
-    </xsl:template>
-    -->
+    <xsl:template match="rdf:type[@rdf:resource]" mode="bs2:PropertyList"/>
 
     <!-- necessary for hiding class description, which addClass() added to the constructor document -->
     <xsl:template match="rdf:type[key('resources', (@rdf:resource, @rdf:nodeID))]" mode="bs2:FormControl" priority="2">
@@ -42,7 +34,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
         <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
             <xsl:with-param name="type" select="'hidden'"/>
-            <xsl:with-param name="traversed-ids" select="(., (@rdf:resource, @rdf:nodeID))" tunnel="yes"/>            
+            <xsl:with-param name="traversed-ids" select="(., (@rdf:resource, @rdf:nodeID))" tunnel="yes"/>
         </xsl:apply-templates>
         <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
             <xsl:with-param name="type" select="'hidden'"/>
