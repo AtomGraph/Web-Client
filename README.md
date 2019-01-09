@@ -44,7 +44,7 @@ It accepts the following environment variables (that become webapp context param
     <dd><code>true</code>/<code>false</code>, optional</dd>
 </dl>
 
-Run Web-Client with the [default XSLT stylesheet](blob/master/src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
+Run Web-Client with the [default XSLT stylesheet](src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
 
     docker run -p 8080:8080 atomgraph/web-client
 

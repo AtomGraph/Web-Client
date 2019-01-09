@@ -334,14 +334,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="$current" mode="#current"/>
         </title>
     </xsl:template>
-
-    <!--
-    <xsl:template match="*[key('resources', ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource]" mode="xhtml:Title" priority="3">
-        <xsl:next-match>
-            <xsl:with-param name="forClass" select="key('resources', ldt:arg/@rdf:resource)[spl:predicate/@rdf:resource = '&dh;forClass']/rdf:value/@rdf:resource" tunnel="yes"/>
-        </xsl:next-match>
-    </xsl:template>
-    -->
     
     <xsl:template match="*[key('resources', ac:uri/@rdf:resource)]" mode="xhtml:Title" priority="1">
         <xsl:apply-templates select="key('resources', ac:uri/@rdf:resource)" mode="#current"/>
@@ -378,7 +370,7 @@ exclude-result-prefixes="#all">
 
     <!-- MAIN MODE -->
 
-    <!--
+    <!-- always show errors in block mode -->
     <xsl:template match="rdf:RDF[not(key('resources', $a:absolutePath))][key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Main" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span12'" as="xs:string?"/>
@@ -394,7 +386,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates mode="bs2:Block"/>
         </div>
     </xsl:template>
-    -->
     
     <xsl:template match="rdf:RDF" mode="bs2:Main">
         <xsl:param name="id" as="xs:string?"/>
@@ -757,6 +748,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
         
+    <!--
     <xsl:template match="*[@rdf:about][@rdf:about = $a:absolutePath]" mode="bs2:Right" priority="1">
         <xsl:for-each-group select="*[key('resources', @rdf:resource | @rdf:nodeID)]" group-by="concat(namespace-uri(), local-name())">
             <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
@@ -775,6 +767,7 @@ exclude-result-prefixes="#all">
             </div>
         </xsl:for-each-group>
     </xsl:template>
+    -->
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
     
