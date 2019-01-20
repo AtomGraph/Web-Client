@@ -64,10 +64,14 @@ exclude-result-prefixes="#all">
     <!-- OPTION MODE -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Option">
+        <xsl:param name="value" select="@rdf:about | @rdf:nodeID" as="xs:string?"/>
         <xsl:param name="selected" as="xs:boolean?"/>
         <xsl:param name="disabled" as="xs:boolean?"/>
 
-        <option value="{@rdf:about | @rdf:nodeID}">
+        <option>
+            <xsl:if test="$value">
+                <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+            </xsl:if>
             <xsl:if test="$selected">
                 <xsl:attribute name="selected">selected</xsl:attribute>
             </xsl:if>
