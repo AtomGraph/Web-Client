@@ -59,6 +59,7 @@ exclude-result-prefixes="xs">
         </xsl:template>
         
         <xsl:template match="rdf:RDF" mode="ac:DataTable">
+            <xsl:param name="resource-ids" select="false()" as="xs:boolean" tunnel="yes"/>
             <xsl:param name="property-uris" as="xs:anyURI*" tunnel="yes"/>
             <xsl:param name="properties" as="element()*">
                 <xsl:choose>
@@ -83,7 +84,7 @@ exclude-result-prefixes="xs">
 {
         "cols": [
                 <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
-                <xsl:if test="empty($properties)">
+                <xsl:if test="$resource-ids">
                     { 
                             "id": "<xsl:value-of select="generate-id()"/>",
                             "type": "string"
@@ -128,12 +129,13 @@ exclude-result-prefixes="xs">
         <!-- subject -->
 
         <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:DataTable">
+            <xsl:param name="resource-ids" select="false()" as="xs:boolean" tunnel="yes"/>
             <xsl:param name="properties" as="element()*"/>
 
         {
                 "c": [
                 <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
-                <xsl:if test="empty($properties)">
+                <xsl:if test="$resource-ids">
                     {
                         "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
                     },
