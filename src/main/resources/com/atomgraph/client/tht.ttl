@@ -16,7 +16,7 @@
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 : a ldt:Ontology ;
-    owl:imports sp: ;
+    owl:imports ct:, sp: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Topic hierarchy templates" ;
     rdfs:comment "Document hierarchy with topic resources" ;
