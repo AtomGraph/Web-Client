@@ -5,21 +5,18 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix http:   <http://www.w3.org/2011/http#> .
 @prefix ldt:	<https://www.w3.org/ns/ldt#> .
 @prefix ct:	<https://www.w3.org/ns/ldt/core/templates#> .
-@prefix dht:	<https://www.w3.org/ns/ldt/document-hierarchy/templates#> .
 @prefix dh:	<https://www.w3.org/ns/ldt/document-hierarchy/domain#> .
 @prefix sd:	<http://www.w3.org/ns/sparql-service-description#> .
 @prefix sp:	<http://spinrdf.org/sp#> .
-@prefix spl:    <http://spinrdf.org/spl#> .
 @prefix dct:	<http://purl.org/dc/terms/> .
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix sioc:	<http://rdfs.org/sioc/ns#> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
 : a ldt:Ontology ;
-    owl:imports dht:, sp: ;
+    owl:imports sp: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Topic hierarchy templates" ;
     rdfs:comment "Document hierarchy with topic resources" ;
@@ -30,45 +27,14 @@
 
 # TEMPLATES
 
-:Container a ldt:Template ;
-    ldt:extends dht:Container ;
-    ldt:query :DescribeWithChildrenTopics ;
-    ldt:update :DeleteWithTopic ;
-    rdfs:label "Container" ;
-    rdfs:isDefinedBy : .
-
-:Item a ldt:Template ;
+:Document a ldt:Template ;
     ldt:extends ct:Document ;
     ldt:query :DescribeWithTopic ;
     ldt:update :DeleteWithTopic ;
-    rdfs:label "Item" ;
+    rdfs:label "Document" ;
     rdfs:isDefinedBy : .
 
 # COMMANDS
-
-:DescribeWithChildrenTopics a sp:Describe, sp:Query ;
-    sp:text """PREFIX  sioc: <http://rdfs.org/sioc/ns#>
-PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
-
-DESCRIBE ?this ?primaryTopic ?child ?childPrimaryTopic
-WHERE
-  { ?this ?p ?o
-    OPTIONAL
-      { ?this foaf:primaryTopic ?primaryTopic }
-    OPTIONAL
-      { { SELECT DISTINCT ?child ?childPrimaryTopic
-          WHERE
-            {   { ?child sioc:has_parent ?this }
-              UNION
-                { ?child sioc:has_container ?this }
-              OPTIONAL
-                { ?child foaf:primaryTopic ?childPrimaryTopic }
-            }
-        }
-      }
-  }""" ;
-    rdfs:label "Describe with children" ;
-    rdfs:isDefinedBy : .
 
 :DescribeWithTopic a sp:Describe, sp:Query ;
     sp:text """PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
