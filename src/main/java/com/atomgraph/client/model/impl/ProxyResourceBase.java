@@ -50,6 +50,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.jena.query.Dataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -214,7 +215,7 @@ public class ProxyResourceBase implements Resource
 
     @POST
     @Override
-    public Response post(Model model)
+    public Response post(Dataset dataset)
     {
         if (log.isDebugEnabled()) log.debug("POSTing Model to URI: {}", getWebResource().getURI());
         ClientResponse cr = null;
@@ -222,7 +223,7 @@ public class ProxyResourceBase implements Resource
         {
             cr = webResource.type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
                 accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                post(ClientResponse.class, model);
+                post(ClientResponse.class, dataset);
             Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
             if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
             return rb.build();
@@ -236,12 +237,12 @@ public class ProxyResourceBase implements Resource
     /**
      * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
      * 
-     * @param model RDF payload
+     * @param dataset RDF payload
      * @return response
      */
     @PUT
     @Override
-    public Response put(Model model)
+    public Response put(Dataset dataset)
     {
         if (log.isDebugEnabled()) log.debug("PUTting Model to URI: {}", getWebResource().getURI());
         ClientResponse cr = null;
@@ -249,7 +250,7 @@ public class ProxyResourceBase implements Resource
         {
             cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
                 accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                put(ClientResponse.class, model);
+                put(ClientResponse.class, dataset);
             ResponseBuilder rb = Response.status(cr.getStatusInfo());
             if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
             return rb.build();
