@@ -64,6 +64,14 @@ public final class AC
 
     public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
 
+    public static final DatatypeProperty limit = m_model.createDatatypeProperty( NS + "limit" );
+
+    public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
+    
+    public static final DatatypeProperty order_by = m_model.createDatatypeProperty( NS + "order-by" );
+    
+    public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
+
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
     public static final ObjectProperty sitemap = m_model.createObjectProperty( NS + "sitemap" );
