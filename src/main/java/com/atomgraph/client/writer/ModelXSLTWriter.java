@@ -143,7 +143,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
                     resolver((UnparsedTextURIResolver)getDataManager()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
-                    //getState(model),
+                    model,
                     headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
@@ -266,7 +266,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public XSLTBuilder setParameters(XSLTBuilder builder, MultivaluedMap<String, Object> headerMap) throws TransformerException
+    public XSLTBuilder setParameters(XSLTBuilder builder, Model model, MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
