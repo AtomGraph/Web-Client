@@ -338,43 +338,6 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             }
             
             builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), modes);
-
-            // pagination parameters
-            if (getUriInfo().getQueryParameters().containsKey(AC.limit.getLocalName()))
-            {
-                try
-                {
-                    Integer limit = Integer.valueOf(getUriInfo().getQueryParameters().getFirst(AC.limit.getLocalName()));
-                    builder.parameter("{" + AC.limit.getNameSpace() + "}" + AC.limit.getLocalName(), limit);
-                }
-                catch (NumberFormatException ex)
-                {
-                    throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
-                }
-            }
-            if (getUriInfo().getQueryParameters().containsKey(AC.offset.getLocalName()))
-            {
-                try
-                {
-                    Integer offset = Integer.valueOf(getUriInfo().getQueryParameters().getFirst(AC.offset.getLocalName()));
-                    builder.parameter("{" + AC.offset.getNameSpace() + "}" + AC.offset.getLocalName(), offset);
-                }
-                catch (NumberFormatException ex)
-                {
-                    throw new WebApplicationException(ex, Response.Status.BAD_REQUEST);
-                }
-            }
-            if (getUriInfo().getQueryParameters().containsKey(AC.order_by.getLocalName()))
-            {
-                String orderBy = getUriInfo().getQueryParameters().getFirst(AC.order_by.getLocalName());
-                builder.parameter("{" + AC.order_by.getNameSpace() + "}" + AC.order_by.getLocalName(), orderBy);
-            }
-            if (getUriInfo().getQueryParameters().containsKey(AC.desc.getLocalName()))
-            {
-                Boolean desc = Boolean.valueOf(getUriInfo().getQueryParameters().getFirst(AC.desc.getLocalName()));
-                builder.parameter("{" + AC.desc.getNameSpace() + "}" + AC.desc.getLocalName(), desc);
-            }
-            
             
             // workaround for Google Maps and Saxon-CE
             // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
