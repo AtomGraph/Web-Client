@@ -35,7 +35,7 @@ import com.atomgraph.client.mapper.jersey.ClientHandlerExceptionMapper;
 import com.atomgraph.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import com.atomgraph.client.model.impl.ProxyResourceBase;
 import com.atomgraph.client.provider.DataManagerProvider;
-import com.atomgraph.client.writer.ModelXSLTWriter;
+import com.atomgraph.client.writer.DatasetXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestReader;
@@ -192,7 +192,7 @@ public class Application extends javax.ws.rs.core.Application
         singletons.add(new UniformInterfaceExceptionMapper());
         singletons.add(new ClientHandlerExceptionMapper());
         singletons.add(new AuthenticationExceptionMapper());
-        singletons.add(new ModelXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
+        singletons.add(new DatasetXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
         
         if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
     }

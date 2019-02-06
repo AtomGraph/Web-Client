@@ -17,6 +17,7 @@
 package com.atomgraph.client.exception;
 
 import com.sun.jersey.api.client.ClientResponse;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 
 /**
@@ -27,17 +28,17 @@ public class ClientErrorException extends RuntimeException
 {
     
     transient private final ClientResponse cr;
-    transient private final Model model;
+    transient private final Dataset dataset;
     
     public ClientErrorException(ClientResponse cr)
     {
         this(cr, null);
     }
     
-    public ClientErrorException(ClientResponse cr, Model model)
+    public ClientErrorException(ClientResponse cr, Dataset dataset)
     {
         this.cr = cr;
-        this.model = model;
+        this.dataset = dataset;
     }
     
     public ClientResponse getClientResponse()
@@ -47,7 +48,7 @@ public class ClientErrorException extends RuntimeException
     
     public Model getModel()
     {
-        return model;
+        return dataset.getDefaultModel();
     }
     
 }

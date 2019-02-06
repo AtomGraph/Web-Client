@@ -16,7 +16,6 @@
  */
 package com.atomgraph.client.model.impl;
 
-import org.apache.jena.rdf.model.Model;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -43,7 +42,7 @@ import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
 import com.atomgraph.core.exception.NotFoundException;
-import com.atomgraph.core.io.ModelProvider;
+import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.Link;
 import java.net.URISyntaxException;
@@ -129,7 +128,7 @@ public class ProxyResourceBase implements Resource
     
     public List<MediaType> getReadableMediaTypes()
     {
-        return getMediaTypes().getReadable(Model.class);
+        return getMediaTypes().getReadable(Dataset.class);
     }
     
     public List<MediaType> getWritableMediaTypes()
@@ -137,13 +136,11 @@ public class ProxyResourceBase implements Resource
         // restrict writable MediaTypes to the requested one (usually by RDF export feature)
         if (getAcceptMediaType() != null) return Arrays.asList(getAcceptMediaType());
 
-        return getMediaTypes().getWritable(Model.class);
+        return getMediaTypes().getWritable(Dataset.class);
     }
     
     /**
-     * Handles GET request and returns response with RDF description of this or remotely loaded resource.
-     * If <samp>uri</samp> query string parameter is present, resource is loaded from the specified remote URI and
-     * its RDF representation is returned. Otherwise, local resource with request URI is used.
+     * Forwards GET request and returns response from remote resource.
      * 
      * @return response
      */
@@ -173,15 +170,15 @@ public class ProxyResourceBase implements Resource
                 }
 
                 if (cr.hasEntity())
-                    throw new ClientErrorException(cr, cr.getEntity(Model.class));
+                    throw new ClientErrorException(cr, cr.getEntity(Dataset.class));
                 else 
                     throw new ClientErrorException(cr);
             }
 
-            cr.getHeaders().putSingle(ModelProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to ModelProvider
+            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to DatasetProvider
             
-            if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", getWebResource().getURI());
-            Model description = cr.getEntity(Model.class);
+            if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebResource().getURI());
+            Dataset description = cr.getEntity(Dataset.class);
 
             com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
             ResponseBuilder rb = response.getResponseBuilder(description,
@@ -213,19 +210,25 @@ public class ProxyResourceBase implements Resource
         }
     }
 
+    /**
+     * Forwards POST request with RDF dataset body and returns RDF response from remote resource.
+     * 
+     * @param dataset
+     * @return response
+     */
     @POST
     @Override
     public Response post(Dataset dataset)
     {
-        if (log.isDebugEnabled()) log.debug("POSTing Model to URI: {}", getWebResource().getURI());
+        if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebResource().getURI());
         ClientResponse cr = null;
         try
         {
             cr = webResource.type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
-                accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
                 post(ClientResponse.class, dataset);
             Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
+            if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
             return rb.build();
         }
         finally
@@ -235,7 +238,7 @@ public class ProxyResourceBase implements Resource
     }
 
     /**
-     * Handles PUT method, stores the submitted RDF model in the default graph of default SPARQL endpoint, and returns response.
+     * Forwards PUT request with RDF dataset body and returns response from remote resource.
      * 
      * @param dataset RDF payload
      * @return response
@@ -244,15 +247,15 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response put(Dataset dataset)
     {
-        if (log.isDebugEnabled()) log.debug("PUTting Model to URI: {}", getWebResource().getURI());
+        if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebResource().getURI());
         ClientResponse cr = null;
         try
         {
             cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
-                accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
                 put(ClientResponse.class, dataset);
             ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
+            if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
             return rb.build();
         }
         finally
@@ -261,19 +264,23 @@ public class ProxyResourceBase implements Resource
         }
     }
     
+    /**
+     * Forwards DELETE request and returns response from remote resource.
+     * @return response
+     */
     @DELETE
     @Override
     public Response delete()
     {
-        if (log.isDebugEnabled()) log.debug("DELETEing Model from URI: {}", getWebResource().getURI());
+        if (log.isDebugEnabled()) log.debug("DELETEing Dataset from URI: {}", getWebResource().getURI());
         ClientResponse cr = null;
         try
         {
             cr = getWebResource().
-                accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
                 delete(ClientResponse.class);
             ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntity(Model.class)); // cr.getEntityInputStream()
+            if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
             return rb.build();
         }
         finally

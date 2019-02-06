@@ -65,6 +65,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -77,15 +78,15 @@ import org.slf4j.LoggerFactory;
  * Needs to be registered in the application.
  * 
  * @author Martynas Jusevičius <martynas@atomgraph.com>
- * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/rdf/model/Model.html">Model</a>
- * @see <a href="http://jsr311.java.net/nonav/javadoc/javax/ws/rs/ext/MessageBodyWriter.html">MessageBodyWriter</a>
+ * @see org.apache.jena.query.Dataset
+ * @see javax.ws.rs.ext.MessageBodyWriter
  */
 @Provider
 @Singleton
-@Produces({MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML}) // MediaType.APPLICATION_XML ?
-public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphRIOT?
+@Produces({MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML})
+public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 {
-    private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
+    private static final Logger log = LoggerFactory.getLogger(DatasetXSLTWriter.class);
 
     private static final Set<String> NAMESPACES;
     static
@@ -117,7 +118,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
      * @param ontModelSpec ontology model specification
      * @see com.atomgraph.client.util.XSLTBuilder
      */
-    public ModelXSLTWriter(Templates templates, OntModelSpec ontModelSpec)
+    public DatasetXSLTWriter(Templates templates, OntModelSpec ontModelSpec)
     {
         if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
@@ -126,7 +127,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     }
     
     @Override
-    public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException
+    public void writeTo(Dataset dataset, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException
     {
         if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
 
@@ -137,13 +138,13 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
             //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
             RDFWriter writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
-            writer.write(model, baos, null);
+            writer.write(dataset.getDefaultModel(), baos, null);
             
             setParameters(com.atomgraph.client.util.saxon.XSLTBuilder.newInstance(getTransformerFactory()).
                     resolver((UnparsedTextURIResolver)getDataManager()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
-                    model,
+                    dataset,
                     headerMap).
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream)).
@@ -156,10 +157,10 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public void write(Model model, OutputStream entityStream) throws TransformerException
+    public void write(Dataset dataset, OutputStream entityStream) throws TransformerException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        model.write(baos, RDFLanguages.RDFXML.getName(), null);
+        dataset.getDefaultModel().write(baos, RDFLanguages.RDFXML.getName(), null);
 
         XSLTBuilder.newInstance(getTransformerFactory()).
             stylesheet(getTemplates()).
@@ -172,11 +173,11 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
-        return Model.class.isAssignableFrom(type);
+        return Dataset.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    public long getSize(Dataset dataset, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
         return -1;
     }
@@ -266,7 +267,7 @@ public class ModelXSLTWriter implements MessageBodyWriter<Model> // WriterGraphR
         }
     }
 
-    public XSLTBuilder setParameters(XSLTBuilder builder, Model model, MultivaluedMap<String, Object> headerMap) throws TransformerException
+    public XSLTBuilder setParameters(XSLTBuilder builder, Dataset dataset, MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
