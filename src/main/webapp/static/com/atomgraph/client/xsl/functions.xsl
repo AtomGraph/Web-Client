@@ -63,7 +63,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="classes" as="xs:anyURI*"/>
         <xsl:param name="base" as="xs:anyURI"/>
 
-        <xsl:sequence select="mxw:getConstructedSource($ontology, $classes, $base)" xmlns:mxw="com.atomgraph.client.writer.ModelXSLTWriter"/>
+        <xsl:sequence select="mxw:getConstructedSource($ontology, $classes, $base)" xmlns:mxw="com.atomgraph.client.writer.DatasetXSLTWriter"/>
     </xsl:function>
     
     <!-- LABEL MODE -->
