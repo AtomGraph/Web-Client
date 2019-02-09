@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.mapper.ExceptionMapperBase;
+import org.apache.jena.query.DatasetFactory;
 
 /**
  *
@@ -34,8 +35,8 @@ public class ClientHandlerExceptionMapper extends ExceptionMapperBase implements
     public Response toResponse(ClientHandlerException ex)
     {
         return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR, null).
-                getModel(), getVariants()).
+            getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR, null).
+                getModel()), getVariants()).
             status(Response.Status.INTERNAL_SERVER_ERROR).
             build();
     }

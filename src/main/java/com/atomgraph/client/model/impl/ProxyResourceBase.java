@@ -49,6 +49,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,12 +179,6 @@ public class ProxyResourceBase implements Resource
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to DatasetProvider
             
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebResource().getURI());
-            Dataset description = cr.getEntity(Dataset.class);
-
-            com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-            ResponseBuilder rb = response.getResponseBuilder(description,
-                    response.getVariantListBuilder(getWritableMediaTypes(), new ArrayList(), new ArrayList()).
-                            add().build());
 
             // move headers to HypermediaFilter?
             if (cr.getHeaders().get("Link") != null)
@@ -202,7 +197,16 @@ public class ProxyResourceBase implements Resource
                     }
                 }
 
-            return rb.build();
+            
+            com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
+            List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(), new ArrayList(), new ArrayList()).add().build();
+
+            Variant variant = getRequest().selectVariant(variants);
+            Dataset description = cr.getEntity(Dataset.class);
+            if (MediaTypes.isTriples(variant.getMediaType()))
+                return response.getResponseBuilder(description.getDefaultModel(), variants).build(); // Variant will be matched once again
+            else
+                return response.getResponseBuilder(description, variants).build();
         }
         finally
         {

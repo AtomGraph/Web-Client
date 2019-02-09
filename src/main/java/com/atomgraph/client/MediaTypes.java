@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 
@@ -40,12 +41,13 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
         READABLE = coreTypes.getReadable();
         
         // add XHTML as writable MediaType
-        List<MediaType> writableModelTypes = new ArrayList<>(coreTypes.getWritable(Model.class));
+        List<MediaType> writableDatasetTypes = new ArrayList<>(coreTypes.getWritable(Dataset.class));
         MediaType xhtmlXml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
-        writableModelTypes.add(0, xhtmlXml);
+        writableDatasetTypes.add(0, xhtmlXml);
         
         WRITABLE = new HashMap<>();
-        WRITABLE.put(Model.class, Collections.unmodifiableList(writableModelTypes));
+        WRITABLE.put(Dataset.class, Collections.unmodifiableList(writableDatasetTypes));
+        WRITABLE.put(Model.class, coreTypes.getWritable(Model.class));
         WRITABLE.put(ResultSet.class, coreTypes.getWritable(ResultSet.class));
     }
     

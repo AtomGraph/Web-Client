@@ -272,8 +272,9 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
-        builder.parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
-            parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
+        builder.
+            //parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
+            //parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
             parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
             parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
             parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
@@ -294,10 +295,9 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                 OntModel sitemap = getOntModel(ontologyURI.toString());
                 builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
 
-                URI baseURI = (URI)getHttpServletRequest().getAttribute(LDT.base.getURI());
-                if (baseURI != null)
+                if (getBaseUri() != null)
                 {
-                    builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), baseURI);
+                    builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), getBaseUri());
 
                     String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
                     if (forClassURI != null)
@@ -309,13 +309,12 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                     }
                 }
 
-                URI templateURI = (URI)getHttpServletRequest().getAttribute(LDT.template.getURI());
-                if (templateURI != null)
+                if (getTemplateURI() != null)
                 {
-                    builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), templateURI);
+                    builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), getTemplateURI());
                     if (modes.isEmpty()) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
                     {
-                        Resource template = sitemap.getResource(templateURI.toString());
+                        Resource template = sitemap.getResource(getTemplateURI().toString());
 
                         StmtIterator it = template.listProperties(AC.mode);
                         try
@@ -466,6 +465,16 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         }
 
         return getSource(instances);
+    }
+    
+    public URI getBaseUri()
+    {
+        return (URI)getHttpServletRequest().getAttribute(LDT.base.getURI()); // set in ProxyResourceBase
+    }
+    
+    public URI getTemplateURI()
+    {
+        return (URI)getHttpServletRequest().getAttribute(LDT.template.getURI()); // set in ProxyResourceBase
     }
     
     public UriInfo getUriInfo()

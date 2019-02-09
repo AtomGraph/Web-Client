@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.core.exception.NotFoundException;
+import org.apache.jena.query.DatasetFactory;
 
 /**
  * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.
@@ -35,9 +36,9 @@ public class NotFoundExceptionMapper extends ExceptionMapperBase implements Exce
     public Response toResponse(NotFoundException ex)
     {
         return Response.status(Response.Status.NOT_FOUND).
-                entity(toResource(ex, Response.Status.NOT_FOUND,
+                entity(DatasetFactory.create(toResource(ex, Response.Status.NOT_FOUND,
                         ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#NotFound")).
-                    getModel()).
+                    getModel())).
                 build();
     }
     

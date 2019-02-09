@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.mapper.ExceptionMapperBase;
+import org.apache.jena.query.DatasetFactory;
 
 /**
  *
@@ -34,8 +35,8 @@ public class UniformInterfaceExceptionMapper extends ExceptionMapperBase impleme
     public Response toResponse(UniformInterfaceException ex)
     {
         return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null).
-                getModel(), getVariants()).
+            getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null).
+                getModel()), getVariants()).
             status(ex.getResponse().getStatus()).
             build();
     }
