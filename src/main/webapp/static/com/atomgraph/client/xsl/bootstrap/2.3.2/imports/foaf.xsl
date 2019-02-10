@@ -56,7 +56,7 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
         </xsl:call-template>
 
-        <xsl:if test="not($type = 'hidden') and $type-label">                
+        <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Literal</span>
         </xsl:if>
     </xsl:template>
@@ -75,7 +75,7 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
         </xsl:call-template>
 
-        <xsl:if test="not($type = 'hidden') and $type-label">                
+        <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Literal</span>
         </xsl:if>
     </xsl:template>

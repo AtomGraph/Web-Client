@@ -236,7 +236,7 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="." mode="bs2:ActionBar"/>
         </div>
-    </xsl:template>    
+    </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="bs2:ActionBar">
         <xsl:param name="id" as="xs:string?"/>

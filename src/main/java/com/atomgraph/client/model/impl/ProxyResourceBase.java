@@ -51,6 +51,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,21 +124,21 @@ public class ProxyResourceBase implements Resource
     public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
     {
         return webResource.getRequestBuilder().
-                accept(getReadableMediaTypes().toArray(new MediaType[getReadableMediaTypes().size()])).
+                accept(getReadableMediaTypes(Dataset.class).toArray(new MediaType[getReadableMediaTypes(Dataset.class).size()])).
                 get(ClientResponse.class);
     }
     
-    public List<MediaType> getReadableMediaTypes()
+    public List<MediaType> getReadableMediaTypes(Class clazz)
     {
-        return getMediaTypes().getReadable(Dataset.class);
+        return getMediaTypes().getReadable(clazz);
     }
     
-    public List<MediaType> getWritableMediaTypes()
+    public List<MediaType> getWritableMediaTypes(Class clazz)
     {
         // restrict writable MediaTypes to the requested one (usually by RDF export feature)
         if (getAcceptMediaType() != null) return Arrays.asList(getAcceptMediaType());
 
-        return getMediaTypes().getWritable(Dataset.class);
+        return getMediaTypes().getWritable(clazz);
     }
     
     /**
@@ -197,14 +198,17 @@ public class ProxyResourceBase implements Resource
                     }
                 }
 
+            Dataset description = cr.getEntity(Dataset.class);
             
             com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-            List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(), new ArrayList(), new ArrayList()).add().build();
+            List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(Dataset.class), new ArrayList(), new ArrayList()).add().build();
 
             Variant variant = getRequest().selectVariant(variants);
-            Dataset description = cr.getEntity(Dataset.class);
-            if (MediaTypes.isTriples(variant.getMediaType()))
-                return response.getResponseBuilder(description.getDefaultModel(), variants).build(); // Variant will be matched once again
+            if (variant == null)
+            {
+                variants = response.getVariantListBuilder(getWritableMediaTypes(Model.class), new ArrayList(), new ArrayList()).add().build(); // fallback to Model
+                return response.getResponseBuilder(description.getDefaultModel(), variants).build();
+            }
             else
                 return response.getResponseBuilder(description, variants).build();
         }
