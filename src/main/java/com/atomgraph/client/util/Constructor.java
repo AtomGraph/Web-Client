@@ -88,14 +88,14 @@ public class Constructor
                 if (!constructor.isResource())
                 {
                     if (log.isErrorEnabled()) log.error("Constructor is invoked but {} is not defined for class '{}'", property, forClass.getURI());
-                    throw new OntologyException(forClass, property, "Constructor property not defined");
+                    throw new OntologyException("Constructor property not defined", forClass, property);
                 }
 
                 Statement queryText = constructor.asResource().getProperty(SP.text);
                 if (queryText == null || !queryText.getObject().isLiteral())
                 {
                     if (log.isErrorEnabled()) log.error("Constructor resource '{}' does not have sp:text property", constructor);
-                    throw new OntologyException(constructor.asResource(), SP.text, "Query property not defined");
+                    throw new OntologyException("Query property not defined", constructor.asResource(), SP.text);
                 }
 
                 try
@@ -116,7 +116,7 @@ public class Constructor
                 catch (QueryParseException ex)
                 {
                     if (log.isErrorEnabled()) log.error("Constructor resource '{}' sp:text property contains an invalid SPARQL CONSTRUCT", constructor);
-                    throw new OntologyException(constructor.asResource(), SP.text, "Invalid SPARQL CONSTRUCT");
+                    throw new OntologyException("Invalid SPARQL CONSTRUCT", ex, constructor.asResource(), SP.text);
                 }
             }
         }
@@ -172,7 +172,7 @@ public class Constructor
                         if (reachedClasses.contains(valueClass))
                         {
                             if (log.isErrorEnabled()) log.error("Circular template restriction between '{}' and '{}' is not allowed", forClass.getURI(), valueClass.getURI());
-                            throw new OntologyException(valueClass, property, "Circular template restriction between '" + forClass.getURI() + "' and '" + valueClass.getURI() + "' is not allowed");
+                            throw new OntologyException("Circular template restriction between '" + forClass.getURI() + "' and '" + valueClass.getURI() + "' is not allowed", valueClass, property);
                         }
 
                         Resource value = instance.getModel().createResource().

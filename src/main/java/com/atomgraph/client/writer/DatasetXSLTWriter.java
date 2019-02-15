@@ -324,7 +324,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                                 Statement modeStmt = it.next();
 
                                 if (!modeStmt.getObject().isURIResource())
-                                    throw new OntologyException(template, AC.mode, "Value is not a URI resource");
+                                    throw new OntologyException("Value is not a URI resource", template, AC.mode);
 
                                 modes.add(URI.create(modeStmt.getResource().getURI()));
                             }
