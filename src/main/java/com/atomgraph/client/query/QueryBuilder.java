@@ -47,7 +47,6 @@ import org.spinrdf.vocabulary.SP;
  * @see <a href="http://spinrdf.org/sp.html">SPIN - SPARQL Syntax</a>
  * @see <a href="http://topbraid.org/spin/api/">SPIN API</a>
  */
-@Deprecated // move to Atomgraph Web-Client
 public class QueryBuilder implements org.spinrdf.model.Query
 {
     private static final Logger log = LoggerFactory.getLogger(QueryBuilder.class);
@@ -353,7 +352,6 @@ public class QueryBuilder implements org.spinrdf.model.Query
         return expression;
     }
         
-    @Deprecated
     public QueryBuilder filter(Variable var, RDFList resources)
     {
         if (var == null) throw new IllegalArgumentException("FILTER variable cannot be null");
@@ -364,7 +362,6 @@ public class QueryBuilder implements org.spinrdf.model.Query
         return filter(SPINFactory.createFilter(getModel(), createFilterExpression(var, resources)));
     }
 
-    @Deprecated
     private Resource createFilterExpression(Variable var, RDFList resources)
     {
         Resource eqExpr = getModel().createResource().
@@ -382,7 +379,6 @@ public class QueryBuilder implements org.spinrdf.model.Query
                 addProperty(SP.arg2, createFilterExpression(var, resources.getTail()));
     }
     
-    @Deprecated
     public QueryBuilder filter(String varName, RDFList resources)
     {
         if (varName == null) throw new IllegalArgumentException("FILTER variable name cannot be null");
