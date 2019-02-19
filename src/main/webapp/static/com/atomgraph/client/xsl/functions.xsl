@@ -419,7 +419,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="string" select="replace($string, '\|', '\\\\|')"/>
         <xsl:variable name="string" select="replace($string, '\\', '\\\\\\')"/>
         <xsl:variable name="string" select="replace($string, '\^', '\\\\^')"/>
-        <xsl:variable name="string" select="replace($string, '\$', '\\\\$')"/>
+        <xsl:variable name="string" select="replace($string, '\$', '\\\\\$')"/>
 
         <xsl:sequence select="$string"/>
     </xsl:function>
