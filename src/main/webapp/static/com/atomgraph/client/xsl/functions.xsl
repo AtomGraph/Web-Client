@@ -170,7 +170,7 @@ exclude-result-prefixes="#all">
             </xsl:when>
             <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
                 <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
-                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>                    
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="."/>
@@ -404,4 +404,22 @@ exclude-result-prefixes="#all">
         <xsl:value-of select="$string"/>
     </xsl:template>
 
+    <xsl:template name="ac:escape-regex">
+        <xsl:param name="string" as="xs:string?"/>
+        <xsl:variable name="string" select="replace($string, '\.', '\\\\.')"/>
+        <xsl:variable name="string" select="replace($string, '\*', '\\\\*')"/>
+        <xsl:variable name="string" select="replace($string, '\+', '\\\\+')"/>
+        <xsl:variable name="string" select="replace($string, '\?', '\\\\?')"/>
+        <xsl:variable name="string" select="replace($string, '\{', '\\\\{')"/>
+        <xsl:variable name="string" select="replace($string, '\[', '\\\\[')"/>
+        <xsl:variable name="string" select="replace($string, '\(', '\\\\(')"/>
+        <xsl:variable name="string" select="replace($string, '\)', '\\\\)')"/>
+        <xsl:variable name="string" select="replace($string, '\|', '\\\\|')"/>
+        <xsl:variable name="string" select="replace($string, '\\', '\\\\\')"/>
+        <xsl:variable name="string" select="replace($string, '\^', '\\\\^')"/>
+        <xsl:variable name="string" select="replace($string, '\$', '\\\\$')"/>
+
+        <xsl:value-of select="$string"/>
+    </xsl:template>
+    
 </xsl:stylesheet>
