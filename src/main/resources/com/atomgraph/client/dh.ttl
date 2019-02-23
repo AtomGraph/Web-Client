@@ -32,12 +32,17 @@
     rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
     rdfs:isDefinedBy : .
 
+:select a owl:ObjectProperty ;
+    rdfs:domain :Container ;
+    rdfs:range sp:Select ;
+    rdfs:label "Select" ;
+    rdfs:isDefinedBy : .
+
 # CLASSES
 
 :Container a rdfs:Class ;
-    rdfs:subClassOf foaf:Document, sioc:Container ;
-    ldt:path "{slug}" ;
-    spin:constructor :DocumentConstructor ;
+    rdfs:subClassOf :Item, sioc:Container ;
+    spin:constructor :ContainerConstructor ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
     rdfs:isDefinedBy : .
@@ -50,6 +55,18 @@
     rdfs:isDefinedBy : .
 
 # QUERIES
+
+:ContainerConstructor a sp:Construct, sp:Query ;
+  sp:text """
+      PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
+      PREFIX sp:      <http://spinrdf.org/sp#>
+
+      CONSTRUCT {
+        ?this dh:select [ a sp:Select ]
+      }
+      WHERE {}""" ;
+    rdfs:label "Container constructor" ;
+    rdfs:isDefinedBy : .
 
 :DocumentConstructor a sp:Construct, sp:Query ;
   sp:text """
