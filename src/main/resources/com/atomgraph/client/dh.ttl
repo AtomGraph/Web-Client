@@ -36,7 +36,7 @@
 
 :Container a rdfs:Class ;
     rdfs:subClassOf foaf:Document, sioc:Container ;
-    # ldt:path "{slug}/" ;
+    ldt:path "{slug}" ;
     spin:constructor :DocumentConstructor ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
