@@ -58,6 +58,7 @@ import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.vocabulary.A;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -148,6 +149,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                 resolver(getDataManager()).
                 result(new StreamResult(entityStream));
 
+            builder.outputProperty(OutputKeys.ENCODING, UTF_8.name());
             if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
             {
                 builder.outputProperty(OutputKeys.METHOD, "html");
