@@ -30,9 +30,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -98,12 +96,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     
     private final Templates templates;
     private final OntModelSpec ontModelSpec;
-    private final Map<URI, MediaType> modeMediaTypeMap = new HashMap<>(); // would String not suffice as the key?
-    
-    {
-        modeMediaTypeMap.put(URI.create(AC.EditMode.getURI()), MediaType.TEXT_HTML_TYPE);
-        modeMediaTypeMap.put(URI.create(AC.MapMode.getURI()), MediaType.TEXT_HTML_TYPE);
-    }
 
     @Context private UriInfo uriInfo;
     @Context private Request request;
@@ -415,18 +407,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     {
         return new OntologyProvider().getOntModel(getOntDocumentManager(), ontologyURI, ontModelSpec);
     }
-
-    public MediaType getCustomMediaType(List<URI> modes)
-    {
-        if (modes == null) throw new IllegalArgumentException("List<URI> cannot be null");
-
-        if (getUriInfo().getQueryParameters().containsKey(AC.forClass.getLocalName())) return MediaType.TEXT_HTML_TYPE;
-
-        for (URI mode : modes)
-            if (getModeMediaTypeMap().containsKey(mode)) return getModeMediaTypeMap().get(mode);
-
-        return null;
-    }
     
     public List<URI> getModes(Set<String> namespaces)
     {
@@ -512,11 +492,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     public HttpServletRequest getHttpServletRequest()
     {
         return httpServletRequest;
-    }
-
-    public Map<URI, MediaType> getModeMediaTypeMap()
-    {
-        return modeMediaTypeMap;
     }
 
     public OntModelSpec getOntModelSpec()
