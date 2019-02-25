@@ -129,7 +129,7 @@ public class XSLTBuilder
         return stylesheet(factory.newTemplates(stylesheet));
     }
 
-    public XSLTBuilder stylesheet(Templates templates) throws TransformerConfigurationException            
+    public XSLTBuilder stylesheet(Templates templates) throws TransformerConfigurationException
     {
         this.templates = templates;
         return this;

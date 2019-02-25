@@ -109,7 +109,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     @Context private HttpHeaders httpHeaders;
     @Context private Providers providers;
     @Context private HttpServletRequest httpServletRequest;
-    //@Context private Application application;
     
     /**
      * Constructs from XSLT builder.
@@ -140,15 +139,31 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(dataset.getDefaultModel(), baos, null);
             
-            setParameters(com.atomgraph.client.util.saxon.XSLTBuilder.newInstance(getTransformerFactory()).
+            XSLTBuilder builder = setParameters(com.atomgraph.client.util.saxon.XSLTBuilder.newInstance(getTransformerFactory()).
                     resolver((UnparsedTextURIResolver)getDataManager()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
                     dataset,
                     headerMap).
                 resolver(getDataManager()).
-                result(new StreamResult(entityStream)).
-                transform();
+                result(new StreamResult(entityStream));
+
+            if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
+            {
+                builder.outputProperty(OutputKeys.METHOD, "html");
+                builder.outputProperty(OutputKeys.MEDIA_TYPE, MediaType.TEXT_HTML);
+                builder.outputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/TR/html4/strict.dtd");
+                builder.outputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
+            }
+            if (mediaType.isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
+            {
+                builder.outputProperty(OutputKeys.METHOD, "xhtml");
+                builder.outputProperty(OutputKeys.MEDIA_TYPE, MediaType.APPLICATION_XHTML_XML);
+                builder.outputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+                builder.outputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
+            }
+            
+            builder.transform();
         }
         catch (TransformerException ex)
         {
