@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-@Produces({MediaType.APPLICATION_XHTML_XML + ";charset=UTF-8", MediaType.TEXT_HTML + ";charset=UTF-8"})
+@Produces({MediaType.TEXT_HTML + ";charset=UTF-8"}) // MediaType.APPLICATION_XHTML_XML + ";charset=UTF-8", 
 public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 {
     private static final Logger log = LoggerFactory.getLogger(DatasetXSLTWriter.class);
@@ -359,15 +359,15 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
             // workaround for Google Maps and Saxon-CE
             // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
             // https://saxonica.plan.io/issues/1447
-            // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-            MediaType customMediaType = getCustomMediaType(modes);
-            if (customMediaType != null)
-            {
-                if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
-                List<Object> contentTypes = new ArrayList();
-                contentTypes.add(customMediaType);
-                headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
-            }
+//            // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
+//            MediaType customMediaType = getCustomMediaType(modes);
+//            if (customMediaType != null)
+//            {
+//                if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
+//                List<Object> contentTypes = new ArrayList();
+//                contentTypes.add(customMediaType);
+//                headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
+//            }
 
             MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
             if (contentType != null)
