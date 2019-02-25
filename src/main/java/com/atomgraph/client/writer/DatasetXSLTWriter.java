@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-@Produces({MediaType.APPLICATION_XHTML_XML,MediaType.TEXT_HTML})
+@Produces({MediaType.APPLICATION_XHTML_XML + ";charset=UTF-8", MediaType.TEXT_HTML + ";charset=UTF-8"})
 public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 {
     private static final Logger log = LoggerFactory.getLogger(DatasetXSLTWriter.class);
