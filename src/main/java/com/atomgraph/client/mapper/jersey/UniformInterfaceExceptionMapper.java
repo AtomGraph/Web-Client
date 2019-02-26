@@ -34,9 +34,8 @@ public class UniformInterfaceExceptionMapper extends ExceptionMapperBase impleme
     @Override
     public Response toResponse(UniformInterfaceException ex)
     {
-        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null).
-                getModel()), getVariants()).
+        return getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null).
+                getModel())).
             status(ex.getResponse().getStatus()).
             build();
     }

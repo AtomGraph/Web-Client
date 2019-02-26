@@ -31,10 +31,9 @@ public class RiotExceptionMapper extends ExceptionMapperBase implements Exceptio
     @Override
     public Response toResponse(RiotException ex)
     {
-        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-                getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR,
+        return getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR,
                         ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#InternalServerError")).
-                    getModel()), getVariants()).
+                    getModel())).
                 status(Response.Status.INTERNAL_SERVER_ERROR).
                 build();
     }

@@ -34,6 +34,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.client.vocabulary.HTTP;
+import org.apache.jena.query.Dataset;
 
 /**
  * Abstract base class for ExceptionMappers that build responses with exceptions as RDF resources.
@@ -64,21 +65,36 @@ abstract public class ExceptionMapperBase
         return resource;
     }
     
+    public Response.ResponseBuilder getResponseBuilder(Dataset dataset)
+    {
+        Variant variant = getRequest().selectVariant(getVariants(Dataset.class));
+        if (variant == null) return getResponseBuilder(dataset.getDefaultModel()); // if quads are not acceptable, fallback to responding with the default graph
+        
+        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
+            getResponseBuilder(dataset, getVariants(Dataset.class));
+    }
+    
+    public Response.ResponseBuilder getResponseBuilder(Model model)
+    {
+        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
+            getResponseBuilder(model, getVariants(Model.class));
+    }
+    
     public MediaTypes getMediaTypes()
     {
         ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
         return cr.getContext(MediaTypes.class);
     }
     
-    public List<Variant> getVariants()
+    public List<Variant> getVariants(Class clazz)
     {
-        return getVariantListBuilder().add().build();
+        return getVariantListBuilder(clazz).add().build();
     }
 
-    public Variant.VariantListBuilder getVariantListBuilder()
+    public Variant.VariantListBuilder getVariantListBuilder(Class clazz)
     {
         com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-        return response.getVariantListBuilder(getWritableMediaTypes(), getLanguages(), getEncodings());
+        return response.getVariantListBuilder(getMediaTypes().getWritable(clazz), getLanguages(), getEncodings());
     }
     
     public List<MediaType> getWritableMediaTypes()

@@ -38,8 +38,7 @@ public class ClientErrorExceptionMapper extends ExceptionMapperBase implements E
         
         if (ex.getModel() != null) exRes.getModel().add(ex.getModel()); // tunnel exception Model, e.g. with RequestAccess
         
-        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(DatasetFactory.create(exRes.getModel()), getVariants()).
+        return getResponseBuilder(DatasetFactory.create(exRes.getModel())).
             status(ex.getClientResponse().getStatus()).
             build();
     }

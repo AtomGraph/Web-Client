@@ -35,10 +35,10 @@ public class NotFoundExceptionMapper extends ExceptionMapperBase implements Exce
     @Override
     public Response toResponse(NotFoundException ex)
     {
-        return Response.status(Response.Status.NOT_FOUND).
-                entity(DatasetFactory.create(toResource(ex, Response.Status.NOT_FOUND,
+        return getResponseBuilder(DatasetFactory.create(DatasetFactory.create(toResource(ex, Response.Status.NOT_FOUND,
                         ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#NotFound")).
-                    getModel())).
+                    getModel()))).
+                status(Response.Status.NOT_FOUND).
                 build();
     }
     

@@ -51,6 +51,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,7 @@ public class ProxyResourceBase implements Resource
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
     private final MediaType accept;
+    private final MediaType[] readableMediaTypes;
     private final WebResource webResource;
     private final LinkedDataClient linkedDataClient;
     private final HttpServletRequest httpServletRequest;
@@ -96,7 +98,11 @@ public class ProxyResourceBase implements Resource
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
         this.accept = accept;
-
+        List<javax.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
+        readableMediaTypesList.addAll(mediaTypes.getReadable(Dataset.class));
+        readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
+        this.readableMediaTypes = readableMediaTypesList.toArray(new MediaType[readableMediaTypesList.size()]);
+        
         // client.setFollowRedirects(true); // doesn't work: https://stackoverflow.com/questions/29955951/jersey-is-not-following-302-redirects/29957936
         if (uri.getFragment() != null)
             try
@@ -124,13 +130,13 @@ public class ProxyResourceBase implements Resource
     public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
     {
         return webResource.getRequestBuilder().
-                accept(getReadableMediaTypes(Dataset.class).toArray(new MediaType[getReadableMediaTypes(Dataset.class).size()])).
+                accept(getReadableMediaTypes()).
                 get(ClientResponse.class);
     }
     
-    public List<MediaType> getReadableMediaTypes(Class clazz)
+    public MediaType[] getReadableMediaTypes()
     {
-        return getMediaTypes().getReadable(clazz);
+        return readableMediaTypes;
     }
     
     public List<MediaType> getWritableMediaTypes(Class clazz)
@@ -172,16 +178,15 @@ public class ProxyResourceBase implements Resource
                 }
 
                 if (cr.hasEntity())
-                    throw new ClientErrorException(cr, cr.getEntity(Dataset.class));
+                    throw new ClientErrorException(cr, DatasetFactory.create(cr.getEntity(Model.class)));
                 else 
                     throw new ClientErrorException(cr);
             }
 
-            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to DatasetProvider
+            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
             
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebResource().getURI());
 
-            // move headers to HypermediaFilter?
             if (cr.getHeaders().get("Link") != null)
                 for (String linkValue : cr.getHeaders().get("Link"))
                 {
@@ -198,7 +203,7 @@ public class ProxyResourceBase implements Resource
                     }
                 }
 
-            Dataset description = cr.getEntity(Dataset.class);
+            Model description = cr.getEntity(Model.class);
             
             com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
             List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(Dataset.class), new ArrayList(), new ArrayList()).add().build();
@@ -207,10 +212,10 @@ public class ProxyResourceBase implements Resource
             if (variant == null)
             {
                 variants = response.getVariantListBuilder(getWritableMediaTypes(Model.class), new ArrayList(), new ArrayList()).add().build(); // fallback to Model
-                return response.getResponseBuilder(description.getDefaultModel(), variants).build();
-            }
-            else
                 return response.getResponseBuilder(description, variants).build();
+            }
+
+            return response.getResponseBuilder(DatasetFactory.create(description), variants).build();
         }
         finally
         {

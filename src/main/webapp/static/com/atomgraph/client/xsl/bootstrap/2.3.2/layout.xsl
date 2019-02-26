@@ -41,7 +41,6 @@ limitations under the License.
     <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
 ]>
 <xsl:stylesheet version="2.0"
-xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:a="&a;"
@@ -152,7 +151,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:template match="/">
-        <html xml:lang="{$ldt:lang}">
+        <html lang="{$ldt:lang}">
             <xsl:variable name="grouped-rdf" as="document-node()">
                 <xsl:apply-templates select="." mode="ac:GroupTriples"/>
             </xsl:variable>

@@ -34,9 +34,8 @@ public class ClientHandlerExceptionMapper extends ExceptionMapperBase implements
     @Override
     public Response toResponse(ClientHandlerException ex)
     {
-        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR, null).
-                getModel()), getVariants()).
+        return getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR, null).
+                getModel())).
             status(Response.Status.INTERNAL_SERVER_ERROR).
             build();
     }
