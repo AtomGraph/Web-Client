@@ -65,7 +65,6 @@ xmlns:xhv="&xhv;"
 xmlns:geo="&geo;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
-xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:javaee="http://java.sun.com/xml/ns/javaee"
 xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">

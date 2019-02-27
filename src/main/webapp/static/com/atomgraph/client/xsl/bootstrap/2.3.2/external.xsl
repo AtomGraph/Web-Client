@@ -24,7 +24,6 @@ limitations under the License.
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 ]>
 <xsl:stylesheet version="2.0"
-xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"

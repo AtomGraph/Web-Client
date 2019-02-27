@@ -20,7 +20,6 @@ limitations under the License.
     <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
 ]>
 <xsl:stylesheet version="2.0"
-xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
