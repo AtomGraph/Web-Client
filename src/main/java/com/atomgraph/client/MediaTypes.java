@@ -42,11 +42,11 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
         
         // add XHTML as writable MediaType
         List<MediaType> writableDatasetTypes = new ArrayList<>(coreTypes.getWritable(Dataset.class));
-        MediaType xhtml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
-        writableDatasetTypes.add(0, xhtml);
+//        MediaType xhtml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
+//        writableDatasetTypes.add(0, xhtml);
         // add HTML as writable MediaType
         MediaType html = new MediaType(MediaType.TEXT_HTML_TYPE.getType(), MediaType.TEXT_HTML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
-        writableDatasetTypes.add(1, html);
+        writableDatasetTypes.add(0, html);
         
         WRITABLE = new HashMap<>();
         WRITABLE.put(Dataset.class, Collections.unmodifiableList(writableDatasetTypes));
