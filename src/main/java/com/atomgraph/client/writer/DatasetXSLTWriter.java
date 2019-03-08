@@ -55,7 +55,6 @@ import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.util.XSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
-import com.atomgraph.core.vocabulary.A;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashSet;
 import java.util.Locale;
@@ -284,8 +283,9 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         builder.
             //parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
             //parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
-            parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
-            parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
+//            parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
+//            parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
+            parameter("{" + AC.requestUri.getNameSpace() + "}" + AC.requestUri.getLocalName(), getRequestURI()).
             parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
      
         try
@@ -347,19 +347,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
             }
             
             builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), modes);
-            
-            // workaround for Google Maps and Saxon-CE
-            // They currently seem to work only in HTML mode and not in XHTML, because of document.write() usage
-            // https://saxonica.plan.io/issues/1447
-//            // https://code.google.com/p/gmaps-api-issues/issues/detail?id=2820
-//            MediaType customMediaType = getCustomMediaType(modes);
-//            if (customMediaType != null)
-//            {
-//                if (log.isDebugEnabled()) log.debug("Overriding response media type with '{}'", customMediaType);
-//                List<Object> contentTypes = new ArrayList();
-//                contentTypes.add(customMediaType);
-//                headerMap.put(HttpHeaders.CONTENT_TYPE, contentTypes);
-//            }
 
             MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
             if (contentType != null)

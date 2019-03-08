@@ -99,7 +99,7 @@ public class ProxyResourceBase implements Resource
         this.mediaTypes = mediaTypes;
         this.accept = accept;
         List<javax.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
-        readableMediaTypesList.addAll(mediaTypes.getReadable(Dataset.class));
+        //readableMediaTypesList.addAll(mediaTypes.getReadable(Dataset.class));
         readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
         this.readableMediaTypes = readableMediaTypesList.toArray(new MediaType[readableMediaTypesList.size()]);
         

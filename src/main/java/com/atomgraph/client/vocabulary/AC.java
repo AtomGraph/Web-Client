@@ -78,6 +78,8 @@ public final class AC
 
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 
+    public static final ObjectProperty requestUri = m_model.createObjectProperty( NS + "requestUri" );
+
     public static final ObjectProperty endpoint = m_model.createObjectProperty( NS + "endpoint" );
 
     public static final DatatypeProperty query = m_model.createDatatypeProperty( NS + "query" );
