@@ -77,7 +77,9 @@ public final class AC
     public static final ObjectProperty sitemap = m_model.createObjectProperty( NS + "sitemap" );
 
     public static final DatatypeProperty method = m_model.createDatatypeProperty( NS + "method" );
-    
+
+    public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
+
     public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
 
     public static final ObjectProperty requestUri = m_model.createObjectProperty( NS + "requestUri" );
