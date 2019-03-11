@@ -101,11 +101,6 @@ exclude-result-prefixes="#all">
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
     <xsl:param name="ldt:base" as="xs:anyURI?"/>
-    <!--
-    <xsl:param name="a:requestUri" as="xs:anyURI?"/>
-    <xsl:param name="a:absolutePath" select="xs:anyURI(tokenize($a:requestUri,'\?')[1])" as="xs:anyURI?"/>
-    -->
-    <xsl:param name="a:httpHeaders" as="xs:string"/>
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
     <xsl:param name="ac:uri" as="xs:anyURI?"/>
@@ -117,7 +112,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
-    <!-- <xsl:param name="uri" select="$ac:uri" as="xs:string?"/> -->
     
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
     
