@@ -1102,7 +1102,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!--
-    <xsl:template match="*[@rdf:about = $a:absolutePath]" mode="bs2:Legend" priority="1">
+    <xsl:template match="*[@rdf:about = $ac:uri]" mode="bs2:Legend" priority="1">
         <legend>
             <xsl:apply-templates select="." mode="xhtml:Anchor"/>
         </legend>

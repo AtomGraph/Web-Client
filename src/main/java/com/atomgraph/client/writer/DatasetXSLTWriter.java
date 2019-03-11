@@ -280,11 +280,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
-        builder.
-            //parameter("{" + A.absolutePath.getNameSpace() + "}" + A.absolutePath.getLocalName(), getAbsolutePath()).
-            //parameter("{" + A.requestUri.getNameSpace() + "}" + A.requestUri.getLocalName(), getRequestURI()).
-//            parameter("{" + A.method.getNameSpace() + "}" + A.method.getLocalName(), getRequest().getMethod()).
-//            parameter("{" + A.httpHeaders.getNameSpace() + "}" + A.httpHeaders.getLocalName(), headerMap.toString()).
+        builder.parameter("{" + AC.method.getNameSpace() + "}" + AC.method.getLocalName(), getRequest().getMethod()).
             parameter("{" + AC.requestUri.getNameSpace() + "}" + AC.requestUri.getLocalName(), getRequestURI()).
             parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
      
