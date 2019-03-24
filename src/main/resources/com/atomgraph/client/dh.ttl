@@ -41,13 +41,13 @@
 # CLASSES
 
 :Container a rdfs:Class ;
-    rdfs:subClassOf :Item, sioc:Container ;
+    rdfs:subClassOf :Document, sioc:Container ;
     spin:constructor :ContainerConstructor ;
     rdfs:label "Container" ;
     rdfs:comment "Container that can have other containers and items as children" ;
     rdfs:isDefinedBy : .
 
-:Item a rdfs:Class ;
+:Document a rdfs:Class ;
     rdfs:subClassOf foaf:Document, sioc:Item ;
     ldt:path "{slug}" ;
     rdfs:label "Document" ;

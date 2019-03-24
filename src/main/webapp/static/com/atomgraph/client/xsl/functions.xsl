@@ -144,7 +144,7 @@ exclude-result-prefixes="#all">
             </xsl:when>
             <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
                 <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
-                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>                    
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="$this"/>
