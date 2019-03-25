@@ -368,12 +368,23 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="." mode="bs2:PagerList"/>
 
-            <xsl:apply-templates select="." mode="bs2:Block"/>
+            <xsl:apply-templates select="." mode="ac:ModeChoice"/>
 
             <xsl:apply-templates select="." mode="bs2:PagerList"/>
         </div>
     </xsl:template>
             
+    <xsl:template match="rdf:RDF" mode="ac:ModeChoice">
+        <xsl:choose>
+            <xsl:when test="$ac:mode = '&ac;EditMode' or $ac:forClass">
+                <xsl:apply-templates select="." mode="bs2:Form"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates select="." mode="bs2:Block"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     <!-- LIST -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:List">
