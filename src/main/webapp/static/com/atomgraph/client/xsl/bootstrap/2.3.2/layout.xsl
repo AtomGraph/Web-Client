@@ -15,7 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY a      "http://atomgraph.com/ns/core#">
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
@@ -23,22 +22,14 @@ limitations under the License.
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
-    <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
-    <!ENTITY c      "https://www.w3.org/ns/ldt/core/domain#">
-    <!ENTITY ct     "https://www.w3.org/ns/ldt/core/templates#">    
-    <!ENTITY dh     "https://www.w3.org/ns/ldt/document-hierarchy/domain#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
-    <!ENTITY spl    "http://spinrdf.org/spl#">
-    <!ENTITY void   "http://rdfs.org/ns/void#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
-    <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -48,26 +39,16 @@ xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
-xmlns:sparql="&sparql;"
 xmlns:http="&http;"
 xmlns:ldt="&ldt;"
-xmlns:core="&c;"
-xmlns:dh="&dh;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
-xmlns:spl="&spl;"
-xmlns:void="&void;"
-xmlns:list="&list;"
 xmlns:xhv="&xhv;"
-xmlns:geo="&geo;"
-xmlns:url="&java;java.net.URLDecoder"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:javaee="http://java.sun.com/xml/ns/javaee"
-xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">
 
     <xsl:import href="../../group-sort-triples.xsl"/>
@@ -95,6 +76,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/rdf.xsl"/>
     <xsl:import href="imports/sioc.xsl"/>
     <xsl:import href="imports/sp.xsl"/>
+    <xsl:import href="container.xsl"/>
 
     <xsl:include href="sparql.xsl"/>
 
@@ -122,13 +104,12 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
     <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
     <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
-    <xsl:key name="restrictions-by-container" match="*[rdf:type/@rdf:resource = '&owl;Restriction'][owl:onProperty/@rdf:resource = ('&sioc;has_parent', '&sioc;has_container')]" use="owl:allValuesFrom/@rdf:resource"/>
 
     <rdf:Description rdf:about="">
-        <foaf:maker rdf:resource="http://atomgraph.com/#company"/>
+        <foaf:maker rdf:resource="https://atomgraph.com/#company"/>
     </rdf:Description>
 
-    <rdf:Description rdf:about="http://atomgraph.com/#company">
+    <rdf:Description rdf:about="https://atomgraph.com/#company">
         <dct:title>AtomGraph</dct:title>
     </rdf:Description>
 
@@ -387,38 +368,12 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="." mode="bs2:PagerList"/>
 
-            <xsl:apply-templates select="." mode="ac:ModeChoice"/>
+            <xsl:apply-templates select="." mode="bs2:Block"/>
 
             <xsl:apply-templates select="." mode="bs2:PagerList"/>
         </div>
     </xsl:template>
             
-    <xsl:template match="rdf:RDF" mode="ac:ModeChoice">
-        <xsl:choose>
-            <xsl:when test="$ac:mode = '&ac;EditMode' or $ac:forClass">
-                <xsl:apply-templates select="." mode="bs2:Form"/>
-            </xsl:when>
-            <xsl:when test="$ac:mode = '&ac;ListMode'">
-                <xsl:apply-templates select="." mode="bs2:BlockList"/>
-            </xsl:when>
-            <xsl:when test="$ac:mode = '&ac;TableMode'">
-                <xsl:apply-templates select="." mode="xhtml:Table"/>
-            </xsl:when>
-            <xsl:when test="$ac:mode = '&ac;GridMode'">
-                <xsl:apply-templates select="." mode="bs2:Grid"/>
-            </xsl:when>
-            <xsl:when test="$ac:mode = '&ac;MapMode'">
-                <xsl:apply-templates select="." mode="bs2:Map"/>
-            </xsl:when>
-            <xsl:when test="$ac:mode = '&ac;GraphMode'">
-                <xsl:apply-templates select="." mode="bs2:Graph"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates select="." mode="bs2:Block"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    
     <!-- LIST -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:List">
@@ -755,7 +710,7 @@ exclude-result-prefixes="#all">
             </li>
             <li class="next">
                 <xsl:choose>
-                    <xsl:when test="xhv:next">   and $count &gt;= dh:limit 
+                    <xsl:when test="xhv:next">   and $count &gt;= ac:limit 
                         <a href="{xhv:next/@rdf:resource}" class="active">
                             <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>  &#8594;
                         </a>
@@ -772,46 +727,6 @@ exclude-result-prefixes="#all">
     </xsl:template>-->
 
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:PagerList"/>
-
-    <!-- LIST MODE -->
-
-    <xsl:template match="rdf:RDF" mode="bs2:BlockList">
-        <xsl:apply-templates mode="#current"/>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'well'" as="xs:string?"/>
-
-        <div>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:apply-templates select="." mode="bs2:Image"/>
-            
-            <xsl:apply-templates select="." mode="bs2:Actions"/>
-
-            <h2>
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-            </h2>
-
-            <p>
-                <xsl:apply-templates select="." mode="ac:description"/>
-            </p>
-
-            <xsl:apply-templates select="." mode="bs2:TypeList"/>
-
-            <xsl:if test="@rdf:nodeID">
-                <xsl:apply-templates select="." mode="bs2:PropertyList"/>
-            </xsl:if>
-        </div>
-    </xsl:template>
-        
-    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>
 
     <!-- BLOCK MODE -->
 
@@ -858,165 +773,6 @@ exclude-result-prefixes="#all">
             <xsl:next-match/>
         </xsl:if>
     </xsl:template>
-     
-    <!-- GRID MODE -->
-
-    <xsl:template match="rdf:RDF" mode="bs2:Grid">
-        <xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
-        <xsl:param name="sort-property" as="xs:anyURI?"/>
-        
-        <xsl:variable name="thumbnail-items" as="element()*">
-            <xsl:apply-templates mode="#current">
-                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
-                <xsl:sort select="if ($sort-property) then *[concat(namespace-uri(), local-name()) = $sort-property]/(text(), @rdf:resource, @rdf:nodeID) else ac:label(.)"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
-            <xsl:sort select="ac:label(.)" lang="{$ldt:lang}"/>
-            <div class="row-fluid">
-                <ul class="thumbnails">
-                    <xsl:copy-of select="current-group()"/>
-                </ul>
-            </div>
-        </xsl:for-each-group>
-    </xsl:template>
-    
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:Grid" priority="1">
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
-        <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
-
-        <li>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-
-            <div class="thumbnail">
-                <xsl:apply-templates select="." mode="bs2:Image"/>
-
-                <div class="caption">
-                    <xsl:apply-templates select="." mode="bs2:Actions"/>
-
-                    <h2>
-                        <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-                    </h2>
-                    <p>
-                        <xsl:apply-templates select="." mode="ac:description"/>
-                    </p>
-                </div>
-            </div>
-        </li>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:Grid"/>
-
-    <!-- TABLE MODE -->
-
-    <xsl:template match="rdf:RDF" mode="xhtml:Table">
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
-        <xsl:param name="predicates" as="element()*">
-            <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:sequence select="current-group()[1]"/>
-            </xsl:for-each-group>
-        </xsl:param>
-        <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
-
-        <table>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-            <thead>
-                <tr>
-                    <xsl:if test="$anchor-column">
-                        <th>
-                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label"/>
-                        </th>
-                    </xsl:if>
-                    
-                    <xsl:apply-templates select="$predicates" mode="xhtml:TableHeaderCell"/>
-                </tr>
-            </thead>
-            <tbody>
-                <xsl:apply-templates mode="#current">
-                    <xsl:with-param name="predicates" select="$predicates" tunnel="yes"/>
-                </xsl:apply-templates>
-            </tbody>
-        </table>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about]" mode="xhtml:Table" priority="1">
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="predicates" as="element()*" tunnel="yes"/>
-        <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
-
-        <tr>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:if test="$anchor-column">
-                <td>
-                    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-                </td>
-            </xsl:if>
-            
-            <xsl:variable name="resource" select="." as="element()"/>
-            <xsl:for-each select="$predicates">
-                <xsl:choose>
-                    <xsl:when test="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]">
-                        <xsl:apply-templates select="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]" mode="xhtml:TableDataCell"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <td></td>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:for-each>
-        </tr>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/>
-
-    <!-- MAP MODE -->
-
-    <xsl:template match="rdf:RDF" mode="bs2:Map">
-        <div id="map-canvas">
-            <xsl:apply-templates mode="#current"/>
-        </div>
-    </xsl:template>
-
-    <xsl:template match="*[@rdf:about or @rdf:nodeID][geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:Map" priority="1">
-        <xsl:param name="nested" as="xs:boolean?"/>
-
-        <script type="text/javascript">
-            <![CDATA[
-                function initialize]]><xsl:value-of select="generate-id()"/><![CDATA[()
-                {
-                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
-                    var marker = new google.maps.Marker({
-                        position: latLng,
-                        map: map,
-                        title: "]]><xsl:apply-templates select="." mode="ac:label"/><![CDATA["
-                    });
-                }
-
-                google.maps.event.addDomListener(window, 'load', initialize]]><xsl:value-of select="generate-id()"/><![CDATA[);
-            ]]>
-        </script>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Map"/>
 
     <!-- FORM MODE -->
 
