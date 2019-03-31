@@ -89,7 +89,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
+                <!-- <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/> -->
                 <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
                     <xsl:when test="doc-available(ac:document-uri(.))">
                         <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
