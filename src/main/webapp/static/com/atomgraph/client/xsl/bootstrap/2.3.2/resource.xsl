@@ -61,11 +61,11 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
-        <xsl:variable name="images" as="element()*">
+        <!-- <xsl:variable name="images" as="element()*">
             <xsl:apply-templates mode="ac:image"/>
-        </xsl:variable>
+        </xsl:variable> -->
         <xsl:message>
-            $images: <xsl:copy-of select="$images"/>
+            $images: <xsl:apply-templates mode="ac:image"/>
         </xsl:message>
         
 <!--        <xsl:if test="$images">
