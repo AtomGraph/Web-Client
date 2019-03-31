@@ -87,7 +87,7 @@ exclude-result-prefixes="#all">
     <!-- TYPE MODE -->
         
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
-<!--        <ul class="inline">
+        <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
                 <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
@@ -100,7 +100,7 @@ exclude-result-prefixes="#all">
                 </xsl:choose>
                 <xsl:value-of select="." use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
             </xsl:for-each>
-        </ul>-->
+        </ul>
     </xsl:template>
 
     <xsl:template match="*" mode="bs2:TypeList"/>
