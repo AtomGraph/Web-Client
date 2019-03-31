@@ -61,11 +61,14 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
-        
         <xsl:variable name="images" as="element()*">
             <xsl:apply-templates mode="ac:image"/>
         </xsl:variable>
-        <xsl:if test="$images">
+        <xsl:message>
+            $images: <xsl:copy-of select="$images"/>
+        </xsl:message>
+        
+<!--        <xsl:if test="$images">
             <div class="carousel slide">
                 <div class="carousel-inner">
                     <xsl:for-each select="$images">
@@ -80,8 +83,7 @@ exclude-result-prefixes="#all">
                     <a class="carousel-control right" onclick="$(this).parents('.carousel').carousel('next');">&#8250;</a>
                 </div>
             </div>
-        </xsl:if>
-        
+        </xsl:if>-->
     </xsl:template>
     
     <!-- TYPE MODE -->
@@ -89,7 +91,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="ac:object-label(.)" order="ascending"/> <!--  lang="{$ldt:lang}" -->
+                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
+                
                 <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
                     <xsl:when test="doc-available(ac:document-uri(.))">
                         <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
