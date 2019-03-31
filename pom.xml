@@ -7,7 +7,7 @@
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
-    <description>Generic Linked Data client</description>
+    <description>Generic Linked Data browser and UX component framework</description>
     <url>https://github.com/AtomGraph/Web-Client</url>
     <inceptionYear>2010</inceptionYear>
 

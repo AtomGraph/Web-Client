@@ -213,7 +213,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 
     public URI getURI() throws URISyntaxException
     {
-        return getURIParam(getUriInfo(), AC.uri.getLocalName());
+        return getURIParam(getUriInfo(), AC.uri.getLocalName()); // TO-DO: remove possible #fragment from URI
     }
 
     public URI getEndpointURI() throws URISyntaxException

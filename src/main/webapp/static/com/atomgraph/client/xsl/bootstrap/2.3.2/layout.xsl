@@ -76,6 +76,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/rdf.xsl"/>
     <xsl:import href="imports/sioc.xsl"/>
     <xsl:import href="imports/sp.xsl"/>
+    <xsl:import href="resource.xsl"/>
     <xsl:import href="container.xsl"/>
 
     <xsl:include href="sparql.xsl"/>
@@ -366,11 +367,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="bs2:PagerList"/>
-
             <xsl:apply-templates select="." mode="ac:ModeChoice"/>
-
-            <xsl:apply-templates select="." mode="bs2:PagerList"/>
         </div>
     </xsl:template>
             
@@ -379,6 +376,9 @@ exclude-result-prefixes="#all">
             <xsl:when test="$ac:mode = '&ac;EditMode' or $ac:forClass">
                 <xsl:apply-templates select="." mode="bs2:Form"/>
             </xsl:when>
+            <xsl:when test="$ac:mode = '&ac;MapMode'">
+                <xsl:apply-templates select="." mode="bs2:Map"/>
+            </xsl:when>            
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="bs2:Block"/>
             </xsl:otherwise>
@@ -549,8 +549,6 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="ac:description"/>
             </p>
 
-            <xsl:apply-templates select="." mode="bs2:MediaTypeList"/>
-
             <xsl:apply-templates select="." mode="bs2:TypeList"/>
         </div>
     </xsl:template>
@@ -578,100 +576,6 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:MediaTypeList"/>
-
-    <!-- ACTIONS MODE (Create/Edit buttons) -->
-
-    <!-- <xsl:template match="rdf:RDF" mode="bs2:Actions">
-        <xsl:apply-templates mode="#current"/>
-    </xsl:template> -->
-    
-    <xsl:template match="*[@rdf:about]" mode="bs2:Actions" priority="1">
-        <div class="pull-right">
-            <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
-                <button class="btn btn-primary btn-delete" type="submit">
-                    <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label"/>
-                </button>
-            </form>
-        </div>
-
-        <div class="pull-right">
-            <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
-                <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
-            </a>
-        </div>
-    </xsl:template>
-    
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Actions"/>
-
-    <!-- IMAGE MODE -->
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
-        <xsl:variable name="images" as="element()*">
-            <xsl:apply-templates mode="ac:image"/>
-        </xsl:variable>
-        <xsl:if test="$images">
-            <div class="carousel slide">
-                <div class="carousel-inner">
-                    <xsl:for-each select="$images">
-                        <div class="item">
-                            <xsl:if test="position() = 1">
-                                <xsl:attribute name="class">active item</xsl:attribute>
-                            </xsl:if>
-                            <xsl:copy-of select="."/>
-                        </div>
-                    </xsl:for-each>
-                    <a class="carousel-control left" onclick="$(this).parents('.carousel').carousel('prev');">&#8249;</a>
-                    <a class="carousel-control right" onclick="$(this).parents('.carousel').carousel('next');">&#8250;</a>
-                </div>
-            </div>
-        </xsl:if>
-    </xsl:template>
-    
-    <!-- TYPE MODE -->
-        
-    <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
-        <ul class="inline">
-            <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:choose>
-                    <xsl:when test="doc-available(ac:document-uri(.))">
-                        <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="."/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:for-each>
-        </ul>
-    </xsl:template>
-
-    <xsl:template match="*" mode="bs2:TypeList"/>
-
-    <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
-        <li>
-            <span title="{@rdf:about}" class="btn btn-type">
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-            </span>
-        </li>
-    </xsl:template>
-
-    <!-- PROPERTY LIST MODE -->
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
-        <xsl:variable name="properties" as="element()*">
-            <xsl:apply-templates mode="#current">
-                <xsl:sort select="ac:property-label(.)" data-type="text" order="ascending" lang="{$ldt:lang}"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-
-        <xsl:if test="$properties">
-            <dl class="dl-horizontal">
-                <xsl:copy-of select="$properties"/>
-            </dl>
-        </xsl:if>
-    </xsl:template>
-
     <!-- RIGHT NAV MODE -->
     
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Right" priority="1"/>
@@ -693,51 +597,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
         
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
-    
-    <!-- PAGINATION MODE -->
-
-    <xsl:template match="rdf:RDF" mode="bs2:PagerList">
-        <xsl:apply-templates mode="#current"/>
-    </xsl:template>
-
-    <xsl:template match="*[$ac:forClass]" mode="bs2:PagerList" priority="2"/>
-
-<!--    <xsl:template match="*[@rdf:about = $a:requestUri][xhv:prev or xhv:next]" mode="bs2:PagerList" priority="1">
-        <ul class="pager">
-            <li class="previous">
-                <xsl:choose>
-                    <xsl:when test="xhv:prev">
-                        <a href="{xhv:prev/@rdf:resource}" class="active">
-                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>
-                        </a>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:attribute name="class">previous disabled</xsl:attribute>
-                        <a>
-                            &#8592; <xsl:apply-templates select="key('resources', '&xhv;prev', document(''))" mode="ac:label"/>
-                        </a>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </li>
-            <li class="next">
-                <xsl:choose>
-                    <xsl:when test="xhv:next">   and $count &gt;= ac:limit 
-                        <a href="{xhv:next/@rdf:resource}" class="active">
-                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/>  &#8594;
-                        </a>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:attribute name="class">next disabled</xsl:attribute>
-                        <a>
-                            <xsl:apply-templates select="key('resources', '&xhv;next', document(''))" mode="ac:label"/> &#8594;
-                        </a>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </li>
-        </ul>
-    </xsl:template>-->
-
-    <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:PagerList"/>
 
     <!-- BLOCK MODE -->
 

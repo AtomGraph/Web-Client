@@ -35,6 +35,8 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">
 
+    <!-- <xsl:import href="common.xsl"/> -->
+    
     <!-- LIST MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:BlockList">
@@ -233,5 +235,5 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Map"/>
-            
+
 </xsl:stylesheet>
