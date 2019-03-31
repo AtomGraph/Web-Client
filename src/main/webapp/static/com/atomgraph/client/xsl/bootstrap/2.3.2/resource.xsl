@@ -52,8 +52,8 @@ exclude-result-prefixes="#all">
         </div>
 
         <div class="pull-right">
-            <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}" use-when="system-property('xsl:product-name') = 'SAXON'">
-                <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
+            <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
+                <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                 <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
             </a>
         </div>
