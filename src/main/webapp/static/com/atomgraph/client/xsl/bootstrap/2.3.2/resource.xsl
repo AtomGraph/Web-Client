@@ -64,7 +64,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="prelim-images" as="item()*">
             <xsl:apply-templates mode="ac:image"/>
         </xsl:variable>
-        <xsl:variable name="images"as="element()*" select="$prelim-images/self::*"/>
+        <xsl:variable name="images" select="$prelim-images/self::*" as="element()*"/>
 
         <xsl:if test="$images">
             <div class="carousel slide">
