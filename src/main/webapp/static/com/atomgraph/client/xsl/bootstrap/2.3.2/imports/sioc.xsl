@@ -78,7 +78,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
         <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
             <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>        
+        </xsl:apply-templates>
     </xsl:template>
 
 </xsl:stylesheet>

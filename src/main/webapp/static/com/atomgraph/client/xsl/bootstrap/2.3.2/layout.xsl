@@ -52,6 +52,7 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <xsl:import href="../../group-sort-triples.xsl"/>
+    <xsl:import href="../../xml-to-string.xsl"/>
     <xsl:import href="../../functions.xsl"/>
     <xsl:import href="../../imports/default.xsl"/>
     <xsl:import href="../../imports/dbpedia-owl.xsl"/>
