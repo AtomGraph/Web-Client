@@ -42,11 +42,11 @@ exclude-result-prefixes="#all">
     </xsl:template> -->
     
     <xsl:template match="*[@rdf:about]" mode="bs2:Actions" priority="1">
-        <div class="pull-right">
+<!--        <div class="pull-right">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
                     <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                    <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                    <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Delete</xsl:text>  TO-DO: cache ontologies in localStorage 
                 </button>
             </form>
         </div>
@@ -54,9 +54,9 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
                 <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Edit</xsl:text>  TO-DO: cache ontologies in localStorage 
             </a>
-        </div>
+        </div>-->
     </xsl:template>
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Actions"/>
