@@ -91,7 +91,7 @@ exclude-result-prefixes="#all">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:choose>
+                <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
                     <xsl:when test="doc-available(ac:document-uri(.))">
                         <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
                     </xsl:when>
@@ -99,6 +99,7 @@ exclude-result-prefixes="#all">
                         <xsl:value-of select="."/>
                     </xsl:otherwise>
                 </xsl:choose>
+                <xsl:value-of select="." use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
             </xsl:for-each>
         </ul>
     </xsl:template>

@@ -161,7 +161,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', .)">
                 <xsl:apply-templates select="key('resources', .)" mode="ac:label"/>
             </xsl:when>
-            <xsl:when test="doc-available(ac:document-uri(.)) and key('resources', ., document(ac:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'" >
+            <xsl:when test="doc-available(ac:document-uri(.)) and key('resources', ., document(ac:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'">
                 <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
