@@ -378,7 +378,7 @@ exclude-result-prefixes="#all">
             </xsl:when>
             <xsl:when test="$ac:mode = '&ac;MapMode'">
                 <xsl:apply-templates select="." mode="bs2:Map"/>
-            </xsl:when>            
+            </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="bs2:Block"/>
             </xsl:otherwise>

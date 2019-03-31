@@ -62,6 +62,7 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
+        <!--
         <xsl:variable name="images" as="element()*">
             <xsl:apply-templates mode="ac:image"/>
         </xsl:variable>
@@ -81,6 +82,7 @@ exclude-result-prefixes="#all">
                 </div>
             </div>
         </xsl:if>
+        -->
     </xsl:template>
     
     <!-- TYPE MODE -->
