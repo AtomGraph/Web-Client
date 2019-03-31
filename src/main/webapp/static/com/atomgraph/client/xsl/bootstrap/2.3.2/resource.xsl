@@ -19,7 +19,6 @@ limitations under the License.
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
 ]>
 <xsl:stylesheet version="2.0"
@@ -27,12 +26,10 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:sparql="&sparql;"
 xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">
 
     <!-- ACTIONS MODE (Create/Edit buttons) -->
@@ -90,7 +87,7 @@ exclude-result-prefixes="#all">
     <!-- TYPE MODE -->
         
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
-        <ul class="inline">
+<!--        <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}"/>
                 <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
@@ -103,23 +100,23 @@ exclude-result-prefixes="#all">
                 </xsl:choose>
                 <xsl:value-of select="." use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
             </xsl:for-each>
-        </ul>
+        </ul>-->
     </xsl:template>
 
     <xsl:template match="*" mode="bs2:TypeList"/>
 
     <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
-        <li>
+<!--        <li>
             <span title="{@rdf:about}" class="btn btn-type">
                 <xsl:apply-templates select="." mode="xhtml:Anchor"/>
             </span>
-        </li>
+        </li>-->
     </xsl:template>
 
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
-        <xsl:variable name="properties" as="element()*">
+<!--        <xsl:variable name="properties" as="element()*">
             <xsl:apply-templates mode="#current">
                 <xsl:sort select="ac:property-label(.)" data-type="text" order="ascending" lang="{$ldt:lang}"/>
             </xsl:apply-templates>
@@ -129,7 +126,7 @@ exclude-result-prefixes="#all">
             <dl class="dl-horizontal">
                 <xsl:copy-of select="$properties"/>
             </dl>
-        </xsl:if>
+        </xsl:if>-->
     </xsl:template>
     
 </xsl:stylesheet>
