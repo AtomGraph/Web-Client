@@ -61,14 +61,12 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
-        <!-- <xsl:variable name="images" as="element()*">
+        <xsl:variable name="prelim-images" as="item()*">
             <xsl:apply-templates mode="ac:image"/>
-        </xsl:variable> -->
-        <xsl:message>
-            $images: <xsl:apply-templates mode="ac:image"/>
-        </xsl:message>
-        
-<!--        <xsl:if test="$images">
+        </xsl:variable>
+        <xsl:variable name="images"as="element()*" select="$prelim-images/self::*"/>
+
+        <xsl:if test="$images">
             <div class="carousel slide">
                 <div class="carousel-inner">
                     <xsl:for-each select="$images">
@@ -83,7 +81,7 @@ exclude-result-prefixes="#all">
                     <a class="carousel-control right" onclick="$(this).parents('.carousel').carousel('next');">&#8250;</a>
                 </div>
             </div>
-        </xsl:if>-->
+        </xsl:if>
     </xsl:template>
     
     <!-- TYPE MODE -->
