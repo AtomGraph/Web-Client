@@ -167,7 +167,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
                 <xsl:value-of select="substring-after(., '#')"/>
             </xsl:when>
-            <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0" use-when="system-property('xsl:product-name') = 'SAXON'">
+            <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
                 <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
                 <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
             </xsl:when>
