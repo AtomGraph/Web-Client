@@ -40,18 +40,24 @@
 
 # CLASSES
 
+:Document a rdfs:Class ;
+    rdfs:subClassOf foaf:Document ;
+    ldt:path "{slug}" ;
+    rdfs:label "Document" ;
+    spin:constructor :DocumentConstructor ;
+    rdfs:isDefinedBy : .
+
 :Container a rdfs:Class ;
     rdfs:subClassOf :Document, sioc:Container ;
     spin:constructor :ContainerConstructor ;
     rdfs:label "Container" ;
-    rdfs:comment "Container that can have other containers and items as children" ;
+    rdfs:comment "An area in which content Items are contained" ;
     rdfs:isDefinedBy : .
 
-:Document a rdfs:Class ;
-    rdfs:subClassOf foaf:Document, sioc:Item ;
-    ldt:path "{slug}" ;
-    rdfs:label "Document" ;
-    spin:constructor :DocumentConstructor ;
+:Item a rdfs:Class ;
+    rdfs:subClassOf :Document, sioc:Item ;
+    rdfs:label "Item" ;
+    rdfs:comment "An Item is something which can be in a Container" ;
     rdfs:isDefinedBy : .
 
 # QUERIES
