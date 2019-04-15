@@ -42,7 +42,7 @@
 
 :Document a rdfs:Class ;
     rdfs:subClassOf foaf:Document ;
-    ldt:path "{slug}" ;
+    ldt:path "{slug}/" ;
     rdfs:label "Document" ;
     spin:constructor :DocumentConstructor ;
     rdfs:isDefinedBy : .
