@@ -90,7 +90,7 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:for-each-group select="$thumbnail-items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
-            <xsl:sort select="ac:label(.)" lang="{$ldt:lang}"/>
+            <!--<xsl:sort select="ac:label(.)" lang="{$ldt:lang}"/>-->
             <div class="row-fluid">
                 <ul class="thumbnails">
                     <xsl:copy-of select="current-group()"/>
