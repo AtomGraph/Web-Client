@@ -140,7 +140,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
             <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
+                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                <xsl:sort select="ac:property-label(.)" order="ascending" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
+
                 <xsl:sequence select="current-group()[1]"/>
             </xsl:for-each-group>
         </xsl:param>
@@ -157,7 +159,8 @@ exclude-result-prefixes="#all">
                 <tr>
                     <xsl:if test="$anchor-column">
                         <th>
-                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label"/>
+                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                            <xsl:value-of use-when="system-property('xsl:product-name') = 'Saxon-CE'">Resource</xsl:value-of>
                         </th>
                     </xsl:if>
                     
