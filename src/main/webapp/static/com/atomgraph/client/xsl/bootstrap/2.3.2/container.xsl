@@ -209,7 +209,7 @@ exclude-result-prefixes="#all">
         </tr>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/>
+    <!-- <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/> -->
 
     <!-- MAP MODE -->
 

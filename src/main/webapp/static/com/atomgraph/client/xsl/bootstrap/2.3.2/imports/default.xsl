@@ -17,12 +17,10 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY ac     "http://atomgraph.com/ns/client#">
-    <!ENTITY g      "http://atomgraph.com/ns/core#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">    
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
@@ -33,12 +31,10 @@ limitations under the License.
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
-xmlns:g="&g;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
-xmlns:sparql="&sparql;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
 xmlns:foaf="&foaf;"
