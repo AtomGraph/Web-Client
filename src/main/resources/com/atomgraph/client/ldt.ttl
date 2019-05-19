@@ -13,7 +13,7 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 
 : a owl:Ontology ;
-    owl:imports sp:, spin:, sd: ;
+    owl:imports sp:, spin:, spl:, sd: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Linked Data Templates ontology" ;
     rdfs:comment "Must be imported and reused by LDT applications" ;
@@ -190,7 +190,7 @@
     rdfs:isDefinedBy : .
 
 :Parameter a rdfs:Class ;
+    rdfs:subClassOf spl:Argument ;
     rdfs:label "Parameter" ;
-    rdfs:comment "Represents a parameter that has predicate, value type, default value etc." ;
-    rdfs:seeAlso spl:Argument ;
+    rdfs:comment "Represents a query parameter that has predicate, value type, default value etc." ;
     rdfs:isDefinedBy : .

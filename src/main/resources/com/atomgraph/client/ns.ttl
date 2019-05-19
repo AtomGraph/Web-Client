@@ -60,7 +60,7 @@
 
 # MODES
 
-:ReadMode a :Mode, :DocumentMode, :ContainerMode ;
+:ReadMode a :Mode, :DocumentMode ;
     rdfs:label "Properties" ;
     rdfs:isDefinedBy : .
 

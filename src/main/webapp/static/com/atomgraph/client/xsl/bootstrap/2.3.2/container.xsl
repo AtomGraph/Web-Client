@@ -75,7 +75,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
         
-    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>
+    <!--<xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>-->
      
     <!-- GRID MODE -->
 
