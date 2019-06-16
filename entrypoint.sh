@@ -2,13 +2,13 @@
 
 # set Context variables (which are used in $CATALINA_HOME/conf/Catalina/localhost/ROOT.xml)
 
-if [ ! -z "$STYLESHEET" ] ; then
+if [ -n "$STYLESHEET" ] ; then
     STYLESHEET_PARAM="--stringparam ac:stylesheet $STYLESHEET "
 fi
-if [ ! -z "$RESOLVING_UNCACHED" ] ; then
+if [ -n "$RESOLVING_UNCACHED" ] ; then
     RESOLVING_UNCACHED_PARAM="--stringparam ac:resolvingUncached $RESOLVING_UNCACHED "
 fi
-if [ ! -z "$SITEMAP_RULES" ] ; then
+if [ -n "$SITEMAP_RULES" ] ; then
     SITEMAP_RULES_PARAM="--stringparam ac:sitemapRules $SITEMAP_RULES "
 fi
 
@@ -22,7 +22,7 @@ transform="xsltproc \
   conf/Catalina/localhost/context.xsl \
   conf/Catalina/localhost/ROOT.xml"
 
-eval $transform
+eval "$transform"
 
 # run Tomcat
 
