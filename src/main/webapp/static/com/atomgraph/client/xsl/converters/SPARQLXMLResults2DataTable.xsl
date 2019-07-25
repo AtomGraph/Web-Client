@@ -29,7 +29,6 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 xmlns:ac="&ac;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:date="http://exslt.org/dates-and-times"
 exclude-result-prefixes="#all">
 
         <xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="application/json"/>
@@ -151,11 +150,11 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;date']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.) - 1"/>, <xsl:value-of select="date:day-in-month(.)"/>)
+                new Date(<xsl:value-of select="year-from-date(.)"/>, <xsl:value-of select="month-from-date(.) - 1"/>, <xsl:value-of select="day-from-date(.)"/>)
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="date:year(.)"/>, <xsl:value-of select="date:month-in-year(.) - 1"/>, <xsl:value-of select="date:day-in-month(.)"/>, <xsl:value-of select="date:hour-in-day(.)"/>, <xsl:value-of select="date:minute-in-hour(.)"/>, <xsl:value-of select="date:second-in-minute(.)"/>)
+                new Date(<xsl:value-of select="year-from-dateTime(.)"/>, <xsl:value-of select="month-from-dateTime(.) - 1"/>, <xsl:value-of select="day-from-dateTime(.)"/>, <xsl:value-of select="hours-from-dateTime(.)"/>, <xsl:value-of select="minutes-from-dateTime(.)"/>, <xsl:value-of select="seconds-from-dateTime(.)"/>)
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;time']" mode="ac:DataTable">

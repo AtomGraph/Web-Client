@@ -47,6 +47,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -217,7 +218,7 @@ public class PostReplaceFilter implements ContainerRequestFilter
 
     @Override
     public ContainerRequest filter(ContainerRequest request) {
-        if (!request.getMethod().equalsIgnoreCase("POST")) {
+        if (!request.getMethod().equalsIgnoreCase(HttpMethod.POST)) {
             return request;
         }
 
@@ -239,7 +240,7 @@ public class PostReplaceFilter implements ContainerRequestFilter
             return request;
         }
         request.setMethod(override);
-        if (override.equals("GET")) {
+        if (override.equals(HttpMethod.GET)) {
             if (MediaTypes.typeEquals(MediaType.APPLICATION_FORM_URLENCODED_TYPE, request.getMediaType())) {
                 UriBuilder ub = request.getRequestUriBuilder().replaceQuery(request.getEntity(String.class));
                 request.setUris(request.getBaseUri(), ub.build());
