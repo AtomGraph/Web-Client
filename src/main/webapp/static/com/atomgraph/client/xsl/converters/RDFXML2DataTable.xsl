@@ -97,7 +97,7 @@ exclude-result-prefixes="xs">
                 </xsl:for-each>
         ],
         "rows": [
-                <xsl:apply-templates mode="#current">
+                <xsl:apply-templates select="*" mode="#current">
                     <xsl:with-param name="properties" select="$properties"/>
                 </xsl:apply-templates>
                 ]
@@ -194,7 +194,7 @@ exclude-result-prefixes="xs">
                 ]
         </xsl:template>
 
-        <xsl:template match="text()[../@rdf:datatype = '&xsd;string'] | text()" mode="ac:DataTable">
+        <xsl:template match="text()[../@rdf:datatype = '&xsd;string'] | *[@rdf:about or @rdf:nodeID]/*/text()" mode="ac:DataTable">
                 "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>"
         </xsl:template>
 
