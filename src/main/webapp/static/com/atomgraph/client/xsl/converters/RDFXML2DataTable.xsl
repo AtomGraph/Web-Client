@@ -214,7 +214,7 @@ exclude-result-prefixes="xs">
                 </xsl:if>
         </xsl:template>
 
-        <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:DataTable">
+        <xsl:template match="@rdf:*" mode="ac:DataTable">
                 "<xsl:value-of select="."/>"
         </xsl:template>
 
