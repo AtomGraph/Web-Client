@@ -135,7 +135,7 @@ exclude-result-prefixes="#all">
 
         <xsl:template match="sparql:binding" mode="ac:DataTable">
                         {
-                                "v": <xsl:apply-templates mode="#current"/>
+                                "v": <xsl:apply-templates select="*" mode="#current"/>
                         }
                 <xsl:if test="position() != last()">        ,
                 </xsl:if>
