@@ -154,7 +154,7 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="ac:DataTable">
-                "Date(<xsl:value-of select="year-from-dateTime(.)"/>, <xsl:value-of select="month-from-dateTime(.) - 1"/>, <xsl:value-of select="day-from-dateTime(.)"/>, <xsl:value-of select="hours-from-dateTime(.)"/>, <xsl:value-of select="minutes-from-dateTime(.)"/>, <xsl:value-of select="seconds-from-dateTime(.)"/>"
+                "Date(<xsl:value-of select="year-from-dateTime(.)"/>, <xsl:value-of select="month-from-dateTime(.) - 1"/>, <xsl:value-of select="day-from-dateTime(.)"/>, <xsl:value-of select="hours-from-dateTime(.)"/>, <xsl:value-of select="minutes-from-dateTime(.)"/>, <xsl:value-of select="seconds-from-dateTime(.)"/>)"
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;time']" mode="ac:DataTable">
