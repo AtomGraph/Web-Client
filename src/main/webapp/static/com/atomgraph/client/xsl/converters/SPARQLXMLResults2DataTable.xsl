@@ -46,9 +46,9 @@ exclude-result-prefixes="#all">
                          {id: 'B', label: 'B-label', type: 'number'},
                          {id: 'C', label: 'C-label', type: 'date'}
                         ],
-          "rows": [{c:[{v: 'a'}, {v: 1.0, f: 'One'}, {v: new Date(2008, 1, 28, 0, 31, 26), f: '2/28/08 12:31 AM'}]},
-                         {c:[{v: 'b'}, {v: 2.0, f: 'Two'}, {v: new Date(2008, 2, 30, 0, 31, 26), f: '3/30/08 12:31 AM'}]},
-                         {c:[{v: 'c'}, {v: 3.0, f: 'Three'}, {v: new Date(2008, 3, 30, 0, 31, 26), f: '4/30/08 12:31 AM'}]}
+          "rows": [{c:[{v: 'a'}, {v: 1.0, f: 'One'}, {v: "Date(2008, 1, 28, 0, 31, 26)", f: '2/28/08 12:31 AM'}]},
+                         {c:[{v: 'b'}, {v: 2.0, f: 'Two'}, {v: "Date(2008, 2, 30, 0, 31, 26)", f: '3/30/08 12:31 AM'}]},
+                         {c:[{v: 'c'}, {v: 3.0, f: 'Three'}, {v: "Date(2008, 3, 30, 0, 31, 26)", f: '4/30/08 12:31 AM'}]}
                         ]
         }
 
@@ -150,11 +150,11 @@ exclude-result-prefixes="#all">
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;date']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="year-from-date(.)"/>, <xsl:value-of select="month-from-date(.) - 1"/>, <xsl:value-of select="day-from-date(.)"/>)
+                "Date(<xsl:value-of select="year-from-date(.)"/>, <xsl:value-of select="month-from-date(.) - 1"/>, <xsl:value-of select="day-from-date(.)"/>)"
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;dateTime']" mode="ac:DataTable">
-                new Date(<xsl:value-of select="year-from-dateTime(.)"/>, <xsl:value-of select="month-from-dateTime(.) - 1"/>, <xsl:value-of select="day-from-dateTime(.)"/>, <xsl:value-of select="hours-from-dateTime(.)"/>, <xsl:value-of select="minutes-from-dateTime(.)"/>, <xsl:value-of select="seconds-from-dateTime(.)"/>)
+                "Date(<xsl:value-of select="year-from-dateTime(.)"/>, <xsl:value-of select="month-from-dateTime(.) - 1"/>, <xsl:value-of select="day-from-dateTime(.)"/>, <xsl:value-of select="hours-from-dateTime(.)"/>, <xsl:value-of select="minutes-from-dateTime(.)"/>, <xsl:value-of select="seconds-from-dateTime(.)"/>"
         </xsl:template>
 
         <xsl:template match="sparql:literal[@datatype = '&xsd;time']" mode="ac:DataTable">
