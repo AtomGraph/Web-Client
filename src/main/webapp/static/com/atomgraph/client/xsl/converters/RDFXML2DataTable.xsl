@@ -195,11 +195,11 @@ exclude-result-prefixes="xs">
         </xsl:template>
 
         <xsl:template match="text()[../@rdf:datatype = '&xsd;string']" mode="ac:DataTable">
-                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>"
+                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '/', '\\/'), '&#xA;', '\\n'), '&#xD;', '\\r'), '&#x9;', '\\t')"/>"
         </xsl:template>
 
         <xsl:template match="text()" mode="ac:DataTable" priority="-1">
-                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>"
+                "<xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '/', '\\/'), '&#xA;', '\\n'), '&#xD;', '\\r'), '&#x9;', '\\t')"/>"
         </xsl:template>
         
         <xsl:template match="node()[../@rdf:parseType = 'Literal']" mode="ac:DataTable">
@@ -207,7 +207,7 @@ exclude-result-prefixes="xs">
                     <xsl:text>"</xsl:text>
                 </xsl:if>
 
-                <xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '''', '\\'''), '&#x9;', '\\t'), '&#xA;', '\\n'), '&#xD;', '\\r')"/>
+                <xsl:value-of select="replace(replace(replace(replace(replace(replace(., '\\', '\\\\'), '&quot;', '\\&quot;'), '/', '\\/'), '&#xA;', '\\n'), '&#xD;', '\\r'), '&#x9;', '\\t')"/>
                 
                 <xsl:if test="position() = last()">
                     <xsl:text>"</xsl:text>
