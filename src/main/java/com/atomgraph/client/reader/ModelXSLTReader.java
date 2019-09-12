@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * Reads RDF from XML by transforming it to RDF/XML using GRDDL (XSLT) stylesheet
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
- * @see com.atomgraph.processor.locator.LocatorGRDDL
  */
 @Consumes(MediaType.APPLICATION_XML)
 public class ModelXSLTReader extends ModelProvider implements RDFReader

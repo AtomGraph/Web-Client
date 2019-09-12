@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * A custom mapper implementation that maps URI prefixes to file names
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
- * @see com.atomgraph.processor.util.DataManager
+ * @see com.atomgraph.client.util.DataManager
  */
 public class PrefixMapper extends LocationMapper
 {

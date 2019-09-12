@@ -169,7 +169,7 @@ public class Application extends javax.ws.rs.core.Application
      * Initializes (post construction) DataManager, its LocationMapper and Locators, and Context
      * 
      * @see com.atomgraph.client.util.DataManager
-     * @see com.atomgraph.processor.locator
+     * @see com.atomgraph.client.locator.PrefixMapper
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/util/FileManager.html">FileManager</a>
      * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/util/LocationMapper.html">LocationMapper</a>
      */

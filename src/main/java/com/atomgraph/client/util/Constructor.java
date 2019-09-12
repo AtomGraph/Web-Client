@@ -66,7 +66,6 @@ public class Constructor
      * @param instance the instance resource
      * @param baseURI base URI of the query
      * @param reachedClasses classes that were already constructed
-     * @see org.spinrdf.inference.SPINConstructors
      * @return the instance resource with constructed properties
      */
     public Resource constructInstance(OntClass forClass, Property property, Resource instance, String baseURI, Set<OntClass> reachedClasses)
