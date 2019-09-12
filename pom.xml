@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>2.0.3-SNAPSHOT</version>
+    <version>2.0.3</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -42,7 +42,8 @@
         <url>https://github.com/AtomGraph/Web-Client</url>
         <connection>scm:git:git://github.com/AtomGraph/Web-Client.git</connection>
         <developerConnection>scm:git:git@github.com:AtomGraph/Web-Client.git</developerConnection>
-    </scm>
+      <tag>client-2.0.3</tag>
+  </scm>
   
     <repositories>
         <repository>
