@@ -52,6 +52,10 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -72,10 +76,18 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.spinrdf</groupId>
             <artifactId>spinrdf</artifactId>
             <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        -->
+        <!-- we need to use JitPack since SPINRDF is not published on Maven central -->
+        <dependency>
+            <groupId>com.github.spinrdf</groupId>
+            <artifactId>spinrdf</artifactId>
+            <version>0acf2c0fdaaa7038d795c98b72bce89b045887e9</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
