@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * JAX-RS provider for data manager subclass.
  * Needs to be registered in the application.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see com.atomgraph.client.util.DataManager
  */
 @Provider

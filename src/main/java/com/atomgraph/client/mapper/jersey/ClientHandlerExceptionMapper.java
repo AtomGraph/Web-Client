@@ -25,7 +25,7 @@ import org.apache.jena.query.DatasetFactory;
 
 /**
  *
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 @Provider
 public class ClientHandlerExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<ClientHandlerException>

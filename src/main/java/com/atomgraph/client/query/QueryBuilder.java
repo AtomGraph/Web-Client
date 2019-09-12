@@ -42,7 +42,7 @@ import org.spinrdf.vocabulary.SP;
 /**
  * SPARQL query builder based on SPIN RDF syntax
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see SelectBuilder
  * @see <a href="http://spinrdf.org/sp.html">SPIN - SPARQL Syntax</a>
  * @see <a href="http://topbraid.org/spin/api/">SPIN API</a>

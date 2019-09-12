@@ -15,11 +15,15 @@ $(document).ready(function()
 
     $(".navbar-form").on("submit", function()
     {
-        var uriOrLabel = $(this).find("input[name=label]").val();
-        if (uriOrLabel.indexOf("http://") === 0 || uriOrLabel.indexOf("https://") === 0)
+        var labelInput = $(this).find("input[name=label]");
+        if (labelInput.length) // check whether label input exists
         {
-            $(this).attr("action", "");
-            $(this).find("input[name=label]").attr("name", "uri");
+            var uriOrLabel = labelInput.val();
+            if (uriOrLabel.indexOf("http://") === 0 || uriOrLabel.indexOf("https://") === 0)
+            {
+                $(this).attr("action", "");
+                $(this).find("input[name=label]").attr("name", "uri");
+            }
         }
         
         return true;

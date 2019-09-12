@@ -26,7 +26,7 @@ import org.apache.jena.query.DatasetFactory;
 /**
  * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 @Provider
 public class NotFoundExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<NotFoundException>

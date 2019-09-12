@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Resource that can publish Linked Data and (X)HTML as well as load RDF from remote sources.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 @Path("/")
 public class ProxyResourceBase implements Resource

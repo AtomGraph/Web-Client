@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Data manager subclass that resolves URI to RDF/XML.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public class DataManager extends com.atomgraph.core.util.jena.DataManager implements URIResolver, UnparsedTextURIResolver // net.sf.saxon.NonDelegatingURIResolver ?
 {

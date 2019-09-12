@@ -31,7 +31,7 @@ import org.spinrdf.vocabulary.SP;
 /**
  * SPARQL update builder based on SPIN RDF syntax
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://spinrdf.org/sp.html">SPIN - SPARQL Syntax</a>
  * @see <a href="http://topbraid.org/spin/api/1.2.0/spin/apidocs/org/topbraid/spin/model/update/Update.html">SPIN Update</a>
  */

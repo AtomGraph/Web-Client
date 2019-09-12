@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Transforms SPARQL XML results with XSLT stylesheet and writes result to response.
  * Needs to be registered in the application.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/query/ResultSet.html">ResultSet</a>
  * @see <a href="http://jsr311.java.net/nonav/javadoc/javax/ws/rs/ext/MessageBodyWriter.html">MessageBodyWriter</a>
  */

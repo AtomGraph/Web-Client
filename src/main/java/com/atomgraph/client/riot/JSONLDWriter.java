@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  *  Writes Model as JSON-LD.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://json-ld.org">JSON-LD - JSON for Linking Data</a>
  */
 public class JSONLDWriter implements WriterGraphRIOT

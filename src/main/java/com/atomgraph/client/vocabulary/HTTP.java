@@ -27,7 +27,7 @@ import org.apache.jena.rdf.model.Resource;
 /**
  * HTTP Vocabulary in RDF
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://www.w3.org/TR/HTTP-in-RDF10/">HTTP Vocabulary in RDF 1.0</a>
  */
 public class HTTP

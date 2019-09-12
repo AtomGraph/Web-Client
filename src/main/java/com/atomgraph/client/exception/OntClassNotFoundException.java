@@ -17,7 +17,7 @@ package com.atomgraph.client.exception;
 
 /**
  *
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public class OntClassNotFoundException extends RuntimeException
 {

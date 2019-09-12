@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
  * Transforms RDF with XSLT stylesheet and writes (X)HTML result to response.
  * Needs to be registered in the application.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see org.apache.jena.query.Dataset
  * @see javax.ws.rs.ext.MessageBodyWriter
  */

@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
  * Utility class that simplifies building of XSLT transformations.
  * Uses builder pattern.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public class XSLTBuilder
 {

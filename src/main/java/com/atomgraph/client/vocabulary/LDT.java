@@ -28,7 +28,7 @@ import org.apache.jena.rdf.model.Resource;
 /**
  * Linked Data Templates vocabulary.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public final class LDT
 {

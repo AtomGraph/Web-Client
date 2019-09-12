@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of URIResolver that can resolve URIs to file entries within ZIP archives.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public class ZipURIResolver implements URIResolver
 {
