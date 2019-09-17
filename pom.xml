@@ -86,9 +86,9 @@
         -->
         <!-- we need to use JitPack since SPINRDF is not published on Maven central -->
         <dependency>
-            <groupId>com.github.spinrdf</groupId>
+            <groupId>com.github.AtomGraph</groupId>
             <artifactId>spinrdf</artifactId>
-            <version>0acf2c0fdaaa7038d795c98b72bce89b045887e9</version>
+            <version>23d1be77a171291ee6375c5e5062760c4a073c16</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
