@@ -12,7 +12,7 @@ RUN mvn -Pstandalone clean install
 
 FROM tomcat:8.0.52-jre8
 
-ARG VERSION=client-2.0.4-SNAPSHOT
+ARG VERSION=client-2.0.5-SNAPSHOT
 
 WORKDIR $CATALINA_HOME/webapps
 
