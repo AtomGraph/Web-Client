@@ -1,15 +1,5 @@
 FROM maven:3.5.3-jdk-8 as maven
 
-### Clone and build AtomGraph Core (2.0.1-SNAPSHOT is not on Maven central)
-
-WORKDIR /usr/src
-
-RUN git clone https://github.com/AtomGraph/Core.git
-
-WORKDIR /usr/src/Core
-
-RUN mvn clean install
-
 ### Build AtomGraph Web-Client
 
 WORKDIR /usr/src/Web-Client
@@ -22,9 +12,9 @@ RUN mvn -Pstandalone clean install
 
 FROM tomcat:8.0.52-jre8
 
-ARG VERSION=client-1.1.4-SNAPSHOT
+ARG VERSION=client-2.0.4-SNAPSHOT
 
-WORKDIR /usr/local/tomcat/webapps/
+WORKDIR $CATALINA_HOME/webapps
 
 RUN rm -rf * # remove Tomcat's default webapps
 
