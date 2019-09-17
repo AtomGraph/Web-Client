@@ -19,12 +19,12 @@ What AWC provides for users as out-of-the-box generic features:
 Getting started
 ===============
 
-* [what is Linked Data](../../wiki/What-is-Linked-Data)
-* [installing Web-Client](../../wiki/Installation)
-* [extending Web-Client](../../wiki/Extending-Web-Client)
-* [configuring Web-Client](../../wiki/Configuration)
+* [what is Linked Data](https://github.com/AtomGraph/Web-Client/wiki/What-is-Linked-Data)
+* [installing Web-Client](https://github.com/AtomGraph/Web-Client/wiki/Installation)
+* [extending Web-Client](https://github.com/AtomGraph/Web-Client/wiki/Extending-Web-Client)
+* [configuring Web-Client](https://github.com/AtomGraph/Web-Client/wiki/Configuration)
 
-For full documentation, see the [wiki index](../../wiki).
+For full documentation, see the [wiki index](https://github.com/AtomGraph/Web-Client/wiki).
 
 Usage
 =====
@@ -44,19 +44,21 @@ It accepts the following environment variables (that become webapp context param
     <dd><code>true</code>/<code>false</code>, optional</dd>
 </dl>
 
-Run Web-Client with the [default XSLT stylesheet](src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
+Run Web-Client with the [default XSLT stylesheet](https://github.com/AtomGraph/Web-Client/blob/master/src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
 
     docker run -p 8080:8080 atomgraph/web-client
+
+Web-Client will be available on [http://localhost:8080](http://localhost:8080).
 
 Maven
 -----
 
-Web-Client is released on Maven central as [`com.atomgraph:client](https://search.maven.org/artifact/com.atomgraph/client/).
+Web-Client is released on Maven central as [`com.atomgraph:client`](https://search.maven.org/artifact/com.atomgraph/client/).
 
 Support
 =======
 
-Please [report issues](../../issues) if you've encountered a bug or have a feature request.
+Please [report issues](https://github.com/AtomGraph/Web-Client/issues) if you've encountered a bug or have a feature request.
 
 Commercial AtomGraph consulting, development, and support are available from [AtomGraph](https://atomgraph.com).
 
