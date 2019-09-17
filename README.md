@@ -51,7 +51,7 @@ Run Web-Client with the [default XSLT stylesheet](src/main/webapp/static/com/ato
 Maven
 -----
 
-Web-Client will be released on Maven central when it reaches the 2.1 version.
+Web-Client is released on Maven central as [`com.atomgraph:client](https://search.maven.org/artifact/com.atomgraph/client/).
 
 Support
 =======
