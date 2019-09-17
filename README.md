@@ -22,7 +22,6 @@ Getting started
 * [what is Linked Data](https://github.com/AtomGraph/Web-Client/wiki/What-is-Linked-Data)
 * [installing Web-Client](https://github.com/AtomGraph/Web-Client/wiki/Installation)
 * [extending Web-Client](https://github.com/AtomGraph/Web-Client/wiki/Extending-Web-Client)
-* [configuring Web-Client](https://github.com/AtomGraph/Web-Client/wiki/Configuration)
 
 For full documentation, see the [wiki index](https://github.com/AtomGraph/Web-Client/wiki).
 
@@ -40,7 +39,7 @@ It accepts the following environment variables (that become webapp context param
     <dd>Custom XSLT stylesheet</dd>
     <dd>URI, optional</dd>
     <dt><code>RESOLVING_UNCACHED</code></dt>
-    <dd>If <code>true</code>, the stylesheet will attempt to load RDF resources by dereferencing URIs in the main data to improve the UX</dd>
+    <dd>If <code>true</code>, the stylesheet will attempt to resolve (dereference) URI resources in the rendered RDF data to improve the UX</dd>
     <dd><code>true</code>/<code>false</code>, optional</dd>
 </dl>
 
