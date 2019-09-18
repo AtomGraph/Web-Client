@@ -25,10 +25,11 @@ WORKDIR $CATALINA_HOME
 
 COPY src/main/webapp/META-INF/context.xml conf/Catalina/localhost/ROOT.xml
 
-### Install XSLT processor
+### Install XSLT processor and ps
 
 RUN apt-get update && \
-  apt-get -y install xsltproc
+  apt-get -y install xsltproc && \
+  apt-get -y install procps
 
 ### Copy entrypoint
 
