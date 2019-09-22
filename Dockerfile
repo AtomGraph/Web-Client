@@ -12,14 +12,12 @@ RUN mvn -Pstandalone clean install
 
 FROM tomcat:8.0.52-jre8
 
-ARG VERSION=client-2.0.5-SNAPSHOT
-
 WORKDIR $CATALINA_HOME/webapps
 
 RUN rm -rf * # remove Tomcat's default webapps
 
 # copy exploded WAR folder from the maven stage
-COPY --from=maven /usr/src/Web-Client/target/$VERSION/ ROOT/
+COPY --from=maven /usr/src/Web-Client/target/ROOT/ ROOT/
 
 WORKDIR $CATALINA_HOME
 
