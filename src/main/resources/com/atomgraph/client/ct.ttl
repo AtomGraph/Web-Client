@@ -36,7 +36,7 @@
     ldt:param  :Query, :DefaultGraphURI, :NamedGraphURI ;
     # using-graph-uri - POST only
     # using-named-graph-uri - POST only
-    ldt:loadClass <java:com.atomgraph.core.model.impl.SPARQLEndpointBase> ;
+    ldt:loadClass <java:com.atomgraph.core.model.impl.SPARQLEndpointImpl> ;
     rdfs:label "SPARQL endpoint" ;
     rdfs:isDefinedBy : .
 
@@ -44,7 +44,7 @@
     ldt:match "/service" ;
     ldt:query :Describe ;
     ldt:param :Default, :Graph ;
-    ldt:loadClass <java:com.atomgraph.core.model.impl.GraphStoreBase> ;
+    ldt:loadClass <java:com.atomgraph.core.model.impl.GraphStoreImpl> ;
     rdfs:label "Graph Store" ;
     rdfs:isDefinedBy : .
 

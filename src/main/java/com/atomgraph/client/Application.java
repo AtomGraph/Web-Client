@@ -58,7 +58,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.atomgraph.core.io.DatasetProvider;
-import com.atomgraph.core.io.QueryWriter;
+import com.atomgraph.core.io.QueryProvider;
 import com.atomgraph.core.riot.RDFLanguages;
 import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -227,7 +227,7 @@ public class Application extends javax.ws.rs.core.Application
         clientConfig.getSingletons().add(new ModelProvider());
         clientConfig.getSingletons().add(new DatasetProvider());
         clientConfig.getSingletons().add(new ResultSetProvider());
-        clientConfig.getSingletons().add(new QueryWriter());
+        clientConfig.getSingletons().add(new QueryProvider());
         clientConfig.getSingletons().add(new UpdateRequestReader()); // TO-DO: UpdateRequestProvider
 
         Client client = Client.create(clientConfig);
