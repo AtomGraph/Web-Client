@@ -80,17 +80,17 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="bs2:Grid">
         <xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
         <xsl:param name="sort-property" as="xs:anyURI?"/>
-        
+
         <xsl:variable name="prelim-items" as="item()*">
             <xsl:apply-templates mode="#current">
+                <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                <xsl:sort select="ac:label(.)" order="ascending" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="items" select="$prelim-items/self::*" as="element()*"/>
+        
         <xsl:for-each-group select="$items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
-            <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-            <xsl:sort select="ac:label(.)" order="ascending" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
-
             <div class="row-fluid">
                 <ul class="thumbnails">
                     <xsl:copy-of select="current-group()"/>
