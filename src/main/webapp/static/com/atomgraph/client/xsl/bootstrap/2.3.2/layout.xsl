@@ -51,6 +51,7 @@ xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
+    <xsl:import href="../../converters/RDFXML2SVG.xsl"/>
     <xsl:import href="../../group-sort-triples.xsl"/>
     <xsl:import href="../../xml-to-string.xsl"/>
     <xsl:import href="../../functions.xsl"/>
@@ -380,6 +381,9 @@ exclude-result-prefixes="#all">
             <xsl:when test="$ac:mode = '&ac;MapMode'">
                 <xsl:apply-templates select="." mode="bs2:Map"/>
             </xsl:when>
+            <xsl:when test="$ac:mode = '&ac;GraphMode'">
+                <xsl:apply-templates select="." mode="bs2:Graph"/>
+            </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="." mode="bs2:Block"/>
             </xsl:otherwise>
@@ -460,7 +464,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <a href="?uri={$ac:uri}&amp;mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
+            <a href="?uri={ac:document-uri($ac:uri)}&amp;mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
                 <xsl:apply-templates select="." mode="ac:label"/>
             </a>
         </li>
@@ -645,6 +649,15 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
+    <!-- GRAPH MODE -->
+    
+    <xsl:template match="rdf:RDF" mode="bs2:Graph">
+        <xsl:apply-templates select="." mode="ac:SVG">
+            <xsl:with-param name="width" select="'100%'"/>
+            <xsl:with-param name="spring-length" select="150" tunnel="yes"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
     <!-- FORM MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Form" priority="3">

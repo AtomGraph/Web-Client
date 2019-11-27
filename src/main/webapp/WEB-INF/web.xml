@@ -20,11 +20,11 @@
     </context-param>
     <context-param>
         <param-name>http://atomgraph.com/ns/client#cacheStylesheet</param-name>
-        <param-value>false</param-value>
+        <param-value>true</param-value>
     </context-param>
     <context-param>
         <param-name>http://atomgraph.com/ns/client#resolvingUncached</param-name>
-        <param-value>false</param-value>
+        <param-value>true</param-value>
     </context-param>
     <context-param>
         <param-name>http://atomgraph.com/ns/client#sitemapRules</param-name>

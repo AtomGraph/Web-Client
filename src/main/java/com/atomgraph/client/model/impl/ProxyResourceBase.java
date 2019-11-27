@@ -187,35 +187,11 @@ public class ProxyResourceBase implements Resource
             
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebResource().getURI());
 
-            if (cr.getHeaders().get("Link") != null)
-                for (String linkValue : cr.getHeaders().get("Link"))
-                {
-                    try
-                    {
-                        Link link = Link.valueOf(linkValue);
-                        if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getHref());
-                        if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getHref());
-                        if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getHref());
-                    }
-                    catch (URISyntaxException ex)
-                    {
-                        if (log.isErrorEnabled()) log.debug("Could parse Link URI: {}", ex.getInput());
-                    }
-                }
+            if (cr.getHeaders().get("Link") != null) setLinkAttributes(cr.getHeaders().get("Link"));
 
             Model description = cr.getEntity(Model.class);
             
-            com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-            List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(Dataset.class), new ArrayList(), new ArrayList()).add().build();
-
-            Variant variant = getRequest().selectVariant(variants);
-            if (variant == null)
-            {
-                variants = response.getVariantListBuilder(getWritableMediaTypes(Model.class), new ArrayList(), new ArrayList()).add().build(); // fallback to Model
-                return response.getResponseBuilder(description, variants).build();
-            }
-
-            return response.getResponseBuilder(DatasetFactory.create(description), variants).build();
+            return getResponse(DatasetFactory.create(description));
         }
         finally
         {
@@ -223,6 +199,51 @@ public class ProxyResourceBase implements Resource
         }
     }
 
+    /**
+     * Returns response for the given RDF dataset.
+     * 
+     * @param dataset RDF dataset
+     * @return response object
+     */
+    public Response getResponse(Dataset dataset)
+    {
+        com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
+        List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(Dataset.class), new ArrayList(), new ArrayList()).add().build();
+
+        Variant variant = getRequest().selectVariant(variants);
+        if (variant == null || MediaTypes.isTriples(variant.getMediaType()))
+        {
+            variants = response.getVariantListBuilder(getWritableMediaTypes(Model.class), new ArrayList(), new ArrayList()).add().build(); // fallback to Model
+            return response.getResponseBuilder(dataset.getDefaultModel(), variants).build();
+        }
+
+        return response.getResponseBuilder(dataset, variants).build();
+    }
+    
+    /**
+     * Parses <code>Link</code> header values. If they belong to the LDT namespace, they are set as request attributes.
+     * The attributes are used by the {@link com.atomgraph.client.writer.DatasetXSLTWriter}.
+     * 
+     * @param linkValues header values
+     */
+    protected void setLinkAttributes(List<String> linkValues)
+    {
+        for (String linkValue : linkValues)
+        {
+            try
+            {
+                Link link = Link.valueOf(linkValue);
+                if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getHref());
+                if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getHref());
+                if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getHref());
+            }
+            catch (URISyntaxException ex)
+            {
+                if (log.isErrorEnabled()) log.debug("Could parse Link URI: {}", ex.getInput());
+            }
+        }
+    }
+    
     /**
      * Forwards POST request with RDF dataset body and returns RDF response from remote resource.
      * 
