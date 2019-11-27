@@ -4,7 +4,7 @@ and/or build an end-user application on it, or would like to explore Linked Open
 Web-Client renders (X)HTML user interface by transforming ["plain" RDF/XML](https://jena.apache.org/documentation/io/rdf-output.html#rdfxml) (without nested resource descriptions)
 using [XSLT 2.0](https://www.w3.org/TR/xslt20/) stylesheets.
 
-![AtomGraph Web-Client screenshot](https://raw.github.com/AtomGraph/Web-Client/master/screenshot.jpg)
+![AtomGraph Web-Client screenshot](https://raw.github.com/AtomGraph/Web-Client/master/screenshot.png)
 
 Features
 ========
