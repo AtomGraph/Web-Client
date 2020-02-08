@@ -1,0 +1,101 @@
+@base           <http://atomgraph.com/ns/client> .
+
+@prefix :	<#> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix ldt:	<https://www.w3.org/ns/ldt#> .
+@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
+
+# ONTOLOGY
+
+: a owl:Ontology ;
+    rdfs:label "Atomgraph Client ontology" ;
+    owl:versionInfo "1.1.4" .
+
+# PROPERTIES
+
+:mode a owl:ObjectProperty, ldt:InheritedProperty ; # used by inheritance rules
+    rdfs:domain ldt:Template ;
+    rdfs:range :Mode ;
+    rdfs:label "Layout mode" ;
+    rdfs:isDefinedBy : .
+
+:accept a owl:ObjectProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "Accept media type" ;
+    rdfs:isDefinedBy : .
+
+:stylesheet a owl:ObjectProperty ;
+    rdfs:domain ldt:Application ;
+    rdfs:label "XSLT stylesheet" ;
+    rdfs:isDefinedBy : .
+
+# CLASSES
+
+:Mode a owl:Class ;
+    rdfs:label "Mode" ;
+    rdfs:isDefinedBy : .
+
+:DocumentMode a owl:Class ;
+    rdfs:subClassOf :Mode ;
+    rdfs:label "Document mode" ;
+    rdfs:isDefinedBy : .
+
+:ContainerMode a owl:Class ;
+    rdfs:subClassOf :Mode ;
+    rdfs:label "Container mode" ;
+    rdfs:isDefinedBy : .
+
+:ModalMode a owl:Class ;
+    rdfs:subClassOf :Mode ;
+    rdfs:label "Modal mode" ;
+    rdfs:isDefinedBy : .
+
+:QueryEditorMode a owl:Class ;
+    rdfs:subClassOf :Mode ;
+    rdfs:label "Query editor mode" ;
+    rdfs:isDefinedBy : .
+
+# MODES
+
+:ReadMode a :Mode, :DocumentMode ;
+    rdfs:label "Properties" ;
+    rdfs:isDefinedBy : .
+
+:EditMode a :Mode, :DocumentMode ;
+    rdfs:label "Edit" ;
+    rdfs:isDefinedBy : .
+
+:TableMode a :Mode, :ContainerMode ;
+    rdfs:label "Table" ;
+    rdfs:isDefinedBy : .
+
+:ListMode a :Mode, :ContainerMode ;
+    rdfs:label "List" ;
+    rdfs:isDefinedBy : .
+
+:GridMode a :Mode, :ContainerMode ;
+    rdfs:label "Grid" ;
+    rdfs:isDefinedBy : .
+
+:MapMode a :Mode, :DocumentMode, :ContainerMode ;
+    rdfs:label "Map" ;
+    rdfs:isDefinedBy : .
+
+:GraphMode a :Mode, :DocumentMode, :ContainerMode ;
+    rdfs:label "Graph" ;
+    rdfs:isDefinedBy : .
+
+# UI keywords
+
+# rename to :Create?
+:ConstructMode rdfs:label "Create" ;
+    rdfs:isDefinedBy : .
+
+:Delete rdfs:label "Delete" ;
+    rdfs:isDefinedBy : .
+
+:Export rdfs:label "Export" ;
+    rdfs:isDefinedBy : .
