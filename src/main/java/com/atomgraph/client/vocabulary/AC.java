@@ -61,6 +61,8 @@ public final class AC
     public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
 
     public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
+    
+    public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
 
     public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
 

@@ -43,7 +43,8 @@ exclude-result-prefixes="#all">
     <!-- 1. position resource nodes (optionally also literals) randomly. TO-DO: position on an ellipse -->
     <!-- 2. move nodes in a loop using the force-directed algorithm -->
     <!-- 3. draw lines between the nodes, calculating the correct intersection with the node border -->
-
+    <!-- Note: only "flat" RDF/XML (properties grouped into descriptions; no nesting) is supported. It's called RDFXML_PLAIN in Jena. -->
+    
     <xsl:output method="xml" indent="yes" encoding="UTF-8" media-type="image/svg+xml"/>
     <xsl:strip-space elements="*"/>
 

@@ -15,10 +15,10 @@
 
 : a owl:Ontology ;
     owl:imports foaf:, sioc:, sp: ;
-    owl:versionInfo "1.1.4" ;
+    owl:versionInfo "1.1.5" ;
     rdfs:label "Document hierarchy" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    dct:modified "2019-01-27T01:15:00+01:00"^^xsd:dateTime ;
+    dct:modified "2019-12-13T12:06:00+01:00"^^xsd:dateTime ;
     vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/document-hierarchy/domain#" ;
     vann:preferredNamespacePrefix "dh";
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
@@ -56,23 +56,12 @@
 
 :Item a rdfs:Class ;
     rdfs:subClassOf :Document, sioc:Item ;
+    spin:constructor :ItemConstructor ;
     rdfs:label "Item" ;
     rdfs:comment "An Item is something which can be in a Container" ;
     rdfs:isDefinedBy : .
 
 # QUERIES
-
-:ContainerConstructor a sp:Construct, sp:Query ;
-  sp:text """
-      PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
-      PREFIX sp:      <http://spinrdf.org/sp#>
-
-      CONSTRUCT {
-        ?this dh:select [ a sp:Select ]
-      }
-      WHERE {}""" ;
-    rdfs:label "Container constructor" ;
-    rdfs:isDefinedBy : .
 
 :DocumentConstructor a sp:Construct, sp:Query ;
   sp:text """
@@ -86,4 +75,30 @@
         BIND (STRUUID() AS ?slug)
 }""" ;
     rdfs:label "Document constructor" ;
+    rdfs:isDefinedBy : .
+
+:ContainerConstructor a sp:Construct, sp:Query ;
+  sp:text """
+      PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
+      PREFIX sp:      <http://spinrdf.org/sp#>
+      PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+
+      CONSTRUCT {
+        ?this sioc:has_parent [ a dh:Container ] ;
+            dh:select [ a sp:Select ]
+      }
+      WHERE {}""" ;
+    rdfs:label "Container constructor" ;
+    rdfs:isDefinedBy : .
+
+:ItemConstructor a sp:Construct, sp:Query ;
+  sp:text """
+      PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
+      PREFIX sioc:    <http://rdfs.org/sioc/ns#>
+
+      CONSTRUCT {
+        ?this sioc:has_container [ a dh:Container ] .
+      }
+      WHERE {}""" ;
+    rdfs:label "Container constructor" ;
     rdfs:isDefinedBy : .

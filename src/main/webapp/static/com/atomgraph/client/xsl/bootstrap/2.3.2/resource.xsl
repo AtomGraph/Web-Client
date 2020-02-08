@@ -32,6 +32,51 @@ xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
+    <!-- BLOCK MODE -->
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="bs2:Header"/>
+
+            <xsl:apply-templates select="." mode="bs2:PropertyList"/>
+        </div>
+    </xsl:template>
+
+    <!-- inline blank node resource if there is only one property except foaf:primaryTopic having it as object -->
+    <xsl:template match="@rdf:nodeID[key('resources', .)][count(key('predicates-by-object', .)[not(self::foaf:primaryTopic)]) = 1]" mode="bs2:Block" priority="2">
+        <xsl:param name="inline" select="true()" as="xs:boolean" tunnel="yes"/>
+
+        <xsl:choose>
+            <xsl:when test="$inline">
+                <xsl:apply-templates select="key('resources', .)" mode="#current">
+                    <xsl:with-param name="display" select="$inline" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <!-- hide inlined blank node resources from the main block flow -->
+    <xsl:template match="*[*][key('resources', @rdf:nodeID)][count(key('predicates-by-object', @rdf:nodeID)[not(self::foaf:primaryTopic)]) = 1]" mode="bs2:Block" priority="1">
+        <xsl:param name="display" select="false()" as="xs:boolean" tunnel="yes"/>
+        
+        <xsl:if test="$display">
+            <xsl:next-match/>
+        </xsl:if>
+    </xsl:template>
+    
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
     <!-- <xsl:template match="rdf:RDF" mode="bs2:Actions">
