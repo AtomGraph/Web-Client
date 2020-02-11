@@ -15,8 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY a      "http://atomgraph.com/ns/core#">
-    <!ENTITY ac     "http://atomgraph.com/ns/client#">
+    <!ENTITY a      "https://w3id.org/atomgraph/core#">
+    <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -279,7 +279,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="bs2:ActionBarRight"/>
 
-    <xsl:template match="*[@rdf:about]" mode="bs2:NavBarListItem">
+<!--    <xsl:template match="*[@rdf:about]" mode="bs2:NavBarListItem">
         <xsl:param name="space" as="xs:anyURI*"/>
         <li>
             <xsl:if test="@rdf:about = $space">
@@ -288,7 +288,7 @@ exclude-result-prefixes="#all">
             
             <xsl:apply-templates select="." mode="xhtml:Anchor"/>
         </li>
-    </xsl:template>
+    </xsl:template>-->
     
     <xsl:template match="rdf:RDF" mode="bs2:Footer">
         <div class="footer text-center">
@@ -602,52 +602,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
         
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
-
-    <!-- BLOCK MODE -->
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" as="xs:string?"/>
-
-        <div>
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:apply-templates select="." mode="bs2:Header"/>
-
-            <xsl:apply-templates select="." mode="bs2:PropertyList"/>
-        </div>
-    </xsl:template>
-
-    <!-- inline blank node resource if there is only one property except foaf:primaryTopic having it as object -->
-    <xsl:template match="@rdf:nodeID[key('resources', .)][count(key('predicates-by-object', .)[not(self::foaf:primaryTopic)]) = 1]" priority="2">
-        <xsl:param name="inline" select="true()" as="xs:boolean" tunnel="yes"/>
-
-        <xsl:choose>
-            <xsl:when test="$inline">
-                <xsl:apply-templates select="key('resources', .)" mode="bs2:Block">
-                    <xsl:with-param name="display" select="$inline" tunnel="yes"/>
-                </xsl:apply-templates>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:next-match/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
-    
-    <!-- hide inlined blank node resources from the main block flow -->
-    <xsl:template match="*[*][key('resources', @rdf:nodeID)][count(key('predicates-by-object', @rdf:nodeID)[not(self::foaf:primaryTopic)]) = 1]" mode="bs2:Block" priority="1">
-        <xsl:param name="display" select="false()" as="xs:boolean" tunnel="yes"/>
-        
-        <xsl:if test="$display">
-            <xsl:next-match/>
-        </xsl:if>
-    </xsl:template>
 
     <!-- GRAPH MODE -->
     

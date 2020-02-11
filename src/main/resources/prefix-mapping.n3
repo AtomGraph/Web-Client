@@ -2,7 +2,7 @@
 
 [] lm:mapping
 
-   [ lm:name "http://atomgraph.com/ns/client#" ;                            lm:altName "com/atomgraph/client/ns.ttl" ] ,   
+   [ lm:name "https://w3id.org/atomgraph/client#" ;                            lm:altName "com/atomgraph/client/ns.ttl" ] ,   
    [ lm:name "http://rdfs.org/sioc/ns#" ;                                   lm:altName "com/atomgraph/client/sioc.owl" ] ,
    [ lm:name "http://rdfs.org/ns/void#" ;                                   lm:altName "com/atomgraph/client/void.owl" ] ,
    [ lm:name "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ;                lm:altName "com/atomgraph/client/rdf.owl" ] ,
@@ -27,7 +27,7 @@
    [ lm:name "http://graph.facebook.com/schema/user#" ;                     lm:altName "com/atomgraph/client/gfb-user.owl" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;                              lm:altName "com/atomgraph/client/doap.owl" ] ,
 
-   [ lm:prefix "http://atomgraph.com/ns/client" ;                           lm:altName "com/atomgraph/client/ns.ttl" ] ,
+   [ lm:prefix "https://w3id.org/atomgraph/client" ;                           lm:altName "com/atomgraph/client/ns.ttl" ] ,
    [ lm:prefix "http://rdfs.org/sioc/ns" ;                                  lm:altName "com/atomgraph/client/sioc.owl" ] ,
    [ lm:prefix "http://rdfs.org/ns/void" ;                                  lm:altName "com/atomgraph/client/void.owl" ] ,
    [ lm:prefix "http://www.w3.org/1999/02/22-rdf-syntax-ns" ;               lm:altName "com/atomgraph/client/rdf.owl" ] ,

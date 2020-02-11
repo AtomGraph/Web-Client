@@ -36,7 +36,7 @@ public final class AC
     private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
     
     /** <p>The namespace of the vocabulary as a string</p> */
-    public static final String NS = "http://atomgraph.com/ns/client#";
+    public static final String NS = "https://w3id.org/atomgraph/client#";
     
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */
@@ -61,6 +61,8 @@ public final class AC
     public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
 
     public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
+    
+    public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
 
     public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
 

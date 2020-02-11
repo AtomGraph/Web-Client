@@ -19,7 +19,7 @@ limitations under the License.
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ac     "http://atomgraph.com/ns/client#">
+    <!ENTITY ac     "https://w3id.org/atomgraph/client#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

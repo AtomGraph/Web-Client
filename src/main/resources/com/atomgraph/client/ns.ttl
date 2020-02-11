@@ -1,4 +1,4 @@
-@base           <http://atomgraph.com/ns/client> .
+@base           <https://w3id.org/atomgraph/client> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -12,7 +12,7 @@
 
 : a owl:Ontology ;
     rdfs:label "Atomgraph Client ontology" ;
-    owl:versionInfo "1.1.4" .
+    owl:versionInfo "2.1.0" .
 
 # PROPERTIES
 
