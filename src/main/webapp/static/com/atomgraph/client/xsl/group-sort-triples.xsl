@@ -17,7 +17,7 @@ limitations under the License.
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-xmlns:ac="http://atomgraph.com/ns/client#"
+xmlns:ac="https://w3id.org/atomgraph/client#"
 exclude-result-prefixes="xsl rdf ac">
 
     <!-- groups and sorts triples in RDF/XML to ease further XSLT processing -->

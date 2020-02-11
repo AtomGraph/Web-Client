@@ -15,8 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY a      "http://atomgraph.com/ns/core#">
-    <!ENTITY ac     "http://atomgraph.com/ns/client#">
+    <!ENTITY a      "https://w3id.org/atomgraph/core#">
+    <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
