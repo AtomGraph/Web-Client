@@ -45,10 +45,12 @@ import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.Link;
+import com.atomgraph.core.util.ModelUtils;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
@@ -207,17 +209,33 @@ public class ProxyResourceBase implements Resource
      */
     public Response getResponse(Dataset dataset)
     {
-        com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-        List<Variant> variants = response.getVariantListBuilder(getWritableMediaTypes(Dataset.class), new ArrayList(), new ArrayList()).add().build();
+        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Dataset.class),
+                new ArrayList(),
+                new ArrayList()).
+            add().
+            build();
+
+        com.atomgraph.core.model.impl.Response response = new com.atomgraph.core.model.impl.Response(getRequest(),
+                dataset,
+                new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
+                variants);
 
         Variant variant = getRequest().selectVariant(variants);
-        if (variant == null || MediaTypes.isTriples(variant.getMediaType()))
+        if (variant == null || MediaTypes.isTriples(variant.getMediaType())) // fallback to Model
         {
-            variants = response.getVariantListBuilder(getWritableMediaTypes(Model.class), new ArrayList(), new ArrayList()).add().build(); // fallback to Model
-            return response.getResponseBuilder(dataset.getDefaultModel(), variants).build();
+            variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Model.class),
+                    new ArrayList(),
+                    new ArrayList()).
+                add().
+                build();
+            
+            response = new com.atomgraph.core.model.impl.Response(getRequest(),
+                dataset.getDefaultModel(),
+                new EntityTag(Long.toHexString(ModelUtils.hashModel(dataset.getDefaultModel()))),
+                variants);
         }
 
-        return response.getResponseBuilder(dataset, variants).build();
+        return response.getResponseBuilder().build();
     }
     
     /**

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
@@ -34,6 +33,8 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.client.vocabulary.HTTP;
+import com.atomgraph.core.util.ModelUtils;
+import javax.ws.rs.core.EntityTag;
 import org.apache.jena.query.Dataset;
 
 /**
@@ -70,14 +71,21 @@ abstract public class ExceptionMapperBase
         Variant variant = getRequest().selectVariant(getVariants(Dataset.class));
         if (variant == null) return getResponseBuilder(dataset.getDefaultModel()); // if quads are not acceptable, fallback to responding with the default graph
         
-        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(dataset, getVariants(Dataset.class));
+        return new com.atomgraph.core.model.impl.Response(getRequest(),
+                dataset,
+                new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
+                getVariants(Dataset.class)).
+            getResponseBuilder();
     }
     
     public Response.ResponseBuilder getResponseBuilder(Model model)
     {
-        return com.atomgraph.core.model.impl.Response.fromRequest(getRequest()).
-            getResponseBuilder(model, getVariants(Model.class));
+        return new com.atomgraph.core.model.impl.Response(getRequest(),
+                model,
+                new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
+                getVariants(Model.class)).
+            getResponseBuilder();
+
     }
     
     public MediaTypes getMediaTypes()
@@ -88,18 +96,7 @@ abstract public class ExceptionMapperBase
     
     public List<Variant> getVariants(Class clazz)
     {
-        return getVariantListBuilder(clazz).add().build();
-    }
-
-    public Variant.VariantListBuilder getVariantListBuilder(Class clazz)
-    {
-        com.atomgraph.core.model.impl.Response response = com.atomgraph.core.model.impl.Response.fromRequest(getRequest());
-        return response.getVariantListBuilder(getMediaTypes().getWritable(clazz), getLanguages(), getEncodings());
-    }
-    
-    public List<MediaType> getWritableMediaTypes()
-    {
-        return getMediaTypes().getWritable(Model.class);
+        return com.atomgraph.core.model.impl.Response.getVariantListBuilder(getMediaTypes().getWritable(clazz), getLanguages(), getEncodings()).add().build();
     }
     
     public List<Locale> getLanguages()
