@@ -217,6 +217,7 @@ public class ProxyResourceBase implements Resource
 
         com.atomgraph.core.model.impl.Response response = new com.atomgraph.core.model.impl.Response(getRequest(),
                 dataset,
+                null,
                 new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
                 variants);
 
@@ -231,6 +232,7 @@ public class ProxyResourceBase implements Resource
             
             response = new com.atomgraph.core.model.impl.Response(getRequest(),
                 dataset.getDefaultModel(),
+                    null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(dataset.getDefaultModel()))),
                 variants);
         }

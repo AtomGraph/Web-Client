@@ -73,6 +73,7 @@ abstract public class ExceptionMapperBase
         
         return new com.atomgraph.core.model.impl.Response(getRequest(),
                 dataset,
+                null,
                 new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
                 getVariants(Dataset.class)).
             getResponseBuilder();
@@ -82,6 +83,7 @@ abstract public class ExceptionMapperBase
     {
         return new com.atomgraph.core.model.impl.Response(getRequest(),
                 model,
+                null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
                 getVariants(Model.class)).
             getResponseBuilder();
