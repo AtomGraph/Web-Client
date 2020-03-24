@@ -35,6 +35,7 @@ import com.atomgraph.core.MediaTypes;
 import com.atomgraph.client.vocabulary.HTTP;
 import com.atomgraph.core.util.ModelUtils;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MediaType;
 import org.apache.jena.query.Dataset;
 
 /**
@@ -87,18 +88,45 @@ abstract public class ExceptionMapperBase
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
                 getVariants(Model.class)).
             getResponseBuilder();
+    }
 
+    /**
+     * Builds a list of acceptable response variants for a certain class.
+     * 
+     * @param clazz class
+     * @return list of variants
+     */
+    public List<Variant> getVariants(Class clazz)
+    {
+        return getVariants(getWritableMediaTypes(clazz));
     }
     
+    /**
+     * Builds a list of acceptable response variants.
+     * 
+     * @param mediaTypes
+     * @return supported variants
+     */
+    public List<Variant> getVariants(List<MediaType> mediaTypes)
+    {
+        return com.atomgraph.core.model.impl.Response.getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
+    }
+    
+    /**
+     * Get writable media types for a certain class.
+     * 
+     * @param clazz class
+     * @return list of media types
+     */
+    public List<MediaType> getWritableMediaTypes(Class clazz)
+    {
+        return getMediaTypes().getWritable(clazz);
+    }
+
     public MediaTypes getMediaTypes()
     {
         ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
         return cr.getContext(MediaTypes.class);
-    }
-    
-    public List<Variant> getVariants(Class clazz)
-    {
-        return com.atomgraph.core.model.impl.Response.getVariantListBuilder(getMediaTypes().getWritable(clazz), getLanguages(), getEncodings()).add().build();
     }
     
     public List<Locale> getLanguages()
