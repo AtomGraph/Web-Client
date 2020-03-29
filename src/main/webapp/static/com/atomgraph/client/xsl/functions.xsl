@@ -56,7 +56,8 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
 
     <!-- INSTANCE CONSTRUCTOR -->
-    
+
+    <!--
     <xsl:function use-when="system-property('xsl:product-name') = 'SAXON'" name="ac:construct-doc" as="document-node()?">
         <xsl:param name="ontology" as="xs:anyURI"/>
         <xsl:param name="classes" as="xs:anyURI*"/>
@@ -64,6 +65,7 @@ exclude-result-prefixes="#all">
 
         <xsl:sequence select="mxw:getConstructedSource($ontology, $classes, $base)" xmlns:mxw="com.atomgraph.client.writer.DatasetXSLTWriter"/>
     </xsl:function>
+    -->
     
     <!-- LABEL MODE -->
 

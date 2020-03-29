@@ -38,7 +38,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import net.sf.saxon.Configuration;
-import net.sf.saxon.trans.UnparsedTextURIResolver;
+import net.sf.saxon.lib.UnparsedTextURIResolver;
 import net.sf.saxon.trans.XPathException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

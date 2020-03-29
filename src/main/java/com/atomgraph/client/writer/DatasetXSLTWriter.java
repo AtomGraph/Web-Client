@@ -40,7 +40,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.iri.IRI;
 import org.apache.jena.iri.IRIFactory;
@@ -52,15 +51,23 @@ import org.apache.jena.riot.checker.CheckerIRI;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.OntologyProvider;
-import com.atomgraph.client.util.XSLTBuilder;
+import com.atomgraph.client.util.saxon.SaxonXSLTBuilder;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
+import com.atomgraph.client.writer.function.ConstructDocument;
+import com.atomgraph.client.writer.function.UUID;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import net.sf.saxon.trans.UnparsedTextURIResolver;
+import net.sf.saxon.lib.UnparsedTextURIResolver;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.s9api.XsltExecutable;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.query.Dataset;
@@ -92,7 +99,8 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         NAMESPACES = new HashSet<>();
         NAMESPACES.add(AC.NS);
     }
-    
+
+    private final Processor processor = new Processor(false);
     private final Templates templates;
     private final OntModelSpec ontModelSpec;
 
@@ -115,6 +123,9 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
         this.templates = templates;
         this.ontModelSpec = ontModelSpec;
+        
+        processor.registerExtensionFunction(new UUID());
+        processor.registerExtensionFunction(new ConstructDocument(processor));
     }
     
     @Override
@@ -124,59 +135,60 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
-            Templates stylesheet = getTemplates();
+            //Templates stylesheet = getTemplates();
+            XsltExecutable stylesheet = null;
             
             //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
             RDFWriter writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(dataset.getDefaultModel(), baos, null);
             
-            XSLTBuilder builder = setParameters(com.atomgraph.client.util.saxon.XSLTBuilder.newInstance(getTransformerFactory()).
+            SaxonXSLTBuilder builder = setParameters(SaxonXSLTBuilder.newInstance(getProcessor()).
                     resolver((UnparsedTextURIResolver)getDataManager()).
                     stylesheet(stylesheet).
                     document(new ByteArrayInputStream(baos.toByteArray())),
                     dataset,
                     headerMap).
-                resolver(getDataManager()).
-                result(new StreamResult(entityStream));
+                resolver((URIResolver)getDataManager()).
+                destination(entityStream);
 
-            builder.outputProperty(OutputKeys.ENCODING, UTF_8.name());
+            builder.outputProperty(Serializer.Property.ENCODING, UTF_8.name());
             if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
             {
-                builder.outputProperty(OutputKeys.METHOD, "html");
-                builder.outputProperty(OutputKeys.MEDIA_TYPE, MediaType.TEXT_HTML);
-                builder.outputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/TR/html4/strict.dtd");
-                builder.outputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
+                builder.outputProperty(Serializer.Property.METHOD, "html");
+                builder.outputProperty(Serializer.Property.MEDIA_TYPE, MediaType.TEXT_HTML);
+                builder.outputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/html4/strict.dtd");
+                builder.outputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
             }
             if (mediaType.isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
             {
-                builder.outputProperty(OutputKeys.METHOD, "xhtml");
-                builder.outputProperty(OutputKeys.MEDIA_TYPE, MediaType.APPLICATION_XHTML_XML);
-                builder.outputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-                builder.outputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
+                builder.outputProperty(Serializer.Property.METHOD, "xhtml");
+                builder.outputProperty(Serializer.Property.MEDIA_TYPE, MediaType.APPLICATION_XHTML_XML);
+                builder.outputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+                builder.outputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
             }
             
             builder.transform();
         }
-        catch (TransformerException ex)
+        catch (TransformerException | SaxonApiException ex)
         {
             if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR); // TO-DO: make Mapper
         }
     }
 
-    public void write(Dataset dataset, OutputStream entityStream) throws TransformerException
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dataset.getDefaultModel().write(baos, RDFLanguages.RDFXML.getName(), null);
-
-        XSLTBuilder.newInstance(getTransformerFactory()).
-            stylesheet(getTemplates()).
-            document(new ByteArrayInputStream(baos.toByteArray())).
-            resolver(getDataManager()).
-            result(new StreamResult(entityStream)).
-            transform();
-    }
+//    public void write(Dataset dataset, OutputStream entityStream) throws TransformerException
+//    {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        dataset.getDefaultModel().write(baos, RDFLanguages.RDFXML.getName(), null);
+//
+//        SaxonXSLTBuilder.newInstance(getProcessor()).
+//            stylesheet(getTemplates()).
+//            document(new ByteArrayInputStream(baos.toByteArray())).
+//            resolver(getDataManager()).
+//            result(new StreamResult(entityStream)).
+//            transform();
+//    }
     
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -229,7 +241,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         return null;
     }
     
-    public static Source getSource(Model model) throws IOException
+    public static StreamSource getSource(Model model) throws IOException
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
         if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
@@ -275,35 +287,36 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         }
     }
 
-    public XSLTBuilder setParameters(XSLTBuilder builder, Dataset dataset, MultivaluedMap<String, Object> headerMap) throws TransformerException
+    public SaxonXSLTBuilder setParameters(SaxonXSLTBuilder builder, Dataset dataset, MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
         if (builder == null) throw new IllegalArgumentException("XSLTBuilder cannot be null");
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
         
-        builder.parameter("{" + AC.httpHeaders.getNameSpace() + "}" + AC.httpHeaders.getLocalName(), headerMap.toString()).
-            parameter("{" + AC.method.getNameSpace() + "}" + AC.method.getLocalName(), getRequest().getMethod()).
-            parameter("{" + AC.requestUri.getNameSpace() + "}" + AC.requestUri.getLocalName(), getRequestURI()).
-            parameter("{" + AC.contextUri.getNameSpace() + "}" + AC.contextUri.getLocalName(), getContextURI());
+        builder.parameter(new QName(null, AC.httpHeaders.getNameSpace(), AC.httpHeaders.getLocalName()), new XdmAtomicValue(headerMap.toString())).
+            parameter(new QName(null, AC.method.getNameSpace(), AC.method.getLocalName()), new XdmAtomicValue(getRequest().getMethod())).
+            parameter(new QName(null, AC.requestUri.getNameSpace(), AC.requestUri.getLocalName()), new XdmAtomicValue(getRequestURI())).
+            parameter(new QName(null, AC.contextUri.getNameSpace(), AC.contextUri.getLocalName()), new XdmAtomicValue(getContextURI()));
      
         try
         {
-            if (getURI() != null) builder.parameter("{" + AC.uri.getNameSpace() + "}" + AC.uri.getLocalName(), getURI());
-            if (getEndpointURI() != null) builder.parameter("{" + AC.endpoint.getNameSpace() + "}" + AC.endpoint.getLocalName(), getEndpointURI());
-            if (getQuery() != null) builder.parameter("{" + AC.query.getNameSpace() + "}" + AC.query.getLocalName(), getQuery());
+            if (getURI() != null) builder.parameter(new QName(null, AC.uri.getNameSpace(), AC.uri.getLocalName()), new XdmAtomicValue(getURI()));
+            if (getEndpointURI() != null) builder.parameter(new QName(null, AC.endpoint.getNameSpace(), AC.endpoint.getLocalName()), new XdmAtomicValue(getEndpointURI()));
+            if (getQuery() != null) builder.parameter(new QName(null, AC.query.getNameSpace(), AC.query.getLocalName()), new XdmAtomicValue(getQuery()));
 
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
+            builder.parameter(new QName(null, AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
 
             URI ontologyURI = (URI)getHttpServletRequest().getAttribute(LDT.ontology.getURI());
             if (ontologyURI != null)
             {
-                builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyURI);
+                builder.parameter(new QName(null, LDT.ontology.getNameSpace(), LDT.ontology.getLocalName()), new XdmAtomicValue(ontologyURI));
 
                 OntModel sitemap = getOntModel(ontologyURI.toString());
-                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
+                builder.parameter(new QName(null, AC.sitemap.getNameSpace(), AC.sitemap.getLocalName()), getProcessor().newDocumentBuilder().build(getSource(sitemap, true)));
 
                 if (getBaseUri() != null)
                 {
-                    builder.parameter("{" + LDT.base.getNameSpace() + "}" + LDT.base.getLocalName(), getBaseUri());
+                    builder.parameter(new QName(null, LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(getBaseUri()));
 
                     String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
                     if (forClassURI != null)
@@ -311,13 +324,13 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                         OntClass forClass = sitemap.getOntClass(forClassURI);
 
                         if (forClass == null) throw new OntClassNotFoundException(forClassURI); // do we need this check here?
-                        builder.parameter("{" + AC.forClass.getNameSpace() + "}" + AC.forClass.getLocalName(), URI.create(forClass.getURI()));
+                        builder.parameter(new QName(null, AC.forClass.getNameSpace(), AC.forClass.getLocalName()), new XdmAtomicValue(URI.create(forClass.getURI())));
                     }
                 }
 
                 if (getTemplateURI() != null)
                 {
-                    builder.parameter("{" + LDT.template.getNameSpace() + "}" + LDT.template.getLocalName(), getTemplateURI());
+                    builder.parameter(new QName(null, LDT.template.getNameSpace(), LDT.template.getLocalName()), new XdmAtomicValue(getTemplateURI()));
                     if (modes.isEmpty()) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
                     {
                         Resource template = sitemap.getResource(getTemplateURI().toString());
@@ -342,32 +355,35 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                     }
                 }
             }
-            
-            builder.parameter("{" + AC.mode.getNameSpace() + "}" + AC.mode.getLocalName(), modes);
 
             MediaType contentType = (MediaType)headerMap.getFirst(HttpHeaders.CONTENT_TYPE);
             if (contentType != null)
             {
                 if (log.isDebugEnabled()) log.debug("Writing Model using XSLT media type: {}", contentType);
-                builder.outputProperty(OutputKeys.MEDIA_TYPE, contentType.toString());
+                builder.outputProperty(Serializer.Property.MEDIA_TYPE, contentType.toString());
             }
             Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
             if (locale != null)
             {
                 if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
-                builder.parameter("{" + LDT.lang.getNameSpace() + "}" + LDT.lang.getLocalName(), locale.toLanguageTag());
+                builder.parameter(new QName(null, LDT.lang.getNameSpace(), LDT.lang.getLocalName()), new XdmAtomicValue(locale.toLanguageTag()));
             }
 
             return builder;
         }
         catch (IOException ex)
         {
-            if (log.isErrorEnabled()) log.error("Error reading Source stream");
+            if (log.isErrorEnabled()) log.error("Error reading Source stream: {}", ex.getMessage());
             throw new TransformerException(ex);
         }
         catch (URISyntaxException ex)
         {
-            if (log.isErrorEnabled()) log.error("URI syntax exception");
+            if (log.isErrorEnabled()) log.error("URI syntax exception: {}", ex.getMessage());
+            throw new TransformerException(ex);
+        }
+        catch (SaxonApiException ex)
+        {
+            if (log.isErrorEnabled()) log.error("Saxon XSLT error: {}", ex.getMessage());
             throw new TransformerException(ex);
         }
     }
@@ -430,7 +446,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         return classIRI;
     }
 
-    public static Source getConstructedSource(URI ontologyURI, List<URI> classURIs, URI baseURI) throws URISyntaxException, IOException
+    public static StreamSource getConstructedSource(URI ontologyURI, List<URI> classURIs, URI baseURI) throws URISyntaxException, IOException
     {
         if (ontologyURI == null) throw new IllegalArgumentException("Ontology URI cannot be null");
         if (classURIs == null) throw new IllegalArgumentException("Class URIs cannot be null");
@@ -493,10 +509,10 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
         return cr.getContext(DataManager.class);
     }
-    
-    public SAXTransformerFactory getTransformerFactory()
+
+    public Processor getProcessor()
     {
-        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
+        return processor;
     }
     
 }
