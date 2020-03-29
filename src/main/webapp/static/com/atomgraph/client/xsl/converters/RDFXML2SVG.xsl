@@ -92,13 +92,14 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="ixsl:call(ixsl:get(ixsl:window(), 'Math'), 'random')" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
     </xsl:function>
 
+    <!--
     <xsl:function name="ac:abs" as="xs:double">
         <xsl:param name="number" as="xs:double"/>
 
         <xsl:sequence select="math:abs($number)" use-when="not(system-property('xsl:product-name') = 'Saxon-CE')"/>
-        <!-- use JavaScript function on Saxon-CE (TO-DO: Saxon-JS) -->
         <xsl:sequence select="ixsl:call(ixsl:get(ixsl:window(), 'Math'), 'abs', $number)" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
     </xsl:function>
+    -->
     
     <xsl:function name="ac:sqrt" as="xs:double">
         <xsl:param name="number" as="xs:double"/>
@@ -424,8 +425,8 @@ exclude-result-prefixes="#all">
                     <!-- TO-DO: $x-diff = 0 and $y-diff = 0 -->
                     <!-- find the point where the line intersect the circle -->
                     <xsl:variable name="tan" select="$x-diff div $y-diff" as="xs:double"/>
-                    <xsl:variable name="yc" select="ac:abs($r div ac:sqrt($tan * $tan + 1))" as="xs:double"/>
-                    <xsl:variable name="xc" select="ac:abs($r * $tan * ac:sqrt(1 div ($tan * $tan + 1)))" as="xs:double"/>
+                    <xsl:variable name="yc" select="abs($r div ac:sqrt($tan * $tan + 1))" as="xs:double"/>
+                    <xsl:variable name="xc" select="abs($r * $tan * ac:sqrt(1 div ($tan * $tan + 1)))" as="xs:double"/>
                     <xsl:variable name="x2" select="if ($x1 &gt; $x2) then ($x2 + $xc) else ($x2 - $xc)" as="xs:double"/>
                     <xsl:variable name="y2" select="if ($y1 &gt; $y2) then ($y2 + $yc) else ($y2 - $yc)" as="xs:double"/>
 
@@ -477,7 +478,7 @@ exclude-result-prefixes="#all">
                         <xsl:variable name="rect-tan" select="svg:g/svg:rect/@width div svg:g/svg:rect/@height" as="xs:double"/>
                         <xsl:variable name="diff-tan" select="$x-diff div $y-diff" as="xs:double"/>
 
-                        <xsl:if test="ac:abs($rect-tan) &gt; ac:abs($diff-tan)">
+                        <xsl:if test="abs($rect-tan) &gt; abs($diff-tan)">
                             <xsl:variable name="y-delta" select="svg:g/svg:rect/@height div 2" as="xs:double"/>
                             <xsl:variable name="x-delta" select="$y-delta * $x-diff div $y-diff" as="xs:double"/>
 
@@ -490,7 +491,7 @@ exclude-result-prefixes="#all">
                                 <xsl:attribute name="y2" select="$y2 - $y-delta"/>
                             </xsl:if>
                         </xsl:if>
-                        <xsl:if test="ac:abs($rect-tan) &lt; ac:abs($diff-tan)">
+                        <xsl:if test="abs($rect-tan) &lt; abs($diff-tan)">
                             <xsl:variable name="x-delta" select="svg:g/svg:rect/@width div 2" as="xs:double"/>
                             <xsl:variable name="y-delta" select="$x-delta * $y-diff div $x-diff" as="xs:double"/>
 
