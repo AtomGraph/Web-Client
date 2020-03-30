@@ -42,381 +42,400 @@ public class UpdateBuilder implements Update
     
     protected UpdateBuilder(Update update)
     {
-	if (update == null) throw new IllegalArgumentException("SPIN Update cannot be null");
+        if (update == null) throw new IllegalArgumentException("SPIN Update cannot be null");
 
         // Initialize system functions and templates
         SPINModuleRegistry.get().init();
 
-	this.update = update;
+        this.update = update;
     }
     
     protected Update getUpdate()
     {
-	return update;
+        return update;
     }
 
     public static UpdateBuilder fromUpdate(Update update)
     {
-	return new UpdateBuilder(update);
+        return new UpdateBuilder(update);
     }
 
     public static UpdateBuilder fromResource(Resource resource)
     {
-	if (resource == null) throw new IllegalArgumentException("Update Resource cannot be null");
+        if (resource == null) throw new IllegalArgumentException("Update Resource cannot be null");
 
-	return fromUpdate(SPINFactory.asUpdate(resource));
+        return fromUpdate(SPINFactory.asUpdate(resource));
     }
 
     public static UpdateBuilder fromUpdate(org.apache.jena.update.Update update, String uri, Model model)
     {
-	if (update == null) throw new IllegalArgumentException("Update cannot be null");
-	
-	ARQ2SPIN arq2spin = new ARQ2SPIN(model);
-	return fromUpdate(arq2spin.createUpdate(update, uri));
+        if (update == null) throw new IllegalArgumentException("Update cannot be null");
+        
+        ARQ2SPIN arq2spin = new ARQ2SPIN(model);
+        return fromUpdate(arq2spin.createUpdate(update, uri));
     }
 
     public static UpdateBuilder fromUpdate(org.apache.jena.update.Update update, Model model)
     {
-	return fromUpdate(update, null, model);
+        return fromUpdate(update, null, model);
     }
     
     protected Resource createTripleTemplate(Statement stmt)
     {
-	if (stmt == null) throw new IllegalArgumentException("Statement cannot be null");
+        if (stmt == null) throw new IllegalArgumentException("Statement cannot be null");
 
-	return getModel().createResource().
-	    addProperty(SP.subject, stmt.getSubject()).
-	    addProperty(SP.predicate, stmt.getPredicate()).
-	    addProperty(SP.object, stmt.getObject());
+        return getModel().createResource().
+            addProperty(SP.subject, stmt.getSubject()).
+            addProperty(SP.predicate, stmt.getPredicate()).
+            addProperty(SP.object, stmt.getObject());
     }
 
     public RDFList createDataList(Model model)
     {
-	if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
 
-	RDFList data = getModel().createList();
-	
-	StmtIterator it = model.listStatements();
-	while (it.hasNext())
-	    data = data.with(createTripleTemplate(it.next()));
-	
-	return data;
+        RDFList data = getModel().createList();
+        
+        StmtIterator it = model.listStatements();
+        while (it.hasNext())
+            data = data.with(createTripleTemplate(it.next()));
+        
+        return data;
     }
 
     public UpdateRequest build()
     {
-	org.apache.jena.update.UpdateRequest request = ARQFactory.get().createUpdateRequest(getUpdate());
-	
-	// generate SPARQL query string
-	removeAll(SP.text).
+        org.apache.jena.update.UpdateRequest request = ARQFactory.get().createUpdateRequest(getUpdate());
+        
+        // generate SPARQL query string
+        removeAll(SP.text).
                 addLiteral(SP.text, getModel().createTypedLiteral(request.toString()));
-	
-	return request;
+        
+        return request;
     }
 
     @Override
     public String getComment()
     {
-	return getUpdate().getComment();
+        return getUpdate().getComment();
     }
 
     @Override
     public void print(PrintContext pc)
     {
-	getUpdate().print(pc);
+        getUpdate().print(pc);
     }
 
     @Override
     public AnonId getId()
     {
-	return getUpdate().getId();
+        return getUpdate().getId();
     }
 
     @Override
     public Resource inModel(Model model)
     {
-	return getUpdate().inModel(model);
+        return getUpdate().inModel(model);
     }
 
     @Override
     public boolean hasURI(String string)
     {
-	return getUpdate().hasURI(string);
+        return getUpdate().hasURI(string);
     }
 
     @Override
     public String getURI()
     {
-	return getUpdate().getURI();
+        return getUpdate().getURI();
     }
 
     @Override
     public String getNameSpace()
     {
-	return getUpdate().getNameSpace();
+        return getUpdate().getNameSpace();
     }
 
     @Override
     public String getLocalName()
     {
-	return getUpdate().getLocalName();
+        return getUpdate().getLocalName();
     }
 
     @Override
     public Statement getRequiredProperty(Property prprt)
     {
-	return getUpdate().getRequiredProperty(prprt);
+        return getUpdate().getRequiredProperty(prprt);
+    }
+
+    @Override
+    public Statement getRequiredProperty(Property p, String lang)
+    {
+        return getUpdate().getRequiredProperty(p, lang);
     }
 
     @Override
     public Statement getProperty(Property prprt)
     {
-	return getUpdate().getProperty(prprt);
+        return getUpdate().getProperty(prprt);
+    }
+
+    @Override
+    public Statement getProperty(Property p, String lang)
+    {
+        return getUpdate().getProperty(p, lang);
     }
 
     @Override
     public StmtIterator listProperties(Property prprt)
     {
-	return getUpdate().listProperties(prprt);
+        return getUpdate().listProperties(prprt);
+    }
+
+    @Override
+    public StmtIterator listProperties(Property p, String lang)
+    {
+        return getUpdate().listProperties(p, lang);
     }
 
     @Override
     public StmtIterator listProperties()
     {
-	return getUpdate().listProperties();
+        return getUpdate().listProperties();
     }
 
     @Override
     public Resource addLiteral(Property prprt, boolean bln)
     {
-	return getUpdate().addLiteral(prprt, bln);
+        return getUpdate().addLiteral(prprt, bln);
     }
 
     @Override
     public Resource addLiteral(Property prprt, long l)
     {
-	return getUpdate().addLiteral(prprt, l);
+        return getUpdate().addLiteral(prprt, l);
     }
 
     @Override
     public Resource addLiteral(Property prprt, char c)
     {
-	return getUpdate().addLiteral(prprt, c);
+        return getUpdate().addLiteral(prprt, c);
     }
 
     @Override
     public Resource addLiteral(Property prprt, double d)
     {
-	return getUpdate().addLiteral(prprt, d);
+        return getUpdate().addLiteral(prprt, d);
     }
 
     @Override
     public Resource addLiteral(Property prprt, float f)
     {
-	return getUpdate().addLiteral(prprt, f);
+        return getUpdate().addLiteral(prprt, f);
     }
 
     @Override
     public Resource addLiteral(Property prprt, Object o)
     {
-	return getUpdate().addLiteral(prprt, o);
+        return getUpdate().addLiteral(prprt, o);
     }
 
     @Override
     public Resource addLiteral(Property prprt, Literal ltrl)
     {
-	return getUpdate().addLiteral(prprt, ltrl);
+        return getUpdate().addLiteral(prprt, ltrl);
     }
 
     @Override
     public Resource addProperty(Property prprt, String string)
     {
-	return getUpdate().addProperty(prprt, string);
+        return getUpdate().addProperty(prprt, string);
     }
 
     @Override
     public Resource addProperty(Property prprt, String string, String string1)
     {
-	return getUpdate().addProperty(prprt, string, string1);
+        return getUpdate().addProperty(prprt, string, string1);
     }
 
     @Override
     public Resource addProperty(Property prprt, String string, RDFDatatype rdfd)
     {
-	return getUpdate().addProperty(prprt, string, rdfd);
+        return getUpdate().addProperty(prprt, string, rdfd);
     }
 
     @Override
     public Resource addProperty(Property prprt, RDFNode rdfn)
     {
-	return getUpdate().addProperty(prprt, rdfn);
+        return getUpdate().addProperty(prprt, rdfn);
     }
 
     @Override
     public boolean hasProperty(Property prprt)
     {
-	return getUpdate().hasProperty(prprt);
+        return getUpdate().hasProperty(prprt);
     }
 
     @Override
     public boolean hasLiteral(Property prprt, boolean bln)
     {
-	return getUpdate().hasLiteral(prprt, bln);
+        return getUpdate().hasLiteral(prprt, bln);
     }
 
     @Override
     public boolean hasLiteral(Property prprt, long l)
     {
-	return getUpdate().hasLiteral(prprt, l);
+        return getUpdate().hasLiteral(prprt, l);
     }
 
     @Override
     public boolean hasLiteral(Property prprt, char c)
     {
-	return getUpdate().hasLiteral(prprt, c);
+        return getUpdate().hasLiteral(prprt, c);
     }
 
     @Override
     public boolean hasLiteral(Property prprt, double d)
     {
-	return getUpdate().hasLiteral(prprt, d);
+        return getUpdate().hasLiteral(prprt, d);
     }
 
     @Override
     public boolean hasLiteral(Property prprt, float f)
     {
-	return getUpdate().hasLiteral(prprt, f);
+        return getUpdate().hasLiteral(prprt, f);
     }
 
     @Override
     public boolean hasLiteral(Property prprt, Object o)
     {
-	return getUpdate().hasLiteral(prprt, o);
+        return getUpdate().hasLiteral(prprt, o);
     }
 
     @Override
     public boolean hasProperty(Property prprt, String string)
     {
-	return getUpdate().hasProperty(prprt, string);
+        return getUpdate().hasProperty(prprt, string);
     }
 
     @Override
     public boolean hasProperty(Property prprt, String string, String string1)
     {
-	return getUpdate().hasProperty(prprt, string, string1);
+        return getUpdate().hasProperty(prprt, string, string1);
     }
 
     @Override
     public boolean hasProperty(Property prprt, RDFNode rdfn)
     {
-	return getUpdate().hasProperty(prprt, rdfn);
+        return getUpdate().hasProperty(prprt, rdfn);
     }
 
     @Override
     public Resource removeProperties()
     {
-	return getUpdate().removeProperties();
+        return getUpdate().removeProperties();
     }
 
     @Override
     public Resource removeAll(Property prprt)
     {
-	return getUpdate().removeAll(prprt);
+        return getUpdate().removeAll(prprt);
     }
 
     @Override
     public Resource begin()
     {
-	return getUpdate().begin();
+        return getUpdate().begin();
     }
 
     @Override
     public Resource abort()
     {
-	return getUpdate().abort();
+        return getUpdate().abort();
     }
 
     @Override
     public Resource commit()
     {
-	return getUpdate().commit();
+        return getUpdate().commit();
     }
 
     @Override
     public Resource getPropertyResourceValue(Property prprt)
     {
-	return getUpdate().getPropertyResourceValue(prprt);
+        return getUpdate().getPropertyResourceValue(prprt);
     }
 
     @Override
     public boolean isAnon()
     {
-	return getUpdate().isAnon();
+        return getUpdate().isAnon();
     }
 
     @Override
     public boolean isLiteral()
     {
-	return getUpdate().isLiteral();
+        return getUpdate().isLiteral();
     }
 
     @Override
     public boolean isURIResource()
     {
-	return getUpdate().isURIResource();
+        return getUpdate().isURIResource();
     }
 
     @Override
     public boolean isResource()
     {
-	return getUpdate().isResource();
+        return getUpdate().isResource();
     }
 
     @Override
     public <T extends RDFNode> T as(Class<T> type)
     {
-	return getUpdate().as(type);
+        return getUpdate().as(type);
     }
 
     @Override
     public <T extends RDFNode> boolean canAs(Class<T> type)
     {
-	return getUpdate().canAs(type);
+        return getUpdate().canAs(type);
     }
 
     @Override
     public Model getModel()
     {
-	return getUpdate().getModel();
+        return getUpdate().getModel();
     }
 
     @Override
     public Object visitWith(RDFVisitor rdfv)
     {
-	return getUpdate().visitWith(rdfv);
+        return getUpdate().visitWith(rdfv);
     }
 
     @Override
     public Resource asResource()
     {
-	return getUpdate().asResource();
+        return getUpdate().asResource();
     }
 
     @Override
     public Literal asLiteral()
     {
-	return getUpdate().asLiteral();
+        return getUpdate().asLiteral();
     }
 
     @Override
     public Node asNode()
     {
-	return getUpdate().asNode();
+        return getUpdate().asNode();
     }
 
     @Override
     public String toString()
     {
-	return getUpdate().toString();
+        return getUpdate().toString();
     }
+
 }

@@ -568,15 +568,33 @@ public class QueryBuilder implements org.spinrdf.model.Query
     }
 
     @Override
+    public Statement getRequiredProperty(Property p, String lang)
+    {
+        return getQuery().getRequiredProperty(p, lang);
+    }
+
+    @Override
     public Statement getProperty(Property prprt)
     {
         return getQuery().getProperty(prprt);
     }
 
     @Override
+    public Statement getProperty(Property p, String lang)
+    {
+        return getQuery().getProperty(p, lang);
+    }
+
+    @Override
     public StmtIterator listProperties(Property prprt)
     {
         return getQuery().listProperties(prprt);
+    }
+
+    @Override
+    public StmtIterator listProperties(Property p, String lang)
+    {
+        return getQuery().listProperties(p, lang);
     }
 
     @Override
@@ -824,5 +842,5 @@ public class QueryBuilder implements org.spinrdf.model.Query
     {
         return getQuery().getValues();
     }
-    
+
 }
