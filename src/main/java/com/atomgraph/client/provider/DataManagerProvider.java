@@ -16,11 +16,8 @@
  */
 package com.atomgraph.client.provider;
 
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+
 import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import com.atomgraph.client.util.DataManager;
 import org.slf4j.Logger;
@@ -34,45 +31,46 @@ import org.slf4j.LoggerFactory;
  * @see com.atomgraph.client.util.DataManager
  */
 @Provider
-public class DataManagerProvider extends PerRequestTypeInjectableProvider<Context, DataManager> implements ContextResolver<DataManager>
+@Deprecated
+public class DataManagerProvider // implements Factory<DataManager> // extends PerRequestTypeInjectableProvider<Context, DataManager> implements ContextResolver<DataManager>
 {
     private static final Logger log = LoggerFactory.getLogger(DataManagerProvider.class);
     
-    private final DataManager dataManager;
+//    private final DataManager dataManager;
     
-    public DataManagerProvider(final DataManager dataManager)
-    {
-        super(DataManager.class);
-        
-        this.dataManager = dataManager;
-    }
-
-    @Override
-    public Injectable<DataManager> getInjectable(ComponentContext cc, Context a)
-    {
-        return new Injectable<DataManager>()
-        {
-            @Override
-            public DataManager getValue()
-            {
-                return getDataManager();
-            }
-        };
-    }
-
-    @Override
-    public DataManager getContext(Class<?> type)
-    {
-        return getDataManager();
-    }
-
-    /**
-     * Returns default data manager instance.
-     * @return data manager instance
-     */
-    public DataManager getDataManager()
-    {
-        return dataManager;
-    }
+//    public DataManagerProvider(final DataManager dataManager)
+//    {
+//        super(DataManager.class);
+//        
+//        this.dataManager = dataManager;
+//    }
+//
+//    @Override
+//    public Injectable<DataManager> getInjectable(ComponentContext cc, Context a)
+//    {
+//        return new Injectable<DataManager>()
+//        {
+//            @Override
+//            public DataManager getValue()
+//            {
+//                return getDataManager();
+//            }
+//        };
+//    }
+//
+//    @Override
+//    public DataManager getContext(Class<?> type)
+//    {
+//        return getDataManager();
+//    }
+//
+//    /**
+//     * Returns default data manager instance.
+//     * @return data manager instance
+//     */
+//    public DataManager getDataManager()
+//    {
+//        return dataManager;
+//    }
 
 }

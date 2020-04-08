@@ -19,7 +19,6 @@ package com.atomgraph.client.util;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.LocationMapper;
-import com.sun.jersey.api.client.ClientResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
@@ -29,12 +28,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import com.atomgraph.core.MediaTypes;
-import com.sun.jersey.api.client.Client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import net.sf.saxon.Configuration;
@@ -91,7 +90,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
     }
 
-    public ClientResponse load(String filenameOrURI)
+    public Response load(String filenameOrURI)
     {        
         return get(filenameOrURI, getAcceptedMediaTypes());
     }
@@ -133,7 +132,7 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         {
             if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
             
-            ClientResponse cr = null;
+            Response cr = null;
             try
             {
                 if (!resolvingUncached(uri.toString()))
@@ -143,11 +142,11 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
-                if (!isAcceptedMediaType(cr.getType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
-                    throw new IOException("MediaType '" + cr.getType() + "' is not accepted");
+                if (!isAcceptedMediaType(cr.getMediaType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
+                    throw new IOException("MediaType '" + cr.getMediaType() + "' is not accepted");
 
                 // buffer the stream so we can close ClientResponse
-                try (InputStream is = cr.getEntityInputStream())
+                try (InputStream is = cr.readEntity(InputStream.class)) //cr.getEntityInputStream())
                 {
                     byte[] bytes = IOUtils.toByteArray(is);
                     return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
@@ -170,18 +169,18 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     @Override
     public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
     {
-        ClientResponse cr = null;
+        Response cr = null;
         try
         {
-            cr = getClient().resource(uri).get(ClientResponse.class);
+            cr = getClient().target(uri).request().get();
 
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 throw new IOException("Unparsed text could not be successfully loaded over HTTP");
 
-            InputStream is = cr.getEntityInputStream();
+            InputStream is = cr.readEntity(InputStream.class); // .getEntityInputStream();
             byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse
-            if (cr.getType() != null && cr.getType().getParameters().containsKey("charset"))
-                return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getType().getParameters().get("charset")); // extract response content charset
+            if (cr.getMediaType() != null && cr.getMediaType().getParameters().containsKey("charset"))
+                return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getMediaType().getParameters().get("charset")); // extract response content charset
             else
                 return new InputStreamReader(new ByteArrayInputStream(bytes));
         }

@@ -15,33 +15,38 @@
  */
 package com.atomgraph.client.filter;
 
-import com.sun.jersey.api.client.ClientHandler;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.filter.ClientFilter;
-import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  *
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
-public class RedirectFilter extends ClientFilter
+public class RedirectFilter implements ClientResponseFilter
 {
 
+//    public Response filter(ClientResponseContext cr)
+//    {
+//        //ClientHandler ch = getNext();
+//        //Response resp = ch.handle(cr);
+//
+//        if (cr.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) return resp;
+//
+//        String target = resp.getHeaders().getFirst(HttpHeaders.LOCATION);
+//        cr.setURI(UriBuilder.fromUri(target).build());
+//        return ch.handle(cr);
+//    }
+
     @Override
-    public ClientResponse handle(ClientRequest cr) throws ClientHandlerException
+    public void filter(ClientRequestContext req, ClientResponseContext resp) throws IOException
     {
-        ClientHandler ch = getNext();
-        ClientResponse resp = ch.handle(cr);
-
-        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) return resp;
-
-        String target = resp.getHeaders().getFirst(HttpHeaders.LOCATION);
-        cr.setURI(UriBuilder.fromUri(target).build());
-        return ch.handle(cr);
+        if (resp.getStatusInfo().getFamily() == Response.Status.Family.REDIRECTION)
+        {
+            //resp.getHeaders().add(k, v);
+        }
     }
 
 }

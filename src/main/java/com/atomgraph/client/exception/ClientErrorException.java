@@ -16,7 +16,7 @@
 
 package com.atomgraph.client.exception;
 
-import com.sun.jersey.api.client.ClientResponse;
+import javax.ws.rs.core.Response;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 
@@ -27,21 +27,21 @@ import org.apache.jena.rdf.model.Model;
 public class ClientErrorException extends RuntimeException
 {
     
-    transient private final ClientResponse cr;
+    transient private final Response cr;
     transient private final Dataset dataset;
     
-    public ClientErrorException(ClientResponse cr)
+    public ClientErrorException(Response cr)
     {
         this(cr, null);
     }
     
-    public ClientErrorException(ClientResponse cr, Dataset dataset)
+    public ClientErrorException(Response cr, Dataset dataset)
     {
         this.cr = cr;
         this.dataset = dataset;
     }
     
-    public ClientResponse getClientResponse()
+    public Response getResponse()
     {
         return cr;
     }

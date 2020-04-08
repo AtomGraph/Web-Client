@@ -31,10 +31,7 @@ import com.atomgraph.client.locator.PrefixMapper;
 import com.atomgraph.client.mapper.ClientErrorExceptionMapper;
 import com.atomgraph.client.mapper.NotFoundExceptionMapper;
 import com.atomgraph.client.mapper.RiotExceptionMapper;
-import com.atomgraph.client.mapper.jersey.ClientHandlerExceptionMapper;
-import com.atomgraph.client.mapper.jersey.UniformInterfaceExceptionMapper;
 import com.atomgraph.client.model.impl.ProxyResourceBase;
-import com.atomgraph.client.provider.DataManagerProvider;
 import com.atomgraph.client.writer.DatasetXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
@@ -46,8 +43,6 @@ import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.mapper.AuthenticationExceptionMapper;
 import com.atomgraph.core.provider.MediaTypesProvider;
 import com.atomgraph.core.vocabulary.A;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -61,11 +56,10 @@ import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.io.QueryProvider;
 import com.atomgraph.core.riot.RDFLanguages;
 import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.util.List;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
@@ -75,6 +69,8 @@ import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
 import org.apache.jena.riot.RDFParserRegistry;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.server.ResourceConfig;
 
 /**
  * AtomGraph Client JAX-RS application base class.
@@ -85,7 +81,7 @@ import org.apache.jena.riot.RDFParserRegistry;
  * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
-public class Application extends javax.ws.rs.core.Application
+public class Application extends ResourceConfig
 {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -107,11 +103,11 @@ public class Application extends javax.ws.rs.core.Application
      */
     public Application(@Context ServletConfig servletConfig) throws URISyntaxException, IOException
     {
-        this(new MediaTypes(), getClient(new DefaultClientConfig()),
+        this(new MediaTypes(), getClient(new ClientConfig()),
             servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI()) != null ? Integer.parseInt(servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI())) : null,
             servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI())) : false,
             getDataManager(new PrefixMapper(servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()) : null),
-                com.atomgraph.client.Application.getClient(new DefaultClientConfig()),
+                com.atomgraph.client.Application.getClient(new ClientConfig()),
                 new MediaTypes(),
                 servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI())) : false,
                 servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI())) : false),
@@ -176,25 +172,24 @@ public class Application extends javax.ws.rs.core.Application
     @PostConstruct
     public void init()
     {
-        classes.add(ProxyResourceBase.class);
+        register(ProxyResourceBase.class);
 
-        singletons.add(new ModelProvider());
-        singletons.add(new ResultSetProvider());
-        singletons.add(new QueryParamProvider());
-        singletons.add(new UpdateRequestReader());
-        singletons.add(new MediaTypesProvider(getMediaTypes()));
-        singletons.add(new DataManagerProvider(getDataManager()));
-        singletons.add(new ClientProvider(getClient()));
-        singletons.add(new com.atomgraph.core.provider.DataManagerProvider(getDataManager()));
-        singletons.add(new NotFoundExceptionMapper());
-        singletons.add(new RiotExceptionMapper());
-        singletons.add(new ClientErrorExceptionMapper());
-        singletons.add(new UniformInterfaceExceptionMapper());
-        singletons.add(new ClientHandlerExceptionMapper());
-        singletons.add(new AuthenticationExceptionMapper());
-        singletons.add(new DatasetXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
+        register(new ModelProvider());
+        register(new ResultSetProvider());
+        register(new QueryParamProvider());
+        register(new UpdateRequestReader());
+        register(new MediaTypesProvider(getMediaTypes()));
+        //register(new DataManagerProvider(getDataManager()));
+        register(new ClientProvider(getClient()));
+        register(new com.atomgraph.core.provider.DataManagerProvider(getDataManager()));
+        register(new NotFoundExceptionMapper());
+        register(new RiotExceptionMapper());
+        register(new ClientErrorExceptionMapper());
+        //register(new UniformInterfaceExceptionMapper());
+        register(new AuthenticationExceptionMapper());
+        register(new DatasetXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
         
-        if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
+        //if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
     }
         
     /**
@@ -223,15 +218,15 @@ public class Application extends javax.ws.rs.core.Application
 
     public static Client getClient(ClientConfig clientConfig)
     {
-        clientConfig.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
-        clientConfig.getSingletons().add(new ModelProvider());
-        clientConfig.getSingletons().add(new DatasetProvider());
-        clientConfig.getSingletons().add(new ResultSetProvider());
-        clientConfig.getSingletons().add(new QueryProvider());
-        clientConfig.getSingletons().add(new UpdateRequestReader()); // TO-DO: UpdateRequestProvider
+        //clientConfig.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
+        clientConfig.register(new ModelProvider());
+        clientConfig.register(new DatasetProvider());
+        clientConfig.register(new ResultSetProvider());
+        clientConfig.register(new QueryProvider());
+        clientConfig.register(new UpdateRequestReader()); // TO-DO: UpdateRequestProvider
 
-        Client client = Client.create(clientConfig);
-        if (log.isDebugEnabled()) client.addFilter(new LoggingFilter(System.out));
+        Client client = ClientBuilder.newClient(clientConfig);
+        //if (log.isDebugEnabled()) client.addFilter(new LoggingFilter(System.out));
         
         return client;
     }
@@ -276,29 +271,29 @@ public class Application extends javax.ws.rs.core.Application
         return templates;
     }
 
-    /**
-     * Provides JAX-RS root resource classes.
-     *
-     * @return set of root resource classes
-     * @see <a
-     * href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getClasses()">Application.getClasses()</a>
-     */
-    @Override
-    public Set<Class<?>> getClasses()
-    {
-        return classes;
-    }
-
-    /**
-     * Provides JAX-RS singleton objects (e.g. resources or Providers)
-     * 
-     * @return set of singleton objects
-     * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getSingletons()">Application.getSingletons()</a>
-     */
-    @Override
-    public Set<Object> getSingletons()
-    {
-        return singletons;
-    }
+//    /**
+//     * Provides JAX-RS root resource classes.
+//     *
+//     * @return set of root resource classes
+//     * @see <a
+//     * href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getClasses()">Application.getClasses()</a>
+//     */
+//    @Override
+//    public Set<Class<?>> getClasses()
+//    {
+//        return classes;
+//    }
+//
+//    /**
+//     * Provides JAX-RS singleton objects (e.g. resources or Providers)
+//     * 
+//     * @return set of singleton objects
+//     * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getSingletons()">Application.getSingletons()</a>
+//     */
+//    @Override
+//    public Set<Object> getSingletons()
+//    {
+//        return singletons;
+//    }
 
 }

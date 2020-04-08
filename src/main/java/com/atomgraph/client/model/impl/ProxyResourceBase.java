@@ -16,9 +16,6 @@
  */
 package com.atomgraph.client.model.impl;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import java.net.URI;
 import java.util.ArrayList;
 import javax.ws.rs.DELETE;
@@ -32,7 +29,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.client.LinkedDataClient;
@@ -49,7 +45,11 @@ import com.atomgraph.core.util.ModelUtils;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
@@ -73,7 +73,7 @@ public class ProxyResourceBase implements Resource
     private final MediaTypes mediaTypes;
     private final MediaType accept;
     private final MediaType[] readableMediaTypes;
-    private final WebResource webResource;
+    private final WebTarget webTarget;
     private final LinkedDataClient linkedDataClient;
     private final HttpServletRequest httpServletRequest;
     
@@ -91,6 +91,7 @@ public class ProxyResourceBase implements Resource
      * @param client HTTP client
      * @param httpServletRequest HTTP request
      */
+    @Inject
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
             @Context Client client, @Context HttpServletRequest httpServletRequest)
@@ -117,23 +118,21 @@ public class ProxyResourceBase implements Resource
                 // should not happen
             }
         
-        webResource = client.resource(uri);
-        webResource.addFilter(new RedirectFilter());
-        linkedDataClient = LinkedDataClient.create(webResource, mediaTypes);
+        webTarget = client.target(uri);
+        webTarget.register(new RedirectFilter());
+        linkedDataClient = LinkedDataClient.create(webTarget, mediaTypes);
         this.httpServletRequest = httpServletRequest;
     }
     
     @Override
     public URI getURI()
     {
-        return getWebResource().getURI();
+        return getWebTarget().getUri();
     }
     
-    public ClientResponse getClientResponse(WebResource webResource, HttpHeaders httpHeaders)
+    public Response getResponse(WebTarget webResource, HttpHeaders httpHeaders)
     {
-        return webResource.getRequestBuilder().
-                accept(getReadableMediaTypes()).
-                get(ClientResponse.class);
+        return webResource.request(getReadableMediaTypes()).get();
     }
     
     public MediaType[] getReadableMediaTypes()
@@ -158,47 +157,39 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response get()
     {
-        ClientResponse cr = null;
-        try
+        Response cr = getResponse(getWebTarget(), getHttpHeaders());
+
+        if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
         {
-            cr = getClientResponse(getWebResource(), getHttpHeaders());
-
-            if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+            // forward WWW-Authenticate response header
+            if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
             {
-                // forward WWW-Authenticate response header
-                if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
+                String header = cr.getHeaderString(HttpHeaders.WWW_AUTHENTICATE);
+                if (header.contains("Basic realm="))
                 {
-                    String header = cr.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE);
-                    if (header.contains("Basic realm="))
-                    {
-                        int realmStart = header.indexOf("\"") + 1;
-                        int realmEnd = header.lastIndexOf("\"");
-                        
-                        String realm = header.substring(realmStart, realmEnd);
-                        throw new AuthenticationException("Login is required", realm);
-                    }
-                }
+                    int realmStart = header.indexOf("\"") + 1;
+                    int realmEnd = header.lastIndexOf("\"");
 
-                if (cr.hasEntity())
-                    throw new ClientErrorException(cr, DatasetFactory.create(cr.getEntity(Model.class)));
-                else 
-                    throw new ClientErrorException(cr);
+                    String realm = header.substring(realmStart, realmEnd);
+                    throw new AuthenticationException("Login is required", realm);
+                }
             }
 
-            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebResource().getURI().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
-            
-            if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebResource().getURI());
-
-            if (cr.getHeaders().get("Link") != null) setLinkAttributes(cr.getHeaders().get("Link"));
-
-            Model description = cr.getEntity(Model.class);
-            
-            return getResponse(DatasetFactory.create(description));
+            if (cr.hasEntity())
+                throw new ClientErrorException(cr, DatasetFactory.create(cr.readEntity(Model.class)));
+            else 
+                throw new ClientErrorException(cr);
         }
-        finally
-        {
-            if (cr != null) cr.close();
-        }
+
+        cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebTarget().getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
+
+        if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebTarget().getUri());
+
+        if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinkAttributes(cr.getHeaders().get(HttpHeaders.LINK));
+
+        Model description = cr.readEntity(Model.class);
+
+        return getResponse(DatasetFactory.create(description));
     }
 
     /**
@@ -246,13 +237,13 @@ public class ProxyResourceBase implements Resource
      * 
      * @param linkValues header values
      */
-    protected void setLinkAttributes(List<String> linkValues)
+    protected void setLinkAttributes(List<Object> linkValues)
     {
-        for (String linkValue : linkValues)
+        for (Object linkValue : linkValues)
         {
             try
             {
-                Link link = Link.valueOf(linkValue);
+                Link link = Link.valueOf(linkValue.toString());
                 if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getHref());
                 if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getHref());
                 if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getHref());
@@ -274,21 +265,14 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response post(Dataset dataset)
     {
-        if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebResource().getURI());
-        ClientResponse cr = null;
-        try
-        {
-            cr = webResource.type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
-                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                post(ClientResponse.class, dataset);
-            Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
-            return rb.build();
-        }
-        finally
-        {
-            if (cr != null) cr.close();
-        }
+        if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebTarget().getUri());
+        return getWebTarget().request().
+                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0]))
+                .post(Entity.entity(dataset, com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE));
+        
+//        Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
+//        if (cr.hasEntity()) rb.entity(cr.readEntity(Dataset.class)); // cr.getEntityInputStream()
+//        return rb.build();
     }
 
     /**
@@ -301,21 +285,14 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response put(Dataset dataset)
     {
-        if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebResource().getURI());
-        ClientResponse cr = null;
-        try
-        {
-            cr = getWebResource().type(com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE).
+        if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebTarget().getUri());
+        return getWebTarget().request().
                 accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                put(ClientResponse.class, dataset);
-            ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
-            return rb.build();
-        }
-        finally
-        {
-            if (cr != null) cr.close();
-        }
+                put(Entity.entity(dataset, com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE));
+        
+//        ResponseBuilder rb = Response.status(cr.getStatusInfo());
+//        if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
+//        return rb.build();
     }
     
     /**
@@ -326,21 +303,14 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response delete()
     {
-        if (log.isDebugEnabled()) log.debug("DELETEing Dataset from URI: {}", getWebResource().getURI());
-        ClientResponse cr = null;
-        try
-        {
-            cr = getWebResource().
+        if (log.isDebugEnabled()) log.debug("DELETEing Dataset from URI: {}", getWebTarget().getUri());
+        return getWebTarget().request().
                 accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                delete(ClientResponse.class);
-            ResponseBuilder rb = Response.status(cr.getStatusInfo());
-            if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
-            return rb.build();
-        }
-        finally
-        {
-            if (cr != null) cr.close();
-        }
+                delete(Response.class);
+        
+//        ResponseBuilder rb = Response.status(cr.getStatusInfo());
+//        if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
+//        return rb.build();
     }
     
     public HttpHeaders getHttpHeaders()
@@ -359,9 +329,9 @@ public class ProxyResourceBase implements Resource
         return accept;
     }
     
-    public final WebResource getWebResource()
+    public final WebTarget getWebTarget()
     {
-        return webResource;
+        return webTarget;
     }
 
     public Request getRequest()

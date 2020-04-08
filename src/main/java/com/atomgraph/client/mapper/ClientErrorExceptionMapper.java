@@ -34,12 +34,12 @@ public class ClientErrorExceptionMapper extends ExceptionMapperBase implements E
     @Override
     public Response toResponse(ClientErrorException ex)
     {
-        Resource exRes = toResource(ex, Response.Status.fromStatusCode(ex.getClientResponse().getStatus()), null);
+        Resource exRes = toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null);
         
         if (ex.getModel() != null) exRes.getModel().add(ex.getModel()); // tunnel exception Model, e.g. with RequestAccess
         
         return getResponseBuilder(DatasetFactory.create(exRes.getModel())).
-            status(ex.getClientResponse().getStatus()).
+            status(ex.getResponse().getStatus()).
             build();
     }
     
