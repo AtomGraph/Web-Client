@@ -34,10 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -95,26 +93,32 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     
     private final Templates templates;
     private final OntModelSpec ontModelSpec;
+    private final DataManager dataManager;
 
     @Context private UriInfo uriInfo;
     @Context private Request request;
     @Context private HttpHeaders httpHeaders;
-    @Context private Providers providers;
+    //@Context private Providers providers;
     @Context private HttpServletRequest httpServletRequest;
+    
+    //@Inject private DataManager dataManager;
     
     /**
      * Constructs from XSLT builder.
      * 
      * @param templates compiled XSLT stylesheet
      * @param ontModelSpec ontology model specification
+     * @param dataManager data manager
      * @see com.atomgraph.client.util.XSLTBuilder
      */
-    public DatasetXSLTWriter(Templates templates, OntModelSpec ontModelSpec)
+    public DatasetXSLTWriter(Templates templates, OntModelSpec ontModelSpec, DataManager dataManager)
     {
         if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
+        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.templates = templates;
         this.ontModelSpec = ontModelSpec;
+        this.dataManager = dataManager;
     }
     
     @Override
@@ -267,12 +271,13 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     
     public Templates getTemplates()
     {
-        if (templates != null) return templates;
-        else
-        {
-            ContextResolver<Templates> cr = getProviders().getContextResolver(Templates.class, null);
-            return cr.getContext(Templates.class);
-        }
+//        if (templates != null) return templates;
+//        else
+//        {
+//            ContextResolver<Templates> cr = getProviders().getContextResolver(Templates.class, null);
+//            return cr.getContext(Templates.class);
+//        }
+        return templates;
     }
 
     public XSLTBuilder setParameters(XSLTBuilder builder, Dataset dataset, MultivaluedMap<String, Object> headerMap) throws TransformerException
@@ -483,15 +488,16 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         return ontModelSpec;
     }
  
-    public Providers getProviders()
-    {
-        return providers;
-    }
+//    public Providers getProviders()
+//    {
+//        return providers;
+//    }
 
     public DataManager getDataManager()
     {
-        ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
-        return cr.getContext(DataManager.class);
+//        ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
+//        return cr.getContext(DataManager.class);
+        return dataManager;
     }
     
     public SAXTransformerFactory getTransformerFactory()

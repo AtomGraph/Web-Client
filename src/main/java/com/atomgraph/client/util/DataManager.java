@@ -132,13 +132,12 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         {
             if (log.isDebugEnabled()) log.debug("Resolving URI: {} against base URI: {}", href, base);
             
-            Response cr = null;
             try
             {
                 if (!resolvingUncached(uri.toString()))
                     throw new IOException("Dereferencing uncached URIs is disabled");
 
-                cr = get(uri.toString(), getAcceptedXMLMediaTypes());
+                Response cr = get(uri.toString(), getAcceptedXMLMediaTypes());
 
                 if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                     throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
@@ -157,10 +156,6 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 if (log.isWarnEnabled()) log.warn("Could not read XML document from URI: {}", uri);
                 throw new TransformerException(ex);
             }
-            finally
-            {
-                if (cr != null) cr.close();
-            }
         }
         
         return null;
@@ -169,10 +164,9 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     @Override
     public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
     {
-        Response cr = null;
         try
         {
-            cr = getClient().target(uri).request().get();
+            Response cr = getClient().target(uri).request().get();
 
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 throw new IOException("Unparsed text could not be successfully loaded over HTTP");
@@ -187,10 +181,6 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
         catch (IOException ex)
         {
             throw new WebApplicationException(ex);
-        }
-        finally
-        {
-            if (cr != null) cr.close();
         }
     }
     

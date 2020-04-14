@@ -35,23 +35,14 @@
 ]]></param-value>
     </context-param>
     <servlet>
-        <servlet-name>client</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>com.atomgraph.client.Application</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>com.atomgraph.client.filter.request.PostReplaceFilter</param-value>
-        </init-param>
+        <servlet-name>com.atomgraph.client.Application</servlet-name>
     </servlet>
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>client</servlet-name>
+        <servlet-name>com.atomgraph.client.Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 </web-app>

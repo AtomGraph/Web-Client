@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.model.impl;
 
+import com.atomgraph.client.MediaTypes;
 import java.net.URI;
 import java.util.ArrayList;
 import javax.ws.rs.DELETE;
@@ -35,7 +36,6 @@ import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.client.filter.RedirectFilter;
 import com.atomgraph.client.vocabulary.LDT;
-import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.exception.AuthenticationException;
 import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.io.DatasetProvider;
@@ -92,11 +92,10 @@ public class ProxyResourceBase implements Resource
      * @param httpServletRequest HTTP request
      */
     @Inject
-    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, @Context MediaTypes mediaTypes,
+    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
-            @Context Client client, @Context HttpServletRequest httpServletRequest)
+            Client client, @Context HttpServletRequest httpServletRequest)
     {
-        if (uri == null) throw new NotFoundException("Resource URI not supplied"); // TO-DO: BadRequestException
         this.request = request;
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
@@ -107,20 +106,28 @@ public class ProxyResourceBase implements Resource
         this.readableMediaTypes = readableMediaTypesList.toArray(new MediaType[readableMediaTypesList.size()]);
         
         // client.setFollowRedirects(true); // doesn't work: https://stackoverflow.com/questions/29955951/jersey-is-not-following-302-redirects/29957936
-        if (uri.getFragment() != null)
-            try
-            {
-                // strip #fragment as we don't want to use it in the request to server
-                uri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), null);
-            }
-            catch (URISyntaxException ex)
-            {
-                // should not happen
-            }
+        if (uri != null)
+        {
+            if (uri.getFragment() != null)
+                try
+                {
+                    // strip #fragment as we don't want to use it in the request to server
+                    uri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), null);
+                }
+                catch (URISyntaxException ex)
+                {
+                    // should not happen
+                }
         
-        webTarget = client.target(uri);
-        webTarget.register(new RedirectFilter());
-        linkedDataClient = LinkedDataClient.create(webTarget, mediaTypes);
+            webTarget = client.target(uri);
+            webTarget.register(new RedirectFilter());
+            linkedDataClient = LinkedDataClient.create(webTarget, mediaTypes);
+        }
+        else
+        {
+            webTarget = null;
+            linkedDataClient = null;
+        }
         this.httpServletRequest = httpServletRequest;
     }
     
@@ -157,6 +164,8 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response get()
     {
+        if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+        
         Response cr = getResponse(getWebTarget(), getHttpHeaders());
 
         if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
@@ -265,10 +274,12 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response post(Dataset dataset)
     {
+        if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+        
         if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0]))
-                .post(Entity.entity(dataset, com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE));
+                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
+                post(Entity.entity(dataset, com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE));
         
 //        Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
 //        if (cr.hasEntity()) rb.entity(cr.readEntity(Dataset.class)); // cr.getEntityInputStream()
@@ -285,6 +296,8 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response put(Dataset dataset)
     {
+        if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+        
         if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
                 accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
@@ -303,6 +316,8 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response delete()
     {
+        if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+        
         if (log.isDebugEnabled()) log.debug("DELETEing Dataset from URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
                 accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).

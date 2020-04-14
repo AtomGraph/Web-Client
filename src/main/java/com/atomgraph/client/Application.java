@@ -38,10 +38,8 @@ import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestReader;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.vocabulary.AC;
-import com.atomgraph.core.provider.ClientProvider;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.mapper.AuthenticationExceptionMapper;
-import com.atomgraph.core.provider.MediaTypesProvider;
 import com.atomgraph.core.vocabulary.A;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -70,7 +68,9 @@ import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 
 /**
  * AtomGraph Client JAX-RS application base class.
@@ -173,22 +173,39 @@ public class Application extends ResourceConfig
     public void init()
     {
         register(ProxyResourceBase.class);
-
+        register(new HttpMethodOverrideFilter());
+        
         register(new ModelProvider());
         register(new ResultSetProvider());
         register(new QueryParamProvider());
         register(new UpdateRequestReader());
-        register(new MediaTypesProvider(getMediaTypes()));
+        //register(new MediaTypesProvider(getMediaTypes()));
         //register(new DataManagerProvider(getDataManager()));
-        register(new ClientProvider(getClient()));
+        //register(new ClientProvider(getClient()));
         register(new com.atomgraph.core.provider.DataManagerProvider(getDataManager()));
-        register(new NotFoundExceptionMapper());
-        register(new RiotExceptionMapper());
-        register(new ClientErrorExceptionMapper());
-        //register(new UniformInterfaceExceptionMapper());
-        register(new AuthenticationExceptionMapper());
-        register(new DatasetXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
+        register(NotFoundExceptionMapper.class);
+        register(RiotExceptionMapper.class);
+        register(ClientErrorExceptionMapper.class);
+        //register(UniformInterfaceExceptionMapper());
+        register(AuthenticationExceptionMapper.class);
+        register(new DatasetXSLTWriter(getTemplates(), getOntModelSpec(), getDataManager())); // writes XHTML responses
         
+        register(new AbstractBinder()
+        {
+            @Override
+            protected void configure()
+            {
+                bind(new MediaTypes()).to(MediaTypes.class);
+            }
+        });
+        register(new AbstractBinder()
+        {
+            @Override
+            protected void configure()
+            {
+                bind(getClient()).to(Client.class);
+            }
+        });
         //if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
     }
         

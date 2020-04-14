@@ -24,7 +24,7 @@ import com.atomgraph.core.exception.NotFoundException;
 import org.apache.jena.query.DatasetFactory;
 
 /**
- * Maps (tunnels) one of Jena's remote loading 404 Not Found exceptions.
+ * Maps one of Jena's remote loading 404 Not Found exceptions.
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */

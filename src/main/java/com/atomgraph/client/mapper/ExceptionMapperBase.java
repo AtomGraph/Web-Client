@@ -16,6 +16,7 @@
 
 package com.atomgraph.client.mapper;
 
+import com.atomgraph.client.MediaTypes;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -28,12 +29,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import com.atomgraph.core.MediaTypes;
 import com.atomgraph.client.vocabulary.HTTP;
 import com.atomgraph.core.util.ModelUtils;
+import javax.inject.Inject;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import org.apache.jena.query.Dataset;
@@ -49,6 +49,8 @@ abstract public class ExceptionMapperBase
 
     @Context private Request request;
     @Context private Providers providers;
+    
+    @Inject MediaTypes mediaTypes;
     
     public Resource toResource(Exception ex, Response.Status status, Resource statusResource)
     {
@@ -125,8 +127,9 @@ abstract public class ExceptionMapperBase
 
     public MediaTypes getMediaTypes()
     {
-        ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
-        return cr.getContext(MediaTypes.class);
+//        ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
+//        return cr.getContext(MediaTypes.class);
+        return mediaTypes;
     }
     
     public List<Locale> getLanguages()
