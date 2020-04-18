@@ -271,12 +271,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     
     public Templates getTemplates()
     {
-//        if (templates != null) return templates;
-//        else
-//        {
-//            ContextResolver<Templates> cr = getProviders().getContextResolver(Templates.class, null);
-//            return cr.getContext(Templates.class);
-//        }
         return templates;
     }
 

@@ -19,8 +19,6 @@ package com.atomgraph.client;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.util.LocationMapper;
-import java.util.HashSet;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.core.Context;
@@ -92,8 +90,8 @@ public class Application extends ResourceConfig
     private final Boolean cacheStylesheet;
     private final OntModelSpec ontModelSpec;
     private final Templates templates;
-    private final Set<Class<?>> classes = new HashSet<>();
-    private final Set<Object> singletons = new HashSet<>();
+//    private final Set<Class<?>> classes = new HashSet<>();
+//    private final Set<Object> singletons = new HashSet<>();
 
     /**
      * Initializes root resource classes and provider singletons
