@@ -166,39 +166,41 @@ public class ProxyResourceBase implements Resource
     {
         if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
         
-        Response cr = getResponse(getWebTarget(), getHttpHeaders());
-
-        if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+        try (Response cr = getResponse(getWebTarget(), getHttpHeaders()))
         {
-            // forward WWW-Authenticate response header
-            if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
-            {
-                String header = cr.getHeaderString(HttpHeaders.WWW_AUTHENTICATE);
-                if (header.contains("Basic realm="))
-                {
-                    int realmStart = header.indexOf("\"") + 1;
-                    int realmEnd = header.lastIndexOf("\"");
 
-                    String realm = header.substring(realmStart, realmEnd);
-                    throw new AuthenticationException("Login is required", realm);
+            if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
+            {
+                // forward WWW-Authenticate response header
+                if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
+                {
+                    String header = cr.getHeaderString(HttpHeaders.WWW_AUTHENTICATE);
+                    if (header.contains("Basic realm="))
+                    {
+                        int realmStart = header.indexOf("\"") + 1;
+                        int realmEnd = header.lastIndexOf("\"");
+
+                        String realm = header.substring(realmStart, realmEnd);
+                        throw new AuthenticationException("Login is required", realm);
+                    }
                 }
+
+                if (cr.hasEntity())
+                    throw new ClientErrorException(cr, DatasetFactory.create(cr.readEntity(Model.class)));
+                else 
+                    throw new ClientErrorException(cr);
             }
 
-            if (cr.hasEntity())
-                throw new ClientErrorException(cr, DatasetFactory.create(cr.readEntity(Model.class)));
-            else 
-                throw new ClientErrorException(cr);
+            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebTarget().getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
+
+            if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebTarget().getUri());
+
+            if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinkAttributes(cr.getHeaders().get(HttpHeaders.LINK));
+
+            Model description = cr.readEntity(Model.class);
+
+            return getResponse(DatasetFactory.create(description));
         }
-
-        cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebTarget().getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
-
-        if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebTarget().getUri());
-
-        if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinkAttributes(cr.getHeaders().get(HttpHeaders.LINK));
-
-        Model description = cr.readEntity(Model.class);
-
-        return getResponse(DatasetFactory.create(description));
     }
 
     /**

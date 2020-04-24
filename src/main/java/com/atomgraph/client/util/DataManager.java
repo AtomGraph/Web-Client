@@ -137,18 +137,20 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
                 if (!resolvingUncached(uri.toString()))
                     throw new IOException("Dereferencing uncached URIs is disabled");
 
-                Response cr = get(uri.toString(), getAcceptedXMLMediaTypes());
-
-                if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
-                    throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
-                if (!isAcceptedMediaType(cr.getMediaType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
-                    throw new IOException("MediaType '" + cr.getMediaType() + "' is not accepted");
-
-                // buffer the stream so we can close ClientResponse
-                try (InputStream is = cr.readEntity(InputStream.class)) //cr.getEntityInputStream())
+                try (Response cr = get(uri.toString(), getAcceptedXMLMediaTypes()))
                 {
-                    byte[] bytes = IOUtils.toByteArray(is);
-                    return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
+                    if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                        throw new IOException("XML document could not be successfully loaded over HTTP. Status code: " + cr.getStatus());
+                    
+                    if (!isAcceptedMediaType(cr.getMediaType(), getAcceptedXMLMediaTypes())) // response content type is an acceptable XML format
+                        throw new IOException("MediaType '" + cr.getMediaType() + "' is not accepted");
+
+                    // buffer the stream so we can close ClientResponse
+                    try (InputStream is = cr.readEntity(InputStream.class)) //cr.getEntityInputStream())
+                    {
+                        byte[] bytes = IOUtils.toByteArray(is);
+                        return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
+                    }
                 }
             }
             catch (IOException ex)
@@ -164,19 +166,19 @@ public class DataManager extends com.atomgraph.core.util.jena.DataManager implem
     @Override
     public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
     {
-        try
+        try (Response cr = getClient().target(uri).request().get())
         {
-            Response cr = getClient().target(uri).request().get();
-
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 throw new IOException("Unparsed text could not be successfully loaded over HTTP");
 
-            InputStream is = cr.readEntity(InputStream.class); // .getEntityInputStream();
-            byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse
-            if (cr.getMediaType() != null && cr.getMediaType().getParameters().containsKey("charset"))
-                return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getMediaType().getParameters().get("charset")); // extract response content charset
-            else
-                return new InputStreamReader(new ByteArrayInputStream(bytes));
+            try (InputStream is = cr.readEntity(InputStream.class)) // .getEntityInputStream();
+            {
+                byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close ClientResponse
+                if (cr.getMediaType() != null && cr.getMediaType().getParameters().containsKey("charset"))
+                    return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getMediaType().getParameters().get("charset")); // extract response content charset
+                else
+                    return new InputStreamReader(new ByteArrayInputStream(bytes));
+            }
         }
         catch (IOException ex)
         {
