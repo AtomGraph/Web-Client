@@ -36,8 +36,6 @@ import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.client.filter.RedirectFilter;
 import com.atomgraph.client.vocabulary.LDT;
-import com.atomgraph.core.exception.AuthenticationException;
-import com.atomgraph.core.exception.NotFoundException;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.Link;
@@ -47,6 +45,8 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -181,7 +181,7 @@ public class ProxyResourceBase implements Resource
                         int realmEnd = header.lastIndexOf("\"");
 
                         String realm = header.substring(realmStart, realmEnd);
-                        throw new AuthenticationException("Login is required", realm);
+                        throw new NotAuthorizedException("Login is required", realm);
                     }
                 }
 

@@ -56,6 +56,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.trans.UnparsedTextURIResolver;
@@ -93,32 +94,28 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     
     private final Templates templates;
     private final OntModelSpec ontModelSpec;
-    private final DataManager dataManager;
+    //private final DataManager dataManager;
 
     @Context private UriInfo uriInfo;
     @Context private Request request;
     @Context private HttpHeaders httpHeaders;
-    //@Context private Providers providers;
     @Context private HttpServletRequest httpServletRequest;
     
-    //@Inject private DataManager dataManager;
+    @Inject DataManager dataManager;
     
     /**
      * Constructs from XSLT builder.
      * 
      * @param templates compiled XSLT stylesheet
      * @param ontModelSpec ontology model specification
-     * @param dataManager data manager
      * @see com.atomgraph.client.util.XSLTBuilder
      */
-    public DatasetXSLTWriter(Templates templates, OntModelSpec ontModelSpec, DataManager dataManager)
+    public DatasetXSLTWriter(Templates templates, OntModelSpec ontModelSpec)
     {
         if (templates == null) throw new IllegalArgumentException("Templates cannot be null");
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
-        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.templates = templates;
         this.ontModelSpec = ontModelSpec;
-        this.dataManager = dataManager;
     }
     
     @Override
@@ -481,11 +478,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
     {
         return ontModelSpec;
     }
- 
-//    public Providers getProviders()
-//    {
-//        return providers;
-//    }
 
     public DataManager getDataManager()
     {

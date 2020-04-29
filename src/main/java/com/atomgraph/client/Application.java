@@ -35,9 +35,9 @@ import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestReader;
 import com.atomgraph.client.util.DataManager;
+import com.atomgraph.client.util.DataManagerImpl;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.core.io.ModelProvider;
-import com.atomgraph.core.mapper.AuthenticationExceptionMapper;
 import com.atomgraph.core.vocabulary.A;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,8 +90,7 @@ public class Application extends ResourceConfig
     private final Boolean cacheStylesheet;
     private final OntModelSpec ontModelSpec;
     private final Templates templates;
-//    private final Set<Class<?>> classes = new HashSet<>();
-//    private final Set<Object> singletons = new HashSet<>();
+
 
     /**
      * Initializes root resource classes and provider singletons
@@ -125,11 +124,11 @@ public class Application extends ResourceConfig
         this.cacheStylesheet = cacheStylesheet;
         this.dataManager = dataManager;
         
-        FileManager.setStdLocators(dataManager);
-        FileManager.setGlobalFileManager(dataManager);
+        FileManager.setStdLocators((FileManager)dataManager);
+        FileManager.setGlobalFileManager((FileManager)dataManager);
         if (log.isDebugEnabled()) log.debug("FileManager.get(): {} LocationMapper.get(): {}", FileManager.get(), LocationMapper.get());
 
-        OntDocumentManager.getInstance().setFileManager(dataManager);
+        OntDocumentManager.getInstance().setFileManager((FileManager)dataManager);
         if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
 
         List<Rule> rules = Rule.parseRules(rulesString);
@@ -177,17 +176,19 @@ public class Application extends ResourceConfig
         register(new ResultSetProvider());
         register(new QueryParamProvider());
         register(new UpdateRequestReader());
-        //register(new MediaTypesProvider(getMediaTypes()));
-        //register(new DataManagerProvider(getDataManager()));
-        //register(new ClientProvider(getClient()));
-        register(new com.atomgraph.core.provider.DataManagerProvider(getDataManager()));
         register(NotFoundExceptionMapper.class);
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
-        //register(UniformInterfaceExceptionMapper());
-        register(AuthenticationExceptionMapper.class);
-        register(new DatasetXSLTWriter(getTemplates(), getOntModelSpec(), getDataManager())); // writes XHTML responses
+        register(new DatasetXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
         
+        register(new AbstractBinder()
+        {
+            @Override
+            protected void configure()
+            {
+                bind(getDataManager()).to(DataManager.class);
+            }
+        });
         register(new AbstractBinder()
         {
             @Override
@@ -204,7 +205,6 @@ public class Application extends ResourceConfig
                 bind(getClient()).to(Client.class);
             }
         });
-        //if (log.isTraceEnabled()) log.trace("Application.init() with Classes: {} and Singletons: {}", classes, singletons);
     }
         
     /**
@@ -233,7 +233,6 @@ public class Application extends ResourceConfig
 
     public static Client getClient(ClientConfig clientConfig)
     {
-        //clientConfig.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
         clientConfig.register(new ModelProvider());
         clientConfig.register(new DatasetProvider());
         clientConfig.register(new ResultSetProvider());
@@ -248,7 +247,7 @@ public class Application extends ResourceConfig
 
     public static DataManager getDataManager(final LocationMapper mapper, final Client client, final MediaTypes mediaTypes, final boolean preemptiveAuth, final boolean resolvingUncached)
     {
-        return new DataManager(mapper, client, mediaTypes, preemptiveAuth, resolvingUncached);
+        return new DataManagerImpl(mapper, client, mediaTypes, preemptiveAuth, resolvingUncached);
     }
 
     public MediaTypes getMediaTypes()
