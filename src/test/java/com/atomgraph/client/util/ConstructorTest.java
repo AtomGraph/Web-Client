@@ -16,6 +16,8 @@
 package com.atomgraph.client.util;
 
 import com.atomgraph.client.exception.OntologyException;
+import com.atomgraph.spinrdf.vocabulary.SP;
+import com.atomgraph.spinrdf.vocabulary.SPIN;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.Ontology;
 import org.apache.jena.query.QueryParseException;
@@ -28,8 +30,6 @@ import org.apache.jena.vocabulary.XSD;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.spinrdf.vocabulary.SP;
-import org.spinrdf.vocabulary.SPIN;
 
 /**
  *

@@ -225,7 +225,7 @@ public class PrefixMapper extends LocationMapper
         }
         
         // Make a file manager to look for the location mapping file
-        FileManager fm = new FileManager() ;
+        FileManager fm = FileManager.create();
         fm.addLocatorFile() ;
         fm.addLocatorClassLoader(fm.getClass().getClassLoader()) ;
         

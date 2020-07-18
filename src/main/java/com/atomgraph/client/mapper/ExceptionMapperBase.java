@@ -127,8 +127,6 @@ abstract public class ExceptionMapperBase
 
     public MediaTypes getMediaTypes()
     {
-//        ContextResolver<MediaTypes> cr = getProviders().getContextResolver(MediaTypes.class, null);
-//        return cr.getContext(MediaTypes.class);
         return mediaTypes;
     }
     

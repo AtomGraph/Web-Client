@@ -12,7 +12,7 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 @prefix foaf:	<http://xmlns.com/foaf/0.1/> .
 
-: a ldt:Ontology ;
+: a ldt:Ontology, owl:Ontology ;
     owl:imports ldt:, sp: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Core LDT templates" ;

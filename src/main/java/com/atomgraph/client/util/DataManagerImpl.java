@@ -117,7 +117,8 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         {
             try
             {
-                if (log.isDebugEnabled()) log.debug("hasCachedModel({}): {} isMapped({}): {}", uri, hasCachedModel(uri.toString()), uri, isMapped(uri.toString()));
+                if (log.isDebugEnabled()) log.debug("hasCachedModel({}): {}", uri, hasCachedModel(uri.toString()));
+                if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
                 return getSource(loadModel(uri.toString()), uri.toString());
             }
             catch (IOException ex)
@@ -193,6 +194,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
      * @return XML source
      * @throws java.io.IOException
      */
+    @Override
     public Source getSource(Model model, String systemId) throws IOException
     {
         if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
@@ -212,6 +214,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
      * @return XML source
      * @throws java.io.IOException
      */
+    @Override
     public Source getSource(ResultSet results, String systemId) throws IOException
     {
         if (log.isDebugEnabled()) log.debug("ResultVars: {}", results.getResultVars());

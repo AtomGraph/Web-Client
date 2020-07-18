@@ -52,7 +52,6 @@ import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.io.QueryProvider;
 import com.atomgraph.core.riot.RDFLanguages;
 import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
-import java.util.List;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -61,10 +60,12 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.reasoner.Reasoner;
-import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
-import org.apache.jena.reasoner.rulesys.Rule;
+import org.apache.jena.reasoner.rulesys.RDFSRuleReasonerFactory;
 import org.apache.jena.riot.RDFParserRegistry;
+import org.apache.jena.vocabulary.ReasonerVocabulary;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -110,13 +111,12 @@ public class Application extends ResourceConfig
                 servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI())) : false),
             getSource(servletConfig.getServletContext(), servletConfig.getServletContext().getInitParameter(AC.stylesheet.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.stylesheet.getURI()) : null),
             servletConfig.getServletContext().getInitParameter(AC.cacheStylesheet.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.cacheStylesheet.getURI())) : false,
-            servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI())) : null,
-            servletConfig.getServletContext().getInitParameter(AC.sitemapRules.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.sitemapRules.getURI()) : null
+            servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI())) : null
         );
     }
     
     public Application(final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize, final boolean preemptiveAuth,
-            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached, final String rulesString)
+            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
     {
         this.mediaTypes = mediaTypes;
         this.client = client;
@@ -124,20 +124,23 @@ public class Application extends ResourceConfig
         this.cacheStylesheet = cacheStylesheet;
         this.dataManager = dataManager;
         
-        FileManager.setStdLocators((FileManager)dataManager);
-        FileManager.setGlobalFileManager((FileManager)dataManager);
-        if (log.isDebugEnabled()) log.debug("FileManager.get(): {} LocationMapper.get(): {}", FileManager.get(), LocationMapper.get());
+//        FileManager.setStdLocators((FileManager)dataManager);
+//        FileManager.setGlobalFileManager((FileManager)dataManager);
+//        if (log.isDebugEnabled()) log.debug("FileManager.get(): {} LocationMapper.get(): {}", FileManager.get(), LocationMapper.get());
 
         OntDocumentManager.getInstance().setFileManager((FileManager)dataManager);
         if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
-
-        List<Rule> rules = Rule.parseRules(rulesString);
-        OntModelSpec rulesSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
-        Reasoner reasoner = new GenericRuleReasoner(rules);
+        
+        OntModelSpec rdfsReasonerSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
+        Resource reasonerConfig = ModelFactory.createDefaultModel().
+            createResource().
+            addProperty(ReasonerVocabulary.PROPsetRDFSLevel, "simple");
+        Reasoner reasoner = RDFSRuleReasonerFactory.theInstance().
+                create(reasonerConfig);
         //reasoner.setDerivationLogging(true);
         //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
-        rulesSpec.setReasoner(reasoner);
-        this.ontModelSpec = rulesSpec;
+        rdfsReasonerSpec.setReasoner(reasoner);
+        this.ontModelSpec = rdfsReasonerSpec;
         
         // add RDF/POST serialization
         RDFLanguages.register(RDFLanguages.RDFPOST);
@@ -284,30 +287,5 @@ public class Application extends ResourceConfig
     {
         return templates;
     }
-
-//    /**
-//     * Provides JAX-RS root resource classes.
-//     *
-//     * @return set of root resource classes
-//     * @see <a
-//     * href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getClasses()">Application.getClasses()</a>
-//     */
-//    @Override
-//    public Set<Class<?>> getClasses()
-//    {
-//        return classes;
-//    }
-//
-//    /**
-//     * Provides JAX-RS singleton objects (e.g. resources or Providers)
-//     * 
-//     * @return set of singleton objects
-//     * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html#getSingletons()">Application.getSingletons()</a>
-//     */
-//    @Override
-//    public Set<Object> getSingletons()
-//    {
-//        return singletons;
-//    }
 
 }

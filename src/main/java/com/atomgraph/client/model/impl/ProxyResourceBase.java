@@ -120,7 +120,7 @@ public class ProxyResourceBase implements Resource
                 }
         
             webTarget = client.target(uri);
-            webTarget.register(new RedirectFilter());
+            //webTarget.register(new RedirectFilter()); // TO-DO
             linkedDataClient = LinkedDataClient.create(webTarget, mediaTypes);
         }
         else
