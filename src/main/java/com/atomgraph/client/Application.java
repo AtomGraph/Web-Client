@@ -67,6 +67,7 @@ import org.apache.jena.reasoner.rulesys.RDFSRuleReasonerFactory;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.vocabulary.ReasonerVocabulary;
 import org.glassfish.jersey.client.ClientConfig;
+import static org.glassfish.jersey.client.ClientProperties.FOLLOW_REDIRECTS;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
@@ -123,10 +124,6 @@ public class Application extends ResourceConfig
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
         this.dataManager = dataManager;
-        
-//        FileManager.setStdLocators((FileManager)dataManager);
-//        FileManager.setGlobalFileManager((FileManager)dataManager);
-//        if (log.isDebugEnabled()) log.debug("FileManager.get(): {} LocationMapper.get(): {}", FileManager.get(), LocationMapper.get());
 
         OntDocumentManager.getInstance().setFileManager((FileManager)dataManager);
         if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
@@ -236,6 +233,9 @@ public class Application extends ResourceConfig
 
     public static Client getClient(ClientConfig clientConfig)
     {
+//        clientConfig.connectorProvider(new ApacheConnectorProvider());
+        clientConfig.property(FOLLOW_REDIRECTS, Boolean.TRUE);
+
         clientConfig.register(new ModelProvider());
         clientConfig.register(new DatasetProvider());
         clientConfig.register(new ResultSetProvider());

@@ -675,7 +675,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="bs2:Legend" priority="1">
         <xsl:param name="forClass" select="$ac:forClass" as="xs:anyURI"/>
 
-        <xsl:for-each select="key('resources', $forClass, $ac:sitemap)">
+        <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
             <legend>
                 <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
                 <xsl:text> </xsl:text>

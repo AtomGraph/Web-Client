@@ -243,22 +243,22 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
             return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
         }
     }
-    
-    public static Source getSource(OntModel ontModel, boolean writeAll) throws IOException
-    {
-        if (!writeAll) return getSource(ontModel);
-        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
-
-        if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
-
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
-        {
-            ontModel.writeAll(stream, Lang.RDFXML.getName(), null);
-
-            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
-        }
-    }
+//    
+//    public static Source getSource(OntModel ontModel, boolean writeAll) throws IOException
+//    {
+//        if (!writeAll) return getSource(ontModel);
+//        if (ontModel == null) throw new IllegalArgumentException("OntModel cannot be null");
+//
+//        if (log.isDebugEnabled()) log.debug("Number of OntModel stmts read: {}", ontModel.size());
+//
+//        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+//        {
+//            ontModel.writeAll(stream, Lang.RDFXML.getName(), null);
+//
+//            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+//            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+//        }
+//    }
     
     public URI getContextURI()
     {
@@ -295,7 +295,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
                 builder.parameter("{" + LDT.ontology.getNameSpace() + "}" + LDT.ontology.getLocalName(), ontologyURI);
 
                 OntModel sitemap = getOntModel(ontologyURI.toString());
-                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
+//                builder.parameter("{" + AC.sitemap.getNameSpace() + "}" + AC.sitemap.getLocalName(), getSource(sitemap, true));
 
                 if (getBaseUri() != null)
                 {
@@ -356,11 +356,11 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 
             return builder;
         }
-        catch (IOException ex)
-        {
-            if (log.isErrorEnabled()) log.error("Error reading Source stream");
-            throw new TransformerException(ex);
-        }
+//        catch (IOException ex)
+//        {
+//            if (log.isErrorEnabled()) log.error("Error reading Source stream");
+//            throw new TransformerException(ex);
+//        }
         catch (URISyntaxException ex)
         {
             if (log.isErrorEnabled()) log.error("URI syntax exception");
@@ -481,8 +481,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 
     public DataManager getDataManager()
     {
-//        ContextResolver<DataManager> cr = getProviders().getContextResolver(DataManager.class, null);
-//        return cr.getContext(DataManager.class);
         return dataManager;
     }
     

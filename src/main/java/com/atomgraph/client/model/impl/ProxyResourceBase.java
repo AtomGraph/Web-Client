@@ -34,11 +34,9 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.exception.ClientErrorException;
-import com.atomgraph.client.filter.RedirectFilter;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
-import com.atomgraph.core.util.Link;
 import com.atomgraph.core.util.ModelUtils;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -51,10 +49,12 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
+import static org.glassfish.jersey.client.ClientProperties.FOLLOW_REDIRECTS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +105,6 @@ public class ProxyResourceBase implements Resource
         readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
         this.readableMediaTypes = readableMediaTypesList.toArray(new MediaType[readableMediaTypesList.size()]);
         
-        // client.setFollowRedirects(true); // doesn't work: https://stackoverflow.com/questions/29955951/jersey-is-not-following-302-redirects/29957936
         if (uri != null)
         {
             if (uri.getFragment() != null)
@@ -191,6 +190,8 @@ public class ProxyResourceBase implements Resource
                     throw new ClientErrorException(cr);
             }
 
+            if (!cr.hasEntity()) throw new IllegalStateException("No response entity received");
+
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebTarget().getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
 
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebTarget().getUri());
@@ -198,7 +199,7 @@ public class ProxyResourceBase implements Resource
             if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinkAttributes(cr.getHeaders().get(HttpHeaders.LINK));
 
             Model description = cr.readEntity(Model.class);
-
+            
             return getResponse(DatasetFactory.create(description));
         }
     }
@@ -255,13 +256,13 @@ public class ProxyResourceBase implements Resource
             try
             {
                 Link link = Link.valueOf(linkValue.toString());
-                if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getHref());
-                if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getHref());
-                if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getHref());
+                if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getUri());
+                if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getUri());
+                if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getUri());
             }
-            catch (URISyntaxException ex)
+            catch (IllegalArgumentException ex)
             {
-                if (log.isErrorEnabled()) log.debug("Could parse Link URI: {}", ex.getInput());
+                if (log.isWarnEnabled()) log.warn("Could parse Link URI", ex);
             }
         }
     }
