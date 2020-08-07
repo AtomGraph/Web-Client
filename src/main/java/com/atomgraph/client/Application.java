@@ -37,6 +37,8 @@ import com.atomgraph.core.io.UpdateRequestReader;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.DataManagerImpl;
 import com.atomgraph.client.vocabulary.AC;
+import com.atomgraph.client.writer.function.ConstructDocument;
+import com.atomgraph.client.writer.function.UUID;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.vocabulary.A;
 import java.io.FileNotFoundException;
@@ -55,10 +57,10 @@ import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -91,7 +93,9 @@ public class Application extends ResourceConfig
     private final Source stylesheet;
     private final Boolean cacheStylesheet;
     private final OntModelSpec ontModelSpec;
-    private final Templates templates;
+    private final Processor xsltProc = new Processor(false);
+//    private final Templates templates;
+    private final XsltExecutable xsltExec;
 
 
     /**
@@ -145,13 +149,15 @@ public class Application extends ResourceConfig
         // register plain RDF/XML writer as default
         RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
         
-        SAXTransformerFactory transformerFactory = ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
-        transformerFactory.setURIResolver(dataManager);
+        xsltProc.registerExtensionFunction(new UUID());
+        xsltProc.registerExtensionFunction(new ConstructDocument(xsltProc));
+
         try
         {
-            this.templates = transformerFactory.newTemplates(stylesheet);
+            XsltCompiler comp = xsltProc.newXsltCompiler();
+            xsltExec = comp.compile(stylesheet);
         }
-        catch (TransformerConfigurationException ex)
+        catch (SaxonApiException ex)
         {
             if (log.isErrorEnabled()) log.error("System XSLT stylesheet error: {}", ex);
             throw new WebApplicationException(ex);
@@ -179,7 +185,7 @@ public class Application extends ResourceConfig
         register(NotFoundExceptionMapper.class);
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
-        register(new DatasetXSLTWriter(getTemplates(), getOntModelSpec())); // writes XHTML responses
+        register(new DatasetXSLTWriter(getXsltExecutable(), getOntModelSpec())); // writes XHTML responses
         
         register(new AbstractBinder()
         {
@@ -283,9 +289,9 @@ public class Application extends ResourceConfig
         return ontModelSpec;
     }
 
-    public Templates getTemplates()
+    public XsltExecutable getXsltExecutable()
     {
-        return templates;
+        return xsltExec;
     }
 
 }

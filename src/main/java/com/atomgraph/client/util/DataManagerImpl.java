@@ -171,7 +171,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 throw new IOException("Unparsed text could not be successfully loaded over HTTP");
 
-            try (InputStream is = cr.readEntity(InputStream.class)) // .getEntityInputStream();
+            try (InputStream is = cr.readEntity(InputStream.class))
             {
                 byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close Response
                 if (cr.getMediaType() != null && cr.getMediaType().getParameters().containsKey("charset"))

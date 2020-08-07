@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/2000/svg"
 xmlns:svg="http://www.w3.org/2000/svg"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -32,10 +32,10 @@ xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:owl="&owl;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:math="http://exslt.org/math"
+xmlns:math="http://www.w3.org/2005/xpath-functions/math"
 xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 xmlns:js="http://saxonica.com/ns/globalJS"
-extension-element-prefixes="math ixsl"
+extension-element-prefixes="ixsl"
 exclude-result-prefixes="#all">
 
     <!-- Paper on force directed layout in XSLT: "GraphML Transformation" -->
@@ -87,20 +87,11 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="ac:random" as="xs:double">
-        <xsl:sequence select="math:random()" use-when="not(system-property('xsl:product-name') = 'Saxon-CE')"/>
+        <xsl:sequence select="random-number-generator(current-dateTime())?number" use-when="not(system-property('xsl:product-name') = 'Saxon-CE')"/>
         <!-- use JavaScript function on Saxon-CE (TO-DO: Saxon-JS) -->
         <xsl:sequence select="ixsl:call(ixsl:get(ixsl:window(), 'Math'), 'random')" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
     </xsl:function>
 
-    <!--
-    <xsl:function name="ac:abs" as="xs:double">
-        <xsl:param name="number" as="xs:double"/>
-
-        <xsl:sequence select="math:abs($number)" use-when="not(system-property('xsl:product-name') = 'Saxon-CE')"/>
-        <xsl:sequence select="ixsl:call(ixsl:get(ixsl:window(), 'Math'), 'abs', $number)" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
-    </xsl:function>
-    -->
-    
     <xsl:function name="ac:sqrt" as="xs:double">
         <xsl:param name="number" as="xs:double"/>
 

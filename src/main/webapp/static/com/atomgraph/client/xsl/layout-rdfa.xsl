@@ -36,7 +36,6 @@ xmlns:xsd="&xsd;"
 xmlns:sparql="&sparql;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
-xmlns:uuid="java:java.util.UUID"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 

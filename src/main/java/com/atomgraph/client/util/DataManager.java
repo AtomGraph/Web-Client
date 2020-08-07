@@ -20,7 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
-import net.sf.saxon.trans.UnparsedTextURIResolver;
+import net.sf.saxon.lib.UnparsedTextURIResolver;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 
