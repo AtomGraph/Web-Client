@@ -95,7 +95,6 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
         NAMESPACES.add(AC.NS);
     }
 
-//    private final Xslt30Transformer xsltTrans;
     private final XsltExecutable xsltExec;
     private final OntModelSpec ontModelSpec;
 
