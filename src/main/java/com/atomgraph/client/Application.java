@@ -33,7 +33,7 @@ import com.atomgraph.client.model.impl.ProxyResourceBase;
 import com.atomgraph.client.writer.DatasetXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
-import com.atomgraph.core.io.UpdateRequestReader;
+import com.atomgraph.core.io.UpdateRequestProvider;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.DataManagerImpl;
 import com.atomgraph.client.vocabulary.AC;
@@ -94,7 +94,6 @@ public class Application extends ResourceConfig
     private final Boolean cacheStylesheet;
     private final OntModelSpec ontModelSpec;
     private final Processor xsltProc = new Processor(false);
-//    private final Templates templates;
     private final XsltExecutable xsltExec;
 
 
@@ -154,8 +153,8 @@ public class Application extends ResourceConfig
 
         try
         {
-            XsltCompiler comp = xsltProc.newXsltCompiler();
-            xsltExec = comp.compile(stylesheet);
+            XsltCompiler xsltComp = xsltProc.newXsltCompiler();
+            xsltExec = xsltComp.compile(stylesheet);
         }
         catch (SaxonApiException ex)
         {
@@ -181,7 +180,7 @@ public class Application extends ResourceConfig
         register(new ModelProvider());
         register(new ResultSetProvider());
         register(new QueryParamProvider());
-        register(new UpdateRequestReader());
+        register(new UpdateRequestProvider());
         register(NotFoundExceptionMapper.class);
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
@@ -246,7 +245,7 @@ public class Application extends ResourceConfig
         clientConfig.register(new DatasetProvider());
         clientConfig.register(new ResultSetProvider());
         clientConfig.register(new QueryProvider());
-        clientConfig.register(new UpdateRequestReader()); // TO-DO: UpdateRequestProvider
+        clientConfig.register(new UpdateRequestProvider()); // TO-DO: UpdateRequestProvider
 
         Client client = ClientBuilder.newClient(clientConfig);
         //if (log.isDebugEnabled()) client.addFilter(new LoggingFilter(System.out));
