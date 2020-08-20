@@ -3,7 +3,7 @@
 ### Signal handlers ###
 
 function handle_signal {
-    case "$1" in
+    case $1 in
       TERM|INT|EXIT)
         if [ -n "$CMD_PID" ]; then
           kill "$CMD_PID" &>/dev/null

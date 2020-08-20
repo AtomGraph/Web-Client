@@ -152,12 +152,16 @@ exclude-result-prefixes="#all">
                     </xsl:when>
                     <xsl:otherwise>
                         <!-- calculate the size of the viewport by finding nodes with min/max translated coordinates -->
-                        <xsl:variable name="min-x" select="min((key('nodes', 'circle')/(svg:circle/@cx + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)), key('nodes', 'rect')/(svg:rect/@x + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)))) - $padding" as="xs:double"/>
-                        <xsl:variable name="min-y" select="min((key('nodes', 'circle')/(svg:circle/@cy + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)), key('nodes', 'rect')/(svg:rect/@y + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)))) - $padding" as="xs:double"/>
-                        <xsl:variable name="width" select="max((key('nodes', 'circle')/(svg:circle/@cx + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)), key('nodes', 'rect')/(svg:rect/@x + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)))) - $min-x + $padding" as="xs:double"/>
-                        <xsl:variable name="height" select="max((key('nodes', 'circle')/(svg:circle/@cy + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)), key('nodes', 'rect')/(svg:rect/@y + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)))) - $min-y + $padding" as="xs:double"/>
-
-                        <xsl:attribute name="viewBox" select="concat($min-x, ' ', $min-y, ' ', $width, ' ', $height)"/>
+                        <xsl:variable name="min-x" select="min((key('nodes', 'circle')/(svg:circle/@cx + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)), key('nodes', 'rect')/(svg:rect/@x + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)))) - $padding" as="xs:double?"/>
+                        <xsl:variable name="min-y" select="min((key('nodes', 'circle')/(svg:circle/@cy + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)), key('nodes', 'rect')/(svg:rect/@y + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)))) - $padding" as="xs:double?"/>
+                        
+                        <!-- $min-x/$min-y are empty sequences if there are no actual <svg:circle> elements in <svg:svg> -->
+                        <xsl:if test="$min-x and $min-y">
+                            <xsl:variable name="width" select="max((key('nodes', 'circle')/(svg:circle/@cx + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)), key('nodes', 'rect')/(svg:rect/@x + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)))) - $min-x + $padding" as="xs:double"/>
+                            <xsl:variable name="height" select="max((key('nodes', 'circle')/(svg:circle/@cy + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)), key('nodes', 'rect')/(svg:rect/@y + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)))) - $min-y + $padding" as="xs:double"/>
+                            
+                            <xsl:attribute name="viewBox" select="concat($min-x, ' ', $min-y, ' ', $width, ' ', $height)"/>
+                        </xsl:if>
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:if test="$preserveAspectRatio">

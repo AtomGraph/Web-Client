@@ -252,7 +252,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
             if (getQuery() != null) params.put(new QName("ac", AC.query.getNameSpace(), AC.query.getLocalName()), new XdmAtomicValue(getQuery()));
 
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
-            params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
+            if (!modes.isEmpty()) params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
 
             URI ontologyURI = (URI)getHttpServletRequest().getAttribute(LDT.ontology.getURI());
             if (ontologyURI != null)
