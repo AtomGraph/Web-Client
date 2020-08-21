@@ -43,8 +43,6 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="ac:sitemap" as="document-node()?"/>
-
     <!-- PROPERTY LIST -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:PropertyList">

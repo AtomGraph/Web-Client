@@ -95,7 +95,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:query" as="xs:string?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
-    <xsl:param name="ac:sitemap" as="document-node()?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
     
     <xsl:variable name="main-doc" select="/" as="document-node()"/>

@@ -96,7 +96,7 @@ public final class AC
 
     public static final DatatypeProperty instance = m_model.createDatatypeProperty( NS + "instance" );
 
-    // CONFIG
+    // CONFIG - separate?
     
     public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
     

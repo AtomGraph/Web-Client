@@ -49,6 +49,7 @@ import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -64,6 +65,7 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.value.DateTimeValue;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.query.Dataset;
@@ -153,6 +155,7 @@ public class DatasetXSLTWriter implements MessageBodyWriter<Dataset>
 
             xsltTrans.setURIResolver((URIResolver)getDataManager());
             xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)getDataManager());
+            xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now()));
             xsltTrans.setStylesheetParameters(getParameters(dataset, headerMap));
             xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
         }

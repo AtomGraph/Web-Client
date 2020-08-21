@@ -274,6 +274,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="../@rdf:datatype" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="timezone" select="implicit-timezone()" as="xs:dayTimeDuration?"/>
         
         <span>
             <xsl:if test="$id">
@@ -288,7 +289,7 @@ exclude-result-prefixes="#all">
 
             <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
             <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-            <xsl:value-of select="format-dateTime(., '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
+            <xsl:value-of select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
         </span>
     </xsl:template>
 
