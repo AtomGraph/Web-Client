@@ -39,18 +39,22 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
     {
         com.atomgraph.core.MediaTypes coreTypes = new com.atomgraph.core.MediaTypes();
         READABLE = coreTypes.getReadable();
-        
-        // add XHTML as writable MediaType
-        List<MediaType> writableDatasetTypes = new ArrayList<>(coreTypes.getWritable(Dataset.class));
-//        MediaType xhtml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
-//        writableDatasetTypes.add(0, xhtml);
-        // add HTML as writable MediaType
+
         MediaType html = new MediaType(MediaType.TEXT_HTML_TYPE.getType(), MediaType.TEXT_HTML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
-        writableDatasetTypes.add(0, html);
-        
+        MediaType xhtml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
+
         WRITABLE = new HashMap<>();
+
+        List<MediaType> writableDatasetTypes = new ArrayList<>(coreTypes.getWritable(Dataset.class));
+        writableDatasetTypes.add(0, html); // add HTML as writable MediaType
+        writableDatasetTypes.add(1, xhtml); // add XHTML as writable MediaType
         WRITABLE.put(Dataset.class, Collections.unmodifiableList(writableDatasetTypes));
-        WRITABLE.put(Model.class, coreTypes.getWritable(Model.class));
+        
+        List<MediaType> writableModelTypes = new ArrayList<>(coreTypes.getWritable(Model.class));
+        writableModelTypes.add(0, html); // add HTML as writable MediaType
+        writableModelTypes.add(1, xhtml); // add XHTML as writable MediaType
+        WRITABLE.put(Model.class, Collections.unmodifiableList(writableModelTypes));
+        
         WRITABLE.put(ResultSet.class, coreTypes.getWritable(ResultSet.class));
     }
     

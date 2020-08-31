@@ -37,6 +37,7 @@ import com.atomgraph.core.io.UpdateRequestProvider;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.DataManagerImpl;
 import com.atomgraph.client.vocabulary.AC;
+import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.client.writer.function.ConstructDocument;
 import com.atomgraph.client.writer.function.UUID;
 import com.atomgraph.core.io.ModelProvider;
@@ -184,7 +185,8 @@ public class Application extends ResourceConfig
         register(NotFoundExceptionMapper.class);
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
-        register(new DatasetXSLTWriter(getXsltExecutable(), getOntModelSpec())); // writes XHTML responses
+        register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec())); // writes (X)HTML responses
+        register(new DatasetXSLTWriter(getXsltExecutable(), getOntModelSpec())); // writes (X)HTML responses
         
         register(new AbstractBinder()
         {
