@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE uridef[
+<!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -87,19 +87,9 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="ac:random" as="xs:double">
-        <xsl:sequence select="random-number-generator(current-dateTime())?number" use-when="not(system-property('xsl:product-name') = 'Saxon-CE')"/>
-        <!-- use JavaScript function on Saxon-CE (TO-DO: Saxon-JS) -->
-        <xsl:sequence select="ixsl:call(ixsl:get(ixsl:window(), 'Math'), 'random')" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
+        <xsl:sequence select="random-number-generator(current-dateTime())?number"/>
     </xsl:function>
 
-    <xsl:function name="ac:sqrt" as="xs:double">
-        <xsl:param name="number" as="xs:double"/>
-
-        <xsl:sequence select="math:sqrt($number)" use-when="not(system-property('xsl:product-name') = 'Saxon-CE')"/>
-        <!-- use JavaScript function on Saxon-CE (TO-DO: Saxon-JS) -->
-        <xsl:sequence select="ixsl:call(ixsl:get(ixsl:window(), 'Math'), 'sqrt', $number)" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
-    </xsl:function>
-    
     <xsl:template match="rdf:RDF">
         <xsl:apply-templates select="." mode="ac:SVG"/>
     </xsl:template>
@@ -347,11 +337,11 @@ exclude-result-prefixes="#all">
                     <xsl:choose>
                         <!-- $v adjacent to $v resource -->
                         <xsl:when test="@about = $v/following-sibling::svg:g[@class = 'property']/@resource">
-                            <xsl:sequence select="(ac:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
+                            <xsl:sequence select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
                         </xsl:when>
                         <!-- $v adjacent to $v literal-->
                         <xsl:when test="generate-id() = $v/following-sibling::svg:g[@class = 'property']/svg:rect/generate-id()">
-                            <xsl:sequence select="(ac:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
+                            <xsl:sequence select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
                         </xsl:when>
                         <!-- $v not adjacent to $v -->
                         <xsl:otherwise>
@@ -398,7 +388,7 @@ exclude-result-prefixes="#all">
                         <xsl:variable name="width" select="@r div 2" as="xs:double"/>
                         <xsl:variable name="height" select="100" as="xs:double"/>
                         <!-- find the distance from the circle to the tangent line: https://math.stackexchange.com/questions/1391470/find-distance-between-point-on-tangent-line-and-circle -->
-                        <xsl:variable name="y-delta" select="@r - ac:sqrt(@r * @r - $width * $width)" as="xs:double"/>
+                        <xsl:variable name="y-delta" select="@r - math:sqrt(@r * @r - $width * $width)" as="xs:double"/>
 
                         <path d="M {$x1-offset + @cx - $width},{$y1-offset + @cy + @r - $y-delta} C {$x1-offset + @cx - @r div 2},{$y1-offset + @cy + @r + $height} {$x1-offset + @cx + @r div 2},{$y1-offset + @cy + @r + $height} {$x1-offset + @cx + $width},{$y1-offset + @cy + @r - $y-delta}" stroke="{$stroke}" stroke-width="{$stroke-width}" fill="none" marker-end="url(#triangle)">
                             <title><xsl:value-of select="$property"/></title>
@@ -420,8 +410,8 @@ exclude-result-prefixes="#all">
                     <!-- TO-DO: $x-diff = 0 and $y-diff = 0 -->
                     <!-- find the point where the line intersect the circle -->
                     <xsl:variable name="tan" select="$x-diff div $y-diff" as="xs:double"/>
-                    <xsl:variable name="yc" select="abs($r div ac:sqrt($tan * $tan + 1))" as="xs:double"/>
-                    <xsl:variable name="xc" select="abs($r * $tan * ac:sqrt(1 div ($tan * $tan + 1)))" as="xs:double"/>
+                    <xsl:variable name="yc" select="abs($r div math:sqrt($tan * $tan + 1))" as="xs:double"/>
+                    <xsl:variable name="xc" select="abs($r * $tan * math:sqrt(1 div ($tan * $tan + 1)))" as="xs:double"/>
                     <xsl:variable name="x2" select="if ($x1 &gt; $x2) then ($x2 + $xc) else ($x2 - $xc)" as="xs:double"/>
                     <xsl:variable name="y2" select="if ($y1 &gt; $y2) then ($y2 + $yc) else ($y2 - $yc)" as="xs:double"/>
 

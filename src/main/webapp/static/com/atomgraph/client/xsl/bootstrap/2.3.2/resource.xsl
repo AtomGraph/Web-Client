@@ -90,7 +90,7 @@ exclude-result-prefixes="#all">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
                     <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                    <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                    <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
                 </button>
             </form>
         </div>
@@ -98,7 +98,7 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
                 <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:text use-when="system-property('xsl:product-name') = 'Saxon-CE'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
             </a>
         </div>
     </xsl:template>
@@ -137,7 +137,7 @@ exclude-result-prefixes="#all">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
                 
                 <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
                     <xsl:when test="doc-available(ac:document-uri(.))">
@@ -147,7 +147,7 @@ exclude-result-prefixes="#all">
                         <xsl:value-of select="."/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:value-of select="." use-when="system-property('xsl:product-name') = 'Saxon-CE'"/>
+                <xsl:value-of select="." use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
             </xsl:for-each>
         </ul>
     </xsl:template>
