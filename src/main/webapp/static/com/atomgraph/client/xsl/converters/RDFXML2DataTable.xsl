@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!DOCTYPE uridef[
+<!DOCTYPE xsl:stylesheet [
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
@@ -86,9 +86,11 @@ exclude-result-prefixes="xs">
                     { 
                             "id": "<xsl:value-of select="generate-id()"/>",
                             "type": "string"
-                    },
+                    }
                 </xsl:if>
-
+                
+                <xsl:if test="$resource-ids and $properties">,</xsl:if>
+                
                 <xsl:for-each select="$properties">
                         <xsl:apply-templates select="." mode="ac:DataTableColumns"/>
                         
@@ -105,6 +107,7 @@ exclude-result-prefixes="xs">
         </xsl:template>
 
         <!--  DATA TABLE HEADER -->
+        
         <!-- properties -->
 
         <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTableColumns">
@@ -124,6 +127,7 @@ exclude-result-prefixes="xs">
         </xsl:template>
 
         <!--  DATA TABLE ROW -->
+        
         <!-- subject -->
 
         <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:DataTable">
@@ -136,8 +140,10 @@ exclude-result-prefixes="xs">
                 <xsl:if test="$resource-ids">
                     {
                         "v": <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
-                    },
+                    }
                 </xsl:if>
+
+                <xsl:if test="$resource-ids and $properties">,</xsl:if>
 
                 <xsl:variable name="subject" select="."/>
                 <xsl:for-each select="$properties">
@@ -160,6 +166,7 @@ exclude-result-prefixes="xs">
         </xsl:template>
 
         <!--  DATA TABLE CELLS -->
+        
         <!-- properties -->
 
         <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:DataTable">
