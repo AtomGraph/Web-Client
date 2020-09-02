@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.trans.XPathException;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +136,10 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
             try
             {
                 if (!resolvingUncached(uri.toString()))
-                    throw new IOException("Dereferencing uncached URIs is disabled");
+                {
+                    if (log.isInfoEnabled()) log.info("Dereferencing uncached URIs is disabled - returning empty document for URI: {}", uri);
+                    return getSource(ModelFactory.createDefaultModel(), uri.toString());
+                }
 
                 try (Response cr = get(uri.toString(), getAcceptedXMLMediaTypes()))
                 {
