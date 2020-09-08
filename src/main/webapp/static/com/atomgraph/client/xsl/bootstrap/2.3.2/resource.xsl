@@ -79,6 +79,50 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
+    <!-- HEADER MODE -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Header">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" select="'well header'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="bs2:Image"/>
+            
+            <xsl:apply-templates select="." mode="bs2:Actions"/>
+
+            <h2>
+                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+            </h2>
+            
+            <p>
+                <xsl:apply-templates select="." mode="ac:description"/>
+            </p>
+
+            <xsl:apply-templates select="." mode="bs2:TypeList"/>
+        </div>
+    </xsl:template>
+    
+    <!-- LIST MODE -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:List">
+        <xsl:param name="active" as="xs:boolean?"/>
+        
+        <li>
+            <xsl:if test="$active">
+                <xsl:attribute name="class">active</xsl:attribute>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+        </li>
+    </xsl:template>
+    
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
     <!-- <xsl:template match="rdf:RDF" mode="bs2:Actions">
@@ -176,6 +220,40 @@ exclude-result-prefixes="#all">
                 <xsl:copy-of select="$properties"/>
             </dl>
         </xsl:if>
+    </xsl:template>
+    
+    <!-- FORM CONTROL MODE -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl" use-when="system-property('xsl:product-name') = 'SAXON'">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
+        <xsl:param name="violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
+        <xsl:param name="template-doc" select="if ($ldt:ontology) then ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base) else ()" as="document-node()?"/>
+        <xsl:param name="template" select="$template-doc/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
+        <xsl:param name="traversed-ids" select="@rdf:*" as="xs:string*" tunnel="yes"/>
+
+        <fieldset>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+            </xsl:if>
+
+            <xsl:apply-templates select="$violations" mode="bs2:Violation"/>
+
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
+
+            <xsl:if test="not($template)">
+                <xsl:message>Template is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>' with types '<xsl:value-of select="rdf:type/@rdf:resource"/>'</xsl:message>
+            </xsl:if>
+            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
+                <xsl:sort select="ac:property-label(.)"/>
+                <xsl:with-param name="violations" select="$violations"/>
+                <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
+            </xsl:apply-templates>
+        </fieldset>
     </xsl:template>
     
 </xsl:stylesheet>

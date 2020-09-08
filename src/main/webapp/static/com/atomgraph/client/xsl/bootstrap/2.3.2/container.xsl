@@ -32,7 +32,6 @@ xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:saxon="http://saxon.sf.net/"
 exclude-result-prefixes="#all">
     
     <!-- LIST MODE -->
@@ -73,8 +72,6 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
         
-    <!--<xsl:template match="*[*][@rdf:nodeID]" mode="bs2:BlockList"/>-->
-     
     <!-- GRID MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Grid">

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
+@Deprecated
 public class OntologyProvider
 {
 
@@ -51,20 +52,20 @@ public class OntologyProvider
         OntModel ontModel = manager.getOntology(ontologyURI, ontModelSpec);
         
         // explicitly loading owl:imports -- workaround for Jena bug: https://issues.apache.org/jira/browse/JENA-1210
-        ontModel.enterCriticalSection(Lock.WRITE);
-        try
-        {
-            ontModel.loadImports();
-        }
-        finally
-        {
-            ontModel.leaveCriticalSection();
-        }
+//        ontModel.enterCriticalSection(Lock.WRITE);
+//        try
+//        {
+//            ontModel.loadImports();
+//        }
+//        finally
+//        {
+//            ontModel.leaveCriticalSection();
+//        }
 
         // lock and clone the model to avoid ConcurrentModificationExceptions
         ontModel.enterCriticalSection(Lock.READ);
         try
-        {            
+        {
             return ModelFactory.createOntologyModel(ontModelSpec,
                     ModelFactory.createUnion(ModelFactory.createDefaultModel(), ontModel.getBaseModel()));
         }

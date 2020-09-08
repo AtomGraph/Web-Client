@@ -241,7 +241,6 @@ public abstract class ModelXSLTWriterBase
         }
     }
 
-    
     public URI getAbsolutePath()
     {
         return getUriInfo().getAbsolutePath();
