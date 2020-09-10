@@ -1,5 +1,5 @@
 var onRemoveButtonClick = function()
-{        
+{
     return $(this).parent().parent().parent().remove();
 };
 
@@ -30,7 +30,7 @@ $(document).ready(function()
     });
     
     $(".btn-delete").on("click", function() // prompt on DELETE
-    {        
+    {
         return confirm('Are you sure?');
     });
 
