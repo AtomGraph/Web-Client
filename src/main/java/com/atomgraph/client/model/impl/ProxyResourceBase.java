@@ -218,29 +218,39 @@ public class ProxyResourceBase implements Resource
             add().
             build();
 
-        com.atomgraph.core.model.impl.Response response = new com.atomgraph.core.model.impl.Response(getRequest(),
+        Variant variant = getRequest().selectVariant(variants);
+        if (variant == null || MediaTypes.isTriples(variant.getMediaType())) return getResponse(dataset.getDefaultModel()); // fallback to Model
+
+        return new com.atomgraph.core.model.impl.Response(getRequest(),
                 dataset,
                 null,
                 new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
-                variants);
-
-        Variant variant = getRequest().selectVariant(variants);
-        if (variant == null || MediaTypes.isTriples(variant.getMediaType())) // fallback to Model
-        {
-            variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Model.class),
-                    new ArrayList(),
-                    new ArrayList()).
-                add().
+                variants).
+            getResponseBuilder().
                 build();
-            
-            response = new com.atomgraph.core.model.impl.Response(getRequest(),
-                dataset.getDefaultModel(),
-                    null,
-                new EntityTag(Long.toHexString(ModelUtils.hashModel(dataset.getDefaultModel()))),
-                variants);
-        }
+    }
+    
+    /**
+     * Returns response for the given RDF model.
+     * 
+     * @param model RDF model
+     * @return response object
+     */
+    public Response getResponse(Model model)
+    {
+        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Model.class),
+                new ArrayList(),
+                new ArrayList()).
+            add().
+            build();
 
-        return response.getResponseBuilder().build();
+        return new com.atomgraph.core.model.impl.Response(getRequest(),
+                model,
+                null,
+                new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
+                variants).
+            getResponseBuilder().
+            build();
     }
     
     /**
