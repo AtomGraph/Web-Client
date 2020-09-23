@@ -88,6 +88,10 @@
     rdfs:label "Graph" ;
     rdfs:isDefinedBy : .
 
+:ChartMode a :Mode, :DocumentMode, :ContainerMode ;
+    rdfs:label "Chart" ;
+    rdfs:isDefinedBy : .
+
 # UI keywords
 
 # rename to :Create?
