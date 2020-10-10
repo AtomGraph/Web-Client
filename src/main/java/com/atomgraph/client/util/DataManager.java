@@ -41,6 +41,8 @@ public interface DataManager extends com.atomgraph.core.util.jena.DataManager, U
     
     boolean isResolvingMapped();
     
+    boolean isMapped(String filenameOrURI);
+    
     Source getSource(Model model, String systemId) throws IOException;
         
     Source getSource(ResultSet results, String systemId) throws IOException;

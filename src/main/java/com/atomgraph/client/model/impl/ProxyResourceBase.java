@@ -54,7 +54,6 @@ import javax.ws.rs.core.Variant;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
-import static org.glassfish.jersey.client.ClientProperties.FOLLOW_REDIRECTS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,9 +135,9 @@ public class ProxyResourceBase implements Resource
         return getWebTarget().getUri();
     }
     
-    public Response getResponse(WebTarget webResource, HttpHeaders httpHeaders)
+    public Response getClientResponse()
     {
-        return webResource.request(getReadableMediaTypes()).get();
+        return getWebTarget().request(getReadableMediaTypes()).get();
     }
     
     public MediaType[] getReadableMediaTypes()
@@ -165,9 +164,8 @@ public class ProxyResourceBase implements Resource
     {
         if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
         
-        try (Response cr = getResponse(getWebTarget(), getHttpHeaders()))
+        try (Response cr = getClientResponse())
         {
-
             if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
             {
                 // forward WWW-Authenticate response header

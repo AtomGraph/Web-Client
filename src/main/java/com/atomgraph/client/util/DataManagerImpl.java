@@ -57,10 +57,10 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
             
-    public DataManagerImpl(LocationMapper mapper, Client client, MediaTypes mediaTypes,
-            boolean preemptiveAuth, boolean resolvingUncached)
+    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, Client client, MediaTypes mediaTypes,
+            boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        super(mapper, client, mediaTypes, preemptiveAuth);
+        super(mapper, modelCache, client, mediaTypes, cacheModelLoads, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
         List<MediaType> acceptedTypeList = new ArrayList();
@@ -95,6 +95,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         return get(filenameOrURI, getAcceptedMediaTypes());
     }
     
+    @Override
     public boolean isMapped(String filenameOrURI)
     {
         String mappedURI = mapURI(filenameOrURI);
@@ -150,7 +151,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
                         throw new IOException("MediaType '" + cr.getMediaType() + "' is not accepted");
 
                     // buffer the stream so we can close ClientResponse
-                    try (InputStream is = cr.readEntity(InputStream.class)) //cr.getEntityInputStream())
+                    try (InputStream is = cr.readEntity(InputStream.class))
                     {
                         byte[] bytes = IOUtils.toByteArray(is);
                         return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());

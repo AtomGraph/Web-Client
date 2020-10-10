@@ -55,6 +55,7 @@ import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.io.QueryProvider;
 import com.atomgraph.core.riot.RDFLanguages;
 import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
+import java.util.HashMap;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -112,6 +113,7 @@ public class Application extends ResourceConfig
             getDataManager(new PrefixMapper(servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()) : null),
                 com.atomgraph.client.Application.getClient(new ClientConfig()),
                 new MediaTypes(),
+                true, // TO-DO: config property
                 servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI())) : false,
                 servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI())) : false),
             getSource(servletConfig.getServletContext(), servletConfig.getServletContext().getInitParameter(AC.stylesheet.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.stylesheet.getURI()) : null),
@@ -255,9 +257,9 @@ public class Application extends ResourceConfig
         return client;
     }
 
-    public static DataManager getDataManager(final LocationMapper mapper, final Client client, final MediaTypes mediaTypes, final boolean preemptiveAuth, final boolean resolvingUncached)
+    public static DataManager getDataManager(final LocationMapper mapper, final Client client, final MediaTypes mediaTypes, final boolean cacheModelLoads, final boolean preemptiveAuth, final boolean resolvingUncached)
     {
-        return new DataManagerImpl(mapper, client, mediaTypes, preemptiveAuth, resolvingUncached);
+        return new DataManagerImpl(mapper, new HashMap<>(), client, mediaTypes, cacheModelLoads, preemptiveAuth, resolvingUncached);
     }
 
     public MediaTypes getMediaTypes()
