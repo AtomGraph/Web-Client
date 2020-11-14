@@ -141,8 +141,8 @@ exclude-result-prefixes="#all">
             <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
                 <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
             </xsl:when>
-            <xsl:when test="contains(concat(namespace-uri(), local-name()), '#') and not(ends-with(concat(namespace-uri(), local-name()), '#'))">
-                <xsl:value-of select="substring-after(concat(namespace-uri(), local-name()), '#')"/>
+            <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
+                <xsl:value-of select="substring-after($this, '#')"/>
             </xsl:when>
             <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
                 <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>

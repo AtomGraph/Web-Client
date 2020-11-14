@@ -290,7 +290,7 @@ public class ProxyResourceBase implements Resource
         if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
                 accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                post(Entity.entity(dataset, com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE));
+                post(Entity.entity(dataset, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
         
 //        Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
 //        if (cr.hasEntity()) rb.entity(cr.readEntity(Dataset.class)); // cr.getEntityInputStream()
@@ -312,7 +312,7 @@ public class ProxyResourceBase implements Resource
         if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
                 accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                put(Entity.entity(dataset, com.atomgraph.core.MediaType.TEXT_NTRIPLES_TYPE));
+                put(Entity.entity(dataset, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
         
 //        ResponseBuilder rb = Response.status(cr.getStatusInfo());
 //        if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()

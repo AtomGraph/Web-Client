@@ -125,10 +125,6 @@ exclude-result-prefixes="#all">
     
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
-    <!-- <xsl:template match="rdf:RDF" mode="bs2:Actions">
-        <xsl:apply-templates mode="#current"/>
-    </xsl:template> -->
-    
     <xsl:template match="*[@rdf:about]" mode="bs2:Actions" priority="1">
         <div class="pull-right">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
@@ -191,7 +187,12 @@ exclude-result-prefixes="#all">
                         <xsl:value-of select="."/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:value-of select="." use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
+                
+                <li use-when="system-property('xsl:product-name') eq 'Saxon-JS'">
+                    <span title="{.}" class="btn btn-type">
+                        <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+                    </span>
+                </li>
             </xsl:for-each>
         </ul>
     </xsl:template>
@@ -201,7 +202,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
         <li>
             <span title="{@rdf:about}" class="btn btn-type">
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+               <xsl:apply-templates select="."/>
             </span>
         </li>
     </xsl:template>
