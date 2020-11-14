@@ -93,7 +93,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>twirl</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.17</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
