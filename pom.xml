@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>2.1.70-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -93,12 +93,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>twirl</artifactId>
-            <version>1.0.14-SNAPSHOT</version>
+            <version>1.0.14</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>2.2.16-SNAPSHOT</version>
+            <version>3.0.0</version>
         </dependency>
 <!--        <dependency>
             <groupId>org.glassfish.jersey.connectors</groupId>
