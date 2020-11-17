@@ -33,7 +33,6 @@
     </licenses>
     
     <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
@@ -98,7 +97,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1-SNAPSHOT</version>
         </dependency>
 <!--        <dependency>
             <groupId>org.glassfish.jersey.connectors</groupId>
@@ -123,9 +122,6 @@
                 <version>3.8.1</version>
                 <configuration>
                     <release>11</release>
-                    <compilerArguments>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
                 </configuration>
             </plugin>
             <plugin>
