@@ -152,10 +152,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="ac:image"/>
         </xsl:variable>
         <xsl:variable name="this" select="." as="element()"/>
-<xsl:message>
-    IMAGE URIS: <xsl:sequence select="$image-uris"/>
-</xsl:message>
-
         <xsl:variable name="link" as="element()">
             <xsl:apply-templates select="." mode="xhtml:Anchor"/>
         </xsl:variable>
@@ -200,7 +196,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
         <xsl:variable name="properties" as="element()*">
             <xsl:apply-templates mode="#current">
-                <xsl:sort select="ac:property-label(.)" data-type="text" order="ascending" lang="{$ldt:lang}"/>
+                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
             </xsl:apply-templates>
         </xsl:variable>
 

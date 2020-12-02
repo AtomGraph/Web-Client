@@ -539,9 +539,17 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
     
+    <!-- BLOCK MODE -->
+    
+    <xsl:template match="rdf:RDF" mode="bs2:Block">
+        <xsl:apply-templates mode="#current">
+            <xsl:sort select="ac:label(.)"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
     <!-- FORM MODE -->
 
-    <xsl:template match="rdf:RDF" mode="bs2:Form" priority="3">
+    <xsl:template match="rdf:RDF" mode="bs2:Form">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('?_method=PUT')" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
@@ -577,7 +585,9 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base)/rdf:RDF/*" mode="#current"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:apply-templates mode="#current"/>
+                    <xsl:apply-templates mode="#current">
+                        <xsl:sort select="ac:label(.)"/>
+                    </xsl:apply-templates>
                 </xsl:otherwise>
             </xsl:choose>
 
@@ -661,19 +671,17 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- object blank node (avoid infinite loop) -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID" mode="xhtml:Anchor">
-        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
+        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]" as="element()"/>
 
         <xsl:choose>
             <xsl:when test="$bnode">
                 <xsl:apply-templates select="$bnode" mode="bs2:Block">
-                    <xsl:with-param name="nested" select="true()"/>
+                    <xsl:with-param name="display" select="true()" tunnel="yes"/>
                 </xsl:apply-templates>
             </xsl:when>
             <xsl:otherwise>
-                <span id="{.}" title="{.}">
-                    <xsl:apply-templates select="." mode="ac:label"/>
-                </span>
+                <xsl:next-match/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>

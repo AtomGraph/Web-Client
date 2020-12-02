@@ -61,7 +61,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="*[@rdf:about] | *[@rdf:nodeID]" mode="ac:label">
-        <xsl:sequence select="@rdf:about | @rdf:nodeID"/>
+        <xsl:value-of select="@rdf:about | @rdf:nodeID"/>
     </xsl:template>
     
     <!-- PROPERTY LABEL -->
@@ -73,17 +73,29 @@ exclude-result-prefixes="#all">
         
         <xsl:choose>
             <xsl:when test="key('resources', $this)">
-                <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
+                <xsl:variable name="labels" as="xs:string*">
+                    <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
+                </xsl:variable>
+                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
             </xsl:when>
             <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
-                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
+                <xsl:variable name="labels" as="xs:string*">
+                    <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
+                </xsl:variable>
+                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
             </xsl:when>
             <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
-                <xsl:sequence select="substring-after($this, '#')"/>
+                <xsl:variable name="labels" as="xs:string*">
+                    <xsl:sequence select="substring-after($this, '#')"/>
+                </xsl:variable>
+                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
             </xsl:when>
             <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
-                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
-                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
+                <xsl:variable name="labels" as="xs:string*">
+                    <xsl:sequence use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+                    <xsl:sequence use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
+                </xsl:variable>
+                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:sequence select="$this"/>
@@ -91,7 +103,7 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
     
-    <!-- OBJECT LABEL NODE -->
+    <!-- OBJECT LABEL -->
     
     <xsl:template match="node()" mode="ac:object-label"/>
         
@@ -107,8 +119,8 @@ exclude-result-prefixes="#all">
                 <xsl:sequence select="substring-after(., '#')"/>
             </xsl:when>
             <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
-                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
-                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
+                <xsl:sequence use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:sequence use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:sequence select="."/>
@@ -117,11 +129,11 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
 
-    <!-- DESCRIPTION MODE -->
+    <!-- DESCRIPTION -->
 
     <xsl:template match="node()" mode="ac:description"/>
     
-    <!-- IMAGE MODE -->
+    <!-- IMAGE -->
 
     <xsl:template match="node()" mode="ac:image"/>
 
@@ -250,7 +262,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object blank node -->
-    <xsl:template match="@rdf:nodeID">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
         <xsl:param name="href" select="xs:anyURI(concat('#', .))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
@@ -266,7 +278,7 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
-            
+
             <xsl:apply-templates select="." mode="ac:object-label"/>
         </a>
     </xsl:template>

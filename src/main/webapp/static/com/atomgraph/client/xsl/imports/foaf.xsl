@@ -17,6 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
 <xsl:stylesheet version="3.0"
@@ -24,8 +25,11 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
+xmlns:ldt="&ldt;"
 xmlns:foaf="&foaf;"
 exclude-result-prefixes="#all">
+
+    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
     <xsl:template match="foaf:page/@rdf:resource | foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource">
         <a href="{.}">
@@ -79,6 +83,10 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="foaf:nick/text()"/>
     </xsl:template>
 
+    <xsl:template match="*[foaf:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="6">
+        <xsl:sequence select="foaf:name[lang($ldt:lang)]/text()"/>
+    </xsl:template>
+    
     <xsl:template match="*[foaf:name/text()]" mode="ac:label" priority="4">
         <xsl:sequence select="foaf:name/text()"/>
     </xsl:template>

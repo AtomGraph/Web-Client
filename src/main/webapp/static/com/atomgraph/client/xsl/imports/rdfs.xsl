@@ -18,6 +18,7 @@ limitations under the License.
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -25,12 +26,23 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
+xmlns:ldt="&ldt;"
 exclude-result-prefixes="#all">
 
+    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
+
+    <xsl:template match="*[rdfs:label[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="rdfs:label[lang($ldt:lang)]/text()"/>
+    </xsl:template>
+    
     <xsl:template match="*[rdfs:label/text()]" mode="ac:label">
         <xsl:sequence select="rdfs:label/text()"/>
     </xsl:template>
 
+    <xsl:template match="*[rdfs:comment[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="rdfs:comment[lang($ldt:lang)]/text()"/>
+    </xsl:template>
+    
     <xsl:template match="*[rdfs:comment/text()]" mode="ac:description">
         <xsl:sequence select="rdfs:comment/text()"/>
     </xsl:template>
