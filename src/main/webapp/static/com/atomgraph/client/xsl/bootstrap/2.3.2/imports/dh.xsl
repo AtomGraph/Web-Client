@@ -26,8 +26,6 @@ xmlns:dh="&dh;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="dh:slug" mode="bs2:PropertyList"/>
-    
     <xsl:template match="dh:slug/@rdf:datatype" mode="bs2:FormControl">
         <xsl:next-match>
             <xsl:with-param name="type" select="'hidden'"/>

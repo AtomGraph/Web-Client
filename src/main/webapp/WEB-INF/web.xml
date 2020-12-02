@@ -4,7 +4,7 @@
     <description>Generic Linked Data client</description>
     <context-param>
         <param-name>https://w3id.org/atomgraph/client#stylesheet</param-name>
-        <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/external.xsl</param-value>
+        <param-value>static/com/atomgraph/client/xsl/bootstrap/2.3.2/external-layout.xsl</param-value>
     </context-param>
     <context-param>
         <param-name>https://w3id.org/atomgraph/core#resultLimit</param-name>

@@ -21,7 +21,7 @@ limitations under the License.
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY c      "https://www.w3.org/ns/ldt/core/domain#">
@@ -38,7 +38,7 @@ xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
-xmlns:sparql="&sparql;"
+xmlns:srx="&srx;"
 xmlns:sd="&sd;"
 xmlns:ldt="&ldt;"
 xmlns:core="&c;"
@@ -65,10 +65,10 @@ LIMIT 100</xsl:param>
         
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
             <xsl:call-template name="bs2:QueryForm">
@@ -108,16 +108,16 @@ LIMIT 100</xsl:param>
         
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$accept-charset">
-                <xsl:attribute name="accept-charset"><xsl:value-of select="$accept-charset"/></xsl:attribute>
+                <xsl:attribute name="accept-charset"><xsl:sequence select="$accept-charset"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$enctype">
-                <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
+                <xsl:attribute name="enctype"><xsl:sequence select="$enctype"/></xsl:attribute>
             </xsl:if>
         
             <fieldset>
@@ -131,10 +131,10 @@ LIMIT 100</xsl:param>
                 <textarea id="query-string" name="query" class="span12" rows="15">
                     <xsl:choose>
                         <xsl:when test="$query">
-                            <xsl:value-of select="$query"/>
+                            <xsl:sequence select="$query"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="$default-query"/>
+                            <xsl:sequence select="$default-query"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </textarea>
@@ -207,8 +207,8 @@ LIMIT 100</xsl:param>
         </xsl:if>
         
         <!-- result of SELECT or ASK -->
-        <xsl:if test="$result-doc/sparql:sparql">
-            <xsl:apply-templates select="$result-doc/sparql:sparql" mode="xhtml:Table"/>
+        <xsl:if test="$result-doc/srx:sparql">
+            <xsl:apply-templates select="$result-doc/srx:sparql" mode="xhtml:Table"/>
         </xsl:if>
     </xsl:template>
     

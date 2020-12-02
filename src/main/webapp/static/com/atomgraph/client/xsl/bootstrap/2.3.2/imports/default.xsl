@@ -153,22 +153,22 @@ exclude-result-prefixes="#all">
         
         <textarea name="{$name}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$style">
-                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+                <xsl:attribute name="style"><xsl:sequence select="$style"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$rows">
-                <xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
+                <xsl:attribute name="rows"><xsl:sequence select="$rows"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$disabled">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
 
-            <xsl:value-of select="$value"/>
+            <xsl:sequence select="$value"/>
         </textarea>
         
         <xsl:if test="$type-label">

@@ -30,7 +30,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         
         <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10" style="font-family: monospace;">
-            <xsl:value-of select="."/>
+            <xsl:sequence select="."/>
         </textarea>
 
         <xsl:if test="$type-label">

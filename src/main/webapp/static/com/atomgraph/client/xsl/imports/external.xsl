@@ -21,7 +21,7 @@ limitations under the License.
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
+    <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -31,9 +31,8 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:owl="&owl;"
-xmlns:sparql="&sparql;"
+xmlns:srx="&srx;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:url="&java;java.net.URLDecoder"
 exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
@@ -50,7 +49,7 @@ exclude-result-prefixes="#all">
         </xsl:next-match>
     </xsl:template>
     
-    <xsl:template match="@rdf:resource | sparql:uri">
+    <xsl:template match="@rdf:resource | srx:uri">
         <xsl:param name="href" select="xs:anyURI(concat('?uri=', encode-for-uri(if (contains(., '#')) then substring-before(., '#') else .), if (substring-after(., '#')) then concat('#', substring-after(., '#')) else ()))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>

@@ -26,17 +26,17 @@ xmlns:rdf="&rdf;"
 xmlns:doap="&doap;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="doap:name | @doap:name" mode="ac:label">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[doap:name/text()]" mode="ac:label">
+        <xsl:sequence select="doap:name/text()"/>
     </xsl:template>
 
-    <xsl:template match="doap:description" mode="ac:description">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[doap:description/text()]" mode="ac:description">
+        <xsl:sequence select="doap:description/text()"/>
     </xsl:template>
 
     <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">
         <a href="{.}">
-            <xsl:value-of select="."/>
+            <xsl:sequence select="."/>
         </a>
     </xsl:template>
 

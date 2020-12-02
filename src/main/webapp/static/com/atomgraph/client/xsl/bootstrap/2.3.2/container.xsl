@@ -46,10 +46,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates select="." mode="bs2:Image"/>
@@ -103,10 +103,10 @@ exclude-result-prefixes="#all">
 
         <li>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <div class="thumbnail">
@@ -145,10 +145,10 @@ exclude-result-prefixes="#all">
 
         <table>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <thead>
                 <tr>
@@ -178,10 +178,10 @@ exclude-result-prefixes="#all">
 
         <tr>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:if test="$anchor-column">
@@ -219,9 +219,9 @@ exclude-result-prefixes="#all">
 
         <script type="text/javascript">
             <![CDATA[
-                function initialize]]><xsl:value-of select="generate-id()"/><![CDATA[()
+                function initialize]]><xsl:sequence select="generate-id()"/><![CDATA[()
                 {
-                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
+                    var latLng = new google.maps.LatLng(]]><xsl:sequence select="geo:lat[1]"/>, <xsl:sequence select="geo:long[1]"/><![CDATA[);
                     var marker = new google.maps.Marker({
                         position: latLng,
                         map: map,
@@ -229,7 +229,7 @@ exclude-result-prefixes="#all">
                     });
                 }
 
-                google.maps.event.addDomListener(window, 'load', initialize]]><xsl:value-of select="generate-id()"/><![CDATA[);
+                google.maps.event.addDomListener(window, 'load', initialize]]><xsl:sequence select="generate-id()"/><![CDATA[);
             ]]>
         </script>
     </xsl:template>

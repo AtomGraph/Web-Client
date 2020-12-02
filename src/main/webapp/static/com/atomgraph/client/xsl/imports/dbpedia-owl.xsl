@@ -30,16 +30,20 @@ exclude-result-prefixes="#all">
         <a href="{.}">
             <xsl:choose>
                 <xsl:when test="starts-with(., 'http://')">
-                    <xsl:value-of select="substring-after(., 'http://')"/>
+                    <xsl:sequence select="substring-after(., 'http://')"/>
                 </xsl:when>
                 <xsl:when test="starts-with(., 'https://')">
-                    <xsl:value-of select="substring-after(., 'https://')"/>
+                    <xsl:sequence select="substring-after(., 'https://')"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="."/>
+                    <xsl:sequence select="."/>
                 </xsl:otherwise>
             </xsl:choose>
         </a>
+    </xsl:template>
+
+    <xsl:template match="*[dbpedia-owl:thumbnail/@rdf:resource]" mode="ac:image">
+        <xsl:sequence select="dbpedia-owl:thumbnail/@rdf:resource"/>
     </xsl:template>
 
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
@@ -50,8 +54,8 @@ exclude-result-prefixes="#all">
         </a>
     </xsl:template>
 
-    <xsl:template match="dbpedia-owl:abstract" mode="ac:description">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[dbpedia-owl:abstract/text()]" mode="ac:description">
+        <xsl:sequence select="dbpedia-owl:abstract/text()"/>
     </xsl:template>
 
 </xsl:stylesheet>

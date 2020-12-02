@@ -42,10 +42,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates select="." mode="bs2:Header"/>
@@ -87,10 +87,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates select="." mode="bs2:Image"/>
@@ -147,28 +147,35 @@ exclude-result-prefixes="#all">
     
     <!-- IMAGE MODE -->
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Image">
-        <xsl:variable name="prelim-images" as="item()*">
-            <xsl:apply-templates mode="ac:image"/>
+    <xsl:template match="*[*][@rdf:about]" mode="bs2:Image">
+        <xsl:variable name="image-uris" as="attribute()*">
+            <xsl:apply-templates select="." mode="ac:image"/>
         </xsl:variable>
-        <xsl:variable name="images" select="$prelim-images/self::*" as="element()*"/>
+        <xsl:variable name="this" select="." as="element()"/>
+<xsl:message>
+    IMAGE URIS: <xsl:sequence select="$image-uris"/>
+</xsl:message>
 
-        <xsl:if test="$images">
-            <div class="carousel slide">
-                <div class="carousel-inner">
-                    <xsl:for-each select="$images">
-                        <div class="item">
-                            <xsl:if test="position() = 1">
-                                <xsl:attribute name="class">active item</xsl:attribute>
-                            </xsl:if>
-                            <xsl:copy-of select="."/>
-                        </div>
-                    </xsl:for-each>
-                    <a class="carousel-control left" onclick="$(this).parents('.carousel').carousel('prev');">&#8249;</a>
-                    <a class="carousel-control right" onclick="$(this).parents('.carousel').carousel('next');">&#8250;</a>
-                </div>
-            </div>
-        </xsl:if>
+        <xsl:variable name="link" as="element()">
+            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+        </xsl:variable>
+            
+        <xsl:for-each select="$image-uris[1]">
+            <a href="{$link/@href}" title="{ac:label($this)}">
+                <img src="{.}" alt="{ac:label($this)}" class="img-polaroid"/>
+            </a>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:Image">
+        <xsl:variable name="image-uris" as="attribute()*">
+            <xsl:apply-templates select="." mode="ac:image"/>
+        </xsl:variable>
+        <xsl:variable name="this" select="." as="element()"/>
+
+        <xsl:for-each select="$image-uris[1]">
+            <img src="{.}" alt="{ac:label($this)}" class="img-polaroid"/>
+        </xsl:for-each>
     </xsl:template>
     
     <!-- TYPE MODE -->
@@ -179,33 +186,14 @@ exclude-result-prefixes="#all">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                 <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
                 
-                <xsl:choose use-when="system-property('xsl:product-name') = 'SAXON'">
-                    <xsl:when test="doc-available(ac:document-uri(.))">
-                        <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="bs2:TypeListItem"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="."/>
-                    </xsl:otherwise>
-                </xsl:choose>
-                
-                <li use-when="system-property('xsl:product-name') eq 'Saxon-JS'">
-                    <span title="{.}" class="btn btn-type">
-                        <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-                    </span>
+                <li>
+                    <xsl:apply-templates select="."/>
                 </li>
             </xsl:for-each>
         </ul>
     </xsl:template>
 
     <xsl:template match="*" mode="bs2:TypeList"/>
-
-    <xsl:template match="*[@rdf:about]" mode="bs2:TypeListItem">
-        <li>
-            <span title="{@rdf:about}" class="btn btn-type">
-               <xsl:apply-templates select="."/>
-            </span>
-        </li>
-    </xsl:template>
 
     <!-- PROPERTY LIST MODE -->
 
@@ -236,10 +224,10 @@ exclude-result-prefixes="#all">
 
         <fieldset>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates select="$violations" mode="bs2:Violation"/>
@@ -247,7 +235,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
             <xsl:if test="not($template)">
-                <xsl:message>Template is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>' with types '<xsl:value-of select="rdf:type/@rdf:resource"/>'</xsl:message>
+                <xsl:message>Template is not defined for resource '<xsl:sequence select="@rdf:about | @rdf:nodeID"/>' with types '<xsl:sequence select="rdf:type/@rdf:resource"/>'</xsl:message>
             </xsl:if>
             <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                 <xsl:sort select="ac:property-label(.)"/>

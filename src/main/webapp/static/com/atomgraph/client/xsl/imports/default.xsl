@@ -38,23 +38,102 @@ xmlns:srx="&srx;"
 xmlns:ldt="&ldt;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
-xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:url="&java;java.net.URLDecoder"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
-    <xsl:key name="resources" match="*[*][@rdf:*[local-name() = 'about']] | *[*][@rdf:*[local-name() = 'nodeID']]" use="@rdf:*[local-name() = 'about'] | @rdf:*[local-name() = 'nodeID']"/>
+    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+
+    <!-- LABEL -->
+    
+    <xsl:template match="node()" mode="ac:label"/>
+    
+    <xsl:template match="*[contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))]" mode="ac:label" priority="2">
+        <xsl:sequence select="substring-after(@rdf:about, '#')"/>
+    </xsl:template>
+
+    <xsl:template match="*[string-length(tokenize(@rdf:about, '/')[last()]) &gt; 0]" mode="ac:label" priority="1">
+        <xsl:variable name="label" use-when="function-available('url:decode')" select="translate(url:decode(tokenize(@rdf:about, '/')[last()], 'UTF-8'), '_', ' ')"/>
+        <xsl:variable name="label" use-when="not(function-available('url:decode'))" select="translate(tokenize(@rdf:about, '/')[last()], '_', ' ')"/>
+        <xsl:sequence select="$label"/>
+    </xsl:template>
+    
+    <xsl:template match="*[@rdf:about] | *[@rdf:nodeID]" mode="ac:label">
+        <xsl:sequence select="@rdf:about | @rdf:nodeID"/>
+    </xsl:template>
+    
+    <!-- PROPERTY LABEL -->
+    
+    <xsl:template match="node()" mode="ac:property-label"/>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:property-label" priority="1">
+        <xsl:variable name="this" select="concat(namespace-uri(), local-name())"/>
+        
+        <xsl:choose>
+            <xsl:when test="key('resources', $this)">
+                <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
+            </xsl:when>
+            <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
+                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
+            </xsl:when>
+            <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
+                <xsl:sequence select="substring-after($this, '#')"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
+                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$this"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <!-- OBJECT LABEL NODE -->
+    
+    <xsl:template match="node()" mode="ac:object-label"/>
+        
+    <xsl:template match="@rdf:resource | @rdf:nodeID | srx:uri" mode="ac:object-label" priority="1">
+        <xsl:choose>
+            <xsl:when test="key('resources', .)">
+                <xsl:apply-templates select="key('resources', .)" mode="ac:label"/>
+            </xsl:when>
+            <xsl:when test="doc-available(ac:document-uri(.)) and key('resources', ., document(ac:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'">
+                <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="ac:label"/>
+            </xsl:when>
+            <xsl:when test="contains(., '#') and not(ends-with(., '#'))">
+                <xsl:sequence select="substring-after(., '#')"/>
+            </xsl:when>
+            <xsl:when test="string-length(tokenize(., '/')[last()]) &gt; 0">
+                <xsl:value-of use-when="function-available('url:decode')" select="translate(url:decode(tokenize(., '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:value-of use-when="not(function-available('url:decode'))" select="translate(tokenize(., '/')[last()], '_', ' ')"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="."/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+
+    <!-- DESCRIPTION MODE -->
+
+    <xsl:template match="node()" mode="ac:description"/>
+    
+    <!-- IMAGE MODE -->
+
+    <xsl:template match="node()" mode="ac:image"/>
 
     <!-- DEFINITIONS -->
     
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*" mode="xhtml:DefinitionTerm">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:DefinitionTerm">
         <dt>
             <xsl:apply-templates select="."/>
         </dt>
     </xsl:template>
     
-    <xsl:template match="node() | @rdf:*[local-name() = 'resource'] | @rdf:*[local-name() = 'nodeID']" mode="xhtml:DefinitionDescription">
+    <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription">
         <dd>
             <xsl:apply-templates select="."/>
         </dd>
@@ -62,14 +141,14 @@ exclude-result-prefixes="#all">
     
     <!-- OPTION MODE -->
     
-    <xsl:template match="*[*][@rdf:*[local-name() = 'about']] | *[*][@rdf:*[local-name() = 'nodeID']]" mode="xhtml:Option">
-        <xsl:param name="value" select="@rdf:*[local-name() = 'about'] | @rdf:*[local-name() = 'nodeID']" as="xs:string?"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:Option">
+        <xsl:param name="value" select="@rdf:about | @rdf:nodeID" as="xs:string?"/>
         <xsl:param name="selected" as="xs:boolean?"/>
         <xsl:param name="disabled" as="xs:boolean?"/>
 
         <option>
             <xsl:if test="$value">
-                <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+                <xsl:attribute name="value"><xsl:sequence select="$value"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$selected">
                 <xsl:attribute name="selected">selected</xsl:attribute>
@@ -82,48 +161,40 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- INLINE MODE -->
-
-    <!--
-    <xsl:template match="*[key('resources-by-uri', @rdf:*[local-name() = 'about'])/@rdf:*[local-name() = 'about']]" mode="xhtml:Anchor" priority="1">
-        <a href="{key('resources-by-uri', @rdf:*[local-name() = 'about'])/@rdf:*[local-name() = 'about']}" title="{@rdf:*[local-name() = 'about']}">
-            <xsl:apply-templates select="." mode="ac:label"/>
-        </a>
-    </xsl:template>
-    -->
     
     <!-- subject resource -->
-    <xsl:template match="*[@rdf:*[local-name() = 'about']]" mode="xhtml:Anchor">
-        <xsl:param name="href" select="@rdf:*[local-name() = 'about']" as="xs:anyURI"/>
+    <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
+        <xsl:param name="href" select="@rdf:about" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="title" select="@rdf:*[local-name() = 'about']" as="xs:string?"/>
+        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
         <a href="{$href}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="." mode="ac:label"/>
         </a>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:*[local-name() = 'nodeID']]" mode="xhtml:Anchor">
-        <xsl:param name="id" select="@rdf:*[local-name() = 'nodeID']" as="xs:string"/>
-        <xsl:param name="title" select="@rdf:*[local-name() = 'nodeID']" as="xs:string?"/>
+    <xsl:template match="*[@rdf:nodeID]" mode="xhtml:Anchor">
+        <xsl:param name="id" select="@rdf:nodeID" as="xs:string"/>
+        <xsl:param name="title" select="@rdf:nodeID" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
         <span id="{$id}">
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates select="." mode="ac:label"/>
@@ -133,36 +204,31 @@ exclude-result-prefixes="#all">
     <!-- DEFAULT MODE -->
     
     <!-- property -->
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="concat(namespace-uri(), local-name())" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:apply-templates select="." mode="ac:property-label"/>
+            <xsl:variable name="label" as="xs:string?">
+                <xsl:apply-templates select="." mode="ac:property-label"/>
+            </xsl:variable>
+            <xsl:sequence select="upper-case(substring($label, 1, 1)) || substring($label, 2)"/>
         </span>
     </xsl:template>
 
-    <!--
-    <xsl:template match="@rdf:*[local-name() = 'resource'][key('resources-by-uri', .)/@rdf:*[local-name() = 'about']]" priority="1">
-        <a href="{key('resources-by-uri', .)/@rdf:*[local-name() = 'about']}" title="{.}">
-           <xsl:apply-templates select="." mode="ac:object-label"/>
-        </a>
-    </xsl:template>
-    -->
-
     <!-- object URI resource -->
-    <xsl:template match="@rdf:*[local-name() = 'resource'] | srx:uri">
+    <xsl:template match="@rdf:resource | srx:uri">
         <xsl:param name="href" select="." as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
@@ -170,13 +236,13 @@ exclude-result-prefixes="#all">
         
         <a href="{$href}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="." mode="ac:object-label"/>
@@ -184,7 +250,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object blank node -->
-    <xsl:template match="@rdf:*[local-name() = 'nodeID']">
+    <xsl:template match="@rdf:nodeID">
         <xsl:param name="href" select="xs:anyURI(concat('#', .))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
@@ -192,13 +258,13 @@ exclude-result-prefixes="#all">
         
         <a href="{$href}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="." mode="ac:object-label"/>
@@ -207,7 +273,7 @@ exclude-result-prefixes="#all">
     
     <!-- object literal -->
     <xsl:template match="text()">
-        <xsl:value-of select="."/>
+        <xsl:sequence select="."/>
     </xsl:template>
 
     <xsl:template match="text()[../@rdf:datatype] | srx:literal[@datatype]">
@@ -217,16 +283,16 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:value-of select="."/>
+            <xsl:sequence select="."/>
         </span>
     </xsl:template>
 
@@ -237,16 +303,16 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:value-of select="format-number(., '#####.00')"/>
+            <xsl:sequence select="format-number(., '#####.00')"/>
         </span>
     </xsl:template>
 
@@ -257,16 +323,16 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:value-of select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
+            <xsl:sequence select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
         </span>
     </xsl:template>
 
@@ -278,18 +344,18 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
             <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-            <xsl:value-of select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
+            <xsl:sequence select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
         </span>
     </xsl:template>
 
@@ -301,16 +367,16 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            xsd:<xsl:value-of select="substring-after(., '&xsd;')"/>
+            xsd:<xsl:sequence select="substring-after(., '&xsd;')"/>
         </span>
     </xsl:template>
 
@@ -322,46 +388,46 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:value-of select="."/>
+            <xsl:sequence select="."/>
         </span>
     </xsl:template>
     
     <!-- TABLE PREDICATE MODE -->
     
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*" mode="ac:TablePredicate">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:TablePredicate">
         <xsl:sequence select="."/>
     </xsl:template>
 
     <!-- TABLE -->
 
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*" mode="xhtml:TableHeaderCell">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableHeaderCell">
         <th>
             <xsl:apply-templates select="."/>
         </th>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*" mode="xhtml:TableDataCell"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
 
     <!-- apply properties that match lang() -->
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
         <td>
-            <xsl:apply-templates select="node() | @rdf:*[local-name() = 'resource'] | @rdf:*[local-name() = 'nodeID']"/>
+            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
         </td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
         <td>
-            <xsl:apply-templates select="node() | @rdf:*[local-name() = 'resource'] | @rdf:*[local-name() = 'nodeID']"/>
+            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
         </td>
     </xsl:template>
 
@@ -381,7 +447,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="srx:variable" mode="xhtml:Table">
         <th>
-            <xsl:value-of select="@name"/>
+            <xsl:sequence select="@name"/>
         </th>
     </xsl:template>
 
@@ -405,7 +471,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="srx:uri" mode="xhtml:Table">
         <a href="{.}" title="{.}">
-            <xsl:value-of select="."/>
+            <xsl:sequence select="."/>
         </a>
     </xsl:template>
 
@@ -424,22 +490,22 @@ exclude-result-prefixes="#all">
 
         <input type="{$type}" name="{$name}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$style">
-                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+                <xsl:attribute name="style"><xsl:sequence select="$style"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$disabled">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:value-of select="$title"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$value">
-                <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+                <xsl:attribute name="value"><xsl:sequence select="$value"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$checked">
                 <xsl:attribute name="checked">checked</xsl:attribute>
@@ -448,8 +514,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- subject resource -->
-    <!-- @rdf:*[local-name() = 'about'] -->
-    <xsl:template match="@rdf:*[local-name() = 'about']" mode="xhtml:Input">
+    <!-- @rdf:about -->
+    <xsl:template match="@rdf:about" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -468,8 +534,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- subject blank node -->
-    <!-- @rdf:*[local-name() = 'nodeID'] -->
-    <xsl:template match="@rdf:*[local-name() = 'nodeID']" mode="xhtml:Input">
+    <!-- @rdf:nodeID -->
+    <xsl:template match="@rdf:nodeID" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -488,7 +554,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- property -->
-    <!-- *[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/* -->
+    <!-- *[@rdf:about or @rdf:nodeID]/* -->
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
@@ -508,8 +574,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- object resource -->
-    <!-- *[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*/@rdf:*[local-name() = 'resource'] -->
-    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = 'resource']" mode="xhtml:Input">
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:resource -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:resource" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -528,8 +594,8 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object blank node -->
-    <!-- *[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*/@rdf:*[local-name() = 'nodeID'] -->
-    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = 'nodeID']" mode="xhtml:Input" priority="1">
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:nodeID" mode="xhtml:Input" priority="1">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -548,7 +614,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- object literal -->
-    <!-- *[@rdf:*[local-name() = 'about'] or @rdf:*[local-name() = 'nodeID']]/*/text() -->
+    <!-- *[@rdf:about or @rdf:nodeID]/*/text() -->
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/text()" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>

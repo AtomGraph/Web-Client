@@ -26,8 +26,8 @@ xmlns:rdf="&rdf;"
 xmlns:skos="&skos;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="skos:prefLabel | @skos:prefLabel" mode="ac:label">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[skos:prefLabel/text()]" mode="ac:label">
+        <xsl:sequence select="skos:prefLabel/text()"/>
     </xsl:template>
 
 </xsl:stylesheet>

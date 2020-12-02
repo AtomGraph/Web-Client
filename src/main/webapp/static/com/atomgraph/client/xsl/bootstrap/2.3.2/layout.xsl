@@ -51,36 +51,6 @@ xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <xsl:import href="../../converters/RDFXML2SVG.xsl"/>
-    <xsl:import href="../../group-sort-triples.xsl"/>
-    <xsl:import href="../../xml-to-string.xsl"/>
-    <xsl:import href="../../functions.xsl"/>
-    <xsl:import href="../../imports/default.xsl"/>
-    <xsl:import href="../../imports/dbpedia-owl.xsl"/>
-    <xsl:import href="../../imports/dc.xsl"/>
-    <xsl:import href="../../imports/dct.xsl"/>
-    <xsl:import href="../../imports/doap.xsl"/>
-    <xsl:import href="../../imports/foaf.xsl"/>
-    <xsl:import href="../../imports/gr.xsl"/>
-    <xsl:import href="../../imports/ldt.xsl"/>
-    <xsl:import href="../../imports/rdf.xsl"/>
-    <xsl:import href="../../imports/rdfs.xsl"/>
-    <xsl:import href="../../imports/sd.xsl"/>
-    <xsl:import href="../../imports/schema.xsl"/>
-    <xsl:import href="../../imports/sioc.xsl"/>
-    <xsl:import href="../../imports/skos.xsl"/>
-    <xsl:import href="../../imports/sp.xsl"/>
-    <xsl:import href="imports/default.xsl"/>
-    <xsl:import href="imports/dct.xsl"/>
-    <xsl:import href="imports/dh.xsl"/>
-    <xsl:import href="imports/foaf.xsl"/>
-    <xsl:import href="imports/owl.xsl"/>
-    <xsl:import href="imports/rdf.xsl"/>
-    <xsl:import href="imports/sioc.xsl"/>
-    <xsl:import href="imports/sp.xsl"/>
-    <xsl:import href="resource.xsl"/>
-    <xsl:import href="container.xsl"/>
-
     <xsl:include href="sparql.xsl"/>
 
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
@@ -193,7 +163,7 @@ exclude-result-prefixes="#all">
                                 <input type="text" name="uri" class="input-xxlarge">
                                     <xsl:if test="$ac:uri">
                                         <xsl:attribute name="value">
-                                            <xsl:value-of select="$ac:uri"/>
+                                            <xsl:sequence select="$ac:uri"/>
                                         </xsl:attribute>
                                     </xsl:if>
                                 </input>
@@ -220,10 +190,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <div class="container-fluid">
@@ -244,10 +214,10 @@ exclude-result-prefixes="#all">
         
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="." mode="bs2:Create"/>
@@ -260,10 +230,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="." mode="bs2:MediaTypeList"/>
@@ -293,7 +263,7 @@ exclude-result-prefixes="#all">
         <div class="footer text-center">
             <p>
                 <hr/>
-                <xsl:value-of select="format-date(current-date(), '[Y]', $ldt:lang, (), ())"/>.
+                <xsl:sequence select="format-date(current-date(), '[Y]', $ldt:lang, (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))" mode="xhtml:Anchor"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>
@@ -346,10 +316,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
         
             <xsl:apply-templates mode="bs2:Block"/>
@@ -362,10 +332,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates select="." mode="ac:ModeChoice"/>
@@ -503,10 +473,10 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <h2>
@@ -548,10 +518,10 @@ exclude-result-prefixes="#all">
         
         <div>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <xsl:apply-templates mode="#current"/>
@@ -582,16 +552,16 @@ exclude-result-prefixes="#all">
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$accept-charset">
-                <xsl:attribute name="accept-charset"><xsl:value-of select="$accept-charset"/></xsl:attribute>
+                <xsl:attribute name="accept-charset"><xsl:sequence select="$accept-charset"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$enctype">
-                <xsl:attribute name="enctype"><xsl:value-of select="$enctype"/></xsl:attribute>
+                <xsl:attribute name="enctype"><xsl:sequence select="$enctype"/></xsl:attribute>
             </xsl:if>
 
             <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
@@ -667,7 +637,7 @@ exclude-result-prefixes="#all">
 
         <div>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="." mode="ac:label"/>
         </div>

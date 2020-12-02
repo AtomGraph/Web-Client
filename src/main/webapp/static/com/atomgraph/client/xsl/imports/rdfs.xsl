@@ -27,12 +27,12 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="rdfs:label | @rdfs:label" mode="ac:label">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[rdfs:label/text()]" mode="ac:label">
+        <xsl:sequence select="rdfs:label/text()"/>
     </xsl:template>
 
-    <xsl:template match="rdfs:comment" mode="ac:description">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[rdfs:comment/text()]" mode="ac:description">
+        <xsl:sequence select="rdfs:comment/text()"/>
     </xsl:template>
     
 </xsl:stylesheet>

@@ -27,10 +27,6 @@ xmlns:sioc="&sioc;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="sioc:avatar" mode="bs2:PropertyList" priority="1"/>
-
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:PropertyList"/>
-
     <xsl:template match="sioc:content/text()" mode="bs2:FormControl">
         <xsl:param name="name" select="'ol'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
@@ -42,19 +38,19 @@ exclude-result-prefixes="#all">
         
         <textarea name="{$name}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$style">
-                <xsl:attribute name="style"><xsl:value-of select="$style"/></xsl:attribute>
+                <xsl:attribute name="style"><xsl:sequence select="$style"/></xsl:attribute>
             </xsl:if>
             <xsl:if test="$rows">
-                <xsl:attribute name="rows"><xsl:value-of select="$rows"/></xsl:attribute>
+                <xsl:attribute name="rows"><xsl:sequence select="$rows"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:value-of select="$value"/>
+            <xsl:sequence select="$value"/>
         </textarea>
         
         <xsl:if test="$type-label">
@@ -67,18 +63,6 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="bs2:FormControl">
-        <xsl:apply-templates select="." mode="xhtml:Input">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current">
-            <xsl:with-param name="type" select="'hidden'"/>
-        </xsl:apply-templates>
     </xsl:template>
 
 </xsl:stylesheet>

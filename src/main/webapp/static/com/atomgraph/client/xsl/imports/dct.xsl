@@ -29,12 +29,12 @@ exclude-result-prefixes="#all">
 
     <xsl:preserve-space elements="dct:title dct:description"/>
     
-    <xsl:template match="dct:title | @dct:title" mode="ac:label">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[dct:title/text()]" mode="ac:label">
+        <xsl:sequence select="dct:title/text()"/>
     </xsl:template>
 
-    <xsl:template match="dct:description" mode="ac:description">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[dct:description/text()]" mode="ac:description">
+        <xsl:sequence select="dct:description/text()"/>
     </xsl:template>
     
 </xsl:stylesheet>

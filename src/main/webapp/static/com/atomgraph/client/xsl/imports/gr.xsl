@@ -27,12 +27,12 @@ xmlns:rdf="&rdf;"
 xmlns:gr="&gr;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="gr:name | @gr:name" mode="ac:label">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[gr:name/text()]" mode="ac:label">
+        <xsl:sequence select="gr:name/text()"/>
     </xsl:template>
 
-    <xsl:template match="gr:description" mode="ac:description">
-        <xsl:value-of select="."/>
+    <xsl:template match="*[gr:description/text()]" mode="ac:description">
+        <xsl:sequence select="gr:description/text()"/>
     </xsl:template>
 
 </xsl:stylesheet>
