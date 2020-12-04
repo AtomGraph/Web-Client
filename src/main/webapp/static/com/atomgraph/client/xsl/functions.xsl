@@ -75,14 +75,20 @@ exclude-result-prefixes="#all">
 
     <xsl:function name="ac:property-label" as="xs:string?">
         <xsl:param name="property" as="element()"/>
-        
-        <xsl:apply-templates select="$property" mode="ac:property-label"/>
+
+        <xsl:variable name="labels" as="xs:string*">
+            <xsl:apply-templates select="$property" mode="ac:property-label"/>
+        </xsl:variable>
+        <xsl:sequence select="$labels[1]"/>
     </xsl:function>
 
     <xsl:function name="ac:object-label" as="xs:string?">
         <xsl:param name="object" as="node()"/>
         
-        <xsl:apply-templates select="$object" mode="ac:object-label"/>
+        <xsl:variable name="labels" as="xs:string*">
+            <xsl:apply-templates select="$object" mode="ac:object-label"/>
+        </xsl:variable>
+        <xsl:sequence select="$labels[1]"/>
     </xsl:function>
 
     <xsl:function name="ac:document-uri" as="xs:anyURI">

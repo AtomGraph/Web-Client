@@ -27,6 +27,10 @@ xmlns:sioc="&sioc;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
+    <xsl:template match="sioc:content/xhtml:*">
+        <xsl:copy-of select="." copy-namespaces="no"/>
+    </xsl:template>
+    
     <xsl:template match="sioc:content/text()" mode="bs2:FormControl">
         <xsl:param name="name" select="'ol'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>

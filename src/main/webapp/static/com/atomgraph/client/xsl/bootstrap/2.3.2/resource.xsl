@@ -201,7 +201,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="properties" as="element()*">
             <xsl:apply-templates mode="#current">
                 <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:sort select="ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1])" order="ascending" lang="{$ldt:lang}"/>
+                <xsl:sort select="if (exists((text(), @rdf:resource, @rdf:nodeID))) then ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1]) else()" order="ascending" lang="{$ldt:lang}"/>
             </xsl:apply-templates>
         </xsl:variable>
 
