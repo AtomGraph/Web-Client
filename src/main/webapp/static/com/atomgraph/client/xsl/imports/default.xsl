@@ -257,7 +257,9 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:apply-templates select="." mode="ac:object-label"/>
+            <xsl:value-of>
+                <xsl:apply-templates select="." mode="ac:object-label"/>
+            </xsl:value-of>
         </a>
     </xsl:template>
 
@@ -279,7 +281,9 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="ac:object-label"/>
+            <xsl:value-of>
+                <xsl:apply-templates select="." mode="ac:object-label"/>
+            </xsl:value-of>
         </a>
     </xsl:template>
     

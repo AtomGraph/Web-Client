@@ -225,7 +225,7 @@ exclude-result-prefixes="#all">
                     var marker = new google.maps.Marker({
                         position: latLng,
                         map: map,
-                        title: "]]><xsl:apply-templates select="." mode="ac:label"/><![CDATA["
+                        title: "]]><xsl:value-of><xsl:apply-templates select="." mode="ac:label"/></xsl:value-of><![CDATA["
                     });
                 }
 

@@ -89,7 +89,9 @@ exclude-result-prefixes="#all">
             </xsl:apply-templates>
             <xsl:if test="$label">
                 <label class="control-label" for="{$for}" title="{$this}">
-                    <xsl:apply-templates select="." mode="ac:property-label"/>
+                    <xsl:value-of>
+                        <xsl:apply-templates select="." mode="ac:property-label"/>
+                    </xsl:value-of>
                 </label>
             </xsl:if>
             <xsl:if test="$cloneable">

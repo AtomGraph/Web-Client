@@ -129,7 +129,9 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
-                    <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                    <xsl:value-of>
+                        <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                    </xsl:value-of>
                     <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
                 </button>
             </form>
@@ -137,7 +139,9 @@ exclude-result-prefixes="#all">
 
         <div class="pull-right">
             <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
-                <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                <xsl:value-of>
+                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                </xsl:value-of>
                 <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
             </a>
         </div>
@@ -197,6 +201,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="properties" as="element()*">
             <xsl:apply-templates mode="#current">
                 <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
+                <xsl:sort select="ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1])" order="ascending" lang="{$ldt:lang}"/>
             </xsl:apply-templates>
         </xsl:variable>
 

@@ -151,7 +151,11 @@ exclude-result-prefixes="#all">
                         <a class="brand" href="{$ldt:base}">
                             <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
                                 <img src="{foaf:logo/@rdf:resource}">
-                                    <xsl:attribute name="alt"><xsl:apply-templates select="." mode="ac:label"/></xsl:attribute>
+                                    <xsl:attribute name="alt">
+                                        <xsl:value-of>
+                                            <xsl:apply-templates select="." mode="ac:label"/>
+                                        </xsl:value-of>
+                                    </xsl:attribute>
                                 </img>
                             </xsl:for-each>
                         </a>
@@ -280,7 +284,9 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF[$ac:uri]" mode="xhtml:Title" priority="1">
         <title>
-            <xsl:apply-templates select="key('resources', ac:document-uri($ac:uri))" mode="ac:label"/>
+            <xsl:value-of>
+                <xsl:apply-templates select="key('resources', ac:document-uri($ac:uri))" mode="ac:label"/>
+            </xsl:value-of>
         </title>
     </xsl:template>
 
@@ -290,20 +296,20 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="xhtml:Style">
         <link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
-        <link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css" media="handheld"/>
         <link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
     <!-- SCRIPT MODE -->
 
     <xsl:template match="rdf:RDF" mode="xhtml:Script">
-        <script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}"></script>
-        <script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}"></script>
-        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}"></script>
-        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}"></script>
+        <script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}" defer="defer"></script>
+        <script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}" defer="defer"></script>
+        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}" defer="defer"></script>
+        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}" defer="defer"></script>
         <xsl:if test="$ac:mode = '&ac;MapMode'">
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}"/>
-            <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}"></script>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}" defer="defer"/>
+            <!--<script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}" defer="defer"></script>-->
         </xsl:if>
     </xsl:template>
 
@@ -365,7 +371,9 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <form action="{@rdf:about}?_method=DELETE" method="post">
                 <button class="btn btn-delete" type="submit">
-                    <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label"/>
+                    <xsl:value-of>
+                        <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label"/>
+                    </xsl:value-of>
                 </button>
             </form>
         </div>
@@ -373,7 +381,9 @@ exclude-result-prefixes="#all">
         <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
                 <a class="btn" href="{@rdf:about}{ac:query-string((), xs:anyURI('&ac;EditMode'))}">
-                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
+                    <xsl:value-of>
+                        <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
+                    </xsl:value-of>
                 </a>
             </div>
         </xsl:if>
@@ -394,7 +404,9 @@ exclude-result-prefixes="#all">
         
         <div class="btn-group pull-right">
             <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document('&ac;')))}">
-                <xsl:apply-templates select="key('resources', '&ac;Mode', document('&ac;'))" mode="ac:label"/>
+                <xsl:value-of>
+                    <xsl:apply-templates select="key('resources', '&ac;Mode', document('&ac;'))" mode="ac:label"/>
+                </xsl:value-of>
                 <xsl:text> </xsl:text>
                 <span class="caret"></span>
             </button>
@@ -420,7 +432,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <a href="?uri={ac:document-uri($ac:uri)}&amp;mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
-                <xsl:apply-templates select="." mode="ac:label"/>
+                <xsl:value-of>
+                    <xsl:apply-templates select="." mode="ac:label"/>
+                </xsl:value-of>
             </a>
         </li>
     </xsl:template>
@@ -480,7 +494,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <h2>
-                <xsl:apply-templates select="." mode="ac:label"/>
+                <xsl:value-of>
+                    <xsl:apply-templates select="." mode="ac:label"/>
+                </xsl:value-of>
             </h2>
         </div>
     </xsl:template>
@@ -614,9 +630,13 @@ exclude-result-prefixes="#all">
 
         <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
             <legend>
-                <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
+                <xsl:value-of>
+                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
+                </xsl:value-of>
                 <xsl:text> </xsl:text>
-                <xsl:apply-templates select="." mode="ac:label"/>
+                <xsl:value-of>
+                    <xsl:apply-templates select="." mode="ac:label"/>
+                </xsl:value-of>
             </legend>
             <xsl:if test="ac:description(.)">
                 <p class="text-info">
@@ -649,7 +669,10 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
-            <xsl:apply-templates select="." mode="ac:label"/>
+            
+            <xsl:value-of>
+                <xsl:apply-templates select="." mode="ac:label"/>
+            </xsl:value-of>
         </div>
     </xsl:template>
     

@@ -49,7 +49,11 @@ exclude-result-prefixes="#all">
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
         <a href="{.}">
             <img src="{.}">
-                <xsl:attribute name="alt"><xsl:apply-templates select="." mode="ac:object-label"/></xsl:attribute>
+                <xsl:attribute name="alt">
+                    <xsl:value-of>
+                        <xsl:apply-templates select="." mode="ac:object-label"/>
+                    </xsl:value-of>
+                </xsl:attribute>
             </img>
         </a>
     </xsl:template>

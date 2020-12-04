@@ -80,7 +80,7 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:function name="ac:object-label" as="xs:string?">
-        <xsl:param name="object" as="attribute()"/>
+        <xsl:param name="object" as="node()"/>
         
         <xsl:apply-templates select="$object" mode="ac:object-label"/>
     </xsl:function>
