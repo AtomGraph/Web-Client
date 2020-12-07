@@ -695,7 +695,7 @@ exclude-result-prefixes="#all">
     
     <!-- object blank node (avoid infinite loop) -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
-        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]" as="element()"/>
+        <xsl:variable name="bnode" select="key('resources', .)[not(@rdf:nodeID = current()/../../@rdf:nodeID)][not(*/@rdf:nodeID = current()/../../@rdf:nodeID)]" as="element()?"/>
 
         <xsl:choose>
             <xsl:when test="$bnode">

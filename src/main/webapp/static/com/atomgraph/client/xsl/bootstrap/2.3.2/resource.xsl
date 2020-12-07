@@ -198,7 +198,7 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
-        <xsl:variable name="properties" as="document-node()">
+        <xsl:variable name="definitions" as="document-node()">
             <xsl:document>
                 <dl class="dl-horizontal">
                     <xsl:apply-templates select="*" mode="#current">
@@ -209,7 +209,7 @@ exclude-result-prefixes="#all">
             </xsl:document>
         </xsl:variable>
 
-        <xsl:apply-templates select="$properties" mode="bs2:PropertyListIdentity"/>
+        <xsl:apply-templates select="$definitions" mode="bs2:PropertyListIdentity"/>
     </xsl:template>
     
     <xsl:template match="@* | node()" mode="bs2:PropertyListIdentity">
