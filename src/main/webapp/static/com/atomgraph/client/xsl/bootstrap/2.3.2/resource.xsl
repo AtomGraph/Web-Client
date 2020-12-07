@@ -198,20 +198,28 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
-        <xsl:variable name="properties" as="element()*">
-            <xsl:apply-templates mode="#current">
-                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
-                <xsl:sort select="if (exists((text(), @rdf:resource, @rdf:nodeID))) then ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1]) else()" order="ascending" lang="{$ldt:lang}"/>
-            </xsl:apply-templates>
+        <xsl:variable name="properties" as="document-node()">
+            <xsl:document>
+                <dl class="dl-horizontal">
+                    <xsl:apply-templates select="*" mode="#current">
+                        <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}"/>
+                        <xsl:sort select="if (exists((text(), @rdf:resource, @rdf:nodeID))) then ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1]) else()" order="ascending" lang="{$ldt:lang}"/>
+                    </xsl:apply-templates>
+                </dl>
+            </xsl:document>
         </xsl:variable>
 
-        <xsl:if test="$properties">
-            <dl class="dl-horizontal">
-                <xsl:copy-of select="$properties"/>
-            </dl>
-        </xsl:if>
+        <xsl:apply-templates select="$properties" mode="bs2:PropertyListIdentity"/>
     </xsl:template>
     
+    <xsl:template match="@* | node()" mode="bs2:PropertyListIdentity">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="dt[span/@title = preceding-sibling::dt[1]/span/@title]" mode="bs2:PropertyListIdentity" priority="1"/>
+
     <!-- FORM CONTROL MODE -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl" use-when="system-property('xsl:product-name') = 'SAXON'">

@@ -44,11 +44,7 @@ exclude-result-prefixes="#all">
     <!-- PROPERTY LIST -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:PropertyList">
-        <xsl:variable name="this" select="xs:anyURI(concat(namespace-uri(), local-name()))" as="xs:anyURI"/>
-
-        <xsl:if test="not(preceding-sibling::*[concat(namespace-uri(), local-name()) = $this])">
-            <xsl:apply-templates select="." mode="xhtml:DefinitionTerm"/>
-        </xsl:if>
+        <xsl:apply-templates select="." mode="xhtml:DefinitionTerm"/>
         
         <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription"/>
     </xsl:template>
@@ -186,7 +182,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- blank nodes that only have rdf:type xsd:string and no other properties become literal inputs -->
-    <xsl:template match="*[@rdf:*[local-name() = 'nodeID']]/*/@rdf:*[local-name() = 'nodeID'][key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="bs2:FormControl" priority="2">
+    <xsl:template match="*[@rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="bs2:FormControl" priority="2">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:param name="class" as="xs:string?"/>
