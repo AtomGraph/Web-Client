@@ -46,7 +46,7 @@ import org.apache.jena.rdf.model.ModelFactory;
  * <code>ac:construct-doc()</code> XSLT function that constructs default instance(s) for given class(es).
  * Plugs into Saxon processor.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://www.saxonica.com/documentation/#!extensibility/integratedfunctions">Integrated extension functions</a>
  */
 public class ConstructDocument implements ExtensionFunction

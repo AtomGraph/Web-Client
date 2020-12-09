@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.Model;
 
 /**
  *
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public interface DataManager extends com.atomgraph.core.util.jena.DataManager, URIResolver, UnparsedTextURIResolver
 {

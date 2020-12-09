@@ -29,7 +29,7 @@ import net.sf.saxon.s9api.XdmValue;
  * <code>ac:uuid()</code> XSLT function that generates a unique UUID string.
  * Plugs into Saxon processor.
  * 
- * @author Martynas Jusevičius <martynas@atomgraph.com>
+ * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://www.saxonica.com/documentation/#!extensibility/integratedfunctions">Integrated extension functions</a>
  */
 public class UUID implements ExtensionFunction
