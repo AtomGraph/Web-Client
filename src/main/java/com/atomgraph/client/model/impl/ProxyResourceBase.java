@@ -33,7 +33,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.client.LinkedDataClient;
-import com.atomgraph.client.exception.ClientErrorException;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
@@ -43,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
@@ -182,10 +182,7 @@ public class ProxyResourceBase implements Resource
                     }
                 }
 
-                if (cr.hasEntity())
-                    throw new ClientErrorException(cr, DatasetFactory.create(cr.readEntity(Model.class)));
-                else 
-                    throw new ClientErrorException(cr);
+                throw new ClientErrorException(cr);
             }
 
             if (!cr.hasEntity()) throw new IllegalStateException("No response entity received");
