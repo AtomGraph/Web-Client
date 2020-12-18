@@ -182,7 +182,8 @@ public class ProxyResourceBase implements Resource
                     }
                 }
 
-                throw new ClientErrorException(cr);
+                // throw new ClientErrorException(cr); // this gives "java.lang.IllegalStateException: Entity input stream has already been closed."
+                throw new ClientErrorException(cr.getStatus());
             }
 
             if (!cr.hasEntity()) throw new IllegalStateException("No response entity received");
