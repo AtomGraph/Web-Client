@@ -634,9 +634,7 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
                 </xsl:value-of>
                 <xsl:text> </xsl:text>
-                <xsl:value-of>
-                    <xsl:apply-templates select="." mode="ac:label"/>
-                </xsl:value-of>
+                <xsl:value-of select="ac:label(.)"/>
             </legend>
             <xsl:if test="ac:description(.)">
                 <p class="text-info">

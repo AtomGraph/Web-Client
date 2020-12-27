@@ -61,7 +61,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="labels" as="xs:string*">
             <xsl:apply-templates select="$resource" mode="ac:label"/>
         </xsl:variable>
-        <xsl:sequence select="$labels[1]"/>
+        <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
     </xsl:function>
 
     <xsl:function name="ac:description" as="xs:string?">
@@ -79,7 +79,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="labels" as="xs:string*">
             <xsl:apply-templates select="$property" mode="ac:property-label"/>
         </xsl:variable>
-        <xsl:sequence select="$labels[1]"/>
+        <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
     </xsl:function>
 
     <xsl:function name="ac:object-label" as="xs:string?">

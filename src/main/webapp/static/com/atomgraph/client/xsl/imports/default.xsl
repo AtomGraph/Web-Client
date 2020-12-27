@@ -73,29 +73,17 @@ exclude-result-prefixes="#all">
         
         <xsl:choose>
             <xsl:when test="key('resources', $this)">
-                <xsl:variable name="labels" as="xs:string*">
-                    <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
-                </xsl:variable>
-                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
+                <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
-                <xsl:variable name="labels" as="xs:string*">
-                    <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
-                </xsl:variable>
-                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
+                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
-                <xsl:variable name="labels" as="xs:string*">
-                    <xsl:sequence select="substring-after($this, '#')"/>
-                </xsl:variable>
-                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
+                <xsl:sequence select="substring-after($this, '#')"/>
             </xsl:when>
             <xsl:when test="string-length(tokenize($this, '/')[last()]) &gt; 0">
-                <xsl:variable name="labels" as="xs:string*">
-                    <xsl:sequence use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
-                    <xsl:sequence use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
-                </xsl:variable>
-                <xsl:sequence select="upper-case(substring($labels[1], 1, 1)) || substring($labels[1], 2)"/>
+                <xsl:sequence use-when="function-available('url:decode')" select="translate(url:decode(tokenize($this, '/')[last()], 'UTF-8'), '_', ' ')"/>
+                <xsl:sequence use-when="not(function-available('url:decode'))" select="translate(tokenize($this, '/')[last()], '_', ' ')"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:sequence select="$this"/>
