@@ -186,7 +186,7 @@ public class ProxyResourceBase implements Resource
                 throw new ClientErrorException(cr.getStatus());
             }
 
-            if (!cr.hasEntity()) throw new IllegalStateException("No response entity received");
+//            if (!cr.hasEntity()) throw new IllegalStateException("No response entity received");
 
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebTarget().getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
 
