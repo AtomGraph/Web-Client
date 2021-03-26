@@ -286,23 +286,21 @@ exclude-result-prefixes="#all">
 
     <xsl:template name="ac:SVGPositioningLoop">
         <xsl:param name="svg" as="document-node()"/>
-        <xsl:param name="step" select="1" as="xs:integer"/>
         <xsl:param name="count" as="xs:integer"/>
 
-        <xsl:choose>
-            <xsl:when test="$step &lt;= $count">
-                <xsl:call-template name="ac:SVGPositioningLoop">
-                    <xsl:with-param name="svg">
-                        <xsl:apply-templates select="$svg" mode="ac:SVGPositioning"/>
-                    </xsl:with-param>
-                    <xsl:with-param name="step" select="$step + 1"/>
-                    <xsl:with-param name="count" select="$count"/>
-                </xsl:call-template>
-            </xsl:when>
-            <xsl:otherwise>
+        <xsl:iterate select="1 to $count">
+            <xsl:param name="svg" select="$svg" as="document-node()"/>
+
+            <xsl:on-completion>
                 <xsl:sequence select="$svg"/>
-            </xsl:otherwise>
-        </xsl:choose>
+            </xsl:on-completion>
+            
+            <xsl:next-iteration>
+                <xsl:with-param name="svg">
+                    <xsl:apply-templates select="$svg" mode="ac:SVGPositioning"/>
+                </xsl:with-param>
+            </xsl:next-iteration>
+        </xsl:iterate>
     </xsl:template>
 
     <!-- force directed position of nodes -->
