@@ -40,14 +40,14 @@ exclude-result-prefixes="#all">
     <!-- 1. position resource nodes (optionally also literals) randomly. TO-DO: position on an ellipse -->
     <!-- 2. move nodes in a loop using the force-directed algorithm -->
     <!-- 3. draw lines between the nodes, calculating the correct intersection with the node border -->
-    <!-- Note: only "flat" RDF/XML (properties grouped into descriptions; no nesting) is supported. It's called RDFXML_PLAIN in Jena. -->
+    <!-- Note: only "flat" RDF/XML (properties grouped into descriptions; no nesting) is supported. It's called RDFXML_PLAIN in Apache Jena. -->
     
     <xsl:output method="xml" indent="yes" encoding="UTF-8" media-type="image/svg+xml"/>
     <xsl:strip-space elements="*"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="properties" match="*[@rdf:about or @rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
-    <xsl:key name="nodes" match="svg:g[svg:circle] | svg:g[svg:rect]" use="concat(svg:circle/local-name(), svg:rect/local-name())"/>
+    <xsl:key name="properties" match="*[@rdf:about or @rdf:nodeID]/*" use="namespace-uri() || local-name()"/>
+    <xsl:key name="nodes" match="svg:g[svg:circle] | svg:g[svg:rect]" use="svg:circle/local-name() || svg:rect/local-name()"/>
     <xsl:key name="subjects" match="svg:g[@class = 'subject']" use="@about"/>
 
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
@@ -151,7 +151,7 @@ exclude-result-prefixes="#all">
                             <xsl:variable name="width" select="max((key('nodes', 'circle')/(svg:circle/@cx + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)), key('nodes', 'rect')/(svg:rect/@x + (if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0)))) - $min-x + $padding" as="xs:double"/>
                             <xsl:variable name="height" select="max((key('nodes', 'circle')/(svg:circle/@cy + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)), key('nodes', 'rect')/(svg:rect/@y + (if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0)))) - $min-y + $padding" as="xs:double"/>
                             
-                            <xsl:attribute name="viewBox" select="concat($min-x, ' ', $min-y, ' ', $width, ' ', $height)"/>
+                            <xsl:attribute name="viewBox" select="$min-x || ' ' || $min-y || ' ' || $width || ' ' || $height"/>
                         </xsl:if>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -200,7 +200,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="font-size" select="6" as="xs:integer"/>
         <xsl:param name="dy" select="'.3em'" as="xs:string"/>
 
-        <g class="subject" about="{.}">
+        <g class="subject" about="{.}" transform="translate(0 0)"> <!-- need an initial @transform for ac:SVGPositioning template to match -->
             <circle r="{$r}" cx="{$cx}" cy="{$cy}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}">
                 <title><xsl:value-of select="."/></title>
             </circle>
@@ -234,11 +234,11 @@ exclude-result-prefixes="#all">
     <!-- property -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@rdf:resource | @rdf:nodeID]" mode="ac:SVG">
-        <g class="property" property="{concat(namespace-uri(), local-name())}" resource="{@rdf:resource | @rdf:nodeID}"/>
+        <g class="property" property="{namespace-uri() || local-name()}" resource="{@rdf:resource | @rdf:nodeID}"/>
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[node()][$show-literals]" mode="ac:SVG" priority="1">
-        <g class="property" property="{concat(namespace-uri(), local-name())}" content="{node()}">
+        <g class="property" property="{namespace-uri() || local-name()}" content="{node()}">
             <xsl:apply-templates mode="#current"/>
         </g>
     </xsl:template>
@@ -262,7 +262,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="font-size" select="6" as="xs:integer"/>
         <xsl:param name="dy" select="'.3em'" as="xs:string"/>
 
-        <g class="object">
+        <g class="object" transform="translate(0 0)"> <!-- need an initial @transform for ac:SVGPositioning template to match -->
             <rect x="{$x - $width div 2}" y="{$y}" height="{$height}" width="{$width}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}" />
             <text x="{$x}" y="{$y + $height div 2}" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
                 <xsl:choose>
@@ -364,14 +364,22 @@ exclude-result-prefixes="#all">
         <xsl:variable name="net-y-force" select="$net/@y * $spring-stiffness" as="xs:double"/>
 
         <xsl:copy>
-            <xsl:copy-of select="@*"/>
+            <xsl:apply-templates select="@*" mode="#current">
+                <xsl:with-param name="x" select="$v-x-offset + $net-x-force"/>
+                <xsl:with-param name="y" select="$v-y-offset + $net-y-force"/>
+            </xsl:apply-templates>
 
-            <xsl:attribute name="transform" select="concat('translate(', $v-x-offset + $net-x-force, ' ', $v-y-offset + $net-y-force, ')')"/>
-
-            <xsl:copy-of select="*"/>
+            <xsl:apply-templates mode="#current"/>
         </xsl:copy>
     </xsl:template>
+    
+    <xsl:template match="svg:g[@class = 'subject']/@transform | svg:g[@class = 'object']/@transform" mode="ac:SVGPositioning" priority="1">
+        <xsl:param name="x" as="xs:double"/>
+        <xsl:param name="y" as="xs:double"/>
 
+        <xsl:attribute name="{local-name()}" select="'translate(' || $x || ' ' || $y || ')'"/>
+    </xsl:template>
+    
     <!-- LINE DRAWING -->
 
     <xsl:template match="svg:svg" mode="ac:SVGLines">
