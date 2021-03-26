@@ -57,10 +57,15 @@ exclude-result-prefixes="#all">
     <xsl:param name="spring-length" select="75" as="xs:double"/>
     <xsl:param name="padding" select="$spring-length div 2" as="xs:double"/>
 
+    <xsl:mode name="ac:SVGPositioning" on-no-match="shallow-copy"/>
+
     <xsl:function name="ac:svg-label" as="xs:string?">
         <xsl:param name="resource" as="element()"/>
 
         <xsl:choose>
+            <xsl:when test="ends-with($resource/@rdf:about, '/')">
+                <xsl:sequence select="tokenize($resource/@rdf:about, '/')[last() - 1] || '/'"/>
+            </xsl:when>
             <xsl:when test="$resource/@rdf:about">
                 <xsl:sequence select="tokenize($resource/@rdf:about, '/')[last()]"/>
             </xsl:when>
@@ -74,6 +79,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="object" as="attribute()"/>
 
         <xsl:choose>
+            <xsl:when test="$object/local-name() = 'resource' and ends-with($object, '/')">
+                <xsl:sequence select="tokenize($object, '/')[last() - 1] || '/'"/>
+            </xsl:when>
             <xsl:when test="$object/local-name() = 'resource'">
                 <xsl:sequence select="tokenize($object, '/')[last()]"/>
             </xsl:when>
@@ -297,12 +305,6 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="@* | node()" mode="ac:SVGPositioning">
-        <xsl:copy>
-            <xsl:apply-templates select="@* | node()" mode="#current"/>
-        </xsl:copy>
-    </xsl:template>
-
     <!-- force directed position of nodes -->
     <!-- we need to re-position the whole group so that the text follows the nodes -->
 
@@ -319,13 +321,19 @@ exclude-result-prefixes="#all">
         <xsl:variable name="v" select="." as="element()"/>
 
         <xsl:variable name="net" as="element()*">
-            <xsl:for-each select="$force-nodes[not(. is $v)]">
+            <xsl:iterate select="$force-nodes[not(. is $v)]">
+                <xsl:param name="x-sum" select="0.00" as="xs:double"/>
+                <xsl:param name="y-sum" select="0.00" as="xs:double"/>
+
+                <xsl:on-completion>
+                    <net-force x="{$x-sum}" y="{$y-sum}"/>
+                </xsl:on-completion>
+
                 <!-- node coordinates need to be translated to get the effective position -->
-                <xsl:variable name="x-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0" as="xs:double"/>
-                <xsl:variable name="y-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0" as="xs:double"/>
+                <xsl:variable name="x-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0.00" as="xs:double"/>
+                <xsl:variable name="y-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0.00" as="xs:double"/>
                 <xsl:variable name="x" select="$x-offset + (svg:circle/@cx | svg:rect/@x)" as="xs:double"/>
                 <xsl:variable name="y" select="$y-offset + (svg:circle/@cy | svg:rect/@y)" as="xs:double"/>
-
                 <!-- square of euclidean distance -->
                 <xsl:variable name="distance2" select="($x - $v-x) * ($x - $v-x) + ($y - $v-y) * ($y - $v-y)" as="xs:double"/>
 
@@ -337,7 +345,7 @@ exclude-result-prefixes="#all">
                             <xsl:sequence select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
                         </xsl:when>
                         <!-- $v adjacent to $v literal-->
-                        <xsl:when test="generate-id() = $v/following-sibling::svg:g[@class = 'property']/svg:rect/generate-id()">
+                        <xsl:when test=". is $v/following-sibling::svg:g[@class = 'property']/svg:rect">
                             <xsl:sequence select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
                         </xsl:when>
                         <!-- $v not adjacent to $v -->
@@ -346,13 +354,16 @@ exclude-result-prefixes="#all">
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
-                
-                <force x="{($x - $v-x) * $c}" y="{($y - $v-y) * $c}"/>
-            </xsl:for-each>
+      
+                <xsl:next-iteration>
+                    <xsl:with-param name="x-sum" select="$x-sum + ($x - $v-x) * $c"/>
+                    <xsl:with-param name="y-sum" select="$y-sum + ($y - $v-y) * $c"/>
+                </xsl:next-iteration>
+            </xsl:iterate>
         </xsl:variable>
 
-        <xsl:variable name="net-x-force" select="sum($net/@x) * $spring-stiffness" as="xs:double"/>
-        <xsl:variable name="net-y-force" select="sum($net/@y) * $spring-stiffness" as="xs:double"/>
+        <xsl:variable name="net-x-force" select="$net/@x * $spring-stiffness" as="xs:double"/>
+        <xsl:variable name="net-y-force" select="$net/@y * $spring-stiffness" as="xs:double"/>
 
         <xsl:copy>
             <xsl:copy-of select="@*"/>

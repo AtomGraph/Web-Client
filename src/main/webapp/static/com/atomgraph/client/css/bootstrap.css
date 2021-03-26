@@ -13,3 +13,7 @@ textarea#query-string { font-family: monospace; }
 ul.typeahead { max-height: 20em; overflow: auto; }
 label.typeahead input { display: block; max-width: 160px; }
 label.typeahead { float: left; width: 160px; }
+
+/* SVG */
+
+g.subject:hover circle { stroke-width: 2; }
