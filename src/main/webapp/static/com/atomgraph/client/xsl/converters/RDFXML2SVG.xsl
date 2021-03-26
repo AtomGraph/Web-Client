@@ -33,9 +33,6 @@ xmlns:xsd="&xsd;"
 xmlns:owl="&owl;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:math="http://www.w3.org/2005/xpath-functions/math"
-xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
-xmlns:js="http://saxonica.com/ns/globalJS"
-extension-element-prefixes="ixsl"
 exclude-result-prefixes="#all">
 
     <!-- Paper on force directed layout in XSLT: "GraphML Transformation" -->
@@ -84,10 +81,6 @@ exclude-result-prefixes="#all">
                 <xsl:sequence select="$object"/>
             </xsl:when>
         </xsl:choose>
-    </xsl:function>
-
-    <xsl:function name="ac:random" as="xs:double">
-        <xsl:sequence select="random-number-generator(current-dateTime())?number"/>
     </xsl:function>
 
     <xsl:template match="rdf:RDF">
@@ -188,8 +181,10 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="cx" select="ac:random() * $spring-length" as="xs:double"/>
-        <xsl:param name="cy" select="ac:random() * $spring-length" as="xs:double"/>
+        <xsl:param name="erng" select="random-number-generator(generate-id())?next()" as="map(xs:string, item())"/>
+        <xsl:param name="random-coords" select="$erng ! (.?number, .?next()?number)" as="xs:double*"/>
+        <xsl:param name="cx" select="$random-coords[1] * $spring-length" as="xs:double"/>
+        <xsl:param name="cy" select="$random-coords[2] * $spring-length" as="xs:double"/>
         <xsl:param name="r" select="25" as="xs:double"/>
         <xsl:param name="fill" select="'#acf'" as="xs:string"/>
         <xsl:param name="stroke" select="'gray'" as="xs:string"/>
@@ -246,8 +241,10 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/text() | *[@rdf:about or @rdf:nodeID]/*[@rdf:parseType = 'Literal']/*" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="x" select="ac:random() * $spring-length" as="xs:double"/>
-        <xsl:param name="y" select="ac:random() * $spring-length" as="xs:double"/>
+        <xsl:param name="erng" select="random-number-generator(generate-id())?next()" as="map(xs:string, item())"/>
+        <xsl:param name="random-coords" select="$erng ! (.?number, .?next()?number)" as="xs:double*"/>
+        <xsl:param name="x" select="$random-coords[1] * $spring-length" as="xs:double"/>
+        <xsl:param name="y" select="$random-coords[2] * $spring-length" as="xs:double"/>
         <xsl:param name="height" select="25" as="xs:double"/>
         <xsl:param name="width" select="50" as="xs:double"/>
         <xsl:param name="fill" select="'#fc3'" as="xs:string"/>
