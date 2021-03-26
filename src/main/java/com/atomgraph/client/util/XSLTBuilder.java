@@ -38,7 +38,6 @@ import org.w3c.dom.Node;
  * Uses builder pattern.
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
- * @see com.atomgraph.client.util.saxon.SaxonXSLTBuilder
  */
 @Deprecated
 public class XSLTBuilder
