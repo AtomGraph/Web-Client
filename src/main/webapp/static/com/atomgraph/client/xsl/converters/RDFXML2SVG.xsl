@@ -49,9 +49,10 @@ exclude-result-prefixes="#all">
     <xsl:key name="properties" match="*[@rdf:about or @rdf:nodeID]/*" use="namespace-uri() || local-name()"/>
     <xsl:key name="nodes" match="svg:g[svg:circle] | svg:g[svg:rect]" use="svg:circle/local-name() || svg:rect/local-name()"/>
     <xsl:key name="subjects" match="svg:g[@class = 'subject']" use="@about"/>
-
+    <xsl:key name="adjacent-resources" match="svg:g" use="svg:g[@class = 'property']/@resource"/>
+    
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
-    <xsl:param name="step-count" select="50" as="xs:integer"/>
+    <xsl:param name="step-count" select="20" as="xs:integer"/>
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
     <xsl:param name="spring-length" select="75" as="xs:double"/>
@@ -92,11 +93,13 @@ exclude-result-prefixes="#all">
     </xsl:function>
 
     <xsl:template match="rdf:RDF">
-        <xsl:apply-templates select="." mode="ac:SVG"/>
+        <xsl:apply-templates select="." mode="ac:SVG">
+            <xsl:with-param name="step-count" select="$step-count"/>
+        </xsl:apply-templates>
     </xsl:template>
 
     <xsl:template match="rdf:RDF" mode="ac:SVG">
-        <xsl:param name="step-count" select="10" as="xs:integer"/>
+        <xsl:param name="step-count" as="xs:integer"/>
         <xsl:param name="spring-stiffness" select="$spring-stiffness" as="xs:double" tunnel="yes"/>
         <xsl:param name="spring-length" select="$spring-length" as="xs:double" tunnel="yes"/>
         <xsl:param name="viewBox" as="xs:string?"/>
@@ -288,85 +291,122 @@ exclude-result-prefixes="#all">
         <xsl:param name="svg" as="document-node()"/>
         <xsl:param name="count" as="xs:integer"/>
 
-        <xsl:iterate select="1 to $count">
-            <xsl:param name="svg" select="$svg" as="document-node()"/>
+        <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
+            <xsl:iterate select="1 to $count">
+                <xsl:param name="node-adjacency" as="map(xs:string, item()*)*">
+                    <xsl:for-each select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]">
+                        <!-- adjacent nodes as a union of resources and literals (in both directions) -->
+                        <xsl:variable name="adjacent-nodes" select="key('adjacent-resources', current()/@about)/svg:g[@about] | following-sibling::svg:g[@class = 'property']/svg:g[@class = 'object'][svg:rect] | self::svg:g[@class = 'object'][svg:rect]/../preceding-sibling::svg:g[@class = 'subject']" as="element()*"/>
+                        <xsl:map>
+                            <xsl:map-entry key="'node'" select="."/>
+                            <xsl:map-entry key="'x'" select="if (svg:circle) then xs:double(svg:circle/@cx) else if (svg:rect) then xs:double(svg:rect/@x + svg:rect/@width div 2) else ()"/>
+                            <xsl:map-entry key="'y'" select="if (svg:circle) then xs:double(svg:circle/@cy) else if (svg:rect) then xs:double(svg:rect/@y + svg:rect/@height div 2) else ()"/>
+                            <xsl:map-entry key="'adjacent'" select="$adjacent-nodes"/>
+                            <xsl:map-entry key="'non-adjacent'" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')] except $adjacent-nodes except current()"/>
+                        </xsl:map>
+                    </xsl:for-each>
+                </xsl:param>
 
-            <xsl:on-completion>
-                <xsl:sequence select="$svg"/>
-            </xsl:on-completion>
-            
-            <xsl:next-iteration>
-                <xsl:with-param name="svg">
-                    <xsl:apply-templates select="$svg" mode="ac:SVGPositioning"/>
-                </xsl:with-param>
-            </xsl:next-iteration>
-        </xsl:iterate>
+                <xsl:on-completion>
+                    <xsl:sequence select="$node-adjacency"/>
+                </xsl:on-completion>
+
+                <xsl:next-iteration>
+                    <xsl:with-param name="node-adjacency" select="ac:force-step($node-adjacency, $spring-stiffness, $spring-length)"/>
+                </xsl:next-iteration>
+            </xsl:iterate>
+        </xsl:variable>
+        
+        <xsl:apply-templates select="$svg" mode="ac:SVGPositioning">
+            <xsl:with-param name="node-adjacency" select="$node-adjacency" tunnel="yes"/>
+        </xsl:apply-templates>
     </xsl:template>
 
     <!-- force directed position of nodes -->
     <!-- we need to re-position the whole group so that the text follows the nodes -->
 
-    <xsl:template match="svg:g[@class = 'subject'] | svg:g[@class = 'object']" mode="ac:SVGPositioning" priority="1">
-        <xsl:param name="force-nodes" select="key('nodes', ('circle', 'rect'))" as="element()*"/>
-        <xsl:param name="spring-stiffness" as="xs:double" tunnel="yes"/>
-        <xsl:param name="spring-length" as="xs:double" tunnel="yes"/>
+    <xsl:function name="ac:force-step" as="map(xs:string, item()*)*">
+        <xsl:param name="node-adjacency" as="map(xs:string, item()*)*"/>
+        <xsl:param name="spring-stiffness" as="xs:double"/>
+        <xsl:param name="spring-length" as="xs:double"/>
 
-        <!-- node coordinates need to be translated to get the effective position -->
-        <xsl:variable name="v-x-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0" as="xs:double"/>
-        <xsl:variable name="v-y-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0" as="xs:double"/>
-        <xsl:variable name="v-x" select="$v-x-offset + (svg:circle/@cx | svg:rect/@x)" as="xs:double"/>
-        <xsl:variable name="v-y" select="$v-y-offset + (svg:circle/@cy | svg:rect/@y)" as="xs:double"/>
-        <xsl:variable name="v" select="." as="element()"/>
+        <xsl:for-each select="$node-adjacency">
+            <xsl:variable name="node" select="?node" as="element()"/>
+            <xsl:variable name="v-x" select="?x" as="xs:double"/>
+            <xsl:variable name="v-y" select="?y" as="xs:double"/>
 
-        <xsl:variable name="net" as="element()*">
-            <xsl:iterate select="$force-nodes[not(. is $v)]">
-                <xsl:param name="x-sum" select="0.00" as="xs:double"/>
-                <xsl:param name="y-sum" select="0.00" as="xs:double"/>
+            <xsl:map>
+                <xsl:variable name="net-sums" as="map(xs:string, xs:double)">
+                    <xsl:iterate select="?adjacent">
+                        <xsl:param name="x-sum" select="0.00" as="xs:double"/>
+                        <xsl:param name="y-sum" select="0.00" as="xs:double"/>
 
-                <xsl:on-completion>
-                    <net-force x="{$x-sum}" y="{$y-sum}"/>
-                </xsl:on-completion>
+                        <xsl:on-completion>
+                            <xsl:map>
+                                <xsl:map-entry key="'x'" select="$x-sum"/>
+                                <xsl:map-entry key="'y'" select="$y-sum"/>
+                            </xsl:map>
+                        </xsl:on-completion>
 
-                <!-- node coordinates need to be translated to get the effective position -->
-                <xsl:variable name="x-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, 'translate('), ' ')) else 0.00" as="xs:double"/>
-                <xsl:variable name="y-offset" select="if (@transform) then xs:double(substring-before(substring-after(@transform, ' '), ')')) else 0.00" as="xs:double"/>
-                <xsl:variable name="x" select="$x-offset + (svg:circle/@cx | svg:rect/@x)" as="xs:double"/>
-                <xsl:variable name="y" select="$y-offset + (svg:circle/@cy | svg:rect/@y)" as="xs:double"/>
-                <!-- square of euclidean distance -->
-                <xsl:variable name="distance2" select="($x - $v-x) * ($x - $v-x) + ($y - $v-y) * ($y - $v-y)" as="xs:double"/>
+                        <xsl:variable name="adjacent-map" select="$node-adjacency[?node is current()]" as="map(xs:string, item()*)"/>
+                        <xsl:variable name="x" select="$adjacent-map?x" as="xs:double"/>
+                        <xsl:variable name="y" select="$adjacent-map?y" as="xs:double"/>
 
-                <!-- force coefficient -->
-                <xsl:variable name="c" as="xs:double">
-                    <xsl:choose>
-                        <!-- $v adjacent to $v resource -->
-                        <xsl:when test="@about = $v/following-sibling::svg:g[@class = 'property']/@resource">
-                            <xsl:sequence select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
-                        </xsl:when>
-                        <!-- $v adjacent to $v literal-->
-                        <xsl:when test=". is $v/following-sibling::svg:g[@class = 'property']/svg:rect">
-                            <xsl:sequence select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)"/>
-                        </xsl:when>
-                        <!-- $v not adjacent to $v -->
-                        <xsl:otherwise>
-                            <xsl:sequence select="-1 * ($spring-length * $spring-length div $distance2)"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
+                        <!-- square of euclidean distance -->
+                        <xsl:variable name="distance2" select="($x - $v-x) * ($x - $v-x) + ($y - $v-y) * ($y - $v-y)" as="xs:double"/>
+                        <!-- force coefficient -->
+                        <xsl:variable name="c" select="(math:sqrt($distance2) div $spring-length) - ($spring-length * $spring-length div $distance2)" as="xs:double"/>
+                        
+                        <xsl:next-iteration>
+                            <xsl:with-param name="x-sum" select="$x-sum + ($x - $v-x) * $c"/>
+                            <xsl:with-param name="y-sum" select="$y-sum + ($y - $v-y) * $c"/>
+                        </xsl:next-iteration>
+                    </xsl:iterate>
                 </xsl:variable>
-      
-                <xsl:next-iteration>
-                    <xsl:with-param name="x-sum" select="$x-sum + ($x - $v-x) * $c"/>
-                    <xsl:with-param name="y-sum" select="$y-sum + ($y - $v-y) * $c"/>
-                </xsl:next-iteration>
-            </xsl:iterate>
-        </xsl:variable>
+                <xsl:variable name="net-sums" as="map(xs:string, xs:double)">
+                    <xsl:iterate select="?non-adjacent">
+                        <xsl:param name="x-sum" select="$net-sums?x" as="xs:double"/>
+                        <xsl:param name="y-sum" select="$net-sums?y" as="xs:double"/>
 
-        <xsl:variable name="net-x-force" select="$net/@x * $spring-stiffness" as="xs:double"/>
-        <xsl:variable name="net-y-force" select="$net/@y * $spring-stiffness" as="xs:double"/>
+                        <xsl:on-completion>
+                            <xsl:map>
+                                <xsl:map-entry key="'x'" select="$x-sum"/>
+                                <xsl:map-entry key="'y'" select="$y-sum"/>
+                            </xsl:map>
+                        </xsl:on-completion>
+
+                        <xsl:variable name="adjacent-map" select="$node-adjacency[?node is current()]" as="map(xs:string, item()*)"/>
+                        <xsl:variable name="x" select="$adjacent-map?x" as="xs:double"/>
+                        <xsl:variable name="y" select="$adjacent-map?y" as="xs:double"/>
+                        <!-- square of euclidean distance -->
+                        <xsl:variable name="distance2" select="($x - $v-x) * ($x - $v-x) + ($y - $v-y) * ($y - $v-y)" as="xs:double"/>
+                        <!-- force coefficient -->
+                        <xsl:variable name="c" select="-1 * ($spring-length * $spring-length div $distance2)" as="xs:double"/>
+
+                        <xsl:next-iteration>
+                            <xsl:with-param name="x-sum" select="$x-sum + ($x - $v-x) * $c"/>
+                            <xsl:with-param name="y-sum" select="$y-sum + ($y - $v-y) * $c"/>
+                        </xsl:next-iteration>
+                    </xsl:iterate>
+                </xsl:variable>
+
+                <xsl:map-entry key="'node'" select="?node"/>
+                <xsl:map-entry key="'x'" select="?x + $net-sums?x * $spring-stiffness"/>
+                <xsl:map-entry key="'y'" select="?y + $net-sums?y * $spring-stiffness"/>
+                <xsl:map-entry key="'adjacent'" select="?adjacent"/>
+                <xsl:map-entry key="'non-adjacent'" select="?non-adjacent"/>
+            </xsl:map>
+        </xsl:for-each>
+    </xsl:function>
+    
+    <xsl:template match="svg:g[@class = 'subject'] | svg:g[@class = 'object']" mode="ac:SVGPositioning" priority="1">
+        <xsl:param name="node-adjacency" as="map(xs:string, item()*)*" tunnel="yes"/>
 
         <xsl:copy>
+            <xsl:variable name="map" select="$node-adjacency[?node is current()]" as="map(xs:string, item()*)"/>
             <xsl:apply-templates select="@*" mode="#current">
-                <xsl:with-param name="x" select="$v-x-offset + $net-x-force"/>
-                <xsl:with-param name="y" select="$v-y-offset + $net-y-force"/>
+                <xsl:with-param name="x" select="$map?x"/>
+                <xsl:with-param name="y" select="$map?y"/>
             </xsl:apply-templates>
 
             <xsl:apply-templates mode="#current"/>

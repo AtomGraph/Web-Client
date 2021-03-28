@@ -551,6 +551,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="bs2:Graph">
         <xsl:apply-templates select="." mode="ac:SVG">
             <xsl:with-param name="width" select="'100%'"/>
+            <xsl:with-param name="step-count" select="20"/>
             <xsl:with-param name="spring-length" select="150" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
