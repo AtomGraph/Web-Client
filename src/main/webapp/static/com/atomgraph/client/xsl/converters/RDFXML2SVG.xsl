@@ -52,6 +52,7 @@ exclude-result-prefixes="#all">
     <xsl:key name="adjacent-resources" match="svg:g" use="svg:g[@class = 'property']/@resource"/>
     
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
+    <xsl:param name="show-object-resources" select="false()" as="xs:boolean"/>
     <xsl:param name="step-count" select="20" as="xs:integer"/>
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
@@ -119,10 +120,12 @@ exclude-result-prefixes="#all">
                     <!-- draw nodes -->
                     <xsl:apply-templates mode="#current"/>
 
-                    <!-- select and group objects which are not already present as subjects -->
-                    <xsl:for-each-group select="*/*/@rdf:resource[not(key('resources', .))] | */*/@rdf:nodeID[not(key('resources', .))]" group-by=".">
-                        <xsl:apply-templates select="current-group()[1]" mode="#current"/>
-                    </xsl:for-each-group>
+                    <xsl:if test="$show-object-resources">
+                        <!-- select and group objects which are not already present as subjects -->
+                        <xsl:for-each-group select="*/*/@rdf:resource[not(key('resources', .))] | */*/@rdf:nodeID[not(key('resources', .))]" group-by=".">
+                            <xsl:apply-templates select="current-group()[1]" mode="#current"/>
+                        </xsl:for-each-group>
+                    </xsl:if>
                 </svg>
             </xsl:document>
         </xsl:variable>
@@ -292,9 +295,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="count" as="xs:integer"/>
 
         <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
+            <xsl:variable name="force-nodes" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]" as="element()*"/>
             <xsl:iterate select="1 to $count">
                 <xsl:param name="node-adjacency" as="map(xs:string, item()*)*">
-                    <xsl:for-each select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]">
+                    <xsl:for-each select="$force-nodes">
                         <!-- adjacent nodes as a union of resources and literals (in both directions) -->
                         <xsl:variable name="adjacent-nodes" select="key('adjacent-resources', current()/@about)/svg:g[@about] | following-sibling::svg:g[@class = 'property']/svg:g[@class = 'object'][svg:rect] | self::svg:g[@class = 'object'][svg:rect]/../preceding-sibling::svg:g[@class = 'subject']" as="element()*"/>
                         <xsl:map>
@@ -302,7 +306,7 @@ exclude-result-prefixes="#all">
                             <xsl:map-entry key="'x'" select="if (svg:circle) then xs:double(svg:circle/@cx) else if (svg:rect) then xs:double(svg:rect/@x + svg:rect/@width div 2) else ()"/>
                             <xsl:map-entry key="'y'" select="if (svg:circle) then xs:double(svg:circle/@cy) else if (svg:rect) then xs:double(svg:rect/@y + svg:rect/@height div 2) else ()"/>
                             <xsl:map-entry key="'adjacent'" select="$adjacent-nodes"/>
-                            <xsl:map-entry key="'non-adjacent'" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')] except $adjacent-nodes except current()"/>
+                            <xsl:map-entry key="'non-adjacent'" select="$force-nodes except $adjacent-nodes except current()"/>
                         </xsl:map>
                     </xsl:for-each>
                 </xsl:param>
@@ -399,7 +403,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each>
     </xsl:function>
     
-    <xsl:template match="svg:g[@class = 'subject'] | svg:g[@class = 'object']" mode="ac:SVGPositioning" priority="1">
+    <xsl:template match="svg:g[@class = ('subject', 'object')]" mode="ac:SVGPositioning" priority="1">
         <xsl:param name="node-adjacency" as="map(xs:string, item()*)*" tunnel="yes"/>
 
         <xsl:copy>
@@ -413,7 +417,7 @@ exclude-result-prefixes="#all">
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="svg:g[@class = 'subject']/@transform | svg:g[@class = 'object']/@transform" mode="ac:SVGPositioning" priority="1">
+    <xsl:template match="svg:g[@class = ('subject', 'object')]/@transform" mode="ac:SVGPositioning" priority="1">
         <xsl:param name="x" as="xs:double"/>
         <xsl:param name="y" as="xs:double"/>
 
@@ -422,6 +426,7 @@ exclude-result-prefixes="#all">
     
     <!-- LINE DRAWING -->
 
+    <!-- TO-DO: optimize using $node-adjacency -->
     <xsl:template match="svg:svg" mode="ac:SVGLines">
         <xsl:param name="stroke" select="'gray'" as="xs:string"/>
         <xsl:param name="stroke-width" select="1" as="xs:integer"/>
@@ -450,7 +455,7 @@ exclude-result-prefixes="#all">
                     </xsl:for-each>
                 </xsl:when>
                 <!-- arc -->
-                <xsl:otherwise>
+                <xsl:when test="key('subjects', @resource)">
                     <!-- node coordinates need to be translated to get the effective position -->
                     <xsl:variable name="x1" select="$x1-offset + preceding-sibling::svg:g/svg:circle/@cx" as="xs:double"/>
                     <xsl:variable name="y1" select="$y1-offset + preceding-sibling::svg:g/svg:circle/@cy" as="xs:double"/>
@@ -472,7 +477,7 @@ exclude-result-prefixes="#all">
                     <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)">
                         <title><xsl:value-of select="@property"/></title>
                     </line>
-                </xsl:otherwise>
+                </xsl:when>
             </xsl:choose>
         </xsl:for-each>
         <!-- arcs to object literals -->
