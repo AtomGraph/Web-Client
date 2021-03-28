@@ -97,6 +97,12 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="ac:label($resource)"/>
     </xsl:function>
     
+    <xsl:function name="ac:svg-object-label" as="xs:string?">
+        <xsl:param name="object" as="attribute()"/>
+
+        <xsl:sequence select="ac:object-label($object)"/>
+    </xsl:function>
+    
     <xsl:function name="ac:document-uri" as="xs:anyURI">
         <xsl:param name="uri" as="xs:anyURI"/>
         <xsl:choose>
