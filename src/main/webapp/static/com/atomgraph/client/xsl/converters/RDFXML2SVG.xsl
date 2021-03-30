@@ -317,7 +317,7 @@ exclude-result-prefixes="#all">
                 </xsl:on-completion>
                 
                 <xsl:next-iteration>
-                    <xsl:with-param name="node-adjacency" select="ac:force-step($svg, $node-adjacency, $spring-stiffness, $spring-length)"/>
+                    <xsl:with-param name="node-adjacency" select="ac:force-step($node-adjacency, $spring-stiffness, $spring-length)"/>
                 </xsl:next-iteration>
             </xsl:iterate>
         </xsl:variable>
@@ -331,7 +331,6 @@ exclude-result-prefixes="#all">
     <!-- we need to re-position the whole group so that the text follows the nodes -->
 
     <xsl:function name="ac:force-step" as="map(xs:string, item()*)*">
-        <xsl:param name="svg" as="document-node()"/>
         <xsl:param name="node-adjacency" as="map(xs:string, item()*)*"/>
         <xsl:param name="spring-stiffness" as="xs:double"/>
         <xsl:param name="spring-length" as="xs:double"/>
