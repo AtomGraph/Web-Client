@@ -306,8 +306,8 @@ exclude-result-prefixes="#all">
                             <xsl:map-entry key="'node-id'" select="generate-id()"/>
                             <xsl:map-entry key="'x'" select="math:cos(math:pi() * (2 * position() div $force-node-count)) * ($width div 2 - 10) + ($width div 2)"/>
                             <xsl:map-entry key="'y'" select="math:sin(math:pi() * (2 * position() div $force-node-count)) * ($height div 2 - 10) + ($height div 2)"/>
-                            <xsl:map-entry key="'adjacent'" select="($adjacent-nodes except current())/generate-id()"/>
-                            <xsl:map-entry key="'non-adjacent'" select="($force-nodes except $adjacent-nodes except current())/generate-id()"/>
+                            <xsl:map-entry key="'adjacent-ids'" select="($adjacent-nodes except current())/generate-id()"/>
+                            <xsl:map-entry key="'non-adjacent-ids'" select="($force-nodes except $adjacent-nodes except current())/generate-id()"/>
                         </xsl:map>
                     </xsl:for-each>
                 </xsl:param>
@@ -342,7 +342,7 @@ exclude-result-prefixes="#all">
 
             <xsl:map>
                 <xsl:variable name="net-sums" as="map(xs:string, xs:double)">
-                    <xsl:iterate select="?adjacent">
+                    <xsl:iterate select="?adjacent-ids">
                         <xsl:param name="x-sum" select="0.00" as="xs:double"/>
                         <xsl:param name="y-sum" select="0.00" as="xs:double"/>
 
@@ -369,7 +369,7 @@ exclude-result-prefixes="#all">
                     </xsl:iterate>
                 </xsl:variable>
                 <xsl:variable name="net-sums" as="map(xs:string, xs:double)">
-                    <xsl:iterate select="?non-adjacent">
+                    <xsl:iterate select="?non-adjacent-ids">
                         <xsl:param name="x-sum" select="$net-sums?x" as="xs:double"/>
                         <xsl:param name="y-sum" select="$net-sums?y" as="xs:double"/>
 
@@ -398,8 +398,8 @@ exclude-result-prefixes="#all">
                 <xsl:map-entry key="'node-id'" select="?node-id"/>
                 <xsl:map-entry key="'x'" select="?x + $net-sums?x * $spring-stiffness"/>
                 <xsl:map-entry key="'y'" select="?y + $net-sums?y * $spring-stiffness"/>
-                <xsl:map-entry key="'adjacent'" select="?adjacent"/>
-                <xsl:map-entry key="'non-adjacent'" select="?non-adjacent"/>
+                <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
+                <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
             </xsl:map>
         </xsl:for-each>
     </xsl:function>
