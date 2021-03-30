@@ -309,34 +309,12 @@ exclude-result-prefixes="#all">
                             <xsl:map-entry key="'adjacent'" select="$adjacent-nodes except current()"/>
                             <xsl:map-entry key="'non-adjacent'" select="$force-nodes except $adjacent-nodes except current()"/>
                         </xsl:map>
-
-                        <xsl:if test="@about = ('http://purl.uniprot.org/position/19475964343104814tt10', 'http://purl.uniprot.org/position/19475964343104814tt17', 'http://purl.uniprot.org/position/19475964343104814tt213', 'http://purl.uniprot.org/position/19475964343104814tt234', 'http://purl.uniprot.org/position/19475964343104814tt336', 'http://purl.uniprot.org/position/19475964343104814tt38')">
-                            <xsl:message>
-                            $count: <xsl:value-of select="$count"/>
-                            $force-node-count: <xsl:value-of select="$force-node-count"/>
-                            @about: <xsl:value-of select="@about"/>
-                            position(): <xsl:value-of select="position()"/>
-                            ?x: <xsl:value-of select="math:cos(math:pi() * (2 * position() div $force-node-count)) * ($width div 2 - 10) + ($width div 2)"/>
-                            ?y: <xsl:value-of select="math:sin(math:pi() * (2 * position() div $force-node-count)) * ($height div 2 - 10) + ($height div 2)"/>
-                            </xsl:message>
-                        </xsl:if>
                     </xsl:for-each>
                 </xsl:param>
 
                 <xsl:on-completion>
                     <xsl:sequence select="$node-adjacency"/>
                 </xsl:on-completion>
-
-<xsl:message>
-    <xsl:for-each-group select="$node-adjacency" group-by="string(?x) || string(?y)">
-        <xsl:if test="count(current-group()) gt 1">
-            WTF ?x <xsl:value-of select="current-group()?x"/> ?y <xsl:value-of select="current-group()?y"/>
-            <xsl:for-each select="current-group()?node">
-                @about: <xsl:value-of select="@about"/>
-            </xsl:for-each>
-        </xsl:if>
-    </xsl:for-each-group>
-</xsl:message>
                 
                 <xsl:next-iteration>
                     <xsl:with-param name="node-adjacency" select="ac:force-step($node-adjacency, $spring-stiffness, $spring-length)"/>
@@ -361,12 +339,6 @@ exclude-result-prefixes="#all">
             <xsl:variable name="node" select="?node" as="element()"/>
             <xsl:variable name="v-x" select="?x" as="xs:double"/>
             <xsl:variable name="v-y" select="?y" as="xs:double"/>
-
-<xsl:message>
-$node: <xsl:copy-of select="$node"/>
-$v-x: <xsl:value-of select="$v-x"/>
-$v-y: <xsl:value-of select="$v-y"/>
-</xsl:message>
 
             <xsl:map>
                 <xsl:variable name="net-sums" as="map(xs:string, xs:double)">
@@ -413,15 +385,6 @@ $v-y: <xsl:value-of select="$v-y"/>
                         <xsl:variable name="y" select="$adjacent-map?y" as="xs:double"/>
                         <!-- square of euclidean distance -->
                         <xsl:variable name="distance2" select="($x - $v-x) * ($x - $v-x) + ($y - $v-y) * ($y - $v-y)" as="xs:double"/>
-<xsl:if test="$distance2 eq 0">
-    <xsl:message terminate="yes">
-        $adjacent-map?node/@about: <xsl:value-of select="$adjacent-map?node/@about"/>
-        ?x: <xsl:value-of select="$adjacent-map?x"/>
-        ?y: <xsl:value-of select="$adjacent-map?y"/>
-        
-        $adjacent-map: <xsl:value-of select="$adjacent-map => serialize(map {'method': 'adaptive'})"/>
-    </xsl:message>
-</xsl:if>
                         <!-- force coefficient -->
                         <xsl:variable name="c" select="-1 * ($spring-length * $spring-length div $distance2)" as="xs:double"/>
 
