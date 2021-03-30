@@ -37,7 +37,7 @@ exclude-result-prefixes="#all">
 
     <!-- Paper on force directed layout in XSLT: "GraphML Transformation" -->
     <!-- http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.182.3680&rep=rep1&type=pdf#page=58 -->
-    <!-- 1. position resource nodes (optionally also literals) randomly. TO-DO: position on an ellipse -->
+    <!-- 1. position resource nodes (optionally also literals) randomly -->
     <!-- 2. move nodes in a loop using the force-directed algorithm -->
     <!-- 3. draw lines between the nodes, calculating the correct intersection with the node border -->
     <!-- Note: only "flat" RDF/XML (properties grouped into descriptions; no nesting) is supported. It's called RDFXML_PLAIN in Apache Jena. -->
@@ -53,11 +53,13 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
     <xsl:param name="show-object-resources" select="false()" as="xs:boolean"/>
-    <xsl:param name="step-count" select="20" as="xs:integer"/>
+    <xsl:param name="step-count" select="20" as="xs:integer"/> <!-- number of iteration steps -->
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
-    <xsl:param name="spring-length" select="75" as="xs:double"/>
+    <xsl:param name="spring-length" select="75" as="xs:double"/> <!-- ideal spring length -->
     <xsl:param name="padding" select="$spring-length div 2" as="xs:double"/>
+    <xsl:param name="width" select="320" as="xs:integer"/> <!-- drawing width -->
+    <xsl:param name="height" select="240" as="xs:integer"/> <!-- drawing height -->
 
     <xsl:mode name="ac:SVGPositioning" on-no-match="shallow-copy"/>
 
@@ -195,10 +197,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="erng" select="random-number-generator(generate-id())?next()" as="map(xs:string, item())"/>
-        <xsl:param name="random-coords" select="$erng ! (.?number, .?next()?number)" as="xs:double*"/>
-        <xsl:param name="cx" select="$random-coords[1] * $spring-length" as="xs:double"/>
-        <xsl:param name="cy" select="$random-coords[2] * $spring-length" as="xs:double"/>
         <xsl:param name="r" select="25" as="xs:double"/>
         <xsl:param name="fill" select="'#acf'" as="xs:string"/>
         <xsl:param name="stroke" select="'gray'" as="xs:string"/>
@@ -206,8 +204,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="font-size" select="6" as="xs:integer"/>
         <xsl:param name="dy" select="'.3em'" as="xs:string"/>
 
+        <!-- @x and @y will be set by the ac:SVGPositioningLoop -->
         <g class="subject" about="{.}" transform="translate(0 0)"> <!-- need an initial @transform for ac:SVGPositioning template to match -->
-            <circle r="{$r}" cx="{$cx}" cy="{$cy}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}">
+            <circle r="{$r}" cx="0" cy="0" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}">
                 <title><xsl:value-of select="."/></title>
             </circle>
 
@@ -221,7 +220,7 @@ exclude-result-prefixes="#all">
                     </xsl:otherwise>
                 </xsl:choose>
                 
-                <text x="{$cx}" y="{$cy}" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
+                <text x="0" y="0" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
                     <xsl:choose>
                         <!-- subject -->
                         <xsl:when test="parent::rdf:Description">
@@ -255,10 +254,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/text() | *[@rdf:about or @rdf:nodeID]/*[@rdf:parseType = 'Literal']/*" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="erng" select="random-number-generator(generate-id())?next()" as="map(xs:string, item())"/>
-        <xsl:param name="random-coords" select="$erng ! (.?number, .?next()?number)" as="xs:double*"/>
-        <xsl:param name="x" select="$random-coords[1] * $spring-length" as="xs:double"/>
-        <xsl:param name="y" select="$random-coords[2] * $spring-length" as="xs:double"/>
         <xsl:param name="height" select="25" as="xs:double"/>
         <xsl:param name="width" select="50" as="xs:double"/>
         <xsl:param name="fill" select="'#fc3'" as="xs:string"/>
@@ -268,9 +263,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="font-size" select="6" as="xs:integer"/>
         <xsl:param name="dy" select="'.3em'" as="xs:string"/>
 
+        <!-- @x and @y will be set by the ac:SVGPositioningLoop -->
         <g class="object" transform="translate(0 0)"> <!-- need an initial @transform for ac:SVGPositioning template to match -->
-            <rect x="{$x - $width div 2}" y="{$y}" height="{$height}" width="{$width}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}" />
-            <text x="{$x}" y="{$y + $height div 2}" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
+            <rect x="0" y="0" height="{$height}" width="{$width}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}" />
+            <text x="0" y="0" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
                 <xsl:choose>
                     <xsl:when test="string-length(.) &gt; $max-literal-length">
                         <xsl:value-of select="substring(., 0, $max-literal-length)"/>
@@ -298,16 +294,32 @@ exclude-result-prefixes="#all">
             <xsl:variable name="force-nodes" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]" as="element()*"/>
             <xsl:iterate select="1 to $count">
                 <xsl:param name="node-adjacency" as="map(xs:string, item()*)*">
+                    <xsl:variable name="force-node-count" select="count($force-nodes)" as="xs:integer"/>
                     <xsl:for-each select="$force-nodes">
                         <!-- adjacent nodes as a union of resources and literals (in both directions) -->
-                        <xsl:variable name="adjacent-nodes" select="key('adjacent-resources', current()/@about)/svg:g[@about] | following-sibling::svg:g[@class = 'property']/svg:g[@class = 'object'][svg:rect] | self::svg:g[@class = 'object'][svg:rect]/../preceding-sibling::svg:g[@class = 'subject']" as="element()*"/>
+                        <xsl:variable name="to-resources" select="key('subjects', following-sibling::svg:g[@class = 'property']/@resource)" as="element()*"/>
+                        <xsl:variable name="from-resources" select="key('adjacent-resources', current()/@about)/svg:g[@about]" as="element()*"/>
+                        <xsl:variable name="to-literals" select="following-sibling::svg:g[@class = 'property']/svg:g[@class = 'object'][svg:rect]" as="element()*"/>
+                        <xsl:variable name="from-literals" select="self::svg:g[@class = 'object'][svg:rect]/../preceding-sibling::svg:g[@class = 'subject']" as="element()*"/>
+                        <xsl:variable name="adjacent-nodes" select="$to-resources | $from-resources | $to-literals | $from-literals" as="element()*"/>
                         <xsl:map>
                             <xsl:map-entry key="'node'" select="."/>
-                            <xsl:map-entry key="'x'" select="if (svg:circle) then xs:double(svg:circle/@cx) else if (svg:rect) then xs:double(svg:rect/@x + svg:rect/@width div 2) else ()"/>
-                            <xsl:map-entry key="'y'" select="if (svg:circle) then xs:double(svg:circle/@cy) else if (svg:rect) then xs:double(svg:rect/@y + svg:rect/@height div 2) else ()"/>
-                            <xsl:map-entry key="'adjacent'" select="$adjacent-nodes"/>
+                            <xsl:map-entry key="'x'" select="math:cos(math:pi() * (2 * position() div $force-node-count)) * ($width div 2 - 10) + ($width div 2)"/>
+                            <xsl:map-entry key="'y'" select="math:sin(math:pi() * (2 * position() div $force-node-count)) * ($height div 2 - 10) + ($height div 2)"/>
+                            <xsl:map-entry key="'adjacent'" select="$adjacent-nodes except current()"/>
                             <xsl:map-entry key="'non-adjacent'" select="$force-nodes except $adjacent-nodes except current()"/>
                         </xsl:map>
+
+                        <xsl:if test="@about = ('http://purl.uniprot.org/position/19475964343104814tt10', 'http://purl.uniprot.org/position/19475964343104814tt17', 'http://purl.uniprot.org/position/19475964343104814tt213', 'http://purl.uniprot.org/position/19475964343104814tt234', 'http://purl.uniprot.org/position/19475964343104814tt336', 'http://purl.uniprot.org/position/19475964343104814tt38')">
+                            <xsl:message>
+                            $count: <xsl:value-of select="$count"/>
+                            $force-node-count: <xsl:value-of select="$force-node-count"/>
+                            @about: <xsl:value-of select="@about"/>
+                            position(): <xsl:value-of select="position()"/>
+                            ?x: <xsl:value-of select="math:cos(math:pi() * (2 * position() div $force-node-count)) * ($width div 2 - 10) + ($width div 2)"/>
+                            ?y: <xsl:value-of select="math:sin(math:pi() * (2 * position() div $force-node-count)) * ($height div 2 - 10) + ($height div 2)"/>
+                            </xsl:message>
+                        </xsl:if>
                     </xsl:for-each>
                 </xsl:param>
 
@@ -315,6 +327,17 @@ exclude-result-prefixes="#all">
                     <xsl:sequence select="$node-adjacency"/>
                 </xsl:on-completion>
 
+<xsl:message>
+    <xsl:for-each-group select="$node-adjacency" group-by="string(?x) || string(?y)">
+        <xsl:if test="count(current-group()) gt 1">
+            WTF ?x <xsl:value-of select="current-group()?x"/> ?y <xsl:value-of select="current-group()?y"/>
+            <xsl:for-each select="current-group()?node">
+                @about: <xsl:value-of select="@about"/>
+            </xsl:for-each>
+        </xsl:if>
+    </xsl:for-each-group>
+</xsl:message>
+                
                 <xsl:next-iteration>
                     <xsl:with-param name="node-adjacency" select="ac:force-step($node-adjacency, $spring-stiffness, $spring-length)"/>
                 </xsl:next-iteration>
@@ -338,6 +361,12 @@ exclude-result-prefixes="#all">
             <xsl:variable name="node" select="?node" as="element()"/>
             <xsl:variable name="v-x" select="?x" as="xs:double"/>
             <xsl:variable name="v-y" select="?y" as="xs:double"/>
+
+<xsl:message>
+$node: <xsl:copy-of select="$node"/>
+$v-x: <xsl:value-of select="$v-x"/>
+$v-y: <xsl:value-of select="$v-y"/>
+</xsl:message>
 
             <xsl:map>
                 <xsl:variable name="net-sums" as="map(xs:string, xs:double)">
@@ -384,6 +413,15 @@ exclude-result-prefixes="#all">
                         <xsl:variable name="y" select="$adjacent-map?y" as="xs:double"/>
                         <!-- square of euclidean distance -->
                         <xsl:variable name="distance2" select="($x - $v-x) * ($x - $v-x) + ($y - $v-y) * ($y - $v-y)" as="xs:double"/>
+<xsl:if test="$distance2 eq 0">
+    <xsl:message terminate="yes">
+        $adjacent-map?node/@about: <xsl:value-of select="$adjacent-map?node/@about"/>
+        ?x: <xsl:value-of select="$adjacent-map?x"/>
+        ?y: <xsl:value-of select="$adjacent-map?y"/>
+        
+        $adjacent-map: <xsl:value-of select="$adjacent-map => serialize(map {'method': 'adaptive'})"/>
+    </xsl:message>
+</xsl:if>
                         <!-- force coefficient -->
                         <xsl:variable name="c" select="-1 * ($spring-length * $spring-length div $distance2)" as="xs:double"/>
 
@@ -417,13 +455,23 @@ exclude-result-prefixes="#all">
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="svg:g[@class = ('subject', 'object')]/@transform" mode="ac:SVGPositioning" priority="1">
+    <xsl:template match="svg:g[@class = ('subject', 'object')]/@transform" mode="ac:SVGPositioning">
         <xsl:param name="x" as="xs:double"/>
         <xsl:param name="y" as="xs:double"/>
 
         <xsl:attribute name="{local-name()}" select="'translate(' || $x || ' ' || $y || ')'"/>
     </xsl:template>
-    
+
+    <!-- center the rectangle around the force point -->
+    <xsl:template match="svg:g[@class = 'object']/svg:rect/@x" mode="ac:SVGPositioning">
+        <xsl:attribute name="{local-name()}" select="-1 * ../@width div 2"/>
+    </xsl:template>
+
+    <!-- center the rectangle around the force point -->
+    <xsl:template match="svg:g[@class = 'object']/svg:rect/@y" mode="ac:SVGPositioning">
+        <xsl:attribute name="{local-name()}" select="-1 * ../@height div 2"/>
+    </xsl:template>
+
     <!-- LINE DRAWING -->
 
     <!-- TO-DO: optimize using $node-adjacency -->
