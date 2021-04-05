@@ -58,7 +58,7 @@ extension-element-prefixes="ixsl"
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
     
     <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
-    <xsl:function name="ac:label" as="xs:string" override-extension-function="no">
+    <xsl:function name="ac:uuid" as="xs:string" override-extension-function="no">
         <xsl:value-of use-when="system-property('xsl:product-name') eq 'Saxon-JS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
         <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
             Not implemented -- com.atomgraph.client.writer.function.UUID needs to be registered as an extension function
