@@ -244,7 +244,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
             <xsl:if test="not($template)">
-                <xsl:message>Template is not defined for resource '<xsl:sequence select="@rdf:about | @rdf:nodeID"/>' with types '<xsl:sequence select="rdf:type/@rdf:resource"/>'</xsl:message>
+                <xsl:message>Template is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>' with types '<xsl:value-of select="rdf:type/@rdf:resource"/>'</xsl:message>
             </xsl:if>
             <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
                 <xsl:sort select="ac:property-label(.)"/>

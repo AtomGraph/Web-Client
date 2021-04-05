@@ -16,7 +16,6 @@
 package com.atomgraph.client.writer.function;
 
 import com.atomgraph.client.util.Constructor;
-import com.atomgraph.client.vocabulary.AC;
 import static com.atomgraph.client.writer.DatasetXSLTWriter.checkURI;
 import static com.atomgraph.client.writer.DatasetXSLTWriter.getSource;
 import java.io.IOException;

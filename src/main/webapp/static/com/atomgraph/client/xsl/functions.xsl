@@ -32,7 +32,7 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:url="&java;java.net.URLDecoder"
+xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -45,7 +45,9 @@ xmlns:foaf="&foaf;"
 xmlns:skos="&skos;"
 xmlns:sp="&sp;"
 xmlns:list="&list;"
-exclude-result-prefixes="#all">
+exclude-result-prefixes="#all"
+extension-element-prefixes="ixsl"
+>
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
@@ -54,6 +56,21 @@ exclude-result-prefixes="#all">
     <xsl:key name="resources-by-range" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:range/@rdf:resource"/>
     <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
+    
+    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
+    <xsl:function name="ac:label" as="xs:string" override-extension-function="no">
+        <xsl:value-of use-when="system-property('xsl:product-name') eq 'Saxon-JS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
+        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
+            Not implemented -- com.atomgraph.client.writer.function.UUID needs to be registered as an extension function
+        </xsl:message>
+    </xsl:function>
+    
+    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
+    <xsl:function name="ac:construct-doc" as="document-node()*" override-extension-function="no">
+        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
+            Not implemented -- com.atomgraph.client.writer.function.ConstructDocument needs to be registered as an extension function
+        </xsl:message>
+    </xsl:function>
     
     <xsl:function name="ac:label" as="xs:string?">
         <xsl:param name="resource" as="element()"/>
