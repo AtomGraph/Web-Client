@@ -29,7 +29,6 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:saxon="http://saxon.sf.net/"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -76,7 +75,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', $this)">
                 <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
             </xsl:when>
-            <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="not(system-property('saxon:platform') eq 'Browser')" >
+            <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'" >
                 <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
@@ -101,7 +100,7 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', .)">
                 <xsl:apply-templates select="key('resources', .)" mode="ac:label"/>
             </xsl:when>
-            <xsl:when test="doc-available(ac:document-uri(.)) and key('resources', ., document(ac:document-uri(.)))" use-when="not(system-property('saxon:platform') eq 'Browser')">
+            <xsl:when test="doc-available(ac:document-uri(.)) and key('resources', ., document(ac:document-uri(.)))" use-when="system-property('xsl:product-name') = 'SAXON'">
                 <xsl:apply-templates select="key('resources', ., document(ac:document-uri(.)))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains(., '#') and not(ends-with(., '#'))">

@@ -33,7 +33,6 @@ limitations under the License.
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
-xmlns:saxon="http://saxon.sf.net/"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -60,8 +59,8 @@ extension-element-prefixes="ixsl"
     
     <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
     <xsl:function name="ac:uuid" as="xs:string" override-extension-function="no">
-        <xsl:value-of use-when="system-property('saxon:platform') eq 'Browser'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
-        <xsl:message use-when="not(system-property('saxon:platform') eq 'Browser')" terminate="yes">
+        <xsl:value-of use-when="system-property('xsl:product-name') eq 'Saxon-JS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
+        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
             Not implemented -- com.atomgraph.client.writer.function.UUID needs to be registered as an extension function
         </xsl:message>
     </xsl:function>
@@ -72,7 +71,7 @@ extension-element-prefixes="ixsl"
         <xsl:param name="classes" as="xs:anyURI*"/>
         <xsl:param name="base" as="xs:anyURI"/>
             
-        <xsl:message use-when="not(system-property('saxon:platform') eq 'Browser')" terminate="yes">
+        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
             Not implemented -- com.atomgraph.client.writer.function.ConstructDocument needs to be registered as an extension function
         </xsl:message>
     </xsl:function>

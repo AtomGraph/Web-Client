@@ -25,7 +25,6 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:saxon="http://saxon.sf.net/"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:sparql="&sparql;"
@@ -81,8 +80,8 @@ exclude-result-prefixes="#all">
 
         <xsl:variable name="prelim-items" as="item()*">
             <xsl:apply-templates mode="#current">
-                <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}" use-when="not(system-property('saxon:platform') eq 'Browser')"/>
-                <xsl:sort select="ac:label(.)" order="ascending" use-when="system-property('saxon:platform') eq 'Browser'"/>
+                <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                <xsl:sort select="ac:label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
@@ -136,8 +135,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
             <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}" use-when="not(system-property('saxon:platform') eq 'Browser')"/>
-                <xsl:sort select="ac:property-label(.)" order="ascending" use-when="system-property('saxon:platform') eq 'Browser'"/>
+                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                <xsl:sort select="ac:property-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
 
                 <xsl:sequence select="current-group()[1]"/>
             </xsl:for-each-group>
@@ -155,8 +154,8 @@ exclude-result-prefixes="#all">
                 <tr>
                     <xsl:if test="$anchor-column">
                         <th>
-                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label" use-when="not(system-property('saxon:platform') eq 'Browser')"/>
-                            <xsl:value-of use-when="system-property('saxon:platform') eq 'Browser'">Resource</xsl:value-of>
+                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                            <xsl:value-of use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Resource</xsl:value-of>
                         </th>
                     </xsl:if>
                     
