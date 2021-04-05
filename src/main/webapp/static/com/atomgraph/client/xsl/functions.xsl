@@ -67,6 +67,10 @@ extension-element-prefixes="ixsl"
     
     <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
     <xsl:function name="ac:construct-doc" as="document-node()*" override-extension-function="no">
+        <xsl:param name="ontology" as="xs:anyURI"/>
+        <xsl:param name="classes" as="xs:anyURI*"/>
+        <xsl:param name="base" as="xs:anyURI"/>
+            
         <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
             Not implemented -- com.atomgraph.client.writer.function.ConstructDocument needs to be registered as an extension function
         </xsl:message>
