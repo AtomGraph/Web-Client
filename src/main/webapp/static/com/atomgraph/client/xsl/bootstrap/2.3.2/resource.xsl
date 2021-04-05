@@ -25,6 +25,7 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:saxon="http://saxon.sf.net/"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:ldt="&ldt;"
@@ -130,9 +131,9 @@ exclude-result-prefixes="#all">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                        <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="not(system-property('saxon:platform') eq 'Browser')"/>
                     </xsl:value-of>
-                    <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                    <xsl:text use-when="system-property('saxon:platform') eq 'Browser'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
                 </button>
             </form>
         </div>
@@ -140,9 +141,9 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
                 <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="not(system-property('saxon:platform') eq 'Browser')"/>
                 </xsl:value-of>
-                <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                <xsl:text use-when="system-property('saxon:platform') eq 'Browser'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
             </a>
         </div>
     </xsl:template>
@@ -183,8 +184,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}" use-when="not(system-property('saxon:platform') eq 'Browser')"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('saxon:platform') eq 'Browser'"/>
                 
                 <li>
                     <xsl:apply-templates select="."/>
@@ -222,7 +223,7 @@ exclude-result-prefixes="#all">
 
     <!-- FORM CONTROL MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl" use-when="system-property('xsl:product-name') = 'SAXON'">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl" use-when="not(system-property('saxon:platform') eq 'Browser')">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
