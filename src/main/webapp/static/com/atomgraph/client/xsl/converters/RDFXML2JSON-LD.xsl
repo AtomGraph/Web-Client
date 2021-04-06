@@ -90,32 +90,44 @@ exclude-result-prefixes="xs">
         <xsl:variable name="resource" select="."/>
         <xsl:variable name="properties" as="xs:string*">
             <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:variable name="key" as="xs:string*">
-                    <xsl:choose>
-                        <xsl:when test="current-grouping-key() = '&rdf;type'">
-                            <xsl:sequence select="'&quot;@type&quot;'"/>
-                        </xsl:when>
-                        <xsl:when test="not($resource/*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])">
-                            <xsl:sequence select="concat('&quot;', local-name(), '&quot;')"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <!-- conflicting namespace-uri()/local-name() - full name() is used -->
-                            <xsl:sequence select="concat('&quot;', current-grouping-key(), '&quot;')"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:variable>
-                <xsl:variable name="values" as="xs:string*">
-                    <xsl:apply-templates select="current-group()" mode="#current"/>
-                </xsl:variable>
-
-                <xsl:sequence select="concat($key, ': ',
-                    if (count(current-group()) &gt; 1) then '[' else (),
-                    string-join($values, ', '),
-                    if (count(current-group()) &gt; 1) then ']' else ())"/>
+                <xsl:apply-templates select="current-group()" mode="ac:JSON-LDPropertyGroup">
+                    <xsl:with-param name="resource" select="$resource"/>
+                    <xsl:with-param name="grouping-key" select="current-grouping-key()"/>
+                    <xsl:with-param name="group" select="current-group()"/>
+                </xsl:apply-templates>
             </xsl:for-each-group>
         </xsl:variable>
 
         <xsl:sequence select="concat('{ ', $context, ', ', $subject, ', ', string-join($properties, ', '), ' }')"/>
+    </xsl:template>
+    
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:JSON-LDPropertyGroup">
+        <xsl:param name="resource" as="element()"/>
+        <xsl:param name="grouping-key" as="xs:anyAtomicType?"/>
+        <xsl:param name="group" as="item()*"/>
+        
+        <xsl:variable name="key" as="xs:string*">
+            <xsl:choose>
+                <xsl:when test="$grouping-key = '&rdf;type'">
+                    <xsl:sequence select="'&quot;@type&quot;'"/>
+                </xsl:when>
+                <xsl:when test="not($resource/*[local-name() = local-name(current())][not(namespace-uri() = namespace-uri(current()))])">
+                    <xsl:sequence select="concat('&quot;', local-name(), '&quot;')"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- conflicting namespace-uri()/local-name() - full name() is used -->
+                    <xsl:sequence select="concat('&quot;', $grouping-key, '&quot;')"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="values" as="xs:string*">
+            <xsl:apply-templates select="$group" mode="ac:JSON-LD"/>
+        </xsl:variable>
+
+        <xsl:sequence select="concat($key, ': ',
+            if (count($group) &gt; 1) then '[' else (),
+            string-join($values, ', '),
+            if (count($group) &gt; 1) then ']' else ())"/>
     </xsl:template>
     
     <!-- property -->
