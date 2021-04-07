@@ -76,7 +76,9 @@ exclude-result-prefixes="xs">
                         </xsl:if>
                     </xsl:for-each-group>
                 </xsl:variable>
-                <xsl:apply-templates select="." mode="ac:JSON-LDContext"/>
+                <xsl:for-each-group select="*" group-by="local-name()">
+                    <xsl:apply-templates select="current-group()[1]" mode="ac:JSON-LDContext"/>
+                </xsl:for-each-group>
             </xsl:variable>
 
             <xsl:sequence select="concat('&quot;@context&quot;: { ', string-join($prefixes, ', '),
@@ -90,7 +92,7 @@ exclude-result-prefixes="xs">
         <xsl:variable name="resource" select="."/>
         <xsl:variable name="properties" as="xs:string*">
             <xsl:for-each-group select="*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:apply-templates select="current-group()" mode="ac:JSON-LDPropertyGroup">
+                <xsl:apply-templates select="current-group()[1]" mode="ac:JSON-LDPropertyGroup">
                     <xsl:with-param name="resource" select="$resource"/>
                     <xsl:with-param name="grouping-key" select="current-grouping-key()"/>
                     <xsl:with-param name="group" select="current-group()"/>
