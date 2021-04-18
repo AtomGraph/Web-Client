@@ -15,6 +15,7 @@
  */
 package com.atomgraph.client.writer;
 
+import com.atomgraph.client.util.DataManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.inject.Singleton;
@@ -45,10 +46,11 @@ public class ModelXSLTWriter extends ModelXSLTWriterBase implements MessageBodyW
      * 
      * @param xsltExec compiled XSLT stylesheet
      * @param ontModelSpec ontology model specification
+     * @param dataManager RDF data manager
      */
-    public ModelXSLTWriter(XsltExecutable xsltExec, OntModelSpec ontModelSpec)
+    public ModelXSLTWriter(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
     {
-        super(xsltExec, ontModelSpec);
+        super(xsltExec, ontModelSpec, dataManager);
     }
     
     @Override

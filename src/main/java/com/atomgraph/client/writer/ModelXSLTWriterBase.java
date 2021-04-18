@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -96,20 +95,21 @@ public abstract class ModelXSLTWriterBase
     
     private final XsltExecutable xsltExec;
     private final OntModelSpec ontModelSpec;
+    private final DataManager dataManager;
 
     @Context private UriInfo uriInfo;
     @Context private Request request;
     @Context private HttpHeaders httpHeaders;
     @Context private HttpServletRequest httpServletRequest;
-    
-    @Inject DataManager dataManager;
 
-    public ModelXSLTWriterBase(XsltExecutable xsltExec, OntModelSpec ontModelSpec)
+    public ModelXSLTWriterBase(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
     {
         if (xsltExec == null) throw new IllegalArgumentException("XsltExecutable cannot be null");
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
+        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
         this.xsltExec = xsltExec;
         this.ontModelSpec = ontModelSpec;
+        this.dataManager = dataManager;
     }
 
     public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException

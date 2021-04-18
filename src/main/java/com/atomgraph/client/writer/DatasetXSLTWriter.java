@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.writer;
 
+import com.atomgraph.client.util.DataManager;
 import org.apache.jena.ontology.OntModelSpec;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -47,10 +48,11 @@ public class DatasetXSLTWriter extends ModelXSLTWriterBase implements MessageBod
      * 
      * @param xsltExec compiled XSLT stylesheet
      * @param ontModelSpec ontology model specification
+     * @param dataManager RDF data manager
      */
-    public DatasetXSLTWriter(XsltExecutable xsltExec, OntModelSpec ontModelSpec)
+    public DatasetXSLTWriter(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
     {
-        super(xsltExec, ontModelSpec);
+        super(xsltExec, ontModelSpec, dataManager);
     }
     
     @Override

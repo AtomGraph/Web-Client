@@ -187,17 +187,9 @@ public class Application extends ResourceConfig
         register(NotFoundExceptionMapper.class);
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
-        register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec())); // writes (X)HTML responses
-        register(new DatasetXSLTWriter(getXsltExecutable(), getOntModelSpec())); // writes (X)HTML responses
+        register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
+        register(new DatasetXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
         
-        register(new AbstractBinder()
-        {
-            @Override
-            protected void configure()
-            {
-                bind(getDataManager()).to(DataManager.class);
-            }
-        });
         register(new AbstractBinder()
         {
             @Override
