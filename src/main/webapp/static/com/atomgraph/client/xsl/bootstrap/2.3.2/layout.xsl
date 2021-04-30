@@ -503,7 +503,7 @@ exclude-result-prefixes="#all">
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
         
-    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:MediaTypeList">
+    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:MediaTypeList" priority="1">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
@@ -524,6 +524,8 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <xsl:template match="*" mode="bs2:MediaTypeList"/>
+    
     <!-- RIGHT NAV MODE -->
     
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Right" priority="1"/>
