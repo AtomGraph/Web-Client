@@ -237,9 +237,19 @@ extension-element-prefixes="ixsl"
     <!-- builds URL query string out of a parameter map and appends it to the given URI, if any -->
     <xsl:function name="ac:build-uri" as="xs:anyURI?">
         <xsl:param name="absolute-path" as="xs:anyURI?"/>
-        <xsl:param name="query-params" as="map(xs:string, xs:string)"/>
+        <xsl:param name="query-params" as="map(xs:string, xs:string*)"/>
         
-        <xsl:sequence select="xs:anyURI($absolute-path || string-join(map:keys($query-params)[. ne ''] ! (encode-for-uri(.) || '=' || encode-for-uri($query-params?(.))), '&amp;')[string-length(.) gt 0] ! ('?' || .))"/>
+        <xsl:sequence select="xs:anyURI(if (map:size($query-params) ne 0) then
+    let $param-strings :=
+      for $param in map:keys($query-params)[. ne '']
+      return $query-params?($param) ! string-join((
+        encode-for-uri($param),
+        '=',
+        encode-for-uri(.)
+      ), '')
+    return $absolute-path || '?' || string-join($param-strings, '&amp;')
+  else
+    $absolute-path)"/>
     </xsl:function>
     
     <xsl:function name="ac:visit-elements" as="element()*">
