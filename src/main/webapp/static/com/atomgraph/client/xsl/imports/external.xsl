@@ -23,7 +23,7 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
@@ -36,7 +36,7 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
-        <xsl:param name="href" select="xs:anyURI(concat('?uri=', encode-for-uri(@rdf:about)))" as="xs:anyURI"/>
+        <xsl:param name="href" select="ac:build-uri((), map{ 'uri': string(@rdf:about) })" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -50,7 +50,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:resource | srx:uri">
-        <xsl:param name="href" select="xs:anyURI(concat('?uri=', encode-for-uri(if (contains(., '#')) then substring-before(., '#') else .), if (substring-after(., '#')) then concat('#', substring-after(., '#')) else ()))" as="xs:anyURI"/>
+        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), map{ 'uri': if (contains(., '#')) then substring-before(., '#') else string(.) }) || (if (substring-after(., '#')) then '#' || substring-after(., '#') else ()))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>

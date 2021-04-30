@@ -45,6 +45,7 @@ xmlns:foaf="&foaf;"
 xmlns:skos="&skos;"
 xmlns:sp="&sp;"
 xmlns:list="&list;"
+xmlns:map="http://www.w3.org/2005/xpath-functions/map"
 exclude-result-prefixes="#all"
 extension-element-prefixes="ixsl"
 >
@@ -233,56 +234,12 @@ extension-element-prefixes="ixsl"
         </xsl:if>
     </xsl:function>
 
-    <xsl:function name="ac:query-string" as="xs:string?">
-        <xsl:param name="offset" as="xs:integer?"/>
-        <xsl:param name="limit" as="xs:integer?"/>
-        <xsl:param name="order-by" as="xs:string?"/>
-        <xsl:param name="desc" as="xs:boolean?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
+    <!-- builds URL query string out of a parameter map and appends it to the given URI, if any -->
+    <xsl:function name="ac:build-uri" as="xs:anyURI?">
+        <xsl:param name="absolute-path" as="xs:anyURI?"/>
+        <xsl:param name="query-params" as="map(xs:string, xs:string)"/>
         
-        <xsl:variable name="query-string">
-            <xsl:if test="not(empty($offset))">offset=<xsl:value-of select="$offset"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($limit))">limit=<xsl:value-of select="$limit"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($order-by))">orderBy=<xsl:value-of select="encode-for-uri($order-by)"/>&amp;</xsl:if>
-            <xsl:if test="$desc">desc=true&amp;</xsl:if>
-            <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-        </xsl:variable>
-        
-        <xsl:if test="string-length($query-string) &gt; 1">
-            <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-        </xsl:if>
-    </xsl:function>
-
-    <xsl:function name="ac:query-string" as="xs:string?">
-        <xsl:param name="uri" as="xs:anyURI?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
-
-        <xsl:variable name="query-string">
-            <xsl:if test="not(empty($uri))">uri=<xsl:value-of select="encode-for-uri($uri)"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-        </xsl:variable>
-        
-        <xsl:if test="string-length($query-string) &gt; 1">
-            <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-        </xsl:if>
-    </xsl:function>
-
-    <xsl:function name="ac:query-string" as="xs:string?">
-        <xsl:param name="endpoint" as="xs:anyURI?"/>
-        <xsl:param name="query" as="xs:string?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
-        <xsl:param name="accept" as="xs:string?"/>
-
-        <xsl:variable name="query-string">
-            <xsl:if test="not(empty($endpoint))">endpointUri=<xsl:value-of select="encode-for-uri($endpoint)"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($query))">query=<xsl:value-of select="encode-for-uri($query)"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($mode))">mode=<xsl:value-of select="encode-for-uri($mode)"/>&amp;</xsl:if>
-            <xsl:if test="not(empty($accept))">accept=<xsl:value-of select="encode-for-uri($accept)"/>&amp;</xsl:if>
-        </xsl:variable>
-        
-        <xsl:if test="string-length($query-string) &gt; 1">
-            <xsl:sequence select="concat('?', substring($query-string, 1, string-length($query-string) - 1))"/>
-        </xsl:if>
+        <xsl:sequence select="xs:anyURI($absolute-path || string-join(map:keys($query-params)[. ne ''] ! (encode-for-uri(.) || '=' || encode-for-uri($query-params?(.))), '&amp;')[string-length(.) gt 0] ! ('?' || .))"/>
     </xsl:function>
     
     <xsl:function name="ac:visit-elements" as="element()*">

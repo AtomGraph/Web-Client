@@ -31,7 +31,7 @@ limitations under the License.
     <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:a="&a;"
@@ -177,7 +177,7 @@ exclude-result-prefixes="#all">
 
                         <ul class="nav pull-right">
                             <li>
-                                <a href="?uri={encode-for-uri($ac:uri)}&amp;mode={encode-for-uri('&ac;QueryEditorMode')}">Query editor</a>
+                                <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">Query editor</a>
                             </li>
                         </ul>
                     </div>
@@ -380,7 +380,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
-                <a class="btn" href="{@rdf:about}{ac:query-string((), xs:anyURI('&ac;EditMode'))}">
+                <a class="btn" href="{ac:build-uri(xs:anyURI(@rdf:about), map{ 'mode': '&ac;EditMode' })}">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
                     </xsl:value-of>
@@ -431,7 +431,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <a href="?uri={ac:document-uri($ac:uri)}&amp;mode={encode-for-uri(@rdf:about)}" title="{ac:label(.)}">
+            <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri($ac:uri)), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
                 <xsl:value-of>
                     <xsl:apply-templates select="." mode="ac:label"/>
                 </xsl:value-of>
@@ -503,15 +503,15 @@ exclude-result-prefixes="#all">
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
         
-    <xsl:template match="rdf:RDF" mode="bs2:MediaTypeList">
+    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:MediaTypeList">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="?uri={encode-for-uri($ac:uri)}&amp;accept={encode-for-uri('application/rdf+xml')}">RDF/XML</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri($ac:uri)), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
                 </li>
                 <li>
-                    <a href="?uri={encode-for-uri($ac:uri)}&amp;accept={encode-for-uri('text/turtle')}">Turtle</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri($ac:uri)), 'accept': 'text/turtle' })}">Turtle</a>
                 </li>
                 <!--
                 <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">

@@ -22,7 +22,7 @@ limitations under the License.
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
@@ -138,7 +138,7 @@ exclude-result-prefixes="#all">
         </div>
 
         <div class="pull-right">
-            <a class="btn btn-primary" href="?uri={encode-for-uri(ac:document-uri(@rdf:about))}&amp;mode={encode-for-uri('&ac;EditMode')}">
+            <a class="btn btn-primary" href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)), 'mode': '&ac;EditMode' })}">
                 <xsl:value-of>
                     <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                 </xsl:value-of>

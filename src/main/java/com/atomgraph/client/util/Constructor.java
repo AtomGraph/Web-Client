@@ -54,7 +54,7 @@ public class Constructor
     {
         if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");
 
-        return addInstance(forClass, SPIN.constructor, targetModel.createResource(), baseURI, new HashSet<OntClass>());
+        return addInstance(forClass, SPIN.constructor, targetModel.createResource(), baseURI, new HashSet<>());
     }
 
     /**
