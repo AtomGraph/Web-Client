@@ -235,6 +235,7 @@ extension-element-prefixes="ixsl"
     </xsl:function>
 
     <!-- builds URL query string out of a parameter map and appends it to the given URI, if any -->
+    <!-- TO-DO: add a fragment parameter? -->
     <xsl:function name="ac:build-uri" as="xs:anyURI?">
         <xsl:param name="absolute-path" as="xs:anyURI?"/>
         <xsl:param name="query-params" as="map(xs:string, xs:string*)"/>

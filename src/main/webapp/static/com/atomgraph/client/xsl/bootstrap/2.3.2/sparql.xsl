@@ -164,7 +164,7 @@ LIMIT 100</xsl:param>
     </xsl:template>
 
     <xsl:template name="ac:QueryResult">
-        <xsl:param name="result-doc" select="document(concat($ac:endpoint, '?query=', encode-for-uri($ac:query)))"/>
+        <xsl:param name="result-doc" select="document(ac:build-uri($ac:endpoint, map{ 'query': string($ac:query) }))"/>
 
         <!-- result of CONSTRUCT or DESCRIBE -->
         <xsl:if test="$result-doc/rdf:RDF">

@@ -516,7 +516,7 @@ exclude-result-prefixes="#all">
                 <!--
                 <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">
                     <li>
-                        <a href="{resolve-uri('sparql', $ldt:base)}?query={encode-for-uri($query-res/sp:text)}">SPARQL</a>
+                        <a href="{ac:build-uri(resolve-uri('sparql', $ldt:base), map{ 'query': string($query-res/sp:text) })}">SPARQL</a>
                     </li>
                 </xsl:if>
                 -->
