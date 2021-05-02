@@ -250,7 +250,7 @@ extension-element-prefixes="ixsl"
       ), '')
     return
       let $query-string := '?' || string-join($param-strings, '&amp;')
-      return if ($absolute-path) then resolve-uri($query-string, $absolute-path) else $query-string
+      return if ($absolute-path) then $absolute-path || $query-string else $query-string
   else
     $absolute-path)"/>
     </xsl:function>
