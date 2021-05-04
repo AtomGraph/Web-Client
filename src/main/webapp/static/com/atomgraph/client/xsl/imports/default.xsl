@@ -25,6 +25,7 @@ limitations under the License.
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY spin   "http://spinrdf.org/spin#">
+    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -38,6 +39,7 @@ xmlns:srx="&srx;"
 xmlns:ldt="&ldt;"
 xmlns:sp="&sp;"
 xmlns:spin="&spin;"
+xmlns:foaf="&foaf;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
@@ -49,7 +51,25 @@ exclude-result-prefixes="#all">
     <!-- LABEL -->
     
     <xsl:template match="node()" mode="ac:label"/>
-    
+
+    <!-- attempt use label of the primary topic before parsing label from URL -->
+    <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:*)]" mode="ac:label" priority="3">
+        <xsl:variable name="topic-label" as="item()">
+            <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:*)" mode="#current"/>
+        </xsl:variable>
+        
+        <xsl:choose>
+            <!-- topic doesn't have a label value coming from a property, fall back to next match -->
+            <xsl:when test="$topic-label instance of xs:string">
+                <xsl:next-match/>
+            </xsl:when>
+            <!-- use topic's label value -->
+            <xsl:otherwise>
+                <xsl:sequence select="$topic-label"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template match="*[contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))]" mode="ac:label" priority="2">
         <xsl:sequence select="substring-after(@rdf:about, '#')"/>
     </xsl:template>
