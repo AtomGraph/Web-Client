@@ -176,7 +176,7 @@ public abstract class ModelXSLTWriterBase
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
             if (!modes.isEmpty()) params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
 
-            URI ontologyURI = (URI)getHttpServletRequest().getAttribute(LDT.ontology.getURI());
+            URI ontologyURI = getOntologyURI();
             if (ontologyURI != null)
             {
                 params.put(new QName("ldt", LDT.ontology.getNameSpace(), LDT.ontology.getLocalName()), new XdmAtomicValue(ontologyURI));
@@ -249,6 +249,11 @@ public abstract class ModelXSLTWriterBase
     public URI getRequestURI()
     {
         return getUriInfo().getRequestUri();
+    }
+    
+    public URI getOntologyURI()
+    {
+        return (URI)getHttpServletRequest().getAttribute(LDT.ontology.getURI());
     }
 
     public URI getURIParam(UriInfo uriInfo, String name) throws URISyntaxException
