@@ -34,7 +34,7 @@ $(document).ready(function()
         return confirm('Are you sure?');
     });
 
-    $(".btn-remove").on("click", onRemoveButtonClick);
+    $(".btn-remove-property").on("click", onRemoveButtonClick);
 
     $(".btn-group:has(.btn.dropdown-toggle)").on("click", onDropdownClick);
 

@@ -99,7 +99,7 @@ exclude-result-prefixes="#all">
             <div class="controls">
                 <xsl:if test="not($required)">
                     <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-small pull-right btn-remove" title="Remove this statement">&#x2715;</button>
+                        <button type="button" class="btn btn-small pull-right btn-remove-property" title="Remove this statement">&#x2715;</button>
                     </div>
                 </xsl:if>
 
