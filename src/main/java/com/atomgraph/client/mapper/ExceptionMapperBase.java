@@ -36,7 +36,6 @@ import com.atomgraph.core.util.ModelUtils;
 import javax.inject.Inject;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
-import org.apache.jena.query.Dataset;
 
 /**
  * Abstract base class for ExceptionMappers that build responses with exceptions as RDF resources.
@@ -67,19 +66,6 @@ abstract public class ExceptionMapperBase
         if (ex.getMessage() != null) resource.addLiteral(DCTerms.title, ex.getMessage());
         
         return resource;
-    }
-    
-    public Response.ResponseBuilder getResponseBuilder(Dataset dataset)
-    {
-        Variant variant = getRequest().selectVariant(getVariants(Dataset.class));
-        if (variant == null) return getResponseBuilder(dataset.getDefaultModel()); // if quads are not acceptable, fallback to responding with the default graph
-        
-        return new com.atomgraph.core.model.impl.Response(getRequest(),
-                dataset,
-                null,
-                new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
-                getVariants(Dataset.class)).
-            getResponseBuilder();
     }
     
     public Response.ResponseBuilder getResponseBuilder(Model model)

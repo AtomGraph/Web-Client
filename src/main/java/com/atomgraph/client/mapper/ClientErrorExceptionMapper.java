@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ClientErrorException;
-import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Resource;
 
 /**
@@ -36,7 +35,7 @@ public class ClientErrorExceptionMapper extends ExceptionMapperBase implements E
     {
         Resource exRes = toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null);
         
-        return getResponseBuilder(DatasetFactory.create(exRes.getModel())).
+        return getResponseBuilder(exRes.getModel()).
             status(ex.getResponse().getStatus()).
             build();
     }

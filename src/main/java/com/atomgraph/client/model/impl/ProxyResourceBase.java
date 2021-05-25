@@ -51,8 +51,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Variant;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +98,6 @@ public class ProxyResourceBase implements Resource
         this.mediaTypes = mediaTypes;
         this.accept = accept;
         List<javax.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
-        //readableMediaTypesList.addAll(mediaTypes.getReadable(Dataset.class));
         readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
         this.readableMediaTypes = readableMediaTypesList.toArray(new MediaType[readableMediaTypesList.size()]);
         
@@ -196,36 +193,10 @@ public class ProxyResourceBase implements Resource
 
             Model description = cr.readEntity(Model.class);
             
-            return getResponse(DatasetFactory.create(description));
+            return getResponse(description);
         }
     }
 
-    /**
-     * Returns response for the given RDF dataset.
-     * 
-     * @param dataset RDF dataset
-     * @return response object
-     */
-    public Response getResponse(Dataset dataset)
-    {
-        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Dataset.class),
-                new ArrayList(),
-                new ArrayList()).
-            add().
-            build();
-
-        Variant variant = getRequest().selectVariant(variants);
-        if (variant == null || MediaTypes.isTriples(variant.getMediaType())) return getResponse(dataset.getDefaultModel()); // fallback to Model
-
-        return new com.atomgraph.core.model.impl.Response(getRequest(),
-                dataset,
-                null,
-                new EntityTag(Long.toHexString(com.atomgraph.core.model.impl.Response.hashDataset(dataset))),
-                variants).
-            getResponseBuilder().
-                build();
-    }
-    
     /**
      * Returns response for the given RDF model.
      * 
@@ -276,45 +247,37 @@ public class ProxyResourceBase implements Resource
     /**
      * Forwards POST request with RDF dataset body and returns RDF response from remote resource.
      * 
-     * @param dataset
+     * @param model
      * @return response
      */
     @POST
     @Override
-    public Response post(Dataset dataset)
+    public Response post(Model model)
     {
         if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
         
         if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                post(Entity.entity(dataset, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
-        
-//        Response.ResponseBuilder rb = Response.status(cr.getStatusInfo());
-//        if (cr.hasEntity()) rb.entity(cr.readEntity(Dataset.class)); // cr.getEntityInputStream()
-//        return rb.build();
+            accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+            post(Entity.entity(model, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
     }
 
     /**
      * Forwards PUT request with RDF dataset body and returns response from remote resource.
      * 
-     * @param dataset RDF payload
+     * @param model RDF payload
      * @return response
      */
     @PUT
     @Override
-    public Response put(Dataset dataset)
+    public Response put(Model model)
     {
         if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
         
         if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                put(Entity.entity(dataset, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
-        
-//        ResponseBuilder rb = Response.status(cr.getStatusInfo());
-//        if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
-//        return rb.build();
+            accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+            put(Entity.entity(model, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
     }
     
     /**
@@ -329,12 +292,8 @@ public class ProxyResourceBase implements Resource
         
         if (log.isDebugEnabled()) log.debug("DELETEing Dataset from URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-                accept(getMediaTypes().getReadable(Dataset.class).toArray(new javax.ws.rs.core.MediaType[0])).
-                delete(Response.class);
-        
-//        ResponseBuilder rb = Response.status(cr.getStatusInfo());
-//        if (cr.hasEntity()) rb.entity(cr.getEntity(Dataset.class)); // cr.getEntityInputStream()
-//        return rb.build();
+            accept(getMediaTypes().getReadable(Model.class).toArray(new javax.ws.rs.core.MediaType[0])).
+            delete(Response.class);
     }
     
     public HttpHeaders getHttpHeaders()

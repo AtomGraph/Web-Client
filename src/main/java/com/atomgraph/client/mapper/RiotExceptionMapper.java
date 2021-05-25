@@ -17,7 +17,6 @@ package com.atomgraph.client.mapper;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RiotException;
 
@@ -31,9 +30,9 @@ public class RiotExceptionMapper extends ExceptionMapperBase implements Exceptio
     @Override
     public Response toResponse(RiotException ex)
     {
-        return getResponseBuilder(DatasetFactory.create(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR,
+        return getResponseBuilder(toResource(ex, Response.Status.INTERNAL_SERVER_ERROR,
                         ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#InternalServerError")).
-                    getModel())).
+                    getModel()).
                 status(Response.Status.INTERNAL_SERVER_ERROR).
                 build();
     }

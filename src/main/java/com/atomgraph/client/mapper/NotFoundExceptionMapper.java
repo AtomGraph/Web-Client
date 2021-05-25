@@ -21,7 +21,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import org.apache.jena.query.DatasetFactory;
 
 /**
  * Maps one of Jena's remote loading 404 Not Found exceptions.
@@ -35,9 +34,9 @@ public class NotFoundExceptionMapper extends ExceptionMapperBase implements Exce
     @Override
     public Response toResponse(NotFoundException ex)
     {
-        return getResponseBuilder(DatasetFactory.create(DatasetFactory.create(toResource(ex, Response.Status.NOT_FOUND,
+        return getResponseBuilder(toResource(ex, Response.Status.NOT_FOUND,
                         ResourceFactory.createResource("http://www.w3.org/2011/http-statusCodes#NotFound")).
-                    getModel()))).
+                    getModel()).
                 status(Response.Status.NOT_FOUND).
                 build();
     }

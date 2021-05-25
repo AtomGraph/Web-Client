@@ -40,6 +40,7 @@ import org.apache.jena.query.Dataset;
 @Provider
 @Singleton
 @Produces({MediaType.TEXT_HTML + ";charset=UTF-8", MediaType.APPLICATION_XHTML_XML + ";charset=UTF-8"})
+@Deprecated
 public class DatasetXSLTWriter extends ModelXSLTWriterBase implements MessageBodyWriter<Dataset>
 {
     
