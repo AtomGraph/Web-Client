@@ -119,8 +119,8 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         {
             try
             {
-                if (log.isDebugEnabled()) log.debug("hasCachedModel({}): {}", uri, hasCachedModel(uri.toString()));
-                if (log.isDebugEnabled()) log.debug("isMapped({}): {}", uri, isMapped(uri.toString()));
+                if (log.isTraceEnabled()) log.trace("hasCachedModel({}): {}", uri, hasCachedModel(uri.toString()));
+                if (log.isTraceEnabled()) log.trace("isMapped({}): {}", uri, isMapped(uri.toString()));
                 return getSource(loadModel(uri.toString()), uri.toString());
             }
             catch (IOException ex)
@@ -202,11 +202,11 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     @Override
     public Source getSource(Model model, String systemId) throws IOException
     {
-        if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
+        if (log.isTraceEnabled()) log.trace("Number of Model stmts read: {}", model.size());
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
             model.write(stream);
-            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+            if (log.isTraceEnabled()) log.trace("RDF/XML bytes written: {}", stream.toByteArray().length);
             return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
         }
     }

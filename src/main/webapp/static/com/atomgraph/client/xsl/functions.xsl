@@ -240,19 +240,21 @@ extension-element-prefixes="ixsl"
         <xsl:param name="absolute-path" as="xs:anyURI?"/>
         <xsl:param name="query-params" as="map(xs:string, xs:string*)"/>
         
-        <xsl:sequence select="xs:anyURI(if (map:size($query-params) ne 0) then
-    let $param-strings :=
-      for $param in map:keys($query-params)[. ne '']
-      return $query-params?($param) ! string-join((
-        encode-for-uri($param),
-        '=',
-        encode-for-uri(.)
-      ), '')
-    return
-      let $query-string := '?' || string-join($param-strings, '&amp;')
-      return if ($absolute-path) then $absolute-path || $query-string else $query-string
-  else
-    $absolute-path)"/>
+        <xsl:sequence select="xs:anyURI(let $query-string :=
+            if (map:size($query-params) ne 0) then
+                '?' || string-join(
+                   map:for-each(
+                      $query-params,
+                      function ($key, $values) {
+                         for $value in $values return 
+                            encode-for-uri($key) || '=' || encode-for-uri($value)
+                      }
+                   ),
+                   codepoints-to-string(38)
+                   )
+            else
+               ''
+        return if ($absolute-path) then $absolute-path || $query-string else $query-string)"/>
     </xsl:function>
     
     <xsl:function name="ac:visit-elements" as="element()*">

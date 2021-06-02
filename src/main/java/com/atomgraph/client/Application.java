@@ -188,7 +188,6 @@ public class Application extends ResourceConfig
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
         register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
-        register(new DatasetXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
         
         register(new AbstractBinder()
         {
