@@ -126,7 +126,7 @@ extension-element-prefixes="ixsl"
     </xsl:function>
     
     <xsl:function name="ac:document-uri" as="xs:anyURI">
-        <xsl:param name="uri" as="xs:anyURI"/>
+        <xsl:param name="uri" as="item()"/>
         <xsl:choose>
             <!-- strip trailing fragment identifier (#) -->
             <xsl:when test="contains($uri, '#')">
