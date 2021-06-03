@@ -111,8 +111,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="xhtml:Head">
         <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+            <xsl:apply-templates select="." mode="xhtml:Meta"/>
+    
             <xsl:apply-templates select="." mode="xhtml:Title"/>
             
             <xsl:apply-templates select="." mode="xhtml:Style"/>
@@ -273,7 +273,13 @@ exclude-result-prefixes="#all">
             </p>
         </div>
     </xsl:template>
-
+    
+    <!-- META -->
+    
+    <xsl:template match="rdf:RDF" mode="xhtml:Meta">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </xsl:template>
+    
     <!-- TITLE -->
     
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')]" mode="xhtml:Title" priority="2">
@@ -292,7 +298,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*" mode="xhtml:Title"/>
     
-    <!-- STYLE MODE -->
+    <!-- STYLE  -->
     
     <xsl:template match="rdf:RDF" mode="xhtml:Style">
         <link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -300,7 +306,7 @@ exclude-result-prefixes="#all">
         <link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
     
-    <!-- SCRIPT MODE -->
+    <!-- SCRIPT  -->
 
     <xsl:template match="rdf:RDF" mode="xhtml:Script">
         <script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}" defer="defer"></script>
@@ -313,9 +319,9 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
-    <!-- MAIN MODE -->
+    <!-- MAIN  -->
 
-    <!-- always show errors in block mode -->
+    <!-- always show errors in block  -->
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Main" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span12'" as="xs:string?"/>
@@ -441,7 +447,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ModeList"/>
 
-    <!-- BREADCRUMB MODE -->
+    <!-- BREADCRUMB  -->
 
     <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:BreadCrumbList" priority="1">
         <ul class="breadcrumb">
@@ -479,7 +485,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
         
-    <!-- HEADER MODE -->
+    <!-- HEADER  -->
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:Header" priority="1">
         <xsl:param name="id" as="xs:string?"/>
@@ -526,7 +532,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*" mode="bs2:MediaTypeList"/>
     
-    <!-- RIGHT NAV MODE -->
+    <!-- RIGHT NAV  -->
     
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:Right" priority="1"/>
     
@@ -548,7 +554,7 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
 
-    <!-- GRAPH MODE -->
+    <!-- GRAPH  -->
     
     <xsl:template match="rdf:RDF" mode="bs2:Graph">
         <xsl:apply-templates select="." mode="ac:SVG">
@@ -558,7 +564,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
     
-    <!-- BLOCK MODE -->
+    <!-- BLOCK  -->
     
     <xsl:template match="rdf:RDF" mode="bs2:Block">
         <xsl:apply-templates mode="#current">
@@ -566,7 +572,7 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
 
-    <!-- FORM MODE -->
+    <!-- FORM  -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Form">
         <xsl:param name="method" select="'post'" as="xs:string"/>
@@ -659,7 +665,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <!-- CONSTRAINT VIOLATION MODE -->
+    <!-- CONSTRAINT VIOLATION  -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Violation"/>
 
