@@ -130,7 +130,7 @@ exclude-result-prefixes="#all">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                        <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                     </xsl:value-of>
                     <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
                 </button>
@@ -140,7 +140,7 @@ exclude-result-prefixes="#all">
         <div class="pull-right">
             <a class="btn btn-primary" href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)), 'mode': '&ac;EditMode' })}">
                 <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                 </xsl:value-of>
                 <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
             </a>

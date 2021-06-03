@@ -154,7 +154,7 @@ exclude-result-prefixes="#all">
                 <tr>
                     <xsl:if test="$anchor-column">
                         <th>
-                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document('&rdfs;'))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                            <xsl:apply-templates select="key('resources', '&rdfs;Resource', document(ac:document-uri('&rdfs;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                             <xsl:value-of use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Resource</xsl:value-of>
                         </th>
                     </xsl:if>

@@ -378,7 +378,7 @@ exclude-result-prefixes="#all">
             <form action="{@rdf:about}?_method=DELETE" method="post">
                 <button class="btn btn-delete" type="submit">
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;Delete', document('&ac;'))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                     </xsl:value-of>
                 </button>
             </form>
@@ -388,7 +388,7 @@ exclude-result-prefixes="#all">
             <div class="pull-right">
                 <a class="btn" href="{ac:build-uri(xs:anyURI(@rdf:about), map{ 'mode': '&ac;EditMode' })}">
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;EditMode', document('&ac;'))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                     </xsl:value-of>
                 </a>
             </div>
@@ -406,12 +406,12 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="1"/>
 
     <xsl:template match="rdf:RDF" mode="bs2:ModeList">
-        <xsl:param name="modes" select="key('resources-by-type', ('&ac;Mode'), document('&ac;'))" as="element()*"/>
+        <xsl:param name="modes" select="key('resources-by-type', ('&ac;Mode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
         <div class="btn-group pull-right">
-            <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document('&ac;')))}">
+            <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
                 <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;Mode', document('&ac;'))" mode="ac:label"/>
+                    <xsl:apply-templates select="key('resources', '&ac;Mode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                 </xsl:value-of>
                 <xsl:text> </xsl:text>
                 <span class="caret"></span>
@@ -640,7 +640,7 @@ exclude-result-prefixes="#all">
         <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
             <legend>
                 <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document('&ac;'))" mode="ac:label"/>
+                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                 </xsl:value-of>
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="ac:label(.)"/>
