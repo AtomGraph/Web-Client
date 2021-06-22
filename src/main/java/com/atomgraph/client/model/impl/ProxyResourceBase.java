@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.vocabulary.LDT;
+import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.ModelUtils;
@@ -45,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -194,6 +196,11 @@ public class ProxyResourceBase implements Resource
             Model description = cr.readEntity(Model.class);
             
             return getResponse(description);
+        }
+        catch (ProcessingException ex)
+        {
+            if (log.isErrorEnabled()) log.debug("Could not dereference URI: {}", getWebTarget().getUri());
+            throw new BadGatewayException(ex);
         }
     }
 
