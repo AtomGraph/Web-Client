@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.io.QueryProvider;
+import com.atomgraph.core.mapper.BadGatewayExceptionMapper;
 import com.atomgraph.core.riot.RDFLanguages;
 import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
 import java.util.HashMap;
@@ -187,6 +188,7 @@ public class Application extends ResourceConfig
         register(NotFoundExceptionMapper.class);
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
+        register(BadGatewayExceptionMapper.class);
         register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
         
         register(new AbstractBinder()
