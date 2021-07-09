@@ -133,7 +133,7 @@ extension-element-prefixes="ixsl"
                 <xsl:sequence select="xs:anyURI(substring-before($uri, '#'))"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:sequence select="$uri"/>
+                <xsl:sequence select="xs:anyURI($uri)"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>

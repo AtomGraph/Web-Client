@@ -246,7 +246,7 @@ public class ProxyResourceBase implements Resource
             }
             catch (IllegalArgumentException ex)
             {
-                if (log.isWarnEnabled()) log.warn("Could parse Link URI", ex);
+                if (log.isWarnEnabled()) log.warn("Could not parse Link URI", ex);
             }
         }
     }
