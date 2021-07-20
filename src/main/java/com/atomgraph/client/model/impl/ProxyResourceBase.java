@@ -32,7 +32,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.DatasetProvider;
@@ -72,8 +71,8 @@ public class ProxyResourceBase implements Resource
     private final MediaTypes mediaTypes;
     private final MediaType accept;
     private final MediaType[] readableMediaTypes;
+    private final Client client;
     private final WebTarget webTarget;
-    private final LinkedDataClient linkedDataClient;
     private final HttpServletRequest httpServletRequest;
     
     /**
@@ -99,6 +98,7 @@ public class ProxyResourceBase implements Resource
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
         this.accept = accept;
+        this.client = client;
         List<javax.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
         readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
         this.readableMediaTypes = readableMediaTypesList.toArray(new MediaType[readableMediaTypesList.size()]);
@@ -118,12 +118,10 @@ public class ProxyResourceBase implements Resource
         
             webTarget = client.target(uri);
             //webTarget.register(new RedirectFilter()); // TO-DO
-            linkedDataClient = LinkedDataClient.create(webTarget, mediaTypes);
         }
         else
         {
             webTarget = null;
-            linkedDataClient = null;
         }
         this.httpServletRequest = httpServletRequest;
     }
@@ -132,11 +130,6 @@ public class ProxyResourceBase implements Resource
     public URI getURI()
     {
         return getWebTarget().getUri();
-    }
-    
-    public Response getClientResponse()
-    {
-        return getWebTarget().request(getReadableMediaTypes()).get();
     }
     
     public MediaType[] getReadableMediaTypes()
@@ -161,9 +154,14 @@ public class ProxyResourceBase implements Resource
     @Override
     public Response get()
     {
-        if (getWebTarget() == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+        return get(getWebTarget());
+    }
+    
+    public Response get(WebTarget target)
+    {
+        if (target == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
         
-        try (Response cr = getClientResponse())
+        try (Response cr = target.request(getReadableMediaTypes()).get())
         {
             if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
             {
@@ -184,12 +182,18 @@ public class ProxyResourceBase implements Resource
                 // throw new ClientErrorException(cr); // this gives "java.lang.IllegalStateException: Entity input stream has already been closed."
                 throw new ClientErrorException(cr.getStatus());
             }
+            
+            // special case for http <-> https 301/303 redirection
+            if ((cr.getStatusInfo().toEnum().equals(Status.SEE_OTHER) || cr.getStatusInfo().toEnum().equals(Status.MOVED_PERMANENTLY)) &&
+                ((target.getUri().getScheme().equals("http")  && cr.getLocation().getScheme().equals("https")) ||
+                (target.getUri().getScheme().equals("https") && cr.getLocation().getScheme().equals("http"))) )
+                    return get(getClient().target(cr.getLocation()));
 
-//            if (!cr.hasEntity()) throw new IllegalStateException("No response entity received");
+            if (!cr.hasEntity()) throw new ProcessingException("Could not read RDF from '" + webTarget.getUri() + "'");
 
-            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, getWebTarget().getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
+            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
 
-            if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", getWebTarget().getUri());
+            if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", webTarget.getUri());
 
             if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinkAttributes(cr.getHeaders().get(HttpHeaders.LINK));
 
@@ -199,7 +203,7 @@ public class ProxyResourceBase implements Resource
         }
         catch (ProcessingException ex)
         {
-            if (log.isErrorEnabled()) log.debug("Could not dereference URI: {}", getWebTarget().getUri());
+            if (log.isErrorEnabled()) log.debug("Could not dereference URI: {}", webTarget.getUri());
             throw new BadGatewayException(ex);
         }
     }
@@ -319,6 +323,11 @@ public class ProxyResourceBase implements Resource
         return accept;
     }
     
+    public Client getClient()
+    {
+        return client;
+    }
+    
     public final WebTarget getWebTarget()
     {
         return webTarget;
@@ -332,11 +341,6 @@ public class ProxyResourceBase implements Resource
     public MediaTypes getMediaTypes()
     {
         return mediaTypes;
-    }
-    
-    public LinkedDataClient getLinkedDataClient()
-    {
-        return linkedDataClient;
     }
     
     public HttpServletRequest getHttpServletRequest()

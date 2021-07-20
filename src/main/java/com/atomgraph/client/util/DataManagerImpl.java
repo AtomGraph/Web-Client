@@ -71,8 +71,6 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         Map<String, String> q1 = new HashMap<>();
         q1.put("q", "1.0");
-        acceptableXMLMediaTypeList.add(new MediaType(com.atomgraph.client.MediaType.TEXT_XSL_TYPE.getType(),
-                com.atomgraph.client.MediaType.TEXT_XSL_TYPE.getSubtype(), q1));
         acceptableXMLMediaTypeList.add(new MediaType(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE.getType(),
                 com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE.getSubtype(), q1));
         Map<String, String> q09 = new HashMap<>();

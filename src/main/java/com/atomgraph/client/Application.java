@@ -30,12 +30,12 @@ import com.atomgraph.client.mapper.ClientErrorExceptionMapper;
 import com.atomgraph.client.mapper.NotFoundExceptionMapper;
 import com.atomgraph.client.mapper.RiotExceptionMapper;
 import com.atomgraph.client.model.impl.ProxyResourceBase;
-import com.atomgraph.client.writer.DatasetXSLTWriter;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestProvider;
 import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.DataManagerImpl;
+import com.atomgraph.client.util.XsltResolver;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.client.writer.function.ConstructDocument;
@@ -158,6 +158,7 @@ public class Application extends ResourceConfig
         try
         {
             XsltCompiler xsltComp = xsltProc.newXsltCompiler();
+            xsltComp.setURIResolver(new XsltResolver(LocationMapper.get(), new HashMap<>(), client, mediaTypes, false, false, true));
             xsltExec = xsltComp.compile(stylesheet);
         }
         catch (SaxonApiException ex)

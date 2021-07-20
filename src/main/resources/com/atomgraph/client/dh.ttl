@@ -32,12 +32,6 @@
     rdfs:comment "A string that will be used to build URI from template such as /{slug}" ;
     rdfs:isDefinedBy : .
 
-:select a owl:ObjectProperty ;
-    rdfs:domain :Container ;
-    rdfs:range sp:Select ;
-    rdfs:label "Select" ;
-    rdfs:isDefinedBy : .
-
 # CLASSES
 
 :Document a rdfs:Class ;
@@ -80,12 +74,10 @@
 :ContainerConstructor a sp:Construct, sp:Query ;
   sp:text """
       PREFIX dh:      <https://www.w3.org/ns/ldt/document-hierarchy/domain#>
-      PREFIX sp:      <http://spinrdf.org/sp#>
       PREFIX sioc:    <http://rdfs.org/sioc/ns#>
 
       CONSTRUCT {
-        ?this sioc:has_parent [ a dh:Container ] ;
-            dh:select [ a sp:Select ]
+        ?this sioc:has_parent [ a dh:Container ] .
       }
       WHERE {}""" ;
     rdfs:label "Container constructor" ;

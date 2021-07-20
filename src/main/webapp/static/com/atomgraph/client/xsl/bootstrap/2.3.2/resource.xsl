@@ -132,7 +132,7 @@ exclude-result-prefixes="#all">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                     </xsl:value-of>
-                    <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                    <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text>
                 </button>
             </form>
         </div>
@@ -142,7 +142,7 @@ exclude-result-prefixes="#all">
                 <xsl:value-of>
                     <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                 </xsl:value-of>
-                <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text> <!-- TO-DO: cache ontologies in localStorage -->
+                <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text>
             </a>
         </div>
     </xsl:template>
