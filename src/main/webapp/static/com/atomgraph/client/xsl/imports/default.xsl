@@ -175,6 +175,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="target" as="xs:string?"/>
 
         <a href="{$href}">
             <xsl:if test="$id">
@@ -185,6 +186,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$target">
+                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
             </xsl:if>
             
             <xsl:apply-templates select="." mode="ac:label"/>
@@ -240,7 +244,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
-        
+        <xsl:param name="target" as="xs:string?"/>
+
         <a href="{$href}">
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
@@ -250,6 +255,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$target">
+                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
             </xsl:if>
             
             <xsl:value-of>
@@ -264,7 +272,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
-        
+        <xsl:param name="target" as="xs:string?"/>
+
         <a href="{$href}">
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
@@ -275,7 +284,10 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
-
+            <xsl:if test="$target">
+                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
+            </xsl:if>
+            
             <xsl:value-of>
                 <xsl:apply-templates select="." mode="ac:object-label"/>
             </xsl:value-of>
