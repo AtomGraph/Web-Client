@@ -32,7 +32,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.model.Resource;
@@ -195,11 +194,12 @@ public class ProxyResourceBase implements Resource
 
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", webTarget.getUri());
 
-            if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinkAttributes(cr.getHeaders().get(HttpHeaders.LINK));
-
             Model description = cr.readEntity(Model.class);
+            Response response = getResponse(description);
             
-            return getResponse(description);
+            if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinks(cr.getHeaders().get(HttpHeaders.LINK), response);
+
+            return response;
         }
         catch (ProcessingException ex)
         {
@@ -236,17 +236,16 @@ public class ProxyResourceBase implements Resource
      * The attributes are used by the {@link com.atomgraph.client.writer.DatasetXSLTWriter}.
      * 
      * @param linkValues header values
+     * @param response proxy response
      */
-    protected void setLinkAttributes(List<Object> linkValues)
+    protected void setLinks(List<Object> linkValues, Response response)
     {
         for (Object linkValue : linkValues)
         {
             try
             {
                 Link link = Link.valueOf(linkValue.toString());
-                if (link.getRel().equals(LDT.ontology.getURI())) getHttpServletRequest().setAttribute(LDT.ontology.getURI(), link.getUri());
-                if (link.getRel().equals(LDT.base.getURI())) getHttpServletRequest().setAttribute(LDT.base.getURI(), link.getUri());
-                if (link.getRel().equals(LDT.template.getURI())) getHttpServletRequest().setAttribute(LDT.template.getURI(), link.getUri());
+                response.getHeaders().add(HttpHeaders.LINK, link.getUri());
             }
             catch (IllegalArgumentException ex)
             {
