@@ -49,7 +49,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
@@ -240,18 +239,9 @@ public class ProxyResourceBase implements Resource
      */
     protected void setLinks(List<Object> linkValues, Response response)
     {
-        for (Object linkValue : linkValues)
-        {
-            try
-            {
-                Link link = Link.valueOf(linkValue.toString());
-                response.getHeaders().add(HttpHeaders.LINK, link.getUri());
-            }
-            catch (IllegalArgumentException ex)
-            {
-                if (log.isWarnEnabled()) log.warn("Could not parse Link URI", ex);
-            }
-        }
+        linkValues.forEach(linkValue -> {
+            response.getHeaders().add(HttpHeaders.LINK, linkValue);
+        });
     }
     
     /**

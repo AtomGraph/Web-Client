@@ -20,6 +20,7 @@ import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
+import com.atomgraph.core.util.Link;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,12 +38,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
@@ -365,13 +366,24 @@ public abstract class ModelXSLTWriterBase
         
         List<URI> baseLinks = headerMap.get(HttpHeaders.LINK).
             stream().
-            map(header -> Link.valueOf(header.toString())).
-            filter(link -> link.getRel().equals(property.getURI())).
-            map(link -> link.getUri()).
+            map((Object header) ->
+            {
+                try
+                {
+                    return Link.valueOf(header.toString());
+                }
+                catch (URISyntaxException ex)
+                {
+                    if (log.isWarnEnabled()) log.warn("Could not parse Link URI", ex);
+                    return null;
+                }
+            }).
+            filter(link -> link != null && link.getRel().equals(property.getURI())).
+            map(link -> link.getHref()).
             collect(Collectors.toList());
-        
+
         if (!baseLinks.isEmpty()) return baseLinks.get(0);
-        
+
         return null;
     }
     
