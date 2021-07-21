@@ -361,6 +361,8 @@ public abstract class ModelXSLTWriterBase
     
     public URI getLinkURI(MultivaluedMap<String, Object> headerMap, ObjectProperty property)
     {
+        if (headerMap.get(HttpHeaders.LINK) == null) return null;
+        
         List<URI> baseLinks = headerMap.get(HttpHeaders.LINK).
             stream().
             map(header -> Link.valueOf(header.toString())).
