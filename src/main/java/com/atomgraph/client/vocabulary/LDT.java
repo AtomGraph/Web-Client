@@ -54,22 +54,12 @@ public final class LDT
 
     public static final OntClass Template = m_model.createClass( NS + "Template" );
 
-    public static final OntClass Parameter = m_model.createClass( NS + "Parameter" );
-
-    public static final OntClass TemplateCall = m_model.createClass( NS + "TemplateCall" );
-
-    public static final OntClass Argument = m_model.createClass( NS + "Argument" );
-
     public static final ObjectProperty base = m_model.createObjectProperty( NS + "base" );
 
     public static final ObjectProperty ontology = m_model.createObjectProperty( NS + "ontology" );
 
     public static final ObjectProperty service = m_model.createObjectProperty( NS + "service" );
-
-    public static final ObjectProperty arg = m_model.createObjectProperty( NS + "arg" );
     
-    public static final DatatypeProperty paramName = m_model.createDatatypeProperty( NS + "paramName" );    
-
     // "extends" is a reserved keyword in Java, obviously
     public static final ObjectProperty extends_ = m_model.createObjectProperty( NS + "extends" );
 

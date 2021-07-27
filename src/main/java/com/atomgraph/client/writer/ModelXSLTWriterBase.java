@@ -15,9 +15,7 @@
  */
 package com.atomgraph.client.writer;
 
-import com.atomgraph.client.exception.OntClassNotFoundException;
 import com.atomgraph.client.util.DataManager;
-import com.atomgraph.client.util.OntologyProvider;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
@@ -38,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
@@ -64,9 +61,6 @@ import net.sf.saxon.value.DateTimeValue;
 import org.apache.jena.iri.IRI;
 import org.apache.jena.iri.IRIFactory;
 import org.apache.jena.ontology.ObjectProperty;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntDocumentManager;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFWriter;
@@ -178,54 +172,10 @@ public abstract class ModelXSLTWriterBase
             if (!modes.isEmpty()) params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
 
             URI ontologyURI = getLinkURI(headerMap, LDT.ontology);
-            if (ontologyURI != null)
-            {
-                params.put(new QName("ldt", LDT.ontology.getNameSpace(), LDT.ontology.getLocalName()), new XdmAtomicValue(ontologyURI));
+            if (ontologyURI != null) params.put(new QName("ldt", LDT.ontology.getNameSpace(), LDT.ontology.getLocalName()), new XdmAtomicValue(ontologyURI));
 
-                OntModel sitemap = getOntModel(ontologyURI.toString());
-                
-                URI baseUri = getLinkURI(headerMap, LDT.base);
-                if (baseUri != null)
-                {
-                    params.put(new QName("ldt", LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(baseUri));
-
-                    String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
-                    if (forClassURI != null)
-                    {
-                        OntClass forClass = sitemap.getOntClass(forClassURI);
-
-                        if (forClass == null) throw new OntClassNotFoundException(forClassURI); // do we need this check here?
-                        params.put(new QName("ac", AC.forClass.getNameSpace(), AC.forClass.getLocalName()), new XdmAtomicValue(URI.create(forClass.getURI())));
-                    }
-                }
-
-//                if (getTemplateURI() != null)
-//                {
-//                    params.put(new QName("ldt", LDT.template.getNameSpace(), LDT.template.getLocalName()), new XdmAtomicValue(getTemplateURI()));
-//                    if (modes.isEmpty()) // attempt to retrieve default mode via matched template Link from the app (server) sitemap ontology
-//                    {
-//                        Resource template = sitemap.getResource(getTemplateURI().toString());
-//
-//                        StmtIterator it = template.listProperties(AC.mode);
-//                        try
-//                        {
-//                            while (it.hasNext())
-//                            {
-//                                Statement modeStmt = it.next();
-//
-//                                if (!modeStmt.getObject().isURIResource())
-//                                    throw new OntologyException("Value is not a URI resource", template, AC.mode);
-//
-//                                modes.add(URI.create(modeStmt.getResource().getURI()));
-//                            }
-//                        }
-//                        finally
-//                        {
-//                            it.close();
-//                        }
-//                    }
-//                }
-            }
+            URI baseURI = getLinkURI(headerMap, LDT.base);
+            if (baseURI != null) params.put(new QName("ldt", LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(baseURI));
 
             Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
             if (locale != null)
@@ -307,21 +257,6 @@ public abstract class ModelXSLTWriterBase
         return NAMESPACES;
     }
     
-    public OntDocumentManager getOntDocumentManager()
-    {
-        return OntDocumentManager.getInstance();
-    }
-    
-    public OntModel getOntModel(String ontologyURI)
-    {
-        return getOntModel(ontologyURI, getOntModelSpec());
-    }
-    
-    public OntModel getOntModel(String ontologyURI, OntModelSpec ontModelSpec)
-    {
-        return new OntologyProvider().getOntModel(getOntDocumentManager(), ontologyURI, ontModelSpec);
-    }
-    
     public List<URI> getModes(Set<String> namespaces)
     {
         return getModes(getUriInfo(), namespaces);
@@ -386,12 +321,7 @@ public abstract class ModelXSLTWriterBase
 
         return null;
     }
-    
-//    public URI getTemplateURI()
-//    {
-//        return (URI)getHttpServletRequest().getAttribute(LDT.template.getURI()); // set in ProxyResourceBase
-//    }
-    
+
     public UriInfo getUriInfo()
     {
         return uriInfo;
