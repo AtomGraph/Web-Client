@@ -19,22 +19,7 @@
     vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/core/domain#" ;
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
-# PROPERTIES
-
-:viewOf a owl:ObjectProperty ;
-    rdfs:domain :View ;
-    rdfs:range foaf:Document ;
-    rdfs:label "View of resource" ;
-    rdfs:comment "Links resource view to its resource" ;
-    rdfs:isDefinedBy : .
-
 # CLASSES
-
-:View a rdfs:Class ;
-    rdfs:subClassOf foaf:Document ;
-    rdfs:label "View resource" ;
-    rdfs:comment "A parameterized view of a resource" ;
-    rdfs:isDefinedBy : .
 
 :SPARQLEndpoint a rdfs:Class ;
     foaf:subClassOf foaf:Document ;

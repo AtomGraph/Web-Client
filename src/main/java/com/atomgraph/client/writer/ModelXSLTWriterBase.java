@@ -177,6 +177,9 @@ public abstract class ModelXSLTWriterBase
             URI baseURI = getLinkURI(headerMap, LDT.base);
             if (baseURI != null) params.put(new QName("ldt", LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(baseURI));
 
+            String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
+            if (forClassURI != null) params.put(new QName("ac", AC.forClass.getNameSpace(), AC.forClass.getLocalName()), new XdmAtomicValue(URI.create(forClassURI)));
+            
             Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
             if (locale != null)
             {
