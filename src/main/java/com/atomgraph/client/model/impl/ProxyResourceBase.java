@@ -196,7 +196,7 @@ public class ProxyResourceBase implements Resource
             Model description = cr.readEntity(Model.class);
             Response response = getResponse(description);
             
-            if (cr.getHeaders().containsKey(HttpHeaders.LINK)) setLinks(cr.getHeaders().get(HttpHeaders.LINK), response);
+            //setLinks(cr.getHeaders().get(HttpHeaders.LINK), response);
 
             return response;
         }
