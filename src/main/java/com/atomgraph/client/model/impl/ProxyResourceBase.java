@@ -231,7 +231,7 @@ public class ProxyResourceBase implements Resource
     }
     
     /**
-     * Parses <code>Link</code> header values. If they belong to the LDT namespace, they are set as request attributes.
+     * Forwards <code>Link</code> header values.
      * The attributes are used by the {@link com.atomgraph.client.writer.DatasetXSLTWriter}.
      * 
      * @param linkValues header values
