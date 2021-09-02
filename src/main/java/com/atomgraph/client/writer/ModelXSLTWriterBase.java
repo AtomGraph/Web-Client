@@ -159,7 +159,6 @@ public abstract class ModelXSLTWriterBase
         
         params.put(new QName("ac", AC.httpHeaders.getNameSpace(), AC.httpHeaders.getLocalName()), new XdmAtomicValue(headerMap.toString()));
         params.put(new QName("ac", AC.method.getNameSpace(), AC.method.getLocalName()), new XdmAtomicValue(getRequest().getMethod()));
-        params.put(new QName("ac", AC.requestUri.getNameSpace(), AC.requestUri.getLocalName()), new XdmAtomicValue(getRequestURI()));
         params.put(new QName("ac", AC.contextUri.getNameSpace(), AC.contextUri.getLocalName()), new XdmAtomicValue(getContextURI()));
      
         try
@@ -344,7 +343,7 @@ public abstract class ModelXSLTWriterBase
     {
         return httpServletRequest;
     }
-
+    
     public OntModelSpec getOntModelSpec()
     {
         return ontModelSpec;

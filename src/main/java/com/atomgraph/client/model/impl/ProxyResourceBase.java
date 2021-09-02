@@ -194,11 +194,7 @@ public class ProxyResourceBase implements Resource
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", webTarget.getUri());
 
             Model description = cr.readEntity(Model.class);
-            Response response = getResponse(description);
-            
-            //setLinks(cr.getHeaders().get(HttpHeaders.LINK), response);
-
-            return response;
+            return getResponse(description);
         }
         catch (ProcessingException ex)
         {
@@ -228,20 +224,6 @@ public class ProxyResourceBase implements Resource
                 variants).
             getResponseBuilder().
             build();
-    }
-    
-    /**
-     * Forwards <code>Link</code> header values.
-     * The attributes are used by the {@link com.atomgraph.client.writer.DatasetXSLTWriter}.
-     * 
-     * @param linkValues header values
-     * @param response proxy response
-     */
-    protected void setLinks(List<Object> linkValues, Response response)
-    {
-        linkValues.forEach(linkValue -> {
-            response.getHeaders().add(HttpHeaders.LINK, linkValue);
-        });
     }
     
     /**
