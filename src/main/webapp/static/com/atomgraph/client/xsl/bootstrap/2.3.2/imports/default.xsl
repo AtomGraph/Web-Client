@@ -134,7 +134,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="text()" mode="bs2:FormControlTypeLabel">
-        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="type" as="xs:string?"/>
         <xsl:param name="type-label" as="xs:boolean"/>
         
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -182,21 +182,6 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
             <xsl:with-param name="type-label" select="$type-label"/>
         </xsl:apply-templates>
-    </xsl:template>
-
-    <xsl:template match="text()[string-length(.) &gt; 50]" mode="bs2:FormControlTypeLabel">
-        <xsl:param name="type-label" as="xs:boolean"/>
-        
-        <xsl:if test="$type-label">
-            <xsl:choose>
-                <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <span class="help-inline">Literal</span>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:if>
     </xsl:template>
 
     <!-- blank nodes that only have rdf:type xsd:string and no other properties become literal inputs -->

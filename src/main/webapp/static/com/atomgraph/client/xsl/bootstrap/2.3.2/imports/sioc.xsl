@@ -57,16 +57,9 @@ exclude-result-prefixes="#all">
             <xsl:sequence select="$value"/>
         </textarea>
         
-        <xsl:if test="$type-label">
-            <xsl:choose>
-                <xsl:when test="../@rdf:datatype">
-                    <xsl:apply-templates select="../@rdf:datatype"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <span class="help-inline">Literal</span>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:if>
+        <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
+            <xsl:with-param name="type-label" select="$type-label"/>
+        </xsl:apply-templates>
     </xsl:template>
 
 </xsl:stylesheet>
