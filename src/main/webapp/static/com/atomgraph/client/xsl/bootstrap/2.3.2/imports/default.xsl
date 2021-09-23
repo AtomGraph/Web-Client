@@ -135,7 +135,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="text()" mode="bs2:FormControlTypeLabel">
         <xsl:param name="type" as="xs:string?"/>
-        <xsl:param name="type-label" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         
         <xsl:if test="not($type = 'hidden') and $type-label">
             <xsl:choose>
@@ -209,7 +209,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[@rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="bs2:FormControlTypeLabel" priority="2">
         <xsl:param name="type" as="xs:string?"/>
-        <xsl:param name="type-label" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Literal</span>
@@ -239,7 +239,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControlTypeLabel">
         <xsl:param name="type" as="xs:string?"/>
-        <xsl:param name="type-label" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Resource</span>
@@ -269,7 +269,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@xml:*[local-name() = 'lang']" mode="bs2:FormControlTypeLabel">
         <xsl:param name="type" as="xs:string?"/>
-        <xsl:param name="type-label" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Language</span>
@@ -299,7 +299,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="bs2:FormControlTypeLabel">
         <xsl:param name="type" as="xs:string?"/>
-        <xsl:param name="type-label" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Datatype</span>
@@ -350,7 +350,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControlTypeLabel" priority="1">
         <xsl:param name="type" as="xs:string?"/>
-        <xsl:param name="type-label" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
             <span class="help-inline">Resource</span>
