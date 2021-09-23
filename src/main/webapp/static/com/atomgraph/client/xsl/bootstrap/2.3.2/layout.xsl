@@ -373,9 +373,9 @@ exclude-result-prefixes="#all">
     
     <!-- NAVBAR ACTIONS -->
     
-    <xsl:template match="rdf:RDF" mode="bs2:NavBarActions">
+    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:NavBarActions" priority="1">
         <div class="pull-right">
-            <form action="{@rdf:about}?_method=DELETE" method="post">
+            <form action="{ac:document-uri($ac:uri)}?_method=DELETE" method="post">
                 <button class="btn btn-delete" type="submit">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label"/>
@@ -386,7 +386,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
-                <a class="btn" href="{ac:build-uri(xs:anyURI(@rdf:about), map{ 'mode': '&ac;EditMode' })}">
+                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:document-uri($ac:uri)), 'mode': '&ac;EditMode' })}">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                     </xsl:value-of>
@@ -395,7 +395,7 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:NavBarActions"/>
+    <xsl:template match="rdf:RDF" mode="bs2:NavBarActions"/>
     
     <!-- CREATE -->
     
