@@ -208,7 +208,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="*[@rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="bs2:FormControlTypeLabel" priority="2">
-        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="type" as="xs:string?"/>
         <xsl:param name="type-label" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -238,7 +238,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControlTypeLabel">
-        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="type" as="xs:string?"/>
         <xsl:param name="type-label" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -268,7 +268,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="@xml:*[local-name() = 'lang']" mode="bs2:FormControlTypeLabel">
-        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="type" as="xs:string?"/>
         <xsl:param name="type-label" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -298,7 +298,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="bs2:FormControlTypeLabel">
-        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="type" as="xs:string?"/>
         <xsl:param name="type-label" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
@@ -349,7 +349,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="bs2:FormControlTypeLabel" priority="1">
-        <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="type" as="xs:string?"/>
         <xsl:param name="type-label" as="xs:boolean"/>
 
         <xsl:if test="not($type = 'hidden') and $type-label">
