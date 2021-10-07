@@ -34,8 +34,10 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.DatasetProvider;
+import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.ModelUtils;
+import com.atomgraph.core.util.ResultSetUtils;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +52,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Variant;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,18 +192,31 @@ public class ProxyResourceBase implements Resource
 
             if (!cr.hasEntity()) throw new ProcessingException("Could not read RDF from '" + webTarget.getUri() + "'");
 
-            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider/DatasetProvider
+            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider
 
             if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", webTarget.getUri());
 
-            Model description = cr.readEntity(Model.class);
-            return getResponse(description);
+            return getResponse(cr);
         }
         catch (ProcessingException ex)
         {
             if (log.isErrorEnabled()) log.debug("Could not dereference URI: {}", webTarget.getUri());
             throw new BadGatewayException(ex);
         }
+    }
+    
+    public Response getResponse(Response clientResponse)
+    {
+        // check if we got SPARQL results first
+        if (ResultSetProvider.isResultSetType(clientResponse.getMediaType()))
+        {
+            ResultSet results = clientResponse.readEntity(ResultSet.class);
+            return getResponse(results);
+        }
+        
+        // fallback to RDF graph
+        Model description = clientResponse.readEntity(Model.class);
+        return getResponse(description);
     }
 
     /**
@@ -221,6 +237,29 @@ public class ProxyResourceBase implements Resource
                 model,
                 null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
+                variants).
+            getResponseBuilder().
+            build();
+    }
+    
+    /**
+     * Returns response for the given SPARQL results.
+     * 
+     * @param resultSet SPARQL results
+     * @return response object
+     */
+    public Response getResponse(ResultSet resultSet)
+    {
+        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(ResultSet.class),
+                new ArrayList(),
+                new ArrayList()).
+            add().
+            build();
+
+        return new com.atomgraph.core.model.impl.Response(getRequest(),
+                resultSet,
+                null,
+                new EntityTag(Long.toHexString(ResultSetUtils.hashResultSet(resultSet))),
                 variants).
             getResponseBuilder().
             build();
