@@ -211,7 +211,7 @@ public class ProxyResourceBase implements Resource
         // check if we got SPARQL results first
         if (ResultSetProvider.isResultSetType(clientResponse.getMediaType()))
         {
-            ResultSet results = clientResponse.readEntity(ResultSetRewindable.class);
+            ResultSetRewindable results = clientResponse.readEntity(ResultSetRewindable.class);
             return getResponse(results);
         }
         
@@ -249,8 +249,11 @@ public class ProxyResourceBase implements Resource
      * @param resultSet SPARQL results
      * @return response object
      */
-    public Response getResponse(ResultSet resultSet)
+    public Response getResponse(ResultSetRewindable resultSet)
     {
+        long hash = ResultSetUtils.hashResultSet(resultSet);
+        resultSet.reset();
+        
         List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(ResultSet.class),
                 new ArrayList(),
                 new ArrayList()).
@@ -260,7 +263,7 @@ public class ProxyResourceBase implements Resource
         return new com.atomgraph.core.model.impl.Response(getRequest(),
                 resultSet,
                 null,
-                new EntityTag(Long.toHexString(ResultSetUtils.hashResultSet(resultSet))),
+                new EntityTag(Long.toHexString(hash)),
                 variants).
             getResponseBuilder().
             build();
