@@ -53,6 +53,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Variant;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,7 +211,7 @@ public class ProxyResourceBase implements Resource
         // check if we got SPARQL results first
         if (ResultSetProvider.isResultSetType(clientResponse.getMediaType()))
         {
-            ResultSet results = clientResponse.readEntity(ResultSet.class);
+            ResultSet results = clientResponse.readEntity(ResultSetRewindable.class);
             return getResponse(results);
         }
         
