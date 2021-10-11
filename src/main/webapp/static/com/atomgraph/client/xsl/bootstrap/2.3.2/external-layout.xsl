@@ -60,6 +60,7 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/sioc.xsl"/>
     <xsl:import href="imports/sp.xsl"/>
     <xsl:import href="resource.xsl"/>
+    <xsl:import href="document.xsl"/>
     <xsl:import href="container.xsl"/>
     
     <xsl:include href="layout.xsl"/>

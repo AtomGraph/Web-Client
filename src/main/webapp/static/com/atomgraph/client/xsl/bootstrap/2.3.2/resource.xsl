@@ -21,6 +21,8 @@ limitations under the License.
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
+    <!ENTITY spin   "http://spinrdf.org/spin#">
+    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="3.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -30,10 +32,41 @@ xmlns:rdf="&rdf;"
 xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:foaf="&foaf;"
+xmlns:sioc="&sioc;"
 xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
+    <!-- BREADCRUMB  -->
+
+    <xsl:template match="*[@rdf:about]" mode="bs2:BreadCrumbListItem">
+        <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
+
+        <xsl:choose>
+            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
+                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current">
+                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource">
+                <xsl:if test="doc-available((sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)[1])">
+                    <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
+                    <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current">
+                        <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
+                    </xsl:apply-templates>
+                </xsl:if>
+            </xsl:when>
+        </xsl:choose>
+        
+        <li>
+            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+
+            <xsl:if test="not($leaf)">
+                <span class="divider">/</span>
+            </xsl:if>
+        </li>
+    </xsl:template>
+    
     <!-- BLOCK MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
@@ -220,6 +253,14 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="dt[span/@title = preceding-sibling::dt[1]/span/@title]" mode="bs2:PropertyListIdentity" priority="1"/>
 
+    <!-- FORM MODE -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Form">
+        <xsl:apply-templates select="." mode="bs2:FormControl">
+            <xsl:sort select="ac:label(.)"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
     <!-- FORM CONTROL MODE -->
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl" use-when="system-property('xsl:product-name') = 'SAXON'">
@@ -252,6 +293,47 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
             </xsl:apply-templates>
         </fieldset>
+    </xsl:template>
+    
+    <!-- LEGEND -->
+
+    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="bs2:Legend" priority="1">
+        <xsl:param name="forClass" select="$ac:forClass" as="xs:anyURI"/>
+
+        <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
+            <legend>
+                <xsl:value-of>
+                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
+                </xsl:value-of>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="ac:label(.)"/>
+            </legend>
+            <xsl:if test="ac:description(.)">
+                <p class="text-info">
+                    <xsl:apply-templates select="." mode="ac:description"/>
+                </p>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Legend"/>
+
+    <!-- CONSTRAINT VIOLATION  -->
+    
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Violation"/>
+
+    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:Violation" priority="1">
+        <xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
+
+        <div>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+            </xsl:if>
+            
+            <xsl:value-of>
+                <xsl:apply-templates select="." mode="ac:label"/>
+            </xsl:value-of>
+        </div>
     </xsl:template>
     
 </xsl:stylesheet>

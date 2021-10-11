@@ -251,17 +251,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="rdf:RDF" mode="bs2:ActionBarRight"/>
-
-<!--    <xsl:template match="*[@rdf:about]" mode="bs2:NavBarListItem">
-        <xsl:param name="space" as="xs:anyURI*"/>
-        <li>
-            <xsl:if test="@rdf:about = $space">
-                <xsl:attribute name="class">active</xsl:attribute>
-            </xsl:if>
-            
-            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-        </li>
-    </xsl:template>-->
     
     <xsl:template match="rdf:RDF" mode="bs2:Footer">
         <div class="footer text-center">
@@ -447,45 +436,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ModeList"/>
 
-    <!-- BREADCRUMB  -->
-
-    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:BreadCrumbList" priority="1">
-        <ul class="breadcrumb">
-            <xsl:apply-templates select="key('resources', ac:document-uri($ac:uri))" mode="bs2:BreadCrumbListItem"/>
-        </ul>
-    </xsl:template>
-
-    <xsl:template match="*" mode="bs2:BreadCrumbList"/>
-        
-    <xsl:template match="*[@rdf:about]" mode="bs2:BreadCrumbListItem">
-        <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
-
-        <xsl:choose>
-            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
-                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current">
-                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-                </xsl:apply-templates>
-            </xsl:when>
-            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource">
-                <xsl:if test="doc-available((sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)[1])">
-                    <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
-                    <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current">
-                        <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-                    </xsl:apply-templates>
-                </xsl:if>
-            </xsl:when>
-        </xsl:choose>
-        
-        <li>
-            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
-
-            <xsl:if test="not($leaf)">
-                <span class="divider">/</span>
-            </xsl:if>
-        </li>
-    </xsl:template>
-        
-    <!-- HEADER  -->
+    <!-- HEADER -->
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="bs2:Header" priority="1">
         <xsl:param name="id" as="xs:string?"/>
@@ -554,135 +505,6 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
 
-    <!-- GRAPH  -->
-    
-    <xsl:template match="rdf:RDF" mode="bs2:Graph">
-        <xsl:apply-templates select="." mode="ac:SVG">
-            <xsl:with-param name="width" select="'100%'"/>
-            <xsl:with-param name="step-count" select="20"/>
-            <xsl:with-param name="spring-length" select="150" tunnel="yes"/>
-        </xsl:apply-templates>
-    </xsl:template>
-    
-    <!-- BLOCK  -->
-    
-    <xsl:template match="rdf:RDF" mode="bs2:Block">
-        <xsl:apply-templates mode="#current">
-            <xsl:sort select="ac:label(.)"/>
-        </xsl:apply-templates>
-    </xsl:template>
-
-    <!-- FORM  -->
-
-    <xsl:template match="rdf:RDF" mode="bs2:Form">
-        <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="action" select="xs:anyURI('?_method=PUT')" as="xs:anyURI"/>
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
-        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
-        <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
-        <xsl:param name="enctype" as="xs:string?"/>
-
-        <form method="{$method}" action="{$action}">
-            <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$accept-charset">
-                <xsl:attribute name="accept-charset"><xsl:sequence select="$accept-charset"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$enctype">
-                <xsl:attribute name="enctype"><xsl:sequence select="$enctype"/></xsl:attribute>
-            </xsl:if>
-
-            <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>
-            <xsl:call-template name="xhtml:Input">
-                <xsl:with-param name="name" select="'rdf'"/>
-                <xsl:with-param name="type" select="'hidden'"/>
-            </xsl:call-template>
-
-            <xsl:apply-templates select="." mode="bs2:Legend"/>
-
-            <xsl:choose>
-                <xsl:when test="$ac:forClass and not(key('resources-by-type', '&spin;ConstraintViolation'))">
-                    <xsl:apply-templates select="ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base)/rdf:RDF/*" mode="#current"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates mode="#current">
-                        <xsl:sort select="ac:label(.)"/>
-                    </xsl:apply-templates>
-                </xsl:otherwise>
-            </xsl:choose>
-
-            <xsl:apply-templates select="." mode="bs2:FormActions">
-                <xsl:with-param name="button-class" select="$button-class"/>
-            </xsl:apply-templates>
-        </form>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Form">
-        <xsl:apply-templates select="." mode="bs2:FormControl">
-            <xsl:sort select="ac:label(.)"/>
-        </xsl:apply-templates>
-    </xsl:template>
-    
-    <!-- LEGEND -->
-
-    <xsl:template match="rdf:RDF" mode="bs2:Legend" priority="2">
-        <xsl:apply-templates mode="#current"/>
-    </xsl:template>
-
-    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="bs2:Legend" priority="1">
-        <xsl:param name="forClass" select="$ac:forClass" as="xs:anyURI"/>
-
-        <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
-            <legend>
-                <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
-                </xsl:value-of>
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="ac:label(.)"/>
-            </legend>
-            <xsl:if test="ac:description(.)">
-                <p class="text-info">
-                    <xsl:apply-templates select="." mode="ac:description"/>
-                </p>
-            </xsl:if>
-        </xsl:for-each>
-    </xsl:template>
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Legend"/>
-
-    <!-- FORM ACTIONS -->
-    
-    <xsl:template match="rdf:RDF" mode="bs2:FormActions">
-        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
-        
-        <div class="form-actions">
-            <button type="submit" class="{$button-class}">Save</button>
-        </div>
-    </xsl:template>
-
-    <!-- CONSTRAINT VIOLATION  -->
-    
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Violation"/>
-
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:Violation" priority="1">
-        <xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
-
-        <div>
-            <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
-            </xsl:if>
-            
-            <xsl:value-of>
-                <xsl:apply-templates select="." mode="ac:label"/>
-            </xsl:value-of>
-        </div>
-    </xsl:template>
-    
     <!-- remove spaces -->
     <xsl:template match="text()" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
