@@ -53,9 +53,9 @@ exclude-result-prefixes="#all">
     <xsl:template match="node()" mode="ac:label"/>
 
     <!-- attempt use label of the primary topic before parsing label from URL -->
-    <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:*)]" mode="ac:label" priority="3">
+<!--    <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:*)]" mode="ac:label" priority="3">
         <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:*)" mode="#current"/>
-    </xsl:template>
+    </xsl:template>-->
 
     <xsl:template match="*[contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))]" mode="ac:label" priority="2">
         <xsl:sequence select="substring-after(@rdf:about, '#')"/>
