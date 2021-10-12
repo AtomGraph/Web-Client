@@ -16,8 +16,8 @@
 package com.atomgraph.client.writer.function;
 
 import com.atomgraph.client.util.Constructor;
-import static com.atomgraph.client.writer.DatasetXSLTWriter.checkURI;
-import static com.atomgraph.client.writer.DatasetXSLTWriter.getSource;
+import static com.atomgraph.client.writer.ModelXSLTWriter.checkURI;
+import static com.atomgraph.client.writer.ModelXSLTWriter.getSource;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
