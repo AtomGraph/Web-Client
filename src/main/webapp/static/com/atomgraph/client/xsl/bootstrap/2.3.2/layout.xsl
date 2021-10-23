@@ -97,6 +97,10 @@ exclude-result-prefixes="#all">
         <rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
 
+    <xsl:function name="ac:uri" as="xs:anyURI">
+        <xsl:sequence select="ac:uri()"/>
+    </xsl:function>
+    
     <xsl:template match="/">
         <html lang="{$ldt:lang}">
             <xsl:variable name="grouped-rdf" as="document-node()">
@@ -165,9 +169,9 @@ exclude-result-prefixes="#all">
                         <form action="" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <input type="text" name="uri" class="input-xxlarge">
-                                    <xsl:if test="$ac:uri">
+                                    <xsl:if test="ac:uri()">
                                         <xsl:attribute name="value">
-                                            <xsl:sequence select="$ac:uri"/>
+                                            <xsl:sequence select="ac:uri()"/>
                                         </xsl:attribute>
                                     </xsl:if>
                                 </input>
@@ -277,10 +281,10 @@ exclude-result-prefixes="#all">
         </title>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[$ac:uri]" mode="xhtml:Title" priority="1">
+    <xsl:template match="rdf:RDF[ac:uri()]" mode="xhtml:Title" priority="1">
         <title>
             <xsl:value-of>
-                <xsl:apply-templates select="key('resources', ac:document-uri($ac:uri))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', ac:document-uri(ac:uri()))" mode="ac:label"/>
             </xsl:value-of>
         </title>
     </xsl:template>
@@ -358,9 +362,9 @@ exclude-result-prefixes="#all">
     
     <!-- NAVBAR ACTIONS -->
     
-    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:NavBarActions" priority="1">
+    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:NavBarActions" priority="1">
         <div class="pull-right">
-            <form action="{ac:document-uri($ac:uri)}?_method=DELETE" method="post">
+            <form action="{ac:document-uri(ac:uri())}?_method=DELETE" method="post">
                 <button class="btn btn-delete" type="submit">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label"/>
@@ -371,7 +375,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
-                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:document-uri($ac:uri)), 'mode': '&ac;EditMode' })}">
+                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:document-uri(ac:uri())), 'mode': '&ac;EditMode' })}">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                     </xsl:value-of>
@@ -422,7 +426,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri($ac:uri)), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
+            <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
                 <xsl:value-of>
                     <xsl:apply-templates select="." mode="ac:label"/>
                 </xsl:value-of>
@@ -456,15 +460,15 @@ exclude-result-prefixes="#all">
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
         
-    <xsl:template match="rdf:RDF[$ac:uri]" mode="bs2:MediaTypeList" priority="1">
+    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:MediaTypeList" priority="1">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri($ac:uri)), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
                 </li>
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri($ac:uri)), 'accept': 'text/turtle' })}">Turtle</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'accept': 'text/turtle' })}">Turtle</a>
                 </li>
                 <!--
                 <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">

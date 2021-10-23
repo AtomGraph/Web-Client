@@ -214,9 +214,9 @@ exclude-result-prefixes="#all">
         </div>
         
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}&amp;callback=initMap" async="async"/>
-        <xsl:for-each select="key('resources', $ac:uri)">
+        <xsl:for-each select="key('resources', ac:uri())">
             <script type="text/javascript">
-                <![CDATA[                
+                <![CDATA[
                     function initMap()
                     {
                         var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
