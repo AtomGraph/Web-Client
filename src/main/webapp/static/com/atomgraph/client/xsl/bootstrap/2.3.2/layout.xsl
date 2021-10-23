@@ -302,10 +302,6 @@ exclude-result-prefixes="#all">
         <script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}" defer="defer"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}" defer="defer"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}" defer="defer"></script>
-        <xsl:if test="$ac:mode = '&ac;MapMode'">
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}" defer="defer"/>
-            <!--<script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/google-maps.js', $ac:contextUri)}" defer="defer"></script>-->
-        </xsl:if>
     </xsl:template>
 
     <!-- MAIN  -->

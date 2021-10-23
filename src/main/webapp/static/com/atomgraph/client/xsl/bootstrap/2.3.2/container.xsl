@@ -207,19 +207,39 @@ exclude-result-prefixes="#all">
     <!-- MAP MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Map">
-        <div id="map-canvas">
+        <xsl:param name="canvas-id" select="'map-canvas'" as="xs:string"/>
+
+        <div id="{$canvas-id}">
             <xsl:apply-templates mode="#current"/>
         </div>
+        
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}&amp;callback=initMap" async="async"/>
+        <xsl:for-each select="key('resources', $ac:uri)">
+            <script type="text/javascript">
+                <![CDATA[                
+                    function initMap()
+                    {
+                        var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
+                        var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$canvas-id"/><![CDATA['), { center: latLng, zoom: 8 });
+                        var marker = new google.maps.Marker({
+                            position: latLng,
+                            map: map,
+                            title: "]]><xsl:value-of><xsl:apply-templates select="." mode="ac:label"/></xsl:value-of><![CDATA["
+                        });
+                    }
+                ]]>
+            </script>
+        </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID][geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:Map" priority="1">
+<!--    <xsl:template match="*[@rdf:about or @rdf:nodeID][geo:lat castable as xs:double][geo:long castable as xs:double]" mode="bs2:Map" priority="1">
         <xsl:param name="nested" as="xs:boolean?"/>
 
         <script type="text/javascript">
             <![CDATA[
                 function initialize]]><xsl:sequence select="generate-id()"/><![CDATA[()
                 {
-                    var latLng = new google.maps.LatLng(]]><xsl:sequence select="geo:lat[1]"/>, <xsl:sequence select="geo:long[1]"/><![CDATA[);
+                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
                     var marker = new google.maps.Marker({
                         position: latLng,
                         map: map,
@@ -230,7 +250,7 @@ exclude-result-prefixes="#all">
                 google.maps.event.addDomListener(window, 'load', initialize]]><xsl:sequence select="generate-id()"/><![CDATA[);
             ]]>
         </script>
-    </xsl:template>
+    </xsl:template>-->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Map"/>
 

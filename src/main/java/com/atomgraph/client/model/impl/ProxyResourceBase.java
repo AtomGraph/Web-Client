@@ -195,7 +195,7 @@ public class ProxyResourceBase implements Resource
 
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider
 
-            if (log.isDebugEnabled()) log.debug("GETing Dataset from URI: {}", webTarget.getUri());
+            if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
 
             return getResponse(cr);
         }
