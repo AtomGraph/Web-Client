@@ -47,4 +47,16 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="schema:description/text()"/>
     </xsl:template>
     
+    <xsl:template match="schema:image/@rdf:resource">
+        <a href="{.}">
+            <img src="{.}">
+                <xsl:attribute name="alt">
+                    <xsl:value-of>
+                        <xsl:apply-templates select="." mode="ac:object-label"/>
+                    </xsl:value-of>
+                </xsl:attribute>
+            </img>
+        </a>
+    </xsl:template>
+    
 </xsl:stylesheet>
