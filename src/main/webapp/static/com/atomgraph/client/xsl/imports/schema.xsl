@@ -65,7 +65,7 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="schema2:description/text()"/>
     </xsl:template>
     
-    <xsl:template match="schema1:image/@rdf:resource | schema2:image/@rdf:resource">
+    <xsl:template match="schema1:image/@rdf:resource | schema2:image/@rdf:resource | schema1:logo/@rdf:resource | schema2:logo/@rdf:resource | schema1:thumbnailUrl/@rdf:resource | schema2:thumbnailUrl/@rdf:resource">
         <a href="{.}">
             <img src="{.}">
                 <xsl:attribute name="alt">
