@@ -136,7 +136,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
             {
                 if (!resolvingUncached(uri.toString()))
                 {
-                    if (log.isInfoEnabled()) log.info("Dereferencing uncached URIs is disabled - returning empty document for URI: {}", uri);
+                    if (log.isDebugEnabled()) log.debug("Dereferencing uncached URIs is disabled - returning empty document for URI: {}", uri);
                     return getSource(ModelFactory.createDefaultModel(), uri.toString());
                 }
 
