@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2019 Martynas Jusevičius <martynas@graphity.org>
+Copyright (C) 2019 Martynas Jusevičius <martynas@atomgraph.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

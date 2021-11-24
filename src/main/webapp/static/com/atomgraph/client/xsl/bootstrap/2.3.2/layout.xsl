@@ -394,8 +394,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="1"/>
 
-    <xsl:template match="rdf:RDF" mode="bs2:ModeList">
-        <xsl:param name="modes" select="key('resources-by-type', ('&ac;Mode'), document(ac:document-uri('&ac;')))" as="element()*"/>
+    <xsl:template match="rdf:RDF" mode="bs2:ModeList" priority="1">
+        <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
         <div class="btn-group pull-right">
             <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
@@ -407,11 +407,10 @@ exclude-result-prefixes="#all">
             </button>
 
             <ul class="dropdown-menu">
-                <xsl:variable name="active" select="$ac:mode[1]" as="xs:anyURI?"/> <!-- multiple modes can be present; selecting first as a workaround -->
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
-                        <xsl:with-param name="active" select="$active"/>
+                        <xsl:with-param name="active" select="@rdf:about = $ac:mode"/>
                     </xsl:apply-templates>
                 </xsl:for-each>
             </ul>
@@ -419,11 +418,12 @@ exclude-result-prefixes="#all">
     </xsl:template>
                 
     <xsl:template match="*[@rdf:about]" mode="bs2:ModeListItem">
-        <xsl:param name="active" as="xs:anyURI*"/>
-        
+        <xsl:param name="active" as="xs:boolean"/>
+        <xsl:param name="class" select="if ($active) then 'active' else ()" as="xs:string?"/>
+
         <li>
-            <xsl:if test="@rdf:about = $active">
-                <xsl:attribute name="class">active</xsl:attribute>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
             <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
@@ -434,7 +434,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:ModeList"/>
+    <xsl:template match="*" mode="bs2:ModeList"/>
 
     <!-- HEADER -->
 

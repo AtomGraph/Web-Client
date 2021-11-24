@@ -38,7 +38,8 @@ import com.atomgraph.client.util.DataManagerImpl;
 import com.atomgraph.client.util.XsltResolver;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.writer.ModelXSLTWriter;
-import com.atomgraph.client.writer.function.ConstructDocument;
+import com.atomgraph.client.writer.function.Construct;
+import com.atomgraph.client.writer.function.ConstructForClass;
 import com.atomgraph.client.writer.function.UUID;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.vocabulary.A;
@@ -153,7 +154,8 @@ public class Application extends ResourceConfig
         RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
         
         xsltProc.registerExtensionFunction(new UUID());
-        xsltProc.registerExtensionFunction(new ConstructDocument(xsltProc));
+        xsltProc.registerExtensionFunction(new Construct(xsltProc));
+        xsltProc.registerExtensionFunction(new ConstructForClass(xsltProc));
 
         try
         {

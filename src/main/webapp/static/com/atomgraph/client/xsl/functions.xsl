@@ -67,7 +67,7 @@ extension-element-prefixes="ixsl"
     </xsl:function>
     
     <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
-    <xsl:function name="ac:construct-doc" as="document-node()*" override-extension-function="no">
+    <xsl:function name="ac:construct" as="document-node()*" override-extension-function="no">
         <xsl:param name="ontology" as="xs:anyURI"/>
         <xsl:param name="classes" as="xs:anyURI*"/>
         <xsl:param name="base" as="xs:anyURI"/>

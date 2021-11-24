@@ -177,8 +177,8 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
             try (InputStream is = cr.readEntity(InputStream.class))
             {
                 byte[] bytes = IOUtils.toByteArray(is); // buffer the input stream so we can close Response
-                if (cr.getMediaType() != null && cr.getMediaType().getParameters().containsKey("charset"))
-                    return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getMediaType().getParameters().get("charset")); // extract response content charset
+                if (cr.getMediaType() != null && cr.getMediaType().getParameters().containsKey(MediaType.CHARSET_PARAMETER))
+                    return new InputStreamReader(new ByteArrayInputStream(bytes), cr.getMediaType().getParameters().get(MediaType.CHARSET_PARAMETER)); // extract response content charset
                 else
                     return new InputStreamReader(new ByteArrayInputStream(bytes));
             }

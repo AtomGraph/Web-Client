@@ -98,7 +98,7 @@ exclude-result-prefixes="#all">
 
             <xsl:choose>
                 <xsl:when test="$ac:forClass and not(key('resources-by-type', '&spin;ConstraintViolation'))">
-                    <xsl:apply-templates select="ac:construct-doc($ldt:ontology, $ac:forClass, $ldt:base)/rdf:RDF/*" mode="#current"/>
+                    <xsl:apply-templates select="ac:construct($ldt:ontology, $ac:forClass, $ldt:base)/rdf:RDF/*" mode="#current"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates mode="#current">
