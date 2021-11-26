@@ -93,7 +93,8 @@ public class ConstructForClass implements ExtensionFunction
             OntModel ontModel = getOntDocumentManager().getOntology(ontology, OntModelSpec.OWL_MEM);
             
             arguments[1].stream().
-                map(clazz -> ontModel.getOntClass(checkURI(clazz.getStringValue()).toString())).
+                map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
+                filter(forClass -> forClass != null).
                 forEach(forClass -> new Constructor().construct(forClass, instances, base));
             
             return getProcessor().newDocumentBuilder().build(getSource(instances));

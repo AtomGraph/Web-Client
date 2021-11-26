@@ -73,7 +73,16 @@ extension-element-prefixes="ixsl"
         <xsl:param name="base" as="xs:anyURI"/>
             
         <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
-            Not implemented -- com.atomgraph.client.writer.function.ConstructDocument needs to be registered as an extension function
+            Not implemented -- com.atomgraph.client.writer.function.ConstructForClass needs to be registered as an extension function
+        </xsl:message>
+    </xsl:function>
+    
+    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
+    <xsl:function name="ac:construct" as="document-node()*" override-extension-function="no">
+        <xsl:param name="query" as="xs:string"/>
+            
+        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
+            Not implemented -- com.atomgraph.client.writer.function.Construct needs to be registered as an extension function
         </xsl:message>
     </xsl:function>
     
