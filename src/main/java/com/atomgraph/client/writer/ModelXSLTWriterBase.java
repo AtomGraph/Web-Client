@@ -63,13 +63,12 @@ import org.apache.jena.iri.IRIFactory;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFWriter;
+import org.apache.jena.rdf.model.RDFWriterI;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.checker.CheckerIRI;
-import org.apache.jena.riot.system.ErrorHandlerFactory;
+import org.apache.jena.riot.system.Checker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +113,7 @@ public abstract class ModelXSLTWriterBase
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
             //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
-            RDFWriter writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
+            RDFWriterI writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(model, baos, null);
 
@@ -292,7 +291,7 @@ public abstract class ModelXSLTWriterBase
 
         IRI classIRI = IRIFactory.iriImplementation().create(classIRIStr);
         // throws Exceptions on bad URIs:
-        CheckerIRI.iriViolations(classIRI, ErrorHandlerFactory.getDefaultErrorHandler());
+        Checker.iriViolations(classIRI);
 
         return classIRI;
     }
