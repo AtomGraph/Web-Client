@@ -113,7 +113,7 @@ public abstract class ModelXSLTWriterBase
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
             //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
-            RDFWriterI writer = new Basic(); // workaround for Jena 3.0.1 bug: https://issues.apache.org/jira/browse/JENA-1168
+            RDFWriterI writer = new Basic();
             writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
             writer.write(model, baos, null);
 
