@@ -43,8 +43,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
@@ -165,26 +163,6 @@ public class ProxyResourceBase implements Resource
         
         try (Response cr = target.request(getReadableMediaTypes()).get())
         {
-            if (cr.getStatusInfo().getFamily().equals(Status.Family.CLIENT_ERROR))
-            {
-                // forward WWW-Authenticate response header
-                if (cr.getHeaders().containsKey(HttpHeaders.WWW_AUTHENTICATE))
-                {
-                    String header = cr.getHeaderString(HttpHeaders.WWW_AUTHENTICATE);
-                    if (header.contains("Basic realm="))
-                    {
-                        int realmStart = header.indexOf("\"") + 1;
-                        int realmEnd = header.lastIndexOf("\"");
-
-                        String realm = header.substring(realmStart, realmEnd);
-                        throw new NotAuthorizedException("Login is required", realm);
-                    }
-                }
-
-                // throw new ClientErrorException(cr); // this gives "java.lang.IllegalStateException: Entity input stream has already been closed."
-                throw new ClientErrorException(cr.getStatus());
-            }
-            
             // special case for http <-> https 301/303 redirection
             if ((cr.getStatusInfo().toEnum().equals(Status.SEE_OTHER) || cr.getStatusInfo().toEnum().equals(Status.MOVED_PERMANENTLY)) &&
                 ((target.getUri().getScheme().equals("http")  && cr.getLocation().getScheme().equals("https")) ||
@@ -197,7 +175,7 @@ public class ProxyResourceBase implements Resource
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
 
-            return getResponse(cr);
+            return setLinks(cr.getHeaders().get(HttpHeaders.LINK), getResponse(cr));
         }
         catch (ProcessingException ex)
         {
@@ -267,6 +245,22 @@ public class ProxyResourceBase implements Resource
                 variants).
             getResponseBuilder().
             build();
+    }
+    
+    /**
+     * Forwards <code>Link</code> header values.
+     * 
+     * @param linkValues header values
+     * @param response proxy response
+     * @return the response
+     */
+    protected Response setLinks(List<Object> linkValues, Response response)
+    {
+        linkValues.forEach(linkValue -> {
+            response.getHeaders().add(HttpHeaders.LINK, linkValue);
+        });
+        
+        return response;
     }
     
     /**
