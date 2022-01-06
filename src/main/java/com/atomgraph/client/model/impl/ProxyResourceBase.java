@@ -175,7 +175,12 @@ public class ProxyResourceBase implements Resource
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
 
-            return setLinks(cr.getHeaders().get(HttpHeaders.LINK), getResponse(cr));
+            Response response = getResponse(cr);
+            
+            List<Object> linkValues = cr.getHeaders().get(HttpHeaders.LINK);
+            if (linkValues != null) setLinks(linkValues, response);
+                
+            return response;
         }
         catch (ProcessingException ex)
         {
