@@ -169,8 +169,6 @@ public class ProxyResourceBase implements Resource
                 (target.getUri().getScheme().equals("https") && cr.getLocation().getScheme().equals("http"))) )
                     return get(getClient().target(cr.getLocation()));
 
-            if (!cr.hasEntity()) throw new ProcessingException("Could not read RDF from '" + webTarget.getUri() + "'");
-
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
