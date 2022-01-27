@@ -33,7 +33,6 @@ import java.util.Set;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -105,9 +104,8 @@ public class Constructor
                     // skip SPIN template bindings for now - might support later
 
                     // execute the constructor on the target model
-                    try (QueryExecution qex = QueryExecutionFactory.create(basedQuery, instance.getModel()))
+                    try (QueryExecution qex = QueryExecution.create().query(basedQuery).model(instance.getModel()).initialBinding(bindings).build())
                     {
-                        qex.setInitialBinding(bindings);
                         instance.getModel().add(qex.execConstruct());
                         reachedClasses.add(forClass);
                     }

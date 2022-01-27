@@ -30,7 +30,6 @@ import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 
@@ -87,7 +86,7 @@ public class Construct implements ExtensionFunction
     
     public Model getConstructedInstances(Query constructor) throws URISyntaxException, IOException
     {
-        try (QueryExecution qex = QueryExecutionFactory.create(constructor))
+        try (QueryExecution qex = QueryExecution.create().query(constructor).build())
         {
             return qex.execConstruct();
         }

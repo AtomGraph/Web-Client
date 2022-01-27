@@ -13,7 +13,7 @@
 @prefix vann:	<http://purl.org/vocab/vann/> .
 
 : a owl:Ontology ;
-    owl:imports sp:, spin:, spl:, sd: ;
+    owl:imports <http://spinrdf.org/sp>, <http://spinrdf.org/spin>, sd: ;
     owl:versionInfo "1.1.4" ;
     rdfs:label "Linked Data Templates ontology" ;
     rdfs:comment "Must be imported and reused by LDT applications" ;
@@ -179,7 +179,8 @@
 
 :Query a rdfs:Class ;
     rdfs:subClassOf sp:Query, [ a owl:Class ;
-        owl:unionOf (sp:Describe sp:Construct)
+        owl:unionOf (sp:Describe sp:Construct) ;
+        rdfs:label "Graph query forms"
     ] ;
     rdfs:label "Query" ;
     rdfs:isDefinedBy : .
@@ -194,3 +195,5 @@
     rdfs:label "Parameter" ;
     rdfs:comment "Represents a query parameter that has predicate, value type, default value etc." ;
     rdfs:isDefinedBy : .
+
+spl:Argument a spin:ConstructTemplate .
