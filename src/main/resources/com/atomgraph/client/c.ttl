@@ -1,4 +1,4 @@
-@base           <https://www.w3.org/ns/ldt/core/domain> .
+@base           <https://www.w3.org/ns/ldt/core> .
 
 @prefix :	<#> .
 @prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -16,7 +16,7 @@
     owl:versionInfo "1.1.4" ;
     rdfs:label "LDT Core domain ontology" ;
     dct:created "2016-08-31T21:54:00+02:00"^^xsd:dateTime ;
-    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/core/domain#" ;
+    vann:preferredNamespaceUri "https://www.w3.org/ns/ldt/core#" ;
     dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
 # CLASSES
