@@ -510,7 +510,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="title" as="xs:string?"/>
         <xsl:param name="value" as="xs:string?"/>
         <xsl:param name="checked" as="xs:boolean?"/>
-
+        <xsl:param name="autocomplete" select="true()" as="xs:boolean?"/>
+        
         <input type="{$type}" name="{$name}">
             <xsl:if test="$id">
                 <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
@@ -532,6 +533,9 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:if test="$checked">
                 <xsl:attribute name="checked">checked</xsl:attribute>
+            </xsl:if>
+            <xsl:if test="not($autocomplete)">
+                <xsl:attribute name="autocomplete">off</xsl:attribute>
             </xsl:if>
         </input>
     </xsl:template>
