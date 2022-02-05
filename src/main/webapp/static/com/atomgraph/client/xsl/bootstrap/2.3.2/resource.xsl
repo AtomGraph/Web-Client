@@ -297,7 +297,7 @@ exclude-result-prefixes="#all">
     
     <!-- LEGEND -->
 
-    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="bs2:Legend" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="bs2:Legend" priority="1" use-when="system-property('xsl:product-name') = 'SAXON'">
         <xsl:param name="forClass" select="$ac:forClass" as="xs:anyURI"/>
 
         <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
