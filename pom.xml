@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>3.1.11-SNAPSHOT</version>
+    <version>3.1.12-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>3.1.1-SNAPSHOT</version>
+            <version>3.1.2-SNAPSHOT</version>
             <exclusions>
                 <!-- exclude jakarta.json as its version clashes wich Jersey's -->
                 <exclusion>
