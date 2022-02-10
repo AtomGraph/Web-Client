@@ -97,7 +97,7 @@ exclude-result-prefixes="#all">
         <rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
 
-    <xsl:function name="ac:uri" as="xs:anyURI">
+    <xsl:function name="ac:uri" as="xs:anyURI?">
         <xsl:sequence select="$ac:uri"/>
     </xsl:function>
     
