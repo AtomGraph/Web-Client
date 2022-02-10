@@ -155,7 +155,7 @@ public class Application extends ResourceConfig
         
         xsltProc.registerExtensionFunction(new UUID());
         xsltProc.registerExtensionFunction(new Construct(xsltProc));
-        xsltProc.registerExtensionFunction(new ConstructForClass(xsltProc));
+        xsltProc.registerExtensionFunction(new ConstructForClass(xsltProc, OntDocumentManager.getInstance()));
 
         try
         {

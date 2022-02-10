@@ -147,7 +147,7 @@ public class Constructor
         if (baseURI == null) throw new IllegalArgumentException("Base URI string cannot be null");
         if (reachedClasses == null) throw new IllegalArgumentException("Set<OntClass> cannot be null");
 
-        constructInstance(forClass, property, instance, baseURI, new HashSet<OntClass>()).
+        constructInstance(forClass, property, instance, baseURI, new HashSet<>()).
                 addProperty(RDF.type, forClass);
         reachedClasses.add(forClass);
 

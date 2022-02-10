@@ -47,11 +47,6 @@ public class ConstructForClass implements ExtensionFunction
     private final Processor processor;
     private final OntDocumentManager odm;
     
-    public ConstructForClass(Processor processor)
-    {
-        this(processor, OntDocumentManager.getInstance());
-    }
-    
     public ConstructForClass(Processor processor, OntDocumentManager odm)
     {
         this.processor = processor;
