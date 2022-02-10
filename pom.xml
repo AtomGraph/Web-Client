@@ -46,6 +46,10 @@
   
     <repositories>
         <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
             <id>apache-repo-releases</id>
             <url>https://repository.apache.org/content/repositories/releases/</url>
             <releases>
