@@ -98,7 +98,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:function name="ac:uri" as="xs:anyURI">
-        <xsl:sequence select="ac:uri()"/>
+        <xsl:sequence select="$ac:uri"/>
     </xsl:function>
     
     <xsl:template match="/">
