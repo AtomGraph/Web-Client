@@ -23,8 +23,20 @@ xmlns:rdf="&rdf;"
 exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:type/@rdf:resource" priority="1">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="target" as="xs:string?"/>
+        
         <span title="{.}" class="btn btn-type">
-            <xsl:next-match/>
+            <xsl:next-match>
+                <xsl:with-param name="href" select="$href"/>
+                <xsl:with-param name="id" select="$id"/>
+                <xsl:with-param name="title" select="$title"/>
+                <xsl:with-param name="class" select="$class"/>
+                <xsl:with-param name="target" select="$target"/>
+            </xsl:next-match>
         </span>
     </xsl:template>
     
