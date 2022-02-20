@@ -33,13 +33,6 @@ xmlns:xsd="&xsd;"
 xmlns:owl="&owl;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:math="http://www.w3.org/2005/xpath-functions/math"
-
-
-xmlns:map="http://www.w3.org/2005/xpath-functions/map"
-
-
-
-
 exclude-result-prefixes="#all">
 
     <!-- Paper on force directed layout in XSLT: "GraphML Transformation" -->
@@ -61,7 +54,7 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
     <xsl:param name="show-object-resources" select="false()" as="xs:boolean"/>
-    <xsl:param name="step-count" select="5" as="xs:integer"/> <!-- number of iteration steps -->
+    <xsl:param name="step-count" select="20" as="xs:integer"/> <!-- number of iteration steps -->
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
     <xsl:param name="spring-length" select="100" as="xs:double"/> <!-- ideal spring length -->
@@ -365,24 +358,16 @@ exclude-result-prefixes="#all">
         <xsl:param name="width" as="xs:integer"/>
         <xsl:param name="height" as="xs:integer"/>
         <xsl:param name="temperature" as="xs:double"/>
-        <!-- <xsl:param name="svg" as="document-node()"/> -->
 
-<xsl:message>ac:force-step A CALL count($node-adjacency): <xsl:value-of select="count($node-adjacency)"/> count($edges): <xsl:value-of select="count($edges)"/></xsl:message>
-
+        <!-- calculate repulsive forces against all other nodes -->
         <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
             <xsl:for-each select="$node-adjacency">
                 <xsl:variable name="v" select="." as="map(xs:string, item()*)"/>
-<!-- <xsl:message>?non-adjacent-ids: <xsl:value-of select="?non-adjacent-ids"/></xsl:message>
-<xsl:message>?adjacent-ids: <xsl:value-of select="?adjacent-ids"/></xsl:message>
--->
-                <!-- calculate repulsive forces against all other nodes -->
                 <xsl:iterate select="(?non-adjacent-ids, ?adjacent-ids)">
                     <xsl:param name="dx" select="0.00" as="xs:double"/>
                     <xsl:param name="dy" select="0.00" as="xs:double"/>
 
                     <xsl:on-completion>
-        <xsl:message>ac:force-step A $dx: <xsl:value-of select="$dx"/> $dy: <xsl:value-of select="$dy"/></xsl:message>
-
                         <xsl:map>
                             <xsl:for-each select="$v">
                                 <xsl:map-entry key="'node-id'" select="?node-id"/>
@@ -396,21 +381,21 @@ exclude-result-prefixes="#all">
                         </xsl:map>
                     </xsl:on-completion>
 
-<!-- <xsl:message>current(): <xsl:value-of select="current()"/>
-</xsl:message>
-<xsl:message><xsl:if test="current() = 'd1e167a1049663'">NX: <xsl:copy-of select="$node-adjacency => serialize(map {'method': 'adaptive'})"/></xsl:if></xsl:message>
--->
                     <xsl:variable name="u" select="$node-adjacency[?node-id eq current()]" as="map(xs:string, item()*)"/>
                     <xsl:variable name="dx" select="$v?x - $u?x" as="xs:double"/>
                     <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
                     <!-- square of euclidean distance -->
                     <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
                     <!-- if notes are in the same position, act as though they are a small distance apart -->
-                    <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/>
+                    <!-- <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/> -->
                     <!-- euclidean distance -->
                     <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-                    <!-- repulsion force coefficient (d^2/k)-->
-                    <xsl:variable name="force" select="$distance2 div $spring-length" as="xs:double"/>
+<!--                     <xsl:if test="$distance eq 0">
+                        <xsl:message terminate="yes">########## ZEROOOOO!! ########</xsl:message>
+                    </xsl:if> -->
+                    <!-- repulsion force coefficient (k^2/d)-->
+                    <xsl:variable name="force" select="($spring-length * $spring-length) div $distance" as="xs:double"/>
+
                     <xsl:next-iteration>
                         <!-- displacement -->
                         <xsl:with-param name="dx" select="$dx + $dx * ($force div $distance)"/>
@@ -420,29 +405,24 @@ exclude-result-prefixes="#all">
             </xsl:for-each>
         </xsl:variable>
 
-<xsl:message>ac:force-step B CALL count($node-adjacency): <xsl:value-of select="count($node-adjacency)"/> count($edges): <xsl:value-of select="count($edges)"/></xsl:message>
-
-        <!-- <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*"> -->
+        <!-- calculate attractive forces between adjacent nodes -->
         <xsl:variable name="edge-nodes" as="map(xs:string, item()*)*">
             <xsl:for-each select="$edges">
                 <xsl:variable name="v" select="$node-adjacency[?node-id = current()?v-id]" as="map(xs:string, item()*)"/>
                 <xsl:variable name="u" select="$node-adjacency[?node-id = current()?u-id]" as="map(xs:string, item()*)"/>
                 <xsl:variable name="dx" select="$v?x - $u?x" as="xs:double"/>  
                 <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
-                <!-- calculate attractive forces between adjacent nodes -->
                 <!-- square of euclidean distance -->
                 <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
                 <!-- if notes are in the same position, act as though they are a small distance apart -->
                 <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/>
                 <!-- euclidean distance -->
                 <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-                <!-- attraction force coeficient-->
+                <!-- attraction force coeficient (d^2/k)-->
                 <xsl:variable name="force" select="$distance2 div $spring-length" as="xs:double"/>
                 <!-- displacement -->
                 <xsl:variable name="ddx" select="$dx * ($force div $distance)" as="xs:double"/>
                 <xsl:variable name="ddy" select="$dy * ($force div $distance)" as="xs:double"/>
-
-        <xsl:message>ac:force-step B $ddx: <xsl:value-of select="$dx"/> $ddy: <xsl:value-of select="$dy"/></xsl:message>
 
                 <xsl:map>
                     <xsl:for-each select="$v">
@@ -481,9 +461,6 @@ exclude-result-prefixes="#all">
                 </xsl:map>
             </xsl:for-each-group>
         </xsl:variable>
-
-<xsl:message>ac:force-step C CALL count($node-adjacency): <xsl:value-of select="count($node-adjacency)"/> count($edges): <xsl:value-of select="count($edges)"/> count($edge-nodes): <xsl:value-of select="count($edge-nodes)"/> count($node-adjacency[not(?node-id = $edge-nodes?node-id)]): <xsl:value-of select="count($node-adjacency[not(?node-id = $edge-nodes?node-id)])"/></xsl:message>
-
         <xsl:variable name="node-adjacency" select="($edge-nodes, $node-adjacency[not(?node-id = $edge-nodes?node-id)])" as="map(xs:string, item()*)*"/>
 
         <xsl:for-each select="$node-adjacency">
@@ -497,17 +474,11 @@ exclude-result-prefixes="#all">
                 <xsl:otherwise>
                     <xsl:variable name="d" select="min(($disp, $temperature)) div $disp" as="xs:double"/>
                     <xsl:variable name="x" select="$v?x + $v?dx * $d" as="xs:double"/>
-<!-- <xsl:message>ac:force-step C $v?y: <xsl:value-of select="$v?y"/> $v?dy: <xsl:value-of select="$v?dy"/> $d: <xsl:value-of select="$d"/></xsl:message>
- -->                    <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
+                    <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
                     <xsl:variable name="x" select="min(($width, max((0, $x)))) - $width div 2" as="xs:double"/>
                     <xsl:variable name="y" select="min(($height, max((0, $y)))) - $height div 2" as="xs:double"/>
-<xsl:message>ac:force-step C1 $x: <xsl:value-of select="$x"/> $y: <xsl:value-of select="$y"/></xsl:message>
-        <xsl:message>ac:force-step C1.5 $height * $height div 4 - $x * $x: <xsl:value-of select="$height * $height div 4 - $x * $x"/>  math:sqrt($height * $height div 4 - $x * $x): <xsl:value-of select="math:sqrt($height * $height div 4 - $x * $x)"/> -1 * math:sqrt($height * $height div 4 - $x * $x): <xsl:value-of select="-1 * math:sqrt($height * $height div 4 - $x * $x)"/></xsl:message>
-
                     <xsl:variable name="x" select="min((math:sqrt(abs($width * $width div 4 - $y * $y)), max((-1 * math:sqrt(abs($width * $width div 4 - $y * $y)), $x)))) + $width div 2" as="xs:double"/>
-
                     <xsl:variable name="y" select="min((math:sqrt(abs($height * $height div 4 - $x * $x)), max((-1 * math:sqrt(abs($height * $height div 4 - $x * $x)), $y)))) + $height div 2" as="xs:double"/>
-        <xsl:message>ac:force-step C2 $x: <xsl:value-of select="$x"/> $y: <xsl:value-of select="$y"/></xsl:message>
 
                     <xsl:map>
                         <xsl:map-entry key="'node-id'" select="?node-id"/>
