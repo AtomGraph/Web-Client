@@ -295,9 +295,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="svg" as="document-node()"/>
         <xsl:param name="count" as="xs:integer"/>
         <xsl:param name="temperature" select="$width div 10" as="xs:double"/>
-
-<!-- <xsl:message>BLED: <xsl:copy-of select="$svg"/></xsl:message> -->
-
         <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
             <xsl:variable name="force-nodes" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]" as="element()*"/>
             <xsl:iterate select="1 to $count">
@@ -323,12 +320,7 @@ exclude-result-prefixes="#all">
                     return map{ 'v-id': $b?node-id, 'u-id': $adjacent-id }) })" as="map(xs:string, item())*"/>
                 <xsl:param name="step" select="1" as="xs:integer"/>
                 <xsl:param name="temperature" select="$temperature" as="xs:double"/>
-<!-- <xsl:message>NX: <xsl:copy-of select="$node-adjacency => serialize(map {'method': 'adaptive'})"/></xsl:message> -->
-<!-- <xsl:message>############# STEP: <xsl:value-of select="$step"/> $temperature: <xsl:value-of select="$temperature"/> size($node-adjacency): <xsl:value-of select="count($node-adjacency)"/> count($edges): <xsl:value-of select="count($edges)"/> #############</xsl:message>
-<xsl:message> $edges: <xsl:value-of select="$edges => serialize(map {'method': 'adaptive'})"/></xsl:message>
- -->
-<!--  <xsl:message>NX: <xsl:value-of select="count(distinct-values($node-adjacency?node-id))"/></xsl:message>
- -->
+
                 <xsl:on-completion>
                     <xsl:sequence select="$node-adjacency"/>
                 </xsl:on-completion>
@@ -390,9 +382,6 @@ exclude-result-prefixes="#all">
                     <!-- <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/> -->
                     <!-- euclidean distance -->
                     <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-<!--                     <xsl:if test="$distance eq 0">
-                        <xsl:message terminate="yes">########## ZEROOOOO!! ########</xsl:message>
-                    </xsl:if> -->
                     <!-- repulsion force coefficient (k^2/d)-->
                     <xsl:variable name="force" select="($spring-length * $spring-length) div $distance" as="xs:double"/>
 
