@@ -54,7 +54,7 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
     <xsl:param name="show-object-resources" select="false()" as="xs:boolean"/>
-    <xsl:param name="step-count" select="100" as="xs:integer"/> <!-- number of iteration steps -->
+    <xsl:param name="step-count" select="50" as="xs:integer"/> <!-- number of iteration steps -->
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <!-- <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/> -->
     <xsl:param name="speed-divisor" select="800" as="xs:double"/>
@@ -64,8 +64,8 @@ exclude-result-prefixes="#all">
     <xsl:param name="gravity" select="10" as="xs:double"/>
     <!-- <xsl:param name="spring-length" select="100" as="xs:double"/> --> <!-- ideal spring length -->
     <xsl:param name="padding" select="10" as="xs:double"/>
-    <xsl:param name="width" select="1000" as="xs:integer"/> <!-- drawing width -->
-    <xsl:param name="height" select="1000" as="xs:integer"/> <!-- drawing height -->
+    <xsl:param name="width" select="1250" as="xs:integer"/> <!-- drawing width -->
+    <xsl:param name="height" select="800" as="xs:integer"/> <!-- drawing height -->
 
     <xsl:mode name="ac:SVGPositioning" on-no-match="shallow-copy"/>
 
@@ -327,7 +327,7 @@ exclude-result-prefixes="#all">
                 <xsl:param name="area" select="$area" as="xs:double"/>
                 <xsl:param name="area-multiplicator" select="$area-multiplicator" as="xs:double"/>
                 <xsl:param name="max-displacement" select="math:sqrt($area-multiplicator * $area) div 10" as="xs:double"/>
-                <xsl:param name="spring-length" select="math:sqrt($area-multiplicator * $area) div (1 + count($node-adjacency))" as="xs:double"/>
+                <xsl:param name="spring-length" select="math:sqrt($area-multiplicator * $area) div (1 + count($force-nodes))" as="xs:double"/>
 
                 <xsl:on-completion>
                     <xsl:sequence select="$node-adjacency"/>
