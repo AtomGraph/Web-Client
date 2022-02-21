@@ -64,7 +64,7 @@ exclude-result-prefixes="#all">
     <xsl:param name="gravity" select="10" as="xs:double"/>
     <!-- <xsl:param name="spring-length" select="100" as="xs:double"/> --> <!-- ideal spring length -->
     <xsl:param name="padding" select="10" as="xs:double"/>
-    <xsl:param name="width" select="1250" as="xs:integer"/> <!-- drawing width -->
+    <xsl:param name="width" select="1000" as="xs:integer"/> <!-- drawing width -->
     <xsl:param name="height" select="800" as="xs:integer"/> <!-- drawing height -->
 
     <xsl:mode name="ac:SVGPositioning" on-no-match="shallow-copy"/>
@@ -432,7 +432,8 @@ exclude-result-prefixes="#all">
                 <xsl:variable name="ddx" select="$dx div $distance * $force" as="xs:double"/>
                 <xsl:variable name="ddy" select="$dy div $distance * $force" as="xs:double"/>
 
-        <xsl:message>ac:force-step B $v?dx: <xsl:value-of select="$v?dx"/> $v?dy: <xsl:value-of select="$v?dy"/> $distance: <xsl:value-of select="$distance"/> $force: <xsl:value-of select="$force"/> $ddx: <xsl:value-of select="$dx"/> $ddy: <xsl:value-of select="$dy"/></xsl:message>
+        <xsl:message>ac:force-step B $v?node-id: <xsl:value-of select="$v?node-id"/>  $v?dx: <xsl:value-of select="$v?dx"/> $v?dy: <xsl:value-of select="$v?dy"/> $distance: <xsl:value-of select="$distance"/> $force: <xsl:value-of select="$force"/> $ddx: <xsl:value-of select="$dx"/> $ddy: <xsl:value-of select="$dy"/></xsl:message>
+        <xsl:message>ac:force-step B $u?node-id: <xsl:value-of select="$u?node-id"/>  $u?dx: <xsl:value-of select="$u?dx"/> $u?dy: <xsl:value-of select="$u?dy"/> $distance: <xsl:value-of select="$distance"/> $force: <xsl:value-of select="$force"/> $ddx: <xsl:value-of select="$dx"/> $ddy: <xsl:value-of select="$dy"/></xsl:message>
 
                 <xsl:map>
                     <xsl:for-each select="$v">
@@ -466,11 +467,17 @@ exclude-result-prefixes="#all">
                     <xsl:map-entry key="'y'" select="?y"/>
                     <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
                     <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                    <xsl:map-entry key="'dx'" select="sum(?dx)"/>
-                    <xsl:map-entry key="'dy'" select="sum(?dy)"/>
+                    <xsl:map-entry key="'dx'" select="sum(current-group()?dx)"/>
+                    <xsl:map-entry key="'dy'" select="sum(current-group()?dy)"/>
                 </xsl:map>
+
+        <xsl:message>ac:force-step B ?node-id: <xsl:value-of select="current-grouping-key()"/> COUNT(current-group()): <xsl:value-of select="count(current-group())"/> $v?dx: <xsl:value-of select="?dx"/> $v?dy: <xsl:value-of select="?dy"/> sum(current-group()?dx): <xsl:value-of select="sum(current-group()?dx)"/> sum(current-group()?dy): <xsl:value-of select="sum(current-group()?dy)"/></xsl:message>
+
             </xsl:for-each-group>
         </xsl:variable>
+
+        <xsl:message>BLET: <xsl:value-of select="$edge-nodes[?node-id = 'd1e2a1049664'] => serialize(map{ 'method': 'adaptive'})"/></xsl:message>
+
         <!-- combine edge nodes with standalone nodes (nodes that are not part of any edge) -->
         <xsl:variable name="node-adjacency" select="($edge-nodes, $node-adjacency[not(?node-id = $edge-nodes?node-id)])" as="map(xs:string, item()*)*"/>
         
