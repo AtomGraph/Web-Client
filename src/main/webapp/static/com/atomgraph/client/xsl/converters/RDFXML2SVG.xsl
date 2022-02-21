@@ -54,7 +54,7 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
     <xsl:param name="show-object-resources" select="false()" as="xs:boolean"/>
-    <xsl:param name="step-count" select="100" as="xs:integer"/> <!-- number of iteration steps -->
+    <xsl:param name="step-count" select="20" as="xs:integer"/> <!-- number of iteration steps -->
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
     <xsl:param name="spring-length" select="50" as="xs:double"/> <!-- ideal spring length -->
@@ -199,7 +199,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="r" select="10" as="xs:double"/>
+        <xsl:param name="r" select="12" as="xs:double"/>
         <xsl:param name="random-seed" select="if (../rdf:type/@rdf:*) then random-number-generator(../rdf:type[1]/@rdf:*)?number else ()" as="xs:double?"/>
 <!--         <xsl:param name="rgb" select="if ($random-seed) then 'rgb(' || $random-seed * 256 || ', ' || ($random-seed * 256 + 85) mod 256 || ', ' || ($random-seed * 256 + 170) mod 256 || ')' else ()" as="xs:string?"/> -->
         <xsl:param name="hsl" select="if ($random-seed) then 'hsl(' || $random-seed * 360 || ', 50%, 70%)' else ()" as="xs:string?"/>
@@ -360,11 +360,6 @@ exclude-result-prefixes="#all">
                     <xsl:param name="v-dy" select="0.00" as="xs:double"/>
 
                     <xsl:on-completion>
-<!--         <xsl:message>ac:force-step A $v-dx: <xsl:value-of select="$v-dx"/> $v-dy: <xsl:value-of select="$v-dy"/></xsl:message> -->
-
-<xsl:if test="$v?node-id = 'd1e399a1049663'">
-    <xsl:message>d1e399a1049663?dx: <xsl:value-of select="$v?dx"/> d1e399a1049663?dy: <xsl:value-of select="$v?dy"/></xsl:message>
-</xsl:if>
                         <xsl:map>
                             <xsl:for-each select="$v">
                                 <xsl:map-entry key="'node-id'" select="?node-id"/>
@@ -389,9 +384,6 @@ exclude-result-prefixes="#all">
                             <!-- <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/> -->
                             <!-- euclidean distance -->
                             <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-        <xsl:if test="$v?node-id = 'd1e399a1049663'">
-            <xsl:message>$u?node-id: <xsl:value-of select="$u?node-id"/> $distance: <xsl:value-of select="$distance"/> d1e399a1049663?dy: <xsl:value-of select="$v?dy"/></xsl:message>
-        </xsl:if>
                             <!-- repulsion force coefficient (k^2/d)-->
                             <xsl:variable name="force" select="($spring-length * $spring-length) div $distance" as="xs:double"/>
                             <xsl:variable name="d" select="$force div $distance" as="xs:double"/>
@@ -424,7 +416,7 @@ exclude-result-prefixes="#all">
                 <!-- square of euclidean distance -->
                 <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
                 <!-- if notes are in the same position, act as though they are a small distance apart -->
-                <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/>
+                <!--  <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/> -->
                 <xsl:choose>
                     <xsl:when test="$distance2 ne 0">
                         <!-- euclidean distance -->
@@ -486,31 +478,23 @@ exclude-result-prefixes="#all">
         <xsl:for-each select="$node-adjacency">
             <xsl:variable name="v" select="." as="map(xs:string, item()*)"/>
             <xsl:variable name="disp" select="math:sqrt($v?dx * $v?dx + $v?dy * $v?dy)" as="xs:double"/>
+            <xsl:variable name="d" select="min(($disp, $temperature)) div $disp" as="xs:double"/>
+            <xsl:variable name="x" select="$v?x + $v?dx * $d" as="xs:double"/>
+            <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
+            <xsl:variable name="x" select="min(($width, max((0, $x)))) - $width div 2" as="xs:double"/>
+            <xsl:variable name="y" select="min(($height, max((0, $y)))) - $height div 2" as="xs:double"/>
+            <xsl:variable name="x" select="min((math:sqrt(abs($width * $width div 4 - $y * $y)), max((-1 * math:sqrt(abs($width * $width div 4 - $y * $y)), $x)))) + $width div 2" as="xs:double"/>
+            <xsl:variable name="y" select="min((math:sqrt(abs($height * $height div 4 - $x * $x)), max((-1 * math:sqrt(abs($height * $height div 4 - $x * $x)), $y)))) + $height div 2" as="xs:double"/>
 
-            <xsl:choose>
-                <xsl:when test="$disp eq 0">
-                    <xsl:sequence select="."/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:variable name="d" select="min(($disp, $temperature)) div $disp" as="xs:double"/>
-                    <xsl:variable name="x" select="$v?x + $v?dx * $d" as="xs:double"/>
-                    <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
-                    <xsl:variable name="x" select="min(($width, max((0, $x)))) - $width div 2" as="xs:double"/>
-                    <xsl:variable name="y" select="min(($height, max((0, $y)))) - $height div 2" as="xs:double"/>
-                    <xsl:variable name="x" select="min((math:sqrt(abs($width * $width div 4 - $y * $y)), max((-1 * math:sqrt(abs($width * $width div 4 - $y * $y)), $x)))) + $width div 2" as="xs:double"/>
-                    <xsl:variable name="y" select="min((math:sqrt(abs($height * $height div 4 - $x * $x)), max((-1 * math:sqrt(abs($height * $height div 4 - $x * $x)), $y)))) + $height div 2" as="xs:double"/>
-
-                    <xsl:map>
-                        <xsl:map-entry key="'node-id'" select="?node-id"/>
-                        <xsl:map-entry key="'x'" select="$x"/>
-                        <xsl:map-entry key="'y'" select="$y"/>
-                        <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                        <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                        <xsl:map-entry key="'dx'" select="?dx"/>
-                        <xsl:map-entry key="'dy'" select="?dy"/>
-                    </xsl:map>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:map>
+                <xsl:map-entry key="'node-id'" select="?node-id"/>
+                <xsl:map-entry key="'x'" select="$x"/>
+                <xsl:map-entry key="'y'" select="$y"/>
+                <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
+                <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
+                <xsl:map-entry key="'dx'" select="?dx"/>
+                <xsl:map-entry key="'dy'" select="?dy"/>
+            </xsl:map>
         </xsl:for-each>
     </xsl:function>
     
