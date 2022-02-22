@@ -201,7 +201,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
         <xsl:param name="r" select="12" as="xs:double"/>
         <xsl:param name="random-seed" select="if (../rdf:type/@rdf:*) then random-number-generator(../rdf:type[1]/@rdf:*)?number else ()" as="xs:double?"/>
-<!--         <xsl:param name="rgb" select="if ($random-seed) then 'rgb(' || $random-seed * 256 || ', ' || ($random-seed * 256 + 85) mod 256 || ', ' || ($random-seed * 256 + 170) mod 256 || ')' else ()" as="xs:string?"/> -->
         <xsl:param name="hsl" select="if ($random-seed) then 'hsl(' || $random-seed * 360 || ', 50%, 70%)' else ()" as="xs:string?"/>
         <xsl:param name="fill" select="if ($hsl) then $hsl else '#acf'" as="xs:string"/>
         <xsl:param name="stroke" select="'gray'" as="xs:string"/>
@@ -355,6 +354,7 @@ exclude-result-prefixes="#all">
         <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
             <xsl:for-each select="$node-adjacency">
                 <xsl:variable name="v" select="." as="map(xs:string, item()*)"/>
+
                 <xsl:iterate select="(?non-adjacent-ids, ?adjacent-ids)">
                     <xsl:param name="v-dx" select="0.00" as="xs:double"/>
                     <xsl:param name="v-dy" select="0.00" as="xs:double"/>
@@ -427,8 +427,6 @@ exclude-result-prefixes="#all">
                         <!-- displacement -->
                         <xsl:variable name="ddx" select="$dx * $d" as="xs:double"/>
                         <xsl:variable name="ddy" select="$dy * $d" as="xs:double"/>
-
-                <!-- <xsl:message>ac:force-step B $distance: <xsl:value-of select="$distance"/> $force: <xsl:value-of select="$force"/> $ddx: <xsl:value-of select="$dx"/> $ddy: <xsl:value-of select="$dy"/></xsl:message> -->
 
                         <xsl:map>
                             <xsl:for-each select="$v">
@@ -579,7 +577,6 @@ exclude-result-prefixes="#all">
                     <xsl:variable name="xc" select="abs($r * $tan * math:sqrt(1 div ($tan * $tan + 1)))" as="xs:double"/>
                     <xsl:variable name="x2" select="if ($x1 &gt; $x2) then ($x2 + $xc) else ($x2 - $xc)" as="xs:double"/>
                     <xsl:variable name="y2" select="if ($y1 &gt; $y2) then ($y2 + $yc) else ($y2 - $yc)" as="xs:double"/>
-<!-- <xsl:message>$x2-offset: <xsl:value-of select="$x2-offset"/> $xc: <xsl:value-of select="$xc"/> key('subjects', @resource)/svg:circle/@cx: <xsl:value-of select="key('subjects', @resource)/svg:circle/@cx"/></xsl:message> -->
 
                     <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)">
                         <title><xsl:value-of select="@property"/></title>
