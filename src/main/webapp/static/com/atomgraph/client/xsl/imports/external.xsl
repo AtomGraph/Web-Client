@@ -33,6 +33,7 @@ xmlns:xsd="&xsd;"
 xmlns:owl="&owl;"
 xmlns:srx="&srx;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:svg="http://www.w3.org/2000/svg"
 exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
@@ -40,12 +41,14 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" select="encode-for-uri(@rdf:about)" as="xs:string?"/>
         <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
-        
+        <xsl:param name="target" as="xs:string?"/>
+
         <xsl:next-match>
             <xsl:with-param name="href" select="$href"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="title" select="$title"/>
             <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="target" select="$target"/>
         </xsl:next-match>
     </xsl:template>
     
@@ -60,6 +63,23 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="title" select="$title"/>
             <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="target" select="$target"/>
+        </xsl:next-match>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:about | @rdf:resource" mode="svg:Anchor">
+        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)) }) || '#' || encode-for-uri(@rdf:about))" as="xs:anyURI"/>
+        <xsl:param name="id" select="encode-for-uri(@rdf:about)" as="xs:string?"/>
+        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="target" as="xs:string?"/>
+
+        <xsl:next-match>
+            <xsl:with-param name="href" select="$href"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="target" select="$target"/>
         </xsl:next-match>
     </xsl:template>
     

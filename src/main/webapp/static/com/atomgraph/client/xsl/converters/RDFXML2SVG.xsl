@@ -36,7 +36,6 @@ xmlns:math="http://www.w3.org/2005/xpath-functions/math"
 exclude-result-prefixes="#all">
 
     <!-- Paper on force directed layout in XSLT: "GraphML Transformation" -->
-    <!-- http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.182.3680&rep=rep1&type=pdf#page=58 -->
     <!-- http://www.mathe2.uni-bayreuth.de/axel/papers/reingold:graph_drawing_by_force_directed_placement.pdf -->
     <!-- 1. position resource nodes (optionally also literals) randomly -->
     <!-- 2. move nodes in a loop using the force-directed algorithm -->
@@ -214,30 +213,48 @@ exclude-result-prefixes="#all">
                 <title><xsl:value-of select="."/></title>
             </circle>
 
-            <a>
+            <xsl:apply-templates select=".." mode="svg:Anchor"/>
+        </g>
+    </xsl:template>
+
+    <!-- TO-DO: align match with xhtml:Anchor -->
+    <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="svg:Anchor">
+        <xsl:param name="href" select="if (local-name() = ('about', 'resource')) then . else ()" as="xs:anyURI?"/>
+        <xsl:param name="id" select="if (local-name() = 'nodeID') then . else ()" as="xs:string?"/>
+        <xsl:param name="title" select="if (parent::rdf:Description) then ac:svg-label(..) else ac:svg-object-label(.)" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="target" as="xs:string?"/>
+
+        <a>
+            <xsl:if test="$href">
+                <xsl:attribute name="href"><xsl:sequence select="$href"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$id">
+                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$target">
+                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
+            </xsl:if>
+            
+            <text x="0" y="0" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
                 <xsl:choose>
-                    <xsl:when test="local-name() = ('about', 'resource')">
-                        <xsl:attribute name="href" select="."/>
+                    <!-- subject -->
+                    <xsl:when test="parent::rdf:Description">
+                        <xsl:value-of select="ac:svg-label(..)"/>
                     </xsl:when>
+                    <!-- object -->
                     <xsl:otherwise>
-                        <xsl:attribute name="id" select="."/>
+                        <xsl:value-of select="ac:svg-object-label(.)"/>
                     </xsl:otherwise>
                 </xsl:choose>
-                
-                <text x="0" y="0" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
-                    <xsl:choose>
-                        <!-- subject -->
-                        <xsl:when test="parent::rdf:Description">
-                            <xsl:value-of select="ac:svg-label(..)"/>
-                        </xsl:when>
-                        <!-- object -->
-                        <xsl:otherwise>
-                            <xsl:value-of select="ac:svg-object-label(.)"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </text>
-            </a>
-        </g>
+            </text>
+        </a>
     </xsl:template>
 
     <!-- property -->
