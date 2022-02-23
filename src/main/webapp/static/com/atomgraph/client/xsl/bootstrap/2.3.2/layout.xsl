@@ -392,7 +392,7 @@ exclude-result-prefixes="#all">
 
     <!-- MODE LIST -->
 
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="1"/>
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="2"/>
 
     <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:ModeList" priority="1">
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>

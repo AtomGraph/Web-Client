@@ -394,6 +394,7 @@ exclude-result-prefixes="#all">
                     <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
                     <!-- square of euclidean distance -->
                     <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
+
                     <xsl:choose>
                         <xsl:when test="$distance2 ne 0">
                             <!-- euclidean distance -->
@@ -429,6 +430,7 @@ exclude-result-prefixes="#all">
                 <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
                 <!-- square of euclidean distance -->
                 <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
+
                 <xsl:choose>
                     <xsl:when test="$distance2 ne 0">
                         <!-- euclidean distance -->
@@ -488,23 +490,31 @@ exclude-result-prefixes="#all">
         <xsl:for-each select="$node-adjacency">
             <xsl:variable name="v" select="." as="map(xs:string, item()*)"/>
             <xsl:variable name="disp" select="math:sqrt($v?dx * $v?dx + $v?dy * $v?dy)" as="xs:double"/>
-            <xsl:variable name="d" select="min(($disp, $temperature)) div $disp" as="xs:double"/>
-            <xsl:variable name="x" select="$v?x + $v?dx * $d" as="xs:double"/>
-            <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
-            <xsl:variable name="x" select="min(($width, max((0, $x)))) - $width div 2" as="xs:double"/>
-            <xsl:variable name="y" select="min(($height, max((0, $y)))) - $height div 2" as="xs:double"/>
-            <xsl:variable name="x" select="min((math:sqrt(abs($width * $width div 4 - $y * $y)), max((-1 * math:sqrt(abs($width * $width div 4 - $y * $y)), $x)))) + $width div 2" as="xs:double"/>
-            <xsl:variable name="y" select="min((math:sqrt(abs($height * $height div 4 - $x * $x)), max((-1 * math:sqrt(abs($height * $height div 4 - $x * $x)), $y)))) + $height div 2" as="xs:double"/>
 
-            <xsl:map>
-                <xsl:map-entry key="'node-id'" select="?node-id"/>
-                <xsl:map-entry key="'x'" select="$x"/>
-                <xsl:map-entry key="'y'" select="$y"/>
-                <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                <xsl:map-entry key="'dx'" select="?dx"/>
-                <xsl:map-entry key="'dy'" select="?dy"/>
-            </xsl:map>
+            <xsl:choose>
+                <xsl:when test="$disp ne 0">
+                    <xsl:variable name="d" select="min(($disp, $temperature)) div $disp" as="xs:double"/>
+                    <xsl:variable name="x" select="$v?x + $v?dx * $d" as="xs:double"/>
+                    <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
+                    <xsl:variable name="x" select="min(($width, max((0, $x)))) - $width div 2" as="xs:double"/>
+                    <xsl:variable name="y" select="min(($height, max((0, $y)))) - $height div 2" as="xs:double"/>
+                    <xsl:variable name="x" select="min((math:sqrt(abs($width * $width div 4 - $y * $y)), max((-1 * math:sqrt(abs($width * $width div 4 - $y * $y)), $x)))) + $width div 2" as="xs:double"/>
+                    <xsl:variable name="y" select="min((math:sqrt(abs($height * $height div 4 - $x * $x)), max((-1 * math:sqrt(abs($height * $height div 4 - $x * $x)), $y)))) + $height div 2" as="xs:double"/>
+
+                    <xsl:map>
+                        <xsl:map-entry key="'node-id'" select="?node-id"/>
+                        <xsl:map-entry key="'x'" select="$x"/>
+                        <xsl:map-entry key="'y'" select="$y"/>
+                        <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
+                        <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
+                        <xsl:map-entry key="'dx'" select="?dx"/>
+                        <xsl:map-entry key="'dy'" select="?dy"/>
+                    </xsl:map>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="."/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:for-each>
     </xsl:function>
     
