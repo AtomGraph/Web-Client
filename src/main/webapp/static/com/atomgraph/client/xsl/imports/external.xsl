@@ -71,8 +71,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="@rdf:about | @rdf:resource" mode="svg:Anchor">
         <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
-        <xsl:param name="id" select="encode-for-uri(@rdf:about)" as="xs:string?"/>
-        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
+        <xsl:param name="id" select="encode-for-uri(.)" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
 
