@@ -59,7 +59,7 @@ exclude-result-prefixes="#all">
         </xsl:choose>
         
         <li>
-            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
 
             <xsl:if test="not($leaf)">
                 <span class="divider">/</span>
@@ -131,7 +131,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
             <h2>
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+                <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
             </h2>
             
             <p>
@@ -152,7 +152,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class">active</xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
         </li>
     </xsl:template>
     
@@ -190,7 +190,7 @@ exclude-result-prefixes="#all">
         </xsl:variable>
         <xsl:variable name="this" select="." as="element()"/>
         <xsl:variable name="link" as="element()">
-            <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
         </xsl:variable>
             
         <xsl:for-each select="$image-uris[1]">

@@ -26,6 +26,7 @@ limitations under the License.
 <xsl:stylesheet version="3.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:map="http://www.w3.org/2005/xpath-functions/map"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -36,10 +37,10 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:svg="http://www.w3.org/2000/svg"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
-        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)) }) || '#' || encode-for-uri(@rdf:about))" as="xs:anyURI"/>
-        <xsl:param name="id" select="encode-for-uri(@rdf:about)" as="xs:string?"/>
-        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
+    <xsl:template match="@rdf:about" mode="xhtml:Anchor">
+        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
+        <xsl:param name="id" select="encode-for-uri(.)" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
 
@@ -53,11 +54,12 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:resource | srx:uri">
-        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), map{ 'uri': string(ac:document-uri(.)) }) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
+        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
-        
+        <xsl:param name="target" as="xs:string?"/>
+
         <xsl:next-match>
             <xsl:with-param name="href" select="$href"/>
             <xsl:with-param name="id" select="$id"/>
@@ -68,7 +70,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:about | @rdf:resource" mode="svg:Anchor">
-        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)) }) || '#' || encode-for-uri(@rdf:about))" as="xs:anyURI"/>
+        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
         <xsl:param name="id" select="encode-for-uri(@rdf:about)" as="xs:string?"/>
         <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>

@@ -261,7 +261,7 @@ exclude-result-prefixes="#all">
             <p>
                 <hr/>
                 <xsl:sequence select="format-date(current-date(), '[Y]', $ldt:lang, (), ())"/>.
-                Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))" mode="xhtml:Anchor"/>.
+                Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>
         </div>

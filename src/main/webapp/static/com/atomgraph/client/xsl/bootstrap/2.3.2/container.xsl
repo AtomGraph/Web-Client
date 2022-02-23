@@ -55,7 +55,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
             <h2>
-                <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
             </h2>
 
             <p>
@@ -114,7 +114,7 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="." mode="bs2:Actions"/>
 
                     <h2>
-                        <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+                        <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
                     </h2>
                     <p>
                         <xsl:apply-templates select="." mode="ac:description"/>
@@ -184,7 +184,7 @@ exclude-result-prefixes="#all">
 
             <xsl:if test="$anchor-column">
                 <td>
-                    <xsl:apply-templates select="." mode="xhtml:Anchor"/>
+                    <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
                 </td>
             </xsl:if>
             

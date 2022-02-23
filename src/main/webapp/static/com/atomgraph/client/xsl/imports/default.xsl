@@ -170,10 +170,10 @@ exclude-result-prefixes="#all">
     <!-- INLINE MODE -->
     
     <!-- subject resource -->
-    <xsl:template match="*[@rdf:about]" mode="xhtml:Anchor">
-        <xsl:param name="href" select="@rdf:about" as="xs:anyURI"/>
+    <xsl:template match="@rdf:about" mode="xhtml:Anchor">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="title" select="@rdf:about" as="xs:string?"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
 
@@ -191,16 +191,16 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
             </xsl:if>
             
-            <xsl:apply-templates select="." mode="ac:label"/>
+            <xsl:apply-templates select=".." mode="ac:label"/>
         </a>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:nodeID]" mode="xhtml:Anchor">
-        <xsl:param name="id" select="@rdf:nodeID" as="xs:string"/>
-        <xsl:param name="title" select="@rdf:nodeID" as="xs:string?"/>
+    <xsl:template match="@rdf:nodeID" mode="xhtml:Anchor">
+        <xsl:param name="id" select="." as="xs:string"/>
+        <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
-        <span id="{$id}">
+        <a id="{$id}">
             <xsl:if test="$title">
                 <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
             </xsl:if>
@@ -208,8 +208,8 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="ac:label"/>
-        </span>
+            <xsl:apply-templates select=".." mode="ac:label"/>
+        </a>
     </xsl:template>
 
     <!-- DEFAULT MODE -->
@@ -268,7 +268,7 @@ exclude-result-prefixes="#all">
 
     <!-- object blank node -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID">
-        <xsl:param name="href" select="xs:anyURI(concat('#', .))" as="xs:anyURI"/>
+        <xsl:param name="href" select="xs:anyURI('#' || .)" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>

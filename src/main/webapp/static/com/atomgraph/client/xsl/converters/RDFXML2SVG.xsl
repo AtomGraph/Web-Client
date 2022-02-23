@@ -35,8 +35,8 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:math="http://www.w3.org/2005/xpath-functions/math"
 exclude-result-prefixes="#all">
 
-    <!-- Paper on force directed layout in XSLT: "GraphML Transformation" -->
-    <!-- http://www.mathe2.uni-bayreuth.de/axel/papers/reingold:graph_drawing_by_force_directed_placement.pdf -->
+    <!-- Paper on force directed layout in XSLT: "GraphML Transformation": http://www.mathe2.uni-bayreuth.de/axel/papers/reingold:graph_drawing_by_force_directed_placement.pdf -->
+    <!-- Reference implementation: https://gist.github.com/mmisono/8972731 -->
     <!-- 1. position resource nodes (optionally also literals) randomly -->
     <!-- 2. move nodes in a loop using the force-directed algorithm -->
     <!-- 3. draw lines between the nodes, calculating the correct intersection with the node border -->
@@ -53,7 +53,7 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="show-literals" select="false()" as="xs:boolean"/>
     <xsl:param name="show-object-resources" select="false()" as="xs:boolean"/>
-    <xsl:param name="step-count" select="20" as="xs:integer"/> <!-- number of iteration steps -->
+    <xsl:param name="step-count" select="30" as="xs:integer"/> <!-- number of iteration steps -->
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
     <xsl:param name="spring-length" select="50" as="xs:double"/> <!-- ideal spring length -->
@@ -198,14 +198,12 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="r" select="12" as="xs:double"/>
+        <xsl:param name="r" select="15" as="xs:double"/>
         <xsl:param name="random-seed" select="if (../rdf:type/@rdf:*) then random-number-generator(../rdf:type[1]/@rdf:*)?number else ()" as="xs:double?"/>
         <xsl:param name="hsl" select="if ($random-seed) then 'hsl(' || $random-seed * 360 || ', 50%, 70%)' else ()" as="xs:string?"/>
         <xsl:param name="fill" select="if ($hsl) then $hsl else '#acf'" as="xs:string"/>
         <xsl:param name="stroke" select="'gray'" as="xs:string"/>
         <xsl:param name="stroke-width" select="1" as="xs:integer"/>
-        <xsl:param name="font-size" select="6" as="xs:integer"/>
-        <xsl:param name="dy" select="'.3em'" as="xs:string"/>
 
         <!-- @x and @y will be set by the ac:SVGPositioningLoop -->
         <g id="{$id}" class="subject" about="{.}" transform="translate(0 0)"> <!-- need an initial @transform for ac:SVGPositioning template to match -->
@@ -213,18 +211,19 @@ exclude-result-prefixes="#all">
                 <title><xsl:value-of select="."/></title>
             </circle>
 
-            <xsl:apply-templates select=".." mode="svg:Anchor"/>
+            <xsl:apply-templates select="." mode="svg:Anchor"/>
         </g>
     </xsl:template>
 
-    <!-- TO-DO: align match with xhtml:Anchor -->
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="svg:Anchor">
         <xsl:param name="href" select="if (local-name() = ('about', 'resource')) then . else ()" as="xs:anyURI?"/>
         <xsl:param name="id" select="if (local-name() = 'nodeID') then . else ()" as="xs:string?"/>
         <xsl:param name="title" select="if (parent::rdf:Description) then ac:svg-label(..) else ac:svg-object-label(.)" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
-
+        <xsl:param name="font-size" select="6" as="xs:integer"/>
+        <xsl:param name="dy" select="'.3em'" as="xs:string"/>
+        
         <a>
             <xsl:if test="$href">
                 <xsl:attribute name="href"><xsl:sequence select="$href"/></xsl:attribute>
@@ -397,11 +396,9 @@ exclude-result-prefixes="#all">
                     <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
                     <xsl:choose>
                         <xsl:when test="$distance2 ne 0">
-                            <!-- if notes are in the same position, act as though they are a small distance apart -->
-                            <!-- <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/> -->
                             <!-- euclidean distance -->
                             <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-                            <!-- repulsion force coefficient (k^2/d)-->
+                            <!-- repulsion force coefficient (k^2/d) -->
                             <xsl:variable name="force" select="($spring-length * $spring-length) div $distance" as="xs:double"/>
                             <xsl:variable name="d" select="$force div $distance" as="xs:double"/>
 
@@ -432,8 +429,6 @@ exclude-result-prefixes="#all">
                 <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
                 <!-- square of euclidean distance -->
                 <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
-                <!-- if notes are in the same position, act as though they are a small distance apart -->
-                <!--  <xsl:variable name="distance2" select="if ($distance2 eq 0) then random-number-generator($distance2)?number else $distance2" as="xs:double"/> -->
                 <xsl:choose>
                     <xsl:when test="$distance2 ne 0">
                         <!-- euclidean distance -->
