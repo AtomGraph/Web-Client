@@ -215,43 +215,75 @@ exclude-result-prefixes="#all">
         </g>
     </xsl:template>
 
+    <!-- function courtesy of Joe Wicentowski -->
+    <xsl:function name="ac:trim-lines" as="xs:string*">
+        <xsl:param name="string" as="xs:string*"/>
+        <xsl:param name="line-length" as="xs:integer"/>
+        
+        <xsl:sequence select="
+            let $words := tokenize($string),
+                $trim-function := function ($lines, $word) {
+                    let $reversed := $lines => reverse(),
+                        $current-line := $reversed => head(),
+                        $previous-lines := $reversed => tail() => reverse(),
+                        $candidate-line := string-join(($current-line, $word), ' ')
+                    return
+                        if (string-length($candidate-line) gt $line-length) then
+                            ($previous-lines, $current-line || ' ', $word)
+                        else
+                            ($previous-lines, $candidate-line)
+                },
+                $lines := fold-left($words, (), $trim-function)
+            return $lines
+        "/>
+    </xsl:function>
+    
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="svg:Anchor">
         <xsl:param name="href" select="if (local-name() = ('about', 'resource')) then . else ()" as="xs:anyURI?"/>
         <xsl:param name="id" select="if (local-name() = 'nodeID') then . else ()" as="xs:string?"/>
-        <xsl:param name="title" select="if (parent::rdf:Description) then ac:svg-label(..) else ac:svg-object-label(.)" as="xs:string?"/>
+        <xsl:param name="label" select="if (parent::rdf:Description) then ac:svg-label(..) else ac:svg-object-label(.)" as="xs:string"/>
+        <xsl:param name="title" select="$label" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
         <xsl:param name="font-size" select="6" as="xs:integer"/>
-        <xsl:param name="dy" select="'.3em'" as="xs:string"/>
-        
+        <xsl:param name="dy" select=".3" as="xs:double"/>
+        <xsl:param name="dy-per-line" select="-0.6" as="xs:double"/>
+        <xsl:param name="line-length" select="10" as="xs:integer"/>
+        <xsl:param name="max-lines" select="3" as="xs:integer"/>
+
         <a>
             <xsl:if test="$href">
-                <xsl:attribute name="href"><xsl:sequence select="$href"/></xsl:attribute>
+                <xsl:attribute name="href" select="$href"/>
             </xsl:if>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
-                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
+                <xsl:attribute name="target" select="$target"/>
             </xsl:if>
             
             <text x="0" y="0" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
-                <xsl:choose>
-                    <!-- subject -->
-                    <xsl:when test="parent::rdf:Description">
-                        <xsl:value-of select="ac:svg-label(..)"/>
-                    </xsl:when>
-                    <!-- object -->
-                    <xsl:otherwise>
-                        <xsl:value-of select="ac:svg-object-label(.)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
+                <xsl:variable name="lines" select="ac:trim-lines($label, $line-length)" as="xs:string*"/>
+                <xsl:variable name="tspans" as="element()*">
+                    <xsl:for-each select="subsequence($lines[not(. = ' ')], 1, $max-lines)">
+                        <tspan x="0">
+                            <xsl:if test="position() &gt; 1">
+                                <xsl:attribute name="dy" select="'1.2em'"/>
+                            </xsl:if>
+
+                            <xsl:value-of select="."/>
+                        </tspan>
+                    </xsl:for-each>
+                </xsl:variable>
+                
+                <xsl:attribute name="dy" select="format-number($dy + (count($tspans) - 1) * $dy-per-line, '###.00') || 'em'"/>
+                <xsl:copy-of select="$tspans"/>
             </text>
         </a>
     </xsl:template>
