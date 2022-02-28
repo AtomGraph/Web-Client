@@ -170,9 +170,7 @@ exclude-result-prefixes="#all">
                             <div class="input-append">
                                 <input type="text" name="uri" class="input-xxlarge">
                                     <xsl:if test="ac:uri()">
-                                        <xsl:attribute name="value">
-                                            <xsl:sequence select="ac:uri()"/>
-                                        </xsl:attribute>
+                                        <xsl:attribute name="value" select="ac:uri()"/>
                                     </xsl:if>
                                 </input>
                                 <button type="submit" class="btn btn-primary">Go</button>

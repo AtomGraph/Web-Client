@@ -149,7 +149,7 @@ exclude-result-prefixes="#all">
         
         <li>
             <xsl:if test="$active">
-                <xsl:attribute name="class">active</xsl:attribute>
+                <xsl:attribute name="class" select="'active'"/>
             </xsl:if>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>

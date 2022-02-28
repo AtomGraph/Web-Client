@@ -112,10 +112,10 @@ LIMIT 100</xsl:param>
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$accept-charset">
-                <xsl:attribute name="accept-charset"><xsl:sequence select="$accept-charset"/></xsl:attribute>
+                <xsl:attribute name="accept-charset" select="$accept-charset"/>
             </xsl:if>
             <xsl:if test="$enctype">
-                <xsl:attribute name="enctype"><xsl:sequence select="$enctype"/></xsl:attribute>
+                <xsl:attribute name="enctype" select="$enctype"/>
             </xsl:if>
         
             <fieldset>

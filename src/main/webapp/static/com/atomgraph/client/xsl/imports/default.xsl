@@ -158,10 +158,10 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="value" select="$value"/>
             </xsl:if>
             <xsl:if test="$selected">
-                <xsl:attribute name="selected">selected</xsl:attribute>
+                <xsl:attribute name="selected" select="'selected'"/>
             </xsl:if>
             <xsl:if test="$disabled">
-                <xsl:attribute name="disabled">disabled</xsl:attribute>
+                <xsl:attribute name="disabled" select="'disabled'"/>
             </xsl:if>
             <xsl:apply-templates select="." mode="ac:label"/>
         </option>
@@ -188,7 +188,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
-                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
+                <xsl:attribute name="target" select="$target"/>
             </xsl:if>
             
             <xsl:apply-templates select=".." mode="ac:label"/>
@@ -257,7 +257,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
-                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
+                <xsl:attribute name="target" select="$target"/>
             </xsl:if>
             
             <xsl:value-of>
@@ -285,7 +285,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
-                <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
+                <xsl:attribute name="target" select="$target"/>
             </xsl:if>
             
             <xsl:value-of>
@@ -520,10 +520,10 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$style">
-                <xsl:attribute name="style"><xsl:sequence select="$style"/></xsl:attribute>
+                <xsl:attribute name="style" select="$style"/>
             </xsl:if>
             <xsl:if test="$disabled">
-                <xsl:attribute name="disabled">disabled</xsl:attribute>
+                <xsl:attribute name="disabled" select="'disabled'"/>
             </xsl:if>
             <xsl:if test="$title">
                 <xsl:attribute name="title" select="$title"/>
@@ -532,10 +532,10 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="value" select="$value"/>
             </xsl:if>
             <xsl:if test="$checked">
-                <xsl:attribute name="checked">checked</xsl:attribute>
+                <xsl:attribute name="checked" select="'checked'"/>
             </xsl:if>
             <xsl:if test="not($autocomplete)">
-                <xsl:attribute name="autocomplete">off</xsl:attribute>
+                <xsl:attribute name="autocomplete" select="'off'"/>
             </xsl:if>
         </input>
     </xsl:template>
