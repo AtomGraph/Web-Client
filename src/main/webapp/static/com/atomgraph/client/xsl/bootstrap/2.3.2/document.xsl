@@ -76,16 +76,16 @@ exclude-result-prefixes="#all">
 
         <form method="{$method}" action="{$action}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$accept-charset">
-                <xsl:attribute name="accept-charset"><xsl:sequence select="$accept-charset"/></xsl:attribute>
+                <xsl:attribute name="accept-charset" select="$accept-charset"/>
             </xsl:if>
             <xsl:if test="$enctype">
-                <xsl:attribute name="enctype"><xsl:sequence select="$enctype"/></xsl:attribute>
+                <xsl:attribute name="enctype" select="$enctype"/>
             </xsl:if>
 
             <xsl:comment>This form uses RDF/POST encoding: http://www.lsrn.org/semweb/rdfpost.html</xsl:comment>

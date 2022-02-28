@@ -155,7 +155,7 @@ exclude-result-prefixes="#all">
 
         <option>
             <xsl:if test="$value">
-                <xsl:attribute name="value"><xsl:sequence select="$value"/></xsl:attribute>
+                <xsl:attribute name="value" select="$value"/>
             </xsl:if>
             <xsl:if test="$selected">
                 <xsl:attribute name="selected">selected</xsl:attribute>
@@ -179,13 +179,13 @@ exclude-result-prefixes="#all">
 
         <a href="{$href}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
                 <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
@@ -202,10 +202,10 @@ exclude-result-prefixes="#all">
 
         <a id="{$id}">
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
             <xsl:apply-templates select=".." mode="ac:label"/>
@@ -222,13 +222,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
             <xsl:variable name="label" as="xs:string?">
@@ -248,13 +248,13 @@ exclude-result-prefixes="#all">
 
         <a href="{$href}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
                 <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
@@ -276,13 +276,13 @@ exclude-result-prefixes="#all">
 
         <a href="{$href}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$target">
                 <xsl:attribute name="target"><xsl:sequence select="$target"/></xsl:attribute>
@@ -306,13 +306,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
             <xsl:sequence select="."/>
@@ -326,13 +326,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
             <xsl:sequence select="format-number(., '#####.00')"/>
@@ -346,13 +346,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
             <xsl:sequence select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
@@ -367,13 +367,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
             <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
@@ -390,13 +390,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
             xsd:<xsl:sequence select="substring-after(., '&xsd;')"/>
@@ -411,13 +411,13 @@ exclude-result-prefixes="#all">
         
         <span>
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
             <xsl:sequence select="."/>
@@ -514,10 +514,10 @@ exclude-result-prefixes="#all">
         
         <input type="{$type}" name="{$name}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$style">
                 <xsl:attribute name="style"><xsl:sequence select="$style"/></xsl:attribute>
@@ -526,10 +526,10 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
             <xsl:if test="$title">
-                <xsl:attribute name="title"><xsl:sequence select="$title"/></xsl:attribute>
+                <xsl:attribute name="title" select="$title"/>
             </xsl:if>
             <xsl:if test="$value">
-                <xsl:attribute name="value"><xsl:sequence select="$value"/></xsl:attribute>
+                <xsl:attribute name="value" select="$value"/>
             </xsl:if>
             <xsl:if test="$checked">
                 <xsl:attribute name="checked">checked</xsl:attribute>

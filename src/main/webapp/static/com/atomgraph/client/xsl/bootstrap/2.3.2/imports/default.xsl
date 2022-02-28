@@ -78,7 +78,7 @@ exclude-result-prefixes="#all">
 
         <div class="control-group">
             <xsl:if test="$error">
-                <xsl:attribute name="class">control-group error</xsl:attribute>
+                <xsl:attribute name="class" select="'control-group error'"/>
             </xsl:if>
             <xsl:apply-templates select="." mode="xhtml:Input">
                 <xsl:with-param name="type" select="'hidden'"/>
@@ -161,19 +161,19 @@ exclude-result-prefixes="#all">
         
         <textarea name="{$name}">
             <xsl:if test="$id">
-                <xsl:attribute name="id"><xsl:sequence select="$id"/></xsl:attribute>
+                <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$class">
-                <xsl:attribute name="class"><xsl:sequence select="$class"/></xsl:attribute>
+                <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:if test="$style">
-                <xsl:attribute name="style"><xsl:sequence select="$style"/></xsl:attribute>
+                <xsl:attribute name="style" select="$style"/>
             </xsl:if>
             <xsl:if test="$rows">
-                <xsl:attribute name="rows"><xsl:sequence select="$rows"/></xsl:attribute>
+                <xsl:attribute name="rows" select="$rows"/>
             </xsl:if>
             <xsl:if test="$disabled">
-                <xsl:attribute name="disabled">disabled</xsl:attribute>
+                <xsl:attribute name="disabled" select="'disabled'"/>
             </xsl:if>
 
             <xsl:sequence select="$value"/>
