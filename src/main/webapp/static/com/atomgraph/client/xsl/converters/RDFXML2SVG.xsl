@@ -596,7 +596,7 @@ exclude-result-prefixes="#all">
             <xsl:variable name="y1-offset" select="if (preceding-sibling::svg:g/@transform) then xs:double(substring-before(substring-after(preceding-sibling::svg:g/@transform, ' '), ')')) else 0" as="xs:double"/>
 
             <xsl:choose>
-                <!-- loop arc (resource property pointing to itself -->
+                <!-- loop arc (resource property pointing to itself) -->
                 <xsl:when test="preceding-sibling::svg:g[@class = 'subject'] is key('subjects', @resource)">
                     <xsl:variable name="property" select="@property" as="xs:string"/>
 
@@ -632,7 +632,7 @@ exclude-result-prefixes="#all">
                     <xsl:variable name="x2" select="if ($x1 &gt; $x2) then ($x2 + $xc) else ($x2 - $xc)" as="xs:double"/>
                     <xsl:variable name="y2" select="if ($y1 &gt; $y2) then ($y2 + $yc) else ($y2 - $yc)" as="xs:double"/>
 
-                    <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)">
+                    <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)" ac:id1="{preceding-sibling::svg:g/@id}" ac:id2="{key('subjects', @resource)/@id}">
                         <title><xsl:value-of select="@property"/></title>
                     </line>
                 </xsl:when>
