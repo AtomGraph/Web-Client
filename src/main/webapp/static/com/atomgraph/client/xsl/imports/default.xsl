@@ -200,7 +200,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
-        <a id="{$id}">
+        <span id="{$id}">
             <xsl:if test="$title">
                 <xsl:attribute name="title" select="$title"/>
             </xsl:if>
@@ -209,7 +209,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <xsl:apply-templates select=".." mode="ac:label"/>
-        </a>
+        </span>
     </xsl:template>
 
     <!-- DEFAULT MODE -->
