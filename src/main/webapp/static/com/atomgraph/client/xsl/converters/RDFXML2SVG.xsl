@@ -632,7 +632,7 @@ exclude-result-prefixes="#all">
                     <xsl:variable name="x2" select="if ($x1 &gt; $x2) then ($x2 + $xc) else ($x2 - $xc)" as="xs:double"/>
                     <xsl:variable name="y2" select="if ($y1 &gt; $y2) then ($y2 + $yc) else ($y2 - $yc)" as="xs:double"/>
 
-                    <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)" ac:id1="{preceding-sibling::svg:g/@id}" ac:id2="{key('subjects', @resource)/@id}">
+                    <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)" data-id1="{preceding-sibling::svg:g/@id}" data-id2="{key('subjects', @resource)/@id}">
                         <title><xsl:value-of select="@property"/></title>
                     </line>
                 </xsl:when>
