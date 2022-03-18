@@ -135,7 +135,6 @@ exclude-result-prefixes="#all">
         <xsl:variable name="svg" as="document-node()">
             <xsl:call-template name="ac:SVGPositioningLoop">
                 <xsl:with-param name="svg" select="$svg"/>
-
                 <xsl:with-param name="count" select="$step-count"/>
                 <xsl:with-param name="spring-stiffness" select="$spring-stiffness" tunnel="yes"/>
                 <xsl:with-param name="spring-length" select="$spring-length" tunnel="yes"/>
