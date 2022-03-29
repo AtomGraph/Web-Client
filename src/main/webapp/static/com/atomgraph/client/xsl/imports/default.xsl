@@ -178,7 +178,11 @@ exclude-result-prefixes="#all">
         <xsl:param name="target" as="xs:string?"/>
         <xsl:param name="mode" as="xs:anyURI?"/>
 
-        <xsl:variable name="href" select="if ($mode) then ac:build-uri($href, map{ 'mode': string($mode) }) else $href" as="xs:anyURI"/>
+        <!-- append ?mode to URI before re-appending #fragment (if it exists) -->
+        <xsl:variable name="doc-href" select="ac:document-uri($href)" as="xs:anyURI"/>
+        <xsl:variable name="fragment" select="if (contains($href, '#')) then substring-after($href, '#') else ()" as="xs:string?"/>
+        <xsl:variable name="href" select="if ($mode) then ac:build-uri($doc-href, map{ 'mode': string($mode) }) else $href" as="xs:anyURI"/>
+        <xsl:variable name="href" select="if ($fragment) then xs:anyURI($href || '#' || $fragment) else $href" as="xs:anyURI"/>
         <a href="{$href}">
             <xsl:if test="$id">
                 <xsl:attribute name="id" select="$id"/>
