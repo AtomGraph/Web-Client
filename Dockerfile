@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-11 as maven
+FROM maven:3.8.4-openjdk-17 as maven
 
 ### Build AtomGraph Web-Client
 
@@ -8,9 +8,9 @@ COPY . /usr/src/Web-Client
 
 RUN mvn -Pstandalone clean install
 
-### Deploy Processor webapp on Tomcat
+### Deploy Web-Client webapp on Tomcat
 
-FROM tomcat:9.0.39-jdk11
+FROM tomcat:9.0.59-jdk17-openjdk
 
 WORKDIR $CATALINA_HOME/webapps
 

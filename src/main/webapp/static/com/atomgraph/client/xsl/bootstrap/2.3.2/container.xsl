@@ -41,6 +41,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'well'" as="xs:string?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <div>
             <xsl:if test="$id">
@@ -55,7 +56,9 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
             <h2>
-                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
+                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
+                    <xsl:with-param name="mode" select="$mode"/>
+                </xsl:apply-templates>
             </h2>
 
             <p>
@@ -98,6 +101,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
         <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <li>
             <xsl:if test="$id">
@@ -114,7 +118,9 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="." mode="bs2:Actions"/>
 
                     <h2>
-                        <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
+                        <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
+                            <xsl:with-param name="mode" select="$mode"/>
+                        </xsl:apply-templates>
                     </h2>
                     <p>
                         <xsl:apply-templates select="." mode="ac:description"/>
@@ -173,6 +179,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*" tunnel="yes"/>
         <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <tr>
             <xsl:if test="$id">
@@ -184,7 +191,9 @@ exclude-result-prefixes="#all">
 
             <xsl:if test="$anchor-column">
                 <td>
-                    <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
+                    <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
+                        <xsl:with-param name="mode" select="$mode"/>
+                    </xsl:apply-templates>
                 </td>
             </xsl:if>
             

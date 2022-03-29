@@ -42,7 +42,7 @@ public class XsltResolver extends DataManagerImpl
         
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         acceptableXMLMediaTypeList.add(com.atomgraph.client.MediaType.TEXT_XSL_TYPE);
-        acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
+        acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(MediaType[]::new);
     }
 
     @Override

@@ -66,7 +66,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         List<MediaType> acceptedTypeList = new ArrayList();
         acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
         acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
-        acceptedTypes = acceptedTypeList.toArray(new MediaType[acceptedTypeList.size()]);
+        acceptedTypes = acceptedTypeList.toArray(MediaType[]::new);
 
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         Map<String, String> q1 = new HashMap<>();
@@ -84,7 +84,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         q04.put("q", "0.4");
         acceptableXMLMediaTypeList.add(new MediaType(MediaType.TEXT_XML_TYPE.getType(), MediaType.TEXT_XML_TYPE.getSubtype(), q04));
 
-        acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(new MediaType[acceptableXMLMediaTypeList.size()]);
+        acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(MediaType[]::new);
     }
 
     @Override

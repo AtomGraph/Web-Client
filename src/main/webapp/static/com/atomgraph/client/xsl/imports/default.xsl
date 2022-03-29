@@ -176,7 +176,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
+        <xsl:param name="mode" as="xs:anyURI?"/>
 
+        <xsl:variable name="href" select="if ($mode) then ac:build-uri($href, map{ 'mode': string($mode) }) else $href" as="xs:anyURI"/>
         <a href="{$href}">
             <xsl:if test="$id">
                 <xsl:attribute name="id" select="$id"/>
