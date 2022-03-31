@@ -41,6 +41,7 @@ import com.atomgraph.core.util.ResultSetUtils;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.NotFoundException;
@@ -210,8 +211,8 @@ public class ProxyResourceBase implements Resource
     public Response getResponse(Model model)
     {
         List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Model.class),
-                new ArrayList(),
-                new ArrayList()).
+                getLanguages(),
+                getEncodings()).
             add().
             build();
 
@@ -236,8 +237,8 @@ public class ProxyResourceBase implements Resource
         resultSet.reset();
         
         List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(ResultSet.class),
-                new ArrayList(),
-                new ArrayList()).
+                getLanguages(),
+                getEncodings()).
             add().
             build();
 
@@ -357,6 +358,27 @@ public class ProxyResourceBase implements Resource
     public HttpServletRequest getHttpServletRequest()
     {
         return httpServletRequest;
+    }
+    
+    /**
+     * Returns a list of supported languages.
+     * 
+     * @return list of languages
+     */
+    public List<Locale> getLanguages()
+    {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Returns a list of supported HTTP encodings.
+     * Note: this is different from content encodings such as UTF-8.
+     * 
+     * @return list of encodings
+     */
+    public List<String> getEncodings()
+    {
+        return new ArrayList<>();
     }
     
 }
