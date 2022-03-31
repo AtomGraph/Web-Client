@@ -16,8 +16,7 @@
 
 # PROPERTIES
 
-:mode a owl:ObjectProperty, ldt:InheritedProperty ; # used by inheritance rules
-    rdfs:domain ldt:Template ;
+:mode a owl:ObjectProperty ; # used by inheritance rules
     rdfs:range :Mode ;
     rdfs:label "Layout mode" ;
     rdfs:isDefinedBy : .
