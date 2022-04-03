@@ -35,16 +35,16 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="dct:title[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[dct:title/text()]" mode="ac:label">
-        <xsl:sequence select="dct:title/text()"/>
+    <xsl:template match="*[dct:title[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="dct:title[not(@xml:lang)]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[$ldt:lang][dct:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="dct:description[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[dct:description/text()]" mode="ac:description">
-        <xsl:sequence select="dct:description/text()"/>
+    <xsl:template match="*[dct:description[not(@xml:lang)]/text()]" mode="ac:description">
+        <xsl:sequence select="dct:description[not(@xml:lang)]/text()"/>
     </xsl:template>
     
 </xsl:stylesheet>

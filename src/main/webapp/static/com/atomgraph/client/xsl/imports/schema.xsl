@@ -41,12 +41,12 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="schema2:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[schema1:name/text()]" mode="ac:label">
-        <xsl:sequence select="schema1:name/text()"/>
+    <xsl:template match="*[schema1:name[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="schema1:name[not(@xml:lang)]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[schema2:name/text()]" mode="ac:label">
-        <xsl:sequence select="schema2:name/text()"/>
+    <xsl:template match="*[schema2:name[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="schema2:name[not(@xml:lang)]/text()"/>
     </xsl:template>
     
     <xsl:template match="*[$ldt:lang][schema1:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
@@ -57,12 +57,12 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="schema2:description[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[schema1:description/text()]" mode="ac:description">
-        <xsl:sequence select="schema1:description/text()"/>
+    <xsl:template match="*[schema1:description[not(@xml:lang)]/text()]" mode="ac:description">
+        <xsl:sequence select="schema1:description[not(@xml:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[schema2:description/text()]" mode="ac:description">
-        <xsl:sequence select="schema2:description/text()"/>
+    <xsl:template match="*[schema2:description[not(@xml:lang)]/text()]" mode="ac:description">
+        <xsl:sequence select="schema2:description[not(@xml:lang)]/text()"/>
     </xsl:template>
     
     <xsl:template match="schema1:image/@rdf:resource | schema2:image/@rdf:resource | schema1:logo/@rdf:resource | schema2:logo/@rdf:resource | schema1:thumbnailUrl/@rdf:resource | schema2:thumbnailUrl/@rdf:resource">

@@ -35,8 +35,8 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="skos:prefLabel[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[skos:prefLabel/text()]" mode="ac:label">
-        <xsl:sequence select="skos:prefLabel/text()"/>
+    <xsl:template match="*[skos:prefLabel[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="skos:prefLabel[not(@xml:lang)]/text()"/>
     </xsl:template>
 
 </xsl:stylesheet>

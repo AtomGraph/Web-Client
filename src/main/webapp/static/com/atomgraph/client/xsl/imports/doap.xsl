@@ -35,16 +35,16 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="doap:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[doap:name/text()]" mode="ac:label">
-        <xsl:sequence select="doap:name/text()"/>
+    <xsl:template match="*[doap:name[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="doap:name[not(@xml:lang)]/text()"/>
     </xsl:template>
 
    <xsl:template match="*[$ldt:lang][doap:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="doap:description[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[doap:description/text()]" mode="ac:description">
-        <xsl:sequence select="doap:description/text()"/>
+    <xsl:template match="*[doap:description[not(@xml:lang)]/text()]" mode="ac:description">
+        <xsl:sequence select="doap:description[not(@xml:lang)]/text()"/>
     </xsl:template>
 
     <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">

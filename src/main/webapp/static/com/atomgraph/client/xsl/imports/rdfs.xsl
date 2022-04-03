@@ -35,16 +35,16 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="rdfs:label[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[rdfs:label/text()]" mode="ac:label">
-        <xsl:sequence select="rdfs:label/text()"/>
+    <xsl:template match="*[rdfs:label[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="rdfs:label[not(@xml:lang)]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[$ldt:lang][rdfs:comment[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="rdfs:comment[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[rdfs:comment/text()]" mode="ac:description">
-        <xsl:sequence select="rdfs:comment/text()"/>
+    <xsl:template match="*[rdfs:comment[not(@xml:lang)]/text()]" mode="ac:description">
+        <xsl:sequence select="rdfs:comment[not(@xml:lang)]/text()"/>
     </xsl:template>
     
 </xsl:stylesheet>

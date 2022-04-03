@@ -237,10 +237,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
-            <xsl:variable name="label" as="xs:string?">
-                <xsl:apply-templates select="." mode="ac:property-label"/>
-            </xsl:variable>
-            <xsl:sequence select="upper-case(substring($label, 1, 1)) || substring($label, 2)"/>
+            <xsl:sequence select="ac:property-label(.)"/>
         </span>
     </xsl:template>
 
@@ -311,7 +308,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- suppress literals that have @xml:lang but do not match $ldt:lang, if they have siblings that do match -->
-    <xsl:template match="text()[$ldt:lang][../@xml:lang and not(lang($ldt:lang, ..))][../preceding-sibling::*[lang($ldt:lang)] or ../following-sibling::*[lang($ldt:lang)]]" priority="1"/>
+    <xsl:template match="text()[$ldt:lang][../@xml:lang and not(lang($ldt:lang, ..))][../preceding-sibling::*[namespace-uri() || local-name() = namespace-uri(current()/..) || local-name(current()/..)][lang($ldt:lang)] or ../following-sibling::*[namespace-uri() || local-name() = namespace-uri(current()/..) || local-name(current()/..)][lang($ldt:lang)]]" priority="1"/>
 
     <xsl:template match="text()[../@rdf:datatype] | srx:literal[@datatype]">
         <xsl:param name="id" as="xs:string?"/>

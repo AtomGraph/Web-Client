@@ -35,8 +35,8 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="sioc:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[sioc:name/text()]" mode="ac:label">
-        <xsl:sequence select="sioc:name/text()"/>
+    <xsl:template match="*[sioc:name[not(@xml:lang)]/text()]" mode="ac:label">
+        <xsl:sequence select="sioc:name[not(@xml:lang)]/text()"/>
     </xsl:template>
 
     <xsl:template match="sioc:email/@rdf:resource">
