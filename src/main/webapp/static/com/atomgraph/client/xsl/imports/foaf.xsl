@@ -87,7 +87,7 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="foaf:nick/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[foaf:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="6">
+    <xsl:template match="*[$ldt:lang][foaf:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="6">
         <xsl:sequence select="foaf:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
     

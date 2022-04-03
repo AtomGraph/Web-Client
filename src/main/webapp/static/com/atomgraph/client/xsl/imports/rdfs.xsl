@@ -31,7 +31,7 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
-    <xsl:template match="*[rdfs:label[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+    <xsl:template match="*[$ldt:lang][rdfs:label[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="rdfs:label[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
@@ -39,7 +39,7 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="rdfs:label/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[rdfs:comment[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
+    <xsl:template match="*[$ldt:lang][rdfs:comment[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="rdfs:comment[lang($ldt:lang)]/text()"/>
     </xsl:template>
     

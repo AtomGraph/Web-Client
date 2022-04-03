@@ -31,7 +31,7 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
-    <xsl:template match="*[doap:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+    <xsl:template match="*[$ldt:lang][doap:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="doap:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
 
@@ -39,7 +39,7 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="doap:name/text()"/>
     </xsl:template>
 
-   <xsl:template match="*[doap:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
+   <xsl:template match="*[$ldt:lang][doap:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="doap:description[lang($ldt:lang)]/text()"/>
     </xsl:template>
     

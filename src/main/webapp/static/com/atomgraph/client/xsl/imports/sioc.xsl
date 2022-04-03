@@ -31,7 +31,7 @@ exclude-result-prefixes="#all">
     
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
-    <xsl:template match="*[sioc:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+    <xsl:template match="*[$ldt:lang][sioc:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="sioc:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
     

@@ -31,7 +31,7 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
-    <xsl:template match="*[skos:prefLabel[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+    <xsl:template match="*[$ldt:lang][skos:prefLabel[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="skos:prefLabel[lang($ldt:lang)]/text()"/>
     </xsl:template>
     

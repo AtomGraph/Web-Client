@@ -33,11 +33,11 @@ exclude-result-prefixes="#all">
 
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
 
-    <xsl:template match="*[schema1:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+    <xsl:template match="*[$ldt:lang][schema1:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="schema1:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[schema2:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
+    <xsl:template match="*[$ldt:lang][schema2:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="schema2:name[lang($ldt:lang)]/text()"/>
     </xsl:template>
     
@@ -49,11 +49,11 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="schema2:name/text()"/>
     </xsl:template>
     
-    <xsl:template match="*[schema1:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
+    <xsl:template match="*[$ldt:lang][schema1:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="schema1:description[lang($ldt:lang)]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[schema2:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
+    <xsl:template match="*[$ldt:lang][schema2:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
         <xsl:sequence select="schema2:description[lang($ldt:lang)]/text()"/>
     </xsl:template>
     

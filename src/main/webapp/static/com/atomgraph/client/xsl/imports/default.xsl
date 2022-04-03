@@ -305,6 +305,14 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="."/>
     </xsl:template>
 
+    <!-- show literals that match $ldt:lang, if any -->
+    <xsl:template match="text()[$ldt:lang][lang($ldt:lang, ..)]" priority="1">
+        <xsl:next-match/>
+    </xsl:template>
+
+    <!-- suppress literals that do not match $ldt:lang, if they have siblings that do match -->
+    <xsl:template match="text()[$ldt:lang][not(lang($ldt:lang, ..))][../preceding-sibling::*[lang($ldt:lang)] or ../following-sibling::*[lang($ldt:lang)]]" priority="1"/>
+
     <xsl:template match="text()[../@rdf:datatype] | srx:literal[@datatype]">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="../@rdf:datatype | @datatype" as="xs:string?"/>
@@ -389,7 +397,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- @rdf:datatype -->
-    <xsl:template match="@rdf:*[local-name() = 'datatype'][starts-with(., '&xsd;')]" priority="1">
+    <xsl:template match="@rdf:datatype[starts-with(., '&xsd;')]" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
@@ -410,7 +418,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- @rdf:datatype -->
-    <xsl:template match="@rdf:*[local-name() = 'datatype']">
+    <xsl:template match="@rdf:datatype">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
@@ -447,14 +455,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
 
     <!-- apply properties that match lang() -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[$ldt:lang][@rdf:about or @rdf:nodeID]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
         <td>
             <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
         </td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[$ldt:lang][@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
         <td>
             <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
         </td>
@@ -668,7 +676,7 @@ exclude-result-prefixes="#all">
 
     <!-- datatype -->
     <!-- @rdf:datatype -->
-    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="xhtml:Input">
+    <xsl:template match="@rdf:datatype" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -688,7 +696,7 @@ exclude-result-prefixes="#all">
 
     <!-- language tag -->
     <!-- @xml:lang -->
-    <xsl:template match="@xml:*[local-name() = 'lang']" mode="xhtml:Input">
+    <xsl:template match="@xml:lang" mode="xhtml:Input">
         <xsl:param name="type" select="'text'" as="xs:string"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
