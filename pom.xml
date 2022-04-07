@@ -112,7 +112,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>twirl</artifactId>
-            <version>1.0.27-SNAPSHOT</version>
+            <version>1.0.28-SNAPSHOT</version>
             <exclusions>
                 <!-- exclude jakarta.json as its version clashes wich Jersey's -->
                 <exclusion>
