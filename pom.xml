@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>3.1.37-SNAPSHOT</version>
+    <version>3.1.38-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -92,6 +92,15 @@
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
+                <!-- exclude HTTP Client as its version clashes with Jersey's -->
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -115,7 +124,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>3.1.5-SNAPSHOT</version>
+            <version>3.1.6-SNAPSHOT</version>
             <exclusions>
                 <!-- exclude jakarta.json as its version clashes wich Jersey's -->
                 <exclusion>
