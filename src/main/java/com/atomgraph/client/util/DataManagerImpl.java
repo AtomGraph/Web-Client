@@ -26,13 +26,12 @@ import java.util.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
-import com.atomgraph.core.MediaTypes;
+import com.atomgraph.core.client.LinkedDataClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import net.sf.saxon.Configuration;
@@ -57,15 +56,15 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
             
-    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, Client client, MediaTypes mediaTypes,
+    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, LinkedDataClient ldc,
             boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        super(mapper, modelCache, client, mediaTypes, cacheModelLoads, preemptiveAuth);
+        super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
         List<MediaType> acceptedTypeList = new ArrayList();
-        acceptedTypeList.addAll(mediaTypes.getReadable(Model.class));
-        acceptedTypeList.addAll(mediaTypes.getReadable(ResultSet.class));
+        acceptedTypeList.addAll(ldc.getMediaTypes().getReadable(Model.class));
+        acceptedTypeList.addAll(ldc.getMediaTypes().getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(MediaType[]::new);
 
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
@@ -89,7 +88,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
 
     @Override
     public Response load(String filenameOrURI)
-    {        
+    {
         return get(filenameOrURI, getAcceptedMediaTypes());
     }
     
@@ -169,7 +168,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     @Override
     public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
     {
-        try (Response cr = getClient().target(uri).request().get())
+        try (Response cr = getLinkedDataClient().getClient().target(uri).request().get())
         {
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 throw new IOException("Unparsed text could not be successfully loaded over HTTP");

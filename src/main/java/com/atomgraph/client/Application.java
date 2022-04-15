@@ -41,6 +41,7 @@ import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.client.writer.function.Construct;
 import com.atomgraph.client.writer.function.ConstructForClass;
 import com.atomgraph.client.writer.function.UUID;
+import com.atomgraph.core.client.LinkedDataClient;
 import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.vocabulary.A;
 import java.io.FileNotFoundException;
@@ -160,7 +161,7 @@ public class Application extends ResourceConfig
         try
         {
             XsltCompiler xsltComp = xsltProc.newXsltCompiler();
-            xsltComp.setURIResolver(new XsltResolver(LocationMapper.get(), new HashMap<>(), client, mediaTypes, false, false, true));
+            xsltComp.setURIResolver(new XsltResolver(LocationMapper.get(), new HashMap<>(), LinkedDataClient.create(client, mediaTypes), false, false, true));
             xsltExec = xsltComp.compile(stylesheet);
         }
         catch (SaxonApiException ex)
@@ -255,7 +256,7 @@ public class Application extends ResourceConfig
 
     public static DataManager getDataManager(final LocationMapper mapper, final Client client, final MediaTypes mediaTypes, final boolean cacheModelLoads, final boolean preemptiveAuth, final boolean resolvingUncached)
     {
-        return new DataManagerImpl(mapper, new HashMap<>(), client, mediaTypes, cacheModelLoads, preemptiveAuth, resolvingUncached);
+        return new DataManagerImpl(mapper, new HashMap<>(), LinkedDataClient.create(client, mediaTypes), cacheModelLoads, preemptiveAuth, resolvingUncached);
     }
 
     public MediaTypes getMediaTypes()

@@ -16,11 +16,10 @@
  */
 package com.atomgraph.client.util;
 
-import com.atomgraph.core.MediaTypes;
+import com.atomgraph.core.client.LinkedDataClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.LocationMapper;
@@ -36,9 +35,9 @@ public class XsltResolver extends DataManagerImpl
 
     private final MediaType[] acceptedXMLMediaTypes;
 
-    public XsltResolver(LocationMapper mapper, Map<String, Model> modelCache, Client client, MediaTypes mediaTypes, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
+    public XsltResolver(LocationMapper mapper, Map<String, Model> modelCache, LinkedDataClient ldc, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        super(mapper, modelCache, client, mediaTypes, cacheModelLoads, preemptiveAuth, resolvingUncached);
+        super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth, resolvingUncached);
         
         List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         acceptableXMLMediaTypeList.add(com.atomgraph.client.MediaType.TEXT_XSL_TYPE);
