@@ -174,7 +174,7 @@ exclude-result-prefixes="#all">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                     </xsl:value-of>
-                    <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Delete</xsl:text>
+                    <xsl:text use-when="system-property('xsl:product-name') eq 'SaxonJS'">Delete</xsl:text>
                 </button>
             </form>
         </div>
@@ -184,7 +184,7 @@ exclude-result-prefixes="#all">
                 <xsl:value-of>
                     <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                 </xsl:value-of>
-                <xsl:text use-when="system-property('xsl:product-name') eq 'Saxon-JS'">Edit</xsl:text>
+                <xsl:text use-when="system-property('xsl:product-name') eq 'SaxonJS'">Edit</xsl:text>
             </a>
         </div>
     </xsl:template>
@@ -230,7 +230,7 @@ exclude-result-prefixes="#all">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'Saxon-JS'"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'SaxonJS'"/>
                 
                 <li>
                     <xsl:apply-templates select="."/>

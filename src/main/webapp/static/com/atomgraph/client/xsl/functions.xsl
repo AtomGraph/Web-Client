@@ -60,7 +60,7 @@ extension-element-prefixes="ixsl"
     
     <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
     <xsl:function name="ac:uuid" as="xs:string" override-extension-function="no">
-        <xsl:value-of use-when="system-property('xsl:product-name') eq 'Saxon-JS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
+        <xsl:value-of use-when="system-property('xsl:product-name') eq 'SaxonJS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
         <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
             Not implemented -- com.atomgraph.client.writer.function.UUID needs to be registered as an extension function
         </xsl:message>
