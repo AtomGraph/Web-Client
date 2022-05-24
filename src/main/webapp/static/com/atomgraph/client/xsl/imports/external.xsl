@@ -38,12 +38,11 @@ xmlns:svg="http://www.w3.org/2000/svg"
 exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about" mode="xhtml:Anchor">
-        <xsl:param name="href" select="xs:anyURI('')" as="xs:anyURI"/>
+        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
         <xsl:param name="id" select="encode-for-uri(.)" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
-        <xsl:param name="fragment" select="encode-for-uri(.)" as="xs:string?"/>
 
         <xsl:next-match>
             <xsl:with-param name="href" select="$href"/>
@@ -51,8 +50,6 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="title" select="$title"/>
             <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="target" select="$target"/>
-            <xsl:with-param name="query-params" select="map{ 'uri': string(.) }"/>
-            <xsl:with-param name="fragment" select="$fragment" as="xs:string?"/>
         </xsl:next-match>
     </xsl:template>
     
