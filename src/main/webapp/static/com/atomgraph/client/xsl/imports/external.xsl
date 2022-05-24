@@ -43,7 +43,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="fragment" select="encode-for-uri(.)" as="xs:string?"/>
 
         <xsl:next-match>
             <xsl:with-param name="href" select="$href"/>
@@ -51,9 +51,8 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="title" select="$title"/>
             <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="target" select="$target"/>
-            <xsl:with-param name="mode" select="$mode"/>
-            <xsl:with-param name="query-params" select="map{ 'uri': string(ac:document-uri(.)) }"/>
-            <xsl:with-param name="fragment" select="if (contains(., '#')) then substring-after(., '#') else ()" as="xs:string?"/>
+            <xsl:with-param name="query-params" select="map{ 'uri': string(.) }"/>
+            <xsl:with-param name="fragment" select="$fragment" as="xs:string?"/>
         </xsl:next-match>
     </xsl:template>
     

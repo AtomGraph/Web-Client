@@ -177,18 +177,20 @@ exclude-result-prefixes="#all">
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
+        <xsl:param name="mode" as="xs:anyURI?" tunnel="yes"/>
         <xsl:param name="endpoint" as="xs:anyURI?" tunnel="yes"/>
         <xsl:param name="query-params" select="map{}" as="map(xs:string, xs:string*)"/>
         <xsl:param name="fragment" select="if (contains($href, '#')) then substring-after($href, '#') else ()" as="xs:string?"/>
-
+        <xsl:param name="render-id" select="true()" as="xs:boolean" tunnel="yes"/>
+        
         <!-- append ?mode and ?endpoint to URI before re-appending #fragment (if it exists) -->
         <xsl:variable name="doc-href" select="ac:document-uri($href)" as="xs:anyURI"/>
         <xsl:variable name="query-params" select="map:merge(($query-params, if ($mode) then map{ 'mode': string($mode) } else (), if ($endpoint) then map{ 'endpoint': string($endpoint) } else ()))" as="map(xs:string, xs:string*)"/>
         <xsl:variable name="href" select="ac:build-uri($doc-href, $query-params)" as="xs:anyURI"/>
         <xsl:variable name="href" select="if ($fragment) then xs:anyURI($href || '#' || $fragment) else $href" as="xs:anyURI"/>
+        
         <a href="{$href}">
-            <xsl:if test="$id">
+            <xsl:if test="$id and $render-id">
                 <xsl:attribute name="id" select="$id"/>
             </xsl:if>
             <xsl:if test="$title">

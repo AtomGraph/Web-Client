@@ -41,7 +41,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'well'" as="xs:string?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <div>
             <xsl:if test="$id">
@@ -56,9 +55,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
             <h2>
-                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
-                    <xsl:with-param name="mode" select="$mode"/>
-                </xsl:apply-templates>
+                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
             </h2>
 
             <p>
@@ -101,7 +98,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
         <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <li>
             <xsl:if test="$id">
@@ -118,9 +114,7 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="." mode="bs2:Actions"/>
 
                     <h2>
-                        <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
-                            <xsl:with-param name="mode" select="$mode"/>
-                        </xsl:apply-templates>
+                        <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
                     </h2>
                     <p>
                         <xsl:apply-templates select="." mode="ac:description"/>
@@ -179,7 +173,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*" tunnel="yes"/>
         <xsl:param name="anchor-column" as="xs:boolean" select="true()" tunnel="yes"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <tr>
             <xsl:if test="$id">
@@ -191,9 +184,7 @@ exclude-result-prefixes="#all">
 
             <xsl:if test="$anchor-column">
                 <td>
-                    <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
-                        <xsl:with-param name="mode" select="$mode"/>
-                    </xsl:apply-templates>
+                    <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
                 </td>
             </xsl:if>
             
@@ -225,18 +216,30 @@ exclude-result-prefixes="#all">
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}&amp;callback=initMap" async="async"/>
         <xsl:for-each select="key('resources', ac:uri())">
             <script type="text/javascript">
-                <![CDATA[
-                    function initMap()
-                    {
-                        var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
-                        var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$canvas-id"/><![CDATA['), { center: latLng, zoom: 8 });
-                        var marker = new google.maps.Marker({
-                            position: latLng,
-                            map: map,
-                            title: "]]><xsl:value-of><xsl:apply-templates select="." mode="ac:label"/></xsl:value-of><![CDATA["
-                        });
-                    }
-                ]]>
+                <xsl:choose>
+                    <xsl:when test="geo:lat and geo:long">
+                        <![CDATA[
+                            function initMap()
+                            {
+                                var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
+                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$canvas-id"/><![CDATA['), { center: latLng, zoom: 8 });
+                                var marker = new google.maps.Marker({
+                                    position: latLng,
+                                    map: map,
+                                    title: "]]><xsl:value-of><xsl:apply-templates select="." mode="ac:label"/></xsl:value-of><![CDATA["
+                                });
+                            }
+                        ]]>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <![CDATA[
+                            function initMap()
+                            {
+                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$canvas-id"/><![CDATA['));
+                            }
+                        ]]>
+                    </xsl:otherwise>
+                </xsl:choose>
             </script>
         </xsl:for-each>
     </xsl:template>

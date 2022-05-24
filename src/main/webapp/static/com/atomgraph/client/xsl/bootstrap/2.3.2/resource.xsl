@@ -41,7 +41,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[@rdf:about]" mode="bs2:BreadCrumbListItem">
         <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <xsl:choose>
             <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
@@ -60,9 +59,7 @@ exclude-result-prefixes="#all">
         </xsl:choose>
         
         <li>
-            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
-                <xsl:with-param name="mode" select="$mode"/>
-            </xsl:apply-templates>
+            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
 
             <xsl:if test="not($leaf)">
                 <span class="divider">/</span>
@@ -120,7 +117,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Header">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'well header'" as="xs:string?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <div>
             <xsl:if test="$id">
@@ -135,9 +131,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:Actions"/>
 
             <h2>
-                <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor">
-                    <xsl:with-param name="mode" select="$mode"/>
-                </xsl:apply-templates>
+                <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
             </h2>
             
             <p>
@@ -152,16 +146,13 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:List">
         <xsl:param name="active" as="xs:boolean?"/>
-        <xsl:param name="mode" as="xs:anyURI?"/>
 
         <li>
             <xsl:if test="$active">
                 <xsl:attribute name="class" select="'active'"/>
             </xsl:if>
 
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor">
-                <xsl:with-param name="mode" select="$mode"/>
-            </xsl:apply-templates>
+            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
         </li>
     </xsl:template>
     
@@ -194,16 +185,12 @@ exclude-result-prefixes="#all">
     <!-- IMAGE MODE -->
 
     <xsl:template match="*[*][@rdf:about]" mode="bs2:Image">
-        <xsl:param name="mode" as="xs:anyURI?"/>
-        
         <xsl:variable name="image-uris" as="attribute()*">
             <xsl:apply-templates select="." mode="ac:image"/>
         </xsl:variable>
         <xsl:variable name="this" select="." as="element()"/>
         <xsl:variable name="link" as="element()">
-            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor">
-                <xsl:with-param name="mode" select="$mode"/>
-            </xsl:apply-templates>
+            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
         </xsl:variable>
             
         <xsl:for-each select="$image-uris[1]">
