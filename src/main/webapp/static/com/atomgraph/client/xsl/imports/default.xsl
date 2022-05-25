@@ -173,7 +173,7 @@ exclude-result-prefixes="#all">
     <!-- subject resource -->
     <xsl:template match="@rdf:about" mode="xhtml:Anchor">
         <xsl:param name="href" select="." as="xs:anyURI"/>
-        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="id" select="if (contains(., '#')) then substring-after(., '#') else ()" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
