@@ -33,9 +33,9 @@ exclude-result-prefixes="#all">
             <xsl:sequence select="."/>
         </textarea>
 
-        <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
-            <xsl:with-param name="type-label" select="$type-label"/>
-        </xsl:apply-templates>
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel"/>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="sp:text/@rdf:datatype" mode="bs2:FormControl">

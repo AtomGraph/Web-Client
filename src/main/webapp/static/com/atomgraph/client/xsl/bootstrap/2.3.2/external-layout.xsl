@@ -57,7 +57,6 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/default.xsl"/>
     <xsl:import href="imports/dh.xsl"/>
     <xsl:import href="imports/foaf.xsl"/>
-    <xsl:import href="imports/sioc.xsl"/>
     <xsl:import href="imports/sp.xsl"/>
     <xsl:import href="resource.xsl"/>
     <xsl:import href="document.xsl"/>

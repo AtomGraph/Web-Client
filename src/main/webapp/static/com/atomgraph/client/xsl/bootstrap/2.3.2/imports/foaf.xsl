@@ -41,10 +41,11 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
         </xsl:call-template>
 
-        <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
-            <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="type-label" select="$type-label"/>
-        </xsl:apply-templates>
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="bs2:FormControl">
@@ -61,10 +62,11 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
         </xsl:call-template>
 
-        <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
-            <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="type-label" select="$type-label"/>
-        </xsl:apply-templates>
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>
