@@ -59,25 +59,12 @@ exclude-result-prefixes="xs">
         <xsl:template match="rdf:RDF" mode="ac:DataTable">
             <xsl:param name="resource-ids" select="false()" as="xs:boolean" tunnel="yes"/>
             <xsl:param name="property-uris" as="xs:anyURI*" tunnel="yes"/>
-            <xsl:param name="properties" as="element()*">
-                <xsl:choose>
-                    <xsl:when test="not(empty($property-uris))">
-                        <xsl:variable name="current" select="."/>
-                        <xsl:for-each select="$property-uris">
-                            <xsl:for-each-group select="$current/*/*[concat(namespace-uri(), local-name()) = current()][1]" group-by="concat(namespace-uri(), local-name())">
-                                <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-                                <xsl:sequence select="current-group()[1]"/>
-                            </xsl:for-each-group>
-                        </xsl:for-each>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-                            <xsl:sort select="xs:anyURI(concat(namespace-uri(), local-name()))"/>
-                            <xsl:sequence select="current-group()[1]"/>
-                        </xsl:for-each-group>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:param>
+            <xsl:param name="properties" select="if (not(empty($property-uris))) then */*[concat(namespace-uri(), local-name()) = $property-uris] else */*" as="element()*"/>
+            <xsl:variable name="properties" as="element()*">
+                <xsl:perform-sort select="$properties">
+                    <xsl:sort select="concat(namespace-uri(), local-name())"/>
+                </xsl:perform-sort>
+            </xsl:variable>
 
 {
         "cols": [
@@ -148,8 +135,8 @@ exclude-result-prefixes="xs">
                 <xsl:variable name="subject" select="."/>
                 <xsl:for-each select="$properties">
                     <xsl:choose>
-                        <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]">
-                            <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]" mode="#current"/>
+                        <xsl:when test="$subject/*[. is current()]">
+                            <xsl:apply-templates select="$subject/*[. is current()]" mode="#current"/>
                         </xsl:when>
                         <xsl:otherwise>
                             { "v": null }    
