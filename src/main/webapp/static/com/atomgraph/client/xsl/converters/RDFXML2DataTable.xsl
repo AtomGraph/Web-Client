@@ -156,7 +156,7 @@ exclude-result-prefixes="xs">
                         </xsl:when>
                         <xsl:otherwise>
                             <json:map>
-                                <json:string key="v">null</json:string>
+                                <json:null key="v"/>
                             </json:map>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -175,6 +175,14 @@ exclude-result-prefixes="xs">
         </json:map>
     </xsl:template>
 
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;boolean']" mode="ac:DataTable">
+         <json:boolean key="v"><xsl:value-of select="."/></json:boolean>
+    </xsl:template>
+
+    <xsl:template match="text()[../@rdf:datatype = '&xsd;integer'] | text()[../@rdf:datatype = '&xsd;decimal'] | text()[../@rdf:datatype = '&xsd;double'] | text()[../@rdf:datatype = '&xsd;float']" mode="ac:DataTable">
+         <json:number key="v"><xsl:value-of select="."/></json:number>
+    </xsl:template>
+
     <xsl:template match="text()[../@rdf:datatype = '&xsd;date']" mode="ac:DataTable">
         <json:string key="v">Date(<xsl:value-of select="year-from-date(.)"/>, <xsl:value-of select="month-from-date(.) - 1"/>, <xsl:value-of select="day-from-date(.)"/>)</json:string>
     </xsl:template>
@@ -185,12 +193,12 @@ exclude-result-prefixes="xs">
 
     <xsl:template match="text()[../@rdf:datatype = '&xsd;time']" mode="ac:DataTable">
         <json:array key="v">
-            <json:string><xsl:value-of select="substring(., 1, 2)" /></json:string>
-            <json:string><xsl:value-of select="substring(., 4, 2)" /></json:string>
-            <json:string><xsl:value-of select="substring(., 7, 2)" /></json:string>
+            <json:number><xsl:value-of select="substring(., 1, 2)" /></json:number>
+            <json:number><xsl:value-of select="substring(., 4, 2)" /></json:number>
+            <json:number><xsl:value-of select="substring(., 7, 2)" /></json:number>
 
             <xsl:if test="contains(., '.')">
-                <json:string><xsl:value-of select="substring(substring-after(., '.'), 1, 3)"/></json:string>
+                <json:number><xsl:value-of select="substring(substring-after(., '.'), 1, 3)"/></json:number>
             </xsl:if>
          </json:array>
     </xsl:template>
