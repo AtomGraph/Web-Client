@@ -65,7 +65,8 @@ exclude-result-prefixes="xs">
         <xsl:param name="columns" as="map(xs:string, xs:anyAtomicType)*"> <!-- map that stores calculated ?count (max occurence per resource) for each ?property -->
             <xsl:variable name="current" select="."/>
             <xsl:for-each-group select="if (not(empty($properties))) then key('properties', $properties) else */*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:sort select="concat(namespace-uri(), local-name())"/>
+                <!-- sort by the order $properties if they are provided, alphabetically otherwise -->
+                <xsl:sort select="if (exists($properties)) then index-of($properties, concat(namespace-uri(), local-name())) else concat(namespace-uri(), local-name())"/>
 
                 <xsl:map>
                     <xsl:map-entry key="'property'" select="current-grouping-key()"/>
@@ -138,7 +139,7 @@ exclude-result-prefixes="xs">
             <json:array key="c">
                 <!-- resource URI/bnode becomes the first column if none is provided explicitly -->
                 <xsl:if test="$resource-ids">
-                    <json:map key="v">
+                    <json:map>
                         <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
                     </json:map>
                 </xsl:if>
