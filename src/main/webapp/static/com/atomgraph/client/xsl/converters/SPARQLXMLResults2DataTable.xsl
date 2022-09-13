@@ -97,7 +97,7 @@ exclude-result-prefixes="#all">
             <json:string key="label"><xsl:value-of select="@name"/></json:string>
             <json:string key="type">
                 <xsl:variable name="bindings" select="key('binding-by-name', @name)" as="element()*"/>
-                <xsl:variable name="binding-count" select="count(key('binding-by-name', @name))" as="xs:integer"/>
+                <xsl:variable name="binding-count" select="count($bindings)" as="xs:integer"/>
                 <xsl:choose>
                     <xsl:when test="count($bindings/srx:uri) = $binding-count">string</xsl:when>
                     <xsl:when test="count($bindings/srx:bnode) = $binding-count">string</xsl:when>
