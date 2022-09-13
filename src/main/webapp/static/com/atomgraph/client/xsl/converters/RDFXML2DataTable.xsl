@@ -64,17 +64,34 @@ exclude-result-prefixes="xs">
         <xsl:param name="properties" as="xs:anyURI*" tunnel="yes"/>
         <xsl:param name="columns" as="map(xs:string, xs:anyAtomicType)*"> <!-- map that stores calculated ?count (max occurence per resource) for each ?property -->
             <xsl:variable name="current" select="."/>
-            <xsl:for-each-group select="if (not(empty($properties))) then key('properties', $properties) else */*" group-by="concat(namespace-uri(), local-name())">
-                <!-- sort by the order $properties if they are provided, alphabetically otherwise -->
-                <xsl:sort select="if (exists($properties)) then index-of($properties, concat(namespace-uri(), local-name())) else concat(namespace-uri(), local-name())"/>
+            <xsl:choose>
+                <xsl:when test="exists($properties)">
+                    <xsl:for-each select="$properties">
+                        <xsl:for-each-group select="key('properties', current(), $current)" group-by="concat(namespace-uri(), local-name())">
+                            <xsl:sort select="index-of($properties, concat(namespace-uri(), local-name()))[1]"/>
 
-                <xsl:map>
-                    <xsl:map-entry key="'property'" select="current-grouping-key()"/>
+                            <xsl:map>
+                                <xsl:map-entry key="'property'" select="current-grouping-key()"/>
 
-                    <xsl:variable name="max-count-per-resource" select="max(for $resource in $current/* return count($resource/*[concat(namespace-uri(), local-name()) = current-grouping-key()]))" as="xs:integer"/>
-                    <xsl:map-entry key="'count'" select="$max-count-per-resource"/>
-                </xsl:map>
-            </xsl:for-each-group>
+                                <xsl:variable name="max-count-per-resource" select="max(for $resource in $current/* return count($resource/*[concat(namespace-uri(), local-name()) = current-grouping-key()]))" as="xs:integer"/>
+                                <xsl:map-entry key="'count'" select="$max-count-per-resource"/>
+                            </xsl:map>
+                        </xsl:for-each-group>
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
+                        <xsl:sort select="concat(namespace-uri(), local-name())"/>
+
+                        <xsl:map>
+                            <xsl:map-entry key="'property'" select="current-grouping-key()"/>
+
+                            <xsl:variable name="max-count-per-resource" select="max(for $resource in $current/* return count($resource/*[concat(namespace-uri(), local-name()) = current-grouping-key()]))" as="xs:integer"/>
+                            <xsl:map-entry key="'count'" select="$max-count-per-resource"/>
+                        </xsl:map>
+                    </xsl:for-each-group>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:param>
 
         <json:map>
@@ -149,18 +166,18 @@ exclude-result-prefixes="xs">
                     <xsl:variable name="property" select="xs:anyURI(current()?property)" as="xs:anyURI"/>
                     <xsl:variable name="count" select="current()?count" as="xs:integer"/>
 
-                    <xsl:choose>
-                        <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = $property]">
-                            <xsl:for-each select="1 to $count">
+                    <xsl:for-each select="1 to $count">
+                        <xsl:choose>
+                            <xsl:when test="$subject/*[concat(namespace-uri(), local-name()) = $property][current()]">
                                 <xsl:apply-templates select="$subject/*[concat(namespace-uri(), local-name()) = $property][current()]" mode="#current"/>
-                            </xsl:for-each>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <json:map>
-                                <json:null key="v"/>
-                            </json:map>
-                        </xsl:otherwise>
-                    </xsl:choose>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <json:map>
+                                    <json:null key="v"/>
+                                </json:map>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each>
                 </xsl:for-each>
              </json:array>
         </json:map>

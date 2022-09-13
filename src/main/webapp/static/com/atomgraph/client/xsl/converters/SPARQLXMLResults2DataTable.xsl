@@ -65,7 +65,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="var-names" as="xs:string*" tunnel="yes"/>
         <xsl:param name="variables" as="element()*">
             <xsl:choose>
-                <xsl:when test="not(empty($var-names))">
+                <xsl:when test="exists($var-names)">
                     <xsl:variable name="current" select="."/>
                     <xsl:for-each select="$var-names">
                         <xsl:sequence select="$current/srx:head/srx:variable[@name = current()]"/>
