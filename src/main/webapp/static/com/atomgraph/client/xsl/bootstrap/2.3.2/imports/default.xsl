@@ -70,7 +70,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="violations" as="element()*"/>
         <xsl:param name="error" select="$violations/spin:violationPath/@rdf:resource = $this" as="xs:boolean"/>
         <xsl:param name="class" as="xs:string?"/>
-        <xsl:param name="label" select="true()" as="xs:boolean"/>
+        <xsl:param name="label" as="xs:string?">
+            <xsl:apply-templates select="." mode="ac:property-label"/>
+        </xsl:param>
+        <xsl:param name="show-label" select="true()" as="xs:boolean"/>
         <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
         <xsl:param name="required" select="false()" as="xs:boolean"/>
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
@@ -83,11 +86,9 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="xhtml:Input">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
-            <xsl:if test="$label">
+            <xsl:if test="$show-label">
                 <label class="control-label" for="{$for}" title="{$this}">
-                    <xsl:value-of>
-                        <xsl:apply-templates select="." mode="ac:property-label"/>
-                    </xsl:value-of>
+                    <xsl:sequence select="$label"/>
                 </label>
             </xsl:if>
             <xsl:if test="$cloneable">
