@@ -141,7 +141,7 @@ public abstract class ModelXSLTWriterBase
             xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)getDataManager());
             xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now())); // TO-DO: make TZ configurable
             xsltTrans.setStylesheetParameters(getParameters(headerMap));
-            xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray()), getAbsolutePath().toString()), out);
+            xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
         }
         catch (TransformerException | SaxonApiException ex)
         {
