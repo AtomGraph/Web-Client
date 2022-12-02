@@ -48,6 +48,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Variant;
@@ -67,8 +68,6 @@ public class ProxyResourceBase implements Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
     
-    private final static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0"; // impersonate Firefox
-
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
@@ -159,12 +158,22 @@ public class ProxyResourceBase implements Resource
     {
         return get(getWebTarget());
     }
-    
+
     public Response get(WebTarget target)
     {
-        if (target == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+        if (target == null) throw new NotFoundException("Resource URI not supplied");
         
-        try (Response cr = target.request(getReadableMediaTypes()).get())
+        return get(target, getBuilder(target));
+    }
+    
+    public Invocation.Builder getBuilder(WebTarget target)
+    {
+        return target.request(getReadableMediaTypes());
+    }
+    
+    public Response get(WebTarget target, Invocation.Builder builder)
+    {
+        try (Response cr = builder.get())
         {
             // special case for http <-> https 301/303 redirection
             if ((cr.getStatusInfo().toEnum().equals(Status.SEE_OTHER) || cr.getStatusInfo().toEnum().equals(Status.MOVED_PERMANENTLY)) &&
@@ -173,7 +182,6 @@ public class ProxyResourceBase implements Resource
                     return get(getClient().target(cr.getLocation()));
 
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider
-            cr.getHeaders().putSingle(HttpHeaders.USER_AGENT, USER_AGENT);
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
 
