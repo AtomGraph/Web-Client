@@ -67,6 +67,8 @@ public class ProxyResourceBase implements Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
     
+    private final static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0"; // impersonate Firefox
+
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
@@ -171,6 +173,7 @@ public class ProxyResourceBase implements Resource
                     return get(getClient().target(cr.getLocation()));
 
             cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider
+            cr.getHeaders().putSingle(HttpHeaders.USER_AGENT, USER_AGENT);
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
 
