@@ -173,6 +173,8 @@ public class ProxyResourceBase implements Resource
     
     public Response get(WebTarget target, Invocation.Builder builder)
     {
+        if (target == null) throw new NotFoundException("Resource URI not supplied"); // cannot throw Exception in constructor: https://github.com/eclipse-ee4j/jersey/issues/4436
+
         try (Response cr = builder.get())
         {
             // special case for http <-> https 301/303 redirection
