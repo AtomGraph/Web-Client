@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>3.1.67-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -79,13 +79,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
-            <version>11.1.1</version>
+            <version>11.4</version>
             <exclusions>
                 <!-- exclude as it gets picked up by Jena -->
                 <exclusion>
@@ -106,13 +106,13 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>4.0.3</version>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>twirl</artifactId>
-            <version>1.0.30</version>
+            <version>1.0.31-SNAPSHOT</version>
             <exclusions>
                 <!-- exclude jakarta.json as its version clashes wich Jersey's -->
                 <exclusion>
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>3.1.16</version>
+            <version>4.0.1-SNAPSHOT</version>
             <exclusions>
                 <!-- exclude jakarta.json as its version clashes wich Jersey's -->
                 <exclusion>

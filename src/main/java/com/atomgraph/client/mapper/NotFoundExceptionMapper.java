@@ -16,11 +16,11 @@
  */
 package com.atomgraph.client.mapper;
 
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 import org.apache.jena.rdf.model.ResourceFactory;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * Maps one of Jena's remote loading 404 Not Found exceptions.

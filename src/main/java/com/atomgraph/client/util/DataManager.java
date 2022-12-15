@@ -16,8 +16,8 @@
 package com.atomgraph.client.util;
 
 import java.io.IOException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
 import net.sf.saxon.lib.UnparsedTextURIResolver;
@@ -31,7 +31,7 @@ import org.apache.jena.rdf.model.Model;
 public interface DataManager extends com.atomgraph.core.util.jena.DataManager, URIResolver, UnparsedTextURIResolver
 {
     
-    javax.ws.rs.core.MediaType[] getAcceptedMediaTypes();
+    jakarta.ws.rs.core.MediaType[] getAcceptedMediaTypes();
     
     MediaType[] getAcceptedXMLMediaTypes();
     

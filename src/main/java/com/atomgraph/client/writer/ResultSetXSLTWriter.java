@@ -21,18 +21,18 @@ import org.apache.jena.query.ResultSetFormatter;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import com.atomgraph.client.util.XSLTBuilder;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import org.slf4j.Logger;
@@ -124,4 +124,5 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
             document(is).
             result(new StreamResult(os));
     }
+
 }

@@ -31,9 +31,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.trans.XPathException;
 import org.apache.commons.io.IOUtils;
@@ -51,7 +51,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
 
     private static final Logger log = LoggerFactory.getLogger(DataManagerImpl.class);
 
-    private final javax.ws.rs.core.MediaType[] acceptedTypes;
+    private final jakarta.ws.rs.core.MediaType[] acceptedTypes;
     private final MediaType[] acceptedXMLMediaTypes;
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
@@ -67,7 +67,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         acceptedTypeList.addAll(ldc.getMediaTypes().getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(MediaType[]::new);
 
-        List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
+        List<jakarta.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         Map<String, String> q1 = new HashMap<>();
         q1.put("q", "1.0");
         acceptableXMLMediaTypeList.add(new MediaType(com.atomgraph.core.MediaType.APPLICATION_SPARQL_RESULTS_XML_TYPE.getType(),
@@ -237,7 +237,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     }
     
     @Override
-    public javax.ws.rs.core.MediaType[] getAcceptedMediaTypes()
+    public jakarta.ws.rs.core.MediaType[] getAcceptedMediaTypes()
     {
         return acceptedTypes;
     }

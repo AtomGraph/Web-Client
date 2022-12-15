@@ -21,11 +21,11 @@ import org.apache.jena.ontology.OntModelSpec;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import javax.inject.Singleton;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.*;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.inject.Singleton;
 import net.sf.saxon.s9api.XsltExecutable;
 import org.apache.jena.query.Dataset;
 

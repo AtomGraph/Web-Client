@@ -20,7 +20,7 @@ import com.atomgraph.core.client.LinkedDataClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.LocationMapper;
 
@@ -39,7 +39,7 @@ public class XsltResolver extends DataManagerImpl
     {
         super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth, resolvingUncached);
         
-        List<javax.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
+        List<jakarta.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         acceptableXMLMediaTypeList.add(com.atomgraph.client.MediaType.TEXT_XSL_TYPE);
         acceptedXMLMediaTypes = acceptableXMLMediaTypeList.toArray(MediaType[]::new);
     }

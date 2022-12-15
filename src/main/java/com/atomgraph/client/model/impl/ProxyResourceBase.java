@@ -19,19 +19,19 @@ package com.atomgraph.client.model.impl;
 import com.atomgraph.client.MediaTypes;
 import java.net.URI;
 import java.util.ArrayList;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Request;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.UriInfo;
 import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.io.ResultSetProvider;
@@ -42,16 +42,16 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Variant;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.Variant;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Model;
@@ -101,7 +101,7 @@ public class ProxyResourceBase implements Resource
         this.mediaTypes = mediaTypes;
         this.accept = accept;
         this.client = client;
-        List<javax.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
+        List<jakarta.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
         readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
         this.readableMediaTypes = readableMediaTypesList.toArray(MediaType[]::new);
         
@@ -294,7 +294,7 @@ public class ProxyResourceBase implements Resource
         
         if (log.isDebugEnabled()) log.debug("POSTing Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-            accept(getMediaTypes().getReadable(Model.class).toArray(javax.ws.rs.core.MediaType[]::new)).
+            accept(getMediaTypes().getReadable(Model.class).toArray(jakarta.ws.rs.core.MediaType[]::new)).
             post(Entity.entity(model, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
     }
 
@@ -312,7 +312,7 @@ public class ProxyResourceBase implements Resource
         
         if (log.isDebugEnabled()) log.debug("PUTting Dataset to URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-            accept(getMediaTypes().getReadable(Model.class).toArray(javax.ws.rs.core.MediaType[]::new)).
+            accept(getMediaTypes().getReadable(Model.class).toArray(jakarta.ws.rs.core.MediaType[]::new)).
             put(Entity.entity(model, com.atomgraph.core.MediaType.APPLICATION_NTRIPLES_TYPE));
     }
     
@@ -328,7 +328,7 @@ public class ProxyResourceBase implements Resource
         
         if (log.isDebugEnabled()) log.debug("DELETEing Dataset from URI: {}", getWebTarget().getUri());
         return getWebTarget().request().
-            accept(getMediaTypes().getReadable(Model.class).toArray(javax.ws.rs.core.MediaType[]::new)).
+            accept(getMediaTypes().getReadable(Model.class).toArray(jakarta.ws.rs.core.MediaType[]::new)).
             delete(Response.class);
     }
     

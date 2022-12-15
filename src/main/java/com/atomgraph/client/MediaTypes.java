@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
@@ -63,7 +63,7 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
         this(READABLE, WRITABLE);
     }
     
-    public MediaTypes(Map<Class, List<javax.ws.rs.core.MediaType>> readable, Map<Class, List<javax.ws.rs.core.MediaType>> writable)
+    public MediaTypes(Map<Class, List<jakarta.ws.rs.core.MediaType>> readable, Map<Class, List<jakarta.ws.rs.core.MediaType>> writable)
     {
         super(readable, writable);
     }

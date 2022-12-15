@@ -10,7 +10,7 @@ RUN mvn -Pstandalone clean install
 
 ### Deploy Web-Client webapp on Tomcat
 
-FROM tomcat:9.0.59-jdk17-openjdk
+FROM tomcat:10.1.4-jdk17
 
 WORKDIR $CATALINA_HOME/webapps
 
