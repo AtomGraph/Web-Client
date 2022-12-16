@@ -26,15 +26,17 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.MessageBodyWriter;
-import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.stream.StreamResult;
-import com.atomgraph.client.util.XSLTBuilder;
 import jakarta.inject.Singleton;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.Xslt30Transformer;
+import net.sf.saxon.s9api.XsltExecutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,30 +46,30 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see <a href="http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/query/ResultSet.html">ResultSet</a>
- * @see <a href="http://jsr311.java.net/nonav/javadoc/javax/ws/rs/ext/MessageBodyWriter.html">MessageBodyWriter</a>
+ * @see <a href="https://jakarta.ee/specifications/restful-ws/3.0/apidocs/jakarta/ws/rs/ext/messagebodywriter">MessageBodyWriter</a>
  */
 @Singleton
 public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
 {
     private static final Logger log = LoggerFactory.getLogger(ResultSetXSLTWriter.class);
 
-    private Source stylesheet = null;
-    private URIResolver resolver = null;
+    private final XsltExecutable xsltExec;
+    private final URIResolver resolver;
 
     /**
      * Constructs from stylesheet source and URI resolver
      * 
-     * @param stylesheet the source of the XSLT transformation
+     * @param xsltExec XSLT executable
      * @param resolver URI resolver to be used in the transformation
      * @throws TransformerConfigurationException 
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
      */
-    public ResultSetXSLTWriter(Source stylesheet, URIResolver resolver) throws TransformerConfigurationException
+    public ResultSetXSLTWriter(XsltExecutable xsltExec, URIResolver resolver) throws TransformerConfigurationException
     {
-        if (stylesheet == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
+        if (xsltExec == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
         if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-        this.stylesheet = stylesheet;
+        this.xsltExec = xsltExec;
         this.resolver = resolver;
     }
     
@@ -89,12 +91,14 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
             ResultSetFormatter.outputAsXML(baos, results);
-            
-            // create XSLTBuilder per request output to avoid document() caching
-            getXSLTBuilder(new ByteArrayInputStream(baos.toByteArray()),
-                    headerMap, entityStream).transform();
+  
+            Xslt30Transformer xsltTrans = getXsltExecutable().load30();
+            Serializer out = xsltTrans.newSerializer();
+            out.setOutputStream(entityStream);
+            out.setOutputProperty(Serializer.Property.ENCODING, UTF_8.name());
+            xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
         }
-        catch (TransformerException ex)
+        catch (SaxonApiException ex)
         {
             log.error("XSLT transformation failed", ex);
             throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
@@ -105,24 +109,15 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
     {
         return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
     }
-    
+
+    public XsltExecutable getXsltExecutable()
+    {
+        return xsltExec;
+    }
+
     public URIResolver getURIResolver()
     {
         return resolver;
     }
-
-    public Source getStylesheet()
-    {
-        return stylesheet;
-    }
-
-    public XSLTBuilder getXSLTBuilder(InputStream is, MultivaluedMap<String, Object> headerMap, OutputStream os) throws TransformerConfigurationException
-    {
-        return XSLTBuilder.newInstance(getTransformerFactory()).
-            stylesheet(getStylesheet()).
-            resolver(getURIResolver()).
-            document(is).
-            result(new StreamResult(os));
-    }
-
+    
 }

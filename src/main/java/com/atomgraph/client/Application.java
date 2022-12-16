@@ -85,7 +85,7 @@ import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
  * Needs to register JAX-RS root resource classes and providers.
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
- * @see <a href="http://docs.oracle.com/javaee/6/api/javax/ws/rs/core/Application.html">JAX-RS Application</a>
+ * @see <a href="https://jakarta.ee/specifications/restful-ws/3.0/apidocs/jakarta/ws/rs/core/application">JAX-RS Application</a>
  * @see <a href="http://docs.oracle.com/cd/E24329_01/web.1211/e24983/configure.htm#CACEAEGG">Packaging the RESTful Web Service Application Using web.xml With Application Subclass</a>
  */
 public class Application extends ResourceConfig

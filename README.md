@@ -2,7 +2,7 @@ AtomGraph Web-Client is a Linked Data web client. If you have a triplestore with
 and/or build an end-user application on it, or would like to explore Linked Open Data, Web-Client provides the components you need.
 
 Web-Client renders (X)HTML user interface by transforming ["plain" RDF/XML](https://jena.apache.org/documentation/io/rdf-output.html#rdfxml) (without nested resource descriptions)
-using [XSLT 2.0](https://www.w3.org/TR/xslt20/) stylesheets.
+using [XSLT 3.0](https://www.w3.org/TR/xslt30/) stylesheets.
 
 ![AtomGraph Web-Client screenshot](https://raw.github.com/AtomGraph/Web-Client/master/screenshot.png)
 

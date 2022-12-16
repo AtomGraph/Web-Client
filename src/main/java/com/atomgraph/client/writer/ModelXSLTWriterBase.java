@@ -63,11 +63,12 @@ import org.apache.jena.iri.IRIFactory;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFWriterI;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdfxml.xmloutput.impl.Basic;
+import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFWriter;
+import org.apache.jena.riot.SysRIOT;
 import org.apache.jena.riot.system.Checker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,10 +113,16 @@ public abstract class ModelXSLTWriterBase
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
-            //RDFWriter writer = model.getWriter(RDFLanguages.RDFXML.getName());
-            RDFWriterI writer = new Basic();
-            writer.setProperty("allowBadURIs", true); // round-tripping RDF/POST with user input may contain invalid URIs
-            writer.write(model, baos, null);
+            Map<String, Object> properties = new HashMap<>() ;
+            properties.put("allowBadURIs", "true"); // round-tripping RDF/POST with user input may contain invalid URIs
+            org.apache.jena.sparql.util.Context cxt = new org.apache.jena.sparql.util.Context();
+            cxt.set(SysRIOT.sysRdfWriterProperties, properties);
+        
+            RDFWriter.create().
+                format(RDFFormat.RDFXML_PLAIN).
+                context(cxt).
+                source(model).
+                output(baos);
 
             Xslt30Transformer xsltTrans = getXsltExecutable().load30();
             Serializer out = xsltTrans.newSerializer();
