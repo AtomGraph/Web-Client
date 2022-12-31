@@ -169,7 +169,7 @@ exclude-result-prefixes="#all"
             <xsl:variable name="stipped-xmlns" as="node()">
                 <xsl:apply-templates select="node()" mode="ac:RemoveNamespaces"/>
             </xsl:variable>
-            <json:string key="@value"><xsl:value-of select="serialize($stipped-xmlns, map { 'method' : 'xhtml' })"/></json:string>
+            <json:string key="@value"><xsl:value-of select="serialize($stipped-xmlns)"/></json:string>
             <json:string key="@type">&rdf;XMLLiteral</json:string>
         </json:map>
     </xsl:template>
