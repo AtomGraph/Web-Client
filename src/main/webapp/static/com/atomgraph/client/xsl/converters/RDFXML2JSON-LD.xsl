@@ -36,7 +36,7 @@ exclude-result-prefixes="#all"
     An XSLT stylesheet transforming Jena's RDF/XML format to JSON-LD.
     Supports @context and prefixed names.
     
-    RDF/XML: http://www.w3.org/TR/REC-rdf-syntax/
+    RDF/XML: https://www.w3.org/TR/rdf-syntax-grammar/
     JSON-LD: https://www.w3.org/TR/json-ld11/
 
     -->
