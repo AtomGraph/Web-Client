@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -112,26 +112,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>twirl</artifactId>
-            <version>1.0.31-SNAPSHOT</version>
-            <exclusions>
-                <!-- exclude jakarta.json as its version clashes wich Jersey's -->
-                <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>jakarta.json</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.0.32-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>4.0.1-SNAPSHOT</version>
-            <exclusions>
-                <!-- exclude jakarta.json as its version clashes wich Jersey's -->
-                <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>jakarta.json</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>4.0.3-SNAPSHOT</version>
         </dependency>
 <!--        <dependency>
             <groupId>org.glassfish.jersey.connectors</groupId>
