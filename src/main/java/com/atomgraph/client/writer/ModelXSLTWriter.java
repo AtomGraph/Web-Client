@@ -33,7 +33,7 @@ import org.apache.jena.rdf.model.Model;
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see org.apache.jena.rdf.model.Model
- * @see javax.ws.rs.ext.MessageBodyWriter
+ * @see jakarta.ws.rs.ext.MessageBodyWriter
  */
 @Provider
 @Singleton

@@ -35,7 +35,7 @@ import org.apache.jena.query.Dataset;
  * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  * @see org.apache.jena.query.Dataset
- * @see javax.ws.rs.ext.MessageBodyWriter
+ * @see jakarta.ws.rs.ext.MessageBodyWriter
  */
 @Provider
 @Singleton
