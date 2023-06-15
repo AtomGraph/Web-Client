@@ -45,6 +45,4 @@ exclude-result-prefixes="#all">
         </a>
     </xsl:template>
 
-    <xsl:template match="sioc:has_container | sioc:has_parent | sioc:has_space" mode="ac:TablePredicate"/>
-
 </xsl:stylesheet>

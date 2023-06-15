@@ -430,12 +430,6 @@ exclude-result-prefixes="#all">
             <xsl:sequence select="."/>
         </span>
     </xsl:template>
-    
-    <!-- TABLE PREDICATE MODE -->
-    
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:TablePredicate">
-        <xsl:sequence select="."/>
-    </xsl:template>
 
     <!-- TABLE -->
 

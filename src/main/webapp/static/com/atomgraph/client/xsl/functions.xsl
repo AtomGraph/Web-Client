@@ -283,36 +283,4 @@ extension-element-prefixes="ixsl"
         </xsl:choose>
     </xsl:function>
     
-    <xsl:function name="ac:escape-json" as="xs:string?">
-        <xsl:param name="string" as="xs:string?"/>
-
-        <xsl:variable name="string" select="replace($string, '\\', '\\\\')"/>
-        <xsl:variable name="string" select="replace($string, '&quot;', '\\&quot;')"/>
-        <xsl:variable name="string" select="replace($string, '''', '\\''')"/>
-        <xsl:variable name="string" select="replace($string, '&#09;', '\\t')"/>
-        <xsl:variable name="string" select="replace($string, '&#10;', '\\n')"/>
-        <xsl:variable name="string" select="replace($string, '&#13;', '\\r')"/>
-
-        <xsl:sequence select="$string"/>
-    </xsl:function>
-
-    <xsl:function name="ac:escape-regex" as="xs:string?">
-        <xsl:param name="string" as="xs:string?"/>
-        
-        <xsl:variable name="string" select="replace($string, '\.', '\\\\.')"/>
-        <xsl:variable name="string" select="replace($string, '\*', '\\\\*')"/>
-        <xsl:variable name="string" select="replace($string, '\+', '\\\\+')"/>
-        <xsl:variable name="string" select="replace($string, '\?', '\\\\?')"/>
-        <xsl:variable name="string" select="replace($string, '\{', '\\\\{')"/>
-        <xsl:variable name="string" select="replace($string, '\[', '\\\\[')"/>
-        <xsl:variable name="string" select="replace($string, '\(', '\\\\(')"/>
-        <xsl:variable name="string" select="replace($string, '\)', '\\\\)')"/>
-        <xsl:variable name="string" select="replace($string, '\|', '\\\\|')"/>
-        <xsl:variable name="string" select="replace($string, '\\', '\\\\\\')"/>
-        <xsl:variable name="string" select="replace($string, '\^', '\\\\^')"/>
-        <xsl:variable name="string" select="replace($string, '\$', '\\\\\$')"/>
-
-        <xsl:sequence select="$string"/>
-    </xsl:function>
-    
 </xsl:stylesheet>
