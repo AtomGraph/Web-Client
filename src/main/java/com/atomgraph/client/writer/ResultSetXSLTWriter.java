@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.writer;
 
+import com.atomgraph.client.util.DataManager;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import java.io.*;
@@ -24,19 +25,13 @@ import java.lang.reflect.Type;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.MessageBodyWriter;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.URIResolver;
 import jakarta.inject.Singleton;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.stream.StreamSource;
+import jakarta.ws.rs.InternalServerErrorException;
+import javax.xml.transform.TransformerException;
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltExecutable;
+import org.apache.jena.ontology.OntModelSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,28 +44,20 @@ import org.slf4j.LoggerFactory;
  * @see <a href="https://jakarta.ee/specifications/restful-ws/3.0/apidocs/jakarta/ws/rs/ext/messagebodywriter">MessageBodyWriter</a>
  */
 @Singleton
-public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
+public class ResultSetXSLTWriter extends XSLTWriterBase implements MessageBodyWriter<ResultSet>
 {
     private static final Logger log = LoggerFactory.getLogger(ResultSetXSLTWriter.class);
 
-    private final XsltExecutable xsltExec;
-    private final URIResolver resolver;
-
     /**
-     * Constructs from stylesheet source and URI resolver
+     * Constructs model writer from XSLT executable and ontology model specification.
      * 
-     * @param xsltExec XSLT executable
-     * @param resolver URI resolver to be used in the transformation
-     * @throws TransformerConfigurationException 
-     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/Source.html">Source</a>
-     * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/transform/URIResolver.html">URIResolver</a>
+     * @param xsltExec compiled XSLT stylesheet
+     * @param ontModelSpec ontology model specification
+     * @param dataManager RDF data manager
      */
-    public ResultSetXSLTWriter(XsltExecutable xsltExec, URIResolver resolver) throws TransformerConfigurationException
+    public ResultSetXSLTWriter(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
     {
-        if (xsltExec == null) throw new IllegalArgumentException("XSLT stylesheet Source cannot be null");
-        if (resolver == null) throw new IllegalArgumentException("URIResolver cannot be null");
-        this.xsltExec = xsltExec;
-        this.resolver = resolver;
+        super(xsltExec, ontModelSpec, dataManager);
     }
     
     @Override
@@ -91,33 +78,14 @@ public class ResultSetXSLTWriter implements MessageBodyWriter<ResultSet>
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
             ResultSetFormatter.outputAsXML(baos, results);
-  
-            Xslt30Transformer xsltTrans = getXsltExecutable().load30();
-            Serializer out = xsltTrans.newSerializer();
-            out.setOutputStream(entityStream);
-            out.setOutputProperty(Serializer.Property.ENCODING, UTF_8.name());
-            xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
+
+            transform(baos, mediaType, headerMap, entityStream);
         }
-        catch (SaxonApiException ex)
+        catch (TransformerException | SaxonApiException ex)
         {
-            log.error("XSLT transformation failed", ex);
-            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
+            throw new InternalServerErrorException(ex);
         }
-    }
-
-    public SAXTransformerFactory getTransformerFactory()
-    {
-        return ((SAXTransformerFactory)TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null));
-    }
-
-    public XsltExecutable getXsltExecutable()
-    {
-        return xsltExec;
-    }
-
-    public URIResolver getURIResolver()
-    {
-        return resolver;
     }
     
 }

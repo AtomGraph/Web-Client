@@ -19,13 +19,30 @@ import com.atomgraph.client.util.DataManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import jakarta.inject.Singleton;
+import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamSource;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XsltExecutable;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFWriter;
+import org.apache.jena.riot.SysRIOT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Transforms RDF with XSLT stylesheet and writes (X)HTML result to response.
@@ -38,8 +55,10 @@ import org.apache.jena.rdf.model.Model;
 @Provider
 @Singleton
 @Produces({MediaType.TEXT_HTML + ";charset=UTF-8", MediaType.APPLICATION_XHTML_XML + ";charset=UTF-8"})
-public class ModelXSLTWriter extends ModelXSLTWriterBase implements MessageBodyWriter<Model>
+public class ModelXSLTWriter extends XSLTWriterBase implements MessageBodyWriter<Model>
 {
+
+    private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriter.class);
 
     /**
      * Constructs model writer from XSLT executable and ontology model specification.
@@ -57,6 +76,53 @@ public class ModelXSLTWriter extends ModelXSLTWriterBase implements MessageBodyW
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
     {
         return Model.class.isAssignableFrom(type);
+    }
+    
+    @Override
+    public long getSize(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+    {
+        return -1;
+    }
+    
+    @Override
+    public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException
+    {
+        if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
+            Map<String, Object> properties = new HashMap<>() ;
+            properties.put("allowBadURIs", "true"); // round-tripping RDF/POST with user input may contain invalid URIs
+            org.apache.jena.sparql.util.Context cxt = new org.apache.jena.sparql.util.Context();
+            cxt.set(SysRIOT.sysRdfWriterProperties, properties);
+        
+            RDFWriter.create().
+                format(RDFFormat.RDFXML_PLAIN).
+                context(cxt).
+                source(model).
+                output(baos);
+            
+            transform(baos, mediaType, headerMap, entityStream);
+        }
+        catch (TransformerException | SaxonApiException ex)
+        {
+            if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
+            throw new InternalServerErrorException(ex);
+        }
+    }
+    
+    public static StreamSource getSource(Model model) throws IOException
+    {
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+        if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
+
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            model.write(stream, RDFLanguages.RDFXML.getName(), null);
+
+            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
+            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
+        }
     }
     
 }

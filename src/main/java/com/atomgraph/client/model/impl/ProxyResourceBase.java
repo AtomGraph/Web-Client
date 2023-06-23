@@ -103,6 +103,7 @@ public class ProxyResourceBase implements Resource
         this.client = client;
         List<jakarta.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
         readableMediaTypesList.addAll(mediaTypes.getReadable(Model.class));
+        readableMediaTypesList.addAll(mediaTypes.getReadable(ResultSet.class));
         this.readableMediaTypes = readableMediaTypesList.toArray(MediaType[]::new);
         
         if (uri != null)
@@ -183,9 +184,9 @@ public class ProxyResourceBase implements Resource
                 (target.getUri().getScheme().equals("https") && cr.getLocation().getScheme().equals("http"))) )
                     return get(getClient().target(cr.getLocation()));
 
-            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, webTarget.getUri().toString()); // provide a base URI hint to ModelProvider
+            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, target.getUri().toString()); // provide a base URI hint to ModelProvider
 
-            if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", webTarget.getUri());
+            if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", target.getUri());
 
             Response response = getResponse(cr);
             

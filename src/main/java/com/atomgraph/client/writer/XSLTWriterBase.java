@@ -19,16 +19,8 @@ import com.atomgraph.client.util.DataManager;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,17 +30,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Request;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import java.time.ZonedDateTime;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import net.sf.saxon.lib.ResourceResolverWrappingURIResolver;
 import net.sf.saxon.lib.UnparsedTextURIResolver;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -62,25 +58,21 @@ import org.apache.jena.iri.IRI;
 import org.apache.jena.iri.IRIFactory;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFWriter;
-import org.apache.jena.riot.SysRIOT;
 import org.apache.jena.riot.system.Checker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Base class for Model and ResultSet (X)HTML writers.
+ * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
-public abstract class ModelXSLTWriterBase
+public abstract class XSLTWriterBase
 {
     
-    private static final Logger log = LoggerFactory.getLogger(ModelXSLTWriterBase.class);
+    private static final Logger log = LoggerFactory.getLogger(XSLTWriterBase.class);
     private static final Set<String> NAMESPACES;
     static
     {
@@ -97,7 +89,7 @@ public abstract class ModelXSLTWriterBase
     @Context private HttpHeaders httpHeaders;
     @Context private HttpServletRequest httpServletRequest;
 
-    public ModelXSLTWriterBase(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
+    public XSLTWriterBase(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
     {
         if (xsltExec == null) throw new IllegalArgumentException("XsltExecutable cannot be null");
         if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
@@ -107,56 +99,42 @@ public abstract class ModelXSLTWriterBase
         this.dataManager = dataManager;
     }
 
-    public void writeTo(Model model, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws IOException
+    public void transform(ByteArrayOutputStream baos, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws TransformerException, SaxonApiException
     {
-        if (log.isTraceEnabled()) log.trace("Writing Model with HTTP headers: {} MediaType: {}", headerMap, mediaType);
-
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
-        {
-            Map<String, Object> properties = new HashMap<>() ;
-            properties.put("allowBadURIs", "true"); // round-tripping RDF/POST with user input may contain invalid URIs
-            org.apache.jena.sparql.util.Context cxt = new org.apache.jena.sparql.util.Context();
-            cxt.set(SysRIOT.sysRdfWriterProperties, properties);
-        
-            RDFWriter.create().
-                format(RDFFormat.RDFXML_PLAIN).
-                context(cxt).
-                source(model).
-                output(baos);
-
-            Xslt30Transformer xsltTrans = getXsltExecutable().load30();
-            Serializer out = xsltTrans.newSerializer();
-            out.setOutputStream(entityStream);
-            out.setOutputProperty(Serializer.Property.ENCODING, UTF_8.name());
-
-            if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
-            {
-                out.setOutputProperty(Serializer.Property.METHOD, "html");
-                out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.TEXT_HTML);
-                out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/html4/strict.dtd");
-                out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
-            }
-            if (mediaType.isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
-            {
-                out.setOutputProperty(Serializer.Property.METHOD, "xhtml");
-                out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.APPLICATION_XHTML_XML);
-                out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-                out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
-            }
-
-            xsltTrans.setURIResolver((URIResolver)getDataManager());
-            xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)getDataManager());
-            xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now())); // TO-DO: make TZ configurable
-            xsltTrans.setStylesheetParameters(getParameters(headerMap));
-            xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
-        }
-        catch (TransformerException | SaxonApiException ex)
-        {
-            if (log.isErrorEnabled()) log.error("XSLT transformation failed", ex);
-            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR); // TO-DO: make Mapper
-        }
+        transform(getXsltExecutable().load30(), getDataManager(), baos, mediaType, getParameters(headerMap), entityStream);
     }
+    
+    public void transform(Xslt30Transformer xsltTrans, DataManager dataManager, ByteArrayOutputStream baos, MediaType mediaType, Map<QName, XdmValue> parameters, OutputStream entityStream) throws TransformerException, SaxonApiException
+    {
+        if (xsltTrans == null) throw new IllegalArgumentException("Xslt30Transformer cannot be null");
+        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
 
+        Serializer out = xsltTrans.newSerializer();
+        out.setOutputStream(entityStream);
+        out.setOutputProperty(Serializer.Property.ENCODING, UTF_8.name());
+
+        if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
+        {
+            out.setOutputProperty(Serializer.Property.METHOD, "html");
+            out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.TEXT_HTML);
+            out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/html4/strict.dtd");
+            out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
+        }
+        if (mediaType.isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
+        {
+            out.setOutputProperty(Serializer.Property.METHOD, "xhtml");
+            out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.APPLICATION_XHTML_XML);
+            out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+            out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
+        }
+
+        xsltTrans.setResourceResolver(new ResourceResolverWrappingURIResolver((URIResolver)dataManager));
+        xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)dataManager);
+        xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now())); // TO-DO: make TZ configurable
+        if (parameters != null) xsltTrans.setStylesheetParameters(parameters);
+        xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
+    }
+    
     public <T extends XdmValue> Map<QName, XdmValue> getParameters(MultivaluedMap<String, Object> headerMap) throws TransformerException
     {
         if (headerMap == null) throw new IllegalArgumentException("MultivaluedMap cannot be null");
@@ -239,21 +217,7 @@ public abstract class ModelXSLTWriterBase
         
         return null;
     }
-    
-    public static StreamSource getSource(Model model) throws IOException
-    {
-        if (model == null) throw new IllegalArgumentException("Model cannot be null");
-        if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
 
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
-        {
-            model.write(stream, RDFLanguages.RDFXML.getName(), null);
-
-            if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
-            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
-        }
-    }
-    
     public URI getContextURI()
     {
         return URI.create(getHttpServletRequest().getRequestURL().toString()).

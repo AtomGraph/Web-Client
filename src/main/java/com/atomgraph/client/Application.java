@@ -38,6 +38,7 @@ import com.atomgraph.client.util.DataManagerImpl;
 import com.atomgraph.client.util.XsltResolver;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.writer.ModelXSLTWriter;
+import com.atomgraph.client.writer.ResultSetXSLTWriter;
 import com.atomgraph.client.writer.function.Construct;
 import com.atomgraph.client.writer.function.ConstructForClass;
 import com.atomgraph.client.writer.function.UUID;
@@ -194,6 +195,7 @@ public class Application extends ResourceConfig
         register(ClientErrorExceptionMapper.class);
         register(BadGatewayExceptionMapper.class);
         register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
+        register(new ResultSetXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
         
         register(new AbstractBinder()
         {

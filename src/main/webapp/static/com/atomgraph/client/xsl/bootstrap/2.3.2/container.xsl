@@ -207,9 +207,9 @@ exclude-result-prefixes="#all">
     <!-- MAP MODE -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Map">
-        <xsl:param name="canvas-id" select="'map-canvas'" as="xs:string"/>
+        <xsl:param name="id" select="'map-canvas'" as="xs:string"/>
 
-        <div id="{$canvas-id}">
+        <div id="{$id}">
             <xsl:apply-templates mode="#current"/>
         </div>
         
@@ -222,7 +222,7 @@ exclude-result-prefixes="#all">
                             function initMap()
                             {
                                 var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
-                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$canvas-id"/><![CDATA['), { center: latLng, zoom: 8 });
+                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$id"/><![CDATA['), { center: latLng, zoom: 8 });
                                 var marker = new google.maps.Marker({
                                     position: latLng,
                                     map: map,
@@ -235,7 +235,7 @@ exclude-result-prefixes="#all">
                         <![CDATA[
                             function initMap()
                             {
-                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$canvas-id"/><![CDATA['));
+                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$id"/><![CDATA['));
                             }
                         ]]>
                     </xsl:otherwise>
