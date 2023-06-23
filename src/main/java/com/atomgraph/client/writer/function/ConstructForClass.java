@@ -18,8 +18,10 @@ package com.atomgraph.client.writer.function;
 import com.atomgraph.client.util.Constructor;
 import com.atomgraph.client.vocabulary.AC;
 import static com.atomgraph.client.writer.ModelXSLTWriter.checkURI;
-import static com.atomgraph.client.writer.ModelXSLTWriter.getSource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.ExtensionFunction;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.OccurrenceIndicator;
@@ -33,6 +35,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.RDFLanguages;
 
 /**
  * <code>ac:construct()</code> XSLT function that constructs instances for given classes from their constructors.
@@ -97,6 +100,17 @@ public class ConstructForClass implements ExtensionFunction
         catch (IOException ex)
         {
             throw new SaxonApiException(ex);
+        }
+    }
+    
+    public StreamSource getSource(Model model) throws IOException
+    {
+        if (model == null) throw new IllegalArgumentException("Model cannot be null");
+
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            model.write(stream, RDFLanguages.RDFXML.getName(), null);
+            return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
         }
     }
     

@@ -111,7 +111,7 @@ public class ModelXSLTWriter extends XSLTWriterBase implements MessageBodyWriter
         }
     }
     
-    public static StreamSource getSource(Model model) throws IOException
+    public StreamSource getSource(Model model) throws IOException
     {
         if (model == null) throw new IllegalArgumentException("Model cannot be null");
         if (log.isDebugEnabled()) log.debug("Number of Model stmts read: {}", model.size());
