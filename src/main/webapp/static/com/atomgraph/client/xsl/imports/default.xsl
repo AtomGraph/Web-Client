@@ -471,7 +471,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="srx:variable" mode="xhtml:Table">
         <th>
-            <xsl:sequence select="@name"/>
+            <xsl:value-of select="@name"/>
         </th>
     </xsl:template>
 
@@ -494,9 +494,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="srx:uri" mode="xhtml:Table">
-        <a href="{.}" title="{.}">
-            <xsl:sequence select="."/>
-        </a>
+        <xsl:apply-templates select="."/>
     </xsl:template>
 
     <!-- INPUT MODE -->

@@ -22,6 +22,7 @@ limitations under the License.
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
@@ -39,6 +40,7 @@ xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
+xmlns:srx="&srx;"
 xmlns:http="&http;"
 xmlns:ldt="&ldt;"
 xmlns:dct="&dct;"
@@ -103,22 +105,34 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="/">
         <html lang="{$ldt:lang}">
-            <xsl:variable name="grouped-rdf" as="document-node()">
-                <xsl:apply-templates select="." mode="ac:GroupTriples"/>
-            </xsl:variable>
-
-            <xsl:apply-templates select="$grouped-rdf/rdf:RDF" mode="xhtml:Head"/>
-            
-            <xsl:apply-templates select="$grouped-rdf/rdf:RDF" mode="xhtml:Body"/>
+            <xsl:apply-templates/>
         </html>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF" mode="xhtml:Head">
+    <xsl:template match="rdf:RDF">
+        <xsl:variable name="grouped-rdf" as="document-node()">
+            <xsl:apply-templates select="root(.)" mode="ac:GroupTriples"/>
+        </xsl:variable>
+
+        <xsl:for-each select="$grouped-rdf/rdf:RDF">
+            <xsl:apply-templates select="." mode="xhtml:Head"/>
+
+            <xsl:apply-templates select="." mode="xhtml:Body"/>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="srx:sparql">
+        <xsl:apply-templates select="." mode="xhtml:Head"/>
+
+        <xsl:apply-templates select="." mode="xhtml:Body"/>
+    </xsl:template>
+    
+    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Head">
         <head>
             <xsl:apply-templates select="." mode="xhtml:Meta"/>
-    
+
             <xsl:apply-templates select="." mode="xhtml:Title"/>
-            
+
             <xsl:apply-templates select="." mode="xhtml:Style"/>
 
             <xsl:apply-templates select="." mode="xhtml:Script"/>
@@ -141,6 +155,12 @@ exclude-result-prefixes="#all">
         </body>
     </xsl:template>
 
+    <xsl:template match="srx:sparql" mode="xhtml:Body">
+        <body>
+            <xsl:apply-templates select="." mode="xhtml:Table"/>
+        </body>
+    </xsl:template>
+    
     <xsl:template match="rdf:RDF" mode="bs2:NavBar">
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
@@ -267,7 +287,7 @@ exclude-result-prefixes="#all">
     
     <!-- META -->
     
-    <xsl:template match="rdf:RDF" mode="xhtml:Meta">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Meta">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </xsl:template>
     
@@ -279,7 +299,7 @@ exclude-result-prefixes="#all">
         </title>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[ac:uri()]" mode="xhtml:Title" priority="1">
+    <xsl:template match="rdf:RDF[ac:uri()] | srx:sparql" mode="xhtml:Title" priority="1">
         <title>
             <xsl:value-of>
                 <xsl:apply-templates select="key('resources', ac:document-uri(ac:uri()))" mode="ac:label"/>
@@ -291,7 +311,7 @@ exclude-result-prefixes="#all">
     
     <!-- STYLE  -->
     
-    <xsl:template match="rdf:RDF" mode="xhtml:Style">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Style">
         <link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
         <link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
         <link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -299,7 +319,7 @@ exclude-result-prefixes="#all">
     
     <!-- SCRIPT  -->
 
-    <xsl:template match="rdf:RDF" mode="xhtml:Script">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Script">
         <script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}" defer="defer"></script>
         <script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}" defer="defer"></script>
         <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}" defer="defer"></script>
