@@ -139,7 +139,7 @@ exclude-result-prefixes="#all">
         </head>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF" mode="xhtml:Body">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Body">
         <body>
             <xsl:apply-templates select="." mode="bs2:NavBar"/>
 
@@ -154,14 +154,8 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:Footer"/>
         </body>
     </xsl:template>
-
-    <xsl:template match="srx:sparql" mode="xhtml:Body">
-        <body>
-            <xsl:apply-templates select="." mode="xhtml:Table"/>
-        </body>
-    </xsl:template>
     
-    <xsl:template match="rdf:RDF" mode="bs2:NavBar">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:NavBar">
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
@@ -210,7 +204,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF" mode="bs2:ActionBar">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:ActionBar">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'navbar-inner action-bar'" as="xs:string?"/>
 
@@ -234,7 +228,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF" mode="bs2:ActionBarLeft">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:ActionBarLeft">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span2'" as="xs:string?"/>
         
@@ -250,7 +244,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF" mode="bs2:ActionBarMain">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:ActionBarMain">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span10'" as="xs:string?"/>
 
@@ -271,10 +265,12 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="bs2:BreadCrumbList"/>
         </div>
     </xsl:template>
+
+    <xsl:template match="srx:sparql" mode="bs2:BreadCrumbList"/>
+
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:ActionBarRight"/>
     
-    <xsl:template match="rdf:RDF" mode="bs2:ActionBarRight"/>
-    
-    <xsl:template match="rdf:RDF" mode="bs2:Footer">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:Footer">
         <div class="footer text-center">
             <p>
                 <hr/>
@@ -345,7 +341,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF" mode="bs2:Main">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:Main">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span8'" as="xs:string?"/>
 
@@ -378,6 +374,10 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
     
+    <xsl:template match="srx:sparql" mode="ac:ModeChoice">
+        <xsl:apply-templates select="." mode="xhtml:Table"/>
+    </xsl:template>
+    
     <!-- NAVBAR ACTIONS -->
     
     <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:NavBarActions" priority="1">
@@ -402,17 +402,17 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF" mode="bs2:NavBarActions"/>
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:NavBarActions"/>
     
     <!-- CREATE -->
     
-    <xsl:template match="rdf:RDF" mode="bs2:Create"/>
+    <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:Create"/>
 
     <!-- MODE LIST -->
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="2"/>
 
-    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:ModeList" priority="1">
+    <xsl:template match="rdf:RDF[ac:uri()] | srx:sparql" mode="bs2:ModeList" priority="1">
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
         <div class="btn-group pull-right">
@@ -520,7 +520,9 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates mode="#current"/>
         </div>
     </xsl:template>
-        
+    
+    <xsl:template match="srx:sparql" mode="bs2:Right"/>
+
     <xsl:template match="*[*][@rdf:about or @rdf:nodeID]" mode="bs2:Right"/>
 
     <!-- remove spaces -->

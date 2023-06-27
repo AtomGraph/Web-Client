@@ -456,7 +456,21 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="srx:sparql" mode="xhtml:Table">
-        <table class="table table-bordered table-striped">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
+        
+        <table>
+            <xsl:if test="$id">
+                <xsl:attribute name="id" select="$id"/>
+            </xsl:if>
+            <xsl:if test="$title">
+                <xsl:attribute name="title" select="$title"/>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+            
             <xsl:apply-templates mode="#current"/>
         </table>
     </xsl:template>
