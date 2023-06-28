@@ -412,7 +412,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="2"/>
 
-    <xsl:template match="rdf:RDF[ac:uri()] | srx:sparql" mode="bs2:ModeList" priority="1">
+    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:ModeList" priority="1">
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
         <div class="btn-group pull-right">
@@ -434,7 +434,9 @@ exclude-result-prefixes="#all">
             </ul>
         </div>
     </xsl:template>
-                
+    
+    <xsl:template match="srx:sparql" mode="bs2:ModeList"/>
+    
     <xsl:template match="*[@rdf:about]" mode="bs2:ModeListItem">
         <xsl:param name="active" as="xs:boolean"/>
         <xsl:param name="class" select="if ($active) then 'active' else ()" as="xs:string?"/>
