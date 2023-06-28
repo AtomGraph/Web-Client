@@ -17,6 +17,7 @@
 package com.atomgraph.client.model.impl;
 
 import com.atomgraph.client.MediaTypes;
+import com.atomgraph.client.vocabulary.AC;
 import java.net.URI;
 import java.util.ArrayList;
 import jakarta.ws.rs.DELETE;
@@ -51,10 +52,12 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.Variant;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Model;
+import org.glassfish.jersey.uri.UriComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +71,7 @@ public class ProxyResourceBase implements Resource
 {
     private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
     
+    private final UriInfo uriInfo;
     private final Request request;
     private final HttpHeaders httpHeaders;
     private final MediaTypes mediaTypes;
@@ -75,6 +79,9 @@ public class ProxyResourceBase implements Resource
     private final MediaType[] readableMediaTypes;
     private final Client client;
     private final WebTarget webTarget;
+    private final URI endpoint;
+    private final String query;
+
     private final HttpServletRequest httpServletRequest;
     
     /**
@@ -86,6 +93,7 @@ public class ProxyResourceBase implements Resource
      * @param mediaTypes supported media types
      * @param uri RDF resource URI
      * @param endpoint SPARQL endpoint URI
+     * @param query SPARQL query
      * @param accept response media type
      * @param mode layout mode
      * @param client HTTP client
@@ -93,12 +101,15 @@ public class ProxyResourceBase implements Resource
      */
     @Inject
     public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, MediaTypes mediaTypes,
-            @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
+            @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("query") String query, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
             Client client, @Context HttpServletRequest httpServletRequest)
     {
+        this.uriInfo = uriInfo;
         this.request = request;
         this.httpHeaders = httpHeaders;
         this.mediaTypes = mediaTypes;
+        this.endpoint = endpoint;
+        this.query = query;
         this.accept = accept;
         this.client = client;
         List<jakarta.ws.rs.core.MediaType> readableMediaTypesList = new ArrayList<>();
@@ -162,7 +173,22 @@ public class ProxyResourceBase implements Resource
 
     public Response get(WebTarget target)
     {
-        if (target == null) throw new NotFoundException("Resource URI not supplied");
+        if (target == null)
+        {
+            // if SPARQL endpoint and query are provided, build a SPARQL Protocol URI and then redirect to a URI that proxies it
+            if (getEndpoint() != null && getQuery() != null)
+            {
+                if (log.isDebugEnabled()) log.debug("Redirecting from endpoint/query URL to a proxied URL");
+                String encodedQuery = UriComponent.encode(getQuery(), UriComponent.Type.UNRESERVED); // manually encode query string because UriBuilder::build will complain about {}
+                URI sparqlUrl = UriBuilder.fromUri(getEndpoint()).queryParam(AC.query.getLocalName(), encodedQuery).build();
+                String encodedSparqlUrl = UriComponent.encode(sparqlUrl.toString(), UriComponent.Type.UNRESERVED); // manually encode URL
+                URI uri = getUriInfo().getBaseUriBuilder().queryParam(AC.uri.getLocalName(), encodedSparqlUrl).build();
+                
+                return Response.seeOther(uri).build();
+            }
+            
+            throw new NotFoundException("Resource URI not supplied");
+        }
         
         return get(target, getBuilder(target));
     }
@@ -333,6 +359,11 @@ public class ProxyResourceBase implements Resource
             delete(Response.class);
     }
     
+    public UriInfo getUriInfo()
+    {
+        return uriInfo;
+    }
+    
     public HttpHeaders getHttpHeaders()
     {
         return httpHeaders;
@@ -359,6 +390,16 @@ public class ProxyResourceBase implements Resource
         return webTarget;
     }
 
+    public final URI getEndpoint()
+    {
+        return endpoint;
+    }
+    
+    public final String getQuery()
+    {
+        return query;
+    }
+    
     public Request getRequest()
     {
         return request;

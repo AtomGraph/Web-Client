@@ -248,7 +248,7 @@ public class Application extends ResourceConfig
         clientConfig.register(new DatasetProvider());
         clientConfig.register(new ResultSetProvider());
         clientConfig.register(new QueryProvider());
-        clientConfig.register(new UpdateRequestProvider()); // TO-DO: UpdateRequestProvider
+        clientConfig.register(new UpdateRequestProvider());
 
         Client client = ClientBuilder.newClient(clientConfig);
         //if (log.isDebugEnabled()) client.addFilter(new LoggingFilter(System.out));

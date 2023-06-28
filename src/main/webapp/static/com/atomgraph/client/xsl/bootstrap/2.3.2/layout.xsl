@@ -490,13 +490,6 @@ exclude-result-prefixes="#all">
                 <li>
                     <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'accept': 'text/turtle' })}">Turtle</a>
                 </li>
-                <!--
-                <xsl:if test="@rdf:about = $a:requestUri and $query-res/sp:text">
-                    <li>
-                        <a href="{ac:build-uri(resolve-uri('sparql', $ldt:base), map{ 'query': string($query-res/sp:text) })}">SPARQL</a>
-                    </li>
-                </xsl:if>
-                -->
             </ul>
         </div>
     </xsl:template>
