@@ -41,6 +41,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.time.ZonedDateTime;
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
@@ -132,7 +133,10 @@ public abstract class XSLTWriterBase
         xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)dataManager);
         xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now())); // TO-DO: make TZ configurable
         if (parameters != null) xsltTrans.setStylesheetParameters(parameters);
-        xsltTrans.transform(new StreamSource(new ByteArrayInputStream(baos.toByteArray())), out);
+        
+        Source source = new StreamSource(new ByteArrayInputStream(baos.toByteArray()));
+        source.setSystemId(getAbsolutePath().toString()); // systemId value is used for base-uri()
+        xsltTrans.transform(source, out);
     }
     
     public <T extends XdmValue> Map<QName, XdmValue> getParameters(MultivaluedMap<String, Object> headerMap) throws TransformerException
