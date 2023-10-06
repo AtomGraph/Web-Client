@@ -183,8 +183,8 @@ exclude-result-prefixes="#all">
                         <form action="" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
                             <div class="input-append">
                                 <input type="text" name="uri" class="input-xxlarge">
-                                    <xsl:if test="ac:uri()">
-                                        <xsl:attribute name="value" select="ac:uri()"/>
+                                    <xsl:if test="base-uri()">
+                                        <xsl:attribute name="value" select="base-uri()"/>
                                     </xsl:if>
                                 </input>
                                 <button type="submit" class="btn btn-primary">Go</button>
@@ -295,10 +295,10 @@ exclude-result-prefixes="#all">
         </title>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF[ac:uri()] | srx:sparql" mode="xhtml:Title" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()] | srx:sparql[base-uri()]" mode="xhtml:Title" priority="1">
         <title>
             <xsl:value-of>
-                <xsl:apply-templates select="key('resources', ac:document-uri(ac:uri()))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', base-uri())" mode="ac:label"/>
             </xsl:value-of>
         </title>
     </xsl:template>
@@ -380,9 +380,9 @@ exclude-result-prefixes="#all">
     
     <!-- NAVBAR ACTIONS -->
     
-    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:NavBarActions" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:NavBarActions" priority="1">
         <div class="pull-right">
-            <form action="{ac:document-uri(ac:uri())}?_method=DELETE" method="post">
+            <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(base-uri())})}?_method=DELETE" method="post">
                 <button class="btn btn-delete" type="submit">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label"/>
@@ -393,7 +393,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
-                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:document-uri(ac:uri())), 'mode': '&ac;EditMode' })}">
+                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(base-uri()), 'mode': '&ac;EditMode' })}">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                     </xsl:value-of>
@@ -412,8 +412,9 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="2"/>
 
-    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:ModeList" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:ModeList" priority="1">
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
+        <xsl:param name="uri" select="base-uri()" as="xs:anyURI"/>
         
         <div class="btn-group pull-right">
             <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
@@ -428,6 +429,7 @@ exclude-result-prefixes="#all">
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
+                        <xsl:with-param name="uri" select="$uri"/>
                         <xsl:with-param name="active" select="@rdf:about = $ac:mode"/>
                     </xsl:apply-templates>
                 </xsl:for-each>
@@ -437,7 +439,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="srx:sparql" mode="bs2:ModeList"/>
     
-    <xsl:template match="*[@rdf:about]" mode="bs2:ModeListItem">
+    <xsl:template match="*[base-uri()][@rdf:about]" mode="bs2:ModeListItem">
+        <xsl:param name="uri" as="xs:anyURI"/>
         <xsl:param name="active" as="xs:boolean"/>
         <xsl:param name="class" select="if ($active) then 'active' else ()" as="xs:string?"/>
 
@@ -446,7 +449,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
+            <a href="{ac:build-uri((), map{ 'uri': string($uri), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
                 <xsl:value-of>
                     <xsl:apply-templates select="." mode="ac:label"/>
                 </xsl:value-of>
@@ -480,15 +483,15 @@ exclude-result-prefixes="#all">
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
         
-    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:MediaTypeList" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:MediaTypeList" priority="1">
         <div class="btn-group pull-right">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(base-uri()), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
                 </li>
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(ac:uri())), 'accept': 'text/turtle' })}">Turtle</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(base-uri()), 'accept': 'text/turtle' })}">Turtle</a>
                 </li>
             </ul>
         </div>

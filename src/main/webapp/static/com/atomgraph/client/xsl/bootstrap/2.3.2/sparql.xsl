@@ -70,7 +70,7 @@ LIMIT 100</xsl:param>
             </xsl:if>
             
             <xsl:call-template name="bs2:QueryForm">
-                <xsl:with-param name="uri" select="ac:uri()"/>
+                <xsl:with-param name="uri" select="base-uri()"/>
                 <xsl:with-param name="mode" select="$ac:mode"/>
                 <xsl:with-param name="endpoint" select="$ac:endpoint"/>
                 <xsl:with-param name="query" select="$ac:query"/>

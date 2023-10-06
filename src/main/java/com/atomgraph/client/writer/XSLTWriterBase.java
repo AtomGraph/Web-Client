@@ -134,9 +134,18 @@ public abstract class XSLTWriterBase
         xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now())); // TO-DO: make TZ configurable
         if (parameters != null) xsltTrans.setStylesheetParameters(parameters);
         
-        Source source = new StreamSource(new ByteArrayInputStream(baos.toByteArray()));
-        source.setSystemId(getAbsolutePath().toString()); // systemId value is used for base-uri()
-        xsltTrans.transform(source, out);
+        try
+        {
+            Source source = new StreamSource(new ByteArrayInputStream(baos.toByteArray()));
+            String systemId = getSystemId();
+            if (systemId != null) source.setSystemId(systemId); // systemId value is used for base-uri()
+            xsltTrans.transform(source, out);
+        }
+        catch (URISyntaxException ex)
+        {
+            if (log.isErrorEnabled()) log.error("URI syntax exception: {}", ex.getMessage());
+            throw new TransformerException(ex);
+        }
     }
     
     public <T extends XdmValue> Map<QName, XdmValue> getParameters(MultivaluedMap<String, Object> headerMap) throws TransformerException
@@ -183,6 +192,15 @@ public abstract class XSLTWriterBase
         }
     }
 
+    public String getSystemId() throws URISyntaxException
+    {
+        URI uri = getURI();
+        
+        if (uri != null) return uri.toString();
+        
+        return null;
+    }
+    
     public URI getAbsolutePath()
     {
         return getUriInfo().getAbsolutePath();
@@ -206,7 +224,7 @@ public abstract class XSLTWriterBase
 
     public URI getURI() throws URISyntaxException
     {
-        return getURIParam(getUriInfo(), AC.uri.getLocalName()); // TO-DO: remove possible #fragment from URI
+        return getURIParam(getUriInfo(), AC.uri.getLocalName());
     }
 
     public URI getEndpointURI() throws URISyntaxException

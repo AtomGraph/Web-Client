@@ -37,9 +37,9 @@ exclude-result-prefixes="#all">
 
     <!-- BREADCRUMB  -->
 
-    <xsl:template match="rdf:RDF[ac:uri()]" mode="bs2:BreadCrumbList" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:BreadCrumbList" priority="1">
         <ul class="breadcrumb">
-            <xsl:apply-templates select="key('resources', ac:document-uri(ac:uri()))" mode="bs2:BreadCrumbListItem"/>
+            <xsl:apply-templates select="key('resources', base-uri())" mode="bs2:BreadCrumbListItem"/>
         </ul>
     </xsl:template>
 

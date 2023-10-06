@@ -206,7 +206,7 @@ exclude-result-prefixes="#all">
 
     <!-- MAP MODE -->
 
-    <xsl:template match="rdf:RDF" mode="bs2:Map">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:Map">
         <xsl:param name="id" select="'map-canvas'" as="xs:string"/>
 
         <div id="{$id}">
@@ -214,7 +214,7 @@ exclude-result-prefixes="#all">
         </div>
         
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}&amp;callback=initMap" async="async"/>
-        <xsl:for-each select="key('resources', ac:uri())">
+        <xsl:for-each select="key('resources', base-uri())">
             <script type="text/javascript">
                 <xsl:choose>
                     <xsl:when test="geo:lat and geo:long">
