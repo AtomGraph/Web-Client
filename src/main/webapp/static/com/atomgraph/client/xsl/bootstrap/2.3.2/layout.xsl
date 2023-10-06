@@ -60,7 +60,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:base" as="xs:anyURI?"/>
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
-    <xsl:param name="ac:uri" as="xs:anyURI?"/>
     <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
     <xsl:param name="ac:forClass" as="xs:anyURI?"/>
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
@@ -98,10 +97,6 @@ exclude-result-prefixes="#all">
     <rdf:Description rdf:nodeID="delete">
         <rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
-
-    <xsl:function name="ac:uri" as="xs:anyURI?">
-        <xsl:sequence select="$ac:uri"/>
-    </xsl:function>
     
     <xsl:template match="/">
         <html lang="{$ldt:lang}">
