@@ -408,8 +408,8 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="bs2:ModeList" priority="2"/>
 
     <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:ModeList" priority="1">
+        <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI"/>
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
-        <xsl:param name="uri" select="base-uri()" as="xs:anyURI"/>
         
         <div class="btn-group pull-right">
             <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
@@ -424,7 +424,7 @@ exclude-result-prefixes="#all">
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
-                        <xsl:with-param name="uri" select="$uri"/>
+                        <xsl:with-param name="base-uri" select="$base-uri"/>
                         <xsl:with-param name="active" select="@rdf:about = $ac:mode"/>
                     </xsl:apply-templates>
                 </xsl:for-each>
@@ -434,8 +434,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="srx:sparql" mode="bs2:ModeList"/>
     
-    <xsl:template match="*[base-uri()][@rdf:about]" mode="bs2:ModeListItem">
-        <xsl:param name="uri" as="xs:anyURI"/>
+    <xsl:template match="*[@rdf:about]" mode="bs2:ModeListItem">
+        <xsl:param name="base-uri" as="xs:anyURI"/>
         <xsl:param name="active" as="xs:boolean"/>
         <xsl:param name="class" select="if ($active) then 'active' else ()" as="xs:string?"/>
 
@@ -444,7 +444,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <a href="{ac:build-uri((), map{ 'uri': string($uri), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
+            <a href="{ac:build-uri((), map{ 'uri': string($base-uri), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
                 <xsl:value-of>
                     <xsl:apply-templates select="." mode="ac:label"/>
                 </xsl:value-of>
