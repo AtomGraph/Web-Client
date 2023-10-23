@@ -35,6 +35,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.DatasetProvider;
+import com.atomgraph.core.io.ModelProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.ModelUtils;
@@ -210,7 +211,7 @@ public class ProxyResourceBase implements Resource
                 (target.getUri().getScheme().equals("https") && cr.getLocation().getScheme().equals("http"))) )
                     return get(getClient().target(cr.getLocation()));
 
-            cr.getHeaders().putSingle(DatasetProvider.REQUEST_URI_HEADER, target.getUri().toString()); // provide a base URI hint to ModelProvider
+            cr.getHeaders().putSingle(ModelProvider.REQUEST_URI_HEADER, target.getUri().toString()); // provide a base URI hint to ModelProvider
 
             if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", target.getUri());
 
@@ -218,7 +219,7 @@ public class ProxyResourceBase implements Resource
             
             List<Object> linkValues = cr.getHeaders().get(HttpHeaders.LINK);
             if (linkValues != null) setLinks(linkValues, response);
-                
+            
             return response;
         }
         catch (ProcessingException ex)

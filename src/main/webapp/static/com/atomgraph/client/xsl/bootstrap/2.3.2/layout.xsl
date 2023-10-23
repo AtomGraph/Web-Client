@@ -293,7 +293,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[base-uri()] | srx:sparql[base-uri()]" mode="xhtml:Title" priority="1">
         <title>
             <xsl:value-of>
-                <xsl:apply-templates select="key('resources', base-uri())" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', ac:absolute-path(base-uri()))" mode="ac:label"/>
             </xsl:value-of>
         </title>
     </xsl:template>
@@ -377,7 +377,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:NavBarActions" priority="1">
         <div class="pull-right">
-            <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(base-uri())})}?_method=DELETE" method="post">
+            <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri()))})}?_method=DELETE" method="post">
                 <button class="btn btn-delete" type="submit">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label"/>
@@ -388,7 +388,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($ac:mode = '&ac;EditMode')">
             <div class="pull-right">
-                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(base-uri()), 'mode': '&ac;EditMode' })}">
+                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                     </xsl:value-of>
@@ -424,7 +424,7 @@ exclude-result-prefixes="#all">
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="bs2:ModeListItem">
-                        <xsl:with-param name="base-uri" select="$base-uri"/>
+                        <xsl:with-param name="base-uri" select="$base-uri" tunnel="yes"/>
                         <xsl:with-param name="active" select="@rdf:about = $ac:mode"/>
                     </xsl:apply-templates>
                 </xsl:for-each>
@@ -435,7 +435,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="srx:sparql" mode="bs2:ModeList"/>
     
     <xsl:template match="*[@rdf:about]" mode="bs2:ModeListItem">
-        <xsl:param name="base-uri" as="xs:anyURI"/>
+        <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI" tunnel="yes"/>
         <xsl:param name="active" as="xs:boolean"/>
         <xsl:param name="class" select="if ($active) then 'active' else ()" as="xs:string?"/>
 
@@ -444,7 +444,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <a href="{ac:build-uri((), map{ 'uri': string($base-uri), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
+            <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path($base-uri)), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
                 <xsl:value-of>
                     <xsl:apply-templates select="." mode="ac:label"/>
                 </xsl:value-of>
@@ -483,10 +483,10 @@ exclude-result-prefixes="#all">
             <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(base-uri()), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
                 </li>
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(base-uri()), 'accept': 'text/turtle' })}">Turtle</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'text/turtle' })}">Turtle</a>
                 </li>
             </ul>
         </div>

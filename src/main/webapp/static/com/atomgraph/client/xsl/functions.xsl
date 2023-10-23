@@ -58,6 +58,12 @@ extension-element-prefixes="ixsl"
     <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
     <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
     
+    <xsl:function name="ac:absolute-path" as="xs:anyURI">
+        <xsl:param name="href" as="xs:anyURI"/>
+        
+        <xsl:sequence select="xs:anyURI(if (contains($href, '?')) then substring-before($href, '?') else if (contains($href, '#')) then substring-before($href, '#') else $href)"/>
+    </xsl:function>
+    
     <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
     <xsl:function name="ac:uuid" as="xs:string" override-extension-function="no">
         <xsl:value-of use-when="system-property('xsl:product-name') eq 'SaxonJS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>

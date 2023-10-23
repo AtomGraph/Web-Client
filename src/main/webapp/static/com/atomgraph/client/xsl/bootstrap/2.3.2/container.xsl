@@ -214,7 +214,7 @@ exclude-result-prefixes="#all">
         </div>
         
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}&amp;callback=initMap" async="async"/>
-        <xsl:for-each select="key('resources', base-uri())">
+        <xsl:for-each select="key('resources', ac:absolute-path(base-uri()))">
             <script type="text/javascript">
                 <xsl:choose>
                     <xsl:when test="geo:lat and geo:long">

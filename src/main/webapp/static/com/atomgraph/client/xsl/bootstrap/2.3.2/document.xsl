@@ -39,7 +39,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:BreadCrumbList" priority="1">
         <ul class="breadcrumb">
-            <xsl:apply-templates select="key('resources', base-uri())" mode="bs2:BreadCrumbListItem"/>
+            <xsl:apply-templates select="key('resources', ac:absolute-path(base-uri()))" mode="bs2:BreadCrumbListItem"/>
         </ul>
     </xsl:template>
 
@@ -93,7 +93,12 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="name" select="'rdf'"/>
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:call-template>
-
+            <xsl:call-template name="xhtml:Input">
+                <xsl:with-param name="name" select="'v'"/>
+                <xsl:with-param name="type" select="'hidden'"/>
+                <xsl:with-param name="value" select="base-uri()"/>
+            </xsl:call-template>
+            
             <xsl:apply-templates select="." mode="bs2:Legend"/>
 
             <xsl:choose>
