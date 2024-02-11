@@ -51,9 +51,18 @@ public class Constructor
 
     public Resource construct(OntClass forClass, Model targetModel, String baseURI)
     {
+        return construct(forClass, targetModel, baseURI, null);
+    }
+    
+    public Resource construct(OntClass forClass, Model targetModel, String baseURI, String resourceURI)
+    {
         if (targetModel == null) throw new IllegalArgumentException("Model cannot be null");
 
-        return addInstance(forClass, SPIN.constructor, targetModel.createResource(), baseURI, new HashSet<>());
+        final Resource resource;
+        if (resourceURI == null) resource = targetModel.createResource(); // blank node
+        else resource = targetModel.createResource(resourceURI); // URI resource
+        
+        return addInstance(forClass, SPIN.constructor, resource, baseURI, new HashSet<>());
     }
 
     /**

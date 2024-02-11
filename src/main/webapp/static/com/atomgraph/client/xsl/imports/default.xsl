@@ -123,7 +123,6 @@ exclude-result-prefixes="#all">
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    
 
     <!-- DESCRIPTION -->
 
