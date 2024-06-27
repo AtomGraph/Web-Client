@@ -34,9 +34,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import com.atomgraph.core.exception.BadGatewayException;
-import com.atomgraph.core.io.DatasetProvider;
 import com.atomgraph.core.io.ModelProvider;
-import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.model.Resource;
 import com.atomgraph.core.util.ModelUtils;
 import com.atomgraph.core.util.ResultSetUtils;
@@ -58,6 +56,9 @@ import jakarta.ws.rs.core.Variant;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.resultset.ResultSetReaderRegistry;
 import org.glassfish.jersey.uri.UriComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,8 +232,11 @@ public class ProxyResourceBase implements Resource
     
     public Response getResponse(Response clientResponse)
     {
+        MediaType formatType = new MediaType(clientResponse.getMediaType().getType(), clientResponse.getMediaType().getSubtype()); // discard charset param
+        Lang lang = RDFLanguages.contentTypeToLang(formatType.toString());
+        
         // check if we got SPARQL results first
-        if (MediaTypes.isResultSet(clientResponse.getMediaType()))
+        if (ResultSetReaderRegistry.isRegistered(lang))
         {
             ResultSetRewindable results = clientResponse.readEntity(ResultSetRewindable.class);
             return getResponse(results);
