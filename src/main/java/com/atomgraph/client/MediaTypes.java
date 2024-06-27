@@ -55,10 +55,10 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
         writableModelTypes.add(1, xhtml); // add XHTML as writable MediaType
         WRITABLE.put(Model.class, Collections.unmodifiableList(writableModelTypes));
 
-        List<MediaType> writablResultSetTypes = new ArrayList<>(coreTypes.getWritable(ResultSet.class));
-        writablResultSetTypes.add(0, html); // add HTML as writable MediaType
-        writablResultSetTypes.add(1, xhtml); // add XHTML as writable MediaType
-        WRITABLE.put(ResultSet.class, Collections.unmodifiableList(writablResultSetTypes));
+        List<MediaType> writableResultSetTypes = new ArrayList<>(coreTypes.getWritable(ResultSet.class));
+        writableResultSetTypes.add(0, html); // add HTML as writable MediaType
+        writableResultSetTypes.add(1, xhtml); // add XHTML as writable MediaType
+        WRITABLE.put(ResultSet.class, Collections.unmodifiableList(writableResultSetTypes));
     }
     
     public MediaTypes()

@@ -298,12 +298,16 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- show literals that match $ldt:lang, if any -->
+    <!-- 
     <xsl:template match="text()[$ldt:lang][../@xml:lang and lang($ldt:lang, ..)]" priority="1">
         <xsl:next-match/>
     </xsl:template>
+    -->
 
     <!-- suppress literals that have @xml:lang but do not match $ldt:lang, if they have siblings that do match -->
+    <!--
     <xsl:template match="text()[$ldt:lang][../@xml:lang and not(lang($ldt:lang, ..))][../preceding-sibling::*[namespace-uri() || local-name() = namespace-uri(current()/..) || local-name(current()/..)][lang($ldt:lang)] or ../following-sibling::*[namespace-uri() || local-name() = namespace-uri(current()/..) || local-name(current()/..)][lang($ldt:lang)]]" priority="1"/>
+    -->
 
     <xsl:template match="text()[../@rdf:datatype] | srx:literal[@datatype]">
         <xsl:param name="id" as="xs:string?"/>

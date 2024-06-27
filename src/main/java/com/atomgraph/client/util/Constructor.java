@@ -19,17 +19,13 @@ package com.atomgraph.client.util;
 import com.atomgraph.client.exception.OntologyException;
 import com.atomgraph.client.vocabulary.SP;
 import com.atomgraph.client.vocabulary.SPIN;
-import org.apache.jena.ontology.AllValuesFromRestriction;
 import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -62,7 +58,8 @@ public class Constructor
         if (resourceURI == null) resource = targetModel.createResource(); // blank node
         else resource = targetModel.createResource(resourceURI); // URI resource
         
-        return addInstance(forClass, SPIN.constructor, resource, baseURI, new HashSet<>());
+        return constructInstance(forClass, SPIN.constructor, resource, baseURI).
+            addProperty(RDF.type, forClass);
     }
 
     /**
@@ -73,18 +70,13 @@ public class Constructor
      * @param property property that attaches <code>CONSTRUCT</code> query resource to class resource, usually <code>spin:constructor</code>
      * @param instance the instance resource
      * @param baseURI base URI of the query
-     * @param reachedClasses classes that were already constructed
      * @return the instance resource with constructed properties
      */
-    public Resource constructInstance(OntClass forClass, Property property, Resource instance, String baseURI, Set<OntClass> reachedClasses)
+    public Resource constructInstance(OntClass forClass, Property property, Resource instance, String baseURI)
     {
         if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
         if (instance == null) throw new IllegalArgumentException("Instance Resource cannot be null");
         if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
-        if (reachedClasses == null) throw new IllegalArgumentException("Set<OntClass> cannot be null");
-
-        // do not construct instance for the same class more than once
-        if (reachedClasses.contains(forClass)) return instance;
         
         NodeIterator constructorIt = forClass.listPropertyValues(property);
         try
@@ -116,7 +108,6 @@ public class Constructor
                     try (QueryExecution qex = QueryExecution.create().query(basedQuery).model(instance.getModel()).initialBinding(bindings).build())
                     {
                         instance.getModel().add(qex.execConstruct());
-                        reachedClasses.add(forClass);
                     }
                 }
                 catch (QueryParseException ex)
@@ -137,71 +128,7 @@ public class Constructor
             while (superClassIt.hasNext())
             {
                 OntClass superClass = superClassIt.next();
-                constructInstance(superClass, property, instance, baseURI, reachedClasses);
-            }
-        }
-        finally
-        {
-            superClassIt.close();
-        }
-
-        return instance;
-    }
-
-    public Resource addInstance(OntClass forClass, Property property, Resource instance, String baseURI, Set<OntClass> reachedClasses)
-    {
-        if (forClass == null) throw new IllegalArgumentException("OntClass cannot be null");
-        if (property == null) throw new IllegalArgumentException("Property cannot be null");
-        if (instance == null) throw new IllegalArgumentException("Resource cannot be null");
-        if (baseURI == null) throw new IllegalArgumentException("Base URI string cannot be null");
-        if (reachedClasses == null) throw new IllegalArgumentException("Set<OntClass> cannot be null");
-
-        constructInstance(forClass, property, instance, baseURI, new HashSet<>()).
-                addProperty(RDF.type, forClass);
-        reachedClasses.add(forClass);
-
-        // evaluate AllValuesFromRestriction to construct related instances
-        ExtendedIterator<OntClass> superClassIt = forClass.listSuperClasses();
-        try
-        {
-            while (superClassIt.hasNext())
-            {
-                OntClass superClass = superClassIt.next();
-
-                // construct restriction
-                if (superClass.canAs(AllValuesFromRestriction.class))
-                {
-                    AllValuesFromRestriction avfr = superClass.as(AllValuesFromRestriction.class);
-                    if (avfr.getAllValuesFrom().canAs(OntClass.class))
-                    {
-                        OntClass valueClass = avfr.getAllValuesFrom().as(OntClass.class);
-                        if (reachedClasses.contains(valueClass))
-                        {
-                            if (log.isErrorEnabled()) log.error("Circular template restriction between '{}' and '{}' is not allowed", forClass.getURI(), valueClass.getURI());
-                            throw new OntologyException("Circular template restriction between '" + forClass.getURI() + "' and '" + valueClass.getURI() + "' is not allowed", valueClass, property);
-                        }
-
-                        Resource value = instance.getModel().createResource().
-                                addProperty(RDF.type, valueClass);
-                        instance.addProperty(avfr.getOnProperty(), value);
-
-                        // add inverse properties
-                        ExtendedIterator<? extends OntProperty> it = avfr.getOnProperty().listInverseOf();
-                        try
-                        {
-                            while (it.hasNext())
-                            {
-                                value.addProperty(it.next(), instance);
-                            }
-                        }
-                        finally
-                        {
-                            it.close();
-                        }
-
-                        addInstance(valueClass, property, value, baseURI, reachedClasses);
-                    }
-                }
+                constructInstance(superClass, property, instance, baseURI);
             }
         }
         finally

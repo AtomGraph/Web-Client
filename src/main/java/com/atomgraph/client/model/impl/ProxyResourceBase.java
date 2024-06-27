@@ -213,7 +213,7 @@ public class ProxyResourceBase implements Resource
 
             cr.getHeaders().putSingle(ModelProvider.REQUEST_URI_HEADER, target.getUri().toString()); // provide a base URI hint to ModelProvider
 
-            if (log.isDebugEnabled()) log.debug("GETing Model from URI: {}", target.getUri());
+            if (log.isDebugEnabled()) log.debug("GETing response from URI: {}", target.getUri());
 
             Response response = getResponse(cr);
             
@@ -232,7 +232,7 @@ public class ProxyResourceBase implements Resource
     public Response getResponse(Response clientResponse)
     {
         // check if we got SPARQL results first
-        if (ResultSetProvider.isResultSetType(clientResponse.getMediaType()))
+        if (MediaTypes.isResultSet(clientResponse.getMediaType()))
         {
             ResultSetRewindable results = clientResponse.readEntity(ResultSetRewindable.class);
             return getResponse(results);
