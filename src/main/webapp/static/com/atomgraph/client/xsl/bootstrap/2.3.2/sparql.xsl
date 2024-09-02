@@ -196,7 +196,7 @@ LIMIT 100</xsl:param>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:apply-templates select="." mode="bs2:Block">
+                        <xsl:apply-templates select=".">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:otherwise>

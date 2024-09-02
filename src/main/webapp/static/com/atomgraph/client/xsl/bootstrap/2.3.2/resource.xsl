@@ -69,7 +69,7 @@ exclude-result-prefixes="#all">
     
     <!-- BLOCK MODE -->
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Block">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
 
@@ -88,7 +88,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <!-- inline blank node resource if there is only one property except foaf:primaryTopic having it as object -->
-    <xsl:template match="@rdf:nodeID[key('resources', .)][count(key('predicates-by-object', .)[not(self::foaf:primaryTopic)]) = 1]" mode="bs2:Block" priority="2">
+    <xsl:template match="@rdf:nodeID[key('resources', .)][count(key('predicates-by-object', .)[not(self::foaf:primaryTopic)]) = 1]" priority="2">
         <xsl:param name="inline" select="true()" as="xs:boolean" tunnel="yes"/>
 
         <xsl:choose>
@@ -104,7 +104,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- hide inlined blank node resources from the main block flow -->
-    <xsl:template match="*[*][key('resources', @rdf:nodeID)][count(key('predicates-by-object', @rdf:nodeID)[not(self::foaf:primaryTopic)]) = 1]" mode="bs2:Block" priority="1">
+    <xsl:template match="*[*][key('resources', @rdf:nodeID)][count(key('predicates-by-object', @rdf:nodeID)[not(self::foaf:primaryTopic)]) = 1]" priority="1">
         <xsl:param name="display" select="false()" as="xs:boolean" tunnel="yes"/>
         
         <xsl:if test="$display">

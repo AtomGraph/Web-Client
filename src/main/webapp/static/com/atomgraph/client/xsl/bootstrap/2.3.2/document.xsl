@@ -55,9 +55,9 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
     
-    <!-- BLOCK  -->
+    <!-- DEFAULT  -->
     
-    <xsl:template match="rdf:RDF" mode="bs2:Block">
+    <xsl:template match="rdf:RDF">
         <xsl:apply-templates mode="#current">
             <xsl:sort select="ac:label(.)"/>
         </xsl:apply-templates>

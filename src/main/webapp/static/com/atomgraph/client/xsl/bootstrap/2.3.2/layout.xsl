@@ -332,7 +332,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
         
-            <xsl:apply-templates mode="bs2:Block"/>
+            <xsl:apply-templates/>
         </div>
     </xsl:template>
     
@@ -364,7 +364,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="bs2:Graph"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:apply-templates select="." mode="bs2:Block"/>
+                <xsl:apply-templates select="."/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -541,7 +541,7 @@ exclude-result-prefixes="#all">
 
         <xsl:choose>
             <xsl:when test="$bnode">
-                <xsl:apply-templates select="$bnode" mode="bs2:Block">
+                <xsl:apply-templates select="$bnode">
                     <xsl:with-param name="display" select="true()" tunnel="yes"/>
                 </xsl:apply-templates>
             </xsl:when>
