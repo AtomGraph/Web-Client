@@ -171,7 +171,7 @@ LIMIT 100</xsl:param>
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
                     <xsl:when test="$ac:mode = '&ac;ListMode'">
-                        <xsl:apply-templates select="*" mode="bs2:BlockList">
+                        <xsl:apply-templates select="*" mode="bs2:List">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>

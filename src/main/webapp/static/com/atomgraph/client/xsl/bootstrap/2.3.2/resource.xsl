@@ -144,7 +144,7 @@ exclude-result-prefixes="#all">
     
     <!-- LIST MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:List">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:List">
         <xsl:param name="active" as="xs:boolean?"/>
 
         <li>

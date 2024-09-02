@@ -34,11 +34,11 @@ exclude-result-prefixes="#all">
     
     <!-- LIST MODE -->
 
-    <xsl:template match="rdf:RDF" mode="bs2:BlockList">
+    <xsl:template match="rdf:RDF" mode="bs2:List">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:BlockList">
+    <xsl:template match="*[*][@rdf:about]" mode="bs2:List">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'well'" as="xs:string?"/>
 
