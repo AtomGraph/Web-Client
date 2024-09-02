@@ -67,7 +67,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
-    <!-- BLOCK MODE -->
+    <!-- DEFAULT MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
         <xsl:param name="id" as="xs:string?"/>
@@ -144,7 +144,7 @@ exclude-result-prefixes="#all">
     
     <!-- LIST MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:List">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:ListItem">
         <xsl:param name="active" as="xs:boolean?"/>
 
         <li>
