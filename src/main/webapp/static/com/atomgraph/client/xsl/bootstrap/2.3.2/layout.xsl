@@ -97,23 +97,19 @@ exclude-result-prefixes="#all">
     <rdf:Description rdf:nodeID="delete">
         <rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
-    
+
     <xsl:template match="/">
         <html lang="{$ldt:lang}">
-            <xsl:apply-templates/>
+            <xsl:variable name="grouped-rdf" as="document-node()">
+                <xsl:apply-templates select="root(.)" mode="ac:GroupTriples"/>
+            </xsl:variable>
+
+            <xsl:for-each select="$grouped-rdf/rdf:RDF">
+                <xsl:apply-templates select="." mode="xhtml:Head"/>
+
+                <xsl:apply-templates select="." mode="xhtml:Body"/>
+            </xsl:for-each>
         </html>
-    </xsl:template>
-
-    <xsl:template match="rdf:RDF">
-        <xsl:variable name="grouped-rdf" as="document-node()">
-            <xsl:apply-templates select="root(.)" mode="ac:GroupTriples"/>
-        </xsl:variable>
-
-        <xsl:for-each select="$grouped-rdf/rdf:RDF">
-            <xsl:apply-templates select="." mode="xhtml:Head"/>
-
-            <xsl:apply-templates select="." mode="xhtml:Body"/>
-        </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="srx:sparql">

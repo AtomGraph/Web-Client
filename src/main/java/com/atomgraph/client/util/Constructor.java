@@ -86,14 +86,14 @@ public class Constructor
                 RDFNode constructor = constructorIt.next();
                 if (!constructor.isResource())
                 {
-                    if (log.isErrorEnabled()) log.error("Constructor is invoked but {} is not defined for class '{}'", property, forClass.getURI());
+                    if (log.isErrorEnabled()) log.error("Constructor is invoked but {} is not defined for class <{}>", property, forClass.getURI());
                     throw new OntologyException("Constructor property not defined", forClass, property);
                 }
 
                 Statement queryText = constructor.asResource().getProperty(SP.text);
                 if (queryText == null || !queryText.getObject().isLiteral())
                 {
-                    if (log.isErrorEnabled()) log.error("Constructor resource '{}' does not have sp:text property", constructor);
+                    if (log.isErrorEnabled()) log.error("Constructor resource <{}> does not have sp:text property", constructor);
                     throw new OntologyException("Query property not defined", constructor.asResource(), SP.text);
                 }
 

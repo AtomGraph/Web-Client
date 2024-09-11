@@ -58,7 +58,7 @@ exclude-result-prefixes="#all">
     <!-- DEFAULT  -->
     
     <xsl:template match="rdf:RDF">
-        <xsl:apply-templates mode="#current">
+        <xsl:apply-templates>
             <xsl:sort select="ac:label(.)"/>
         </xsl:apply-templates>
     </xsl:template>
