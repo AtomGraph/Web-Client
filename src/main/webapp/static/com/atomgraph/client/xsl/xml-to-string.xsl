@@ -56,9 +56,12 @@ Recent changes:
     </xsl:apply-templates>
   </xsl:template>
 
+  <!-- disable as this interferes with the default mode -->
+  <!-- 
   <xsl:template match="/" name="xml-to-string-root-rule">
     <xsl:call-template name="xml-to-string"/>
   </xsl:template>
+  -->
 
   <xsl:template match="/" mode="xml-to-string">
     <xsl:param name="depth"/>
