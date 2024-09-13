@@ -37,7 +37,6 @@ exclude-result-prefixes="#all">
 
     <xsl:import href="../../converters/RDFXML2SVG.xsl"/>
     <xsl:import href="../../group-sort-triples.xsl"/>
-    <xsl:import href="../../xml-to-string.xsl"/>
     <xsl:import href="../../functions.xsl"/>
     <xsl:import href="../../imports/default.xsl"/>
     <xsl:import href="../../imports/dbpedia-owl.xsl"/>

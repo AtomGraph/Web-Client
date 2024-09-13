@@ -358,17 +358,4 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="*[@rdf:*[local-name() = 'parseType'] = 'Literal']/xhtml:*" mode="bs2:FormControl">
-        <xsl:param name="id" select="generate-id()" as="xs:string"/>
-
-        <textarea name="ol" id="{$id}" class="wymeditor">
-            <xsl:apply-templates select="xhtml:*" mode="xml-to-string"/>
-        </textarea>
-        <xsl:call-template name="xhtml:Input">
-            <xsl:with-param name="type" select="'hidden'"/>
-            <xsl:with-param name="name" select="'lt'"/>
-            <xsl:with-param name="value" select="'&rdf;XMLLiteral'"/>
-        </xsl:call-template>
-    </xsl:template>
-    
 </xsl:stylesheet>
