@@ -55,14 +55,6 @@ exclude-result-prefixes="#all">
         </xsl:apply-templates>
     </xsl:template>
     
-    <!-- DEFAULT  -->
-    
-    <xsl:template match="rdf:RDF">
-        <xsl:apply-templates>
-            <xsl:sort select="ac:label(.)"/>
-        </xsl:apply-templates>
-    </xsl:template>
-
     <!-- FORM  -->
 
     <xsl:template match="rdf:RDF" mode="bs2:Form">

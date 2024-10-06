@@ -236,7 +236,7 @@ public class ProxyResourceBase implements Resource
         Lang lang = RDFLanguages.contentTypeToLang(formatType.toString());
         
         // check if we got SPARQL results first
-        if (ResultSetReaderRegistry.isRegistered(lang))
+        if (lang != null && ResultSetReaderRegistry.isRegistered(lang))
         {
             ResultSetRewindable results = clientResponse.readEntity(ResultSetRewindable.class);
             return getResponse(results);

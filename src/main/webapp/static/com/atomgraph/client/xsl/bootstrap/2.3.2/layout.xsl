@@ -100,18 +100,22 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="/">
         <html lang="{$ldt:lang}">
-            <xsl:variable name="grouped-rdf" as="document-node()">
-                <xsl:apply-templates select="root(.)" mode="ac:GroupTriples"/>
-            </xsl:variable>
-
-            <xsl:for-each select="$grouped-rdf/rdf:RDF">
-                <xsl:apply-templates select="." mode="xhtml:Head"/>
-
-                <xsl:apply-templates select="." mode="xhtml:Body"/>
-            </xsl:for-each>
+            <xsl:apply-templates/>
         </html>
     </xsl:template>
-    
+
+    <xsl:template match="rdf:RDF">
+        <xsl:variable name="grouped-rdf" as="document-node()">
+            <xsl:apply-templates select="root(.)" mode="ac:GroupTriples"/>
+        </xsl:variable>
+
+        <xsl:for-each select="$grouped-rdf/rdf:RDF">
+            <xsl:apply-templates select="." mode="xhtml:Head"/>
+
+            <xsl:apply-templates select="." mode="xhtml:Body"/>
+        </xsl:for-each>
+    </xsl:template>
+
     <xsl:template match="srx:sparql">
         <xsl:apply-templates select="." mode="xhtml:Head"/>
 
@@ -360,7 +364,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="bs2:Graph"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:apply-templates select="."/>
+                <xsl:apply-templates/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
