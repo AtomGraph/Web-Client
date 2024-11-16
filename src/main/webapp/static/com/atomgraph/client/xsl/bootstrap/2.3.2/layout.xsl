@@ -33,6 +33,7 @@ limitations under the License.
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="3.0"
+xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:a="&a;"
@@ -267,8 +268,8 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF | srx:sparql" mode="bs2:Footer">
         <div class="footer text-center">
+            <hr/>
             <p>
-                <hr/>
                 <xsl:sequence select="format-date(current-date(), '[Y]', $ldt:lang, (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.

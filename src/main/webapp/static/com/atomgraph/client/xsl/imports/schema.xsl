@@ -21,7 +21,8 @@ limitations under the License.
     <!ENTITY schema1    "http://schema.org/">
     <!ENTITY schema2    "https://schema.org/">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
+xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"

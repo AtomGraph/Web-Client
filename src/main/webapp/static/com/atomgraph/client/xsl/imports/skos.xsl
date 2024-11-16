@@ -20,7 +20,8 @@ limitations under the License.
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
 ]>
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
+xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"

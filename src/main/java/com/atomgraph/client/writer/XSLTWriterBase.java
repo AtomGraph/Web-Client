@@ -114,20 +114,22 @@ public abstract class XSLTWriterBase
         out.setOutputStream(entityStream);
         out.setOutputProperty(Serializer.Property.ENCODING, UTF_8.name());
 
-        if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
-        {
-            out.setOutputProperty(Serializer.Property.METHOD, "html");
-            out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.TEXT_HTML);
-            out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/html4/strict.dtd");
-            out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
-        }
-        if (mediaType.isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
-        {
+//        if (mediaType.isCompatible(MediaType.TEXT_HTML_TYPE))
+//        {
+//            out.setOutputProperty(Serializer.Property.METHOD, "html");
+//            out.setOutputProperty(Serializer.Property.HTML_VERSION, "5.0");
+//            out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.TEXT_HTML);
+//            out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "");
+//            out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "");
+//        }
+//        if (mediaType.isCompatible(MediaType.APPLICATION_XHTML_XML_TYPE))
+//        {
             out.setOutputProperty(Serializer.Property.METHOD, "xhtml");
+            out.setOutputProperty(Serializer.Property.HTML_VERSION, "5.0");
             out.setOutputProperty(Serializer.Property.MEDIA_TYPE, MediaType.APPLICATION_XHTML_XML);
-            out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-            out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN");
-        }
+            out.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC, "");
+            out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "");
+//        }
 
         xsltTrans.setResourceResolver(new ResourceResolverWrappingURIResolver((URIResolver)dataManager));
         xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)dataManager);
