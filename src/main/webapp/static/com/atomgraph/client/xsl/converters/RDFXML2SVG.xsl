@@ -315,7 +315,7 @@ exclude-result-prefixes="#all">
 
         <!-- @x and @y will be set by the ac:SVGPositioningLoop -->
         <g id="{$id}" class="object" transform="translate(0 0)"> <!-- need an initial @transform for ac:SVGPositioning template to match -->
-            <rect x="0" y="0" height="{$height}" width="{$width}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}" />
+            <rect x="0" y="0" height="{$height}" width="{$width}" fill="{$fill}" stroke="{$stroke}" stroke-width="{$stroke-width}"/>
             <text x="0" y="0" text-anchor="middle" font-size="{$font-size}" dy="{$dy}">
                 <xsl:choose>
                     <xsl:when test="string-length(.) &gt; $max-literal-length">
