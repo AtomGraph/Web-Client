@@ -44,6 +44,18 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY LIST -->
 
+    <!-- show language tag if it's present -->
+    
+    <xsl:template match="text()[../@xml:lang]" mode="xhtml:DefinitionDescription" priority="1">
+        <dd>
+            <span class="label label-info pull-right">
+                <xsl:value-of select="../@xml:lang"/>
+            </span>
+
+            <xsl:apply-templates select="."/>
+        </dd>
+    </xsl:template>
+    
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:PropertyList">
         <xsl:apply-templates select="." mode="xhtml:DefinitionTerm"/>
         

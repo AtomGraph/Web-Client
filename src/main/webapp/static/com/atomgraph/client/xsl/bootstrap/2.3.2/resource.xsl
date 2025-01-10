@@ -252,7 +252,7 @@ exclude-result-prefixes="#all">
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dt[span/@title = preceding-sibling::dt[1]/span/@title]" mode="bs2:PropertyListIdentity" priority="1"/>
+    <xsl:template match="xhtml:dt[xhtml:span/@title = preceding-sibling::xhtml:dt[1]/xhtml:span/@title]" mode="bs2:PropertyListIdentity" priority="1"/>
 
     <!-- FORM MODE -->
     
