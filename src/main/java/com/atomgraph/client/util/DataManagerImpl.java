@@ -67,6 +67,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
         acceptedTypeList.addAll(ldc.getMediaTypes().getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(MediaType[]::new);
 
+        // TO-DO: reuse MediaTypes?
         List<jakarta.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         Map<String, String> q1 = new HashMap<>();
         q1.put("q", "1.0");
