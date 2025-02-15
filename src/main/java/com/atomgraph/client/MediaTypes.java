@@ -40,25 +40,24 @@ public class MediaTypes extends com.atomgraph.core.MediaTypes
         com.atomgraph.core.MediaTypes coreTypes = new com.atomgraph.core.MediaTypes();
         READABLE = coreTypes.getReadable();
 
-        // !!! HTML is disabled because the current XSLT stylesheets are outputting namespace XHTML which should not be served as plain HTML !!!
-        //MediaType html = new MediaType(MediaType.TEXT_HTML_TYPE.getType(), MediaType.TEXT_HTML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
+        MediaType html = new MediaType(MediaType.TEXT_HTML_TYPE.getType(), MediaType.TEXT_HTML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
         MediaType xhtml = new MediaType(MediaType.APPLICATION_XHTML_XML_TYPE.getType(), MediaType.APPLICATION_XHTML_XML_TYPE.getSubtype(), com.atomgraph.core.MediaTypes.UTF8_PARAM);
 
         WRITABLE = new HashMap<>();
 
         List<MediaType> writableDatasetTypes = new ArrayList<>(coreTypes.getWritable(Dataset.class));
-        //writableDatasetTypes.add(html); // add HTML as writable MediaType
-        writableDatasetTypes.add(xhtml); // add XHTML as writable MediaType
+        writableDatasetTypes.add(0, html); // add HTML as writable MediaType
+        writableDatasetTypes.add(1, xhtml); // add XHTML as writable MediaType
         WRITABLE.put(Dataset.class, Collections.unmodifiableList(writableDatasetTypes));
         
         List<MediaType> writableModelTypes = new ArrayList<>(coreTypes.getWritable(Model.class));
-        //writableModelTypes.add(html); // add HTML as writable MediaType
-        writableModelTypes.add(xhtml); // add XHTML as writable MediaType
+        writableModelTypes.add(0, html); // add HTML as writable MediaType
+        writableModelTypes.add(1, xhtml); // add XHTML as writable MediaType
         WRITABLE.put(Model.class, Collections.unmodifiableList(writableModelTypes));
 
         List<MediaType> writableResultSetTypes = new ArrayList<>(coreTypes.getWritable(ResultSet.class));
-        //writableResultSetTypes.add(html); // add HTML as writable MediaType
-        writableResultSetTypes.add(xhtml); // add XHTML as writable MediaType
+        writableResultSetTypes.add(0, html); // add HTML as writable MediaType
+        writableResultSetTypes.add(1, xhtml); // add XHTML as writable MediaType
         WRITABLE.put(ResultSet.class, Collections.unmodifiableList(writableResultSetTypes));
     }
     
