@@ -17,6 +17,7 @@
 package com.atomgraph.client.model.impl;
 
 import com.atomgraph.client.MediaTypes;
+import com.atomgraph.client.util.HTMLMediaTypePredicate;
 import com.atomgraph.client.vocabulary.AC;
 import java.net.URI;
 import java.util.ArrayList;
@@ -255,17 +256,16 @@ public class ProxyResourceBase implements Resource
      */
     public Response getResponse(Model model)
     {
-        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(Model.class),
+        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariants(getWritableMediaTypes(Model.class),
                 getLanguages(),
-                getEncodings()).
-            add().
-            build();
+                getEncodings());
 
         return new com.atomgraph.core.model.impl.Response(getRequest(),
                 model,
                 null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
-                variants).
+                variants,
+                new HTMLMediaTypePredicate()).
             getResponseBuilder().
             build();
     }
@@ -281,17 +281,16 @@ public class ProxyResourceBase implements Resource
         long hash = ResultSetUtils.hashResultSet(resultSet);
         resultSet.reset();
         
-        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariantListBuilder(getWritableMediaTypes(ResultSet.class),
+        List<Variant> variants = com.atomgraph.core.model.impl.Response.getVariants(getWritableMediaTypes(ResultSet.class),
                 getLanguages(),
-                getEncodings()).
-            add().
-            build();
+                getEncodings());
 
         return new com.atomgraph.core.model.impl.Response(getRequest(),
                 resultSet,
                 null,
                 new EntityTag(Long.toHexString(hash)),
-                variants).
+                variants,
+                new HTMLMediaTypePredicate()).
             getResponseBuilder().
             build();
     }

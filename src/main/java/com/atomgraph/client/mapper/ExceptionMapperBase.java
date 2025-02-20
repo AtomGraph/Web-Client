@@ -17,6 +17,7 @@
 package com.atomgraph.client.mapper;
 
 import com.atomgraph.client.MediaTypes;
+import com.atomgraph.client.util.HTMLMediaTypePredicate;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -74,7 +75,8 @@ abstract public class ExceptionMapperBase
                 model,
                 null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
-                getVariants(Model.class)).
+                getVariants(Model.class),
+                new HTMLMediaTypePredicate()).
             getResponseBuilder();
     }
 
@@ -97,7 +99,7 @@ abstract public class ExceptionMapperBase
      */
     public List<Variant> getVariants(List<MediaType> mediaTypes)
     {
-        return com.atomgraph.core.model.impl.Response.getVariantListBuilder(mediaTypes, getLanguages(), getEncodings()).add().build();
+        return com.atomgraph.core.model.impl.Response.getVariants(mediaTypes, getLanguages(), getEncodings());
     }
     
     /**
