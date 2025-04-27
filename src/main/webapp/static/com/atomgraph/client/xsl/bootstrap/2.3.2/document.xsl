@@ -55,6 +55,14 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="spring-length" select="150" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
+
+    <!-- DEFAULT  -->
+    
+    <xsl:template match="rdf:RDF">
+        <xsl:apply-templates>
+            <xsl:sort select="ac:label(.)"/>
+        </xsl:apply-templates>
+    </xsl:template>
     
     <!-- FORM  -->
 
