@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
@@ -60,6 +61,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.resultset.ResultSetReaderRegistry;
+import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundException;
 import org.glassfish.jersey.uri.UriComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,9 +226,14 @@ public class ProxyResourceBase implements Resource
             
             return response;
         }
+        catch (MessageBodyProviderNotFoundException ex)
+        {
+            if (log.isWarnEnabled()) log.debug("Dereferenced URI {} returned non-RDF media type", ex);
+            throw new NotAcceptableException(ex);
+        }
         catch (ProcessingException ex)
         {
-            if (log.isErrorEnabled()) log.debug("Could not dereference URI: {}", webTarget.getUri());
+            if (log.isWarnEnabled()) log.debug("Could not dereference URI: {}", webTarget.getUri());
             throw new BadGatewayException(ex);
         }
     }
