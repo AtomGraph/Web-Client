@@ -36,7 +36,7 @@ exclude-result-prefixes="#all">
 
         <xsl:call-template name="xhtml:Input">
             <xsl:with-param name="name" select="'ol'"/>
-            <xsl:with-param name="type" select="'text'"/>
+            <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
@@ -57,7 +57,7 @@ exclude-result-prefixes="#all">
 
         <xsl:call-template name="xhtml:Input">
             <xsl:with-param name="name" select="'ol'"/>
-            <xsl:with-param name="type" select="'text'"/>
+            <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
