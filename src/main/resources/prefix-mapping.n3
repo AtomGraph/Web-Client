@@ -21,7 +21,6 @@
    [ lm:name "http://purl.org/dc/terms/" ;                                  lm:altName "com/atomgraph/client/dcterms.rdf" ] ,
    [ lm:name "http://purl.org/goodrelations/v1#" ;                          lm:altName "com/atomgraph/client/goodrelations.owl" ] ,
    [ lm:name "http://xmlns.com/foaf/0.1/" ;                                 lm:altName "com/atomgraph/client/foaf.owl" ] ,
-   [ lm:name "http://dbpedia.org/ontology/" ;                               lm:altName "com/atomgraph/client/dbpedia-owl.owl" ] ,
    [ lm:name "http://graph.facebook.com/schema/user#" ;                     lm:altName "com/atomgraph/client/gfb-user.owl" ] ,
    [ lm:name "http://usefulinc.com/ns/doap#" ;                              lm:altName "com/atomgraph/client/doap.owl" ] ,
 
@@ -44,7 +43,6 @@
    [ lm:prefix "http://purl.org/dc/terms/" ;                                lm:altName "com/atomgraph/client/dcterms.rdf" ] ,
    [ lm:prefix "http://purl.org/goodrelations/v1" ;                         lm:altName "com/atomgraph/client/goodrelations.owl" ] ,
    [ lm:prefix "http://xmlns.com/foaf/0.1/" ;                               lm:altName "com/atomgraph/client/foaf.owl" ] ,
-   [ lm:prefix "http://dbpedia.org/ontology/" ;                             lm:altName "com/atomgraph/client/dbpedia-owl.owl" ] ,
    [ lm:prefix "http://graph.facebook.com/schema/user" ;                    lm:altName "com/atomgraph/client/gfb-user.owl" ] ,
    [ lm:prefix "http://usefulinc.com/ns/doap" ;                             lm:altName "com/atomgraph/client/doap.owl" ]
 .
