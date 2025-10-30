@@ -24371,7 +24371,7 @@ root.autocompleteVariables = function(cm, token) {
  * @method YASQE.fetchFromPrefixCc
  */
 root.fetchFromPrefixCc = function(cm) {
-	$.get("http://prefix.cc/popular/all.file.json", function(data) {
+	$.get("https://prefix.cc/popular/all.file.json", function(data) {
 		var prefixArray = [];
 		for ( var prefix in data) {
 			if (prefix == "bif")

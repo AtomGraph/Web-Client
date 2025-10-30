@@ -94,7 +94,7 @@ LIMIT 100</xsl:param>
 
     <xsl:template name="bs2:QueryForm">
         <xsl:param name="method" select="'get'" as="xs:string"/>
-        <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
+        <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI" tunnel="yes"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
         <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
