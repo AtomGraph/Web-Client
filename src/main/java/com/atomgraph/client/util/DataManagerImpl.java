@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.util;
 
+import com.atomgraph.core.client.GraphStoreClient;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.LocationMapper;
@@ -26,7 +27,6 @@ import java.util.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
-import com.atomgraph.core.client.LinkedDataClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,7 +56,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
             
-    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, LinkedDataClient ldc,
+    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, GraphStoreClient ldc,
             boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
         super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth);

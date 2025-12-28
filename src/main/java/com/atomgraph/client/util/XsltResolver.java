@@ -16,7 +16,7 @@
  */
 package com.atomgraph.client.util;
 
-import com.atomgraph.core.client.LinkedDataClient;
+import com.atomgraph.core.client.GraphStoreClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class XsltResolver extends DataManagerImpl
 
     private final MediaType[] acceptedXMLMediaTypes;
 
-    public XsltResolver(LocationMapper mapper, Map<String, Model> modelCache, LinkedDataClient ldc, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
+    public XsltResolver(LocationMapper mapper, Map<String, Model> modelCache, GraphStoreClient ldc, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
         super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth, resolvingUncached);
         

@@ -118,7 +118,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>4.0.10</version>
+            <version>4.0.12-SNAPSHOT</version>
         </dependency>
 <!--        <dependency>
             <groupId>org.glassfish.jersey.connectors</groupId>
