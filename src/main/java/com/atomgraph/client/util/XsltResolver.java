@@ -35,9 +35,9 @@ public class XsltResolver extends DataManagerImpl
 
     private final MediaType[] acceptedXMLMediaTypes;
 
-    public XsltResolver(LocationMapper mapper, Map<String, Model> modelCache, GraphStoreClient ldc, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
+    public XsltResolver(LocationMapper mapper, Map<String, Model> modelCache, GraphStoreClient gsc, boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth, resolvingUncached);
+        super(mapper, modelCache, gsc, cacheModelLoads, preemptiveAuth, resolvingUncached);
         
         List<jakarta.ws.rs.core.MediaType> acceptableXMLMediaTypeList = new ArrayList();
         acceptableXMLMediaTypeList.add(com.atomgraph.client.MediaType.TEXT_XSL_TYPE);

@@ -169,7 +169,7 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     @Override
     public Reader resolve(URI uri, String encoding, Configuration config) throws XPathException
     {
-        try (Response cr = getLinkedDataClient().getClient().target(uri).request().get())
+        try (Response cr = getGraphStoreClient().getClient().target(uri).request().get())
         {
             if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
                 throw new IOException("Unparsed text could not be successfully loaded over HTTP");
