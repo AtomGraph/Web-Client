@@ -56,15 +56,15 @@ public class DataManagerImpl extends com.atomgraph.core.util.jena.DataManagerImp
     private final boolean resolvingUncached;
     private final boolean resolvingMapped = true;
             
-    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, GraphStoreClient ldc,
+    public DataManagerImpl(LocationMapper mapper, Map<String, Model> modelCache, GraphStoreClient gsc,
             boolean cacheModelLoads, boolean preemptiveAuth, boolean resolvingUncached)
     {
-        super(mapper, modelCache, ldc, cacheModelLoads, preemptiveAuth);
+        super(mapper, modelCache, gsc, cacheModelLoads, preemptiveAuth);
         this.resolvingUncached = resolvingUncached;
         
         List<MediaType> acceptedTypeList = new ArrayList();
-        acceptedTypeList.addAll(ldc.getMediaTypes().getReadable(Model.class));
-        acceptedTypeList.addAll(ldc.getMediaTypes().getReadable(ResultSet.class));
+        acceptedTypeList.addAll(gsc.getMediaTypes().getReadable(Model.class));
+        acceptedTypeList.addAll(gsc.getMediaTypes().getReadable(ResultSet.class));
         acceptedTypes = acceptedTypeList.toArray(MediaType[]::new);
 
         // TO-DO: reuse MediaTypes?
