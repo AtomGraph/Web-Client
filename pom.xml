@@ -41,8 +41,7 @@
         <url>https://github.com/AtomGraph/Web-Client</url>
         <connection>scm:git:git://github.com/AtomGraph/Web-Client.git</connection>
         <developerConnection>scm:git:git@github.com:AtomGraph/Web-Client.git</developerConnection>
-    <tag>client-2.1.2</tag>
-  </scm>
+    </scm>
   
     <repositories>
         <repository>
@@ -118,13 +117,8 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>4.0.14-SNAPSHOT</version>
+            <version>4.0.15</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.glassfish.jersey.connectors</groupId>
-            <artifactId>jersey-apache-connector</artifactId>
-            <version>2.30.1</version>
-        </dependency>-->
     </dependencies>
 
     <build>
@@ -166,14 +160,14 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.12</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh-staging-api</serverId>
-                    <nexusUrl>https://ossrh-staging-api.central.sonatype.com</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central-portal-snapshots</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
         </plugins>
