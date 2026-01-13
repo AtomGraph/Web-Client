@@ -118,7 +118,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>4.0.15</version>
+            <version>4.0.16</version>
         </dependency>
     </dependencies>
 

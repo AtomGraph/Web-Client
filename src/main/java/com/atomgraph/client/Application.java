@@ -29,7 +29,7 @@ import com.atomgraph.client.locator.PrefixMapper;
 import com.atomgraph.client.mapper.ClientErrorExceptionMapper;
 import com.atomgraph.client.mapper.NotFoundExceptionMapper;
 import com.atomgraph.client.mapper.RiotExceptionMapper;
-import com.atomgraph.client.model.impl.ProxyResourceBase;
+import com.atomgraph.client.model.impl.ProxiedGraph;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestProvider;
@@ -183,7 +183,7 @@ public class Application extends ResourceConfig
     @PostConstruct
     public void init()
     {
-        register(ProxyResourceBase.class);
+        register(ProxiedGraph.class);
         register(new HttpMethodOverrideFilter());
         
         register(new ModelProvider());

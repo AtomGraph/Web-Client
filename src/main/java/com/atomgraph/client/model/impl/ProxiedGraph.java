@@ -36,7 +36,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import com.atomgraph.core.exception.BadGatewayException;
 import com.atomgraph.core.io.ModelProvider;
-import com.atomgraph.core.model.Resource;
+import com.atomgraph.core.model.DirectGraphStore;
 import com.atomgraph.core.util.ModelUtils;
 import com.atomgraph.core.util.ResultSetUtils;
 import java.net.URISyntaxException;
@@ -72,9 +72,9 @@ import org.slf4j.LoggerFactory;
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 @Path("/")
-public class ProxyResourceBase implements Resource
+public class ProxiedGraph implements DirectGraphStore
 {
-    private static final Logger log = LoggerFactory.getLogger(ProxyResourceBase.class);
+    private static final Logger log = LoggerFactory.getLogger(ProxiedGraph.class);
     
     private final UriInfo uriInfo;
     private final Request request;
@@ -105,7 +105,7 @@ public class ProxyResourceBase implements Resource
      * @param httpServletRequest HTTP request
      */
     @Inject
-    public ProxyResourceBase(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, MediaTypes mediaTypes,
+    public ProxiedGraph(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders httpHeaders, MediaTypes mediaTypes,
             @QueryParam("uri") URI uri, @QueryParam("endpoint") URI endpoint, @QueryParam("query") String query, @QueryParam("accept") MediaType accept, @QueryParam("mode") URI mode,
             Client client, @Context HttpServletRequest httpServletRequest)
     {
@@ -145,7 +145,6 @@ public class ProxyResourceBase implements Resource
         this.httpServletRequest = httpServletRequest;
     }
     
-    @Override
     public URI getURI()
     {
         return getWebTarget().getUri();
