@@ -55,13 +55,11 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.value.DateTimeValue;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.irix.IRIx;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.riot.system.Checker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,15 +278,11 @@ public abstract class XSLTWriterBase
         return modes;
     }
     
-    public static IRI checkURI(String classIRIStr)
+    public static IRIx checkURI(String classIRIStr)
     {
         if (classIRIStr == null) throw new IllegalArgumentException("URI String cannot be null");
 
-        IRI classIRI = IRIFactory.iriImplementation().create(classIRIStr);
-        // throws Exceptions on bad URIs:
-        Checker.iriViolations(classIRI);
-
-        return classIRI;
+        return IRIx.create(classIRIStr); // throws IRIException on bad IRIs
     }
     
     public URI getLinkURI(MultivaluedMap<String, Object> headerMap, ObjectProperty property)

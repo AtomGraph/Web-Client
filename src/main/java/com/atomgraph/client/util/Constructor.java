@@ -26,13 +26,18 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QueryParseException;
-import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.engine.binding.Binding;
+import org.apache.jena.sparql.engine.binding.BindingFactory;
+import org.apache.jena.sparql.expr.ExprVar;
+import org.apache.jena.sparql.syntax.ElementBind;
+import org.apache.jena.sparql.syntax.ElementGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,13 +104,25 @@ public class Constructor
 
                 try
                 {
-                    Query basedQuery = new ParameterizedSparqlString(queryText.getString(), baseURI).asQuery();
-                    QuerySolutionMap bindings = new QuerySolutionMap();
-                    bindings.add(SPIN.THIS_VAR_NAME, instance);
-                    // skip SPIN template bindings for now - might support later
+                    Query query = QueryFactory.create(queryText.getString(), baseURI);
 
-                    // execute the constructor on the target model
-                    try (QueryExecution qex = QueryExecution.create().query(basedQuery).model(instance.getModel()).initialBinding(bindings).build())
+                    // Inject BIND(?_this_bind AS ?this) into the WHERE clause.
+                    // This keeps ?this as a variable in the CONSTRUCT template (not a written blank node),
+                    // so the template picks up the concrete node value — preserving blank node identity.
+                    // See: https://github.com/apache/jena/issues/3267
+                    Var bindVar = Var.alloc("_this_bind");
+                    ElementGroup group = new ElementGroup();
+                    group.addElement(query.getQueryPattern());
+                    group.addElement(new ElementBind(Var.alloc(SPIN.THIS_VAR_NAME), new ExprVar(bindVar)));
+                    query.setQueryPattern(group);
+
+                    Binding binding = BindingFactory.binding(bindVar, instance.asNode());
+
+                    try (QueryExecution qex = QueryExecution.create().
+                            query(query).
+                            model(instance.getModel()).
+                            substitution(binding).
+                            build())
                     {
                         instance.getModel().add(qex.execConstruct());
                     }
