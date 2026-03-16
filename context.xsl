@@ -11,7 +11,6 @@ xmlns:ac="&ac;"
 
     <xsl:param name="ac:stylesheet"/>
     <xsl:param name="ac:resolvingUncached"/>
-    <xsl:param name="ac:sitemapRules"/>
 
     <xsl:template match="@*|node()">
         <xsl:copy>
@@ -28,9 +27,6 @@ xmlns:ac="&ac;"
             </xsl:if>
             <xsl:if test="$ac:resolvingUncached">
                 <Parameter name="&ac;resolvingUncached" value="{$ac:resolvingUncached}" override="false"/>
-            </xsl:if>
-            <xsl:if test="$ac:sitemapRules">
-                <Parameter name="&ac;sitemapRules" value="{$ac:sitemapRules}" override="false"/>
             </xsl:if>
         </xsl:copy>
     </xsl:template>

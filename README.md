@@ -12,7 +12,7 @@ Features
 What AWC provides for users as out-of-the-box generic features:
 * loading RDF data from remote Linked Data sources
 * multilingual, responsive user interface built with Twitter Bootstrap (currently [2.3.2](https://getbootstrap.com/2.3.2/))
-* multiple RDF rendering modes (currently item/list/table/map)
+* multiple RDF rendering modes (currently item/list/table/map/graph/grid)
 * RDF editing mode based on [RDF/POST](https://atomgraph.github.io/RDF-POST/) encoding
 * SPARQL endpoint with interactive results
 
@@ -42,6 +42,8 @@ It accepts the following environment variables (that become webapp context param
     <dd>If <code>true</code>, the stylesheet will attempt to resolve (dereference) URI resources in the rendered RDF data to improve the UX</dd>
     <dd><code>true</code>/<code>false</code>, optional</dd>
 </dl>
+
+Requires Java 21.
 
 Run Web-Client with the [default XSLT stylesheet](https://github.com/AtomGraph/Web-Client/blob/master/src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/layout.xsl) like this:
 
