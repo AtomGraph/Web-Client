@@ -56,10 +56,6 @@ fi
 if [ -n "$RESOLVING_UNCACHED" ] ; then
     RESOLVING_UNCACHED_PARAM="--stringparam ac:resolvingUncached $RESOLVING_UNCACHED "
 fi
-if [ -n "$SITEMAP_RULES" ] ; then
-    SITEMAP_RULES_PARAM="--stringparam ac:sitemapRules $SITEMAP_RULES "
-fi
-
 ### Execution ###
 
 # $CATALINA_HOME must be the WORKDIR at this point
@@ -68,7 +64,6 @@ transform="xsltproc \
   --output conf/Catalina/localhost/ROOT.xml \
   $STYLESHEET_PARAM \
   $RESOLVING_UNCACHED_PARAM \
-  $SITEMAP_RULES_PARAM \
   conf/Catalina/localhost/context.xsl \
   conf/Catalina/localhost/ROOT.xml"
 

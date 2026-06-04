@@ -30,6 +30,7 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.XdmValue;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -91,7 +92,7 @@ public class ConstructForClass implements ExtensionFunction
             OntModel ontModel = getOntDocumentManager().getOntology(ontology, OntModelSpec.OWL_MEM);
             
             arguments[1].stream().
-                map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
+                <OntClass>map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
                 filter(forClass -> forClass != null).
                 forEach(forClass -> new Constructor().construct(forClass, instances, base));
             

@@ -27,9 +27,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
@@ -56,7 +56,7 @@ public class ConstructorTest
     private OntClass forClass, noConstructorClass, invalidConstructorClass, invalidConstructClass;
     private Constructor constructor;
     
-    @Before
+    @BeforeEach
     public void setUp()
     {
         ontology = ModelFactory.createOntologyModel().createOntology(ONTOLOGY_URI);
@@ -116,26 +116,19 @@ public class ConstructorTest
         assertTrue(result.isIsomorphicWith(expected));
     }
     
-    @Test(expected = OntologyException.class)
+    @Test
     public void testInvalidConstructorClass()
     {
         Model result = ModelFactory.createDefaultModel();
-        constructor.construct(invalidConstructorClass, result, "http://base/");
+        assertThrows(OntologyException.class, () -> constructor.construct(invalidConstructorClass, result, "http://base/"));
     }
     
-    @Test(expected = OntologyException.class)
+    @Test
     public void testInvalidConstructClass()
     {
-        try
-        {
-            Model result = ModelFactory.createDefaultModel();
-            constructor.construct(invalidConstructClass, result, "http://base/");
-        }
-        catch (OntologyException ex)
-        {
-            assertEquals(ex.getCause().getClass(), QueryParseException.class);
-            throw ex;
-        }
+        Model result = ModelFactory.createDefaultModel();
+        OntologyException ex = assertThrows(OntologyException.class, () -> constructor.construct(invalidConstructClass, result, "http://base/"));
+        assertEquals(QueryParseException.class, ex.getCause().getClass());
     }
     
 }

@@ -76,8 +76,6 @@ public final class AC
 
     public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
 
-    public static final ObjectProperty sitemap = m_model.createObjectProperty( NS + "sitemap" );
-
     public static final DatatypeProperty method = m_model.createDatatypeProperty( NS + "method" );
 
     public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
