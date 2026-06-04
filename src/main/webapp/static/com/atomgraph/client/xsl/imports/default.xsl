@@ -84,8 +84,8 @@ exclude-result-prefixes="#all">
             <xsl:when test="key('resources', $this)">
                 <xsl:apply-templates select="key('resources', $this)" mode="ac:label"/>
             </xsl:when>
-            <xsl:when test="doc-available(namespace-uri()) and key('resources', $this, document(namespace-uri()))" use-when="system-property('xsl:product-name') = 'SAXON'">
-                <xsl:apply-templates select="key('resources', $this, document(namespace-uri()))" mode="ac:label"/>
+            <xsl:when test="doc-available(ac:document-uri(namespace-uri())) and key('resources', $this, document(ac:document-uri(namespace-uri())))" use-when="system-property('xsl:product-name') = 'SAXON'">
+                <xsl:apply-templates select="key('resources', $this, document(ac:document-uri(namespace-uri())))" mode="ac:label"/>
             </xsl:when>
             <xsl:when test="contains($this, '#') and not(ends-with($this, '#'))">
                 <xsl:sequence select="substring-after($this, '#')"/>
