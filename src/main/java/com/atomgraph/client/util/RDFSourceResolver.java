@@ -117,7 +117,7 @@ public class RDFSourceResolver implements URIResolver, UnparsedTextURIResolver
 
             try
             {
-                if (!isResolvingUncached())
+                if (!resolvingUncached(uri.toString()))
                 {
                     if (log.isDebugEnabled()) log.debug("Dereferencing uncached URIs is disabled - returning empty document for URI: {}", uri);
                     return getSource(ModelFactory.createDefaultModel(), uri.toString());
@@ -246,6 +246,18 @@ public class RDFSourceResolver implements URIResolver, UnparsedTextURIResolver
     public boolean isResolvingUncached()
     {
         return resolvingUncached;
+    }
+
+    /**
+     * Whether the given uncached URI should be dereferenced. Subclasses can restrict this
+     * (e.g. to same-site URIs only). Defaults to {@link #isResolvingUncached()}.
+     *
+     * @param uri candidate URI
+     * @return true if the URI should be dereferenced
+     */
+    protected boolean resolvingUncached(String uri)
+    {
+        return isResolvingUncached();
     }
 
     /**
