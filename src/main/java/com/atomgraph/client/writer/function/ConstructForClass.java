@@ -30,10 +30,11 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.XdmValue;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntDocumentManager;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
+import com.atomgraph.core.util.jena.PrefixGraphRepository;
+import org.apache.jena.ontapi.OntModelFactory;
+import org.apache.jena.ontapi.OntSpecification;
+import org.apache.jena.ontapi.model.OntClass;
+import org.apache.jena.ontapi.model.OntModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
@@ -49,12 +50,12 @@ public class ConstructForClass implements ExtensionFunction
 {
     
     private final Processor processor;
-    private final OntDocumentManager odm;
-    
-    public ConstructForClass(Processor processor, OntDocumentManager odm)
+    private final PrefixGraphRepository repository;
+
+    public ConstructForClass(Processor processor, PrefixGraphRepository repository)
     {
         this.processor = processor;
-        this.odm = odm;
+        this.repository = repository;
     }
     
     @Override
@@ -89,8 +90,8 @@ public class ConstructForClass implements ExtensionFunction
             String base = arguments[2].itemAt(0).getStringValue();
             
             Model instances = ModelFactory.createDefaultModel();
-            OntModel ontModel = getOntDocumentManager().getOntology(ontology, OntModelSpec.OWL_MEM);
-            
+            OntModel ontModel = OntModelFactory.createModel(getRepository().get(ontology), OntSpecification.OWL2_DL_MEM, getRepository());
+
             arguments[1].stream().
                 <OntClass>map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
                 filter(forClass -> forClass != null).
@@ -120,9 +121,9 @@ public class ConstructForClass implements ExtensionFunction
         return processor;
     }
     
-    public OntDocumentManager getOntDocumentManager()
+    public PrefixGraphRepository getRepository()
     {
-        return odm;
+        return repository;
     }
     
 }

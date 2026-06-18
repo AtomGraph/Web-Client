@@ -19,18 +19,17 @@ package com.atomgraph.client.util;
 import com.atomgraph.client.exception.OntologyException;
 import com.atomgraph.client.vocabulary.SP;
 import com.atomgraph.client.vocabulary.SPIN;
-import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontapi.model.OntClass;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QueryParseException;
-import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
@@ -83,12 +82,12 @@ public class Constructor
         if (instance == null) throw new IllegalArgumentException("Instance Resource cannot be null");
         if (baseURI == null) throw new IllegalArgumentException("Base URI cannot be null");
         
-        NodeIterator constructorIt = forClass.listPropertyValues(property);
+        StmtIterator constructorIt = forClass.listProperties(property);
         try
         {
             while (constructorIt.hasNext()) // traverse all constructors
             {
-                RDFNode constructor = constructorIt.next();
+                RDFNode constructor = constructorIt.next().getObject();
                 if (!constructor.isResource())
                 {
                     if (log.isErrorEnabled()) log.error("Constructor is invoked but {} is not defined for class <{}>", property, forClass.getURI());
@@ -139,19 +138,7 @@ public class Constructor
             constructorIt.close();
         }
         
-        ExtendedIterator<OntClass> superClassIt = forClass.listSuperClasses();
-        try
-        {
-            while (superClassIt.hasNext())
-            {
-                OntClass superClass = superClassIt.next();
-                constructInstance(superClass, property, instance, baseURI);
-            }
-        }
-        finally
-        {
-            superClassIt.close();
-        }
+        forClass.superClasses(true).forEach(superClass -> constructInstance(superClass, property, instance, baseURI));
 
         return instance;
     }

@@ -15,7 +15,7 @@
  */
 package com.atomgraph.client.writer;
 
-import com.atomgraph.client.util.DataManager;
+import com.atomgraph.client.util.RDFSourceResolver;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
@@ -57,7 +57,6 @@ import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.value.DateTimeValue;
 import org.apache.jena.irix.IRIx;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
@@ -80,33 +79,30 @@ public abstract class XSLTWriterBase
     }
     
     private final XsltExecutable xsltExec;
-    private final OntModelSpec ontModelSpec;
-    private final DataManager dataManager;
+    private final RDFSourceResolver resolver;
 
     @Context private UriInfo uriInfo;
     @Context private Request request;
     @Context private HttpHeaders httpHeaders;
     @Context private HttpServletRequest httpServletRequest;
 
-    public XSLTWriterBase(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
+    public XSLTWriterBase(XsltExecutable xsltExec, RDFSourceResolver resolver)
     {
         if (xsltExec == null) throw new IllegalArgumentException("XsltExecutable cannot be null");
-        if (ontModelSpec == null) throw new IllegalArgumentException("OntModelSpec cannot be null");
-        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+        if (resolver == null) throw new IllegalArgumentException("RDFSourceResolver cannot be null");
         this.xsltExec = xsltExec;
-        this.ontModelSpec = ontModelSpec;
-        this.dataManager = dataManager;
+        this.resolver = resolver;
     }
 
     public void transform(ByteArrayOutputStream baos, MediaType mediaType, MultivaluedMap<String, Object> headerMap, OutputStream entityStream) throws TransformerException, SaxonApiException
     {
-        transform(getXsltExecutable().load30(), getDataManager(), baos, mediaType, getParameters(headerMap), entityStream);
+        transform(getXsltExecutable().load30(), getResolver(), baos, mediaType, getParameters(headerMap), entityStream);
     }
-    
-    public void transform(Xslt30Transformer xsltTrans, DataManager dataManager, ByteArrayOutputStream baos, MediaType mediaType, Map<QName, XdmValue> parameters, OutputStream entityStream) throws TransformerException, SaxonApiException
+
+    public void transform(Xslt30Transformer xsltTrans, RDFSourceResolver resolver, ByteArrayOutputStream baos, MediaType mediaType, Map<QName, XdmValue> parameters, OutputStream entityStream) throws TransformerException, SaxonApiException
     {
         if (xsltTrans == null) throw new IllegalArgumentException("Xslt30Transformer cannot be null");
-        if (dataManager == null) throw new IllegalArgumentException("DataManager cannot be null");
+        if (resolver == null) throw new IllegalArgumentException("RDFSourceResolver cannot be null");
 
         Serializer out = xsltTrans.newSerializer();
         out.setOutputStream(entityStream);
@@ -129,8 +125,8 @@ public abstract class XSLTWriterBase
             out.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM, "");
         }
 
-        xsltTrans.setResourceResolver(new ResourceResolverWrappingURIResolver((URIResolver)dataManager));
-        xsltTrans.getUnderlyingController().setUnparsedTextURIResolver((UnparsedTextURIResolver)dataManager);
+        xsltTrans.setResourceResolver(new ResourceResolverWrappingURIResolver(resolver));
+        xsltTrans.getUnderlyingController().setUnparsedTextURIResolver(resolver);
         xsltTrans.getUnderlyingController().setCurrentDateTime(DateTimeValue.fromZonedDateTime(ZonedDateTime.now())); // TO-DO: make TZ configurable
         if (parameters != null) xsltTrans.setStylesheetParameters(parameters);
         
@@ -332,18 +328,13 @@ public abstract class XSLTWriterBase
         return httpServletRequest;
     }
     
-    public OntModelSpec getOntModelSpec()
-    {
-        return ontModelSpec;
-    }
-    
     public XsltExecutable getXsltExecutable()
     {
         return xsltExec;
     }
 
-    public DataManager getDataManager()
+    public RDFSourceResolver getResolver()
     {
-        return dataManager;
+        return resolver;
     }
 }
