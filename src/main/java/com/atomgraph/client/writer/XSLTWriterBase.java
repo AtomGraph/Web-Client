@@ -56,7 +56,7 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.value.DateTimeValue;
 import org.apache.jena.irix.IRIx;
-import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -285,7 +285,7 @@ public abstract class XSLTWriterBase
         return IRIx.create(classIRIStr); // throws IRIException on bad IRIs
     }
     
-    public URI getLinkURI(MultivaluedMap<String, Object> headerMap, ObjectProperty property)
+    public URI getLinkURI(MultivaluedMap<String, Object> headerMap, Property property)
     {
         if (headerMap.get(HttpHeaders.LINK) == null) return null;
         
