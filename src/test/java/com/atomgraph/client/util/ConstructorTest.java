@@ -61,7 +61,7 @@ public class ConstructorTest
     @BeforeEach
     public void setUp()
     {
-        ontModel = OntModelFactory.createModel(OntSpecification.OWL2_DL_MEM);
+        ontModel = OntModelFactory.createModel(OntSpecification.OWL1_FULL_MEM);
 
         OntClass superClass = ontModel.createOntClass(ONTOLOGY_URI + "super-class");
         superClass.addProperty(SPIN.constructor, ontModel.createResource().

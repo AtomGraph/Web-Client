@@ -38,7 +38,7 @@ public class SPIN
     public final static String THIS_VAR_NAME = "this";
 
     /** <p>The RDF model that holds the vocabulary terms</p> */
-    private static OntModel m_model = OntModelFactory.createModel(OntSpecification.OWL2_DL_MEM);
+    private static OntModel m_model = OntModelFactory.createModel(OntSpecification.OWL1_FULL_MEM);
     
     /** <p>The namespace of the vocabulary as a string</p> */
     public static final String NS = "http://spinrdf.org/spin#";

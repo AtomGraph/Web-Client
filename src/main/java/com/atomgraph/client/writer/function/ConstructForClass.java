@@ -90,7 +90,7 @@ public class ConstructForClass implements ExtensionFunction
             String base = arguments[2].itemAt(0).getStringValue();
             
             Model instances = ModelFactory.createDefaultModel();
-            OntModel ontModel = OntModelFactory.createModel(getRepository().get(ontology), OntSpecification.OWL2_DL_MEM, getRepository());
+            OntModel ontModel = OntModelFactory.createModel(getRepository().get(ontology), OntSpecification.OWL1_FULL_MEM, getRepository());
 
             arguments[1].stream().
                 <OntClass>map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
