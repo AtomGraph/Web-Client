@@ -120,6 +120,12 @@
             <artifactId>core</artifactId>
             <version>4.1.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <!-- new Jena ontology API (org.apache.jena.ontapi); PrefixGraphRepository extends DocumentGraphRepository -->
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-ontapi</artifactId>
+            <version>6.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

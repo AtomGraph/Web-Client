@@ -30,14 +30,15 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.XdmValue;
-import com.atomgraph.core.util.jena.PrefixGraphRepository;
+import com.atomgraph.client.util.jena.PrefixGraphRepository;
 import org.apache.jena.ontapi.OntModelFactory;
 import org.apache.jena.ontapi.OntSpecification;
 import org.apache.jena.ontapi.model.OntClass;
 import org.apache.jena.ontapi.model.OntModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFWriter;
 
 /**
  * <code>ac:construct()</code> XSLT function that constructs instances for given classes from their constructors.
@@ -111,7 +112,10 @@ public class ConstructForClass implements ExtensionFunction
 
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
-            model.write(stream, RDFLanguages.RDFXML.getName(), null);
+            RDFWriter.create().
+                format(RDFFormat.RDFXML_PLAIN).
+                source(model).
+                output(stream);
             return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
         }
     }

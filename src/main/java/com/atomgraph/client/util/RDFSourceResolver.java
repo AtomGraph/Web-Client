@@ -18,7 +18,7 @@ package com.atomgraph.client.util;
 
 import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.client.GraphStoreClient;
-import com.atomgraph.core.util.jena.PrefixGraphRepository;
+import com.atomgraph.client.util.jena.PrefixGraphRepository;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -45,6 +45,8 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +184,10 @@ public class RDFSourceResolver implements URIResolver, UnparsedTextURIResolver
     {
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
-            model.write(stream);
+            RDFWriter.create().
+                format(RDFFormat.RDFXML_PLAIN).
+                source(model).
+                output(stream);
             return new StreamSource(new ByteArrayInputStream(stream.toByteArray()), systemId);
         }
     }

@@ -17,7 +17,7 @@
 package com.atomgraph.client.util;
 
 import com.atomgraph.core.client.GraphStoreClient;
-import com.atomgraph.core.util.jena.PrefixGraphRepository;
+import com.atomgraph.client.util.jena.PrefixGraphRepository;
 import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -18,7 +18,7 @@ package com.atomgraph.client;
 
 import com.atomgraph.client.util.RDFSourceResolver;
 import com.atomgraph.client.util.StylesheetResolver;
-import com.atomgraph.core.util.jena.PrefixGraphRepository;
+import com.atomgraph.client.util.jena.PrefixGraphRepository;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFParser;

@@ -37,7 +37,6 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XsltExecutable;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.riot.SysRIOT;
 import org.slf4j.Logger;
@@ -116,7 +115,10 @@ public class ModelXSLTWriter extends XSLTWriterBase implements MessageBodyWriter
 
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
         {
-            model.write(stream, RDFLanguages.RDFXML.getName(), null);
+            RDFWriter.create().
+                format(RDFFormat.RDFXML_PLAIN).
+                source(model).
+                output(stream);
 
             if (log.isDebugEnabled()) log.debug("RDF/XML bytes written: {}", stream.toByteArray().length);
             return new StreamSource(new ByteArrayInputStream(stream.toByteArray()));
