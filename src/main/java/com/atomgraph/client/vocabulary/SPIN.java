@@ -18,7 +18,6 @@ package com.atomgraph.client.vocabulary;
 import org.apache.jena.ontapi.OntModelFactory;
 import org.apache.jena.ontapi.OntSpecification;
 import org.apache.jena.ontapi.model.OntModel;
-import org.apache.jena.rdf.model.Resource;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ResourceFactory;
