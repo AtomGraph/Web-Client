@@ -16,7 +16,6 @@
  */
 package com.atomgraph.client.util;
 
-import com.atomgraph.core.MediaTypes;
 import com.atomgraph.core.client.GraphStoreClient;
 import com.atomgraph.client.util.jena.PrefixGraphRepository;
 import jakarta.ws.rs.WebApplicationException;
