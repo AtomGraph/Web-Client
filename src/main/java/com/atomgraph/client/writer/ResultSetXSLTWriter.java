@@ -16,7 +16,7 @@
  */
 package com.atomgraph.client.writer;
 
-import com.atomgraph.client.util.DataManager;
+import com.atomgraph.client.util.RDFSourceResolver;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import java.io.*;
@@ -31,7 +31,6 @@ import jakarta.ws.rs.InternalServerErrorException;
 import javax.xml.transform.TransformerException;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XsltExecutable;
-import org.apache.jena.ontology.OntModelSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +48,14 @@ public class ResultSetXSLTWriter extends XSLTWriterBase implements MessageBodyWr
     private static final Logger log = LoggerFactory.getLogger(ResultSetXSLTWriter.class);
 
     /**
-     * Constructs model writer from XSLT executable and ontology model specification.
-     * 
+     * Constructs result set writer from XSLT executable and XSLT source resolver.
+     *
      * @param xsltExec compiled XSLT stylesheet
-     * @param ontModelSpec ontology model specification
-     * @param dataManager RDF data manager
+     * @param resolver XSLT document()/unparsed-text() resolver
      */
-    public ResultSetXSLTWriter(XsltExecutable xsltExec, OntModelSpec ontModelSpec, DataManager dataManager)
+    public ResultSetXSLTWriter(XsltExecutable xsltExec, RDFSourceResolver resolver)
     {
-        super(xsltExec, ontModelSpec, dataManager);
+        super(xsltExec, resolver);
     }
     
     @Override

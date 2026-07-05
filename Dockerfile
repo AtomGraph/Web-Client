@@ -1,4 +1,4 @@
-FROM maven:3.8.4-openjdk-17 as maven
+FROM maven:3.9-eclipse-temurin-21 AS maven
 
 ### Build AtomGraph Web-Client
 
@@ -10,7 +10,7 @@ RUN mvn -Pstandalone clean install
 
 ### Deploy Web-Client webapp on Tomcat
 
-FROM tomcat:10.1.4-jdk17
+FROM tomcat:10.1-jdk21-temurin
 
 WORKDIR $CATALINA_HOME/webapps
 

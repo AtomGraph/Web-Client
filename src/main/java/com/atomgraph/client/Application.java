@@ -16,16 +16,17 @@
  */
 package com.atomgraph.client;
 
-import org.apache.jena.ontology.OntDocumentManager;
-import org.apache.jena.util.FileManager;
-import org.apache.jena.util.LocationMapper;
+import com.atomgraph.client.util.RDFSourceResolver;
+import com.atomgraph.client.util.StylesheetResolver;
+import com.atomgraph.client.util.jena.PrefixGraphRepository;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.RDFParser;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletConfig;
 import jakarta.ws.rs.core.Context;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriterRegistry;
-import com.atomgraph.client.locator.PrefixMapper;
 import com.atomgraph.client.mapper.ClientErrorExceptionMapper;
 import com.atomgraph.client.mapper.NotFoundExceptionMapper;
 import com.atomgraph.client.mapper.RiotExceptionMapper;
@@ -33,9 +34,6 @@ import com.atomgraph.client.model.impl.ProxiedGraph;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestProvider;
-import com.atomgraph.client.util.DataManager;
-import com.atomgraph.client.util.DataManagerImpl;
-import com.atomgraph.client.util.XsltResolver;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.client.writer.ResultSetXSLTWriter;
@@ -58,7 +56,6 @@ import com.atomgraph.core.io.QueryProvider;
 import com.atomgraph.core.mapper.BadGatewayExceptionMapper;
 import com.atomgraph.core.riot.RDFLanguages;
 import com.atomgraph.core.riot.lang.RDFPostReaderFactory;
-import java.util.HashMap;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -66,13 +63,8 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.reasoner.Reasoner;
-import org.apache.jena.reasoner.rulesys.RDFSRuleReasonerFactory;
 import org.apache.jena.riot.RDFParserRegistry;
-import org.apache.jena.vocabulary.ReasonerVocabulary;
 import org.glassfish.jersey.client.ClientConfig;
 import static org.glassfish.jersey.client.ClientProperties.FOLLOW_REDIRECTS;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
@@ -94,10 +86,9 @@ public class Application extends ResourceConfig
 
     private final MediaTypes mediaTypes;
     private final Client client;
-    private final DataManager dataManager;
+    private final RDFSourceResolver resolver;
     private final Source stylesheet;
     private final Boolean cacheStylesheet;
-    private final OntModelSpec ontModelSpec;
     private final Processor xsltProc = new Processor(false);
     private final XsltExecutable xsltExec;
 
@@ -113,11 +104,9 @@ public class Application extends ResourceConfig
         this(new MediaTypes(), getClient(new ClientConfig()),
             servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI()) != null ? Integer.valueOf(servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI())) : null,
             servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI())) : false,
-            getDataManager(new PrefixMapper(servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()) : null),
+            getResolver(servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()),
                 com.atomgraph.client.Application.getClient(new ClientConfig()),
                 new MediaTypes(),
-                servletConfig.getServletContext().getInitParameter(A.cacheModelLoads.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.cacheModelLoads.getURI())) : false,
-                servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI())) : false,
                 servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.resolvingUncached.getURI())) : false),
             getSource(servletConfig.getServletContext(), servletConfig.getServletContext().getInitParameter(AC.stylesheet.getURI()) != null ? servletConfig.getServletContext().getInitParameter(AC.stylesheet.getURI()) : null),
             servletConfig.getServletContext().getInitParameter(AC.cacheStylesheet.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(AC.cacheStylesheet.getURI())) : false,
@@ -126,41 +115,27 @@ public class Application extends ResourceConfig
     }
     
     public Application(final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize, final boolean preemptiveAuth,
-            final DataManager dataManager, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
+            final RDFSourceResolver resolver, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
     {
         this.mediaTypes = mediaTypes;
         this.client = client;
         this.stylesheet = stylesheet;
         this.cacheStylesheet = cacheStylesheet;
-        this.dataManager = dataManager;
+        this.resolver = resolver;
 
-        OntDocumentManager.getInstance().setFileManager((FileManager)dataManager);
-        if (log.isDebugEnabled()) log.debug("OntDocumentManager.getInstance().getFileManager(): {}", OntDocumentManager.getInstance().getFileManager());
-        
-        OntModelSpec rdfsReasonerSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
-        Resource reasonerConfig = ModelFactory.createDefaultModel().
-            createResource().
-            addProperty(ReasonerVocabulary.PROPsetRDFSLevel, "simple");
-        Reasoner reasoner = RDFSRuleReasonerFactory.theInstance().
-                create(reasonerConfig);
-        //reasoner.setDerivationLogging(true);
-        //reasoner.setParameter(ReasonerVocabulary.PROPtraceOn, Boolean.TRUE);
-        rdfsReasonerSpec.setReasoner(reasoner);
-        this.ontModelSpec = rdfsReasonerSpec;
-        
         // add RDF/POST serialization
         RDFLanguages.register(RDFLanguages.RDFPOST);
         RDFParserRegistry.registerLangTriples(RDFLanguages.RDFPOST, new RDFPostReaderFactory());
         // register plain RDF/XML writer as default
         RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
-        
+
         xsltProc.registerExtensionFunction(new UUID());
-        xsltProc.registerExtensionFunction(new ConstructForClass(xsltProc, OntDocumentManager.getInstance()));
+        xsltProc.registerExtensionFunction(new ConstructForClass(xsltProc, resolver.getRepository()));
 
         try
         {
             XsltCompiler xsltComp = xsltProc.newXsltCompiler();
-            xsltComp.setURIResolver(new XsltResolver(LocationMapper.get(), new HashMap<>(), GraphStoreClient.create(client, mediaTypes), false, false, true));
+            xsltComp.setURIResolver(new StylesheetResolver(resolver.getRepository(), GraphStoreClient.create(client, mediaTypes)));
             xsltExec = xsltComp.compile(stylesheet);
         }
         catch (SaxonApiException ex)
@@ -171,12 +146,7 @@ public class Application extends ResourceConfig
     }
 
     /**
-     * Initializes (post construction) DataManager, its LocationMapper and Locators, and Context
-     * 
-     * @see com.atomgraph.client.util.DataManager
-     * @see com.atomgraph.client.locator.PrefixMapper
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/util/FileManager.html">FileManager</a>
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/util/LocationMapper.html">LocationMapper</a>
+     * Registers JAX-RS providers, message body writers, and XSLT extension functions (post construction).
      */
     @PostConstruct
     public void init()
@@ -192,8 +162,8 @@ public class Application extends ResourceConfig
         register(RiotExceptionMapper.class);
         register(ClientErrorExceptionMapper.class);
         register(BadGatewayExceptionMapper.class);
-        register(new ModelXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
-        register(new ResultSetXSLTWriter(getXsltExecutable(), getOntModelSpec(), getDataManager())); // writes (X)HTML responses
+        register(new ModelXSLTWriter(getXsltExecutable(), getResolver())); // writes (X)HTML responses
+        register(new ResultSetXSLTWriter(getXsltExecutable(), getResolver())); // writes (X)HTML responses
         
         register(new AbstractBinder()
         {
@@ -254,9 +224,17 @@ public class Application extends ResourceConfig
         return client;
     }
 
-    public static DataManager getDataManager(final LocationMapper mapper, final Client client, final MediaTypes mediaTypes, final boolean cacheModelLoads, final boolean preemptiveAuth, final boolean resolvingUncached)
+    public static RDFSourceResolver getResolver(final String prefixMappingConfig, final Client client, final MediaTypes mediaTypes, final boolean resolvingUncached)
     {
-        return new DataManagerImpl(mapper, new HashMap<>(), GraphStoreClient.create(client, mediaTypes), cacheModelLoads, preemptiveAuth, resolvingUncached);
+        GraphStoreClient gsc = GraphStoreClient.create(client, mediaTypes);
+        PrefixGraphRepository repository = new PrefixGraphRepository(gsc);
+        if (prefixMappingConfig != null)
+        {
+            Model config = ModelFactory.createDefaultModel();
+            RDFParser.create().source(prefixMappingConfig).streamManager(repository.getStreamManager()).build().parse(config);
+            repository.processConfig(config);
+        }
+        return new RDFSourceResolver(repository, gsc, resolvingUncached);
     }
 
     public MediaTypes getMediaTypes()
@@ -269,24 +247,19 @@ public class Application extends ResourceConfig
         return client;
     }
     
-    public DataManager getDataManager()
+    public RDFSourceResolver getResolver()
     {
-        return dataManager;
+        return resolver;
     }
-    
+
     public Source getStylesheet()
     {
         return stylesheet;
     }
-    
+
     public Boolean isCacheStylesheet()
     {
         return cacheStylesheet;
-    }
-    
-    public OntModelSpec getOntModelSpec()
-    {
-        return ontModelSpec;
     }
 
     public XsltExecutable getXsltExecutable()

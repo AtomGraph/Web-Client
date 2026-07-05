@@ -17,12 +17,11 @@
 
 package com.atomgraph.client.vocabulary;
 
-import org.apache.jena.ontology.DatatypeProperty;
-import org.apache.jena.ontology.ObjectProperty;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.ontapi.OntModelFactory;
+import org.apache.jena.ontapi.OntSpecification;
+import org.apache.jena.ontapi.model.OntModel;
+import org.apache.jena.rdf.model.Property;
+
 import org.apache.jena.rdf.model.Resource;
 
 /**
@@ -32,8 +31,13 @@ import org.apache.jena.rdf.model.Resource;
  */
 public final class AC
 {
+
+    static
+    {
+        org.apache.jena.sys.JenaSystem.init(); // ensure Jena (RDFS vocab) is initialized before ontapi touches it
+    }
     /** <p>The RDF model that holds the vocabulary terms</p> */
-    private static OntModel m_model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
+    private static OntModel m_model = OntModelFactory.createModel(OntSpecification.OWL2_FULL_MEM);
     
     /** <p>The namespace of the vocabulary as a string</p> */
     public static final String NS = "https://w3id.org/atomgraph/client#";
@@ -48,59 +52,59 @@ public final class AC
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
 
-    public static final OntClass PageMode = m_model.createClass( NS + "PageMode" );
+    public static final Resource PageMode = m_model.createOntClass( NS + "PageMode" );
     
-    public static final OntClass EditMode = m_model.createClass( NS + "EditMode" );
+    public static final Resource EditMode = m_model.createOntClass( NS + "EditMode" );
 
-    public static final OntClass ListMode = m_model.createClass( NS + "ListMode" );
+    public static final Resource ListMode = m_model.createOntClass( NS + "ListMode" );
     
-    public static final OntClass TableMode = m_model.createClass( NS + "TableMode" );
+    public static final Resource TableMode = m_model.createOntClass( NS + "TableMode" );
 
-    public static final OntClass GridMode = m_model.createClass( NS + "GridMode" );
+    public static final Resource GridMode = m_model.createOntClass( NS + "GridMode" );
     
-    public static final OntClass MapMode = m_model.createClass( NS + "MapMode" );
+    public static final Resource MapMode = m_model.createOntClass( NS + "MapMode" );
 
-    public static final OntClass ReadMode = m_model.createClass( NS + "ReadMode" );
+    public static final Resource ReadMode = m_model.createOntClass( NS + "ReadMode" );
     
-    public static final OntClass ConstructMode = m_model.createClass( NS + "ConstructMode" );
+    public static final Resource ConstructMode = m_model.createOntClass( NS + "ConstructMode" );
 
-    public static final ObjectProperty contextUri = m_model.createObjectProperty( NS + "contextUri" );
+    public static final Property contextUri = m_model.createObjectProperty( NS + "contextUri" );
 
-    public static final DatatypeProperty limit = m_model.createDatatypeProperty( NS + "limit" );
+    public static final Property limit = m_model.createDataProperty( NS + "limit" );
 
-    public static final DatatypeProperty offset = m_model.createDatatypeProperty( NS + "offset" );
+    public static final Property offset = m_model.createDataProperty( NS + "offset" );
     
-    public static final DatatypeProperty order_by = m_model.createDatatypeProperty( NS + "order-by" );
+    public static final Property order_by = m_model.createDataProperty( NS + "order-by" );
     
-    public static final DatatypeProperty desc = m_model.createDatatypeProperty( NS + "desc" );
+    public static final Property desc = m_model.createDataProperty( NS + "desc" );
 
-    public static final ObjectProperty mode = m_model.createObjectProperty( NS + "mode" );
+    public static final Property mode = m_model.createObjectProperty( NS + "mode" );
 
-    public static final DatatypeProperty method = m_model.createDatatypeProperty( NS + "method" );
+    public static final Property method = m_model.createDataProperty( NS + "method" );
 
-    public static final DatatypeProperty httpHeaders = m_model.createDatatypeProperty( NS + "httpHeaders" );
+    public static final Property httpHeaders = m_model.createDataProperty( NS + "httpHeaders" );
 
-    public static final ObjectProperty uri = m_model.createObjectProperty( NS + "uri" );
+    public static final Property uri = m_model.createObjectProperty( NS + "uri" );
 
-    public static final ObjectProperty endpoint = m_model.createObjectProperty( NS + "endpoint" );
+    public static final Property endpoint = m_model.createObjectProperty( NS + "endpoint" );
 
-    public static final DatatypeProperty query = m_model.createDatatypeProperty( NS + "query" );
+    public static final Property query = m_model.createDataProperty( NS + "query" );
    
-    public static final DatatypeProperty accept = m_model.createDatatypeProperty( NS + "accept" );
+    public static final Property accept = m_model.createDataProperty( NS + "accept" );
 
-    public static final ObjectProperty forClass = m_model.createObjectProperty( NS + "forClass" );
+    public static final Property forClass = m_model.createObjectProperty( NS + "forClass" );
 
-    public static final DatatypeProperty instance = m_model.createDatatypeProperty( NS + "instance" );
+    public static final Property instance = m_model.createDataProperty( NS + "instance" );
 
     // CONFIG - separate?
     
-    public static final ObjectProperty stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
+    public static final Property stylesheet = m_model.createObjectProperty( NS + "stylesheet" );
     
-    public static final DatatypeProperty cacheStylesheet = m_model.createDatatypeProperty( NS + "cacheStylesheet" );
+    public static final Property cacheStylesheet = m_model.createDataProperty( NS + "cacheStylesheet" );
     
-    public static final DatatypeProperty resolvingUncached = m_model.createDatatypeProperty( NS + "resolvingUncached" );
+    public static final Property resolvingUncached = m_model.createDataProperty( NS + "resolvingUncached" );
     
-    public static final DatatypeProperty prefixMapping = m_model.createDatatypeProperty( NS + "prefixMapping" );
+    public static final Property prefixMapping = m_model.createDataProperty( NS + "prefixMapping" );
     
 
 }

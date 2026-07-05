@@ -18,8 +18,10 @@ package com.atomgraph.client.util;
 import com.atomgraph.client.exception.OntologyException;
 import com.atomgraph.client.vocabulary.SP;
 import com.atomgraph.client.vocabulary.SPIN;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.Ontology;
+import org.apache.jena.ontapi.OntModelFactory;
+import org.apache.jena.ontapi.OntSpecification;
+import org.apache.jena.ontapi.model.OntClass;
+import org.apache.jena.ontapi.model.OntModel;
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -52,33 +54,33 @@ public class ConstructorTest
 "CONSTRUCT { ?this ont:" + RESOURCE_PROPERTY_LOCAL_NAME + " <" + RESOURCE_URI + "> ; ont:" + LITERAL_PROPERTY_LOCAL_NAME + " [ a <" + DATATYPE.getURI() + "> ] }\n" +
 "WHERE {}";
     
-    private Ontology ontology;
+    private OntModel ontModel;
     private OntClass forClass, noConstructorClass, invalidConstructorClass, invalidConstructClass;
     private Constructor constructor;
-    
+
     @BeforeEach
     public void setUp()
     {
-        ontology = ModelFactory.createOntologyModel().createOntology(ONTOLOGY_URI);
-        
-        OntClass superClass = ontology.getOntModel().createClass(ONTOLOGY_URI + "super-class");
-        superClass.addProperty(SPIN.constructor, ontology.getOntModel().createResource().
+        ontModel = OntModelFactory.createModel(OntSpecification.OWL2_FULL_MEM);
+
+        OntClass superClass = ontModel.createOntClass(ONTOLOGY_URI + "super-class");
+        superClass.addProperty(SPIN.constructor, ontModel.createResource().
                 addProperty(SP.text, SUPER_CONSTRUCT));
-        
-        forClass = ontology.getOntModel().createClass(ONTOLOGY_URI + "class");
+
+        forClass = ontModel.createOntClass(ONTOLOGY_URI + "class");
         forClass.addProperty(RDFS.subClassOf, superClass).
-                addProperty(SPIN.constructor, ontology.getOntModel().createResource().
+                addProperty(SPIN.constructor, ontModel.createResource().
                         addLiteral(SP.text, CONSTRUCT));
-        
-        noConstructorClass = ontology.getOntModel().createClass(ONTOLOGY_URI + "no-constructor-class");
-        
-        invalidConstructorClass = ontology.getOntModel().createClass(ONTOLOGY_URI + "invalid-constructor-class");
+
+        noConstructorClass = ontModel.createOntClass(ONTOLOGY_URI + "no-constructor-class");
+
+        invalidConstructorClass = ontModel.createOntClass(ONTOLOGY_URI + "invalid-constructor-class");
         invalidConstructorClass.addLiteral(SPIN.constructor, 123);
-        
-        invalidConstructClass = ontology.getOntModel().createClass(ONTOLOGY_URI + "invalid-construct-class");
-        invalidConstructClass.addProperty(SPIN.constructor, ontology.getOntModel().createResource().
+
+        invalidConstructClass = ontModel.createOntClass(ONTOLOGY_URI + "invalid-construct-class");
+        invalidConstructClass.addProperty(SPIN.constructor, ontModel.createResource().
                 addProperty(SP.text, "INVALID { SPARQL } QUERY"));
-        
+
         constructor = new Constructor();
     }
 

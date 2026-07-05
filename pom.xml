@@ -3,7 +3,7 @@
 
     <groupId>com.atomgraph</groupId>
     <artifactId>client</artifactId>
-    <version>4.3.1-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
 
     <name>AtomGraph Web-Client</name>
@@ -118,7 +118,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>4.1.0</version>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <!-- new Jena ontology API (org.apache.jena.ontapi); PrefixGraphRepository extends DocumentGraphRepository -->
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-ontapi</artifactId>
+            <version>6.1.0</version>
         </dependency>
     </dependencies>
 
