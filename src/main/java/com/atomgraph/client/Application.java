@@ -103,7 +103,6 @@ public class Application extends ResourceConfig
     {
         this(new MediaTypes(), getClient(new ClientConfig()),
             servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI()) != null ? Integer.valueOf(servletConfig.getServletContext().getInitParameter(A.maxGetRequestSize.getURI())) : null,
-            servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI()) != null ? Boolean.parseBoolean(servletConfig.getServletContext().getInitParameter(A.preemptiveAuth.getURI())) : false,
             getResolver(servletConfig.getServletContext().getInitParameter(AC.prefixMapping.getURI()),
                 com.atomgraph.client.Application.getClient(new ClientConfig()),
                 new MediaTypes(),
@@ -114,7 +113,7 @@ public class Application extends ResourceConfig
         );
     }
     
-    public Application(final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize, final boolean preemptiveAuth,
+    public Application(final MediaTypes mediaTypes, final Client client, final Integer maxGetRequestSize,
             final RDFSourceResolver resolver, final Source stylesheet, final boolean cacheStylesheet, final boolean resolvingUncached)
     {
         this.mediaTypes = mediaTypes;
