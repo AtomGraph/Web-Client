@@ -17,8 +17,10 @@
 package com.atomgraph.client.util.jena;
 
 import com.atomgraph.core.client.GraphStoreClient;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.jena.graph.Graph;
@@ -45,10 +47,11 @@ import org.slf4j.LoggerFactory;
  * caching), the {@code PrefixMapper} ({@code LocationMapper} subclass with prefix matching), and
  * the ontology {@code ModelGetter} used for {@code owl:imports} resolution. HTTP/HTTPS locations
  * are loaded via the {@link GraphStoreClient}; other locations (classpath, file) via a RIOT
- * {@link StreamManager}. Loaded graphs are cached by ID in the inherited repository store.
+ * {@link StreamManager}. Dynamically loaded graphs are cached by ID in a store obtained from
+ * {@link #createStore()} (overridable, e.g. to supply a bounded/evicting map).
  *
- * The repository is shared across request threads while the inherited store is an unsynchronized
- * map, so all store access is synchronized here; loading itself happens outside the lock.
+ * The repository is shared across request threads while the store is a plain unsynchronized map, so
+ * all store access is synchronized here; loading itself happens outside the lock.
  *
  * Bundled (non-HTTP mapped) documents are cached by their resolved location rather than by graph
  * ID, so that every URI in a mapped namespace shares a single graph. This bounds the cache to the
@@ -65,9 +68,23 @@ public class PrefixGraphRepository extends DocumentGraphRepository
 
     private final Map<String, String> exactLocations = new HashMap<>();
     private final Map<String, String> prefixLocations = new HashMap<>();
+    private final Map<String, Graph> store = createStore(); // dynamically loaded graphs, keyed by graph ID
     private final Map<String, Graph> mappedGraphs = new HashMap<>(); // bundled documents cached by resolved location, shared across all URIs in the namespace
     private final GraphStoreClient gsc;
     private final StreamManager streamManager;
+
+    /**
+     * Creates the backing store for dynamically loaded graphs (keyed by graph ID). The default is an
+     * unbounded {@link HashMap}; subclasses may override to supply a bounded/evicting map. The returned
+     * map must not depend on subclass state — it is created during construction. The location-keyed
+     * bundled-document cache is separate and always unbounded (bounded by the number of bundled files).
+     *
+     * @return dynamic-graph store
+     */
+    protected Map<String, Graph> createStore()
+    {
+        return new HashMap<>();
+    }
 
     /**
      * Constructs the repository with the Graph Store client used for HTTP loading.
@@ -217,7 +234,7 @@ public class PrefixGraphRepository extends DocumentGraphRepository
      */
     public synchronized boolean isCached(String id)
     {
-        return getIds().contains(id) || mappedGraphs.containsKey(resolve(id));
+        return store.containsKey(id) || mappedGraphs.containsKey(resolve(id));
     }
 
     @Override
@@ -226,7 +243,8 @@ public class PrefixGraphRepository extends DocumentGraphRepository
         String location;
         synchronized (this)
         {
-            if (getIds().contains(id)) return super.get(id); // explicitly cached (e.g. a materialized ontology) or non-mapped
+            Graph cached = store.get(id); // explicitly cached (e.g. a materialized ontology) or non-mapped
+            if (cached != null) return cached;
             location = resolve(id);
             Graph mapped = mappedGraphs.get(location);
             if (mapped != null) return mapped; // bundled document already loaded — shared across the namespace
@@ -243,8 +261,9 @@ public class PrefixGraphRepository extends DocumentGraphRepository
         {
             if (mapped) return mappedGraphs.computeIfAbsent(location, k -> graph); // loser of a race discards its graph
 
-            if (getIds().contains(id)) return super.get(id);
-            put(id, graph);
+            Graph raced = store.get(id);
+            if (raced != null) return raced; // lost the race — another thread loaded it first
+            store.put(id, graph);
             return graph;
         }
     }
@@ -252,13 +271,13 @@ public class PrefixGraphRepository extends DocumentGraphRepository
     @Override
     public synchronized Graph put(String id, Graph graph)
     {
-        return super.put(id, graph);
+        return store.put(id, graph);
     }
 
     @Override
     public synchronized Graph remove(String id)
     {
-        Graph removed = super.remove(id);
+        Graph removed = store.remove(id);
         Graph mapped = mappedGraphs.remove(resolve(id));
         return removed != null ? removed : mapped;
     }
@@ -266,32 +285,34 @@ public class PrefixGraphRepository extends DocumentGraphRepository
     @Override
     public synchronized void clear()
     {
-        super.clear();
+        store.clear();
         mappedGraphs.clear();
     }
 
     @Override
     public synchronized boolean contains(String id)
     {
-        return super.contains(id) || mappedGraphs.containsKey(resolve(id));
+        return store.containsKey(id) || mappedGraphs.containsKey(resolve(id));
     }
 
     @Override
     public synchronized long count()
     {
-        return super.count() + mappedGraphs.size();
+        return store.size() + mappedGraphs.size();
     }
 
     @Override
     public synchronized Stream<String> ids()
     {
-        return super.ids().toList().stream(); // snapshot under the lock — a live stream would read the store unsynchronized
+        return List.copyOf(store.keySet()).stream(); // snapshot under the lock — a live stream would read the store unsynchronized
     }
 
     @Override
     public synchronized Stream<Graph> loadedGraphs()
     {
-        return super.loadedGraphs().toList().stream(); // snapshot under the lock — a live stream would read the store unsynchronized
+        List<Graph> loaded = new ArrayList<>(store.values());
+        loaded.addAll(mappedGraphs.values());
+        return loaded.stream(); // snapshot under the lock — a live stream would read the store unsynchronized
     }
 
     /**
