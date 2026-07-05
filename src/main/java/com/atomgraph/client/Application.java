@@ -146,12 +146,7 @@ public class Application extends ResourceConfig
     }
 
     /**
-     * Initializes (post construction) DataManager, its LocationMapper and Locators, and Context
-     * 
-     * @see com.atomgraph.client.util.DataManager
-     * @see com.atomgraph.client.locator.PrefixMapper
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/util/FileManager.html">FileManager</a>
-     * @see <a href="http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/util/LocationMapper.html">LocationMapper</a>
+     * Registers JAX-RS providers, message body writers, and XSLT extension functions (post construction).
      */
     @PostConstruct
     public void init()
