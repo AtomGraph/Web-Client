@@ -16,8 +16,8 @@
  */
 package com.atomgraph.client.util;
 
-import com.atomgraph.core.client.GraphStoreClient;
-import com.atomgraph.client.util.jena.PrefixGraphRepository;
+import com.atomgraph.client.MediaType;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,31 +31,27 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * Resolves XSLT {@code xsl:import}/{@code xsl:include} URIs to raw stylesheet {@link Source}s
- * during compilation. HTTP locations are fetched via the {@link GraphStoreClient}; local
- * ({@code file:}/{@code jar:}/classpath) locations are handed back to Saxon by returning
- * {@code null}, so its default resolver opens them (relative imports against a {@code file:}/{@code jar:}
- * base need no location mapping). Unlike {@link RDFSourceResolver} the bytes are returned verbatim
- * (stylesheets are XML, not RDF). Replaces the legacy {@code XsltResolver} (which extended the
- * FileManager-based {@code DataManagerImpl}).
+ * during compilation. HTTP(S) locations are fetched with the SSL-configured JAX-RS {@link Client}
+ * (app stylesheets served over HTTPS need its trust store / client certificate), requesting
+ * {@code text/xsl}; local ({@code file:}/{@code jar:}/classpath) locations are handed back to Saxon
+ * by returning {@code null}, so its default resolver opens them. Bytes are returned verbatim
+ * (stylesheets are XML, not RDF).
  *
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public class StylesheetResolver implements URIResolver
 {
 
-    private final PrefixGraphRepository repository;
-    private final GraphStoreClient gsc;
+    private final Client client;
 
     /**
      * Constructs the resolver.
      *
-     * @param repository graph repository for URI→location mapping
-     * @param gsc Graph Store client for HTTP retrieval
+     * @param client SSL-configured JAX-RS client for HTTP(S) stylesheet retrieval
      */
-    public StylesheetResolver(PrefixGraphRepository repository, GraphStoreClient gsc)
+    public StylesheetResolver(Client client)
     {
-        this.repository = repository;
-        this.gsc = gsc;
+        this.client = client;
     }
 
     @Override
@@ -63,21 +59,21 @@ public class StylesheetResolver implements URIResolver
     {
         URI baseURI = URI.create(base);
         URI uri = href.isEmpty() ? baseURI : baseURI.resolve(href);
-        String location = getRepository().resolve(uri.toString());
 
-        try
-        {
-            if (location.startsWith("http://") || location.startsWith("https://"))
-            {
-                try (Response cr = getGraphStoreClient().getClient().target(URI.create(location)).request().get();
-                     InputStream is = cr.readEntity(InputStream.class))
-                {
-                    byte[] bytes = IOUtils.toByteArray(is); // buffer so we can close the Response
-                    return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
-                }
-            }
-
+        if (!"http".equals(uri.getScheme()) && !"https".equals(uri.getScheme()))
             return null; // non-HTTP (file:/jar:/classpath): let Saxon's default resolver open it
+
+        try (Response cr = getClient().target(uri).request().accept(MediaType.TEXT_XSL_TYPE).get())
+        {
+            if (!cr.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
+                throw new IOException("XSLT stylesheet could not be loaded over HTTP. Status: " + cr.getStatus() + ", URI: " + uri);
+
+            // buffer the stylesheet stream so we can close the Response
+            try (InputStream is = cr.readEntity(InputStream.class))
+            {
+                byte[] bytes = IOUtils.toByteArray(is);
+                return new StreamSource(new ByteArrayInputStream(bytes), uri.toString());
+            }
         }
         catch (IOException ex)
         {
@@ -86,23 +82,13 @@ public class StylesheetResolver implements URIResolver
     }
 
     /**
-     * Returns the graph repository.
-     *
-     * @return repository
-     */
-    public PrefixGraphRepository getRepository()
-    {
-        return repository;
-    }
-
-    /**
-     * Returns the Graph Store client.
+     * Returns the JAX-RS client used for HTTP(S) retrieval.
      *
      * @return client
      */
-    public GraphStoreClient getGraphStoreClient()
+    public Client getClient()
     {
-        return gsc;
+        return client;
     }
 
 }

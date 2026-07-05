@@ -135,7 +135,7 @@ public class Application extends ResourceConfig
         try
         {
             XsltCompiler xsltComp = xsltProc.newXsltCompiler();
-            xsltComp.setURIResolver(new StylesheetResolver(resolver.getRepository(), GraphStoreClient.create(client, mediaTypes)));
+            xsltComp.setURIResolver(new StylesheetResolver(client));
             xsltExec = xsltComp.compile(stylesheet);
         }
         catch (SaxonApiException ex)
