@@ -28,23 +28,20 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.atlas.web.TypedInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Resolves XSLT {@code xsl:import}/{@code xsl:include} URIs to raw stylesheet {@link Source}s
- * during compilation. Mapped/classpath/file locations are opened via the repository's RIOT stream
- * manager; HTTP via the {@link GraphStoreClient}. Unlike {@link RDFSourceResolver} the bytes are
- * returned verbatim (stylesheets are XML, not RDF). Replaces the legacy {@code XsltResolver}
- * (which extended the FileManager-based {@code DataManagerImpl}).
+ * during compilation. HTTP locations are fetched via the {@link GraphStoreClient}; local
+ * ({@code file:}/{@code jar:}/classpath) locations are handed back to Saxon by returning
+ * {@code null}, so its default resolver opens them (relative imports against a {@code file:}/{@code jar:}
+ * base need no location mapping). Unlike {@link RDFSourceResolver} the bytes are returned verbatim
+ * (stylesheets are XML, not RDF). Replaces the legacy {@code XsltResolver} (which extended the
+ * FileManager-based {@code DataManagerImpl}).
  *
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 public class StylesheetResolver implements URIResolver
 {
-
-    private static final Logger log = LoggerFactory.getLogger(StylesheetResolver.class);
 
     private final PrefixGraphRepository repository;
     private final GraphStoreClient gsc;
@@ -52,7 +49,7 @@ public class StylesheetResolver implements URIResolver
     /**
      * Constructs the resolver.
      *
-     * @param repository graph repository for URI→location mapping and classpath/file opening
+     * @param repository graph repository for URI→location mapping
      * @param gsc Graph Store client for HTTP retrieval
      */
     public StylesheetResolver(PrefixGraphRepository repository, GraphStoreClient gsc)
@@ -80,13 +77,7 @@ public class StylesheetResolver implements URIResolver
                 }
             }
 
-            TypedInputStream in = getRepository().getStreamManager().open(location);
-            if (in == null)
-            {
-                if (log.isWarnEnabled()) log.warn("Could not resolve stylesheet location: {}", location);
-                return null;
-            }
-            return new StreamSource(in, uri.toString());
+            return null; // non-HTTP (file:/jar:/classpath): let Saxon's default resolver open it
         }
         catch (IOException ex)
         {
