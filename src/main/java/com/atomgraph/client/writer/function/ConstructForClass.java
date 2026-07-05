@@ -39,6 +39,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>ac:construct()</code> XSLT function that constructs instances for given classes from their constructors.
@@ -49,7 +51,9 @@ import org.apache.jena.riot.RDFWriter;
  */
 public class ConstructForClass implements ExtensionFunction
 {
-    
+
+    private static final Logger log = LoggerFactory.getLogger(ConstructForClass.class);
+
     private final Processor processor;
     private final PrefixGraphRepository repository;
 
@@ -91,13 +95,20 @@ public class ConstructForClass implements ExtensionFunction
             String base = arguments[2].itemAt(0).getStringValue();
             
             Model instances = ModelFactory.createDefaultModel();
-            OntModel ontModel = OntModelFactory.createModel(getRepository().get(ontology), OntSpecification.OWL2_FULL_MEM, getRepository());
+            try
+            {
+                OntModel ontModel = OntModelFactory.createModel(getRepository().get(ontology), OntSpecification.OWL2_FULL_MEM, getRepository());
 
-            arguments[1].stream().
-                <OntClass>map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
-                filter(forClass -> forClass != null).
-                forEach(forClass -> new Constructor().construct(forClass, instances, base));
-            
+                arguments[1].stream().
+                    <OntClass>map(forClass -> ontModel.getOntClass(checkURI(forClass.getStringValue()).toString())).
+                    filter(forClass -> forClass != null).
+                    forEach(forClass -> new Constructor().construct(forClass, instances, base));
+            }
+            catch (RuntimeException ex) // ontology or one of its imports could not be loaded — return empty result instead of failing the transform
+            {
+                if (log.isWarnEnabled()) log.warn("Could not construct instances for ontology '{}': {}", ontology, ex.toString());
+            }
+
             return getProcessor().newDocumentBuilder().build(getSource(instances));
         }
         catch (IOException ex)

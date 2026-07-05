@@ -20,6 +20,7 @@ import com.atomgraph.core.client.GraphStoreClient;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.ontapi.impl.repositories.DocumentGraphRepository;
 import org.apache.jena.rdf.model.Model;
@@ -45,6 +46,9 @@ import org.slf4j.LoggerFactory;
  * the ontology {@code ModelGetter} used for {@code owl:imports} resolution. HTTP/HTTPS locations
  * are loaded via the {@link GraphStoreClient}; other locations (classpath, file) via a RIOT
  * {@link StreamManager}. Loaded graphs are cached by ID in the inherited repository store.
+ *
+ * The repository is shared across request threads while the inherited store is an unsynchronized
+ * map, so all store access is synchronized here; loading itself happens outside the lock.
  *
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
@@ -182,7 +186,7 @@ public class PrefixGraphRepository extends DocumentGraphRepository
      * @param id graph ID
      * @return true if cached
      */
-    public boolean isCached(String id)
+    public synchronized boolean isCached(String id)
     {
         return getIds().contains(id);
     }
@@ -190,13 +194,63 @@ public class PrefixGraphRepository extends DocumentGraphRepository
     @Override
     public Graph get(String id)
     {
-        if (getIds().contains(id)) return super.get(id); // already loaded into the store
+        synchronized (this)
+        {
+            if (getIds().contains(id)) return super.get(id); // already loaded into the store
+        }
 
         String location = resolve(id);
         if (log.isDebugEnabled()) log.debug("Loading graph '{}' from location '{}'", id, location);
-        Graph graph = load(id, location);
-        put(id, graph);
-        return graph;
+        Graph graph = load(id, location); // I/O outside the lock — concurrent first loads may duplicate work
+
+        synchronized (this)
+        {
+            if (getIds().contains(id)) return super.get(id); // lost the race — another thread loaded it first
+            put(id, graph);
+            return graph;
+        }
+    }
+
+    @Override
+    public synchronized Graph put(String id, Graph graph)
+    {
+        return super.put(id, graph);
+    }
+
+    @Override
+    public synchronized Graph remove(String id)
+    {
+        return super.remove(id);
+    }
+
+    @Override
+    public synchronized void clear()
+    {
+        super.clear();
+    }
+
+    @Override
+    public synchronized boolean contains(String id)
+    {
+        return super.contains(id);
+    }
+
+    @Override
+    public synchronized long count()
+    {
+        return super.count();
+    }
+
+    @Override
+    public synchronized Stream<String> ids()
+    {
+        return super.ids().toList().stream(); // snapshot under the lock — a live stream would read the store unsynchronized
+    }
+
+    @Override
+    public synchronized Stream<Graph> loadedGraphs()
+    {
+        return super.loadedGraphs().toList().stream(); // snapshot under the lock — a live stream would read the store unsynchronized
     }
 
     /**
