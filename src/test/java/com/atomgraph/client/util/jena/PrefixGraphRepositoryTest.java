@@ -16,6 +16,7 @@
  */
 package com.atomgraph.client.util.jena;
 
+import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -94,6 +95,40 @@ public class PrefixGraphRepositoryTest
 
         assertEquals("file:exact.ttl", repo.resolve("http://example.org/exact#"));
         assertEquals("file:prefix.ttl", repo.resolve("http://example.org/prefix/Term"));
+    }
+
+    /**
+     * A prefix only matches at a namespace boundary — the id equals the prefix, or the character
+     * after the prefix is a {@code /} or {@code #}. An unrelated URI that merely shares the prefix
+     * string (e.g. {@code …/ns-evil}) must not resolve to the mapped location.
+     */
+    @Test
+    public void testResolveRespectsPrefixBoundary()
+    {
+        repo.addPrefixMapping("http://example.org/ns", "file:ns.ttl"); // no trailing delimiter
+
+        assertEquals("file:ns.ttl", repo.resolve("http://example.org/ns"), "exact namespace root");
+        assertEquals("file:ns.ttl", repo.resolve("http://example.org/ns#Term"), "hash boundary");
+        assertEquals("file:ns.ttl", repo.resolve("http://example.org/ns/Term"), "slash boundary");
+        assertEquals("http://example.org/nsEvil", repo.resolve("http://example.org/nsEvil"), "no boundary — must not match");
+        assertEquals("http://example.org/ns-evil", repo.resolve("http://example.org/ns-evil"), "no boundary — must not match");
+    }
+
+    /**
+     * A malicious actor minting an unbounded number of distinct URIs under a mapped prefix must not
+     * grow the cache: every URI in a mapped namespace resolves to the same bundled document, so they
+     * share one graph instance and the store stays bounded by the number of bundled files.
+     */
+    @Test
+    public void testMappedGraphCacheDoesNotGrowWithDistinctURIs()
+    {
+        repo.addPrefixMapping("http://example.org/ns/", "com/atomgraph/client/test/mint-ontology.ttl");
+
+        Graph first = repo.get("http://example.org/ns/term0");
+        for (int i = 1; i < 1000; i++)
+            assertSame(first, repo.get("http://example.org/ns/term" + i), "all URIs in a mapped namespace must share one graph instance");
+
+        assertEquals(1, repo.count(), "1000 distinct mapped URIs must not grow the cache beyond the single bundled document");
     }
 
 }

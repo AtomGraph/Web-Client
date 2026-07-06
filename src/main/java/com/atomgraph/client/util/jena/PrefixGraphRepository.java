@@ -17,9 +17,12 @@
 package com.atomgraph.client.util.jena;
 
 import com.atomgraph.core.client.GraphStoreClient;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.ontapi.impl.repositories.DocumentGraphRepository;
 import org.apache.jena.rdf.model.Model;
@@ -44,7 +47,17 @@ import org.slf4j.LoggerFactory;
  * caching), the {@code PrefixMapper} ({@code LocationMapper} subclass with prefix matching), and
  * the ontology {@code ModelGetter} used for {@code owl:imports} resolution. HTTP/HTTPS locations
  * are loaded via the {@link GraphStoreClient}; other locations (classpath, file) via a RIOT
- * {@link StreamManager}. Loaded graphs are cached by ID in the inherited repository store.
+ * {@link StreamManager}. Dynamically loaded graphs are cached by ID in a store obtained from
+ * {@link #createStore()} (overridable, e.g. to supply a bounded/evicting map).
+ *
+ * The repository is shared across request threads while the store is a plain unsynchronized map, so
+ * all store access is synchronized here; loading itself happens outside the lock.
+ *
+ * Bundled (non-HTTP mapped) documents are cached by their resolved location rather than by graph
+ * ID, so that every URI in a mapped namespace shares a single graph. This bounds the cache to the
+ * number of bundled files regardless of how many distinct URIs are requested — otherwise an actor
+ * minting distinct URIs under a mapped prefix (e.g. {@code http://xmlns.com/foaf/0.1/<n>}) would
+ * grow the store without bound.
  *
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
@@ -55,8 +68,23 @@ public class PrefixGraphRepository extends DocumentGraphRepository
 
     private final Map<String, String> exactLocations = new HashMap<>();
     private final Map<String, String> prefixLocations = new HashMap<>();
+    private final Map<String, Graph> store = createStore(); // dynamically loaded graphs, keyed by graph ID
+    private final Map<String, Graph> mappedGraphs = new HashMap<>(); // bundled documents cached by resolved location, shared across all URIs in the namespace
     private final GraphStoreClient gsc;
     private final StreamManager streamManager;
+
+    /**
+     * Creates the backing store for dynamically loaded graphs (keyed by graph ID). The default is an
+     * unbounded {@link HashMap}; subclasses may override to supply a bounded/evicting map. The returned
+     * map must not depend on subclass state — it is created during construction. The location-keyed
+     * bundled-document cache is separate and always unbounded (bounded by the number of bundled files).
+     *
+     * @return dynamic-graph store
+     */
+    protected Map<String, Graph> createStore()
+    {
+        return new HashMap<>();
+    }
 
     /**
      * Constructs the repository with the Graph Store client used for HTTP loading.
@@ -137,11 +165,33 @@ public class PrefixGraphRepository extends DocumentGraphRepository
         for (Iterator<String> it = prefixLocations.keySet().iterator(); it.hasNext();)
         {
             String candidate = it.next();
-            if (id.startsWith(candidate) && (prefix == null || candidate.length() > prefix.length())) prefix = candidate;
+            if (matchesPrefix(id, candidate) && (prefix == null || candidate.length() > prefix.length())) prefix = candidate;
         }
         if (prefix != null) return prefixLocations.get(prefix);
 
         return id;
+    }
+
+    /**
+     * Returns true if the id falls under the namespace prefix at a URI boundary: the id equals the
+     * prefix, the prefix already ends at a delimiter, or the character following the prefix in the id
+     * is a {@code /} or {@code #}. Prevents an unrelated URI (e.g. {@code …/foobar}) from matching a
+     * shorter prefix (e.g. {@code …/foo}) and resolving to the wrong mapped location.
+     *
+     * @param id graph ID
+     * @param prefix candidate namespace prefix
+     * @return true if the id is within the prefix namespace
+     */
+    protected static boolean matchesPrefix(String id, String prefix)
+    {
+        if (!id.startsWith(prefix)) return false;
+        if (id.length() == prefix.length()) return true;
+
+        char last = prefix.charAt(prefix.length() - 1);
+        if (last == '/' || last == '#') return true;
+
+        char next = id.charAt(prefix.length());
+        return next == '/' || next == '#';
     }
 
     /**
@@ -182,21 +232,87 @@ public class PrefixGraphRepository extends DocumentGraphRepository
      * @param id graph ID
      * @return true if cached
      */
-    public boolean isCached(String id)
+    public synchronized boolean isCached(String id)
     {
-        return getIds().contains(id);
+        return store.containsKey(id) || mappedGraphs.containsKey(resolve(id));
     }
 
     @Override
     public Graph get(String id)
     {
-        if (getIds().contains(id)) return super.get(id); // already loaded into the store
+        String location;
+        synchronized (this)
+        {
+            Graph cached = store.get(id); // explicitly cached (e.g. a materialized ontology) or non-mapped
+            if (cached != null) return cached;
+            location = resolve(id);
+            Graph mapped = mappedGraphs.get(location);
+            if (mapped != null) return mapped; // bundled document already loaded — shared across the namespace
+        }
 
-        String location = resolve(id);
         if (log.isDebugEnabled()) log.debug("Loading graph '{}' from location '{}'", id, location);
-        Graph graph = load(id, location);
-        put(id, graph);
-        return graph;
+        Graph graph = load(id, location); // I/O outside the lock — concurrent first loads may duplicate work
+
+        // bundled (non-HTTP mapped) documents are cached by location so every URI in the namespace shares one
+        // graph, bounding the store; everything else (HTTP, identity) is cached by ID
+        boolean mapped = !location.equals(id) && !location.startsWith("http://") && !location.startsWith("https://");
+
+        synchronized (this)
+        {
+            if (mapped) return mappedGraphs.computeIfAbsent(location, k -> graph); // loser of a race discards its graph
+
+            Graph raced = store.get(id);
+            if (raced != null) return raced; // lost the race — another thread loaded it first
+            store.put(id, graph);
+            return graph;
+        }
+    }
+
+    @Override
+    public synchronized Graph put(String id, Graph graph)
+    {
+        return store.put(id, graph);
+    }
+
+    @Override
+    public synchronized Graph remove(String id)
+    {
+        Graph removed = store.remove(id);
+        Graph mapped = mappedGraphs.remove(resolve(id));
+        return removed != null ? removed : mapped;
+    }
+
+    @Override
+    public synchronized void clear()
+    {
+        store.clear();
+        mappedGraphs.clear();
+    }
+
+    @Override
+    public synchronized boolean contains(String id)
+    {
+        return store.containsKey(id) || mappedGraphs.containsKey(resolve(id));
+    }
+
+    @Override
+    public synchronized long count()
+    {
+        return store.size() + mappedGraphs.size();
+    }
+
+    @Override
+    public synchronized Stream<String> ids()
+    {
+        return List.copyOf(store.keySet()).stream(); // snapshot under the lock — a live stream would read the store unsynchronized
+    }
+
+    @Override
+    public synchronized Stream<Graph> loadedGraphs()
+    {
+        List<Graph> loaded = new ArrayList<>(store.values());
+        loaded.addAll(mappedGraphs.values());
+        return loaded.stream(); // snapshot under the lock — a live stream would read the store unsynchronized
     }
 
     /**
