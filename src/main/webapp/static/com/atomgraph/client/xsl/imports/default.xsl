@@ -44,13 +44,11 @@ xmlns:spin="&spin;"
 xmlns:foaf="&foaf;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
-xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 exclude-result-prefixes="#all">
 
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-    <!-- ordered language preference list: negotiation input, unlike $ldt:lang which carries the negotiated Content-Language -->
-    <xsl:param name="ac:langs" select="for $lang in ixsl:get(ixsl:window(), 'navigator.languages') return tokenize($lang, '-')[1]" as="xs:string*" use-when="system-property('xsl:product-name') eq 'SaxonJS'"/>
-    <xsl:param name="ac:langs" select="tokenize($ldt:lang, '-')[1]" as="xs:string*" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+    <!-- ordered language preference list (negotiation input, unlike the negotiated Content-Language in $ldt:lang); the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
+    <xsl:param name="ac:langs" select="tokenize($ldt:lang, '-')[1]" as="xs:string*"/>
     <xsl:param name="ac:lang" select="($ac:langs[1], 'en')[1]" as="xs:string"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
