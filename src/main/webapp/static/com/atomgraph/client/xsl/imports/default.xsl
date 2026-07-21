@@ -44,9 +44,14 @@ xmlns:spin="&spin;"
 xmlns:foaf="&foaf;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 exclude-result-prefixes="#all">
 
     <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
+    <!-- ordered language preference list: negotiation input, unlike $ldt:lang which carries the negotiated Content-Language -->
+    <xsl:param name="ac:langs" select="let $langs := ixsl:get(ixsl:window(), 'navigator.languages') return for $i in 0 to xs:integer(ixsl:get($langs, 'length')) - 1 return tokenize(ixsl:get($langs, string($i)), '-')[1]" as="xs:string*" use-when="system-property('xsl:product-name') eq 'SaxonJS'"/>
+    <xsl:param name="ac:langs" select="tokenize($ldt:lang, '-')[1]" as="xs:string*" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+    <xsl:param name="ac:lang" select="($ac:langs[1], 'en')[1]" as="xs:string"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 

@@ -177,6 +177,13 @@ public abstract class XSLTWriterBase
                 params.put(new QName("ldt", LDT.lang.getNameSpace(), LDT.lang.getLocalName()), new XdmAtomicValue(locale.toLanguageTag()));
             }
 
+            // ordered language preference list (negotiation input) as opposed to the negotiated Content-Language above
+            List<String> langs = getHttpHeaders().getAcceptableLanguages().stream().
+                map(Locale::getLanguage).
+                filter(lang -> !lang.isEmpty() && !lang.equals("*")).
+                collect(Collectors.toList());
+            if (!langs.isEmpty()) params.put(new QName("ac", AC.langs.getNameSpace(), AC.langs.getLocalName()), XdmValue.makeSequence(langs));
+
             return params;
         }
         catch (URISyntaxException ex)
