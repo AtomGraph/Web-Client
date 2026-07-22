@@ -46,9 +46,8 @@ xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-    <!-- ordered language preference list (negotiation input, unlike the negotiated Content-Language in $ldt:lang); the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
-    <xsl:param name="ac:langs" select="tokenize($ldt:lang, '-')[1]" as="xs:string*"/>
+    <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
+    <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
     <xsl:param name="ac:lang" select="($ac:langs[1], 'en')[1]" as="xs:string"/>
 
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
@@ -369,7 +368,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
-            <xsl:sequence select="format-date(., '[D] [MNn] [Y]', $ldt:lang, (), ())"/>
+            <xsl:sequence select="format-date(., '[D] [MNn] [Y]', $ac:lang, (), ())"/>
         </span>
     </xsl:template>
 
@@ -392,7 +391,7 @@ exclude-result-prefixes="#all">
 
             <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
             <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-            <xsl:sequence select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', $ldt:lang, (), ())"/>
+            <xsl:sequence select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', $ac:lang, (), ())"/>
         </span>
     </xsl:template>
 
@@ -449,14 +448,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
 
     <!-- apply properties that match lang() -->
-    <xsl:template match="*[$ldt:lang][@rdf:about or @rdf:nodeID]/*[lang($ldt:lang)]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[$ac:lang][@rdf:about or @rdf:nodeID]/*[lang($ac:lang)]" mode="xhtml:TableDataCell" priority="1">
         <td>
             <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
         </td>
     </xsl:template>
     
     <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[$ldt:lang][@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ldt:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[$ac:lang][@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ac:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
         <td>
             <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
         </td>

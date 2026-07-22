@@ -170,14 +170,7 @@ public abstract class XSLTWriterBase
             String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
             if (forClassURI != null) params.put(new QName("ac", AC.forClass.getNameSpace(), AC.forClass.getLocalName()), new XdmAtomicValue(URI.create(forClassURI)));
             
-            Locale locale = (Locale)headerMap.getFirst(HttpHeaders.CONTENT_LANGUAGE);
-            if (locale != null)
-            {
-                if (log.isDebugEnabled()) log.debug("Writing Model using language: {}", locale.toLanguageTag());
-                params.put(new QName("ldt", LDT.lang.getNameSpace(), LDT.lang.getLocalName()), new XdmAtomicValue(locale.toLanguageTag()));
-            }
-
-            // ordered language preference list (negotiation input) as opposed to the negotiated Content-Language above
+            // ordered language preference list from Accept-Language
             List<String> langs = getHttpHeaders().getAcceptableLanguages().stream().
                 map(Locale::getLanguage).
                 filter(lang -> !lang.isEmpty() && !lang.equals("*")).
