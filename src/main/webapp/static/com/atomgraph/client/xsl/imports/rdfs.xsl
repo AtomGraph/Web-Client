@@ -18,7 +18,6 @@ limitations under the License.
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
 ]>
 <xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -27,25 +26,22 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:ldt="&ldt;"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-
-    <xsl:template match="*[$ldt:lang][rdfs:label[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="rdfs:label[lang($ldt:lang)]/text()"/>
-    </xsl:template>
-    
-    <xsl:template match="*[rdfs:label[not(@xml:lang)]/text()]" mode="ac:label">
-        <xsl:sequence select="rdfs:label[not(@xml:lang)]/text()"/>
+    <xsl:template match="*[rdfs:label[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return rdfs:label[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[$ldt:lang][rdfs:comment[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="rdfs:comment[lang($ldt:lang)]/text()"/>
+    <xsl:template match="*[rdfs:label/text()]" mode="ac:label">
+        <xsl:sequence select="(rdfs:label[not(@xml:lang)], rdfs:label)[1]/text()"/>
     </xsl:template>
-    
-    <xsl:template match="*[rdfs:comment[not(@xml:lang)]/text()]" mode="ac:description">
-        <xsl:sequence select="rdfs:comment[not(@xml:lang)]/text()"/>
+
+    <xsl:template match="*[rdfs:comment[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return rdfs:comment[lang($lang)])[1]/text()"/>
+    </xsl:template>
+
+    <xsl:template match="*[rdfs:comment/text()]" mode="ac:description">
+        <xsl:sequence select="(rdfs:comment[not(@xml:lang)], rdfs:comment)[1]/text()"/>
     </xsl:template>
     
 </xsl:stylesheet>

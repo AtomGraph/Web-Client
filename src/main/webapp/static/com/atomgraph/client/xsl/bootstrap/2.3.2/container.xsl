@@ -79,8 +79,7 @@ exclude-result-prefixes="#all">
 
         <xsl:variable name="prelim-items" as="item()*">
             <xsl:apply-templates mode="#current">
-                <xsl:sort select="ac:label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:sort select="ac:label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'SaxonJS'"/>
+                <xsl:sort select="ac:label(.)" order="ascending" lang="{$ac:lang}"/>
                 <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
@@ -134,8 +133,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
             <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
-                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ldt:lang}" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                <xsl:sort select="ac:property-label(.)" order="ascending" use-when="system-property('xsl:product-name') eq 'SaxonJS'"/>
+                <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ac:lang}"/>
 
                 <xsl:sequence select="current-group()[1]"/>
             </xsl:for-each-group>

@@ -17,7 +17,6 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY dc     "http://purl.org/dc/elements/1.1/">
 ]>
 <xsl:stylesheet version="3.0"
@@ -26,26 +25,23 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:ldt="&ldt;"
 xmlns:dc="&dc;"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-
-    <xsl:template match="*[$ldt:lang][dc:title[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="dc:title[lang($ldt:lang)]/text()"/>
-    </xsl:template>
-    
-    <xsl:template match="*[dc:title[not(@xml:lang)]/text()]" mode="ac:label">
-        <xsl:sequence select="dc:title[not(@xml:lang)]/text()"/>
+    <xsl:template match="*[dc:title[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return dc:title[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[$ldt:lang][dc:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="dc:description[lang($ldt:lang)]/text()"/>
+    <xsl:template match="*[dc:title/text()]" mode="ac:label">
+        <xsl:sequence select="(dc:title[not(@xml:lang)], dc:title)[1]/text()"/>
     </xsl:template>
-    
-    <xsl:template match="*[dc:description[not(@xml:lang)]/text()]" mode="ac:description">
-        <xsl:sequence select="dc:description[not(@xml:lang)]/text()"/>
+
+    <xsl:template match="*[dc:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return dc:description[lang($lang)])[1]/text()"/>
+    </xsl:template>
+
+    <xsl:template match="*[dc:description/text()]" mode="ac:description">
+        <xsl:sequence select="(dc:description[not(@xml:lang)], dc:description)[1]/text()"/>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -17,7 +17,6 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY doap   "http://usefulinc.com/ns/doap#">
 ]>
 <xsl:stylesheet version="3.0"
@@ -26,26 +25,23 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:ldt="&ldt;"
 xmlns:doap="&doap;"
 exclude-result-prefixes="#all">
     
-    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-
-    <xsl:template match="*[$ldt:lang][doap:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="doap:name[lang($ldt:lang)]/text()"/>
+    <xsl:template match="*[doap:name[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return doap:name[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[doap:name[not(@xml:lang)]/text()]" mode="ac:label">
-        <xsl:sequence select="doap:name[not(@xml:lang)]/text()"/>
+    <xsl:template match="*[doap:name/text()]" mode="ac:label">
+        <xsl:sequence select="(doap:name[not(@xml:lang)], doap:name)[1]/text()"/>
     </xsl:template>
 
-   <xsl:template match="*[$ldt:lang][doap:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="doap:description[lang($ldt:lang)]/text()"/>
+    <xsl:template match="*[doap:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return doap:description[lang($lang)])[1]/text()"/>
     </xsl:template>
-    
-    <xsl:template match="*[doap:description[not(@xml:lang)]/text()]" mode="ac:description">
-        <xsl:sequence select="doap:description[not(@xml:lang)]/text()"/>
+
+    <xsl:template match="*[doap:description/text()]" mode="ac:description">
+        <xsl:sequence select="(doap:description[not(@xml:lang)], doap:description)[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">
