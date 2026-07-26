@@ -17,7 +17,6 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac         "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf        "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY ldt        "https://www.w3.org/ns/ldt#">
     <!ENTITY schema1    "http://schema.org/">
     <!ENTITY schema2    "https://schema.org/">
 ]>
@@ -27,43 +26,40 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:ldt="&ldt;"
 xmlns:schema1="&schema1;"
 xmlns:schema2="&schema2;"
 exclude-result-prefixes="#all">
 
-    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
-
-    <xsl:template match="*[$ldt:lang][schema1:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="schema1:name[lang($ldt:lang)]/text()"/>
-    </xsl:template>
-    
-    <xsl:template match="*[$ldt:lang][schema2:name[lang($ldt:lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="schema2:name[lang($ldt:lang)]/text()"/>
-    </xsl:template>
-    
-    <xsl:template match="*[schema1:name[not(@xml:lang)]/text()]" mode="ac:label">
-        <xsl:sequence select="schema1:name[not(@xml:lang)]/text()"/>
+    <xsl:template match="*[schema1:name[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return schema1:name[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[schema2:name[not(@xml:lang)]/text()]" mode="ac:label">
-        <xsl:sequence select="schema2:name[not(@xml:lang)]/text()"/>
-    </xsl:template>
-    
-    <xsl:template match="*[$ldt:lang][schema1:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="schema1:description[lang($ldt:lang)]/text()"/>
+    <xsl:template match="*[schema2:name[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return schema2:name[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[$ldt:lang][schema2:description[lang($ldt:lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="schema2:description[lang($ldt:lang)]/text()"/>
+    <xsl:template match="*[schema1:name/text()]" mode="ac:label">
+        <xsl:sequence select="(schema1:name[not(@xml:lang)], schema1:name)[1]/text()"/>
     </xsl:template>
-    
-    <xsl:template match="*[schema1:description[not(@xml:lang)]/text()]" mode="ac:description">
-        <xsl:sequence select="schema1:description[not(@xml:lang)]/text()"/>
+
+    <xsl:template match="*[schema2:name/text()]" mode="ac:label">
+        <xsl:sequence select="(schema2:name[not(@xml:lang)], schema2:name)[1]/text()"/>
     </xsl:template>
-    
-    <xsl:template match="*[schema2:description[not(@xml:lang)]/text()]" mode="ac:description">
-        <xsl:sequence select="schema2:description[not(@xml:lang)]/text()"/>
+
+    <xsl:template match="*[schema1:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return schema1:description[lang($lang)])[1]/text()"/>
+    </xsl:template>
+
+    <xsl:template match="*[schema2:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in $ac:langs return schema2:description[lang($lang)])[1]/text()"/>
+    </xsl:template>
+
+    <xsl:template match="*[schema1:description/text()]" mode="ac:description">
+        <xsl:sequence select="(schema1:description[not(@xml:lang)], schema1:description)[1]/text()"/>
+    </xsl:template>
+
+    <xsl:template match="*[schema2:description/text()]" mode="ac:description">
+        <xsl:sequence select="(schema2:description[not(@xml:lang)], schema2:description)[1]/text()"/>
     </xsl:template>
     
     <xsl:template match="schema1:image/@rdf:resource | schema2:image/@rdf:resource | schema1:logo/@rdf:resource | schema2:logo/@rdf:resource | schema1:thumbnailUrl/@rdf:resource | schema2:thumbnailUrl/@rdf:resource">

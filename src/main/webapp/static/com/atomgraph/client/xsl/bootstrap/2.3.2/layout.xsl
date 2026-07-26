@@ -59,7 +59,6 @@ exclude-result-prefixes="#all">
     <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
     
     <xsl:param name="ldt:base" as="xs:anyURI?"/>
-    <xsl:param name="ldt:lang" select="'en'" as="xs:string"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
     <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
     <xsl:param name="ac:forClass" as="xs:anyURI?"/>
@@ -100,7 +99,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:template match="/">
-        <html lang="{$ldt:lang}">
+        <html lang="{$ac:lang}">
             <xsl:apply-templates/>
         </html>
     </xsl:template>
@@ -270,7 +269,7 @@ exclude-result-prefixes="#all">
         <div class="footer text-center">
             <hr/>
             <p>
-                <xsl:sequence select="format-date(current-date(), '[Y]', $ldt:lang, (), ())"/>.
+                <xsl:sequence select="format-date(current-date(), '[Y]', $ac:lang, (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>

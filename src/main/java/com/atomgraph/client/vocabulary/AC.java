@@ -92,6 +92,8 @@ public final class AC
    
     public static final Property accept = m_model.createDataProperty( NS + "accept" );
 
+    public static final Property langs = m_model.createDataProperty( NS + "langs" );
+
     public static final Property forClass = m_model.createObjectProperty( NS + "forClass" );
 
     public static final Property instance = m_model.createDataProperty( NS + "instance" );

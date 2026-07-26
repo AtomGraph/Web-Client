@@ -32,7 +32,6 @@ limitations under the License.
 <xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:ixsl="http://saxonica.com/ns/interactiveXSLT"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
@@ -47,7 +46,6 @@ xmlns:sp="&sp;"
 xmlns:list="&list;"
 xmlns:map="http://www.w3.org/2005/xpath-functions/map"
 exclude-result-prefixes="#all"
-extension-element-prefixes="ixsl"
 >
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
@@ -64,10 +62,9 @@ extension-element-prefixes="ixsl"
         <xsl:sequence select="xs:anyURI(if (contains($href, '?')) then substring-before($href, '?') else if (contains($href, '#')) then substring-before($href, '#') else $href)"/>
     </xsl:function>
     
-    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
+    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF; client-side stylesheets override it -->
     <xsl:function name="ac:uuid" as="xs:string" override-extension-function="no">
-        <xsl:value-of use-when="system-property('xsl:product-name') eq 'SaxonJS'" select="ixsl:call(ixsl:window(), 'generateUUID', [])"/>
-        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
+        <xsl:message terminate="yes">
             Not implemented -- com.atomgraph.client.writer.function.UUID needs to be registered as an extension function
         </xsl:message>
     </xsl:function>
