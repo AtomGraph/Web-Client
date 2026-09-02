@@ -89,14 +89,32 @@ exclude-result-prefixes="#all"
         </xsl:message>
     </xsl:function>
     
-    <!-- position of a value's language in $ac:langs, used as a sort key so each property leads with the reader's language.
+    <!-- the languages the reader accepts, most preferred first, reduced to primary subtags and deduped.
+
+         Server-side that is the Accept-Language list the writer supplies; client-side LinkedDataHub overrides this whole
+         function with one that reads the browser's own list, because Web-Client carries no browser dependencies. The two
+         bodies are guarded by use-when so exactly one exists in any compilation - neither engine ever sees the other's.
+
+         Normalising here rather than at each declaration is what keeps the two engines agreeing: primary subtags because
+         fn:lang() prefix-matches, so 'es' reaches a label tagged es-ES while 'es-ES' would not reach one tagged es; deduped
+         because a browser sending es-ES,es yields the same subtag twice; and 'en' when the reader expressed no preference,
+         which is the same floor the negotiation applies server-side. -->
+    <xsl:function name="ac:langs" as="xs:string*" use-when="system-property('xsl:product-name') = 'SAXON'">
+        <xsl:variable name="langs" select="distinct-values(for $lang in $ac:langs return tokenize($lang, '-')[1])[not(. = ('', '*'))]" as="xs:string*"/>
+
+        <xsl:sequence select="if (exists($langs)) then $langs else 'en'"/>
+    </xsl:function>
+
+    <!-- position of a value's language in the accepted list, used as a sort key so each property leads with the reader's language.
          Values in a language the reader does not accept, and untagged values, rank last and so sort after the accepted ones
          - they are ordered, never withheld. Takes the node explicitly: the one-argument fn:lang tests the context item, and
          a rank computed over a range of integers has no node to test. -->
     <xsl:function name="ac:lang-rank" as="xs:integer">
         <xsl:param name="value" as="element()"/>
 
-        <xsl:sequence select="((for $i in 1 to count($ac:langs) return if (lang($ac:langs[$i], $value)) then $i else ())[1], count($ac:langs) + 1)[1]"/>
+        <xsl:variable name="langs" select="ac:langs()" as="xs:string*"/>
+
+        <xsl:sequence select="((for $i in 1 to count($langs) return if (lang($langs[$i], $value)) then $i else ())[1], count($langs) + 1)[1]"/>
     </xsl:function>
 
     <xsl:function name="ac:label" as="xs:string?">

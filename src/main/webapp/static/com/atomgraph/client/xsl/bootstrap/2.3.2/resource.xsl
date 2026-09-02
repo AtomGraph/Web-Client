@@ -217,7 +217,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
-                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{$ac:lang}"/>
+                <xsl:sort select="ac:object-label(.)" order="ascending" lang="{ac:langs()[1]}"/>
                 
                 <li>
                     <xsl:apply-templates select="."/>
@@ -235,8 +235,8 @@ exclude-result-prefixes="#all">
             <xsl:document>
                 <dl class="dl-horizontal">
                     <xsl:apply-templates select="*" mode="#current">
-                        <xsl:sort select="ac:property-label(.)" order="ascending" lang="{$ac:lang}"/>
-                        <xsl:sort select="if (exists((text(), @rdf:resource, @rdf:nodeID))) then ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1]) else()" order="ascending" lang="{$ac:lang}"/>
+                        <xsl:sort select="ac:property-label(.)" order="ascending" lang="{ac:langs()[1]}"/>
+                        <xsl:sort select="if (exists((text(), @rdf:resource, @rdf:nodeID))) then ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1]) else()" order="ascending" lang="{ac:langs()[1]}"/>
                     </xsl:apply-templates>
                 </dl>
             </xsl:document>

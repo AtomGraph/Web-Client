@@ -28,16 +28,16 @@ xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[rdfs:label[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return rdfs:label[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[rdfs:label[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return rdfs:label[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[rdfs:label/text()]" mode="ac:label">
         <xsl:sequence select="(rdfs:label[not(@xml:lang)], rdfs:label)[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[rdfs:comment[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return rdfs:comment[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[rdfs:comment[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return rdfs:comment[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[rdfs:comment/text()]" mode="ac:description">

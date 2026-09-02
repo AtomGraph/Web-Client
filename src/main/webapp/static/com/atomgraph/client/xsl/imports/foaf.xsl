@@ -84,8 +84,8 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="foaf:nick/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[foaf:name[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="6">
-        <xsl:sequence select="(for $lang in $ac:langs return foaf:name[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[foaf:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="6">
+        <xsl:sequence select="(for $lang in ac:langs() return foaf:name[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[foaf:name/text()]" mode="ac:label" priority="4">

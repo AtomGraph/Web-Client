@@ -374,7 +374,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
-            <xsl:sequence select="format-date(., '[D] [MNn] [Y]', $ac:lang, (), ())"/>
+            <xsl:sequence select="format-date(., '[D] [MNn] [Y]', ac:langs()[1], (), ())"/>
         </span>
     </xsl:template>
 
@@ -397,7 +397,7 @@ exclude-result-prefixes="#all">
 
             <!-- http://www.w3.org/TR/xslt20/#date-time-examples -->
             <!-- http://en.wikipedia.org/wiki/Date_format_by_country -->
-            <xsl:sequence select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', $ac:lang, (), ())"/>
+            <xsl:sequence select="format-dateTime(adjust-dateTime-to-timezone(., $timezone), '[D] [MNn] [Y] [H01]:[m01]', ac:langs()[1], (), ())"/>
         </span>
     </xsl:template>
 

@@ -69,15 +69,14 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
     <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
     <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
-    <xsl:param name="ac:lang" select="($ac:langs[1], 'en')[1]" as="xs:string"/>
     <!-- the language the representation is composed in, as opposed to the one the reader asked for: the writer supplies the
-         highest-ranked accepted language the UI actually has. Distinct from $ac:lang because asking for a language does not
-         make the page that language - reporting the request as the content's language is what put lang="de" on a page written
-         entirely in English.
+         highest-ranked accepted language the UI actually has. Distinct from what the reader accepts because asking for a
+         language does not make the page that language - reporting the request as the content's language is what put
+         lang="de" on a page written entirely in English.
 
-         Defaults to en rather than to $ac:lang. The rule is "the first accepted language the UI provides, else en", and
+         Defaults to en rather than to the reader's top preference. The rule is "the first accepted language the UI provides, else en", and
          Web-Client's own strings are English only, so for a client that supplies no value the negotiation would always answer
-         en whatever the reader asked for. Defaulting to $ac:lang would return a value the negotiation cannot produce - and
+         en whatever the reader asked for. Defaulting to their preference would return a value the negotiation cannot produce - and
          would keep the defect as the out-of-the-box behaviour -->
     <xsl:param name="ac:contentLang" select="'en'" as="xs:string"/>
 
@@ -282,7 +281,7 @@ exclude-result-prefixes="#all">
         <div class="footer text-center">
             <hr/>
             <p>
-                <xsl:sequence select="format-date(current-date(), '[Y]', $ac:lang, (), ())"/>.
+                <xsl:sequence select="format-date(current-date(), '[Y]', ac:langs()[1], (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
                 <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
             </p>

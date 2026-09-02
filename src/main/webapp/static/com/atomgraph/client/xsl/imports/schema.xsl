@@ -30,12 +30,12 @@ xmlns:schema1="&schema1;"
 xmlns:schema2="&schema2;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[schema1:name[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return schema1:name[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[schema1:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return schema1:name[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[schema2:name[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return schema2:name[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[schema2:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return schema2:name[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[schema1:name/text()]" mode="ac:label">
@@ -46,12 +46,12 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="(schema2:name[not(@xml:lang)], schema2:name)[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[schema1:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return schema1:description[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[schema1:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return schema1:description[lang($lang)])[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[schema2:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return schema2:description[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[schema2:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return schema2:description[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[schema1:description/text()]" mode="ac:description">

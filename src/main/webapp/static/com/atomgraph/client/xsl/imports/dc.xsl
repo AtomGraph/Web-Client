@@ -28,16 +28,16 @@ xmlns:rdf="&rdf;"
 xmlns:dc="&dc;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[dc:title[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return dc:title[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[dc:title[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return dc:title[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[dc:title/text()]" mode="ac:label">
         <xsl:sequence select="(dc:title[not(@xml:lang)], dc:title)[1]/text()"/>
     </xsl:template>
 
-    <xsl:template match="*[dc:description[some $lang in $ac:langs satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in $ac:langs return dc:description[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[dc:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
+        <xsl:sequence select="(for $lang in ac:langs() return dc:description[lang($lang)])[1]/text()"/>
     </xsl:template>
 
     <xsl:template match="*[dc:description/text()]" mode="ac:description">
