@@ -278,10 +278,21 @@ exclude-result-prefixes="#all">
             <xsl:if test="$target">
                 <xsl:attribute name="target" select="$target"/>
             </xsl:if>
-            
-            <xsl:value-of>
+
+            <!-- the label was picked from whichever language the reader accepts, so the link says which one it ended up in.
+                 Bound as nodes rather than wrapped in xsl:value-of, which would atomize the literal and discard the tag
+                 before it could be read. A label built as a computed string - a fragment identifier, a decoded path segment
+                 - has no literal behind it and inherits instead -->
+            <xsl:variable name="label" as="item()*">
                 <xsl:apply-templates select="." mode="ac:object-label"/>
-            </xsl:value-of>
+            </xsl:variable>
+            <xsl:variable name="label-lang" select="$label[1][. instance of node()]/../@xml:lang" as="attribute()?"/>
+
+            <xsl:if test="$label-lang">
+                <xsl:attribute name="lang" select="$label-lang"/>
+            </xsl:if>
+
+            <xsl:value-of select="$label"/>
         </a>
     </xsl:template>
 
