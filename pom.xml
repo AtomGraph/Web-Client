@@ -118,7 +118,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>5.0.2</version>
+            <version>5.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <!-- new Jena ontology API (org.apache.jena.ontapi); PrefixGraphRepository extends DocumentGraphRepository -->
@@ -174,7 +174,6 @@
                 <configuration>
                     <publishingServerId>central-portal-snapshots</publishingServerId>
                     <autoPublish>true</autoPublish>
-                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
         </plugins>
