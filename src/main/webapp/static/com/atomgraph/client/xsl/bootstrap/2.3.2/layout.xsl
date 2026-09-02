@@ -65,7 +65,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
     <xsl:param name="ac:query" as="xs:string?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
-    <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
     <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
     <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
