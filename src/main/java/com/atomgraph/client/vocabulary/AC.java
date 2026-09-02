@@ -94,6 +94,9 @@ public final class AC
 
     public static final Property langs = m_model.createDataProperty( NS + "langs" );
 
+    /** The language the representation is composed in, as opposed to the languages the reader accepts. */
+    public static final Property contentLang = m_model.createDataProperty( NS + "contentLang" );
+
     public static final Property forClass = m_model.createObjectProperty( NS + "forClass" );
 
     public static final Property instance = m_model.createDataProperty( NS + "instance" );

@@ -67,7 +67,20 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <xsl:param name="rdf:type" as="xs:anyURI?"/>
     <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
-    
+    <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
+    <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
+    <xsl:param name="ac:lang" select="($ac:langs[1], 'en')[1]" as="xs:string"/>
+    <!-- the language the representation is composed in, as opposed to the one the reader asked for: the writer supplies the
+         highest-ranked accepted language the UI actually has. Distinct from $ac:lang because asking for a language does not
+         make the page that language - reporting the request as the content's language is what put lang="de" on a page written
+         entirely in English.
+
+         Defaults to en rather than to $ac:lang. The rule is "the first accepted language the UI provides, else en", and
+         Web-Client's own strings are English only, so for a client that supplies no value the negotiation would always answer
+         en whatever the reader asked for. Defaulting to $ac:lang would return a value the negotiation cannot produce - and
+         would keep the defect as the out-of-the-box behaviour -->
+    <xsl:param name="ac:contentLang" select="'en'" as="xs:string"/>
+
     <xsl:variable name="main-doc" select="/" as="document-node()"/>
     
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
@@ -99,7 +112,7 @@ exclude-result-prefixes="#all">
     </rdf:Description>
 
     <xsl:template match="/">
-        <html lang="{$ac:lang}">
+        <html lang="{$ac:contentLang}">
             <xsl:apply-templates/>
         </html>
     </xsl:template>
