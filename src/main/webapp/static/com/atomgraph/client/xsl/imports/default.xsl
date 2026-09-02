@@ -46,10 +46,6 @@ xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
-    <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
-    <xsl:param name="ac:lang" select="($ac:langs[1], 'en')[1]" as="xs:string"/>
-
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
 
     <!-- LABEL -->
@@ -194,8 +190,19 @@ exclude-result-prefixes="#all">
             <xsl:if test="$target">
                 <xsl:attribute name="target" select="$target"/>
             </xsl:if>
-            
-            <xsl:apply-templates select=".." mode="ac:label"/>
+
+            <!-- the label was chosen from whichever language the reader accepts, so the link says which one it ended up
+                 in. A label built as a computed string has no literal behind it and inherits instead -->
+            <xsl:variable name="label" as="item()*">
+                <xsl:apply-templates select=".." mode="ac:label"/>
+            </xsl:variable>
+            <xsl:variable name="label-lang" select="$label[1][. instance of node()]/../@xml:lang" as="attribute()?"/>
+
+            <xsl:if test="$label-lang">
+                <xsl:attribute name="lang" select="$label-lang"/>
+            </xsl:if>
+
+            <xsl:sequence select="$label"/>
         </a>
     </xsl:template>
     
@@ -212,7 +219,18 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <xsl:apply-templates select=".." mode="ac:label"/>
+            <!-- the label was chosen from whichever language the reader accepts, so the link says which one it ended up
+                 in. A label built as a computed string has no literal behind it and inherits instead -->
+            <xsl:variable name="label" as="item()*">
+                <xsl:apply-templates select=".." mode="ac:label"/>
+            </xsl:variable>
+            <xsl:variable name="label-lang" select="$label[1][. instance of node()]/../@xml:lang" as="attribute()?"/>
+
+            <xsl:if test="$label-lang">
+                <xsl:attribute name="lang" select="$label-lang"/>
+            </xsl:if>
+
+            <xsl:sequence select="$label"/>
         </span>
     </xsl:template>
 
@@ -299,18 +317,6 @@ exclude-result-prefixes="#all">
     <xsl:template match="text()">
         <xsl:sequence select="."/>
     </xsl:template>
-
-    <!-- show literals that match $ldt:lang, if any -->
-    <!-- 
-    <xsl:template match="text()[$ldt:lang][../@xml:lang and lang($ldt:lang, ..)]" priority="1">
-        <xsl:next-match/>
-    </xsl:template>
-    -->
-
-    <!-- suppress literals that have @xml:lang but do not match $ldt:lang, if they have siblings that do match -->
-    <!--
-    <xsl:template match="text()[$ldt:lang][../@xml:lang and not(lang($ldt:lang, ..))][../preceding-sibling::*[namespace-uri() || local-name() = namespace-uri(current()/..) || local-name(current()/..)][lang($ldt:lang)] or ../following-sibling::*[namespace-uri() || local-name() = namespace-uri(current()/..) || local-name(current()/..)][lang($ldt:lang)]]" priority="1"/>
-    -->
 
     <xsl:template match="text()[../@rdf:datatype] | srx:literal[@datatype]">
         <xsl:param name="id" as="xs:string?"/>
@@ -445,19 +451,37 @@ exclude-result-prefixes="#all">
         </th>
     </xsl:template>
     
+    <!-- every value of the property beyond the first is folded into the cell the first one opens -->
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
 
-    <!-- apply properties that match lang() -->
-    <xsl:template match="*[$ac:lang][@rdf:about or @rdf:nodeID]/*[lang($ac:lang)]" mode="xhtml:TableDataCell" priority="1">
+    <!-- the header fixes the column count, so a property gets one cell however many values it has, and they share it.
+         Ordering them by the reader's languages puts the one they read first and leaves the rest reachable: a reader whose
+         language the data lacks used to be shown the first value in document order, and every other reader was shown one
+         value with no sign that the others existed -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+        <xsl:variable name="property-uri" select="concat(namespace-uri(), local-name())" as="xs:string"/>
+
         <td>
-            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
-        </td>
-    </xsl:template>
-    
-    <!-- apply the first one in the group if there's no lang() match -->
-    <xsl:template match="*[$ac:lang][@rdf:about or @rdf:nodeID]/*[not(../*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))][lang($ac:lang)])][not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
-        <td>
-            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+            <xsl:for-each select="../*[concat(namespace-uri(), local-name()) = $property-uri]">
+                <xsl:sort select="ac:lang-rank(.)"/>
+
+                <!-- each value declares its own language rather than inheriting the document's, since the cell now holds
+                     several at once and the document default is wrong for all but one of them -->
+                <span>
+                    <xsl:choose>
+                        <xsl:when test="@xml:lang">
+                            <xsl:attribute name="lang" select="@xml:lang"/>
+                        </xsl:when>
+                        <!-- an untagged literal makes no language claim, which HTML spells lang="". A typed value is not
+                             prose and inherits, so a number or a date is read out in the reader's own language -->
+                        <xsl:when test="text() and (not(@rdf:datatype) or @rdf:datatype = '&xsd;string')">
+                            <xsl:attribute name="lang" select="''"/>
+                        </xsl:when>
+                    </xsl:choose>
+
+                    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+                </span>
+            </xsl:for-each>
         </td>
     </xsl:template>
 

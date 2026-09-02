@@ -89,6 +89,16 @@ exclude-result-prefixes="#all"
         </xsl:message>
     </xsl:function>
     
+    <!-- position of a value's language in $ac:langs, used as a sort key so each property leads with the reader's language.
+         Values in a language the reader does not accept, and untagged values, rank last and so sort after the accepted ones
+         - they are ordered, never withheld. Takes the node explicitly: the one-argument fn:lang tests the context item, and
+         a rank computed over a range of integers has no node to test. -->
+    <xsl:function name="ac:lang-rank" as="xs:integer">
+        <xsl:param name="value" as="element()"/>
+
+        <xsl:sequence select="((for $i in 1 to count($ac:langs) return if (lang($ac:langs[$i], $value)) then $i else ())[1], count($ac:langs) + 1)[1]"/>
+    </xsl:function>
+
     <xsl:function name="ac:label" as="xs:string?">
         <xsl:param name="resource" as="element()"/>
 
