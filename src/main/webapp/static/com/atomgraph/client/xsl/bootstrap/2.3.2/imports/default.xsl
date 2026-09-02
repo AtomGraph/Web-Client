@@ -48,12 +48,18 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="text()[../@xml:lang]" mode="xhtml:DefinitionDescription" priority="1">
         <dd>
-            <span class="label label-info pull-right">
-                <xsl:value-of select="../@xml:lang"/>
-            </span>
+            <xsl:apply-templates select="../@xml:lang" mode="ac:lang-tag"/>
 
             <xsl:apply-templates select="."/>
         </dd>
+    </xsl:template>
+
+    <!-- the property list and the table cell both put a value's languages side by side, so the badge that tells them
+         apart is written once here and applied from wherever the values are laid out -->
+    <xsl:template match="@xml:lang" mode="ac:lang-tag">
+        <span class="label label-info pull-right">
+            <xsl:value-of select="."/>
+        </span>
     </xsl:template>
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="bs2:PropertyList">

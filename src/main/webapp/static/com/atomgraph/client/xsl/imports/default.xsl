@@ -131,6 +131,12 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="node()" mode="ac:image"/>
 
+    <!-- LANGUAGE TAG -->
+
+    <!-- the tag a value carries, shown wherever a skin renders several languages side by side. Nothing generic to show:
+         a skin that has a badge for it overrides this, the built-in attribute rule would otherwise leak the bare code -->
+    <xsl:template match="@xml:lang" mode="ac:lang-tag"/>
+
     <!-- DEFINITIONS -->
     
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:DefinitionTerm">
@@ -473,27 +479,38 @@ exclude-result-prefixes="#all">
         <xsl:variable name="property-uri" select="concat(namespace-uri(), local-name())" as="xs:string"/>
 
         <td>
-            <xsl:for-each select="../*[concat(namespace-uri(), local-name()) = $property-uri]">
-                <xsl:sort select="ac:lang-rank(.)"/>
-
-                <!-- each value declares its own language rather than inheriting the document's, since the cell now holds
-                     several at once and the document default is wrong for all but one of them -->
-                <span>
-                    <xsl:choose>
-                        <xsl:when test="@xml:lang">
-                            <xsl:attribute name="lang" select="@xml:lang"/>
-                        </xsl:when>
-                        <!-- an untagged literal makes no language claim, which HTML spells lang="". A typed value is not
-                             prose and inherits, so a number or a date is read out in the reader's own language -->
-                        <xsl:when test="text() and (not(@rdf:datatype) or @rdf:datatype = '&xsd;string')">
-                            <xsl:attribute name="lang" select="''"/>
-                        </xsl:when>
-                    </xsl:choose>
-
-                    <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
-                </span>
-            </xsl:for-each>
+            <!-- the values stack rather than run together, and the stack is what carries the height: a cell cannot cap its
+                 own, so a property with many values has to be bounded by a container the cell holds -->
+            <div class="values">
+                <xsl:apply-templates select="../*[concat(namespace-uri(), local-name()) = $property-uri]" mode="xhtml:TableDataCellValue">
+                    <xsl:sort select="ac:lang-rank(.)"/>
+                </xsl:apply-templates>
+            </div>
         </td>
+    </xsl:template>
+
+    <!-- one block per statement, so the values stack apart instead of running into each other. The statement is the unit,
+         not the node under it: an XHTML literal is one value however many elements it is written with -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCellValue">
+        <div class="value">
+            <!-- an untagged literal makes no language claim, which HTML spells lang="". A typed value is not prose and
+                 inherits, so a number or a date is read out in the reader's own language -->
+            <xsl:if test="text() and (not(@rdf:datatype) or @rdf:datatype = '&xsd;string')">
+                <xsl:attribute name="lang" select="''"/>
+            </xsl:if>
+
+            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+        </div>
+    </xsl:template>
+
+    <!-- each value declares its own language rather than inheriting the document's, since the cell holds several at once
+         and the document default is wrong for all but one of them -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@xml:lang]" mode="xhtml:TableDataCellValue" priority="1">
+        <div class="value" lang="{@xml:lang}">
+            <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
+
+            <xsl:apply-templates select="@xml:lang" mode="ac:lang-tag"/>
+        </div>
     </xsl:template>
 
     <xsl:template match="srx:sparql" mode="xhtml:Table">
