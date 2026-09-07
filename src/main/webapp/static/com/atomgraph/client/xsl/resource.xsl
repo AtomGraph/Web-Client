@@ -16,7 +16,6 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
-    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
@@ -159,31 +158,10 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
-    <!-- ACTIONS MODE (Create/Edit buttons) -->
+    <!-- ACTIONS MODE -->
 
-    <xsl:template match="*[@rdf:about]" mode="ac:BlockActions" priority="1">
-        <div class="actions">
-            <a class="ldhc-btn in-neutral ap-outline sz-sm" href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)), 'mode': '&ac;EditMode' })}">
-                <span class="msi sm" aria-hidden="true">edit</span>
-                <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&translations;edit', ac:translations())" mode="ac:label"/>
-                </xsl:value-of>
-            </a>
-
-            <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
-                <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit">
-                    <xsl:attribute name="data-confirm">
-                        <xsl:apply-templates select="key('resources', '&translations;confirm-delete', ac:translations())" mode="ac:label"/>
-                    </xsl:attribute>
-                    <span class="msi sm" aria-hidden="true">delete</span>
-                    <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&translations;delete', ac:translations())" mode="ac:label"/>
-                    </xsl:value-of>
-                </button>
-            </form>
-        </div>
-    </xsl:template>
-    
+    <!-- an empty extension point: Edit and Delete act on documents, so they live in the action bar
+         (ac:HeaderActions), and importing layers add their own per-block actions here -->
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:BlockActions"/>
     
     <!-- IMAGE MODE -->
