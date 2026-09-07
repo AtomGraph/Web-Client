@@ -64,10 +64,14 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 .types { display: flex; flex-wrap: wrap; gap: var(--sp-2); list-style: none; margin: 0; padding: 0; font-size: var(--fs-sm); }
 .types li { display: inline-flex; min-width: 0; }
 
-/* ---------- read-mode property list ---------- */
-.properties { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; column-gap: var(--sp-4); row-gap: var(--sp-1); margin: var(--sp-4) 0 0; }
-.properties dt { font-weight: var(--fw-medium); color: var(--fg-2); min-width: 0; overflow-wrap: break-word; }
-.properties dd { margin: 0; min-width: 0; overflow-wrap: break-word; }
+/* ---------- read-mode property list ----------
+   One dt can be followed by N dds (multi-valued property; the grouping pass suppresses the repeated
+   terms), so this is float/clear column layout rather than a two-column grid: grid auto-placement
+   cannot keep a run of dds in the value column without per-group wrappers the flat dl does not have */
+.properties { margin: var(--sp-4) 0 0; }
+.properties::after { content: ""; display: block; clear: both; }
+.properties dt { float: left; clear: left; width: 200px; padding-right: var(--sp-4); box-sizing: border-box; font-weight: var(--fw-medium); color: var(--fg-2); overflow-wrap: break-word; }
+.properties dd { margin: 0 0 var(--sp-1) 200px; min-width: 0; overflow-wrap: break-word; }
 .properties dd .ldhc-tag { margin-right: var(--sp-1); }
 
 /* ---------- collections ---------- */
