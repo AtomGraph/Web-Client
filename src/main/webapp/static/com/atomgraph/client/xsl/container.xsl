@@ -35,68 +35,14 @@ exclude-result-prefixes="#all">
     <!-- LIST MODE -->
 
     <xsl:template match="rdf:RDF" mode="ac:List">
-        <xsl:apply-templates mode="#current"/>
+        <ul class="resource-list">
+            <xsl:apply-templates mode="#current"/>
+        </ul>
     </xsl:template>
 
     <xsl:template match="*[*][@rdf:about]" mode="ac:List">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'well'" as="xs:string?"/>
-
-        <div>
-            <xsl:if test="$id">
-                <xsl:attribute name="id" select="$id"/>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class" select="$class"/>
-            </xsl:if>
-
-            <xsl:apply-templates select="." mode="ac:Depiction"/>
-            
-            <xsl:apply-templates select="." mode="ac:BlockActions"/>
-
-            <h2>
-                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
-            </h2>
-
-            <p>
-                <xsl:apply-templates select="." mode="ac:description"/>
-            </p>
-
-            <xsl:apply-templates select="." mode="ac:ResourceTypes"/>
-
-            <xsl:if test="@rdf:nodeID">
-                <xsl:apply-templates select="." mode="ac:PropertyEditor"/>
-            </xsl:if>
-        </div>
-    </xsl:template>
-        
-    <!-- GRID MODE -->
-
-    <xsl:template match="rdf:RDF" mode="ac:Grid">
-        <xsl:param name="thumbnails-per-row" select="2" as="xs:integer"/>
-        <xsl:param name="sort-property" as="xs:anyURI?"/>
-
-        <xsl:variable name="prelim-items" as="item()*">
-            <xsl:apply-templates mode="#current">
-                <xsl:sort select="ac:label(.)" order="ascending" lang="{ac:langs()[1]}"/>
-                <xsl:with-param name="thumbnails-per-row" select="$thumbnails-per-row" tunnel="yes"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="items" select="$prelim-items/self::*" as="element()*"/>
-        
-        <xsl:for-each-group select="$items" group-adjacent="(position() - 1) idiv $thumbnails-per-row">
-            <div class="row-fluid">
-                <ul class="thumbnails">
-                    <xsl:copy-of select="current-group()"/>
-                </ul>
-            </div>
-        </xsl:for-each-group>
-    </xsl:template>
-    
-    <xsl:template match="*[*][@rdf:about]" mode="ac:Grid" priority="1">
-        <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="thumbnails-per-row" as="xs:integer" tunnel="yes"/>
-        <xsl:param name="class" select="concat('span', 12 div $thumbnails-per-row)" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
 
         <li>
             <xsl:if test="$id">
@@ -106,18 +52,67 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <div class="thumbnail">
+            <xsl:apply-templates select="." mode="ac:Depiction"/>
+
+            <xsl:apply-templates select="." mode="ac:BlockActions"/>
+
+            <h2>
+                <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
+            </h2>
+
+            <xsl:where-populated>
+                <p class="description">
+                    <xsl:apply-templates select="." mode="ac:description"/>
+                </p>
+            </xsl:where-populated>
+
+            <xsl:apply-templates select="." mode="ac:ResourceTypes"/>
+
+            <xsl:if test="@rdf:nodeID">
+                <xsl:apply-templates select="." mode="ac:PropertyEditor"/>
+            </xsl:if>
+        </li>
+    </xsl:template>
+
+    <!-- GRID MODE -->
+
+    <!-- the grid lays its items out itself (client.css), so the rows are one flat list rather than chunked rows -->
+    <xsl:template match="rdf:RDF" mode="ac:Grid">
+        <xsl:param name="sort-property" as="xs:anyURI?"/>
+
+        <ul class="resource-grid">
+            <xsl:apply-templates mode="#current">
+                <xsl:sort select="ac:label(.)" order="ascending" lang="{ac:langs()[1]}"/>
+            </xsl:apply-templates>
+        </ul>
+    </xsl:template>
+
+    <xsl:template match="*[*][@rdf:about]" mode="ac:Grid" priority="1">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <li>
+            <xsl:if test="$id">
+                <xsl:attribute name="id" select="$id"/>
+            </xsl:if>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
+            <div class="ldhc-card">
                 <xsl:apply-templates select="." mode="ac:Depiction"/>
 
-                <div class="caption">
+                <div class="ldhc-card-body">
                     <xsl:apply-templates select="." mode="ac:BlockActions"/>
 
                     <h2>
                         <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
                     </h2>
-                    <p>
-                        <xsl:apply-templates select="." mode="ac:description"/>
-                    </p>
+                    <xsl:where-populated>
+                        <p class="description">
+                            <xsl:apply-templates select="." mode="ac:description"/>
+                        </p>
+                    </xsl:where-populated>
                 </div>
             </div>
         </li>
@@ -129,7 +124,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="xhtml:Table">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
+        <xsl:param name="class" select="'results-table'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
             <xsl:for-each-group select="*/*" group-by="concat(namespace-uri(), local-name())">
                 <xsl:sort select="ac:property-label(.)" order="ascending" lang="{ac:langs()[1]}"/>
@@ -146,15 +141,18 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
+            <caption class="ldhc-vh">
+                <xsl:apply-templates select="key('resources', 'resources', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </caption>
             <thead>
                 <tr>
                     <xsl:if test="$anchor-column">
-                        <th>
+                        <th scope="col">
                             <xsl:apply-templates select="key('resources', '&rdfs;Resource', document(ac:document-uri('&rdfs;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
                             <xsl:value-of use-when="system-property('xsl:product-name') eq 'SaxonJS'">Resource</xsl:value-of>
                         </th>
                     </xsl:if>
-                    
+
                     <xsl:apply-templates select="$predicates" mode="xhtml:TableHeaderCell"/>
                 </tr>
             </thead>
@@ -207,7 +205,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:Map">
         <xsl:param name="id" select="'map-canvas'" as="xs:string"/>
 
-        <div id="{$id}">
+        <div id="{$id}" class="map-canvas">
             <xsl:apply-templates mode="#current"/>
         </div>
         

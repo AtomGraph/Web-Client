@@ -49,4 +49,28 @@ and emitted via the ac:label mode. Downstream layers keep their own catalogs for
         <rdfs:label xml:lang="en-US">Query</rdfs:label>
         <rdfs:label xml:lang="es-ES">Consultar</rdfs:label>
     </rdf:Description>
+    <rdf:Description rdf:nodeID="endpoint">
+        <rdfs:label xml:lang="en-US">Endpoint</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Punto de acceso</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="confirm-delete">
+        <rdfs:label xml:lang="en-US">Are you sure?</rdfs:label>
+        <rdfs:label xml:lang="es-ES">¿Está seguro?</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="go">
+        <rdfs:label xml:lang="en-US">Go</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Ir</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="query-editor">
+        <rdfs:label xml:lang="en-US">Query editor</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Editor de consultas</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="resources">
+        <rdfs:label xml:lang="en-US">Resources</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Recursos</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="query-results">
+        <rdfs:label xml:lang="en-US">Query results</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Resultados de la consulta</rdfs:label>
+    </rdf:Description>
 </rdf:RDF>

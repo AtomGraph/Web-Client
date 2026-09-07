@@ -69,8 +69,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('?_method=PUT')" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
-        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
+        <xsl:param name="class" select="'resource-form'" as="xs:string?"/>
+        <xsl:param name="button-class" select="'ldhc-btn in-primary ap-solid sz-md'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
 
@@ -122,10 +122,13 @@ exclude-result-prefixes="#all">
     <!-- FORM ACTIONS -->
     
     <xsl:template match="rdf:RDF" mode="ac:FormActions">
-        <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
-        
+        <xsl:param name="button-class" select="'ldhc-btn in-primary ap-solid sz-md'" as="xs:string?"/>
+
         <div class="form-actions">
-            <button type="submit" class="{$button-class}">Save</button>
+            <button type="submit" class="{$button-class}">
+                <span class="msi sm" aria-hidden="true">save</span>
+                <xsl:apply-templates select="key('resources', 'save', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </button>
         </div>
     </xsl:template>
     

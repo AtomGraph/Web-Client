@@ -466,7 +466,7 @@ exclude-result-prefixes="#all">
     <!-- TABLE -->
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableHeaderCell">
-        <th>
+        <th scope="col">
             <xsl:apply-templates select="."/>
         </th>
     </xsl:template>
@@ -532,6 +532,10 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
+            <caption class="ldhc-vh">
+                <xsl:apply-templates select="key('resources', 'query-results', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </caption>
+
             <xsl:apply-templates mode="#current"/>
         </table>
     </xsl:template>
@@ -545,7 +549,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="srx:variable" mode="xhtml:Table">
-        <th>
+        <th scope="col">
             <xsl:value-of select="@name"/>
         </th>
     </xsl:template>

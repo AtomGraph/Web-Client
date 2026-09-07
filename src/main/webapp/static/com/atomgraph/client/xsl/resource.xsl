@@ -62,16 +62,16 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
 
             <xsl:if test="not($leaf)">
-                <span class="divider">/</span>
+                <span class="msi sm" aria-hidden="true">chevron_right</span>
             </xsl:if>
         </li>
     </xsl:template>
-    
+
     <!-- DEFAULT MODE -->
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="class" select="'block'" as="xs:string?"/>
 
         <div>
             <xsl:if test="$id">
@@ -116,7 +116,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:BlockHeader">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'well header'" as="xs:string?"/>
+        <xsl:param name="class" select="'block-header'" as="xs:string?"/>
 
         <div>
             <xsl:if test="$id">
@@ -127,16 +127,18 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <xsl:apply-templates select="." mode="ac:Depiction"/>
-            
+
             <xsl:apply-templates select="." mode="ac:BlockActions"/>
 
             <h2>
                 <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
             </h2>
-            
-            <p>
-                <xsl:apply-templates select="." mode="ac:description"/>
-            </p>
+
+            <xsl:where-populated>
+                <p class="description">
+                    <xsl:apply-templates select="." mode="ac:description"/>
+                </p>
+            </xsl:where-populated>
 
             <xsl:apply-templates select="." mode="ac:ResourceTypes"/>
         </div>
@@ -159,24 +161,22 @@ exclude-result-prefixes="#all">
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
     <xsl:template match="*[@rdf:about]" mode="ac:BlockActions" priority="1">
-        <div class="pull-right">
+        <div class="actions">
+            <a class="ldhc-btn in-neutral ap-outline sz-sm" href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)), 'mode': '&ac;EditMode' })}">
+                <span class="msi sm" aria-hidden="true">edit</span>
+                <xsl:value-of>
+                    <xsl:apply-templates select="key('resources', 'edit', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                </xsl:value-of>
+            </a>
+
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
-                <button class="btn btn-primary btn-delete" type="submit">
+                <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit" data-confirm="{ac:label(key('resources', 'confirm-delete', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri))))}">
+                    <span class="msi sm" aria-hidden="true">delete</span>
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
+                        <xsl:apply-templates select="key('resources', 'delete', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
                     </xsl:value-of>
-                    <xsl:text use-when="system-property('xsl:product-name') eq 'SaxonJS'">Delete</xsl:text>
                 </button>
             </form>
-        </div>
-
-        <div class="pull-right">
-            <a class="btn btn-primary" href="{ac:build-uri((), map{ 'uri': string(ac:document-uri(@rdf:about)), 'mode': '&ac;EditMode' })}">
-                <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                </xsl:value-of>
-                <xsl:text use-when="system-property('xsl:product-name') eq 'SaxonJS'">Edit</xsl:text>
-            </a>
         </div>
     </xsl:template>
     
@@ -194,8 +194,8 @@ exclude-result-prefixes="#all">
         </xsl:variable>
             
         <xsl:for-each select="$image-uris[1]">
-            <a href="{$link/@href}" title="{ac:label($this)}">
-                <img src="{.}" alt="{ac:label($this)}" class="img-polaroid"/>
+            <a class="depiction" href="{$link/@href}" title="{ac:label($this)}">
+                <img src="{.}" alt="{ac:label($this)}"/>
             </a>
         </xsl:for-each>
     </xsl:template>
@@ -207,17 +207,19 @@ exclude-result-prefixes="#all">
         <xsl:variable name="this" select="." as="element()"/>
 
         <xsl:for-each select="$image-uris[1]">
-            <img src="{.}" alt="{ac:label($this)}" class="img-polaroid"/>
+            <span class="depiction">
+                <img src="{.}" alt="{ac:label($this)}"/>
+            </span>
         </xsl:for-each>
     </xsl:template>
     
     <!-- TYPE MODE -->
         
     <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="ac:ResourceTypes" priority="1">
-        <ul class="inline">
+        <ul class="types">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{ac:langs()[1]}"/>
-                
+
                 <li>
                     <xsl:apply-templates select="."/>
                 </li>
@@ -232,7 +234,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:PropertyEditor">
         <xsl:variable name="definitions" as="document-node()">
             <xsl:document>
-                <dl class="dl-horizontal">
+                <dl class="properties">
                     <xsl:apply-templates select="*" mode="#current">
                         <xsl:sort select="ac:property-label(.)" order="ascending" lang="{ac:langs()[1]}"/>
                         <xsl:sort select="if (exists((text(), @rdf:resource, @rdf:nodeID))) then ac:object-label((text(), @rdf:resource, @rdf:nodeID)[1]) else()" order="ascending" lang="{ac:langs()[1]}"/>
@@ -308,7 +310,7 @@ exclude-result-prefixes="#all">
                 <xsl:value-of select="ac:label(.)"/>
             </legend>
             <xsl:if test="ac:description(.)">
-                <p class="text-info">
+                <p class="description">
                     <xsl:apply-templates select="." mode="ac:description"/>
                 </p>
             </xsl:if>
@@ -322,16 +324,21 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Violation"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="ac:Violation" priority="1">
-        <xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
+        <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
 
-        <div>
+        <div role="alert">
             <xsl:if test="$class">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
-            
-            <xsl:value-of>
-                <xsl:apply-templates select="." mode="ac:label"/>
-            </xsl:value-of>
+
+            <span class="ldhc-alert-ic"><span class="msi outline" aria-hidden="true">error</span></span>
+            <div class="ldhc-alert-body">
+                <span class="ldhc-alert-text">
+                    <xsl:value-of>
+                        <xsl:apply-templates select="." mode="ac:label"/>
+                    </xsl:value-of>
+                </span>
+            </div>
         </div>
     </xsl:template>
     

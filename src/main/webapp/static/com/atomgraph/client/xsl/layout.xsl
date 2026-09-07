@@ -55,7 +55,7 @@ exclude-result-prefixes="#all">
 
     <xsl:include href="sparql.xsl"/>
 
-    <xsl:output method="xhtml" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" media-type="application/xhtml+xml"/>
+    <xsl:output method="xhtml" html-version="5" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml"/>
     
     <xsl:param name="ldt:base" as="xs:anyURI?"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
@@ -148,70 +148,63 @@ exclude-result-prefixes="#all">
         <body>
             <xsl:apply-templates select="." mode="ac:Header"/>
 
-            <div class="container-fluid">
-                <div class="row-fluid">
-                    <xsl:apply-templates select="." mode="ac:Main"/>
+            <div class="content">
+                <xsl:apply-templates select="." mode="ac:Main"/>
 
-                    <xsl:apply-templates select="." mode="ac:Aside"/>
-                </div>
+                <xsl:apply-templates select="." mode="ac:Aside"/>
             </div>
-    
+
             <xsl:apply-templates select="." mode="ac:Footer"/>
         </body>
     </xsl:template>
-    
+
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Header">
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container-fluid">
-                    <button class="btn btn-navbar" onclick="if ($('#collapsing-top-navbar').hasClass('in')) $('#collapsing-top-navbar').removeClass('collapse in').height(0); else $('#collapsing-top-navbar').addClass('collapse in').height('auto');">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
+        <div class="header">
+            <xsl:if test="$ldt:base and doc-available($ldt:base)">
+                <a class="brand" href="{$ldt:base}">
+                    <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
+                        <img src="{foaf:logo/@rdf:resource}">
+                            <xsl:attribute name="alt">
+                                <xsl:value-of>
+                                    <xsl:apply-templates select="." mode="ac:label"/>
+                                </xsl:value-of>
+                            </xsl:attribute>
+                        </img>
+                    </xsl:for-each>
+                </a>
+            </xsl:if>
 
-                    <xsl:if test="$ldt:base and doc-available($ldt:base)">
-                        <a class="brand" href="{$ldt:base}">
-                            <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
-                                <img src="{foaf:logo/@rdf:resource}">
-                                    <xsl:attribute name="alt">
-                                        <xsl:value-of>
-                                            <xsl:apply-templates select="." mode="ac:label"/>
-                                        </xsl:value-of>
-                                    </xsl:attribute>
-                                </img>
-                            </xsl:for-each>
-                        </a>
-                    </xsl:if>
-
-                    <div id="collapsing-top-navbar" class="nav-collapse collapse">
-                        <form action="" method="get" class="navbar-form pull-left" accept-charset="UTF-8">
-                            <div class="input-append">
-                                <input type="text" name="uri" class="input-xxlarge">
-                                    <xsl:if test="base-uri()">
-                                        <xsl:attribute name="value" select="base-uri()"/>
-                                    </xsl:if>
-                                </input>
-                                <button type="submit" class="btn btn-primary">Go</button>
-                            </div>
-                        </form>
-
-                        <ul class="nav pull-right">
-                            <li>
-                                <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">Query editor</a>
-                            </li>
-                        </ul>
+            <form action="" method="get" class="uri-form" accept-charset="UTF-8">
+                <div class="ldhc-field">
+                    <div class="ldhc-field-box sz-md">
+                        <span class="ldhc-adorn"><span class="msi outline sm" aria-hidden="true">public</span></span>
+                        <input type="text" name="uri">
+                            <xsl:if test="base-uri()">
+                                <xsl:attribute name="value" select="base-uri()"/>
+                            </xsl:if>
+                        </input>
                     </div>
                 </div>
-            </div>
+                <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
+                    <xsl:apply-templates select="key('resources', 'go', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                </button>
+            </form>
 
-            <xsl:apply-templates select="." mode="ac:ActionBar"/>
+            <ul class="nav">
+                <li>
+                    <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">
+                        <xsl:apply-templates select="key('resources', 'query-editor', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                    </a>
+                </li>
+            </ul>
         </div>
+
+        <xsl:apply-templates select="." mode="ac:ActionBar"/>
     </xsl:template>
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:ActionBar">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'navbar-inner action-bar'" as="xs:string?"/>
+        <xsl:param name="class" select="'action-bar'" as="xs:string?"/>
 
         <div>
             <xsl:if test="$id">
@@ -221,22 +214,18 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <div class="container-fluid">
-                <div class="row-fluid">
-                    <xsl:apply-templates select="." mode="ac:ActionBarLeft"/>
+            <xsl:apply-templates select="." mode="ac:ActionBarLeft"/>
 
-                    <xsl:apply-templates select="." mode="ac:ActionBarMain"/>
-                    
-                    <xsl:apply-templates select="." mode="ac:ActionBarRight"/>
-                </div>
-            </div>
+            <xsl:apply-templates select="." mode="ac:ActionBarMain"/>
+
+            <xsl:apply-templates select="." mode="ac:ActionBarRight"/>
         </div>
     </xsl:template>
-    
+
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:ActionBarLeft">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span2'" as="xs:string?"/>
-        
+        <xsl:param name="class" select="'ab-left'" as="xs:string?"/>
+
         <div>
             <xsl:if test="$id">
                 <xsl:attribute name="id" select="$id"/>
@@ -244,14 +233,14 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
-            
+
             <xsl:apply-templates select="." mode="ac:Create"/>
         </div>
     </xsl:template>
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:ActionBarMain">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span10'" as="xs:string?"/>
+        <xsl:param name="class" select="'ab-main'" as="xs:string?"/>
 
         <div>
             <xsl:if test="$id">
@@ -260,24 +249,23 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
-            
-            <xsl:apply-templates select="." mode="ac:MediaTypeList"/>
 
-            <xsl:apply-templates select="." mode="ac:HeaderActions"/>
+            <xsl:apply-templates select="." mode="ac:Breadcrumb"/>
 
             <xsl:apply-templates select="." mode="ac:ModeList"/>
 
-            <xsl:apply-templates select="." mode="ac:Breadcrumb"/>
+            <xsl:apply-templates select="." mode="ac:HeaderActions"/>
+
+            <xsl:apply-templates select="." mode="ac:MediaTypeList"/>
         </div>
     </xsl:template>
 
     <xsl:template match="srx:sparql" mode="ac:Breadcrumb"/>
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:ActionBarRight"/>
-    
+
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Footer">
-        <div class="footer text-center">
-            <hr/>
+        <div class="footer">
             <p>
                 <xsl:sequence select="format-date(current-date(), '[Y]', ac:langs()[1], (), ())"/>.
                 Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
@@ -312,19 +300,17 @@ exclude-result-prefixes="#all">
     
     <!-- STYLE  -->
     
+    <!-- design-system tokens and core kit (core.css imports controls/overlays/surfaces), then Web-Client's own browser chrome -->
     <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Style">
-        <link href="{resolve-uri('static/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
-        <link href="{resolve-uri('static/css/bootstrap-responsive.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
-        <link href="{resolve-uri('static/com/atomgraph/client/css/bootstrap.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/com/atomgraph/client/css/colors_and_type.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/com/atomgraph/client/css/core.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+        <link href="{resolve-uri('static/com/atomgraph/client/css/client.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
-    
+
     <!-- SCRIPT  -->
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Script">
-        <script type="text/javascript" src="{resolve-uri('static/js/jquery.min.js', $ac:contextUri)}" defer="defer"></script>
-        <script type="text/javascript" src="{resolve-uri('static/js/bootstrap.js', $ac:contextUri)}" defer="defer"></script>
-        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/UUID.js', $ac:contextUri)}" defer="defer"></script>
-        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/jquery.js', $ac:contextUri)}" defer="defer"></script>
+        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/client.js', $ac:contextUri)}" defer="defer"></script>
     </xsl:template>
 
     <!-- MAIN  -->
@@ -332,7 +318,7 @@ exclude-result-prefixes="#all">
     <!-- always show errors in block  -->
     <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:Main" priority="1">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span12'" as="xs:string?"/>
+        <xsl:param name="class" select="'main'" as="xs:string?"/>
 
         <div>
             <xsl:if test="$id">
@@ -348,7 +334,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Main">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span8'" as="xs:string?"/>
+        <xsl:param name="class" select="'main'" as="xs:string?"/>
 
         <div>
             <xsl:if test="$id">
@@ -386,25 +372,25 @@ exclude-result-prefixes="#all">
     <!-- NAVBAR ACTIONS -->
     
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:HeaderActions" priority="1">
-        <div class="pull-right">
-            <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri()))})}?_method=DELETE" method="post">
-                <button class="btn btn-delete" type="submit">
+        <div class="actions">
+            <xsl:if test="not($ac:mode = '&ac;EditMode')">
+                <a class="ldhc-btn in-neutral ap-outline sz-sm" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
+                    <span class="msi sm" aria-hidden="true">edit</span>
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;Delete', document(ac:document-uri('&ac;')))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', 'edit', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                    </xsl:value-of>
+                </a>
+            </xsl:if>
+
+            <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri()))})}?_method=DELETE" method="post">
+                <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit" data-confirm="{ac:label(key('resources', 'confirm-delete', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri))))}">
+                    <span class="msi sm" aria-hidden="true">delete</span>
+                    <xsl:value-of>
+                        <xsl:apply-templates select="key('resources', 'delete', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
                     </xsl:value-of>
                 </button>
             </form>
         </div>
-
-        <xsl:if test="not($ac:mode = '&ac;EditMode')">
-            <div class="pull-right">
-                <a class="btn" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
-                    <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&ac;EditMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
-                    </xsl:value-of>
-                </a>
-            </div>
-        </xsl:if>
     </xsl:template>
     
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:HeaderActions"/>
@@ -421,16 +407,15 @@ exclude-result-prefixes="#all">
         <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI"/>
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
-        <div class="btn-group pull-right">
-            <button type="button" class="btn dropdown-toggle" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
+        <details class="menu">
+            <summary class="ldhc-btn in-neutral ap-outline sz-sm" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
                 <xsl:value-of>
                     <xsl:apply-templates select="key('resources', '&ac;Mode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                 </xsl:value-of>
-                <xsl:text> </xsl:text>
-                <span class="caret"></span>
-            </button>
+                <span class="msi sm" aria-hidden="true">expand_more</span>
+            </summary>
 
-            <ul class="dropdown-menu">
+            <ul class="menu-list">
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
                     <xsl:apply-templates select="." mode="ac:ModeListItem">
@@ -439,7 +424,7 @@ exclude-result-prefixes="#all">
                     </xsl:apply-templates>
                 </xsl:for-each>
             </ul>
-        </div>
+        </details>
     </xsl:template>
     
     <xsl:template match="srx:sparql" mode="ac:ModeList"/>
@@ -447,11 +432,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[@rdf:about]" mode="ac:ModeListItem">
         <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI" tunnel="yes"/>
         <xsl:param name="active" as="xs:boolean"/>
-        <xsl:param name="class" select="if ($active) then 'active' else ()" as="xs:string?"/>
+        <xsl:param name="class" select="if ($active) then 'is-active' else ()" as="xs:string?"/>
 
         <li>
             <xsl:if test="$class">
                 <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+            <xsl:if test="$active">
+                <xsl:attribute name="aria-current" select="'true'"/>
             </xsl:if>
 
             <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path($base-uri)), 'mode': string(@rdf:about) })}" title="{ac:label(.)}">
@@ -468,9 +456,9 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="ac:BlockHeader" priority="1">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'alert alert-error well'" as="xs:string?"/>
+        <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
 
-        <div>
+        <div role="alert">
             <xsl:if test="$id">
                 <xsl:attribute name="id" select="$id"/>
             </xsl:if>
@@ -478,20 +466,27 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <h2>
-                <xsl:value-of>
-                    <xsl:apply-templates select="." mode="ac:label"/>
-                </xsl:value-of>
-            </h2>
+            <span class="ldhc-alert-ic"><span class="msi outline" aria-hidden="true">error</span></span>
+            <div class="ldhc-alert-body">
+                <h2 class="ldhc-alert-text">
+                    <xsl:value-of>
+                        <xsl:apply-templates select="." mode="ac:label"/>
+                    </xsl:value-of>
+                </h2>
+            </div>
         </div>
     </xsl:template>
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->
         
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:MediaTypeList" priority="1">
-        <div class="btn-group pull-right">
-            <div class="btn dropdown-toggle">Export <span class="caret"></span></div>
-            <ul class="dropdown-menu">
+        <details class="menu">
+            <summary class="ldhc-btn in-neutral ap-outline sz-sm">
+                <span class="msi sm" aria-hidden="true">download</span>
+                <xsl:apply-templates select="key('resources', 'export', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <span class="msi sm" aria-hidden="true">expand_more</span>
+            </summary>
+            <ul class="menu-list">
                 <li>
                     <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
                 </li>
@@ -499,7 +494,7 @@ exclude-result-prefixes="#all">
                     <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'text/turtle' })}">Turtle</a>
                 </li>
             </ul>
-        </div>
+        </details>
     </xsl:template>
 
     <xsl:template match="*" mode="ac:MediaTypeList"/>
@@ -510,7 +505,7 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF" mode="ac:Aside">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span4'" as="xs:string?"/>
+        <xsl:param name="class" select="'aside'" as="xs:string?"/>
         
         <div>
             <xsl:if test="$id">

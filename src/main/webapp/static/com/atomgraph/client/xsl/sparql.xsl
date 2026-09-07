@@ -59,7 +59,7 @@ LIMIT 100</xsl:param>
 
     <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="ac:Main" priority="2">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'span8'" as="xs:string?"/>
+        <xsl:param name="class" select="'main'" as="xs:string?"/>
         
         <div>
             <xsl:if test="$id">
@@ -95,7 +95,7 @@ LIMIT 100</xsl:param>
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
-        <xsl:param name="class" select="'form-horizontal'" as="xs:string?"/>
+        <xsl:param name="class" select="'query-form'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
         <xsl:param name="uri" as="xs:anyURI?"/>
@@ -119,14 +119,20 @@ LIMIT 100</xsl:param>
             </xsl:if>
         
             <fieldset>
-                <label for="endpoint-uri">Endpoint</label>
-                <input type="text" id="endpoint-uri" name="endpoint" class="input-xxlarge">
-                    <xsl:if test="$endpoint">
-                        <xsl:attribute name="value" select="$endpoint"/>
-                    </xsl:if>
-                </input>
-        
-                <textarea id="query-string" name="query" class="span12" rows="15">
+                <label class="ldhc-label" for="endpoint-uri">
+                    <xsl:apply-templates select="key('resources', 'endpoint', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                </label>
+                <div class="ldhc-field">
+                    <div class="ldhc-field-box sz-md">
+                        <input type="text" id="endpoint-uri" name="endpoint">
+                            <xsl:if test="$endpoint">
+                                <xsl:attribute name="value" select="$endpoint"/>
+                            </xsl:if>
+                        </input>
+                    </div>
+                </div>
+
+                <textarea id="query-string" name="query" rows="15">
                     <xsl:choose>
                         <xsl:when test="$query">
                             <xsl:sequence select="$query"/>
@@ -155,7 +161,10 @@ LIMIT 100</xsl:param>
                         <input type="hidden" name="mode" value="{.}"/>
                     </xsl:for-each>
                     
-                    <button type="submit" class="btn btn-primary">Query</button>
+                    <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
+                        <span class="msi sm" aria-hidden="true">play_arrow</span>
+                        <xsl:apply-templates select="key('resources', 'query', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                    </button>
                 </div>
             </fieldset>
         </form>
