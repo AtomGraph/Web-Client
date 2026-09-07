@@ -285,6 +285,13 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
+            <!-- name the resource whose statements follow, so stacked resources in one form stay apart -->
+            <xsl:if test="$legend">
+                <legend>
+                    <xsl:value-of select="ac:label(.)"/>
+                </legend>
+            </xsl:if>
+
             <xsl:apply-templates select="$violations" mode="ac:Violation"/>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>

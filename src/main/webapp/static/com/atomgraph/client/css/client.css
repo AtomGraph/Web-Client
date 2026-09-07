@@ -105,13 +105,26 @@ fieldset .description { margin: 0 0 var(--sp-4); color: var(--fg-2); }
 .statement { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; column-gap: var(--sp-4); align-items: start; padding: var(--sp-2) 0; border-bottom: 1px solid var(--border-default); }
 .statement:last-of-type { border-bottom: 0; }
 .statement > .ldhc-label { padding-top: 6px; overflow-wrap: break-word; min-width: 0; }
-.statement > .values { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); min-width: 0; }
+/* nowrap keeps the type tag and the statement actions on the field's own line; the field shrinks instead */
+.statement > .values { grid-column: 2; display: flex; flex-wrap: nowrap; align-items: center; gap: var(--sp-2); min-width: 0; }
 .statement > .ldhc-label ~ .values { grid-column: auto; }
 .statement > .annotations { grid-column: 2; display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-1); }
-.statement .ldhc-field { flex: 0 1 340px; min-width: 0; }
+.statement .ldhc-field { flex: 0 1 340px; min-width: 8rem; }
+.statement .values > .ldhc-tag, .statement .values > .ldhc-iconbtn { flex-shrink: 0; }
 .statement .ldhc-field:has(textarea) { flex: 1 1 100%; }
 .statement.is-invalid .ldhc-field-box { border-color: var(--danger-500); }
 .annotations .ldhc-field { width: 12ch; flex: 0 0 auto; }
+
+/* statement actions: the ghost icon buttons get a resting affordance here - without hover chrome around
+   them, a bare minus glyph reads as punctuation rather than a control */
+.statement .values > .ldhc-iconbtn { border: 1px solid var(--border-default); color: var(--fg-hint); }
+
+/* an inlined blank-node resource nests its own fieldset inside the value column: recess it so its rows
+   read as one contained sub-form. The nesting row wraps (the fieldset takes the full row), plain value
+   rows stay nowrap */
+.statement > .values:has(> fieldset) { flex-wrap: wrap; }
+.statement > .values > fieldset { flex: 1 1 100%; margin: 0; padding: var(--sp-3) var(--sp-4); background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--r-md); }
+.statement > .values > fieldset legend { font-size: var(--fs-base); }
 
 .form-actions { display: flex; justify-content: flex-end; gap: var(--sp-2); padding: var(--sp-4) 0 0; }
 
