@@ -139,5 +139,14 @@ fieldset .description { margin: 0 0 var(--sp-4); color: var(--fg-2); }
 /* ---------- map ---------- */
 .map-canvas { width: 100%; height: 480px; border-radius: var(--r-md); background: var(--surface-2); }
 
+/* map mode is a full-bleed canvas: the page becomes a viewport-high column and the map takes every
+   pixel below the bars; the footer yields */
+.map-view { display: flex; flex-direction: column; height: 100vh; }
+.map-view .header, .map-view .action-bar { flex-shrink: 0; }
+.map-view .content { flex: 1 1 auto; min-height: 0; max-width: none; margin: 0; padding: 0; }
+.map-view .main { display: flex; min-width: 0; }
+.map-view .map-canvas { flex: 1 1 auto; height: auto; border-radius: 0; }
+.map-view .footer { display: none; }
+
 /* ---------- alerts fill their column ---------- */
 .main > .ldhc-alert { margin-bottom: var(--sp-4); }

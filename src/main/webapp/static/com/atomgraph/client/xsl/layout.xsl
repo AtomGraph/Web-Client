@@ -144,8 +144,21 @@ exclude-result-prefixes="#all">
         </head>
     </xsl:template>
 
+    <!-- the map is a full-bleed canvas: it takes every pixel below the bars (client.css keys on the class) -->
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;MapMode']" mode="xhtml:Body" priority="1">
+        <xsl:next-match>
+            <xsl:with-param name="class" select="'map-view'"/>
+        </xsl:next-match>
+    </xsl:template>
+
     <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Body">
+        <xsl:param name="class" as="xs:string?"/>
+
         <body>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
             <xsl:apply-templates select="." mode="ac:Header"/>
 
             <div class="content">
