@@ -17,6 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
+    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
@@ -533,7 +534,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
             
             <caption class="ldhc-vh">
-                <xsl:apply-templates select="key('resources', 'query-results', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;query-results', ac:translations())" mode="ac:label"/>
             </caption>
 
             <xsl:apply-templates mode="#current"/>
@@ -846,7 +847,7 @@ exclude-result-prefixes="#all">
                 <xsl:if test="$cloneable">
                     <button type="button" class="ldhc-iconbtn sz-xs in-accent ap-ghost btn-add">
                         <xsl:attribute name="title">
-                            <xsl:apply-templates select="key('resources', 'add-stmt', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                            <xsl:apply-templates select="key('resources', '&translations;add-stmt', ac:translations())" mode="ac:label"/>
                         </xsl:attribute>
 
                         <span class="msi sm" aria-hidden="true">add</span>
@@ -855,7 +856,7 @@ exclude-result-prefixes="#all">
                 <xsl:if test="not($required)">
                     <button type="button" class="ldhc-iconbtn sz-xs in-destructive ap-ghost btn-remove-property">
                         <xsl:attribute name="title">
-                            <xsl:apply-templates select="key('resources', 'remove-stmt', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                            <xsl:apply-templates select="key('resources', '&translations;remove-stmt', ac:translations())" mode="ac:label"/>
                         </xsl:attribute>
 
                         <span class="msi sm" aria-hidden="true">remove</span>
@@ -918,7 +919,7 @@ exclude-result-prefixes="#all">
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="ldhc-tag sz-sm em-quiet">
-                        <xsl:apply-templates select="key('resources', 'literal', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&translations;literal', ac:translations())" mode="ac:label"/>
                     </span>
                 </xsl:otherwise>
             </xsl:choose>
@@ -997,7 +998,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($type = 'hidden')">
             <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', 'literal', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;literal', ac:translations())" mode="ac:label"/>
             </span>
         </xsl:if>
     </xsl:template>
@@ -1045,7 +1046,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($type = 'hidden')">
             <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', 'resource', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;resource', ac:translations())" mode="ac:label"/>
             </span>
         </xsl:if>
     </xsl:template>
@@ -1063,7 +1064,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <xsl:attribute name="title">
-                <xsl:apply-templates select="key('resources', 'language-tag', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;language-tag', ac:translations())" mode="ac:label"/>
             </xsl:attribute>
 
             <div class="ldhc-field">
@@ -1084,7 +1085,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($type = 'hidden')">
             <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', 'language-tag', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;language-tag', ac:translations())" mode="ac:label"/>
             </span>
         </xsl:if>
     </xsl:template>
@@ -1164,7 +1165,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($type = 'hidden')">
             <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', 'resource', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;resource', ac:translations())" mode="ac:label"/>
             </span>
         </xsl:if>
     </xsl:template>

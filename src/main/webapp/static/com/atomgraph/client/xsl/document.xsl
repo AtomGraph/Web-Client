@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
+    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
@@ -127,7 +128,7 @@ exclude-result-prefixes="#all">
         <div class="form-actions">
             <button type="submit" class="{$button-class}">
                 <span class="msi sm" aria-hidden="true">save</span>
-                <xsl:apply-templates select="key('resources', 'save', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;save', ac:translations())" mode="ac:label"/>
             </button>
         </div>
     </xsl:template>

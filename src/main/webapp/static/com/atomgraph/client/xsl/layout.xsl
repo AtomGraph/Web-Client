@@ -17,6 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY a      "https://w3id.org/atomgraph/core#">
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
+    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -186,14 +187,14 @@ exclude-result-prefixes="#all">
                     </div>
                 </div>
                 <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
-                    <xsl:apply-templates select="key('resources', 'go', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                    <xsl:apply-templates select="key('resources', '&translations;go', ac:translations())" mode="ac:label"/>
                 </button>
             </form>
 
             <ul class="nav">
                 <li>
                     <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">
-                        <xsl:apply-templates select="key('resources', 'query-editor', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&translations;query-editor', ac:translations())" mode="ac:label"/>
                     </a>
                 </li>
             </ul>
@@ -377,16 +378,19 @@ exclude-result-prefixes="#all">
                 <a class="ldhc-btn in-neutral ap-outline sz-sm" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
                     <span class="msi sm" aria-hidden="true">edit</span>
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', 'edit', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&translations;edit', ac:translations())" mode="ac:label"/>
                     </xsl:value-of>
                 </a>
             </xsl:if>
 
             <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri()))})}?_method=DELETE" method="post">
-                <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit" data-confirm="{ac:label(key('resources', 'confirm-delete', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri))))}">
+                <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit">
+                    <xsl:attribute name="data-confirm">
+                        <xsl:apply-templates select="key('resources', '&translations;confirm-delete', ac:translations())" mode="ac:label"/>
+                    </xsl:attribute>
                     <span class="msi sm" aria-hidden="true">delete</span>
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', 'delete', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&translations;delete', ac:translations())" mode="ac:label"/>
                     </xsl:value-of>
                 </button>
             </form>
@@ -483,7 +487,7 @@ exclude-result-prefixes="#all">
         <details class="menu">
             <summary class="ldhc-btn in-neutral ap-outline sz-sm">
                 <span class="msi sm" aria-hidden="true">download</span>
-                <xsl:apply-templates select="key('resources', 'export', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;export', ac:translations())" mode="ac:label"/>
                 <span class="msi sm" aria-hidden="true">expand_more</span>
             </summary>
             <ul class="menu-list">

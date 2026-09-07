@@ -16,6 +16,7 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
+    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
@@ -142,7 +143,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <caption class="ldhc-vh">
-                <xsl:apply-templates select="key('resources', 'resources', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', '&translations;resources', ac:translations())" mode="ac:label"/>
             </caption>
             <thead>
                 <tr>

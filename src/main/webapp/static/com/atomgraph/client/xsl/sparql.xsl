@@ -17,6 +17,7 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY a      "https://w3id.org/atomgraph/core#">
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
+    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
@@ -120,7 +121,7 @@ LIMIT 100</xsl:param>
         
             <fieldset>
                 <label class="ldhc-label" for="endpoint-uri">
-                    <xsl:apply-templates select="key('resources', 'endpoint', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                    <xsl:apply-templates select="key('resources', '&translations;endpoint', ac:translations())" mode="ac:label"/>
                 </label>
                 <div class="ldhc-field">
                     <div class="ldhc-field-box sz-md">
@@ -163,7 +164,7 @@ LIMIT 100</xsl:param>
                     
                     <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
                         <span class="msi sm" aria-hidden="true">play_arrow</span>
-                        <xsl:apply-templates select="key('resources', 'query', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', '&translations;query', ac:translations())" mode="ac:label"/>
                     </button>
                 </div>
             </fieldset>

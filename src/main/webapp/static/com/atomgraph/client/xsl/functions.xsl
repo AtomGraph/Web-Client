@@ -117,6 +117,13 @@ exclude-result-prefixes="#all"
         <xsl:sequence select="((for $i in 1 to count($langs) return if (lang($langs[$i], $value)) then $i else ())[1], count($langs) + 1)[1]"/>
     </xsl:function>
 
+    <!-- the UI label catalog. The canonical URI is location-mapped to the bundled copy (prefix-mapping.n3), so
+         resolution stays local like the system ontologies'; importing layers override this function to resolve
+         the catalog their own way (e.g. a same-origin URL in the browser) -->
+    <xsl:function name="ac:translations" as="document-node()">
+        <xsl:sequence select="document('https://w3id.org/atomgraph/client/xsl/translations.rdf')"/>
+    </xsl:function>
+
     <xsl:function name="ac:label" as="xs:string?">
         <xsl:param name="resource" as="element()"/>
 

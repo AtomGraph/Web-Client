@@ -44,4 +44,24 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="(dct:description[not(@xml:lang)], dct:description)[1]/text()"/>
     </xsl:template>
     
+    <!-- FORM CONTROLS -->
+
+    <!-- a description is multi-line prose whatever its current length -->
+    <xsl:template match="dct:description/text()" mode="ac:FormControl">
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:param name="rows" select="3" as="xs:integer"/>
+
+        <div class="ldhc-field">
+            <div class="ldhc-field-box sz-sm">
+                <textarea name="ol" id="{generate-id()}" rows="{$rows}">
+                    <xsl:value-of select="."/>
+                </textarea>
+            </div>
+        </div>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
+        </xsl:if>
+    </xsl:template>
+
 </xsl:stylesheet>
