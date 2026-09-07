@@ -133,9 +133,12 @@ exclude-result-prefixes="#all">
 
     <!-- LANGUAGE TAG -->
 
-    <!-- the tag a value carries, shown wherever a skin renders several languages side by side. Nothing generic to show:
-         a skin that has a badge for it overrides this, the built-in attribute rule would otherwise leak the bare code -->
-    <xsl:template match="@xml:lang" mode="ac:lang-tag"/>
+    <!-- the tag a value carries, shown wherever several languages of one value render side by side -->
+    <xsl:template match="@xml:lang" mode="ac:lang-tag">
+        <span class="ldhc-tag sz-sm em-quiet">
+            <xsl:value-of select="."/>
+        </span>
+    </xsl:template>
 
     <!-- DEFINITIONS -->
     
@@ -422,7 +425,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype[starts-with(., '&xsd;')]" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
-        <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
+        <xsl:param name="class" select="'ldhc-tag sz-sm em-quiet'" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
@@ -443,7 +446,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
-        <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
+        <xsl:param name="class" select="'ldhc-tag sz-sm em-quiet'" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
@@ -516,7 +519,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="srx:sparql" mode="xhtml:Table">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" as="xs:string?"/>
-        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
+        <xsl:param name="class" select="'results-table'" as="xs:string?"/>
         
         <table>
             <xsl:if test="$id">
@@ -772,6 +775,394 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="title" select="$title"/>
             <xsl:with-param name="value" select="."/>
         </xsl:call-template>
+    </xsl:template>
+
+    <!-- PROPERTY EDITOR -->
+
+    <xsl:template match="text()[../@xml:lang]" mode="xhtml:DefinitionDescription" priority="1">
+        <dd>
+            <xsl:apply-templates select="../@xml:lang" mode="ac:lang-tag"/>
+
+            <xsl:apply-templates select="."/>
+        </dd>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:PropertyEditor">
+        <xsl:apply-templates select="." mode="xhtml:DefinitionTerm"/>
+
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription"/>
+    </xsl:template>
+
+    <!-- FORM CONTROLS -->
+
+    <!-- @rdf:about | @rdf:nodeID -->
+    <xsl:template match="*[*]/@rdf:*[local-name() = ('about', 'nodeID')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'hidden'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="xhtml:Input">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <!-- one statement: predicate label, value controls, term annotations -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="ac:FormControl">
+        <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:param name="violations" as="element()*"/>
+        <xsl:param name="error" select="$violations/spin:violationPath/@rdf:resource = $this" as="xs:boolean"/>
+        <xsl:param name="class" select="concat('statement', if ($error) then ' is-invalid' else ())" as="xs:string?"/>
+        <xsl:param name="label" as="xs:string?">
+            <xsl:apply-templates select="." mode="ac:property-label"/>
+        </xsl:param>
+        <xsl:param name="show-label" select="true()" as="xs:boolean"/>
+        <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
+
+        <div>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+            <xsl:apply-templates select="." mode="xhtml:Input">
+                <xsl:with-param name="type" select="'hidden'"/>
+            </xsl:apply-templates>
+            <xsl:if test="$show-label">
+                <label class="ldhc-label" for="{$for}" title="{$this}">
+                    <xsl:sequence select="$label"/>
+                </label>
+            </xsl:if>
+
+            <div class="values">
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
+
+                <xsl:if test="$cloneable">
+                    <button type="button" class="ldhc-iconbtn sz-xs in-accent ap-ghost btn-add">
+                        <xsl:attribute name="title">
+                            <xsl:apply-templates select="key('resources', 'add-stmt', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        </xsl:attribute>
+
+                        <span class="msi sm" aria-hidden="true">add</span>
+                    </button>
+                </xsl:if>
+                <xsl:if test="not($required)">
+                    <button type="button" class="ldhc-iconbtn sz-xs in-destructive ap-ghost btn-remove-property">
+                        <xsl:attribute name="title">
+                            <xsl:apply-templates select="key('resources', 'remove-stmt', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                        </xsl:attribute>
+
+                        <span class="msi sm" aria-hidden="true">remove</span>
+                    </button>
+                </xsl:if>
+            </div>
+            <xsl:if test="@xml:lang | @rdf:datatype">
+                <div class="annotations">
+                    <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current"/>
+                </div>
+            </xsl:if>
+        </div>
+    </xsl:template>
+
+    <!-- literal inputs ride the field shell: the box carries the chrome, the input stays bare -->
+    <xsl:template match="text()" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:choose>
+            <xsl:when test="$type = 'hidden'">
+                <xsl:apply-templates select="." mode="xhtml:Input">
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <div class="ldhc-field">
+                    <div class="ldhc-field-box sz-sm">
+                        <xsl:apply-templates select="." mode="xhtml:Input">
+                            <xsl:with-param name="type" select="$type"/>
+                            <xsl:with-param name="id" select="$id"/>
+                            <xsl:with-param name="class" select="$class"/>
+                            <xsl:with-param name="disabled" select="$disabled"/>
+                        </xsl:apply-templates>
+                    </div>
+                </div>
+            </xsl:otherwise>
+        </xsl:choose>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="text()" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:choose>
+                <xsl:when test="../@rdf:datatype">
+                    <xsl:apply-templates select="../@rdf:datatype" mode="#current"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="ldhc-tag sz-sm em-quiet">
+                        <xsl:apply-templates select="key('resources', 'literal', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+                    </span>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="text()[string-length(.) &gt; 50]" mode="ac:FormControl">
+        <xsl:param name="name" select="'ol'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="style" as="xs:string?"/>
+        <xsl:param name="value" select="." as="xs:string?"/>
+        <xsl:param name="rows" as="xs:integer?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <div class="ldhc-field">
+            <div class="ldhc-field-box sz-sm">
+                <textarea name="{$name}">
+                    <xsl:if test="$id">
+                        <xsl:attribute name="id" select="$id"/>
+                    </xsl:if>
+                    <xsl:if test="$class">
+                        <xsl:attribute name="class" select="$class"/>
+                    </xsl:if>
+                    <xsl:if test="$style">
+                        <xsl:attribute name="style" select="$style"/>
+                    </xsl:if>
+                    <xsl:if test="$rows">
+                        <xsl:attribute name="rows" select="$rows"/>
+                    </xsl:if>
+                    <xsl:if test="$disabled">
+                        <xsl:attribute name="disabled" select="'disabled'"/>
+                    </xsl:if>
+
+                    <xsl:sequence select="$value"/>
+                </textarea>
+            </div>
+        </div>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- blank nodes that only have rdf:type xsd:string and no other properties become literal inputs -->
+    <xsl:template match="*[@rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="ac:FormControl" priority="2">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <div class="ldhc-field">
+            <div class="ldhc-field-box sz-sm">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:call-template>
+            </div>
+        </div>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="ac:ValueAnnotations" priority="2">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <span class="ldhc-tag sz-sm em-quiet">
+                <xsl:apply-templates select="key('resources', 'literal', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </span>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- @rdf:resource, @rdf:nodeID -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:choose>
+            <xsl:when test="$type = 'hidden'">
+                <xsl:apply-templates select="." mode="xhtml:Input">
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <div class="ldhc-field">
+                    <div class="ldhc-field-box sz-sm">
+                        <xsl:apply-templates select="." mode="xhtml:Input">
+                            <xsl:with-param name="type" select="$type"/>
+                            <xsl:with-param name="id" select="$id"/>
+                            <xsl:with-param name="class" select="$class"/>
+                            <xsl:with-param name="disabled" select="$disabled"/>
+                        </xsl:apply-templates>
+                    </div>
+                </div>
+            </xsl:otherwise>
+        </xsl:choose>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <span class="ldhc-tag sz-sm em-quiet">
+                <xsl:apply-templates select="key('resources', 'resource', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </span>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- @xml:lang: a narrow field beside the value it tags -->
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" select="'lang-field'" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <span>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+            <xsl:attribute name="title">
+                <xsl:apply-templates select="key('resources', 'language-tag', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </xsl:attribute>
+
+            <div class="ldhc-field">
+                <div class="ldhc-field-box sz-sm">
+                    <span class="ldhc-adorn"><span class="msi outline sm" aria-hidden="true">language</span></span>
+                    <xsl:apply-templates select="." mode="xhtml:Input">
+                        <xsl:with-param name="type" select="$type"/>
+                        <xsl:with-param name="id" select="$id"/>
+                        <xsl:with-param name="disabled" select="$disabled"/>
+                    </xsl:apply-templates>
+                </div>
+            </div>
+        </span>
+    </xsl:template>
+
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <span class="ldhc-tag sz-sm em-quiet">
+                <xsl:apply-templates select="key('resources', 'language-tag', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </span>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- @rdf:datatype -->
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="xhtml:Input">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <span class="ldhc-tag sz-sm em-quiet" title="{.}">
+                <xsl:value-of select="if (starts-with(., '&xsd;')) then 'xsd:' || substring-after(., '&xsd;') else ."/>
+            </span>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:* -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:FormControl" priority="1">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
+        <xsl:param name="template"  as="element()?"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:variable name="resource" select="key('resources', .)"/>
+
+        <xsl:choose>
+            <xsl:when test="$resource and not(. = $traversed-ids)">
+                <xsl:apply-templates select="." mode="xhtml:Input">
+                    <xsl:with-param name="type" select="'hidden'"/>
+                </xsl:apply-templates>
+
+                <xsl:apply-templates select="$resource" mode="#current">
+                    <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
+                </xsl:apply-templates>
+
+                <!-- restore subject context -->
+                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current">
+                    <xsl:with-param name="type" select="'hidden'"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                    <xsl:with-param name="type-label" select="$type-label"/>
+                </xsl:next-match>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:ValueAnnotations" priority="1">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <span class="ldhc-tag sz-sm em-quiet">
+                <xsl:apply-templates select="key('resources', 'resource', document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))" mode="ac:label"/>
+            </span>
+        </xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

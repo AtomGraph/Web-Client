@@ -34,13 +34,12 @@ xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
-xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <!-- BREADCRUMB  -->
 
-    <xsl:template match="*[@rdf:about]" mode="bs2:BreadCrumbListItem">
+    <xsl:template match="*[@rdf:about]" mode="ac:BreadcrumbItem">
         <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
 
         <xsl:choose>
@@ -82,9 +81,9 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="bs2:Header"/>
+            <xsl:apply-templates select="." mode="ac:BlockHeader"/>
 
-            <xsl:apply-templates select="." mode="bs2:PropertyList"/>
+            <xsl:apply-templates select="." mode="ac:PropertyEditor"/>
         </div>
     </xsl:template>
 
@@ -115,7 +114,7 @@ exclude-result-prefixes="#all">
     
     <!-- HEADER MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Header">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:BlockHeader">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'well header'" as="xs:string?"/>
 
@@ -127,9 +126,9 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="bs2:Image"/>
+            <xsl:apply-templates select="." mode="ac:Depiction"/>
             
-            <xsl:apply-templates select="." mode="bs2:Actions"/>
+            <xsl:apply-templates select="." mode="ac:BlockActions"/>
 
             <h2>
                 <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
@@ -139,7 +138,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="ac:description"/>
             </p>
 
-            <xsl:apply-templates select="." mode="bs2:TypeList"/>
+            <xsl:apply-templates select="." mode="ac:ResourceTypes"/>
         </div>
     </xsl:template>
     
@@ -159,7 +158,7 @@ exclude-result-prefixes="#all">
     
     <!-- ACTIONS MODE (Create/Edit buttons) -->
 
-    <xsl:template match="*[@rdf:about]" mode="bs2:Actions" priority="1">
+    <xsl:template match="*[@rdf:about]" mode="ac:BlockActions" priority="1">
         <div class="pull-right">
             <form action="{ac:document-uri(@rdf:about)}?_method=DELETE" method="post">
                 <button class="btn btn-primary btn-delete" type="submit">
@@ -181,11 +180,11 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Actions"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:BlockActions"/>
     
     <!-- IMAGE MODE -->
 
-    <xsl:template match="*[*][@rdf:about]" mode="bs2:Image">
+    <xsl:template match="*[*][@rdf:about]" mode="ac:Depiction">
         <xsl:variable name="image-uris" as="attribute()*">
             <xsl:apply-templates select="." mode="ac:image"/>
         </xsl:variable>
@@ -201,7 +200,7 @@ exclude-result-prefixes="#all">
         </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:nodeID]" mode="bs2:Image">
+    <xsl:template match="*[*][@rdf:nodeID]" mode="ac:Depiction">
         <xsl:variable name="image-uris" as="attribute()*">
             <xsl:apply-templates select="." mode="ac:image"/>
         </xsl:variable>
@@ -214,7 +213,7 @@ exclude-result-prefixes="#all">
     
     <!-- TYPE MODE -->
         
-    <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="bs2:TypeList" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID][rdf:type/@rdf:resource]" mode="ac:ResourceTypes" priority="1">
         <ul class="inline">
             <xsl:for-each select="rdf:type/@rdf:resource">
                 <xsl:sort select="ac:object-label(.)" order="ascending" lang="{ac:langs()[1]}"/>
@@ -226,11 +225,11 @@ exclude-result-prefixes="#all">
         </ul>
     </xsl:template>
 
-    <xsl:template match="*" mode="bs2:TypeList"/>
+    <xsl:template match="*" mode="ac:ResourceTypes"/>
 
     <!-- PROPERTY LIST MODE -->
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:PropertyList">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:PropertyEditor">
         <xsl:variable name="definitions" as="document-node()">
             <xsl:document>
                 <dl class="dl-horizontal">
@@ -242,28 +241,28 @@ exclude-result-prefixes="#all">
             </xsl:document>
         </xsl:variable>
 
-        <xsl:apply-templates select="$definitions" mode="bs2:PropertyListIdentity"/>
+        <xsl:apply-templates select="$definitions" mode="ac:PropertyGroups"/>
     </xsl:template>
     
-    <xsl:template match="@* | node()" mode="bs2:PropertyListIdentity">
+    <xsl:template match="@* | node()" mode="ac:PropertyGroups">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="xhtml:dt[xhtml:span/@title = preceding-sibling::xhtml:dt[1]/xhtml:span/@title]" mode="bs2:PropertyListIdentity" priority="1"/>
+    <xsl:template match="xhtml:dt[xhtml:span/@title = preceding-sibling::xhtml:dt[1]/xhtml:span/@title]" mode="ac:PropertyGroups" priority="1"/>
 
     <!-- FORM MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Form">
-        <xsl:apply-templates select="." mode="bs2:FormControl">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:ResourceForm">
+        <xsl:apply-templates select="." mode="ac:FormControl">
             <xsl:sort select="ac:label(.)"/>
         </xsl:apply-templates>
     </xsl:template>
     
     <!-- FORM CONTROL MODE -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:FormControl" use-when="system-property('xsl:product-name') = 'SAXON'">
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:FormControl" use-when="system-property('xsl:product-name') = 'SAXON'">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
@@ -280,7 +279,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <xsl:apply-templates select="$violations" mode="bs2:Violation"/>
+            <xsl:apply-templates select="$violations" mode="ac:Violation"/>
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
@@ -297,7 +296,7 @@ exclude-result-prefixes="#all">
     
     <!-- LEGEND -->
 
-    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="bs2:Legend" priority="1" use-when="system-property('xsl:product-name') = 'SAXON'">
+    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="ac:Legend" priority="1" use-when="system-property('xsl:product-name') = 'SAXON'">
         <xsl:param name="forClass" select="$ac:forClass" as="xs:anyURI"/>
 
         <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
@@ -316,13 +315,13 @@ exclude-result-prefixes="#all">
         </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Legend"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Legend"/>
 
     <!-- CONSTRAINT VIOLATION  -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="bs2:Violation"/>
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Violation"/>
 
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="bs2:Violation" priority="1">
+    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="ac:Violation" priority="1">
         <xsl:param name="class" select="'alert alert-error'" as="xs:string?"/>
 
         <div>

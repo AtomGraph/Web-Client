@@ -26,6 +26,7 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <xsl:template match="foaf:page/@rdf:resource | foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource">
@@ -106,6 +107,58 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[foaf:lastName/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="foaf:lastName/text()"/>
+    </xsl:template>
+
+    <!-- FORM CONTROLS -->
+
+    <xsl:template match="foaf:mbox/@rdf:resource[starts-with(., 'mailto:')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <div class="ldhc-field">
+            <div class="ldhc-field-box sz-sm">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
+                </xsl:call-template>
+            </div>
+        </div>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <div class="ldhc-field">
+            <div class="ldhc-field-box sz-sm">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
+                </xsl:call-template>
+            </div>
+        </div>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Label catalog for the stylesheets: UI strings rendered by Web-Client's own templates,
+looked up as key('resources', $id, document(resolve-uri('static/com/atomgraph/client/xsl/translations.rdf', $ac:contextUri)))
+and emitted via the ac:label mode. Downstream layers keep their own catalogs for their own templates.
+-->
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdf:Description rdf:nodeID="literal">
+        <rdfs:label xml:lang="en-US">Literal</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Literal</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="resource">
+        <rdfs:label xml:lang="en-US">Resource</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Recurso</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="language-tag">
+        <rdfs:label xml:lang="en-US">Language tag</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Etiqueta de idioma</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="datatype">
+        <rdfs:label xml:lang="en-US">Datatype</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Tipo de dato</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="add-stmt">
+        <rdfs:label xml:lang="en-US">Add another statement</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Añadir otra sentencia</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="remove-stmt">
+        <rdfs:label xml:lang="en-US">Remove this statement</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Eliminar esta sentencia</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="save">
+        <rdfs:label xml:lang="en-US">Save</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Guardar</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="edit">
+        <rdfs:label xml:lang="en-US">Edit</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Editar</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="delete">
+        <rdfs:label xml:lang="en-US">Delete</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Eliminar</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="export">
+        <rdfs:label xml:lang="en-US">Export</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Exportar</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="query">
+        <rdfs:label xml:lang="en-US">Query</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Consultar</rdfs:label>
+    </rdf:Description>
+</rdf:RDF>

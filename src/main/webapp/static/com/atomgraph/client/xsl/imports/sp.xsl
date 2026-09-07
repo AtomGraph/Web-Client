@@ -34,4 +34,28 @@ exclude-result-prefixes="#all">
         </pre>
     </xsl:template>
 
+    <!-- FORM CONTROLS -->
+
+    <xsl:template match="sp:text/text()" mode="ac:FormControl">
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <div class="ldhc-field">
+            <div class="ldhc-field-box sz-sm">
+                <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10">
+                    <xsl:sequence select="."/>
+                </textarea>
+            </div>
+        </div>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="sp:text/@rdf:datatype" mode="ac:FormControl">
+        <xsl:next-match>
+            <xsl:with-param name="type" select="'hidden'"/>
+        </xsl:next-match>
+    </xsl:template>
+
 </xsl:stylesheet>

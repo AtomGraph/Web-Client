@@ -15,34 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
+    <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY sp     "http://spinrdf.org/sp#">
+    <!ENTITY dh     "https://www.w3.org/ns/ldt/document-hierarchy#">
 ]>
 <xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:sp="&sp;"
-xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
+xmlns:dh="&dh;"
 exclude-result-prefixes="#all">
-    
-    <xsl:template match="sp:text/text()" mode="bs2:FormControl">
-        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
-        
-        <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10" style="font-family: monospace;">
-            <xsl:sequence select="."/>
-        </textarea>
 
-        <xsl:if test="$type-label">
-            <xsl:apply-templates select="." mode="bs2:FormControlTypeLabel"/>
-        </xsl:if>
-    </xsl:template>
-    
-    <xsl:template match="sp:text/@rdf:datatype" mode="bs2:FormControl">
+    <xsl:template match="dh:slug/@rdf:datatype" mode="ac:FormControl">
         <xsl:next-match>
             <xsl:with-param name="type" select="'hidden'"/>
         </xsl:next-match>
     </xsl:template>
-
+    
 </xsl:stylesheet>

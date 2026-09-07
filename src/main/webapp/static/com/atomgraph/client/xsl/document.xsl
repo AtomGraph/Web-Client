@@ -32,23 +32,22 @@ xmlns:rdf="&rdf;"
 xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:foaf="&foaf;"
-xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <!-- BREADCRUMB  -->
 
-    <xsl:template match="rdf:RDF[base-uri()]" mode="bs2:BreadCrumbList" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="ac:Breadcrumb" priority="1">
         <ul class="breadcrumb">
-            <xsl:apply-templates select="key('resources', ac:absolute-path(base-uri()))" mode="bs2:BreadCrumbListItem"/>
+            <xsl:apply-templates select="key('resources', ac:absolute-path(base-uri()))" mode="ac:BreadcrumbItem"/>
         </ul>
     </xsl:template>
 
-    <xsl:template match="*" mode="bs2:BreadCrumbList"/>
+    <xsl:template match="*" mode="ac:Breadcrumb"/>
 
     <!-- GRAPH  -->
     
-    <xsl:template match="rdf:RDF" mode="bs2:Graph">
+    <xsl:template match="rdf:RDF" mode="ac:Graph">
         <xsl:apply-templates select="." mode="ac:SVG">
             <xsl:with-param name="width" select="'100%'"/>
             <xsl:with-param name="step-count" select="20"/>
@@ -66,7 +65,7 @@ exclude-result-prefixes="#all">
     
     <!-- FORM  -->
 
-    <xsl:template match="rdf:RDF" mode="bs2:Form">
+    <xsl:template match="rdf:RDF" mode="ac:ResourceForm">
         <xsl:param name="method" select="'post'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('?_method=PUT')" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
@@ -95,7 +94,7 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:call-template>
             
-            <xsl:apply-templates select="." mode="bs2:Legend"/>
+            <xsl:apply-templates select="." mode="ac:Legend"/>
 
             <xsl:choose>
                 <xsl:when test="$ac:forClass and not(key('resources-by-type', '&spin;ConstraintViolation'))">
@@ -108,7 +107,7 @@ exclude-result-prefixes="#all">
                 </xsl:otherwise>
             </xsl:choose>
 
-            <xsl:apply-templates select="." mode="bs2:FormActions">
+            <xsl:apply-templates select="." mode="ac:FormActions">
                 <xsl:with-param name="button-class" select="$button-class"/>
             </xsl:apply-templates>
         </form>
@@ -116,13 +115,13 @@ exclude-result-prefixes="#all">
     
     <!-- LEGEND -->
 
-    <xsl:template match="rdf:RDF" mode="bs2:Legend" priority="2">
+    <xsl:template match="rdf:RDF" mode="ac:Legend" priority="2">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
     <!-- FORM ACTIONS -->
     
-    <xsl:template match="rdf:RDF" mode="bs2:FormActions">
+    <xsl:template match="rdf:RDF" mode="ac:FormActions">
         <xsl:param name="button-class" select="'btn btn-primary'" as="xs:string?"/>
         
         <div class="form-actions">

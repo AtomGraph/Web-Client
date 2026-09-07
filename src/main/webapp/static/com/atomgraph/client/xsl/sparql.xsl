@@ -43,7 +43,6 @@ xmlns:sd="&sd;"
 xmlns:ldt="&ldt;"
 xmlns:spl="&spl;"
 xmlns:void="&void;"
-xmlns:bs2="http://graphity.org/xsl/bootstrap/2.3.2"
 exclude-result-prefixes="#all">
 
     <xsl:param name="default-query" as="xs:string">SELECT DISTINCT *
@@ -58,7 +57,7 @@ WHERE
 }
 LIMIT 100</xsl:param>
 
-    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="bs2:Main" priority="2">
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="ac:Main" priority="2">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'span8'" as="xs:string?"/>
         
@@ -70,7 +69,7 @@ LIMIT 100</xsl:param>
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
-            <xsl:call-template name="bs2:QueryForm">
+            <xsl:call-template name="ac:SPARQLPane">
                 <xsl:with-param name="uri" select="ac:absolute-path(base-uri())"/>
                 <xsl:with-param name="mode" select="$ac:mode"/>
                 <xsl:with-param name="endpoint" select="$ac:endpoint"/>
@@ -84,7 +83,7 @@ LIMIT 100</xsl:param>
         </div>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="bs2:Right" priority="2"/>
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="ac:Aside" priority="2"/>
 
     <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="xhtml:Style" priority="1">
         <xsl:next-match/>
@@ -92,7 +91,7 @@ LIMIT 100</xsl:param>
         <link href="{resolve-uri('static/css/yasqe.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
-    <xsl:template name="bs2:QueryForm">
+    <xsl:template name="ac:SPARQLPane">
         <xsl:param name="method" select="'get'" as="xs:string"/>
         <xsl:param name="action" select="xs:anyURI('')" as="xs:anyURI"/>
         <xsl:param name="id" select="'query-form'" as="xs:string?"/>
@@ -167,12 +166,12 @@ LIMIT 100</xsl:param>
 
         <!-- result of CONSTRUCT or DESCRIBE -->
         <xsl:if test="$result-doc/rdf:RDF">
-            <xsl:apply-templates select="." mode="bs2:ModeList"/>
+            <xsl:apply-templates select="." mode="ac:ModeList"/>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>
                     <xsl:when test="$ac:mode = '&ac;ListMode'">
-                        <xsl:apply-templates select="*" mode="bs2:List">
+                        <xsl:apply-templates select="*" mode="ac:List">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
@@ -182,17 +181,17 @@ LIMIT 100</xsl:param>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="$ac:mode = '&ac;GridMode'">
-                        <xsl:apply-templates select="." mode="bs2:Grid">
+                        <xsl:apply-templates select="." mode="ac:Grid">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/>-->
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="$ac:mode = '&ac;MapMode'">
-                        <xsl:apply-templates select="." mode="bs2:Map">
+                        <xsl:apply-templates select="." mode="ac:Map">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="$ac:mode = '&ac;EditMode'">
-                        <xsl:apply-templates select="." mode="bs2:EditForm">
+                        <xsl:apply-templates select="." mode="ac:ResourceForm">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
