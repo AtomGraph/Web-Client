@@ -65,7 +65,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
     <xsl:param name="ac:query" as="xs:string?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
-    <xsl:param name="ac:googleMapsKey" select="'AIzaSyCQ4rt3EnNCmGTpBN0qoZM1Z_jXhUnrTpQ'" as="xs:string"/>
     <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
     <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
     <!-- the language the representation is composed in, as opposed to the one the reader asked for: the writer supplies the
@@ -300,7 +299,16 @@ exclude-result-prefixes="#all">
     <xsl:template match="*" mode="xhtml:Title"/>
     
     <!-- STYLE  -->
-    
+
+    <!-- the map's own stylesheet rides only the mode that renders a map. Lives beside the base template
+         (not in container.xsl) because layout.xsl is included at entry level: an imported override would
+         lose on import precedence however high its priority -->
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;MapMode']" mode="xhtml:Style" priority="1">
+        <xsl:next-match/>
+
+        <link href="{resolve-uri('static/com/atomgraph/client/css/ol.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
+    </xsl:template>
+
     <!-- design-system tokens and core kit (core.css imports controls/overlays/surfaces), then Web-Client's own browser chrome -->
     <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Style">
         <link href="{resolve-uri('static/com/atomgraph/client/css/colors_and_type.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>

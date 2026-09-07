@@ -203,64 +203,58 @@ exclude-result-prefixes="#all">
 
     <!-- MAP MODE -->
 
-    <xsl:template match="rdf:RDF[base-uri()]" mode="ac:Map">
+    <!-- OpenLayers over OSM tiles: every resource in the graph with WGS84 coordinates becomes a marker,
+         and the view fits the markers (world view when there are none) -->
+    <xsl:template match="rdf:RDF" mode="ac:Map">
         <xsl:param name="id" select="'map-canvas'" as="xs:string"/>
 
-        <div id="{$id}" class="map-canvas">
-            <xsl:apply-templates mode="#current"/>
-        </div>
-        
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$ac:googleMapsKey}&amp;callback=initMap" async="async"/>
-        <xsl:for-each select="key('resources', ac:absolute-path(base-uri()))">
-            <script type="text/javascript">
-                <xsl:choose>
-                    <xsl:when test="geo:lat and geo:long">
-                        <![CDATA[
-                            function initMap()
-                            {
-                                var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
-                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$id"/><![CDATA['), { center: latLng, zoom: 8 });
-                                var marker = new google.maps.Marker({
-                                    position: latLng,
-                                    map: map,
-                                    title: "]]><xsl:value-of><xsl:apply-templates select="." mode="ac:label"/></xsl:value-of><![CDATA["
-                                });
-                            }
-                        ]]>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <![CDATA[
-                            function initMap()
-                            {
-                                var map = new google.maps.Map(document.getElementById(']]><xsl:value-of select="$id"/><![CDATA['));
-                            }
-                        ]]>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </script>
-        </xsl:for-each>
-    </xsl:template>
+        <div id="{$id}" class="map-canvas"></div>
 
-<!--    <xsl:template match="*[@rdf:about or @rdf:nodeID][geo:lat castable as xs:double][geo:long castable as xs:double]" mode="ac:Map" priority="1">
-        <xsl:param name="nested" as="xs:boolean?"/>
-
+        <script type="text/javascript" src="{resolve-uri('static/com/atomgraph/client/js/ol.js', $ac:contextUri)}"></script>
         <script type="text/javascript">
+            <xsl:text>var markers = [</xsl:text>
+            <xsl:for-each select="*[geo:lat[1] castable as xs:double][geo:long[1] castable as xs:double]">
+                <xsl:if test="position() &gt; 1">, </xsl:if>
+                <xsl:text>{ lon: </xsl:text>
+                <xsl:value-of select="xs:double(geo:long[1])"/>
+                <xsl:text>, lat: </xsl:text>
+                <xsl:value-of select="xs:double(geo:lat[1])"/>
+                <xsl:text>, title: "</xsl:text>
+                <xsl:value-of select="replace(replace(string(ac:label(.)), '\\', '\\\\'), '&quot;', '\\&quot;')"/>
+                <xsl:text>" }</xsl:text>
+            </xsl:for-each>
+            <xsl:text>];
+</xsl:text>
             <![CDATA[
-                function initialize]]><xsl:sequence select="generate-id()"/><![CDATA[()
-                {
-                    var latLng = new google.maps.LatLng(]]><xsl:value-of select="geo:lat[1]"/>, <xsl:value-of select="geo:long[1]"/><![CDATA[);
-                    var marker = new google.maps.Marker({
-                        position: latLng,
-                        map: map,
-                        title: "]]><xsl:value-of><xsl:apply-templates select="." mode="ac:label"/></xsl:value-of><![CDATA["
-                    });
-                }
-
-                google.maps.event.addDomListener(window, 'load', initialize]]><xsl:sequence select="generate-id()"/><![CDATA[);
+                var source = new ol.source.Vector({
+                    features: markers.map(function(marker)
+                    {
+                        return new ol.Feature({
+                            geometry: new ol.geom.Point(ol.proj.fromLonLat([ marker.lon, marker.lat ])),
+                            name: marker.title
+                        });
+                    })
+                });
+                var map = new ol.Map({
+                    target: ]]>'<xsl:value-of select="$id"/>'<![CDATA[,
+                    layers: [
+                        new ol.layer.Tile({ source: new ol.source.OSM() }),
+                        new ol.layer.Vector({
+                            source: source,
+                            style: new ol.style.Style({
+                                image: new ol.style.Circle({
+                                    radius: 7,
+                                    fill: new ol.style.Fill({ color: "#1c5bff" }),
+                                    stroke: new ol.style.Stroke({ color: "#ffffff", width: 2 })
+                                })
+                            })
+                        })
+                    ],
+                    view: new ol.View({ center: ol.proj.fromLonLat([ 0, 30 ]), zoom: 2 })
+                });
+                if (!source.isEmpty()) map.getView().fit(source.getExtent(), { padding: [ 48, 48, 48, 48 ], maxZoom: 12 });
             ]]>
         </script>
-    </xsl:template>-->
-
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Map"/>
+    </xsl:template>
 
 </xsl:stylesheet>
