@@ -51,13 +51,13 @@ exclude-result-prefixes="#all">
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
         <xsl:param name="rows" select="3" as="xs:integer"/>
 
-        <div class="ldhc-field">
-            <div class="ldhc-field-box sz-sm">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
                 <textarea name="ol" id="{generate-id()}" rows="{$rows}">
                     <xsl:value-of select="."/>
                 </textarea>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>

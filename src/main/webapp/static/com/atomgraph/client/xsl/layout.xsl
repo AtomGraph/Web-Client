@@ -188,16 +188,19 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <form action="" method="get" class="uri-form" accept-charset="UTF-8">
-                <div class="ldhc-field">
-                    <div class="ldhc-field-box sz-md">
+                <xsl:apply-templates select="." mode="ac:FieldShell">
+                    <xsl:with-param name="size" select="'sz-md'"/>
+                    <xsl:with-param name="adorn" as="item()*">
                         <span class="ldhc-adorn"><span class="msi outline sm" aria-hidden="true">public</span></span>
+                    </xsl:with-param>
+                    <xsl:with-param name="control" as="item()*">
                         <input type="text" name="uri">
                             <xsl:if test="base-uri()">
                                 <xsl:attribute name="value" select="base-uri()"/>
                             </xsl:if>
                         </input>
-                    </div>
-                </div>
+                    </xsl:with-param>
+                </xsl:apply-templates>
                 <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
                     <xsl:apply-templates select="key('resources', '&translations;go', ac:translations())" mode="ac:label"/>
                 </button>

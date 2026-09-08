@@ -123,15 +123,16 @@ LIMIT 100</xsl:param>
                 <label class="ldhc-label" for="endpoint-uri">
                     <xsl:apply-templates select="key('resources', '&translations;endpoint', ac:translations())" mode="ac:label"/>
                 </label>
-                <div class="ldhc-field">
-                    <div class="ldhc-field-box sz-md">
+                <xsl:apply-templates select="." mode="ac:FieldShell">
+                    <xsl:with-param name="size" select="'sz-md'"/>
+                    <xsl:with-param name="control" as="item()*">
                         <input type="text" id="endpoint-uri" name="endpoint">
                             <xsl:if test="$endpoint">
                                 <xsl:attribute name="value" select="$endpoint"/>
                             </xsl:if>
                         </input>
-                    </div>
-                </div>
+                    </xsl:with-param>
+                </xsl:apply-templates>
 
                 <textarea id="query-string" name="query" rows="15">
                     <xsl:choose>

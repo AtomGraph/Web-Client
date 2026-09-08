@@ -39,13 +39,13 @@ exclude-result-prefixes="#all">
     <xsl:template match="sp:text/text()" mode="ac:FormControl">
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <div class="ldhc-field">
-            <div class="ldhc-field-box sz-sm">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
                 <textarea name="ol" id="{generate-id()}" class="sp:text" rows="10">
                     <xsl:sequence select="."/>
                 </textarea>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>

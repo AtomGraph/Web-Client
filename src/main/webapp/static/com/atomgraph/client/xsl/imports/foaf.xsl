@@ -117,8 +117,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <div class="ldhc-field">
-            <div class="ldhc-field-box sz-sm">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
                 <xsl:call-template name="xhtml:Input">
                     <xsl:with-param name="name" select="'ol'"/>
                     <xsl:with-param name="type" select="$type"/>
@@ -126,8 +127,8 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="class" select="$class"/>
                     <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
                 </xsl:call-template>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations">
@@ -142,8 +143,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <div class="ldhc-field">
-            <div class="ldhc-field-box sz-sm">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
                 <xsl:call-template name="xhtml:Input">
                     <xsl:with-param name="name" select="'ol'"/>
                     <xsl:with-param name="type" select="$type"/>
@@ -151,8 +153,8 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="class" select="$class"/>
                     <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
                 </xsl:call-template>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations">

@@ -871,6 +871,70 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!-- FIELD SHELL -->
+
+    <!-- the design system's field shell: the single wrapper every text control rides in. The $control slot
+         holds the pre-built input/textarea, $adorn an optional leading adornment; hidden inputs bypass the chrome -->
+    <xsl:template match="node() | @*" mode="ac:FieldShell">
+        <xsl:param name="control" as="item()*"/>
+        <xsl:param name="type" as="xs:string?"/>
+        <xsl:param name="size" select="'sz-sm'" as="xs:string"/>
+        <xsl:param name="adorn" as="item()*"/>
+
+        <xsl:choose>
+            <xsl:when test="$type = 'hidden'">
+                <xsl:sequence select="$control"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <div class="ldhc-field">
+                    <div class="ldhc-field-box {$size}">
+                        <xsl:sequence select="$adorn"/>
+                        <xsl:sequence select="$control"/>
+                    </div>
+                </div>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- SELECT SHELL -->
+
+    <!-- the design system's select shell: the caret-adorned wrapper every dropdown rides in;
+         multiple selects mark the shell and show no caret -->
+    <xsl:template match="node() | @*" mode="ac:SelectShell">
+        <xsl:param name="select" as="item()*"/>
+        <xsl:param name="size" select="'sz-sm'" as="xs:string"/>
+        <xsl:param name="multiple" select="false()" as="xs:boolean"/>
+
+        <span class="ldhc-select {$size}{if ($multiple) then ' is-multiple' else ''}">
+            <xsl:sequence select="$select"/>
+
+            <xsl:if test="not($multiple)">
+                <span class="msi sm ldhc-select-caret" aria-hidden="true">unfold_more</span>
+            </xsl:if>
+        </span>
+    </xsl:template>
+
+    <!-- ANNOTATION TAG -->
+
+    <!-- the single annotation Tag: the value-kind chips beside edit-mode controls all render through here,
+         so a downstream layer re-skins every one by overriding this rule -->
+    <xsl:template match="node() | @*" mode="ac:AnnotationTag">
+        <xsl:param name="class" select="'ldhc-tag sz-sm em-quiet'" as="xs:string"/>
+        <xsl:param name="key" as="xs:string?"/>
+        <xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="label" as="item()*">
+            <xsl:apply-templates select="key('resources', $key, ac:translations())" mode="ac:label"/>
+        </xsl:param>
+
+        <span class="{$class}">
+            <xsl:if test="$title">
+                <xsl:attribute name="title" select="$title"/>
+            </xsl:if>
+
+            <xsl:sequence select="$label"/>
+        </span>
+    </xsl:template>
+
     <!-- literal inputs ride the field shell: the box carries the chrome, the input stays bare -->
     <xsl:template match="text()" mode="ac:FormControl">
         <xsl:param name="type" select="'text'" as="xs:string"/>
@@ -879,28 +943,17 @@ exclude-result-prefixes="#all">
         <xsl:param name="disabled" select="false()" as="xs:boolean"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:choose>
-            <xsl:when test="$type = 'hidden'">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
                 <xsl:apply-templates select="." mode="xhtml:Input">
                     <xsl:with-param name="type" select="$type"/>
                     <xsl:with-param name="id" select="$id"/>
                     <xsl:with-param name="class" select="$class"/>
                     <xsl:with-param name="disabled" select="$disabled"/>
                 </xsl:apply-templates>
-            </xsl:when>
-            <xsl:otherwise>
-                <div class="ldhc-field">
-                    <div class="ldhc-field-box sz-sm">
-                        <xsl:apply-templates select="." mode="xhtml:Input">
-                            <xsl:with-param name="type" select="$type"/>
-                            <xsl:with-param name="id" select="$id"/>
-                            <xsl:with-param name="class" select="$class"/>
-                            <xsl:with-param name="disabled" select="$disabled"/>
-                        </xsl:apply-templates>
-                    </div>
-                </div>
-            </xsl:otherwise>
-        </xsl:choose>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations">
@@ -918,9 +971,9 @@ exclude-result-prefixes="#all">
                     <xsl:apply-templates select="../@rdf:datatype" mode="#current"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <span class="ldhc-tag sz-sm em-quiet">
-                        <xsl:apply-templates select="key('resources', '&translations;literal', ac:translations())" mode="ac:label"/>
-                    </span>
+                    <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                        <xsl:with-param name="key" select="'&translations;literal'"/>
+                    </xsl:apply-templates>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:if>
@@ -936,8 +989,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="disabled" select="false()" as="xs:boolean"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <div class="ldhc-field">
-            <div class="ldhc-field-box sz-sm">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
                 <textarea name="{$name}">
                     <xsl:if test="$id">
                         <xsl:attribute name="id" select="$id"/>
@@ -957,8 +1010,8 @@ exclude-result-prefixes="#all">
 
                     <xsl:sequence select="$value"/>
                 </textarea>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
@@ -974,8 +1027,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="required" select="false()" as="xs:boolean"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <div class="ldhc-field">
-            <div class="ldhc-field-box sz-sm">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
                 <xsl:call-template name="xhtml:Input">
                     <xsl:with-param name="name" select="'ol'"/>
                     <xsl:with-param name="type" select="$type"/>
@@ -983,8 +1037,8 @@ exclude-result-prefixes="#all">
                     <xsl:with-param name="class" select="$class"/>
                     <xsl:with-param name="disabled" select="$disabled"/>
                 </xsl:call-template>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations">
@@ -997,9 +1051,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="type" as="xs:string?"/>
 
         <xsl:if test="not($type = 'hidden')">
-            <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', '&translations;literal', ac:translations())" mode="ac:label"/>
-            </span>
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'&translations;literal'"/>
+            </xsl:apply-templates>
         </xsl:if>
     </xsl:template>
 
@@ -1011,28 +1065,17 @@ exclude-result-prefixes="#all">
         <xsl:param name="disabled" select="false()" as="xs:boolean"/>
         <xsl:param name="type-label" select="true()" as="xs:boolean"/>
 
-        <xsl:choose>
-            <xsl:when test="$type = 'hidden'">
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
                 <xsl:apply-templates select="." mode="xhtml:Input">
                     <xsl:with-param name="type" select="$type"/>
                     <xsl:with-param name="id" select="$id"/>
                     <xsl:with-param name="class" select="$class"/>
                     <xsl:with-param name="disabled" select="$disabled"/>
                 </xsl:apply-templates>
-            </xsl:when>
-            <xsl:otherwise>
-                <div class="ldhc-field">
-                    <div class="ldhc-field-box sz-sm">
-                        <xsl:apply-templates select="." mode="xhtml:Input">
-                            <xsl:with-param name="type" select="$type"/>
-                            <xsl:with-param name="id" select="$id"/>
-                            <xsl:with-param name="class" select="$class"/>
-                            <xsl:with-param name="disabled" select="$disabled"/>
-                        </xsl:apply-templates>
-                    </div>
-                </div>
-            </xsl:otherwise>
-        </xsl:choose>
+            </xsl:with-param>
+        </xsl:apply-templates>
 
         <xsl:if test="$type-label">
             <xsl:apply-templates select="." mode="ac:ValueAnnotations">
@@ -1045,9 +1088,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="type" as="xs:string?"/>
 
         <xsl:if test="not($type = 'hidden')">
-            <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', '&translations;resource', ac:translations())" mode="ac:label"/>
-            </span>
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'&translations;resource'"/>
+            </xsl:apply-templates>
         </xsl:if>
     </xsl:template>
 
@@ -1067,16 +1110,19 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="key('resources', '&translations;language-tag', ac:translations())" mode="ac:label"/>
             </xsl:attribute>
 
-            <div class="ldhc-field">
-                <div class="ldhc-field-box sz-sm">
+            <xsl:apply-templates select="." mode="ac:FieldShell">
+                <xsl:with-param name="type" select="$type"/>
+                <xsl:with-param name="adorn" as="item()*">
                     <span class="ldhc-adorn"><span class="msi outline sm" aria-hidden="true">language</span></span>
+                </xsl:with-param>
+                <xsl:with-param name="control" as="item()*">
                     <xsl:apply-templates select="." mode="xhtml:Input">
                         <xsl:with-param name="type" select="$type"/>
                         <xsl:with-param name="id" select="$id"/>
                         <xsl:with-param name="disabled" select="$disabled"/>
                     </xsl:apply-templates>
-                </div>
-            </div>
+                </xsl:with-param>
+            </xsl:apply-templates>
         </span>
     </xsl:template>
 
@@ -1084,9 +1130,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="type" as="xs:string?"/>
 
         <xsl:if test="not($type = 'hidden')">
-            <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', '&translations;language-tag', ac:translations())" mode="ac:label"/>
-            </span>
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'&translations;language-tag'"/>
+            </xsl:apply-templates>
         </xsl:if>
     </xsl:template>
 
@@ -1116,9 +1162,10 @@ exclude-result-prefixes="#all">
         <xsl:param name="type" as="xs:string?"/>
 
         <xsl:if test="not($type = 'hidden')">
-            <span class="ldhc-tag sz-sm em-quiet" title="{.}">
-                <xsl:value-of select="if (starts-with(., '&xsd;')) then 'xsd:' || substring-after(., '&xsd;') else ."/>
-            </span>
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="title" select="."/>
+                <xsl:with-param name="label" select="if (starts-with(., '&xsd;')) then 'xsd:' || substring-after(., '&xsd;') else string(.)"/>
+            </xsl:apply-templates>
         </xsl:if>
     </xsl:template>
 
@@ -1164,9 +1211,9 @@ exclude-result-prefixes="#all">
         <xsl:param name="type" as="xs:string?"/>
 
         <xsl:if test="not($type = 'hidden')">
-            <span class="ldhc-tag sz-sm em-quiet">
-                <xsl:apply-templates select="key('resources', '&translations;resource', ac:translations())" mode="ac:label"/>
-            </span>
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'&translations;resource'"/>
+            </xsl:apply-templates>
         </xsl:if>
     </xsl:template>
 
