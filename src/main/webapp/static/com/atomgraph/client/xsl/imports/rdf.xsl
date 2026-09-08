@@ -33,15 +33,25 @@ exclude-result-prefixes="#all">
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
+        <!-- tunneled so it survives the layers above (e.g. a proxying @rdf:resource rule) that do not
+             know about it. Linkless callers sit inside an anchor of their own - a nested a is invalid -->
+        <xsl:param name="link" select="true()" as="xs:boolean" tunnel="yes"/>
 
         <span title="{.}" class="ldhc-tag em-quiet co-primary sz-sm">
-            <xsl:next-match>
-                <xsl:with-param name="href" select="$href"/>
-                <xsl:with-param name="id" select="$id"/>
-                <xsl:with-param name="title" select="$title"/>
-                <xsl:with-param name="class" select="$class"/>
-                <xsl:with-param name="target" select="$target"/>
-            </xsl:next-match>
+            <xsl:choose>
+                <xsl:when test="$link">
+                    <xsl:next-match>
+                        <xsl:with-param name="href" select="$href"/>
+                        <xsl:with-param name="id" select="$id"/>
+                        <xsl:with-param name="title" select="$title"/>
+                        <xsl:with-param name="class" select="$class"/>
+                        <xsl:with-param name="target" select="$target"/>
+                    </xsl:next-match>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="." mode="ac:object-label"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </span>
     </xsl:template>
     
