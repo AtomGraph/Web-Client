@@ -24,14 +24,17 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:rdf="&rdf;"
 exclude-result-prefixes="#all">
 
+    <!-- a rendered type is the design system's Tag in the type color, wherever it lands. This is the
+         single pill emitter: every surface that shows a type applies templates into this rule (directly
+         or via a list/header wrapper) rather than building its own pill -->
     <xsl:template match="rdf:type/@rdf:resource" priority="1">
         <xsl:param name="href" select="." as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
-        
-        <span title="{.}" class="btn btn-type">
+
+        <span title="{.}" class="ldhc-tag em-quiet co-primary sz-sm">
             <xsl:next-match>
                 <xsl:with-param name="href" select="$href"/>
                 <xsl:with-param name="id" select="$id"/>
