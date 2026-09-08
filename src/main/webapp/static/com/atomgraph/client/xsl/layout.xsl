@@ -486,23 +486,17 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
 
-        <div role="alert">
-            <xsl:if test="$id">
-                <xsl:attribute name="id" select="$id"/>
-            </xsl:if>
-            <xsl:if test="$class">
-                <xsl:attribute name="class" select="$class"/>
-            </xsl:if>
-
-            <span class="ldhc-alert-ic"><span class="msi outline" aria-hidden="true">error</span></span>
-            <div class="ldhc-alert-body">
-                <h2 class="ldhc-alert-text">
+        <xsl:apply-templates select="." mode="ac:Alert">
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="body" as="item()*">
+                <h2 class="ldhc-alert-title">
                     <xsl:value-of>
                         <xsl:apply-templates select="." mode="ac:label"/>
                     </xsl:value-of>
                 </h2>
-            </div>
-        </div>
+            </xsl:with-param>
+        </xsl:apply-templates>
     </xsl:template>
 
     <!-- MEDIA TYPE SELECT MODE (Export buttons) -->

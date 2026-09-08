@@ -315,20 +315,14 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="ac:Violation" priority="1">
         <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
 
-        <div role="alert">
-            <xsl:if test="$class">
-                <xsl:attribute name="class" select="$class"/>
-            </xsl:if>
-
-            <span class="ldhc-alert-ic"><span class="msi outline" aria-hidden="true">error</span></span>
-            <div class="ldhc-alert-body">
-                <span class="ldhc-alert-text">
-                    <xsl:value-of>
-                        <xsl:apply-templates select="." mode="ac:label"/>
-                    </xsl:value-of>
-                </span>
-            </div>
-        </div>
+        <xsl:apply-templates select="." mode="ac:Alert">
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="text" as="item()*">
+                <xsl:value-of>
+                    <xsl:apply-templates select="." mode="ac:label"/>
+                </xsl:value-of>
+            </xsl:with-param>
+        </xsl:apply-templates>
     </xsl:template>
     
 </xsl:stylesheet>

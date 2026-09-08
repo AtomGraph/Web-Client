@@ -896,6 +896,48 @@ exclude-result-prefixes="#all">
         </xsl:choose>
     </xsl:template>
 
+    <!-- ALERT -->
+
+    <!-- the design system's inline alert: variant, icon and title/text slots, plus a $body tail for
+         links, technical detail or actions. Block-header alerts put their h2 in $body to keep the
+         document outline -->
+    <xsl:template match="node() | @*" mode="ac:Alert">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="variant" select="'va-negative'" as="xs:string"/>
+        <xsl:param name="class" select="'ldhc-alert ' || $variant" as="xs:string"/>
+        <xsl:param name="icon" select="(map{ 'va-negative': 'error', 'va-warning': 'warning', 'va-success': 'check_circle' }($variant), 'info')[1]" as="xs:string"/>
+        <xsl:param name="title" as="item()*"/>
+        <xsl:param name="text" as="item()*"/>
+        <xsl:param name="body" as="item()*"/>
+
+        <div role="alert">
+            <xsl:if test="$id">
+                <xsl:attribute name="id" select="$id"/>
+            </xsl:if>
+            <xsl:attribute name="class" select="$class"/>
+
+            <span class="ldhc-alert-ic">
+                <span class="msi outline" aria-hidden="true">
+                    <xsl:value-of select="$icon"/>
+                </span>
+            </span>
+            <div class="ldhc-alert-body">
+                <xsl:if test="exists($title)">
+                    <span class="ldhc-alert-title">
+                        <xsl:sequence select="$title"/>
+                    </span>
+                </xsl:if>
+                <xsl:if test="exists($text)">
+                    <span class="ldhc-alert-text">
+                        <xsl:sequence select="$text"/>
+                    </span>
+                </xsl:if>
+
+                <xsl:sequence select="$body"/>
+            </div>
+        </div>
+    </xsl:template>
+
     <!-- SELECT SHELL -->
 
     <!-- the design system's select shell: the caret-adorned wrapper every dropdown rides in;
