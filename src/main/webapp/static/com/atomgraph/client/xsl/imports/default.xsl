@@ -143,13 +143,13 @@ exclude-result-prefixes="#all">
 
     <!-- DEFINITIONS -->
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:DefinitionTerm">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:PropertyListLabel">
         <dt>
             <xsl:apply-templates select="."/>
         </dt>
     </xsl:template>
     
-    <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription">
+    <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="ac:PropertyListValue">
         <dd>
             <xsl:apply-templates select="."/>
         </dd>
@@ -466,27 +466,27 @@ exclude-result-prefixes="#all">
 
     <!-- TABLE -->
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableHeaderCell">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:ResultsTableHeaderCell">
         <th scope="col">
             <xsl:apply-templates select="."/>
         </th>
     </xsl:template>
     
     <!-- every value of the property beyond the first is folded into the cell the first one opens -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:ResultsTableDataCell"/>
 
     <!-- the header fixes the column count, so a property gets one cell however many values it has, and they share it.
          Ordering them by the reader's languages puts the one they read first and leaves the rest reachable: a reader whose
          language the data lacks used to be shown the first value in document order, and every other reader was shown one
          value with no sign that the others existed -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="ac:ResultsTableDataCell" priority="1">
         <xsl:variable name="property-uri" select="concat(namespace-uri(), local-name())" as="xs:string"/>
 
         <td>
             <!-- the values stack rather than run together, and the stack is what carries the height: a cell cannot cap its
                  own, so a property with many values has to be bounded by a container the cell holds -->
             <div class="values">
-                <xsl:apply-templates select="../*[concat(namespace-uri(), local-name()) = $property-uri]" mode="xhtml:TableDataCellValue">
+                <xsl:apply-templates select="../*[concat(namespace-uri(), local-name()) = $property-uri]" mode="ac:ResultsTableDataCellValue">
                     <xsl:sort select="ac:lang-rank(.)"/>
                 </xsl:apply-templates>
             </div>
@@ -495,7 +495,7 @@ exclude-result-prefixes="#all">
 
     <!-- one block per statement, so the values stack apart instead of running into each other. The statement is the unit,
          not the node under it: an XHTML literal is one value however many elements it is written with -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCellValue">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:ResultsTableDataCellValue">
         <div class="value">
             <!-- an untagged literal makes no language claim, which HTML spells lang="". A typed value is not prose and
                  inherits, so a number or a date is read out in the reader's own language -->
@@ -509,7 +509,7 @@ exclude-result-prefixes="#all">
 
     <!-- each value declares its own language rather than inheriting the document's, since the cell holds several at once
          and the document default is wrong for all but one of them -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@xml:lang]" mode="xhtml:TableDataCellValue" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@xml:lang]" mode="ac:ResultsTableDataCellValue" priority="1">
         <div class="value" lang="{@xml:lang}">
             <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
 
@@ -517,7 +517,7 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="srx:sparql" mode="xhtml:Table">
+    <xsl:template match="srx:sparql" mode="ac:ResultsTable">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" as="xs:string?"/>
         <xsl:param name="class" select="'results-table'" as="xs:string?"/>
@@ -541,7 +541,7 @@ exclude-result-prefixes="#all">
         </table>
     </xsl:template>
     
-    <xsl:template match="srx:head" mode="xhtml:Table">
+    <xsl:template match="srx:head" mode="ac:ResultsTable">
         <thead>
             <tr>
                 <xsl:apply-templates mode="#current"/>
@@ -549,31 +549,31 @@ exclude-result-prefixes="#all">
         </thead>
     </xsl:template>
 
-    <xsl:template match="srx:variable" mode="xhtml:Table">
+    <xsl:template match="srx:variable" mode="ac:ResultsTable">
         <th scope="col">
             <xsl:value-of select="@name"/>
         </th>
     </xsl:template>
 
-    <xsl:template match="srx:results" mode="xhtml:Table">
+    <xsl:template match="srx:results" mode="ac:ResultsTable">
         <tbody>
             <xsl:apply-templates mode="#current"/>
         </tbody>
     </xsl:template>
 
-    <xsl:template match="srx:result" mode="xhtml:Table">
+    <xsl:template match="srx:result" mode="ac:ResultsTable">
         <tr>
             <xsl:apply-templates mode="#current"/>
         </tr>
     </xsl:template>
 
-    <xsl:template match="srx:binding" mode="xhtml:Table">
+    <xsl:template match="srx:binding" mode="ac:ResultsTable">
         <td>
             <xsl:apply-templates mode="#current"/>
         </td>
     </xsl:template>
     
-    <xsl:template match="srx:uri" mode="xhtml:Table">
+    <xsl:template match="srx:uri" mode="ac:ResultsTable">
         <xsl:apply-templates select="."/>
     </xsl:template>
 
@@ -784,7 +784,7 @@ exclude-result-prefixes="#all">
 
     <!-- PROPERTY EDITOR -->
 
-    <xsl:template match="text()[../@xml:lang]" mode="xhtml:DefinitionDescription" priority="1">
+    <xsl:template match="text()[../@xml:lang]" mode="ac:PropertyListValue" priority="1">
         <dd>
             <xsl:apply-templates select="../@xml:lang" mode="ac:lang-tag"/>
 
@@ -793,9 +793,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:PropertyEditor">
-        <xsl:apply-templates select="." mode="xhtml:DefinitionTerm"/>
+        <xsl:apply-templates select="." mode="ac:PropertyListLabel"/>
 
-        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription"/>
+        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="ac:PropertyListValue"/>
     </xsl:template>
 
     <!-- FORM CONTROLS -->

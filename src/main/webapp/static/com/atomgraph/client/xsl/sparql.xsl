@@ -86,7 +86,7 @@ LIMIT 100</xsl:param>
 
     <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="ac:Aside" priority="2"/>
 
-    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="xhtml:Style" priority="1">
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;QueryEditorMode']" mode="ac:Stylesheets" priority="1">
         <xsl:next-match/>
         
         <link href="{resolve-uri('static/css/yasqe.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -187,7 +187,7 @@ LIMIT 100</xsl:param>
                         </xsl:apply-templates>
                     </xsl:when>
                     <xsl:when test="$ac:mode = '&ac;TableMode'">
-                        <xsl:apply-templates select="." mode="xhtml:Table">
+                        <xsl:apply-templates select="." mode="ac:ResultsTable">
                             <!-- <xsl:with-param name="selected-resources" select="*" tunnel="yes"/> -->
                         </xsl:apply-templates>
                     </xsl:when>
@@ -217,7 +217,7 @@ LIMIT 100</xsl:param>
         
         <!-- result of SELECT or ASK -->
         <xsl:if test="$result-doc/srx:sparql">
-            <xsl:apply-templates select="$result-doc/srx:sparql" mode="xhtml:Table"/>
+            <xsl:apply-templates select="$result-doc/srx:sparql" mode="ac:ResultsTable"/>
         </xsl:if>
     </xsl:template>
     

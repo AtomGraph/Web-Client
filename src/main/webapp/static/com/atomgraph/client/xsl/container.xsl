@@ -123,7 +123,7 @@ exclude-result-prefixes="#all">
 
     <!-- TABLE MODE -->
 
-    <xsl:template match="rdf:RDF" mode="xhtml:Table">
+    <xsl:template match="rdf:RDF" mode="ac:ResultsTable">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'results-table'" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*">
@@ -154,7 +154,7 @@ exclude-result-prefixes="#all">
                         </th>
                     </xsl:if>
 
-                    <xsl:apply-templates select="$predicates" mode="xhtml:TableHeaderCell"/>
+                    <xsl:apply-templates select="$predicates" mode="ac:ResultsTableHeaderCell"/>
                 </tr>
             </thead>
             <tbody>
@@ -165,7 +165,7 @@ exclude-result-prefixes="#all">
         </table>
     </xsl:template>
 
-    <xsl:template match="*[*][@rdf:about]" mode="xhtml:Table" priority="1">
+    <xsl:template match="*[*][@rdf:about]" mode="ac:ResultsTable" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="predicates" as="element()*" tunnel="yes"/>
@@ -189,7 +189,7 @@ exclude-result-prefixes="#all">
             <xsl:for-each select="$predicates">
                 <xsl:choose>
                     <xsl:when test="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]">
-                        <xsl:apply-templates select="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]" mode="xhtml:TableDataCell"/>
+                        <xsl:apply-templates select="$resource/*[concat(namespace-uri(), local-name()) = current()/concat(namespace-uri(), local-name())]" mode="ac:ResultsTableDataCell"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <td></td>
@@ -199,7 +199,7 @@ exclude-result-prefixes="#all">
         </tr>
     </xsl:template>
 
-    <!-- <xsl:template match="*[*][@rdf:nodeID]" mode="xhtml:Table"/> -->
+    <!-- <xsl:template match="*[*][@rdf:nodeID]" mode="ac:ResultsTable"/> -->
 
     <!-- MAP MODE -->
 

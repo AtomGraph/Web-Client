@@ -120,38 +120,38 @@ exclude-result-prefixes="#all">
         </xsl:variable>
 
         <xsl:for-each select="$grouped-rdf/rdf:RDF">
-            <xsl:apply-templates select="." mode="xhtml:Head"/>
+            <xsl:apply-templates select="." mode="ac:Head"/>
 
-            <xsl:apply-templates select="." mode="xhtml:Body"/>
+            <xsl:apply-templates select="." mode="ac:AppShell"/>
         </xsl:for-each>
     </xsl:template>
 
     <xsl:template match="srx:sparql">
-        <xsl:apply-templates select="." mode="xhtml:Head"/>
+        <xsl:apply-templates select="." mode="ac:Head"/>
 
-        <xsl:apply-templates select="." mode="xhtml:Body"/>
+        <xsl:apply-templates select="." mode="ac:AppShell"/>
     </xsl:template>
     
-    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Head">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Head">
         <head>
             <xsl:apply-templates select="." mode="xhtml:Meta"/>
 
             <xsl:apply-templates select="." mode="xhtml:Title"/>
 
-            <xsl:apply-templates select="." mode="xhtml:Style"/>
+            <xsl:apply-templates select="." mode="ac:Stylesheets"/>
 
             <xsl:apply-templates select="." mode="xhtml:Script"/>
         </head>
     </xsl:template>
 
     <!-- the map is a full-bleed canvas: it takes every pixel below the bars (client.css keys on the class) -->
-    <xsl:template match="rdf:RDF[$ac:mode = '&ac;MapMode']" mode="xhtml:Body" priority="1">
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;MapMode']" mode="ac:AppShell" priority="1">
         <xsl:next-match>
             <xsl:with-param name="class" select="'map-view'"/>
         </xsl:next-match>
     </xsl:template>
 
-    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Body">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="ac:AppShell">
         <xsl:param name="class" as="xs:string?"/>
 
         <body>
@@ -319,14 +319,14 @@ exclude-result-prefixes="#all">
     <!-- the map's own stylesheet rides only the mode that renders a map. Lives beside the base template
          (not in container.xsl) because layout.xsl is included at entry level: an imported override would
          lose on import precedence however high its priority -->
-    <xsl:template match="rdf:RDF[$ac:mode = '&ac;MapMode']" mode="xhtml:Style" priority="1">
+    <xsl:template match="rdf:RDF[$ac:mode = '&ac;MapMode']" mode="ac:Stylesheets" priority="1">
         <xsl:next-match/>
 
         <link href="{resolve-uri('static/com/atomgraph/client/css/ol.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
     </xsl:template>
 
     <!-- design-system tokens and core kit (core.css imports controls/overlays/surfaces), then Web-Client's own browser chrome -->
-    <xsl:template match="rdf:RDF | srx:sparql" mode="xhtml:Style">
+    <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Stylesheets">
         <link href="{resolve-uri('static/com/atomgraph/client/css/colors_and_type.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
         <link href="{resolve-uri('static/com/atomgraph/client/css/core.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
         <link href="{resolve-uri('static/com/atomgraph/client/css/client.css', $ac:contextUri)}" rel="stylesheet" type="text/css"/>
@@ -391,7 +391,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="srx:sparql" mode="ac:ModeChoice">
-        <xsl:apply-templates select="." mode="xhtml:Table"/>
+        <xsl:apply-templates select="." mode="ac:ResultsTable"/>
     </xsl:template>
     
     <!-- NAVBAR ACTIONS -->

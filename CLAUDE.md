@@ -70,3 +70,9 @@ Multi-stage build targeting Tomcat 10.1.4. The `entrypoint.sh` transforms `conte
 - **AtomGraph Core 4.1.x** — shared infrastructure (DataManager base, StartupListener)
 - **Jakarta Servlet 5.0 / Jersey** — JAX-RS implementation
 - **Java 21**, packaged as `ROOT.war` for Tomcat
+
+## XSLT Mode Namespaces
+
+- `xhtml:` modes are childless element primitives: the mode's local name is the XHTML element it emits (`xhtml:Input`, `xhtml:Anchor`, `xhtml:Option`, `xhtml:Title`, `xhtml:Meta`, `xhtml:Script`) — one element, attributes as parameters, content at most a text label, no design-system classes baked in.
+- Emitters with internal element structure are components and take `ac:` with the design system's component name (`ac:AppShell`, `ac:Head`, `ac:Stylesheets`, the `ac:ResultsTable*` family, `ac:PropertyListLabel`/`ac:PropertyListValue`, `ac:FieldShell`). Downstream consumers (LinkedDataHub) name their own components in their own namespace.
+- The unnamed mode is the value leaf: mode-less `apply-templates` renders an object/literal via the default-mode value emitters.

@@ -144,20 +144,6 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
     
-    <!-- LIST MODE -->
-    
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="xhtml:ListItem">
-        <xsl:param name="active" as="xs:boolean?"/>
-
-        <li>
-            <xsl:if test="$active">
-                <xsl:attribute name="class" select="'active'"/>
-            </xsl:if>
-
-            <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="xhtml:Anchor"/>
-        </li>
-    </xsl:template>
-    
     <!-- ACTIONS MODE -->
 
     <!-- an empty extension point: Edit and Delete act on documents, so they live in the action bar
