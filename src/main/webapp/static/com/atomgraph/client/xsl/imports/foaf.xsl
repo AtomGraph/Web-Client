@@ -16,7 +16,6 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
-    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
@@ -163,7 +162,7 @@ exclude-result-prefixes="#all">
 
         <xsl:if test="not($type = 'hidden')">
             <xsl:apply-templates select="." mode="ac:AnnotationTag">
-                <xsl:with-param name="key" select="'&translations;literal'"/>
+                <xsl:with-param name="key" select="'literal'"/>
             </xsl:apply-templates>
         </xsl:if>
     </xsl:template>

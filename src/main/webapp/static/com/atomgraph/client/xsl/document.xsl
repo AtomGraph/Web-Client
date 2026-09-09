@@ -16,7 +16,6 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
-    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
@@ -68,7 +67,8 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF" mode="ac:ResourceForm">
         <xsl:param name="method" select="'post'" as="xs:string"/>
-        <xsl:param name="action" select="xs:anyURI('?_method=PUT')" as="xs:anyURI"/>
+        <!-- the action must carry the browsed URI: a bare relative '?_method=PUT' would replace the whole query string and drop the ?uri= the proxy routes on -->
+        <xsl:param name="action" select="ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), '_method': 'PUT' })" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'resource-form'" as="xs:string?"/>
         <xsl:param name="button-class" select="'ldhc-btn in-primary ap-solid sz-md'" as="xs:string?"/>
@@ -97,16 +97,9 @@ exclude-result-prefixes="#all">
             
             <xsl:apply-templates select="." mode="ac:Legend"/>
 
-            <xsl:choose>
-                <xsl:when test="$ac:forClass and not(key('resources-by-type', '&spin;ConstraintViolation'))">
-                    <xsl:apply-templates select="ac:construct($ldt:ontology, $ac:forClass, $ldt:base)/rdf:RDF/*" mode="#current"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates mode="#current">
-                        <xsl:sort select="ac:label(.)"/>
-                    </xsl:apply-templates>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:apply-templates mode="#current">
+                <xsl:sort select="ac:label(.)"/>
+            </xsl:apply-templates>
 
             <xsl:apply-templates select="." mode="ac:FormActions">
                 <xsl:with-param name="button-class" select="$button-class"/>
@@ -128,7 +121,7 @@ exclude-result-prefixes="#all">
         <div class="form-actions">
             <button type="submit" class="{$button-class}">
                 <span class="msi sm" aria-hidden="true">save</span>
-                <xsl:apply-templates select="key('resources', '&translations;save', ac:translations())" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', 'save', ac:translations())" mode="ac:label"/>
             </button>
         </div>
     </xsl:template>

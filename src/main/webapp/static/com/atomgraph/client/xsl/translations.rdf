@@ -1,77 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Label catalog for the stylesheets: UI strings rendered by Web-Client's own templates,
-looked up as key('resources', 'https://w3id.org/atomgraph/client/xsl/translations.rdf#$id', ac:translations()) and emitted via the
-ac:label mode. Entries are URI resources (not blank nodes) so the identifiers survive the graph
-repository's parse/serialize round-trip. Downstream layers keep their own catalogs for their own templates.
+looked up as key('resources', '$id', ac:translations()) and emitted via the ac:label mode.
+Downstream layers keep their own catalogs for their own templates.
 -->
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xml:base="https://w3id.org/atomgraph/client/xsl/translations.rdf">
-    <rdf:Description rdf:about="#literal">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdf:Description rdf:nodeID="literal">
         <rdfs:label xml:lang="en-US">Literal</rdfs:label>
         <rdfs:label xml:lang="es-ES">Literal</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#resource">
+    <rdf:Description rdf:nodeID="resource">
         <rdfs:label xml:lang="en-US">Resource</rdfs:label>
         <rdfs:label xml:lang="es-ES">Recurso</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#language-tag">
+    <rdf:Description rdf:nodeID="language-tag">
         <rdfs:label xml:lang="en-US">Language tag</rdfs:label>
         <rdfs:label xml:lang="es-ES">Etiqueta de idioma</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#datatype">
+    <rdf:Description rdf:nodeID="datatype">
         <rdfs:label xml:lang="en-US">Datatype</rdfs:label>
         <rdfs:label xml:lang="es-ES">Tipo de dato</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#add-stmt">
+    <rdf:Description rdf:nodeID="add-stmt">
         <rdfs:label xml:lang="en-US">Add another statement</rdfs:label>
         <rdfs:label xml:lang="es-ES">Añadir otra sentencia</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#remove-stmt">
+    <rdf:Description rdf:nodeID="remove-stmt">
         <rdfs:label xml:lang="en-US">Remove this statement</rdfs:label>
         <rdfs:label xml:lang="es-ES">Eliminar esta sentencia</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#save">
+    <rdf:Description rdf:nodeID="save">
         <rdfs:label xml:lang="en-US">Save</rdfs:label>
         <rdfs:label xml:lang="es-ES">Guardar</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#edit">
+    <rdf:Description rdf:nodeID="edit">
         <rdfs:label xml:lang="en-US">Edit</rdfs:label>
         <rdfs:label xml:lang="es-ES">Editar</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#delete">
+    <rdf:Description rdf:nodeID="delete">
         <rdfs:label xml:lang="en-US">Delete</rdfs:label>
         <rdfs:label xml:lang="es-ES">Eliminar</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#export">
+    <rdf:Description rdf:nodeID="export">
         <rdfs:label xml:lang="en-US">Export</rdfs:label>
         <rdfs:label xml:lang="es-ES">Exportar</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#query">
+    <rdf:Description rdf:nodeID="query">
         <rdfs:label xml:lang="en-US">Query</rdfs:label>
         <rdfs:label xml:lang="es-ES">Consultar</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#endpoint">
+    <rdf:Description rdf:nodeID="endpoint">
         <rdfs:label xml:lang="en-US">Endpoint</rdfs:label>
         <rdfs:label xml:lang="es-ES">Punto de acceso</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#confirm-delete">
+    <rdf:Description rdf:nodeID="confirm-delete">
         <rdfs:label xml:lang="en-US">Are you sure?</rdfs:label>
         <rdfs:label xml:lang="es-ES">¿Está seguro?</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#go">
+    <rdf:Description rdf:nodeID="go">
         <rdfs:label xml:lang="en-US">Go</rdfs:label>
         <rdfs:label xml:lang="es-ES">Ir</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#query-editor">
+    <rdf:Description rdf:nodeID="query-editor">
         <rdfs:label xml:lang="en-US">Query editor</rdfs:label>
         <rdfs:label xml:lang="es-ES">Editor de consultas</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#resources">
+    <rdf:Description rdf:nodeID="resources">
         <rdfs:label xml:lang="en-US">Resources</rdfs:label>
         <rdfs:label xml:lang="es-ES">Recursos</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="#query-results">
+    <rdf:Description rdf:nodeID="query-results">
         <rdfs:label xml:lang="en-US">Query results</rdfs:label>
         <rdfs:label xml:lang="es-ES">Resultados de la consulta</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="developed-by">
+        <rdfs:label xml:lang="en-US">Developed by</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Desarrollado por</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="apache-license">
+        <rdfs:label xml:lang="en-US">Apache License</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Licencia Apache</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="previous">
+        <rdfs:label xml:lang="en-US">Previous</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Anterior</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="next">
+        <rdfs:label xml:lang="en-US">Next</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Siguiente</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="rdf-xml">
+        <rdfs:label xml:lang="en-US">RDF/XML</rdfs:label>
+        <rdfs:label xml:lang="es-ES">RDF/XML</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:nodeID="turtle">
+        <rdfs:label xml:lang="en-US">Turtle</rdfs:label>
+        <rdfs:label xml:lang="es-ES">Turtle</rdfs:label>
     </rdf:Description>
 </rdf:RDF>

@@ -16,7 +16,6 @@ limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
-    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
@@ -143,14 +142,14 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             <caption class="ldhc-vh">
-                <xsl:apply-templates select="key('resources', '&translations;resources', ac:translations())" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', 'resources', ac:translations())" mode="ac:label"/>
             </caption>
             <thead>
                 <tr>
                     <xsl:if test="$anchor-column">
                         <th scope="col">
                             <xsl:apply-templates select="key('resources', '&rdfs;Resource', document(ac:document-uri('&rdfs;')))" mode="ac:label" use-when="system-property('xsl:product-name') = 'SAXON'"/>
-                            <xsl:value-of use-when="system-property('xsl:product-name') eq 'SaxonJS'">Resource</xsl:value-of>
+                            <xsl:apply-templates select="key('resources', 'resource', ac:translations())" mode="ac:label" use-when="system-property('xsl:product-name') eq 'SaxonJS'"/>
                         </th>
                     </xsl:if>
 

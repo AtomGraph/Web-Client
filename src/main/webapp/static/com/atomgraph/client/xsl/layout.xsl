@@ -17,7 +17,6 @@ limitations under the License.
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY a      "https://w3id.org/atomgraph/core#">
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
-    <!ENTITY translations "https://w3id.org/atomgraph/client/xsl/translations.rdf#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY xhv    "http://www.w3.org/1999/xhtml/vocab#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
@@ -61,7 +60,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ldt:base" as="xs:anyURI?"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
     <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
-    <xsl:param name="ac:forClass" as="xs:anyURI?"/>
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
     <xsl:param name="ac:query" as="xs:string?"/>
     <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
@@ -94,18 +92,6 @@ exclude-result-prefixes="#all">
 
     <rdf:Description rdf:about="https://atomgraph.com/#company">
         <dct:title>AtomGraph</dct:title>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&xhv;prev">
-        <rdfs:label xml:lang="en">Previous</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:about="&xhv;next">
-        <rdfs:label xml:lang="en">Next</rdfs:label>
-    </rdf:Description>
-
-    <rdf:Description rdf:nodeID="delete">
-        <rdfs:label xml:lang="en">Delete</rdfs:label>
     </rdf:Description>
 
     <xsl:template match="/">
@@ -202,14 +188,14 @@ exclude-result-prefixes="#all">
                     </xsl:with-param>
                 </xsl:apply-templates>
                 <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
-                    <xsl:apply-templates select="key('resources', '&translations;go', ac:translations())" mode="ac:label"/>
+                    <xsl:apply-templates select="key('resources', 'go', ac:translations())" mode="ac:label"/>
                 </button>
             </form>
 
             <ul class="nav">
                 <li>
                     <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">
-                        <xsl:apply-templates select="key('resources', '&translations;query-editor', ac:translations())" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', 'query-editor', ac:translations())" mode="ac:label"/>
                     </a>
                 </li>
             </ul>
@@ -284,8 +270,8 @@ exclude-result-prefixes="#all">
         <div class="footer">
             <p>
                 <xsl:sequence select="format-date(current-date(), '[Y]', ac:langs()[1], (), ())"/>.
-                Developed by <xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
-                <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>.
+                <xsl:apply-templates select="key('resources', 'developed-by', ac:translations())" mode="ac:label"/><xsl:text> </xsl:text><xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
+                <a href="http://www.apache.org/licenses/LICENSE-2.0"><xsl:apply-templates select="key('resources', 'apache-license', ac:translations())" mode="ac:label"/></a>.
             </p>
         </div>
     </xsl:template>
@@ -375,7 +361,7 @@ exclude-result-prefixes="#all">
             
     <xsl:template match="rdf:RDF" mode="ac:ModeChoice">
         <xsl:choose>
-            <xsl:when test="$ac:mode = '&ac;EditMode' or $ac:forClass">
+            <xsl:when test="$ac:mode = '&ac;EditMode'">
                 <xsl:apply-templates select="." mode="ac:ResourceForm"/>
             </xsl:when>
             <xsl:when test="$ac:mode = '&ac;MapMode'">
@@ -402,19 +388,19 @@ exclude-result-prefixes="#all">
                 <a class="ldhc-btn in-neutral ap-outline sz-sm" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
                     <span class="msi sm" aria-hidden="true">edit</span>
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&translations;edit', ac:translations())" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', 'edit', ac:translations())" mode="ac:label"/>
                     </xsl:value-of>
                 </a>
             </xsl:if>
 
-            <form action="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri()))})}?_method=DELETE" method="post">
+            <form action="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), '_method': 'DELETE' })}" method="post">
                 <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit">
                     <xsl:attribute name="data-confirm">
-                        <xsl:apply-templates select="key('resources', '&translations;confirm-delete', ac:translations())" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', 'confirm-delete', ac:translations())" mode="ac:label"/>
                     </xsl:attribute>
                     <span class="msi sm" aria-hidden="true">delete</span>
                     <xsl:value-of>
-                        <xsl:apply-templates select="key('resources', '&translations;delete', ac:translations())" mode="ac:label"/>
+                        <xsl:apply-templates select="key('resources', 'delete', ac:translations())" mode="ac:label"/>
                     </xsl:value-of>
                 </button>
             </form>
@@ -505,15 +491,15 @@ exclude-result-prefixes="#all">
         <details class="menu">
             <summary class="ldhc-btn in-neutral ap-outline sz-sm">
                 <span class="msi sm" aria-hidden="true">download</span>
-                <xsl:apply-templates select="key('resources', '&translations;export', ac:translations())" mode="ac:label"/>
+                <xsl:apply-templates select="key('resources', 'export', ac:translations())" mode="ac:label"/>
                 <span class="msi sm" aria-hidden="true">expand_more</span>
             </summary>
             <ul class="menu-list">
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'application/rdf+xml' })}">RDF/XML</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'application/rdf+xml' })}"><xsl:apply-templates select="key('resources', 'rdf-xml', ac:translations())" mode="ac:label"/></a>
                 </li>
                 <li>
-                    <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'text/turtle' })}">Turtle</a>
+                    <a href="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), 'accept': 'text/turtle' })}"><xsl:apply-templates select="key('resources', 'turtle', ac:translations())" mode="ac:label"/></a>
                 </li>
             </ul>
         </details>

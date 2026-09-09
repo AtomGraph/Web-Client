@@ -93,10 +93,6 @@
 
 # UI keywords
 
-# rename to :Create?
-:ConstructMode rdfs:label "Create" ;
-    rdfs:isDefinedBy : .
-
 :Delete rdfs:label "Delete" ;
     rdfs:isDefinedBy : .
 

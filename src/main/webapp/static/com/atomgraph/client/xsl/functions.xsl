@@ -69,26 +69,6 @@ exclude-result-prefixes="#all"
         </xsl:message>
     </xsl:function>
     
-    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
-    <xsl:function name="ac:construct" as="document-node()*" override-extension-function="no">
-        <xsl:param name="ontology" as="xs:anyURI"/>
-        <xsl:param name="classes" as="xs:anyURI*"/>
-        <xsl:param name="base" as="xs:anyURI"/>
-            
-        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
-            Not implemented -- com.atomgraph.client.writer.function.ConstructForClass needs to be registered as an extension function
-        </xsl:message>
-    </xsl:function>
-    
-    <!-- function stub so that Saxon-EE doesn't complain when compiling SEF -->
-    <xsl:function name="ac:construct" as="document-node()*" override-extension-function="no">
-        <xsl:param name="query" as="xs:string"/>
-            
-        <xsl:message use-when="system-property('xsl:product-name') = 'SAXON'" terminate="yes">
-            Not implemented -- com.atomgraph.client.writer.function.Construct needs to be registered as an extension function
-        </xsl:message>
-    </xsl:function>
-    
     <!-- the languages the reader accepts, most preferred first, reduced to primary subtags and deduped.
 
          Server-side that is the Accept-Language list the writer supplies; client-side LinkedDataHub overrides this whole
@@ -117,11 +97,10 @@ exclude-result-prefixes="#all"
         <xsl:sequence select="((for $i in 1 to count($langs) return if (lang($langs[$i], $value)) then $i else ())[1], count($langs) + 1)[1]"/>
     </xsl:function>
 
-    <!-- the UI label catalog. The canonical URI is location-mapped to the bundled copy (prefix-mapping.n3), so
-         resolution stays local like the system ontologies'; importing layers override this function to resolve
-         the catalog their own way (e.g. a same-origin URL in the browser) -->
+    <!-- the UI label catalog: the static file beside the stylesheets. Importing layers override this function
+         to resolve the catalog their own way (e.g. a same-origin URL in the browser) -->
     <xsl:function name="ac:translations" as="document-node()">
-        <xsl:sequence select="document('https://w3id.org/atomgraph/client/xsl/translations.rdf')"/>
+        <xsl:sequence select="document('translations.rdf')"/>
     </xsl:function>
 
     <xsl:function name="ac:label" as="xs:string?">

@@ -237,8 +237,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
         <xsl:param name="violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
-        <xsl:param name="constructor" select="if ($ldt:ontology) then ac:construct($ldt:ontology, $ac:forClass, $ldt:base) else ()" as="document-node()?"/>
-        <xsl:param name="template" select="$constructor/rdf:RDF/*[@rdf:nodeID][every $type in rdf:type/@rdf:resource satisfies current()/rdf:type/@rdf:resource = $type]" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:*" as="xs:string*" tunnel="yes"/>
 
         <fieldset>
@@ -260,10 +258,7 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
-            <xsl:if test="not($template)">
-                <xsl:message>Template is not defined for resource '<xsl:value-of select="@rdf:about | @rdf:nodeID"/>' with types '<xsl:value-of select="rdf:type/@rdf:resource"/>'</xsl:message>
-            </xsl:if>
-            <xsl:apply-templates select="* | $template/*[not(concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype) = current()/*/concat(namespace-uri(), local-name(), @xml:lang, @rdf:datatype))]" mode="#current">
+            <xsl:apply-templates select="*" mode="#current">
                 <xsl:sort select="ac:property-label(.)"/>
                 <xsl:with-param name="violations" select="$violations"/>
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
@@ -272,25 +267,6 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <!-- LEGEND -->
-
-    <xsl:template match="*[rdf:type/@rdf:resource = $ac:forClass]" mode="ac:Legend" priority="1" use-when="system-property('xsl:product-name') = 'SAXON'">
-        <xsl:param name="forClass" select="$ac:forClass" as="xs:anyURI"/>
-
-        <xsl:for-each select="key('resources', $forClass, document(ac:document-uri($forClass)))">
-            <legend>
-                <xsl:value-of>
-                    <xsl:apply-templates select="key('resources', '&ac;ConstructMode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
-                </xsl:value-of>
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="ac:label(.)"/>
-            </legend>
-            <xsl:if test="ac:description(.)">
-                <p class="description">
-                    <xsl:apply-templates select="." mode="ac:description"/>
-                </p>
-            </xsl:if>
-        </xsl:for-each>
-    </xsl:template>
 
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Legend"/>
 

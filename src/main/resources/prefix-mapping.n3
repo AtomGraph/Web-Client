@@ -3,7 +3,6 @@
 [] lm:mapping
 
    [ lm:name "https://w3id.org/atomgraph/client#" ;                         lm:altName "com/atomgraph/client/ns.ttl" ] ,
-   [ lm:name "https://w3id.org/atomgraph/client/xsl/translations.rdf" ;     lm:altName "com/atomgraph/client/translations.rdf" ] ,
    [ lm:name "http://rdfs.org/sioc/ns#" ;                                   lm:altName "com/atomgraph/client/sioc.owl" ] ,
    [ lm:name "http://rdfs.org/ns/void#" ;                                   lm:altName "com/atomgraph/client/void.owl" ] ,
    [ lm:name "https://www.w3.org/1999/xhtml/vocab#" ;                       lm:altName "com/atomgraph/client/xhv.ttl" ] ,
