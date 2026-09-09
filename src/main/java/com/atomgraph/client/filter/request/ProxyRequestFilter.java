@@ -75,10 +75,10 @@ import org.slf4j.LoggerFactory;
  * {@code MediaTypes} snapshot it includes langs registered after class-loading, such as RDF/POST):
  * RDF langs parse into a {@link Model} and SPARQL results langs into a {@link ResultSet}, both
  * re-served through content negotiation - including (X)HTML via the XSLT writers, which is this
- * application's purpose. Error responses and non-RDF bodies relay verbatim: their bodies are
- * diagnostic or opaque representations, not negotiable content, and the origin's status and
- * validators must reach the client unchanged (a rejected write - 412 on a stale {@code If-Match},
- * 401/403 on an unauthorized delta - must surface as that status).
+ * application's purpose. Error responses keep the origin's status and validators but their RDF
+ * diagnostic bodies re-serve through the same negotiation, so a browser gets the rendered error
+ * page rather than raw RDF bytes (a rejected write - 412 on a stale {@code If-Match}, 401/403 on
+ * an unauthorized delta - must surface as that status); non-RDF and unparseable bodies relay verbatim.
  *
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
@@ -251,15 +251,31 @@ public class ProxyRequestFilter implements ContainerRequestFilter
             return overlayHeaders(rb.build(), clientResponse, true);
         }
 
-        // error responses relay verbatim: the body is a diagnostic representation, not negotiable
-        // content, so it must not go through the Model/ResultSet re-serialization branches - parsing a
-        // non-RDF or empty error body there throws and masks the origin's status as 502/406. A proxied
-        // write that the origin rejects (412 on a stale If-Match, 401/403 on an unauthorized delta)
-        // must reach the client as that status, with the origin's validators forwarded
+        // error responses keep the origin's status but re-serve an RDF diagnostic body through content
+        // negotiation - this client's consumer is a browser, and relaying e.g. RDF/Thrift bytes verbatim
+        // on a 403 gives it nothing it can render. The entity is buffered first so a body that is not
+        // the RDF its Content-Type claims falls back to the verbatim relay instead of masking the
+        // origin's status as 502/406. A proxied write that the origin rejects (412 on a stale If-Match,
+        // 401/403 on an unauthorized delta) must reach the client as that status either way, with the
+        // origin's validators forwarded
         Response.Status.Family family = clientResponse.getStatusInfo().getFamily();
         if (family == Response.Status.Family.CLIENT_ERROR || family == Response.Status.Family.SERVER_ERROR)
         {
             clientResponse.bufferEntity();
+
+            MediaType errorType = clientResponse.getMediaType();
+            if (RDFLanguages.contentTypeToLang(new MediaType(errorType.getType(), errorType.getSubtype()).toString()) != null)
+                try
+                {
+                    clientResponse.getHeaders().putSingle(ModelProvider.REQUEST_URI_HEADER, targetURI.toString());
+                    Model errorModel = clientResponse.readEntity(Model.class);
+                    return overlayHeaders(getResponse(errorModel, clientResponse.getStatusInfo()), clientResponse, true);
+                }
+                catch (ProcessingException | RiotException ex)
+                {
+                    if (log.isWarnEnabled()) log.warn("Error body from proxied URI {} typed as RDF but unparseable - relaying verbatim", targetURI);
+                }
+
             Response.ResponseBuilder rb = Response.status(clientResponse.getStatus()).
                 type(clientResponse.getMediaType()).
                 entity(clientResponse.readEntity(InputStream.class));
