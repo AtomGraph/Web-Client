@@ -176,7 +176,7 @@ LIMIT 100</xsl:param>
 
         <!-- result of CONSTRUCT or DESCRIBE -->
         <xsl:if test="$result-doc/rdf:RDF">
-            <xsl:apply-templates select="." mode="ac:ModeList"/>
+            <xsl:apply-templates select="." mode="ac:ModeSwitcher"/>
 
             <xsl:for-each select="$result-doc/rdf:RDF">
                 <xsl:choose>

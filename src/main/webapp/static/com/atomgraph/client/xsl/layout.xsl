@@ -254,7 +254,7 @@ exclude-result-prefixes="#all">
 
             <xsl:apply-templates select="." mode="ac:Breadcrumb"/>
 
-            <xsl:apply-templates select="." mode="ac:ModeList"/>
+            <xsl:apply-templates select="." mode="ac:ModeSwitcher"/>
 
             <xsl:apply-templates select="." mode="ac:HeaderActions"/>
 
@@ -380,7 +380,7 @@ exclude-result-prefixes="#all">
         <xsl:apply-templates select="." mode="ac:ResultsTable"/>
     </xsl:template>
     
-    <!-- NAVBAR ACTIONS -->
+    <!-- HEADER ACTIONS -->
     
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:HeaderActions" priority="1">
         <div class="actions">
@@ -413,11 +413,11 @@ exclude-result-prefixes="#all">
     
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Create"/>
 
-    <!-- MODE LIST -->
+    <!-- MODE SWITCHER -->
 
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:ModeList" priority="2"/>
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:ModeSwitcher" priority="2"/>
 
-    <xsl:template match="rdf:RDF[base-uri()]" mode="ac:ModeList" priority="1">
+    <xsl:template match="rdf:RDF[base-uri()]" mode="ac:ModeSwitcher" priority="1">
         <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI"/>
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
@@ -432,7 +432,7 @@ exclude-result-prefixes="#all">
             <ul class="menu-list">
                 <xsl:for-each select="$modes">
                     <xsl:sort select="ac:label(.)"/>
-                    <xsl:apply-templates select="." mode="ac:ModeListItem">
+                    <xsl:apply-templates select="." mode="ac:ModeSwitcherItem">
                         <xsl:with-param name="base-uri" select="$base-uri" tunnel="yes"/>
                         <xsl:with-param name="active" select="@rdf:about = $ac:mode"/>
                     </xsl:apply-templates>
@@ -441,9 +441,9 @@ exclude-result-prefixes="#all">
         </details>
     </xsl:template>
     
-    <xsl:template match="srx:sparql" mode="ac:ModeList"/>
+    <xsl:template match="srx:sparql" mode="ac:ModeSwitcher"/>
     
-    <xsl:template match="*[@rdf:about]" mode="ac:ModeListItem">
+    <xsl:template match="*[@rdf:about]" mode="ac:ModeSwitcherItem">
         <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI" tunnel="yes"/>
         <xsl:param name="active" as="xs:boolean"/>
         <xsl:param name="class" select="if ($active) then 'is-active' else ()" as="xs:string?"/>
@@ -464,7 +464,7 @@ exclude-result-prefixes="#all">
         </li>
     </xsl:template>
     
-    <xsl:template match="*" mode="ac:ModeList"/>
+    <xsl:template match="*" mode="ac:ModeSwitcher"/>
 
     <!-- HEADER -->
 
@@ -472,7 +472,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
 
-        <xsl:apply-templates select="." mode="ac:Alert">
+        <xsl:apply-templates select="." mode="ac:InlineAlert">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="body" as="item()*">

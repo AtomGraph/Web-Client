@@ -906,7 +906,7 @@ exclude-result-prefixes="#all">
     <!-- the design system's inline alert: variant, icon and title/text slots, plus a $body tail for
          links, technical detail or actions. Block-header alerts put their h2 in $body to keep the
          document outline -->
-    <xsl:template match="node() | @*" mode="ac:Alert">
+    <xsl:template match="node() | @*" mode="ac:InlineAlert">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="variant" select="'va-negative'" as="xs:string"/>
         <xsl:param name="class" select="'ldhc-alert ' || $variant" as="xs:string"/>
