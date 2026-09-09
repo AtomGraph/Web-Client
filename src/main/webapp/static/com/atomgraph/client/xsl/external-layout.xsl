@@ -37,30 +37,10 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <xsl:import href="converters/RDFXML2SVG.xsl"/>
-    <xsl:import href="group-sort-triples.xsl"/>
-    <xsl:import href="functions.xsl"/>
-    <xsl:import href="imports/default.xsl"/>
+    <xsl:import href="common.xsl"/>
+    <!-- above the whole common layer: the external (proxy) anchor and value-leaf overrides must win
+         over every renderer below; nothing above common defines the same matches -->
     <xsl:import href="imports/external.xsl"/>
-    <xsl:import href="imports/dbpedia-owl.xsl"/>
-    <!-- imported first among the vocabulary modules: sh:name/sh:description are modeling-layer fallbacks
-         that must lose to every data-layer label, including the language-negotiated ladders that follow -->
-    <xsl:import href="imports/sh.xsl"/>
-    <xsl:import href="imports/dc.xsl"/>
-    <xsl:import href="imports/dct.xsl"/>
-    <xsl:import href="imports/dh.xsl"/>
-    <xsl:import href="imports/doap.xsl"/>
-    <xsl:import href="imports/foaf.xsl"/>
-    <xsl:import href="imports/ldt.xsl"/>
-    <xsl:import href="imports/rdf.xsl"/>
-    <xsl:import href="imports/rdfs.xsl"/>
-    <xsl:import href="imports/sd.xsl"/>
-    <xsl:import href="imports/schema.xsl"/>
-    <xsl:import href="imports/sioc.xsl"/>
-    <xsl:import href="imports/skos.xsl"/>
-    <xsl:import href="imports/sp.xsl"/>
-    <xsl:import href="resource.xsl"/>
-    <xsl:import href="document.xsl"/>
-    <xsl:import href="container.xsl"/>
     
     <xsl:include href="layout.xsl"/>
     
