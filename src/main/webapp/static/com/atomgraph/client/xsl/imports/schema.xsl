@@ -62,8 +62,28 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="(schema2:description[not(@xml:lang)], schema2:description)[1]/text()"/>
     </xsl:template>
     
+    <xsl:template match="*[schema1:image/@rdf:resource or schema2:image/@rdf:resource]" mode="ac:image" priority="2">
+        <xsl:sequence select="(schema1:image/@rdf:resource, schema2:image/@rdf:resource)[1]"/>
+    </xsl:template>
+
+    <xsl:template match="*[schema1:logo/@rdf:resource or schema2:logo/@rdf:resource]" mode="ac:image" priority="1">
+        <xsl:sequence select="(schema1:logo/@rdf:resource, schema2:logo/@rdf:resource)[1]"/>
+    </xsl:template>
+
+    <xsl:template match="*[schema1:thumbnailUrl/@rdf:resource or schema2:thumbnailUrl/@rdf:resource]" mode="ac:image">
+        <xsl:sequence select="(schema1:thumbnailUrl/@rdf:resource, schema2:thumbnailUrl/@rdf:resource)[1]"/>
+    </xsl:template>
+
+    <!-- the anchor navigates (proxied for external URIs via $href); the image bytes load from the raw URI -->
     <xsl:template match="schema1:image/@rdf:resource | schema2:image/@rdf:resource | schema1:logo/@rdf:resource | schema2:logo/@rdf:resource | schema1:thumbnailUrl/@rdf:resource | schema2:thumbnailUrl/@rdf:resource">
-        <a href="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <a href="{$href}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
             <img src="{.}">
                 <xsl:attribute name="alt">
                     <xsl:value-of>

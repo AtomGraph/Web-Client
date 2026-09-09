@@ -22,6 +22,7 @@ limitations under the License.
 <xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:dbpedia-owl="&dbpedia-owl;"
@@ -47,8 +48,16 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="dbpedia-owl:thumbnail/@rdf:resource"/>
     </xsl:template>
 
+    <!-- the anchor navigates (proxied for external URIs via $href); the image bytes load from the raw URI -->
     <xsl:template match="dbpedia-owl:thumbnail/@rdf:resource">
-        <a href="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <a href="{$href}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
             <img src="{.}">
                 <xsl:attribute name="alt">
                     <xsl:value-of>

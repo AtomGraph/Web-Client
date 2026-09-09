@@ -42,6 +42,9 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/default.xsl"/>
     <xsl:import href="imports/external.xsl"/>
     <xsl:import href="imports/dbpedia-owl.xsl"/>
+    <!-- imported first among the vocabulary modules: sh:name/sh:description are modeling-layer fallbacks
+         that must lose to every data-layer label, including the language-negotiated ladders that follow -->
+    <xsl:import href="imports/sh.xsl"/>
     <xsl:import href="imports/dc.xsl"/>
     <xsl:import href="imports/dct.xsl"/>
     <xsl:import href="imports/dh.xsl"/>

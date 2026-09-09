@@ -45,7 +45,14 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">
-        <a href="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <a href="{$href}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
             <xsl:sequence select="."/>
         </a>
     </xsl:template>
