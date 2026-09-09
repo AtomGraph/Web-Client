@@ -394,7 +394,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <form action="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), '_method': 'DELETE' })}" method="post">
-                <button class="ldhc-btn in-destructive ap-outline sz-sm btn-delete" type="submit">
+                <button class="ldhc-btn in-negative ap-outline sz-sm btn-delete" type="submit">
                     <xsl:attribute name="data-confirm">
                         <xsl:apply-templates select="key('resources', 'confirm-delete', ac:translations())" mode="ac:label"/>
                     </xsl:attribute>
@@ -421,6 +421,8 @@ exclude-result-prefixes="#all">
         <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI"/>
         <xsl:param name="modes" select="key('resources-by-type', ('&ac;DocumentMode'), document(ac:document-uri('&ac;')))" as="element()*"/>
         
+        <!-- a native disclosure, not the core Menu: these standalone pages run without the CSR menu
+             handler, and <details> is the no-script dropdown -->
         <details class="menu">
             <summary class="ldhc-btn in-neutral ap-outline sz-sm" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
                 <xsl:value-of>
