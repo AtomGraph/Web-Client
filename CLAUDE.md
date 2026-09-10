@@ -36,10 +36,10 @@ Release workflow uses `release.sh` which runs `mvn release:clean release:prepare
 
 ### XSLT Rendering
 
-Stylesheets live in `src/main/webapp/static/com/atomgraph/client/xsl/bootstrap/2.3.2/`. The main entry points are:
+Stylesheets live in `src/main/webapp/static/com/atomgraph/client/xsl/`. The main entry points are:
 - `external-layout.xsl` — for external Linked Data (default in `web.xml`)
 - `internal-layout.xsl` — for internal graph stores
-- `layout.xsl` — Bootstrap 2.3.2 based, handles RDF-to-HTML transformation
+- `layout.xsl` — handles RDF-to-HTML transformation, emitting the LinkedDataHub design system's `ldhc-*` primitives against the vendored kit in `static/com/atomgraph/client/css/`
 
 XSLT extension functions in `writer/function/` (`Construct`, `ConstructForClass`, `UUID`) are registered in `Application.java` and callable from stylesheets.
 

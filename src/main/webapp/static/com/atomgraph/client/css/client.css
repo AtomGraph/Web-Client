@@ -17,23 +17,23 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 
 /* ---------- page shell ---------- */
 .header { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-3) var(--sp-6); background: var(--surface-0); border-bottom: 1px solid var(--border-default); flex-wrap: wrap; }
-.header .brand { display: inline-flex; align-items: center; flex-shrink: 0; }
-.header .brand img { display: block; max-height: 36px; }
+.header .logo { display: inline-flex; align-items: center; flex-shrink: 0; }
+.header .logo img { display: block; max-height: 36px; }
 .header .uri-form { display: flex; align-items: center; gap: var(--sp-2); flex: 1 1 24rem; min-width: 0; margin: 0; }
 .header .uri-form .ldhc-field { flex: 1 1 auto; min-width: 0; }
-.header .nav { display: flex; align-items: center; gap: var(--sp-4); list-style: none; margin: 0 0 0 auto; padding: 0; }
+.header .actions { display: flex; align-items: center; gap: var(--sp-4); margin-left: auto; }
 
 .action-bar { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-2) var(--sp-6); background: var(--surface-0); border-bottom: 1px solid var(--border-default); flex-wrap: wrap; }
 .ab-left { flex: 0 0 auto; }
 .ab-main { display: flex; align-items: center; gap: var(--sp-3); flex: 1 1 auto; min-width: 0; }
-.ab-main .breadcrumb { flex: 1 1 auto; }
+.ab-main .crumbs { flex: 1 1 auto; }
 .ab-main .actions { display: flex; align-items: center; gap: var(--sp-2); }
 .ab-main .actions form { margin: 0; }
 
-.breadcrumb { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; min-width: 0; overflow: hidden; }
-.breadcrumb li { display: flex; align-items: center; gap: 4px; min-width: 0; }
-.breadcrumb li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.breadcrumb .msi { color: var(--fg-hint); flex-shrink: 0; }
+.crumbs { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; min-width: 0; overflow: hidden; }
+.crumbs li { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.crumbs li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crumbs .msi { color: var(--fg-hint); flex-shrink: 0; }
 
 .content { display: flex; align-items: flex-start; gap: var(--sp-5); width: 100%; max-width: 1400px; margin: 0 auto; padding: var(--sp-5) var(--sp-6); }
 .main { flex: 1 1 auto; min-width: 0; }

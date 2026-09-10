@@ -158,9 +158,9 @@ exclude-result-prefixes="#all">
     </xsl:template>
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Header">
-        <div class="header">
+        <div class="header" role="banner">
             <xsl:if test="$ldt:base and doc-available($ldt:base)">
-                <a class="brand" href="{$ldt:base}">
+                <a class="logo" href="{$ldt:base}">
                     <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
                         <img src="{foaf:logo/@rdf:resource}">
                             <xsl:attribute name="alt">
@@ -192,13 +192,11 @@ exclude-result-prefixes="#all">
                 </button>
             </form>
 
-            <ul class="nav">
-                <li>
-                    <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">
-                        <xsl:apply-templates select="key('resources', 'query-editor', ac:translations())" mode="ac:label"/>
-                    </a>
-                </li>
-            </ul>
+            <div class="actions">
+                <a href="{ac:build-uri((), map{ 'mode': '&ac;QueryEditorMode' })}">
+                    <xsl:apply-templates select="key('resources', 'query-editor', ac:translations())" mode="ac:label"/>
+                </a>
+            </div>
         </div>
 
         <xsl:apply-templates select="." mode="ac:ActionBar"/>
@@ -267,7 +265,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:ActionBarRight"/>
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Footer">
-        <div class="footer">
+        <div class="footer" role="contentinfo">
             <p>
                 <xsl:sequence select="format-date(current-date(), '[Y]', ac:langs()[1], (), ())"/>.
                 <xsl:apply-templates select="key('resources', 'developed-by', ac:translations())" mode="ac:label"/><xsl:text> </xsl:text><xsl:apply-templates select="key('resources', key('resources', '', document(''))/foaf:maker/@rdf:resource, document(''))/@rdf:about" mode="xhtml:Anchor"/>.
