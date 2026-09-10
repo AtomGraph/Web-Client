@@ -31,6 +31,7 @@ xmlns:rdfs="&rdfs;"
 xmlns:xsd="&xsd;"
 xmlns:owl="&owl;"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:map="http://www.w3.org/2005/xpath-functions/map"
 xmlns:math="http://www.w3.org/2005/xpath-functions/math"
 exclude-result-prefixes="#all">
 
@@ -39,8 +40,11 @@ exclude-result-prefixes="#all">
     <!-- 1. position resource nodes (optionally also literals) randomly -->
     <!-- 2. move nodes in a loop using the force-directed algorithm -->
     <!-- 3. draw lines between the nodes, calculating the correct intersection with the node border -->
-    <!-- Note: only "flat" RDF/XML (properties grouped into descriptions; no nesting) is supported. It's called RDFXML_PLAIN in Apache Jena. -->
-    
+    <!-- Note: only Apache Jena's RDFXML_PLAIN form is supported: every subject is an
+         rdf:Description with rdf:type inlined as an explicit property (never a typed
+         element like owl:Class), properties are grouped into the description, and
+         there is no blank-node nesting. -->
+
     <xsl:output method="xml" indent="yes" encoding="UTF-8" media-type="image/svg+xml"/>
     <xsl:strip-space elements="*"/>
 
@@ -334,229 +338,204 @@ exclude-result-prefixes="#all">
 
     <!-- POSITIONING -->
 
-    <!-- positioning loop -->
+    <!-- positioning loop.
+         Fruchterman-Reingold as the cited paper defines it (repulsion k^2/d,
+         attraction d^2/k along adjacency, temperature-capped displacement with
+         t - t/(step+1) cooling, frame clamping, circle seed), with the machinery
+         rebuilt for performance:
+         - positions live in ONE map(xs:string, map(*)) keyed by node id, so lookups
+           are O(1) map:get where the former sequence-of-maps predicate scans
+           ($seq[?node-id eq $id]) made every step O(n^3);
+         - each step buckets the nodes into a spatial grid of 0.7-spring-length cells
+           and repels only against a deterministic sample (at most 16) of the 3x3
+           cell neighborhood - a ~2k cutoff radius, the customary grid approximation
+           of FR - instead of all pairs;
+         - the per-node displacement is a single XPath expression (per-pair XSLT
+           instructions dominated the profile), and repulsion needs no sqrt in the
+           delta * k^2 / d^2 form;
+         - the maps are deliberately declared as="map(*)", not the precise
+           map(xs:string, map(*)): SaxonJS validates a declared deep map type
+           entry by entry on EVERY function call and parameter binding, which
+           alone made the hot path O(n) per call (measured as the single largest
+           cost). The key/value shapes are documented here instead.
+         Corrected against the former implementation:
+         - repulsion is counted once per node (the former edge-record regrouping
+           summed it once per incident edge record, scaling it by node degree);
+         - attraction acts once per adjacent pair (the former bidirectional edge
+           list pulled every spring twice);
+         - the canvas clamp is a rectangular frame clamp followed by a radial
+           projection onto the inscribed ellipse (the former chain mixed the axes
+           and took abs() of negative sqrt arguments);
+         - coincident nodes separate along a deterministic direction (they used to
+           contribute no force and could stick forever).
+         $spring-stiffness is retained for signature compatibility but was never
+         used by the force model, before or now. -->
 
     <xsl:template name="ac:SVGPositioningLoop">
         <xsl:param name="svg" as="document-node()"/>
         <xsl:param name="count" as="xs:integer"/>
         <xsl:param name="temperature" select="$width div 10" as="xs:double"/>
-        <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
-            <xsl:variable name="force-nodes" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]" as="element()*"/>
+
+        <xsl:variable name="force-nodes" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]" as="element()*"/>
+        <xsl:variable name="node-ids" select="$force-nodes/@id ! string(.)" as="xs:string*"/>
+        <xsl:variable name="force-node-count" select="count($force-nodes)" as="xs:integer"/>
+        <!-- initial placement on a circle, in document order -->
+        <xsl:variable name="seed" as="map(*)">
+            <xsl:map>
+                <xsl:for-each select="$force-nodes">
+                    <xsl:map-entry key="string(@id)" select="map{
+                        'x': math:cos(math:pi() * (2 * position() div $force-node-count)) * ($width div 2 - 10) + ($width div 2),
+                        'y': math:sin(math:pi() * (2 * position() div $force-node-count)) * ($height div 2 - 10) + ($height div 2) }"/>
+                </xsl:for-each>
+            </xsl:map>
+        </xsl:variable>
+        <!-- adjacent nodes as a union of resources and literals (in both directions),
+             computed once - not per iteration -->
+        <xsl:variable name="adjacency" as="map(*)">
+            <xsl:map>
+                <xsl:for-each select="$force-nodes">
+                    <xsl:variable name="to-resources" select="key('subjects', following-sibling::svg:g[@class = 'property']/@resource)" as="element()*"/>
+                    <xsl:variable name="from-resources" select="key('adjacent-resources', current()/@about)/svg:g[@about]" as="element()*"/>
+                    <xsl:variable name="to-literals" select="following-sibling::svg:g[@class = 'property']/svg:g[@class = 'object'][svg:rect]" as="element()*"/>
+                    <xsl:variable name="from-literals" select="self::svg:g[@class = 'object'][svg:rect]/../preceding-sibling::svg:g[@class = 'subject']" as="element()*"/>
+                    <xsl:map-entry key="string(@id)"
+                        select="((($to-resources | $from-resources | $to-literals | $from-literals) except .)/@id) ! string(.)"/>
+                </xsl:for-each>
+            </xsl:map>
+        </xsl:variable>
+
+        <xsl:variable name="positions" as="map(*)">
             <xsl:iterate select="1 to $count">
-                <xsl:param name="node-adjacency" as="map(xs:string, item()*)*">
-                    <xsl:variable name="force-node-count" select="count($force-nodes)" as="xs:integer"/>
-                    <xsl:for-each select="$force-nodes">
-                        <!-- adjacent nodes as a union of resources and literals (in both directions) -->
-                        <xsl:variable name="to-resources" select="key('subjects', following-sibling::svg:g[@class = 'property']/@resource)" as="element()*"/>
-                        <xsl:variable name="from-resources" select="key('adjacent-resources', current()/@about)/svg:g[@about]" as="element()*"/>
-                        <xsl:variable name="to-literals" select="following-sibling::svg:g[@class = 'property']/svg:g[@class = 'object'][svg:rect]" as="element()*"/>
-                        <xsl:variable name="from-literals" select="self::svg:g[@class = 'object'][svg:rect]/../preceding-sibling::svg:g[@class = 'subject']" as="element()*"/>
-                        <xsl:variable name="adjacent-nodes" select="$to-resources | $from-resources | $to-literals | $from-literals" as="element()*"/>
-                        <xsl:map>
-                            <xsl:map-entry key="'node-id'" select="@id"/>
-                            <xsl:map-entry key="'x'" select="math:cos(math:pi() * (2 * position() div $force-node-count)) * ($width div 2 - 10) + ($width div 2)"/>
-                            <xsl:map-entry key="'y'" select="math:sin(math:pi() * (2 * position() div $force-node-count)) * ($height div 2 - 10) + ($height div 2)"/>
-                            <xsl:map-entry key="'adjacent-ids'" select="($adjacent-nodes except current())/@id"/>
-                            <xsl:map-entry key="'non-adjacent-ids'" select="($force-nodes except $adjacent-nodes except current())/@id"/>
-                        </xsl:map>
-                    </xsl:for-each>
-                </xsl:param>
-                <xsl:param name="edges" select="fold-left($node-adjacency, (), function($a, $b) { ($a, for $adjacent-id in $b?adjacent-ids
-                    return map{ 'v-id': $b?node-id, 'u-id': $adjacent-id }) })" as="map(xs:string, item())*"/>
+                <xsl:param name="positions" select="$seed" as="map(*)"/>
                 <xsl:param name="step" select="1" as="xs:integer"/>
                 <xsl:param name="temperature" select="$temperature" as="xs:double"/>
 
                 <xsl:on-completion>
-                    <xsl:sequence select="$node-adjacency"/>
+                    <xsl:sequence select="$positions"/>
                 </xsl:on-completion>
-                
+
                 <xsl:next-iteration>
-                    <!-- cooling down temperature over time -->
-                    <xsl:with-param name="node-adjacency" select="ac:force-step($node-adjacency, $edges, $spring-stiffness, $spring-length, $width, $height, $temperature)"/>
+                    <xsl:with-param name="positions" select="ac:force-step($positions, $node-ids, $adjacency, $spring-length, $width, $height, $temperature)"/>
                     <xsl:with-param name="step" select="$step + 1"/>
+                    <!-- cooling down temperature over time -->
                     <xsl:with-param name="temperature" select="$temperature - $temperature div ($step + 1)"/>
                 </xsl:next-iteration>
             </xsl:iterate>
         </xsl:variable>
 
         <xsl:apply-templates select="$svg" mode="ac:SVGPositioning">
-            <xsl:with-param name="node-adjacency" select="$node-adjacency" tunnel="yes"/>
+            <xsl:with-param name="positions" select="$positions" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
 
-    <!-- force directed position of nodes -->
+    <!-- repulsion cutoff cell: the 3x3 neighborhood spans ~2 spring lengths -->
+    <xsl:function name="ac:grid-cell" as="xs:string">
+        <xsl:param name="position" as="map(*)"/>
+        <xsl:param name="cell-size" as="xs:double"/>
+        <xsl:sequence select="string(floor($position?x div $cell-size)) || ',' || string(floor($position?y div $cell-size))"/>
+    </xsl:function>
+
+    <!-- one force-directed step over the position map -->
     <!-- we need to re-position the whole group so that the text follows the nodes -->
 
-    <xsl:function name="ac:force-step" as="map(xs:string, item()*)*">
-        <xsl:param name="node-adjacency" as="map(xs:string, item()*)*"/>
-        <xsl:param name="edges" as="map(xs:string, item())*"/>
-        <xsl:param name="spring-stiffness" as="xs:double"/>
+    <xsl:function name="ac:force-step" as="map(*)">
+        <xsl:param name="positions" as="map(*)"/>
+        <xsl:param name="node-ids" as="xs:string*"/>
+        <xsl:param name="adjacency" as="map(*)"/>
         <xsl:param name="spring-length" as="xs:double"/>
         <xsl:param name="width" as="xs:integer"/>
         <xsl:param name="height" as="xs:integer"/>
         <xsl:param name="temperature" as="xs:double"/>
 
-        <!-- calculate repulsive forces against all other nodes -->
-        <xsl:variable name="node-adjacency" as="map(xs:string, item()*)*">
-            <xsl:for-each select="$node-adjacency">
-                <xsl:variable name="v" select="." as="map(xs:string, item()*)"/>
-
-                <xsl:iterate select="(?non-adjacent-ids, ?adjacent-ids)">
-                    <xsl:param name="v-dx" select="0.00" as="xs:double"/>
-                    <xsl:param name="v-dy" select="0.00" as="xs:double"/>
-
-                    <xsl:on-completion>
-                        <xsl:map>
-                            <xsl:for-each select="$v">
-                                <xsl:map-entry key="'node-id'" select="?node-id"/>
-                                <xsl:map-entry key="'x'" select="?x"/>
-                                <xsl:map-entry key="'y'" select="?y"/>
-                                <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                                <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                                <xsl:map-entry key="'dx'" select="$v-dx"/>
-                                <xsl:map-entry key="'dy'" select="$v-dy"/>
-                            </xsl:for-each>
-                        </xsl:map>
-                    </xsl:on-completion>
-
-                    <xsl:variable name="u" select="$node-adjacency[?node-id eq current()]" as="map(xs:string, item()*)"/>
-                    <xsl:variable name="dx" select="$v?x - $u?x" as="xs:double"/>
-                    <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
-                    <!-- square of euclidean distance -->
-                    <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
-
-                    <xsl:choose>
-                        <xsl:when test="$distance2 ne 0">
-                            <!-- euclidean distance -->
-                            <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-                            <!-- repulsion force coefficient (k^2/d) -->
-                            <xsl:variable name="force" select="($spring-length * $spring-length) div $distance" as="xs:double"/>
-                            <xsl:variable name="d" select="$force div $distance" as="xs:double"/>
-
-                            <xsl:next-iteration>
-                                <!-- displacement -->
-                                <xsl:with-param name="v-dx" select="$v-dx + $dx * $d"/>
-                                <xsl:with-param name="v-dy" select="$v-dy + $dy * $d"/>
-                            </xsl:next-iteration>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:next-iteration>
-                                <!-- displacement -->
-                                <xsl:with-param name="v-dx" select="$v-dx"/>
-                                <xsl:with-param name="v-dy" select="$v-dy"/>
-                            </xsl:next-iteration>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:iterate>
+        <xsl:variable name="cell-size" select="$spring-length * 0.7" as="xs:double"/>
+        <!-- grouped, not merged with 'combine': each cell's list is built once,
+             where repeated map:merge appends re-copied a packed cell's list per
+             node -->
+        <xsl:variable name="grid" as="map(*)">
+            <xsl:map>
+                <xsl:for-each-group select="$node-ids" group-by="ac:grid-cell($positions(.), $cell-size)">
+                    <xsl:map-entry key="current-grouping-key()" select="current-group()"/>
+                </xsl:for-each-group>
+            </xsl:map>
+        </xsl:variable>
+        <xsl:map>
+            <xsl:for-each select="$node-ids">
+                <xsl:map-entry key="." select="ac:displaced(., $positions, $grid, $adjacency, $spring-length, $cell-size, $width, $height, $temperature)"/>
             </xsl:for-each>
-        </xsl:variable>
-
-        <!-- calculate attractive forces between adjacent nodes -->
-        <xsl:variable name="edge-nodes" as="map(xs:string, item()*)*">
-            <xsl:for-each select="$edges">
-                <xsl:variable name="v" select="$node-adjacency[?node-id = current()?v-id]" as="map(xs:string, item()*)"/>
-                <xsl:variable name="u" select="$node-adjacency[?node-id = current()?u-id]" as="map(xs:string, item()*)"/>
-                <xsl:variable name="dx" select="$v?x - $u?x" as="xs:double"/>  
-                <xsl:variable name="dy" select="$v?y - $u?y" as="xs:double"/>
-                <!-- square of euclidean distance -->
-                <xsl:variable name="distance2" select="$dx * $dx + $dy * $dy" as="xs:double"/>
-
-                <xsl:choose>
-                    <xsl:when test="$distance2 ne 0">
-                        <!-- euclidean distance -->
-                        <xsl:variable name="distance" select="math:sqrt($distance2)" as="xs:double"/>
-                        <!-- attraction force coeficient (d^2/k)-->
-                        <xsl:variable name="force" select="$distance2 div $spring-length" as="xs:double"/>
-                        <xsl:variable name="d" select="$force div $distance" as="xs:double"/>
-                        <!-- displacement -->
-                        <xsl:variable name="ddx" select="$dx * $d" as="xs:double"/>
-                        <xsl:variable name="ddy" select="$dy * $d" as="xs:double"/>
-
-                        <xsl:map>
-                            <xsl:for-each select="$v">
-                                <xsl:map-entry key="'node-id'" select="?node-id"/>
-                                <xsl:map-entry key="'x'" select="?x"/>
-                                <xsl:map-entry key="'y'" select="?y"/>
-                                <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                                <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                                <xsl:map-entry key="'dx'" select="?dx - $ddx"/>
-                                <xsl:map-entry key="'dy'" select="?dy - $ddy"/>
-                            </xsl:for-each>
-                        </xsl:map>
-                        <xsl:map>
-                            <xsl:for-each select="$u">
-                                <xsl:map-entry key="'node-id'" select="?node-id"/>
-                                <xsl:map-entry key="'x'" select="?x"/>
-                                <xsl:map-entry key="'y'" select="?y"/>
-                                <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                                <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                                <xsl:map-entry key="'dx'" select="?dx + $ddx"/>
-                                <xsl:map-entry key="'dy'" select="?dy + $ddy"/>
-                            </xsl:for-each>
-                        </xsl:map>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:sequence select="."/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:for-each>
-        </xsl:variable>
-        <xsl:variable name="edge-nodes" as="map(xs:string, item()*)*">
-            <xsl:for-each-group select="$edge-nodes" group-by="?node-id">
-                <xsl:map>
-                    <xsl:map-entry key="'node-id'" select="current-grouping-key()"/>
-                    <xsl:map-entry key="'x'" select="?x"/>
-                    <xsl:map-entry key="'y'" select="?y"/>
-                    <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                    <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                    <xsl:map-entry key="'dx'" select="sum(current-group()?dx)"/>
-                    <xsl:map-entry key="'dy'" select="sum(current-group()?dy)"/>
-                </xsl:map>
-            </xsl:for-each-group>
-        </xsl:variable>
-        <!-- combine edge nodes with standalone nodes (nodes that are not part of any edge) -->
-        <xsl:variable name="node-adjacency" select="($edge-nodes, $node-adjacency[not(?node-id = $edge-nodes?node-id)])" as="map(xs:string, item()*)*"/>
-
-        <xsl:for-each select="$node-adjacency">
-            <xsl:variable name="v" select="." as="map(xs:string, item()*)"/>
-            <xsl:variable name="disp" select="math:sqrt($v?dx * $v?dx + $v?dy * $v?dy)" as="xs:double"/>
-
-            <xsl:choose>
-                <xsl:when test="$disp ne 0">
-                    <xsl:variable name="d" select="min(($disp, $temperature)) div $disp" as="xs:double"/>
-                    <xsl:variable name="x" select="$v?x + $v?dx * $d" as="xs:double"/>
-                    <xsl:variable name="y" select="$v?y + $v?dy * $d" as="xs:double"/>
-                    <xsl:variable name="x" select="min(($width, max((0, $x)))) - $width div 2" as="xs:double"/>
-                    <xsl:variable name="y" select="min(($height, max((0, $y)))) - $height div 2" as="xs:double"/>
-                    <xsl:variable name="x" select="min((math:sqrt(abs($width * $width div 4 - $y * $y)), max((-1 * math:sqrt(abs($width * $width div 4 - $y * $y)), $x)))) + $width div 2" as="xs:double"/>
-                    <xsl:variable name="y" select="min((math:sqrt(abs($height * $height div 4 - $x * $x)), max((-1 * math:sqrt(abs($height * $height div 4 - $x * $x)), $y)))) + $height div 2" as="xs:double"/>
-
-                    <xsl:map>
-                        <xsl:map-entry key="'node-id'" select="?node-id"/>
-                        <xsl:map-entry key="'x'" select="$x"/>
-                        <xsl:map-entry key="'y'" select="$y"/>
-                        <xsl:map-entry key="'adjacent-ids'" select="?adjacent-ids"/>
-                        <xsl:map-entry key="'non-adjacent-ids'" select="?non-adjacent-ids"/>
-                        <xsl:map-entry key="'dx'" select="?dx"/>
-                        <xsl:map-entry key="'dy'" select="?dy"/>
-                    </xsl:map>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:sequence select="."/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:for-each>
+        </xsl:map>
     </xsl:function>
-    
+
+    <!-- the per-node displacement, deliberately one XPath expression -->
+    <xsl:function name="ac:displaced" as="map(*)">
+        <xsl:param name="v" as="xs:string"/>
+        <xsl:param name="positions" as="map(*)"/>
+        <xsl:param name="grid" as="map(*)"/>
+        <xsl:param name="adjacency" as="map(*)"/>
+        <xsl:param name="spring-length" as="xs:double"/>
+        <xsl:param name="cell-size" as="xs:double"/>
+        <xsl:param name="width" as="xs:integer"/>
+        <xsl:param name="height" as="xs:integer"/>
+        <xsl:param name="temperature" as="xs:double"/>
+
+        <xsl:sequence select="
+            let $pv := $positions($v),
+                $px := $pv?x, $py := $pv?y,
+                $cx := floor($px div $cell-size),
+                $cy := floor($py div $cell-size),
+                (: repulsion sample: at most 3 nodes from each of the 3x3 cells,
+                   at most 16 total - deterministic (grid lists build in node-id
+                   order), spatially stratified, and bounded even when the canvas
+                   packs most of the graph into one cell :)
+                $neighbors := subsequence(
+                    (for $dx in (-1, 0, 1), $dy in (-1, 0, 1)
+                        return subsequence($grid(string($cx + $dx) || ',' || string($cy + $dy)), 1, 3))[. ne $v],
+                    1, 16),
+                $k2 := $spring-length * $spring-length,
+                (: repulsion force coefficient (k^2/d), applied as delta * k^2 / d^2 -
+                   sqrt-free; coincident nodes separate along a deterministic
+                   direction derived from id order :)
+                $repulsion := (for $u in $neighbors return
+                    let $pu := $positions($u),
+                        $dx := $px - $pu?x, $dy := $py - $pu?y,
+                        $distance2 := $dx * $dx + $dy * $dy
+                    return if ($distance2 ne 0)
+                        then ($dx * $k2 div $distance2, $dy * $k2 div $distance2)
+                        else (if ($v lt $u) then $k2 else -$k2,
+                              if ($v lt $u) then $k2 else -$k2)),
+                (: attraction force coefficient (d^2/k), once per adjacent pair -
+                   as delta * d / k :)
+                $attraction := (for $u in $adjacency($v) return
+                    let $pu := $positions($u),
+                        $dx := $pu?x - $px, $dy := $pu?y - $py,
+                        $pull := math:sqrt($dx * $dx + $dy * $dy) div $spring-length
+                    return ($dx * $pull, $dy * $pull)),
+                $terms := ($repulsion, $attraction),
+                $fx := sum($terms[position() mod 2 eq 1]),
+                $fy := sum($terms[position() mod 2 eq 0]),
+                $disp := math:sqrt($fx * $fx + $fy * $fy)
+            return
+                if ($disp eq 0) then $pv
+                else
+                    (: displacement capped at the temperature; then the frame clamp
+                       and a radial projection onto the inscribed ellipse :)
+                    let $d := min(($disp, $temperature)) div $disp,
+                        $xc := min(($width, max((0, $px + $fx * $d)))) - $width div 2,
+                        $yc := min(($height, max((0, $py + $fy * $d)))) - $height div 2,
+                        $a := $width div 2,
+                        $b := $height div 2,
+                        $e := ($xc * $xc) div ($a * $a) + ($yc * $yc) div ($b * $b),
+                        $scale := if ($e gt 1) then 1 div math:sqrt($e) else 1
+                    return map{ 'x': $xc * $scale + $a, 'y': $yc * $scale + $b }"/>
+    </xsl:function>
+
     <xsl:template match="svg:g[@class = ('subject', 'object')]" mode="ac:SVGPositioning" priority="1">
-        <xsl:param name="node-adjacency" as="map(xs:string, item()*)*" tunnel="yes"/>
-        <xsl:variable name="id" select="@id" as="xs:string"/>
-        
+        <xsl:param name="positions" as="map(*)" tunnel="yes"/>
+
         <xsl:copy>
-            <xsl:variable name="map" select="$node-adjacency[?node-id eq $id]" as="map(xs:string, item()*)"/>
+            <xsl:variable name="position" select="$positions(string(@id))" as="map(*)"/>
             <xsl:apply-templates select="@*" mode="#current">
-                <xsl:with-param name="x" select="$map?x"/>
-                <xsl:with-param name="y" select="$map?y"/>
+                <xsl:with-param name="x" select="$position?x"/>
+                <xsl:with-param name="y" select="$position?y"/>
             </xsl:apply-templates>
 
             <xsl:apply-templates mode="#current"/>
@@ -622,13 +601,12 @@ exclude-result-prefixes="#all">
                     <xsl:variable name="r" select="key('subjects', @resource)/svg:circle/@r" as="xs:double"/>
                     <xsl:variable name="x-diff" select="$x2 - $x1" as="xs:double"/>
                     <xsl:variable name="y-diff" select="$y2 - $y1" as="xs:double"/>
-                    <!-- TO-DO: $x-diff = 0 and $y-diff = 0 -->
-                    <!-- find the point where the line intersect the circle -->
-                    <xsl:variable name="tan" select="$x-diff div $y-diff" as="xs:double"/>
-                    <xsl:variable name="yc" select="abs($r div math:sqrt($tan * $tan + 1))" as="xs:double"/>
-                    <xsl:variable name="xc" select="abs($r * $tan * math:sqrt(1 div ($tan * $tan + 1)))" as="xs:double"/>
-                    <xsl:variable name="x2" select="if ($x1 &gt; $x2) then ($x2 + $xc) else ($x2 - $xc)" as="xs:double"/>
-                    <xsl:variable name="y2" select="if ($y1 &gt; $y2) then ($y2 + $yc) else ($y2 - $yc)" as="xs:double"/>
+                    <!-- clip the line at the target circle's border by walking back
+                         one radius along the unit vector (the former tangent-based
+                         form divided by zero for horizontally aligned nodes) -->
+                    <xsl:variable name="distance" select="math:sqrt($x-diff * $x-diff + $y-diff * $y-diff)" as="xs:double"/>
+                    <xsl:variable name="x2" select="if ($distance gt 0) then $x2 - $x-diff div $distance * $r else $x2" as="xs:double"/>
+                    <xsl:variable name="y2" select="if ($distance gt 0) then $y2 - $y-diff div $distance * $r else $y2" as="xs:double"/>
 
                     <line x1="{$x1}" y1="{$y1}" x2="{$x2}" y2="{$y2}" stroke="{$stroke}" stroke-width="{$stroke-width}" marker-end="url(#triangle)" data-id1="{preceding-sibling::svg:g/@id}" data-id2="{key('subjects', @resource)/@id}">
                         <title><xsl:value-of select="@property"/></title>
@@ -655,7 +633,7 @@ exclude-result-prefixes="#all">
                 <xsl:choose>
                     <xsl:when test="$x-diff = 0 and $y-diff = 0">
                         <xsl:attribute name="x2" select="$x2"/>
-                        <xsl:attribute name="y2" select="$x2"/>
+                        <xsl:attribute name="y2" select="$y2"/>
                     </xsl:when>
                     <xsl:when test="$x-diff = 0 and $y-diff &lt; 0">
                         <xsl:attribute name="x2" select="$x2"/>
