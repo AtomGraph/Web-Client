@@ -177,7 +177,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="." mode="ac:FieldShell">
                     <xsl:with-param name="size" select="'sz-md'"/>
                     <xsl:with-param name="adorn" as="item()*">
-                        <span class="ldhc-adorn"><span class="msi outline sm" aria-hidden="true">public</span></span>
+                        <span class="ac-adorn"><span class="msi outline sm" aria-hidden="true">public</span></span>
                     </xsl:with-param>
                     <xsl:with-param name="control" as="item()*">
                         <input type="text" name="uri">
@@ -187,7 +187,7 @@ exclude-result-prefixes="#all">
                         </input>
                     </xsl:with-param>
                 </xsl:apply-templates>
-                <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
+                <button type="submit" class="ac-btn in-primary ap-solid sz-md">
                     <xsl:apply-templates select="key('resources', 'go', ac:translations())" mode="ac:label"/>
                 </button>
             </form>
@@ -383,7 +383,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:HeaderActions" priority="1">
         <div class="actions">
             <xsl:if test="not($ac:mode = '&ac;EditMode')">
-                <a class="ldhc-btn in-neutral ap-outline sz-sm" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
+                <a class="ac-btn in-neutral ap-outline sz-sm" href="{ac:build-uri(xs:anyURI(''), map{ 'uri': string(ac:absolute-path(base-uri())), 'mode': '&ac;EditMode' })}">
                     <span class="msi sm" aria-hidden="true">edit</span>
                     <xsl:value-of>
                         <xsl:apply-templates select="key('resources', 'edit', ac:translations())" mode="ac:label"/>
@@ -392,7 +392,7 @@ exclude-result-prefixes="#all">
             </xsl:if>
 
             <form action="{ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), '_method': 'DELETE' })}" method="post">
-                <button class="ldhc-btn in-negative ap-outline sz-sm btn-delete" type="submit">
+                <button class="ac-btn in-negative ap-outline sz-sm btn-delete" type="submit">
                     <xsl:attribute name="data-confirm">
                         <xsl:apply-templates select="key('resources', 'confirm-delete', ac:translations())" mode="ac:label"/>
                     </xsl:attribute>
@@ -422,7 +422,7 @@ exclude-result-prefixes="#all">
         <!-- a native disclosure, not the core Menu: these standalone pages run without the CSR menu
              handler, and <details> is the no-script dropdown -->
         <details class="menu">
-            <summary class="ldhc-btn in-neutral ap-outline sz-sm" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
+            <summary class="ac-btn in-neutral ap-outline sz-sm" title="{ac:label(key('resources', '&ac;Mode', document(ac:document-uri('&ac;'))))}">
                 <xsl:value-of>
                     <xsl:apply-templates select="key('resources', '&ac;Mode', document(ac:document-uri('&ac;')))" mode="ac:label"/>
                 </xsl:value-of>
@@ -470,13 +470,13 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&http;Response']" mode="ac:BlockHeader" priority="1">
         <xsl:param name="id" as="xs:string?"/>
-        <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
+        <xsl:param name="class" select="'ac-alert va-negative'" as="xs:string?"/>
 
         <xsl:apply-templates select="." mode="ac:InlineAlert">
             <xsl:with-param name="id" select="$id"/>
             <xsl:with-param name="class" select="$class"/>
             <xsl:with-param name="body" as="item()*">
-                <h2 class="ldhc-alert-title">
+                <h2 class="ac-alert-title">
                     <xsl:value-of>
                         <xsl:apply-templates select="." mode="ac:label"/>
                     </xsl:value-of>
@@ -489,7 +489,7 @@ exclude-result-prefixes="#all">
         
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:MediaTypeList" priority="1">
         <details class="menu">
-            <summary class="ldhc-btn in-neutral ap-outline sz-sm">
+            <summary class="ac-btn in-neutral ap-outline sz-sm">
                 <span class="msi sm" aria-hidden="true">download</span>
                 <xsl:apply-templates select="key('resources', 'export', ac:translations())" mode="ac:label"/>
                 <span class="msi sm" aria-hidden="true">expand_more</span>

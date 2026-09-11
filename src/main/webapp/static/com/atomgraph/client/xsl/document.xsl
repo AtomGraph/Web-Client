@@ -71,7 +71,7 @@ exclude-result-prefixes="#all">
         <xsl:param name="action" select="ac:build-uri((), map{ 'uri': string(ac:absolute-path(base-uri())), '_method': 'PUT' })" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'resource-form'" as="xs:string?"/>
-        <xsl:param name="button-class" select="'ldhc-btn in-primary ap-solid sz-md'" as="xs:string?"/>
+        <xsl:param name="button-class" select="'ac-btn in-primary ap-solid sz-md'" as="xs:string?"/>
         <xsl:param name="accept-charset" select="'UTF-8'" as="xs:string?"/>
         <xsl:param name="enctype" as="xs:string?"/>
 
@@ -116,7 +116,7 @@ exclude-result-prefixes="#all">
     <!-- FORM ACTIONS -->
     
     <xsl:template match="rdf:RDF" mode="ac:FormActions">
-        <xsl:param name="button-class" select="'ldhc-btn in-primary ap-solid sz-md'" as="xs:string?"/>
+        <xsl:param name="button-class" select="'ac-btn in-primary ap-solid sz-md'" as="xs:string?"/>
 
         <div class="form-actions">
             <button type="submit" class="{$button-class}">

@@ -39,7 +39,7 @@ exclude-result-prefixes="#all">
              know about it. Linkless callers sit inside an anchor of their own - a nested a is invalid -->
         <xsl:param name="link" select="true()" as="xs:boolean" tunnel="yes"/>
 
-        <span title="{.}" class="ldhc-tag em-quiet co-primary sz-sm">
+        <span title="{.}" class="ac-tag em-quiet co-primary sz-sm">
             <xsl:choose>
                 <xsl:when test="$link">
                     <xsl:next-match>

@@ -135,8 +135,8 @@ exclude-result-prefixes="#all">
 
     <!-- the tag a value carries, shown wherever several languages of one value render side by side -->
     <xsl:template match="@xml:lang" mode="ac:lang-tag">
-        <span class="ldhc-tag sz-sm em-quiet co-accent">
-            <span class="ldhc-tag-lbl">
+        <span class="ac-tag sz-sm em-quiet co-accent">
+            <span class="ac-tag-lbl">
                 <xsl:value-of select="."/>
             </span>
         </span>
@@ -431,7 +431,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype[starts-with(., '&xsd;')]" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
-        <xsl:param name="class" select="'ldhc-tag sz-sm em-quiet co-accent'" as="xs:string?"/>
+        <xsl:param name="class" select="'ac-tag sz-sm em-quiet co-accent'" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
@@ -452,7 +452,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
-        <xsl:param name="class" select="'ldhc-tag sz-sm em-quiet co-accent'" as="xs:string?"/>
+        <xsl:param name="class" select="'ac-tag sz-sm em-quiet co-accent'" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
@@ -538,7 +538,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
-            <caption class="ldhc-vh">
+            <caption class="ac-vh">
                 <xsl:apply-templates select="key('resources', 'query-results', ac:translations())" mode="ac:label"/>
             </caption>
 
@@ -841,7 +841,7 @@ exclude-result-prefixes="#all">
                 <xsl:with-param name="type" select="'hidden'"/>
             </xsl:apply-templates>
             <xsl:if test="$show-label">
-                <label class="ldhc-label" for="{$for}" title="{$this}">
+                <label class="ac-label" for="{$for}" title="{$this}">
                     <xsl:sequence select="$label"/>
                 </label>
             </xsl:if>
@@ -850,7 +850,7 @@ exclude-result-prefixes="#all">
                 <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
 
                 <xsl:if test="$cloneable">
-                    <button type="button" class="ldhc-iconbtn sz-xs in-accent ap-ghost btn-add">
+                    <button type="button" class="ac-iconbtn sz-xs in-accent ap-ghost btn-add">
                         <xsl:attribute name="title">
                             <xsl:apply-templates select="key('resources', 'add-stmt', ac:translations())" mode="ac:label"/>
                         </xsl:attribute>
@@ -859,7 +859,7 @@ exclude-result-prefixes="#all">
                     </button>
                 </xsl:if>
                 <xsl:if test="not($required)">
-                    <button type="button" class="ldhc-iconbtn sz-xs in-destructive ap-ghost btn-remove-property">
+                    <button type="button" class="ac-iconbtn sz-xs in-destructive ap-ghost btn-remove-property">
                         <xsl:attribute name="title">
                             <xsl:apply-templates select="key('resources', 'remove-stmt', ac:translations())" mode="ac:label"/>
                         </xsl:attribute>
@@ -898,9 +898,9 @@ exclude-result-prefixes="#all">
                 <xsl:sequence select="$control"/>
             </xsl:when>
             <xsl:otherwise>
-                <div class="ldhc-field{if ($class) then ' ' || $class else ''}">
+                <div class="ac-field{if ($class) then ' ' || $class else ''}">
                     <xsl:if test="exists($label)">
-                        <label class="ldhc-label {$size}">
+                        <label class="ac-label {$size}">
                             <xsl:if test="$label-for">
                                 <xsl:attribute name="for" select="$label-for"/>
                             </xsl:if>
@@ -908,14 +908,14 @@ exclude-result-prefixes="#all">
                         </label>
                     </xsl:if>
 
-                    <div class="ldhc-field-box {$size}{if ($state) then ' ' || $state else ''}">
+                    <div class="ac-field-box {$size}{if ($state) then ' ' || $state else ''}">
                         <xsl:sequence select="$adorn"/>
                         <xsl:sequence select="$control"/>
                     </div>
 
                     <xsl:if test="exists($help)">
-                        <div class="ldhc-field-foot">
-                            <span class="ldhc-help sz-sm">
+                        <div class="ac-field-foot">
+                            <span class="ac-help sz-sm">
                                 <xsl:sequence select="$help"/>
                             </span>
                         </div>
@@ -933,7 +933,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="node() | @*" mode="ac:InlineAlert">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="variant" select="'va-negative'" as="xs:string"/>
-        <xsl:param name="class" select="'ldhc-alert ' || $variant" as="xs:string"/>
+        <xsl:param name="class" select="'ac-alert ' || $variant" as="xs:string"/>
         <xsl:param name="icon" select="(map{ 'va-negative': 'error', 'va-warning': 'warning', 'va-success': 'check_circle' }($variant), 'info')[1]" as="xs:string"/>
         <xsl:param name="title" as="item()*"/>
         <xsl:param name="text" as="item()*"/>
@@ -946,19 +946,19 @@ exclude-result-prefixes="#all">
             </xsl:if>
             <xsl:attribute name="class" select="$class"/>
 
-            <span class="ldhc-alert-ic">
+            <span class="ac-alert-ic">
                 <span class="msi outline" aria-hidden="true">
                     <xsl:value-of select="$icon"/>
                 </span>
             </span>
-            <div class="ldhc-alert-body">
+            <div class="ac-alert-body">
                 <xsl:if test="exists($title)">
-                    <span class="ldhc-alert-title">
+                    <span class="ac-alert-title">
                         <xsl:sequence select="$title"/>
                     </span>
                 </xsl:if>
                 <xsl:if test="exists($text)">
-                    <span class="ldhc-alert-text">
+                    <span class="ac-alert-text">
                         <xsl:sequence select="$text"/>
                     </span>
                 </xsl:if>
@@ -978,11 +978,11 @@ exclude-result-prefixes="#all">
         <xsl:param name="multiple" select="false()" as="xs:boolean"/>
         <xsl:param name="state" as="xs:string?"/> <!-- st-valid | st-invalid -->
 
-        <span class="ldhc-select {$size}{if ($multiple) then ' is-multiple' else ''}{if ($state) then ' ' || $state else ''}">
+        <span class="ac-select {$size}{if ($multiple) then ' is-multiple' else ''}{if ($state) then ' ' || $state else ''}">
             <xsl:sequence select="$select"/>
 
             <xsl:if test="not($multiple)">
-                <span class="msi sm ldhc-select-caret" aria-hidden="true">unfold_more</span>
+                <span class="msi sm ac-select-caret" aria-hidden="true">unfold_more</span>
             </xsl:if>
         </span>
     </xsl:template>
@@ -992,7 +992,7 @@ exclude-result-prefixes="#all">
     <!-- the single annotation Tag: the value-kind chips beside edit-mode controls all render through here,
          so a downstream layer re-skins every one by overriding this rule -->
     <xsl:template match="node() | @*" mode="ac:AnnotationTag">
-        <xsl:param name="class" select="'ldhc-tag sz-sm em-quiet co-accent'" as="xs:string"/>
+        <xsl:param name="class" select="'ac-tag sz-sm em-quiet co-accent'" as="xs:string"/>
         <xsl:param name="key" as="xs:string?"/>
         <xsl:param name="title" as="xs:string?"/>
         <xsl:param name="label" as="item()*">
@@ -1004,7 +1004,7 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="title" select="$title"/>
             </xsl:if>
 
-            <span class="ldhc-tag-lbl">
+            <span class="ac-tag-lbl">
                 <xsl:sequence select="$label"/>
             </span>
         </span>
@@ -1257,7 +1257,7 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="ac:FieldShell">
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="adorn" as="item()*">
-                    <span class="ldhc-adorn"><span class="msi outline sm" aria-hidden="true">language</span></span>
+                    <span class="ac-adorn"><span class="msi outline sm" aria-hidden="true">language</span></span>
                 </xsl:with-param>
                 <xsl:with-param name="control" as="item()*">
                     <xsl:apply-templates select="." mode="xhtml:Input">

@@ -275,7 +275,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Violation"/>
 
     <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="ac:Violation" priority="1">
-        <xsl:param name="class" select="'ldhc-alert va-negative'" as="xs:string?"/>
+        <xsl:param name="class" select="'ac-alert va-negative'" as="xs:string?"/>
 
         <xsl:apply-templates select="." mode="ac:InlineAlert">
             <xsl:with-param name="class" select="$class"/>

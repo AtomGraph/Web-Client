@@ -11,7 +11,7 @@ Features
 
 What AWC provides for users as out-of-the-box generic features:
 * loading RDF data from remote Linked Data sources
-* multilingual, responsive user interface built on the [LinkedDataHub design system](https://github.com/AtomGraph/LinkedDataHub) — vendored design tokens and `ldhc-*` component primitives, no CSS framework
+* multilingual, responsive user interface built on the [LinkedDataHub design system](https://github.com/AtomGraph/LinkedDataHub) — vendored design tokens and `ac-*` component primitives, no CSS framework
 * multiple RDF rendering modes (currently item/list/table/map/graph/grid)
 * RDF editing mode based on [RDF/POST](https://atomgraph.github.io/RDF-POST/) encoding
 * SPARQL endpoint with interactive results

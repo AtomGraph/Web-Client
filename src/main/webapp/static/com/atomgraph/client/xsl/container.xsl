@@ -99,10 +99,10 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <div class="ldhc-card">
+            <div class="ac-card">
                 <xsl:apply-templates select="." mode="ac:Depiction"/>
 
-                <div class="ldhc-card-body">
+                <div class="ac-card-body">
                     <xsl:apply-templates select="." mode="ac:BlockActions"/>
 
                     <h2>
@@ -141,7 +141,7 @@ exclude-result-prefixes="#all">
             <xsl:if test="$class">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
-            <caption class="ldhc-vh">
+            <caption class="ac-vh">
                 <xsl:apply-templates select="key('resources', 'resources', ac:translations())" mode="ac:label"/>
             </caption>
             <thead>

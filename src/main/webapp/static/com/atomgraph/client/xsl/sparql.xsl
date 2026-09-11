@@ -119,7 +119,7 @@ LIMIT 100</xsl:param>
             </xsl:if>
         
             <fieldset>
-                <label class="ldhc-label" for="endpoint-uri">
+                <label class="ac-label" for="endpoint-uri">
                     <xsl:apply-templates select="key('resources', 'endpoint', ac:translations())" mode="ac:label"/>
                 </label>
                 <xsl:apply-templates select="." mode="ac:FieldShell">
@@ -162,7 +162,7 @@ LIMIT 100</xsl:param>
                         <input type="hidden" name="mode" value="{.}"/>
                     </xsl:for-each>
                     
-                    <button type="submit" class="ldhc-btn in-primary ap-solid sz-md">
+                    <button type="submit" class="ac-btn in-primary ap-solid sz-md">
                         <span class="msi sm" aria-hidden="true">play_arrow</span>
                         <xsl:apply-templates select="key('resources', 'query', ac:translations())" mode="ac:label"/>
                     </button>

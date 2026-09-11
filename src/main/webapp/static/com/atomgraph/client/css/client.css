@@ -20,7 +20,7 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 .header .logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .header .logo img { display: block; max-height: 36px; }
 .header .uri-form { display: flex; align-items: center; gap: var(--sp-2); flex: 1 1 24rem; min-width: 0; margin: 0; }
-.header .uri-form .ldhc-field { flex: 1 1 auto; min-width: 0; }
+.header .uri-form .ac-field { flex: 1 1 auto; min-width: 0; }
 .header .actions { display: flex; align-items: center; gap: var(--sp-4); margin-left: auto; }
 
 .action-bar { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-2) var(--sp-6); background: var(--surface-0); border-bottom: 1px solid var(--border-default); flex-wrap: wrap; }
@@ -72,7 +72,7 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 .properties::after { content: ""; display: block; clear: both; }
 .properties dt { float: left; clear: left; width: 200px; padding-right: var(--sp-4); box-sizing: border-box; font-weight: var(--fw-medium); color: var(--fg-2); overflow-wrap: break-word; }
 .properties dd { margin: 0 0 var(--sp-1) 200px; min-width: 0; overflow-wrap: break-word; }
-.properties dd .ldhc-tag { margin-right: var(--sp-1); }
+.properties dd .ac-tag { margin-right: var(--sp-1); }
 
 /* ---------- collections ---------- */
 .resource-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
@@ -83,13 +83,13 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 
 .resource-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--sp-4); }
 .resource-grid > li { min-width: 0; display: flex; }
-.resource-grid .ldhc-card { flex: 1; min-width: 0; }
+.resource-grid .ac-card { flex: 1; min-width: 0; }
 .resource-grid .depiction { margin: 0; }
 .resource-grid .depiction img { width: 100%; max-height: 180px; object-fit: cover; border-radius: var(--r-md) var(--r-md) 0 0; }
 .resource-grid h2 { margin: 0 0 var(--sp-1); font-size: var(--fs-base); font-weight: var(--fw-medium); }
-.resource-grid .ldhc-card-body { position: relative; }
-.resource-grid .ldhc-card-body > .actions { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-2); }
-.resource-grid .ldhc-card-body > .actions form { margin: 0; }
+.resource-grid .ac-card-body { position: relative; }
+.resource-grid .ac-card-body > .actions { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.resource-grid .ac-card-body > .actions form { margin: 0; }
 
 /* ---------- results table: native table layout, the column count is data-driven ---------- */
 .results-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); background: var(--surface-0); border: 1px solid var(--border-default); border-radius: var(--r-sm); }
@@ -108,20 +108,20 @@ fieldset .description { margin: 0 0 var(--sp-4); color: var(--fg-2); }
 /* one statement row: predicate label · value controls · term annotations */
 .statement { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; column-gap: var(--sp-4); align-items: start; padding: var(--sp-2) 0; border-bottom: 1px solid var(--border-default); }
 .statement:last-of-type { border-bottom: 0; }
-.statement > .ldhc-label { padding-top: 6px; overflow-wrap: break-word; min-width: 0; }
+.statement > .ac-label { padding-top: 6px; overflow-wrap: break-word; min-width: 0; }
 /* nowrap keeps the type tag and the statement actions on the field's own line; the field shrinks instead */
 .statement > .values { grid-column: 2; display: flex; flex-wrap: nowrap; align-items: center; gap: var(--sp-2); min-width: 0; }
-.statement > .ldhc-label ~ .values { grid-column: auto; }
+.statement > .ac-label ~ .values { grid-column: auto; }
 .statement > .annotations { grid-column: 2; display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-1); }
-.statement .ldhc-field { flex: 0 1 340px; min-width: 8rem; }
-.statement .values > .ldhc-tag, .statement .values > .ldhc-iconbtn { flex-shrink: 0; }
-.statement .ldhc-field:has(textarea) { flex: 1 1 100%; }
-.statement.is-invalid .ldhc-field-box { border-color: var(--danger-500); }
-.annotations .ldhc-field { width: 12ch; flex: 0 0 auto; }
+.statement .ac-field { flex: 0 1 340px; min-width: 8rem; }
+.statement .values > .ac-tag, .statement .values > .ac-iconbtn { flex-shrink: 0; }
+.statement .ac-field:has(textarea) { flex: 1 1 100%; }
+.statement.is-invalid .ac-field-box { border-color: var(--danger-500); }
+.annotations .ac-field { width: 12ch; flex: 0 0 auto; }
 
 /* statement actions: the ghost icon buttons get a resting affordance here - without hover chrome around
    them, a bare minus glyph reads as punctuation rather than a control */
-.statement .values > .ldhc-iconbtn { border: 1px solid var(--border-default); color: var(--fg-hint); }
+.statement .values > .ac-iconbtn { border: 1px solid var(--border-default); color: var(--fg-hint); }
 
 /* an inlined blank-node resource nests its own fieldset inside the value column: recess it so its rows
    read as one contained sub-form. The nesting row wraps (the fieldset takes the full row), plain value
@@ -133,8 +133,8 @@ fieldset .description { margin: 0 0 var(--sp-4); color: var(--fg-2); }
 .form-actions { display: flex; justify-content: flex-end; gap: var(--sp-2); padding: var(--sp-4) 0 0; }
 
 /* ---------- SPARQL editor ---------- */
-.query-form .ldhc-label { display: block; margin-bottom: var(--sp-1); }
-.query-form .ldhc-field { margin-bottom: var(--sp-3); }
+.query-form .ac-label { display: block; margin-bottom: var(--sp-1); }
+.query-form .ac-field { margin-bottom: var(--sp-3); }
 
 /* ---------- map ---------- */
 .map-canvas { width: 100%; height: 480px; border-radius: var(--r-md); background: var(--surface-2); }
@@ -151,4 +151,4 @@ fieldset .description { margin: 0 0 var(--sp-4); color: var(--fg-2); }
 .map-view .aside, .map-view .footer { display: none; }
 
 /* ---------- alerts fill their column ---------- */
-.main > .ldhc-alert { margin-bottom: var(--sp-4); }
+.main > .ac-alert { margin-bottom: var(--sp-4); }
