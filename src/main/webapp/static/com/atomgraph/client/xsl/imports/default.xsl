@@ -22,7 +22,6 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
@@ -37,7 +36,6 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
 xmlns:srx="&srx;"
-xmlns:ldt="&ldt;"
 xmlns:sp="&sp;"
 xmlns:foaf="&foaf;"
 xmlns:url="&java;java.net.URLDecoder"

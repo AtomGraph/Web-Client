@@ -24,7 +24,6 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
     <!ENTITY http   "http://www.w3.org/2011/http#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sd     "http://www.w3.org/ns/sparql-service-description#">
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
@@ -42,7 +41,6 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:srx="&srx;"
 xmlns:http="&http;"
-xmlns:ldt="&ldt;"
 xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
@@ -53,7 +51,6 @@ exclude-result-prefixes="#all">
 
     <xsl:output method="xhtml" html-version="5" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml"/>
     
-    <xsl:param name="ldt:base" as="xs:anyURI?"/>
     <xsl:param name="ac:contextUri" as="xs:anyURI?"/>
     <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
@@ -151,19 +148,6 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:Header">
         <div class="header" role="banner">
-            <xsl:if test="$ldt:base and doc-available($ldt:base)">
-                <a class="logo" href="{$ldt:base}">
-                    <xsl:for-each select="key('resources', $ldt:base, document($ldt:base))">
-                        <img src="{foaf:logo/@rdf:resource}">
-                            <xsl:attribute name="alt">
-                                <xsl:value-of>
-                                    <xsl:apply-templates select="." mode="ac:label"/>
-                                </xsl:value-of>
-                            </xsl:attribute>
-                        </img>
-                    </xsl:for-each>
-                </a>
-            </xsl:if>
 
             <form action="" method="get" class="uri-form" accept-charset="UTF-8">
                 <xsl:apply-templates select="." mode="ac:FieldShell">

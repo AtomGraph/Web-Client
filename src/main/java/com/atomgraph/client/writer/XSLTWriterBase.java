@@ -17,7 +17,6 @@ package com.atomgraph.client.writer;
 
 import com.atomgraph.client.util.RDFSourceResolver;
 import com.atomgraph.client.vocabulary.AC;
-import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -158,9 +157,6 @@ public abstract class XSLTWriterBase
 
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
             if (!modes.isEmpty()) params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
-
-            URI baseURI = getLinkURI(headerMap, LDT.base);
-            if (baseURI != null) params.put(new QName("ldt", LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(baseURI));
 
             // ordered language preference list from Accept-Language
             List<String> langs = getHttpHeaders().getAcceptableLanguages().stream().
