@@ -21,7 +21,6 @@ limitations under the License.
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
-    <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="3.0"
@@ -34,13 +33,10 @@ xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
-xmlns:spin="&spin;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <!-- BREADCRUMB  -->
-
-    <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
 
     <xsl:template match="*[@rdf:about]" mode="ac:BreadcrumbItem">
         <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
@@ -239,7 +235,6 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
         <xsl:param name="legend" select="if (@rdf:about) then true() else not(key('predicates-by-object', @rdf:nodeID))" as="xs:boolean"/>
-        <xsl:param name="violations" select="key('violations-by-root', (@rdf:about, @rdf:nodeID))" as="element()*"/>
         <xsl:param name="traversed-ids" select="@rdf:*" as="xs:string*" tunnel="yes"/>
 
         <fieldset>
@@ -257,13 +252,10 @@ exclude-result-prefixes="#all">
                 </legend>
             </xsl:if>
 
-            <xsl:apply-templates select="$violations" mode="ac:Violation"/>
-
             <xsl:apply-templates select="@rdf:about | @rdf:nodeID" mode="#current"/>
 
             <xsl:apply-templates select="*" mode="#current">
                 <xsl:sort select="ac:property-label(.)"/>
-                <xsl:with-param name="violations" select="$violations"/>
                 <xsl:with-param name="traversed-ids" select="$traversed-ids" tunnel="yes"/>
             </xsl:apply-templates>
         </fieldset>
@@ -275,19 +267,5 @@ exclude-result-prefixes="#all">
 
     <!-- CONSTRAINT VIOLATION  -->
     
-    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:Violation"/>
-
-    <xsl:template match="*[rdf:type/@rdf:resource = '&spin;ConstraintViolation']" mode="ac:Violation" priority="1">
-        <xsl:param name="class" select="'ac-alert va-negative'" as="xs:string?"/>
-
-        <xsl:apply-templates select="." mode="ac:InlineAlert">
-            <xsl:with-param name="class" select="$class"/>
-            <xsl:with-param name="text" as="item()*">
-                <xsl:value-of>
-                    <xsl:apply-templates select="." mode="ac:label"/>
-                </xsl:value-of>
-            </xsl:with-param>
-        </xsl:apply-templates>
-    </xsl:template>
-    
+   
 </xsl:stylesheet>

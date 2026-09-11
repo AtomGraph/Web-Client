@@ -819,9 +819,7 @@ exclude-result-prefixes="#all">
     <!-- one statement: predicate label, value controls, term annotations -->
     <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="ac:FormControl">
         <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
-        <xsl:param name="violations" as="element()*"/>
-        <xsl:param name="error" select="$violations/spin:violationPath/@rdf:resource = $this" as="xs:boolean"/>
-        <xsl:param name="class" select="concat('statement', if ($error) then ' is-invalid' else ())" as="xs:string?"/>
+        <xsl:param name="class" select="'statement'" as="xs:string?"/>
         <xsl:param name="label" as="xs:string?">
             <xsl:apply-templates select="." mode="ac:property-label"/>
         </xsl:param>
