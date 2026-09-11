@@ -28,12 +28,8 @@ xmlns:rdf="&rdf;"
 xmlns:sioc="&sioc;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="*[sioc:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return sioc:name[lang($lang)])[1]/text()"/>
-    </xsl:template>
-
     <xsl:template match="*[sioc:name/text()]" mode="ac:label">
-        <xsl:sequence select="(sioc:name[not(@xml:lang)], sioc:name)[1]/text()"/>
+        <xsl:sequence select="ac:preferred-lang(sioc:name)"/>
     </xsl:template>
 
     <xsl:template match="sioc:email/@rdf:resource">

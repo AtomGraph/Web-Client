@@ -28,12 +28,8 @@ xmlns:rdf="&rdf;"
 xmlns:skos="&skos;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[skos:prefLabel[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return skos:prefLabel[lang($lang)])[1]/text()"/>
-    </xsl:template>
-
     <xsl:template match="*[skos:prefLabel/text()]" mode="ac:label">
-        <xsl:sequence select="(skos:prefLabel[not(@xml:lang)], skos:prefLabel)[1]/text()"/>
+        <xsl:sequence select="ac:preferred-lang(skos:prefLabel)"/>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -34,10 +34,13 @@ xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
+xmlns:spin="&spin;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
     <!-- BREADCRUMB  -->
+
+    <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
 
     <xsl:template match="*[@rdf:about]" mode="ac:BreadcrumbItem">
         <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>

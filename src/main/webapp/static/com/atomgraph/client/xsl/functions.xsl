@@ -19,14 +19,6 @@ limitations under the License.
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
-    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
-    <!ENTITY dc     "http://purl.org/dc/elements/1.1/">
-    <!ENTITY dct    "http://purl.org/dc/terms/">
-    <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
-    <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
-    <!ENTITY sp     "http://spinrdf.org/sp#">
     <!ENTITY list   "http://jena.hpl.hp.com/ARQ/list#">
 ]>
 <xsl:stylesheet version="2.0"
@@ -35,14 +27,6 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:rdfs="&rdfs;"
-xmlns:xsd="&xsd;"
-xmlns:sparql="&sparql;"
-xmlns:ldt="&ldt;"
-xmlns:dc="&dc;"
-xmlns:dct="&dct;"
-xmlns:foaf="&foaf;"
-xmlns:skos="&skos;"
-xmlns:sp="&sp;"
 xmlns:list="&list;"
 xmlns:map="http://www.w3.org/2005/xpath-functions/map"
 exclude-result-prefixes="#all"
@@ -51,11 +35,17 @@ exclude-result-prefixes="#all"
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
     <xsl:key name="resources-by-subclass" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:subClassOf/@rdf:resource | rdfs:subClassOf/@rdf:nodeID"/>
-    <xsl:key name="resources-by-domain" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:domain/@rdf:resource"/>
-    <xsl:key name="resources-by-range" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:range/@rdf:resource"/>
-    <xsl:key name="resources-by-broader" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:broader/@rdf:resource"/>
-    <xsl:key name="resources-by-narrower" match="*[@rdf:about] | *[@rdf:nodeID]" use="skos:narrower/@rdf:resource"/>
     
+    <!-- the value to show from a set of same-property literals: the first with text in the reader's
+         most preferred language, else the first untagged one, else the first of any. Language preference
+         is one rule, so it lives here rather than once per vocabulary module -->
+    <xsl:function name="ac:preferred-lang" as="text()?">
+        <xsl:param name="values" as="element()*"/>
+
+        <xsl:variable name="texted" select="$values[text()]" as="element()*"/>
+        <xsl:sequence select="((for $lang in ac:langs() return $texted[lang($lang)])[1], $texted[not(@xml:lang)], $texted)[1]/text()"/>
+    </xsl:function>
+
     <xsl:function name="ac:absolute-path" as="xs:anyURI">
         <xsl:param name="href" as="xs:anyURI"/>
         
@@ -170,85 +160,6 @@ exclude-result-prefixes="#all"
         <xsl:sequence select="substring-after($uri, '#')"/>
     </xsl:function>
 
-    <xsl:function name="rdfs:domain" as="attribute()*">
-        <xsl:param name="property-uri" as="xs:anyURI*"/>
-        <xsl:for-each select="$property-uri">
-            <xsl:for-each select="document(ac:document-uri($property-uri))">
-                <xsl:sequence select="key('resources', $property-uri)/rdfs:domain/@rdf:resource"/>
-            </xsl:for-each>
-        </xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="ac:inDomainOf" as="attribute()*">
-        <xsl:param name="type-uri" as="xs:anyURI*"/>
-        <xsl:for-each select="$type-uri">
-            <xsl:for-each select="document(ac:document-uri(.))">
-                <xsl:sequence select="key('resources-by-domain', $type-uri)/@rdf:about"/>
-            </xsl:for-each>
-        </xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="rdfs:range" as="attribute()*">
-        <xsl:param name="property-uri" as="xs:anyURI*"/>
-        <xsl:for-each select="$property-uri">
-            <xsl:for-each select="document(ac:document-uri($property-uri))">
-                <xsl:sequence select="key('resources', $property-uri)/rdfs:range/@rdf:resource"/>
-            </xsl:for-each>
-        </xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="rdfs:subClassOf" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:sequence select="rdfs:subClassOf($uri, document(ac:document-uri($uri)))"/>
-    </xsl:function>
-
-    <xsl:function name="rdfs:subClassOf" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:param name="document" as="document-node()"/>
-        <xsl:for-each select="$document">
-            <xsl:sequence select="key('resources', $uri)/rdfs:subClassOf/@rdf:resource"/>
-        </xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="ac:superClassOf" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:sequence select="ac:superClassOf($uri, document(ac:document-uri($uri)))"/>
-    </xsl:function>
-
-    <xsl:function name="ac:superClassOf" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:param name="document" as="document-node()"/>
-        <xsl:for-each select="$document">
-            <xsl:sequence select="key('resources-by-subclass', $uri)/@rdf:about"/>
-        </xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="skos:broader" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:sequence select="skos:broader($uri, document(ac:document-uri($uri)))"/>
-    </xsl:function>
-
-    <xsl:function name="skos:broader" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:param name="document" as="document-node()"/>
-        <xsl:for-each select="$document">
-            <xsl:sequence select="key('resources', $uri)/skos:broader/@rdf:resource | key('resources-by-narrower', $uri)/@rdf:about"/>
-        </xsl:for-each>
-    </xsl:function>
-
-    <xsl:function name="skos:narrower" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:sequence select="skos:narrower($uri, document(ac:document-uri($uri)))"/>
-    </xsl:function>
-
-    <xsl:function name="skos:narrower" as="attribute()*">
-        <xsl:param name="uri" as="xs:anyURI*"/>
-        <xsl:param name="document" as="document-node()"/>
-        <xsl:for-each select="$document">
-            <xsl:sequence select="key('resources', $uri)/skos:narrower/@rdf:resource | key('resources-by-broader', $uri)/@rdf:about"/>
-        </xsl:for-each>
-    </xsl:function>
-
     <xsl:function name="list:member" as="node()*">
         <xsl:param name="list" as="node()?"/>
         <xsl:param name="document" as="document-node()"/>
@@ -281,23 +192,6 @@ exclude-result-prefixes="#all"
             else
                ''
         return if ($absolute-path) then $absolute-path || $query-string else $query-string)"/>
-    </xsl:function>
-    
-    <xsl:function name="ac:visit-elements" as="element()*">
-        <xsl:param name="element" as="element()"/>
-        <xsl:param name="type" as="xs:string?"/>
-        
-        <xsl:choose>
-            <xsl:when test="$element/rdf:type/@rdf:resource = $type">
-                <xsl:sequence select="key('resources', $element/sp:query/(@rdf:resource, @rdf:nodeID), root($element))"/>
-            </xsl:when>
-            <xsl:when test="list:member($element, root($element))">
-                <xsl:sequence select="list:member($element, root($element))/ac:visit-elements(., $type)"/>
-            </xsl:when>
-            <xsl:when test="$element/sp:elements/@rdf:nodeID">
-                <xsl:sequence select="key('resources', $element/sp:elements/@rdf:nodeID, root($element))/ac:visit-elements(., $type)"/>
-            </xsl:when>
-        </xsl:choose>
     </xsl:function>
     
 </xsl:stylesheet>

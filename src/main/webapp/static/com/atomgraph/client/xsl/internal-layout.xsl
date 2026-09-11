@@ -39,6 +39,8 @@ exclude-result-prefixes="#all">
     <xsl:import href="converters/RDFXML2SVG.xsl"/>
     <xsl:import href="common.xsl"/>
     
+    <!-- the query editor is a mode this entry point offers, not part of the chrome -->
+    <xsl:include href="sparql.xsl"/>
     <xsl:include href="layout.xsl"/>
     
 </xsl:stylesheet>

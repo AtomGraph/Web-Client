@@ -30,38 +30,16 @@ xmlns:schema1="&schema1;"
 xmlns:schema2="&schema2;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[schema1:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return schema1:name[lang($lang)])[1]/text()"/>
+    <!-- schema.org is published under both the http: and https: namespace; the two spellings are the
+         same property, so each pair of literals is one candidate set -->
+    <xsl:template match="*[(schema1:name | schema2:name)/text()]" mode="ac:label">
+        <xsl:sequence select="ac:preferred-lang(schema1:name | schema2:name)"/>
     </xsl:template>
 
-    <xsl:template match="*[schema2:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return schema2:name[lang($lang)])[1]/text()"/>
+    <xsl:template match="*[(schema1:description | schema2:description)/text()]" mode="ac:description">
+        <xsl:sequence select="ac:preferred-lang(schema1:description | schema2:description)"/>
     </xsl:template>
 
-    <xsl:template match="*[schema1:name/text()]" mode="ac:label">
-        <xsl:sequence select="(schema1:name[not(@xml:lang)], schema1:name)[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[schema2:name/text()]" mode="ac:label">
-        <xsl:sequence select="(schema2:name[not(@xml:lang)], schema2:name)[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[schema1:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return schema1:description[lang($lang)])[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[schema2:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return schema2:description[lang($lang)])[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[schema1:description/text()]" mode="ac:description">
-        <xsl:sequence select="(schema1:description[not(@xml:lang)], schema1:description)[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[schema2:description/text()]" mode="ac:description">
-        <xsl:sequence select="(schema2:description[not(@xml:lang)], schema2:description)[1]/text()"/>
-    </xsl:template>
-    
     <xsl:template match="*[schema1:image/@rdf:resource or schema2:image/@rdf:resource]" mode="ac:image" priority="2">
         <xsl:sequence select="(schema1:image/@rdf:resource, schema2:image/@rdf:resource)[1]"/>
     </xsl:template>

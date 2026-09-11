@@ -42,6 +42,8 @@ exclude-result-prefixes="#all">
          over every renderer below; nothing above common defines the same matches -->
     <xsl:import href="imports/external.xsl"/>
     
+    <!-- the query editor is a mode this entry point offers, not part of the chrome -->
+    <xsl:include href="sparql.xsl"/>
     <xsl:include href="layout.xsl"/>
     
 </xsl:stylesheet>

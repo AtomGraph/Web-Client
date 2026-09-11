@@ -53,8 +53,6 @@ xmlns:xhv="&xhv;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <xsl:include href="sparql.xsl"/>
-
     <xsl:output method="xhtml" html-version="5" encoding="UTF-8" indent="yes" omit-xml-declaration="yes" media-type="application/xhtml+xml"/>
     
     <xsl:param name="ldt:base" as="xs:anyURI?"/>
@@ -62,7 +60,6 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:endpoint" as="xs:anyURI?"/>
     <xsl:param name="ac:mode" select="xs:anyURI('&ac;ReadMode')" as="xs:anyURI*"/>
     <xsl:param name="ac:query" as="xs:string?"/>
-    <xsl:param name="ldt:ontology" as="xs:anyURI?"/>
     <!-- ordered language preference list; the writer passes Accept-Language, client-side stylesheets override with the browser's list -->
     <xsl:param name="ac:langs" select="'en'" as="xs:string*"/>
     <!-- the language the representation is composed in, as opposed to the one the reader asked for: the writer supplies the
@@ -76,15 +73,12 @@ exclude-result-prefixes="#all">
          would keep the defect as the out-of-the-box behaviour -->
     <xsl:param name="ac:contentLang" select="'en'" as="xs:string"/>
 
-    <xsl:variable name="main-doc" select="/" as="document-node()"/>
     
     <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
     <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
     <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
     <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
     <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
-    <xsl:key name="violations-by-path" match="*" use="spin:violationPath/@rdf:resource | spin:violationPath/@rdf:nodeID"/>
-    <xsl:key name="violations-by-root" match="*[@rdf:about] | *[@rdf:nodeID]" use="spin:violationRoot/@rdf:resource | spin:violationRoot/@rdf:nodeID"/>
 
     <rdf:Description rdf:about="">
         <foaf:maker rdf:resource="https://atomgraph.com/#company"/>

@@ -148,8 +148,6 @@ public abstract class XSLTWriterBase
         
         Map<QName, XdmValue> params = new HashMap<>();
         
-        params.put(new QName("ac", AC.httpHeaders.getNameSpace(), AC.httpHeaders.getLocalName()), new XdmAtomicValue(headerMap.toString()));
-        params.put(new QName("ac", AC.method.getNameSpace(), AC.method.getLocalName()), new XdmAtomicValue(getRequest().getMethod()));
         params.put(new QName("ac", AC.contextUri.getNameSpace(), AC.contextUri.getLocalName()), new XdmAtomicValue(getContextURI()));
      
         try
@@ -160,9 +158,6 @@ public abstract class XSLTWriterBase
 
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
             if (!modes.isEmpty()) params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
-
-            URI ontologyURI = getLinkURI(headerMap, LDT.ontology);
-            if (ontologyURI != null) params.put(new QName("ldt", LDT.ontology.getNameSpace(), LDT.ontology.getLocalName()), new XdmAtomicValue(ontologyURI));
 
             URI baseURI = getLinkURI(headerMap, LDT.base);
             if (baseURI != null) params.put(new QName("ldt", LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(baseURI));
