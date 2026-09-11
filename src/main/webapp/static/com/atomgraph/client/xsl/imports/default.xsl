@@ -24,7 +24,6 @@ limitations under the License.
     <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
-    <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
 <xsl:stylesheet version="3.0"
@@ -40,7 +39,6 @@ xmlns:xsd="&xsd;"
 xmlns:srx="&srx;"
 xmlns:ldt="&ldt;"
 xmlns:sp="&sp;"
-xmlns:spin="&spin;"
 xmlns:foaf="&foaf;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"

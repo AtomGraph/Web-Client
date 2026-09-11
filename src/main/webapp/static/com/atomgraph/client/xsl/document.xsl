@@ -21,7 +21,6 @@ limitations under the License.
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
-    <!ENTITY spin   "http://spinrdf.org/spin#">
 ]>
 <xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/1999/xhtml"

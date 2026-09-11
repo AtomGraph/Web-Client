@@ -29,7 +29,6 @@ limitations under the License.
     <!ENTITY dct    "http://purl.org/dc/terms/">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
     <!ENTITY sp     "http://spinrdf.org/sp#">
-    <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="3.0"
@@ -48,7 +47,6 @@ xmlns:dct="&dct;"
 xmlns:foaf="&foaf;"
 xmlns:sioc="&sioc;"
 xmlns:sp="&sp;"
-xmlns:spin="&spin;"
 xmlns:xhv="&xhv;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
@@ -319,7 +317,7 @@ exclude-result-prefixes="#all">
     <!-- MAIN  -->
 
     <!-- always show errors in block  -->
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:Main" priority="1">
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')]" mode="ac:Main" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="class" select="'main'" as="xs:string?"/>
 
@@ -407,7 +405,7 @@ exclude-result-prefixes="#all">
 
     <!-- MODE SWITCHER -->
 
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:ModeSwitcher" priority="2"/>
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')]" mode="ac:ModeSwitcher" priority="2"/>
 
     <xsl:template match="rdf:RDF[base-uri()]" mode="ac:ModeSwitcher" priority="1">
         <xsl:param name="base-uri" select="base-uri()" as="xs:anyURI"/>
@@ -503,7 +501,7 @@ exclude-result-prefixes="#all">
     
     <!-- RIGHT NAV  -->
     
-    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')][not(key('resources-by-type', '&spin;ConstraintViolation'))]" mode="ac:Aside" priority="1"/>
+    <xsl:template match="rdf:RDF[key('resources-by-type', '&http;Response')]" mode="ac:Aside" priority="1"/>
     
     <xsl:template match="rdf:RDF" mode="ac:Aside">
         <xsl:param name="id" as="xs:string?"/>
