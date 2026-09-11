@@ -21,7 +21,6 @@ limitations under the License.
     <!ENTITY geo    "http://www.w3.org/2003/01/geo/wgs84_pos#">
     <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
-    <!ENTITY sioc   "http://rdfs.org/sioc/ns#">
 ]>
 <xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -32,39 +31,8 @@ xmlns:rdf="&rdf;"
 xmlns:ldt="&ldt;"
 xmlns:geo="&geo;"
 xmlns:foaf="&foaf;"
-xmlns:sioc="&sioc;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
-
-    <!-- BREADCRUMB  -->
-
-    <xsl:template match="*[@rdf:about]" mode="ac:BreadcrumbItem">
-        <xsl:param name="leaf" select="true()" as="xs:boolean" tunnel="yes"/>
-
-        <xsl:choose>
-            <xsl:when test="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)">
-                <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" mode="#current">
-                    <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-                </xsl:apply-templates>
-            </xsl:when>
-            <xsl:when test="sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource">
-                <xsl:if test="doc-available((sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)[1])">
-                    <xsl:variable name="parent-doc" select="document(sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource)" as="document-node()?"/>
-                    <xsl:apply-templates select="key('resources', sioc:has_container/@rdf:resource | sioc:has_parent/@rdf:resource, $parent-doc)" mode="#current">
-                        <xsl:with-param name="leaf" select="false()" tunnel="yes"/>
-                    </xsl:apply-templates>
-                </xsl:if>
-            </xsl:when>
-        </xsl:choose>
-        
-        <li>
-            <xsl:apply-templates select="@rdf:about" mode="xhtml:Anchor"/>
-
-            <xsl:if test="not($leaf)">
-                <span class="msi sm" aria-hidden="true">chevron_right</span>
-            </xsl:if>
-        </li>
-    </xsl:template>
 
     <!-- DEFAULT MODE -->
 

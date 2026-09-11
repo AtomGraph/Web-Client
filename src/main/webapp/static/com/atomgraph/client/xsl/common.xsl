@@ -30,7 +30,6 @@ exclude-result-prefixes="#all">
     <xsl:import href="imports/default.xsl"/>
     <xsl:import href="imports/dc.xsl"/>
     <xsl:import href="imports/dct.xsl"/>
-    <xsl:import href="imports/dh.xsl"/>
     <xsl:import href="imports/doap.xsl"/>
     <xsl:import href="imports/foaf.xsl"/>
     <xsl:import href="imports/ldt.xsl"/>

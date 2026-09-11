@@ -242,8 +242,6 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
 
-            <xsl:apply-templates select="." mode="ac:Breadcrumb"/>
-
             <xsl:apply-templates select="." mode="ac:ModeSwitcher"/>
 
             <xsl:apply-templates select="." mode="ac:HeaderActions"/>
@@ -251,8 +249,6 @@ exclude-result-prefixes="#all">
             <xsl:apply-templates select="." mode="ac:MediaTypeList"/>
         </div>
     </xsl:template>
-
-    <xsl:template match="srx:sparql" mode="ac:Breadcrumb"/>
 
     <xsl:template match="rdf:RDF | srx:sparql" mode="ac:ActionBarRight"/>
 

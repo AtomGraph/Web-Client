@@ -34,16 +34,6 @@ xmlns:foaf="&foaf;"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <!-- BREADCRUMB  -->
-
-    <xsl:template match="rdf:RDF[base-uri()]" mode="ac:Breadcrumb" priority="1">
-        <ul class="crumbs">
-            <xsl:apply-templates select="key('resources', ac:absolute-path(base-uri()))" mode="ac:BreadcrumbItem"/>
-        </ul>
-    </xsl:template>
-
-    <xsl:template match="*" mode="ac:Breadcrumb"/>
-
     <!-- GRAPH  -->
     
     <xsl:template match="rdf:RDF" mode="ac:Graph">
