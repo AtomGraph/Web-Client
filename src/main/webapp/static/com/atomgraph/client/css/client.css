@@ -25,15 +25,14 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 
 .action-bar { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-2) var(--sp-6); background: var(--surface-0); border-bottom: 1px solid var(--border-default); flex-wrap: wrap; }
 .ab-left { flex: 0 0 auto; }
-.ab-main { display: flex; align-items: center; gap: var(--sp-3); flex: 1 1 auto; min-width: 0; }
-.ab-main .crumbs { flex: 1 1 auto; }
+/* the bar's controls sit at the end of the row. The breadcrumb used to do this as a side effect -
+   it was the only growing child, so it absorbed the free space and pushed everything past it -
+   which left the controls hard left the moment it went. Stating it on the container instead does
+   not depend on what else the bar happens to contain. */
+.ab-main { display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-3); flex: 1 1 auto; min-width: 0; }
 .ab-main .actions { display: flex; align-items: center; gap: var(--sp-2); }
 .ab-main .actions form { margin: 0; }
 
-.crumbs { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; min-width: 0; overflow: hidden; }
-.crumbs li { display: flex; align-items: center; gap: 4px; min-width: 0; }
-.crumbs li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.crumbs .msi { color: var(--fg-hint); flex-shrink: 0; }
 
 .content { display: flex; align-items: flex-start; gap: var(--sp-5); width: 100%; max-width: 1400px; margin: 0 auto; padding: var(--sp-5) var(--sp-6); }
 .main { flex: 1 1 auto; min-width: 0; }
