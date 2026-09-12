@@ -1183,6 +1183,61 @@ exclude-result-prefixes="#all">
         </xsl:if>
     </xsl:template>
 
+    <!-- A blank node typed rdf:langString is a LANGUAGE-TAGGED literal, so its control is a value input
+         plus a language field and never a datatype. The xsd:* template above cannot serve it and is not
+         widened to: RDF 1.1 requires an rdf:langString literal to carry a language tag and forbids it
+         carrying a datatype attribute, so emitting lt=rdf:langString would encode an ill-formed literal.
+         The two differ in what they emit, not merely in a label, which is why this is a separate rule.
+
+         Without it a constructor declaring [ a rdf:langString ] matched nothing in this mode - the test
+         above is scoped to the XSD namespace - and fell through to the resource control, offering a URI
+         picker for a property that takes text.
+
+         The language field and its input are the SAME emitters the data path uses for an existing
+         @xml:lang value, reached by synthesising the value node this control will produce, so there is
+         one implementation of the control rather than two that can drift. It is prefilled from
+         ac:langs(), the reader's own accepted list, which is the single source of language preference. -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[@rdf:resource = '&rdf;langString'])]]" mode="ac:FormControl" priority="3">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:variable name="value" as="element()">
+            <xsl:element name="{../name()}" namespace="{../namespace-uri()}">
+                <xsl:attribute name="xml:lang" select="ac:langs()[1]"/>
+            </xsl:element>
+        </xsl:variable>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:call-template>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <!-- same treatment as any other datatype tag: rdf:langString is one -->
+                <xsl:with-param name="class" select="'ac-tag sz-sm em-quiet co-neutral'"/>
+                <xsl:with-param name="title" select="'&rdf;langString'"/>
+                <xsl:with-param name="label" select="'rdf:langString'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+
+        <xsl:apply-templates select="$value/@xml:lang" mode="ac:FormControl">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="ac:ValueAnnotations" priority="2">
         <xsl:param name="type" as="xs:string?"/>
 
