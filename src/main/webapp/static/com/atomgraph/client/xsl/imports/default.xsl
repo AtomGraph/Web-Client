@@ -960,6 +960,68 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
+    <!-- ERROR UI: the status-to-sentence key, the negative alert and the technical-detail disclosure. Every
+         failure surface is assembled from these three - the client's own error page, and the apps built on it. -->
+
+    <!-- The nodeID of the sentence that explains an HTTP status in the reader's own terms, rather than
+         restating the upstream text. The upstream text is still shown, demoted, in the technical detail.
+         A key rather than a label, so each catalog - the client's, and an app's own - resolves it itself. -->
+    <xsl:function name="ac:http-error-key" as="xs:string">
+        <xsl:param name="status" as="xs:double?"/> <!-- xs:double, not xs:integer: SaxonJS surfaces the response status as a JS number, and integers promote into this but doubles do not promote the other way -->
+
+        <xsl:sequence select="if ($status = 400) then 'http-error-malformed' else if ($status = 401) then 'http-error-unauthorized' else if ($status = 403) then 'http-error-forbidden' else if ($status = 404) then 'http-error-not-found' else if ($status = (502, 503, 504)) then 'http-error-unreachable' else if ($status ge 500) then 'http-error-server' else 'http-error-unknown'"/>
+    </xsl:function>
+
+    <!-- The negative alert every failure surface is built from (design system: Core → Status, InlineAlert).
+         The headline names what failed, the sentence under it explains why - neither restates the upstream
+         text, which belongs in the technical detail. Both arrive resolved rather than as catalog keys,
+         because the catalog a headline comes from is the caller's. -->
+    <xsl:function name="ac:error-alert" as="element()">
+        <xsl:param name="title" as="item()*"/>
+        <xsl:param name="text" as="item()*"/>
+        <xsl:param name="uri" as="xs:anyURI?"/> <!-- what could not be reached, linked under the sentence -->
+
+        <!-- ac:InlineAlert dispatches on a node whose content it never reads, and a function has no context
+             item to offer it. A document cannot stand in: match="node()" does not match a document node, so
+             the built-in rule descends and the mode fires once per child - twice over a catalog that opens
+             with a comment. One synthesized element, one alert. -->
+        <xsl:variable name="context" as="element()">
+            <ac:Alert/>
+        </xsl:variable>
+
+        <xsl:apply-templates select="$context" mode="ac:InlineAlert">
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="text" select="$text"/>
+            <!-- the URI takes the alert body's link slot, its own row, so the sentence above it stays a
+                 sentence and a long IRI wraps without breaking the prose -->
+            <xsl:with-param name="body" as="item()*">
+                <xsl:if test="$uri">
+                    <a class="ac-alert-uri" href="{$uri}">
+                        <xsl:value-of select="$uri"/>
+                    </a>
+                </xsl:if>
+            </xsl:with-param>
+        </xsl:apply-templates>
+    </xsl:function>
+
+    <!-- The upstream text, demoted into a collapsed disclosure: never the first thing read, never withheld from
+         whoever needs it. Empty when there is nothing to show, so callers can hand it whatever they have. -->
+    <xsl:function name="ac:error-detail" as="element()?">
+        <xsl:param name="detail" as="xs:string?"/>
+
+        <xsl:if test="normalize-space($detail)">
+            <details class="ac-disclosure">
+                <summary>
+                    <span class="msi" aria-hidden="true">chevron_right</span>
+                    <xsl:apply-templates select="key('resources', 'technical-detail', ac:translations())" mode="ac:label"/>
+                </summary>
+                <pre>
+                    <xsl:value-of select="$detail"/>
+                </pre>
+            </details>
+        </xsl:if>
+    </xsl:function>
+
     <!-- SELECT SHELL -->
 
     <!-- the design system's select shell: the caret-adorned wrapper every dropdown rides in;
