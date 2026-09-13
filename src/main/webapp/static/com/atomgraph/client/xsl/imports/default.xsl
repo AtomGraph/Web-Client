@@ -781,6 +781,152 @@ exclude-result-prefixes="#all">
         </xsl:call-template>
     </xsl:template>
 
+    <!-- RDFA ATTRIBUTES -->
+
+    <!-- The single mapping from an RDF/XML term to the RDFa attributes that assert it, so every emitter laying a statement
+         out asks for the set instead of retyping it: the property list below, the carriers further down, and whatever
+         anatomy an importing layer puts a value in. Object/literal level, matching ac:PropertyListValue's own match set, so
+         a caller that can dispatch one can dispatch the other.
+
+         Literals always carry @content. The rendered text is a display decision - a date is formatted, a number is grouped,
+         a language pill sits beside the value - while the literal is the lexical form, and @content is the only attribute
+         that lets the two differ. Emitting it unconditionally costs a few bytes and buys the property that no later
+         rendering change can silently alter the extracted graph; emitting it only when the two differ would put that
+         guarantee in the hands of every caller computing its display string correctly.
+
+         @content never appears beside @resource: RDFa gives @content precedence and the resource would be orphaned. -->
+
+    <xsl:template match="@rdf:resource" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="resource" select="."/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="resource" select="'_:' || ."/>
+    </xsl:template>
+
+    <!-- both language spellings, because the two representations of one URL have to agree: HTML+RDFa reads @lang, XHTML+RDFa @xml:lang -->
+    <xsl:template match="text()[../@xml:lang]" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="lang" select="../@xml:lang"/>
+        <xsl:attribute name="xml:lang" select="../@xml:lang"/>
+        <xsl:attribute name="content" select="."/>
+    </xsl:template>
+
+    <!-- an XML literal is markup, and its lexical form is that markup serialized. Taken from the source rather than from the
+         rendering, which strips it to text, and carried on @content, which RDFa prefers over the element's own inner XML -->
+    <xsl:template match="*[../@rdf:parseType = 'Literal']" mode="ac:RDFaAttributes">
+        <!-- copied without namespaces first, or serializing would stamp every prefix the surrounding RDF/XML document
+             happens to declare onto the literal's outermost element. The xhtml method because an XML literal's stored form
+             is canonical XML, which writes an empty element as a start/end pair rather than self-closing it -->
+        <xsl:variable name="literal" as="node()*">
+            <xsl:copy-of select="../node()" copy-namespaces="no"/>
+        </xsl:variable>
+
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="datatype" select="'&rdf;XMLLiteral'"/>
+        <!-- indent pinned off: the stylesheet's own xsl:output has it on, and it reaches serialize() from there, which would
+             pretty-print the literal into something the stored lexical form never said -->
+        <xsl:attribute name="content" select="serialize($literal, map{ 'method': 'xhtml', 'omit-xml-declaration': true(), 'indent': false() })"/>
+    </xsl:template>
+
+    <xsl:template match="node()" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+
+        <xsl:choose>
+            <!-- a datatype suppresses language inheritance outright, which is what keeps the document's lang off a number -->
+            <xsl:when test="../@rdf:datatype[not(. = '&xsd;string')]">
+                <xsl:attribute name="datatype" select="../@rdf:datatype"/>
+            </xsl:when>
+            <!-- an untagged literal makes no language claim, so it must not inherit the document's: lang="" is HTML's
+                 "unknown", the exact counterpart of RDF's absent tag -->
+            <xsl:when test="self::text()">
+                <xsl:attribute name="lang" select="''"/>
+                <xsl:attribute name="xml:lang" select="''"/>
+            </xsl:when>
+        </xsl:choose>
+
+        <xsl:if test="self::text()">
+            <xsl:attribute name="content" select="."/>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- an empty literal is a childless predicate element: RDF/XML leaves it no text node to match, so the element stands in
+         for its own object and the statement keeps a carrier -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[empty(node() | @rdf:resource | @rdf:nodeID)]" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="concat(namespace-uri(), local-name())"/>
+
+        <xsl:choose>
+            <xsl:when test="@rdf:datatype[not(. = '&xsd;string')]">
+                <xsl:attribute name="datatype" select="@rdf:datatype"/>
+            </xsl:when>
+            <xsl:when test="@xml:lang">
+                <xsl:attribute name="lang" select="@xml:lang"/>
+                <xsl:attribute name="xml:lang" select="@xml:lang"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:attribute name="lang" select="''"/>
+                <xsl:attribute name="xml:lang" select="''"/>
+            </xsl:otherwise>
+        </xsl:choose>
+
+        <xsl:attribute name="content" select="''"/>
+    </xsl:template>
+
+    <!-- RDFA CARRIERS -->
+
+    <!-- A description asserted in markup that renders nothing - what a graph the page cannot show visibly still needs in
+         order to be in the page's graph at all. link and meta are display:none in every UA stylesheet, so there is no rule
+         to load and nothing to hide: a class-based hide would depend on a stylesheet arriving and would leave the values one
+         cascade regression away from being visible, and neither element takes part in layout, so no :nth-child or flex gap
+         shifts around them.
+
+         @property throughout, never @rel. The platform's own extractor has @rel out of scope, so a carrier written with it
+         would be invisible to the one RDFa parser that ships here.
+
+         @about is stamped on each carrier rather than on a wrapper, because the wrapper would have to be a div and a div
+         renders. It is redundant wherever an ancestor already names the same subject, and it is what makes the mode work
+         anywhere else. -->
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:RDFaCarrier">
+        <xsl:param name="about" select="string((@rdf:about, '_:' || @rdf:nodeID)[1])" as="xs:string"/>
+
+        <xsl:apply-templates select="*" mode="#current">
+            <xsl:with-param name="about" select="$about" tunnel="yes"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:RDFaCarrier">
+        <xsl:param name="values" select="if (exists(node() | @rdf:resource | @rdf:nodeID)) then node() | @rdf:resource | @rdf:nodeID else ." as="node()*"/>
+
+        <xsl:apply-templates select="$values" mode="ac:RDFaCarrierValue"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:resource | @rdf:nodeID" mode="ac:RDFaCarrierValue">
+        <xsl:param name="about" as="xs:string?" tunnel="yes"/>
+
+        <link>
+            <xsl:if test="$about">
+                <xsl:attribute name="about" select="$about"/>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="ac:RDFaAttributes"/>
+        </link>
+    </xsl:template>
+
+    <xsl:template match="node()" mode="ac:RDFaCarrierValue">
+        <xsl:param name="about" as="xs:string?" tunnel="yes"/>
+
+        <meta>
+            <xsl:if test="$about">
+                <xsl:attribute name="about" select="$about"/>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="ac:RDFaAttributes"/>
+        </meta>
+    </xsl:template>
+
     <!-- PROPERTY EDITOR -->
 
     <xsl:template match="text()[../@xml:lang]" mode="ac:PropertyListValue" priority="1">
@@ -791,10 +937,20 @@ exclude-result-prefixes="#all">
         </dd>
     </xsl:template>
 
+    <!-- the empty literal again: with nothing to dispatch, the predicate element stands in for its object so the row still
+         gets a value cell. A dt with no dd is also not a dl the content model allows -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[empty(node() | @rdf:resource | @rdf:nodeID)]" mode="ac:PropertyListValue">
+        <dd>
+            <xsl:apply-templates select="." mode="ac:RDFaAttributes"/>
+        </dd>
+    </xsl:template>
+
     <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:PropertyEditor">
+        <xsl:param name="values" select="if (exists(node() | @rdf:resource | @rdf:nodeID)) then node() | @rdf:resource | @rdf:nodeID else ." as="node()*"/>
+
         <xsl:apply-templates select="." mode="ac:PropertyListLabel"/>
 
-        <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="ac:PropertyListValue"/>
+        <xsl:apply-templates select="$values" mode="ac:PropertyListValue"/>
     </xsl:template>
 
     <!-- FORM CONTROLS -->
