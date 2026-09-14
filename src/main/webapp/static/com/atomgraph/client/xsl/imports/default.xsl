@@ -22,9 +22,7 @@ limitations under the License.
     <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
     <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
     <!ENTITY srx    "http://www.w3.org/2005/sparql-results#">
-    <!ENTITY ldt    "https://www.w3.org/ns/ldt#">
     <!ENTITY sp     "http://spinrdf.org/sp#">
-    <!ENTITY spin   "http://spinrdf.org/spin#">
     <!ENTITY foaf   "http://xmlns.com/foaf/0.1/">
 ]>
 <xsl:stylesheet version="3.0"
@@ -38,9 +36,7 @@ xmlns:rdfs="&rdfs;"
 xmlns:owl="&owl;"
 xmlns:xsd="&xsd;"
 xmlns:srx="&srx;"
-xmlns:ldt="&ldt;"
 xmlns:sp="&sp;"
-xmlns:spin="&spin;"
 xmlns:foaf="&foaf;"
 xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -53,9 +49,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="node()" mode="ac:label"/>
 
     <!-- attempt use label of the primary topic before parsing label from URL -->
-<!--    <xsl:template match="*[key('resources', foaf:primaryTopic/@rdf:*)]" mode="ac:label" priority="3">
-        <xsl:apply-templates select="key('resources', foaf:primaryTopic/@rdf:*)" mode="#current"/>
-    </xsl:template>-->
+
 
     <xsl:template match="*[contains(@rdf:about, '#') and not(ends-with(@rdf:about, '#'))]" mode="ac:label" priority="2">
         <xsl:sequence select="substring-after(@rdf:about, '#')"/>
@@ -133,19 +127,24 @@ exclude-result-prefixes="#all">
 
     <!-- LANGUAGE TAG -->
 
-    <!-- the tag a value carries, shown wherever a skin renders several languages side by side. Nothing generic to show:
-         a skin that has a badge for it overrides this, the built-in attribute rule would otherwise leak the bare code -->
-    <xsl:template match="@xml:lang" mode="ac:lang-tag"/>
+    <!-- the tag a value carries, shown wherever several languages of one value render side by side -->
+    <xsl:template match="@xml:lang" mode="ac:lang-tag">
+        <span class="ac-tag sz-sm em-quiet co-accent">
+            <span class="ac-tag-lbl">
+                <xsl:value-of select="."/>
+            </span>
+        </span>
+    </xsl:template>
 
     <!-- DEFINITIONS -->
     
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:DefinitionTerm">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:PropertyListLabel">
         <dt>
             <xsl:apply-templates select="."/>
         </dt>
     </xsl:template>
     
-    <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="xhtml:DefinitionDescription">
+    <xsl:template match="node() | @rdf:resource | @rdf:nodeID" mode="ac:PropertyListValue">
         <dd>
             <xsl:apply-templates select="."/>
         </dd>
@@ -180,12 +179,16 @@ exclude-result-prefixes="#all">
         <xsl:param name="id" select="if (contains(., '#')) then substring-after(., '#') else ()" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="role" as="xs:string?"/>
         <xsl:param name="target" as="xs:string?"/>
         <xsl:param name="render-id" select="true()" as="xs:boolean" tunnel="yes"/>
         
         <a href="{$href}">
             <xsl:if test="$id and $render-id">
                 <xsl:attribute name="id" select="$id"/>
+            </xsl:if>
+            <xsl:if test="$role">
+                <xsl:attribute name="role" select="$role"/>
             </xsl:if>
             <xsl:if test="$title">
                 <xsl:attribute name="title" select="$title"/>
@@ -422,7 +425,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype[starts-with(., '&xsd;')]" priority="1">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
-        <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
+        <xsl:param name="class" select="'ac-tag sz-sm em-quiet co-accent'" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
@@ -443,7 +446,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="@rdf:datatype">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
-        <xsl:param name="class" select="'help-inline'" as="xs:string?"/>
+        <xsl:param name="class" select="'ac-tag sz-sm em-quiet co-accent'" as="xs:string?"/>
         
         <span>
             <xsl:if test="$id">
@@ -462,27 +465,27 @@ exclude-result-prefixes="#all">
 
     <!-- TABLE -->
 
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableHeaderCell">
-        <th>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:ResultsTableHeaderCell">
+        <th scope="col">
             <xsl:apply-templates select="."/>
         </th>
     </xsl:template>
     
     <!-- every value of the property beyond the first is folded into the cell the first one opens -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCell"/>
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:ResultsTableDataCell"/>
 
     <!-- the header fixes the column count, so a property gets one cell however many values it has, and they share it.
          Ordering them by the reader's languages puts the one they read first and leaves the rest reachable: a reader whose
          language the data lacks used to be shown the first value in document order, and every other reader was shown one
          value with no sign that the others existed -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="xhtml:TableDataCell" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[not(preceding-sibling::*[concat(namespace-uri(), local-name()) = concat(namespace-uri(current()), local-name(current()))])]" mode="ac:ResultsTableDataCell" priority="1">
         <xsl:variable name="property-uri" select="concat(namespace-uri(), local-name())" as="xs:string"/>
 
         <td>
             <!-- the values stack rather than run together, and the stack is what carries the height: a cell cannot cap its
                  own, so a property with many values has to be bounded by a container the cell holds -->
             <div class="values">
-                <xsl:apply-templates select="../*[concat(namespace-uri(), local-name()) = $property-uri]" mode="xhtml:TableDataCellValue">
+                <xsl:apply-templates select="../*[concat(namespace-uri(), local-name()) = $property-uri]" mode="ac:ResultsTableDataCellValue">
                     <xsl:sort select="ac:lang-rank(.)"/>
                 </xsl:apply-templates>
             </div>
@@ -491,7 +494,7 @@ exclude-result-prefixes="#all">
 
     <!-- one block per statement, so the values stack apart instead of running into each other. The statement is the unit,
          not the node under it: an XHTML literal is one value however many elements it is written with -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="xhtml:TableDataCellValue">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:ResultsTableDataCellValue">
         <div class="value">
             <!-- an untagged literal makes no language claim, which HTML spells lang="". A typed value is not prose and
                  inherits, so a number or a date is read out in the reader's own language -->
@@ -505,7 +508,7 @@ exclude-result-prefixes="#all">
 
     <!-- each value declares its own language rather than inheriting the document's, since the cell holds several at once
          and the document default is wrong for all but one of them -->
-    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@xml:lang]" mode="xhtml:TableDataCellValue" priority="1">
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[@xml:lang]" mode="ac:ResultsTableDataCellValue" priority="1">
         <div class="value" lang="{@xml:lang}">
             <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID"/>
 
@@ -513,10 +516,10 @@ exclude-result-prefixes="#all">
         </div>
     </xsl:template>
 
-    <xsl:template match="srx:sparql" mode="xhtml:Table">
+    <xsl:template match="srx:sparql" mode="ac:ResultsTable">
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" as="xs:string?"/>
-        <xsl:param name="class" select="'table table-bordered table-striped'" as="xs:string?"/>
+        <xsl:param name="class" select="'results-table'" as="xs:string?"/>
         
         <table>
             <xsl:if test="$id">
@@ -529,11 +532,15 @@ exclude-result-prefixes="#all">
                 <xsl:attribute name="class" select="$class"/>
             </xsl:if>
             
+            <caption class="ac-vh">
+                <xsl:apply-templates select="key('resources', 'query-results', ac:translations())" mode="ac:label"/>
+            </caption>
+
             <xsl:apply-templates mode="#current"/>
         </table>
     </xsl:template>
     
-    <xsl:template match="srx:head" mode="xhtml:Table">
+    <xsl:template match="srx:head" mode="ac:ResultsTable">
         <thead>
             <tr>
                 <xsl:apply-templates mode="#current"/>
@@ -541,31 +548,31 @@ exclude-result-prefixes="#all">
         </thead>
     </xsl:template>
 
-    <xsl:template match="srx:variable" mode="xhtml:Table">
-        <th>
+    <xsl:template match="srx:variable" mode="ac:ResultsTable">
+        <th scope="col">
             <xsl:value-of select="@name"/>
         </th>
     </xsl:template>
 
-    <xsl:template match="srx:results" mode="xhtml:Table">
+    <xsl:template match="srx:results" mode="ac:ResultsTable">
         <tbody>
             <xsl:apply-templates mode="#current"/>
         </tbody>
     </xsl:template>
 
-    <xsl:template match="srx:result" mode="xhtml:Table">
+    <xsl:template match="srx:result" mode="ac:ResultsTable">
         <tr>
             <xsl:apply-templates mode="#current"/>
         </tr>
     </xsl:template>
 
-    <xsl:template match="srx:binding" mode="xhtml:Table">
+    <xsl:template match="srx:binding" mode="ac:ResultsTable">
         <td>
             <xsl:apply-templates mode="#current"/>
         </td>
     </xsl:template>
     
-    <xsl:template match="srx:uri" mode="xhtml:Table">
+    <xsl:template match="srx:uri" mode="ac:ResultsTable">
         <xsl:apply-templates select="."/>
     </xsl:template>
 
@@ -772,6 +779,852 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="title" select="$title"/>
             <xsl:with-param name="value" select="."/>
         </xsl:call-template>
+    </xsl:template>
+
+    <!-- RDFA ATTRIBUTES -->
+
+    <!-- The single mapping from an RDF/XML term to the RDFa attributes that assert it, so every emitter laying a statement
+         out asks for the set instead of retyping it: the property list below, the carriers further down, and whatever
+         anatomy an importing layer puts a value in. Object/literal level, matching ac:PropertyListValue's own match set, so
+         a caller that can dispatch one can dispatch the other.
+
+         Literals always carry @content. The rendered text is a display decision - a date is formatted, a number is grouped,
+         a language pill sits beside the value - while the literal is the lexical form, and @content is the only attribute
+         that lets the two differ. Emitting it unconditionally costs a few bytes and buys the property that no later
+         rendering change can silently alter the extracted graph; emitting it only when the two differ would put that
+         guarantee in the hands of every caller computing its display string correctly.
+
+         @content never appears beside @resource: RDFa gives @content precedence and the resource would be orphaned. -->
+
+    <xsl:template match="@rdf:resource" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="resource" select="."/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:nodeID" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="resource" select="'_:' || ."/>
+    </xsl:template>
+
+    <!-- both language spellings, because the two representations of one URL have to agree: HTML+RDFa reads @lang, XHTML+RDFa @xml:lang -->
+    <xsl:template match="text()[../@xml:lang]" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="lang" select="../@xml:lang"/>
+        <xsl:attribute name="xml:lang" select="../@xml:lang"/>
+        <xsl:attribute name="content" select="."/>
+    </xsl:template>
+
+    <!-- an XML literal is markup, and its lexical form is that markup serialized. Taken from the source rather than from the
+         rendering, which strips it to text, and carried on @content, which RDFa prefers over the element's own inner XML -->
+    <xsl:template match="*[../@rdf:parseType = 'Literal']" mode="ac:RDFaAttributes">
+        <!-- copied without namespaces first, or serializing would stamp every prefix the surrounding RDF/XML document
+             happens to declare onto the literal's outermost element. The xhtml method because an XML literal's stored form
+             is canonical XML, which writes an empty element as a start/end pair rather than self-closing it -->
+        <xsl:variable name="literal" as="node()*">
+            <xsl:copy-of select="../node()" copy-namespaces="no"/>
+        </xsl:variable>
+
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+        <xsl:attribute name="datatype" select="'&rdf;XMLLiteral'"/>
+        <!-- indent pinned off: the stylesheet's own xsl:output has it on, and it reaches serialize() from there, which would
+             pretty-print the literal into something the stored lexical form never said -->
+        <xsl:attribute name="content" select="serialize($literal, map{ 'method': 'xhtml', 'omit-xml-declaration': true(), 'indent': false() })"/>
+    </xsl:template>
+
+    <xsl:template match="node()" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="../concat(namespace-uri(), local-name())"/>
+
+        <xsl:choose>
+            <!-- a datatype suppresses language inheritance outright, which is what keeps the document's lang off a number -->
+            <xsl:when test="../@rdf:datatype[not(. = '&xsd;string')]">
+                <xsl:attribute name="datatype" select="../@rdf:datatype"/>
+            </xsl:when>
+            <!-- an untagged literal makes no language claim, so it must not inherit the document's: lang="" is HTML's
+                 "unknown", the exact counterpart of RDF's absent tag -->
+            <xsl:when test="self::text()">
+                <xsl:attribute name="lang" select="''"/>
+                <xsl:attribute name="xml:lang" select="''"/>
+            </xsl:when>
+        </xsl:choose>
+
+        <xsl:if test="self::text()">
+            <xsl:attribute name="content" select="."/>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- an empty literal is a childless predicate element: RDF/XML leaves it no text node to match, so the element stands in
+         for its own object and the statement keeps a carrier -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[empty(node() | @rdf:resource | @rdf:nodeID)]" mode="ac:RDFaAttributes">
+        <xsl:attribute name="property" select="concat(namespace-uri(), local-name())"/>
+
+        <xsl:choose>
+            <xsl:when test="@rdf:datatype[not(. = '&xsd;string')]">
+                <xsl:attribute name="datatype" select="@rdf:datatype"/>
+            </xsl:when>
+            <xsl:when test="@xml:lang">
+                <xsl:attribute name="lang" select="@xml:lang"/>
+                <xsl:attribute name="xml:lang" select="@xml:lang"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:attribute name="lang" select="''"/>
+                <xsl:attribute name="xml:lang" select="''"/>
+            </xsl:otherwise>
+        </xsl:choose>
+
+        <xsl:attribute name="content" select="''"/>
+    </xsl:template>
+
+    <!-- RDFA CARRIERS -->
+
+    <!-- A description asserted in markup that renders nothing - what a graph the page cannot show visibly still needs in
+         order to be in the page's graph at all. link and meta are display:none in every UA stylesheet, so there is no rule
+         to load and nothing to hide: a class-based hide would depend on a stylesheet arriving and would leave the values one
+         cascade regression away from being visible, and neither element takes part in layout, so no :nth-child or flex gap
+         shifts around them.
+
+         @property throughout, never @rel. The platform's own extractor has @rel out of scope, so a carrier written with it
+         would be invisible to the one RDFa parser that ships here.
+
+         @about is stamped on each carrier rather than on a wrapper, because the wrapper would have to be a div and a div
+         renders. It is redundant wherever an ancestor already names the same subject, and it is what makes the mode work
+         anywhere else. -->
+
+    <xsl:template match="*[*][@rdf:about] | *[*][@rdf:nodeID]" mode="ac:RDFaCarrier">
+        <xsl:param name="about" select="string((@rdf:about, '_:' || @rdf:nodeID)[1])" as="xs:string"/>
+
+        <xsl:apply-templates select="*" mode="#current">
+            <xsl:with-param name="about" select="$about" tunnel="yes"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:RDFaCarrier">
+        <xsl:param name="values" select="if (exists(node() | @rdf:resource | @rdf:nodeID)) then node() | @rdf:resource | @rdf:nodeID else ." as="node()*"/>
+
+        <xsl:apply-templates select="$values" mode="ac:RDFaCarrierValue"/>
+    </xsl:template>
+
+    <xsl:template match="@rdf:resource | @rdf:nodeID" mode="ac:RDFaCarrierValue">
+        <xsl:param name="about" as="xs:string?" tunnel="yes"/>
+
+        <link>
+            <xsl:if test="$about">
+                <xsl:attribute name="about" select="$about"/>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="ac:RDFaAttributes"/>
+        </link>
+    </xsl:template>
+
+    <xsl:template match="node()" mode="ac:RDFaCarrierValue">
+        <xsl:param name="about" as="xs:string?" tunnel="yes"/>
+
+        <meta>
+            <xsl:if test="$about">
+                <xsl:attribute name="about" select="$about"/>
+            </xsl:if>
+
+            <xsl:apply-templates select="." mode="ac:RDFaAttributes"/>
+        </meta>
+    </xsl:template>
+
+    <!-- PROPERTY EDITOR -->
+
+    <xsl:template match="text()[../@xml:lang]" mode="ac:PropertyListValue" priority="1">
+        <dd>
+            <xsl:apply-templates select="../@xml:lang" mode="ac:lang-tag"/>
+
+            <xsl:apply-templates select="."/>
+        </dd>
+    </xsl:template>
+
+    <!-- the empty literal again: with nothing to dispatch, the predicate element stands in for its object so the row still
+         gets a value cell. A dt with no dd is also not a dl the content model allows -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*[empty(node() | @rdf:resource | @rdf:nodeID)]" mode="ac:PropertyListValue">
+        <dd>
+            <xsl:apply-templates select="." mode="ac:RDFaAttributes"/>
+        </dd>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*" mode="ac:PropertyEditor">
+        <xsl:param name="values" select="if (exists(node() | @rdf:resource | @rdf:nodeID)) then node() | @rdf:resource | @rdf:nodeID else ." as="node()*"/>
+
+        <xsl:apply-templates select="." mode="ac:PropertyListLabel"/>
+
+        <xsl:apply-templates select="$values" mode="ac:PropertyListValue"/>
+    </xsl:template>
+
+    <!-- FORM CONTROLS -->
+
+    <!-- @rdf:about | @rdf:nodeID -->
+    <xsl:template match="*[*]/@rdf:*[local-name() = ('about', 'nodeID')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'hidden'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <xsl:apply-templates select="." mode="xhtml:Input">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <!-- one statement: predicate label, value controls, term annotations -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about',  'nodeID')]]/*" mode="ac:FormControl">
+        <xsl:param name="this" select="concat(namespace-uri(), local-name())"/>
+        <xsl:param name="class" select="'statement'" as="xs:string?"/>
+        <xsl:param name="label" as="xs:string?">
+            <xsl:apply-templates select="." mode="ac:property-label"/>
+        </xsl:param>
+        <xsl:param name="show-label" select="true()" as="xs:boolean"/>
+        <xsl:param name="cloneable" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="for" select="generate-id((node() | @rdf:resource | @rdf:nodeID)[1])" as="xs:string"/>
+
+        <div>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+            <xsl:apply-templates select="." mode="xhtml:Input">
+                <xsl:with-param name="type" select="'hidden'"/>
+            </xsl:apply-templates>
+            <xsl:if test="$show-label">
+                <label class="ac-label" for="{$for}" title="{$this}">
+                    <xsl:sequence select="$label"/>
+                </label>
+            </xsl:if>
+
+            <div class="values">
+                <xsl:apply-templates select="node() | @rdf:resource | @rdf:nodeID" mode="#current"/>
+
+                <xsl:if test="$cloneable">
+                    <button type="button" class="ac-iconbtn sz-xs in-accent ap-ghost btn-add">
+                        <xsl:attribute name="title">
+                            <xsl:apply-templates select="key('resources', 'add-stmt', ac:translations())" mode="ac:label"/>
+                        </xsl:attribute>
+
+                        <span class="msi sm" aria-hidden="true">add</span>
+                    </button>
+                </xsl:if>
+                <xsl:if test="not($required)">
+                    <button type="button" class="ac-iconbtn sz-xs in-destructive ap-ghost btn-remove-property">
+                        <xsl:attribute name="title">
+                            <xsl:apply-templates select="key('resources', 'remove-stmt', ac:translations())" mode="ac:label"/>
+                        </xsl:attribute>
+
+                        <span class="msi sm" aria-hidden="true">remove</span>
+                    </button>
+                </xsl:if>
+            </div>
+            <xsl:if test="@xml:lang | @rdf:datatype">
+                <div class="annotations">
+                    <xsl:apply-templates select="@xml:lang | @rdf:datatype" mode="#current"/>
+                </div>
+            </xsl:if>
+        </div>
+    </xsl:template>
+
+    <!-- FIELD SHELL -->
+
+    <!-- the design system's field shell: the single wrapper every text control rides in. The $control slot
+         holds the pre-built input/textarea, $adorn an optional leading adornment; hidden inputs bypass the
+         chrome. $label renders the shell's own Label above the box, $state marks the box's validation state
+         (st-valid | st-invalid), $help renders in the field foot -->
+    <xsl:template match="node() | @*" mode="ac:FieldShell">
+        <xsl:param name="control" as="item()*"/>
+        <xsl:param name="type" as="xs:string?"/>
+        <xsl:param name="size" select="'sz-sm'" as="xs:string"/>
+        <xsl:param name="adorn" as="item()*"/>
+        <xsl:param name="label" as="item()*"/>
+        <xsl:param name="label-for" as="xs:string?"/>
+        <xsl:param name="state" as="xs:string?"/>
+        <xsl:param name="help" as="item()*"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <xsl:choose>
+            <xsl:when test="$type = 'hidden'">
+                <xsl:sequence select="$control"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <div class="ac-field{if ($class) then ' ' || $class else ''}">
+                    <xsl:if test="exists($label)">
+                        <label class="ac-label {$size}">
+                            <xsl:if test="$label-for">
+                                <xsl:attribute name="for" select="$label-for"/>
+                            </xsl:if>
+                            <xsl:sequence select="$label"/>
+                        </label>
+                    </xsl:if>
+
+                    <div class="ac-field-box {$size}{if ($state) then ' ' || $state else ''}">
+                        <xsl:sequence select="$adorn"/>
+                        <xsl:sequence select="$control"/>
+                    </div>
+
+                    <xsl:if test="exists($help)">
+                        <div class="ac-field-foot">
+                            <span class="ac-help sz-sm">
+                                <xsl:sequence select="$help"/>
+                            </span>
+                        </div>
+                    </xsl:if>
+                </div>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- ALERT -->
+
+    <!-- the design system's inline alert: variant, icon and title/text slots, plus a $body tail for
+         links, technical detail or actions. Block-header alerts put their h2 in $body to keep the
+         document outline -->
+    <xsl:template match="node() | @*" mode="ac:InlineAlert">
+        <xsl:param name="id" as="xs:string?"/>
+        <xsl:param name="variant" select="'va-negative'" as="xs:string"/>
+        <xsl:param name="class" select="'ac-alert ' || $variant" as="xs:string"/>
+        <xsl:param name="icon" select="(map{ 'va-negative': 'error', 'va-warning': 'warning', 'va-success': 'check_circle' }($variant), 'info')[1]" as="xs:string"/>
+        <xsl:param name="title" as="item()*"/>
+        <xsl:param name="text" as="item()*"/>
+        <xsl:param name="body" as="item()*"/>
+
+        <!-- only the negative variant announces assertively; the rest are polite status -->
+        <div role="{if ($variant = 'va-negative') then 'alert' else 'status'}">
+            <xsl:if test="$id">
+                <xsl:attribute name="id" select="$id"/>
+            </xsl:if>
+            <xsl:attribute name="class" select="$class"/>
+
+            <span class="ac-alert-ic">
+                <span class="msi outline" aria-hidden="true">
+                    <xsl:value-of select="$icon"/>
+                </span>
+            </span>
+            <div class="ac-alert-body">
+                <xsl:if test="exists($title)">
+                    <span class="ac-alert-title">
+                        <xsl:sequence select="$title"/>
+                    </span>
+                </xsl:if>
+                <xsl:if test="exists($text)">
+                    <span class="ac-alert-text">
+                        <xsl:sequence select="$text"/>
+                    </span>
+                </xsl:if>
+
+                <xsl:sequence select="$body"/>
+            </div>
+        </div>
+    </xsl:template>
+
+    <!-- ERROR UI: the status-to-sentence key, the negative alert and the technical-detail disclosure. Every
+         failure surface is assembled from these three - the client's own error page, and the apps built on it. -->
+
+    <!-- The nodeID of the sentence that explains an HTTP status in the reader's own terms, rather than
+         restating the upstream text. The upstream text is still shown, demoted, in the technical detail.
+         A key rather than a label, so each catalog - the client's, and an app's own - resolves it itself. -->
+    <xsl:function name="ac:http-error-key" as="xs:string">
+        <xsl:param name="status" as="xs:double?"/> <!-- xs:double, not xs:integer: SaxonJS surfaces the response status as a JS number, and integers promote into this but doubles do not promote the other way -->
+
+        <xsl:sequence select="if ($status = 400) then 'http-error-malformed' else if ($status = 401) then 'http-error-unauthorized' else if ($status = 403) then 'http-error-forbidden' else if ($status = 404) then 'http-error-not-found' else if ($status = (502, 503, 504)) then 'http-error-unreachable' else if ($status ge 500) then 'http-error-server' else 'http-error-unknown'"/>
+    </xsl:function>
+
+    <!-- The negative alert every failure surface is built from (design system: Core → Status, InlineAlert).
+         The headline names what failed, the sentence under it explains why - neither restates the upstream
+         text, which belongs in the technical detail. Both arrive resolved rather than as catalog keys,
+         because the catalog a headline comes from is the caller's. -->
+    <xsl:function name="ac:error-alert" as="element()">
+        <xsl:param name="title" as="item()*"/>
+        <xsl:param name="text" as="item()*"/>
+        <xsl:param name="uri" as="xs:anyURI?"/> <!-- what could not be reached, linked under the sentence -->
+
+        <!-- ac:InlineAlert dispatches on a node whose content it never reads, and a function has no context
+             item to offer it. A document cannot stand in: match="node()" does not match a document node, so
+             the built-in rule descends and the mode fires once per child - twice over a catalog that opens
+             with a comment. One synthesized element, one alert. -->
+        <xsl:variable name="context" as="element()">
+            <ac:Alert/>
+        </xsl:variable>
+
+        <xsl:apply-templates select="$context" mode="ac:InlineAlert">
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="text" select="$text"/>
+            <!-- the URI takes the alert body's link slot, its own row, so the sentence above it stays a
+                 sentence and a long IRI wraps without breaking the prose -->
+            <xsl:with-param name="body" as="item()*">
+                <xsl:if test="$uri">
+                    <a class="ac-alert-uri" href="{$uri}">
+                        <xsl:value-of select="$uri"/>
+                    </a>
+                </xsl:if>
+            </xsl:with-param>
+        </xsl:apply-templates>
+    </xsl:function>
+
+    <!-- The upstream text, demoted into a collapsed disclosure: never the first thing read, never withheld from
+         whoever needs it. Empty when there is nothing to show, so callers can hand it whatever they have. -->
+    <xsl:function name="ac:error-detail" as="element()?">
+        <xsl:param name="detail" as="xs:string?"/>
+
+        <xsl:if test="normalize-space($detail)">
+            <details class="ac-disclosure">
+                <summary>
+                    <span class="msi" aria-hidden="true">chevron_right</span>
+                    <xsl:apply-templates select="key('resources', 'technical-detail', ac:translations())" mode="ac:label"/>
+                </summary>
+                <pre>
+                    <xsl:value-of select="$detail"/>
+                </pre>
+            </details>
+        </xsl:if>
+    </xsl:function>
+
+    <!-- SELECT SHELL -->
+
+    <!-- the design system's select shell: the caret-adorned wrapper every dropdown rides in;
+         multiple selects mark the shell and show no caret -->
+    <xsl:template match="node() | @*" mode="ac:SelectShell">
+        <xsl:param name="select" as="item()*"/>
+        <xsl:param name="size" select="'sz-sm'" as="xs:string"/>
+        <xsl:param name="multiple" select="false()" as="xs:boolean"/>
+        <xsl:param name="state" as="xs:string?"/> <!-- st-valid | st-invalid -->
+
+        <span class="ac-select {$size}{if ($multiple) then ' is-multiple' else ''}{if ($state) then ' ' || $state else ''}">
+            <xsl:sequence select="$select"/>
+
+            <xsl:if test="not($multiple)">
+                <span class="msi sm ac-select-caret" aria-hidden="true">unfold_more</span>
+            </xsl:if>
+        </span>
+    </xsl:template>
+
+    <!-- ANNOTATION TAG -->
+
+    <!-- the single annotation Tag: the value-kind chips beside edit-mode controls all render through here,
+         so a downstream layer re-skins every one by overriding this rule -->
+    <xsl:template match="node() | @*" mode="ac:AnnotationTag">
+        <xsl:param name="class" select="'ac-tag sz-sm em-quiet co-accent'" as="xs:string"/>
+        <xsl:param name="key" as="xs:string?"/>
+        <xsl:param name="title" as="xs:string?"/>
+        <xsl:param name="label" as="item()*">
+            <xsl:apply-templates select="key('resources', $key, ac:translations())" mode="ac:label"/>
+        </xsl:param>
+
+        <span class="{$class}">
+            <xsl:if test="$title">
+                <xsl:attribute name="title" select="$title"/>
+            </xsl:if>
+
+            <span class="ac-tag-lbl">
+                <xsl:sequence select="$label"/>
+            </span>
+        </span>
+    </xsl:template>
+
+    <!-- literal inputs ride the field shell: the box carries the chrome, the input stays bare -->
+    <xsl:template match="text()" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:apply-templates select="." mode="xhtml:Input">
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:apply-templates>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="text()" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:choose>
+                <xsl:when test="../@rdf:datatype">
+                    <xsl:apply-templates select="../@rdf:datatype" mode="#current"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                        <xsl:with-param name="key" select="'literal'"/>
+                    </xsl:apply-templates>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="text()[string-length(.) &gt; 50]" mode="ac:FormControl">
+        <xsl:param name="name" select="'ol'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="style" as="xs:string?"/>
+        <xsl:param name="value" select="." as="xs:string?"/>
+        <xsl:param name="rows" as="xs:integer?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
+                <textarea name="{$name}">
+                    <xsl:if test="$id">
+                        <xsl:attribute name="id" select="$id"/>
+                    </xsl:if>
+                    <xsl:if test="$class">
+                        <xsl:attribute name="class" select="$class"/>
+                    </xsl:if>
+                    <xsl:if test="$style">
+                        <xsl:attribute name="style" select="$style"/>
+                    </xsl:if>
+                    <xsl:if test="$rows">
+                        <xsl:attribute name="rows" select="$rows"/>
+                    </xsl:if>
+                    <xsl:if test="$disabled">
+                        <xsl:attribute name="disabled" select="'disabled'"/>
+                    </xsl:if>
+
+                    <xsl:sequence select="$value"/>
+                </textarea>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- XMLLiteral objects fall back to markup-source editing: one textarea carries the serialized fragment
+         as a single typed value, instead of the built-in descent exploding every text node into its own
+         control (and destroying the markup on round-trip) -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*[@rdf:parseType = 'Literal']/node()[not(preceding-sibling::node())]" mode="ac:FormControl" priority="2">
+        <xsl:param name="name" select="'ol'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="rows" as="xs:integer?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
+                <textarea name="{$name}">
+                    <xsl:if test="$id">
+                        <xsl:attribute name="id" select="$id"/>
+                    </xsl:if>
+                    <xsl:if test="$class">
+                        <xsl:attribute name="class" select="$class"/>
+                    </xsl:if>
+                    <xsl:if test="$rows">
+                        <xsl:attribute name="rows" select="$rows"/>
+                    </xsl:if>
+                    <xsl:if test="$disabled">
+                        <xsl:attribute name="disabled" select="'disabled'"/>
+                    </xsl:if>
+
+                    <xsl:sequence select="serialize(../node())"/>
+                </textarea>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <!-- datatype -->
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'lt'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="'&rdf;XMLLiteral'"/>
+        </xsl:call-template>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="title" select="'&rdf;XMLLiteral'"/>
+                <xsl:with-param name="label" select="'rdf:XMLLiteral'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- the remaining XMLLiteral nodes are already inside the serialized textarea above -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*[@rdf:parseType = 'Literal']/node()" mode="ac:FormControl" priority="1"/>
+
+    <!-- blank nodes that only have rdf:type xsd:* and no other properties become literal inputs -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="ac:FormControl" priority="2">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <!-- the field shell keeps this input on the shared control width; a bare input here sat at its
+             UA-intrinsic width beside the capped fields -->
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:call-template>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <!-- datatype -->
+        <xsl:call-template name="xhtml:Input">
+            <xsl:with-param name="name" select="'lt'"/>
+            <xsl:with-param name="type" select="'hidden'"/>
+            <xsl:with-param name="value" select="key('resources', .)/rdf:type/@rdf:resource"/>
+        </xsl:call-template>
+
+        <xsl:if test="$type-label">
+            <xsl:variable name="datatype" as="document-node()">
+                <xsl:document>
+                    <rdf:Description>
+                        <xsl:element name="{../name()}" namespace="{../namespace-uri()}">
+                            <xsl:attribute name="rdf:datatype" select="key('resources', .)/rdf:type/@rdf:resource"/>
+                        </xsl:element>
+                    </rdf:Description>
+                </xsl:document>
+            </xsl:variable>
+
+            <xsl:apply-templates select="$datatype//@rdf:datatype" mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- A blank node typed rdf:langString is a LANGUAGE-TAGGED literal, so its control is a value input
+         plus a language field and never a datatype. The xsd:* template above cannot serve it and is not
+         widened to: RDF 1.1 requires an rdf:langString literal to carry a language tag and forbids it
+         carrying a datatype attribute, so emitting lt=rdf:langString would encode an ill-formed literal.
+         The two differ in what they emit, not merely in a label, which is why this is a separate rule.
+
+         Without it a constructor declaring [ a rdf:langString ] matched nothing in this mode - the test
+         above is scoped to the XSD namespace - and fell through to the resource control, offering a URI
+         picker for a property that takes text.
+
+         The language field and its input are the SAME emitters the data path uses for an existing
+         @xml:lang value, reached by synthesising the value node this control will produce, so there is
+         one implementation of the control rather than two that can drift. It is prefilled from
+         ac:langs(), the reader's own accepted list, which is the single source of language preference. -->
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[@rdf:resource = '&rdf;langString'])]]" mode="ac:FormControl" priority="3">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="required" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:variable name="value" as="element()">
+            <xsl:element name="{../name()}" namespace="{../namespace-uri()}">
+                <xsl:attribute name="xml:lang" select="ac:langs()[1]"/>
+            </xsl:element>
+        </xsl:variable>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:call-template>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <!-- same treatment as any other datatype tag: rdf:langString is one -->
+                <xsl:with-param name="class" select="'ac-tag sz-sm em-quiet co-neutral'"/>
+                <xsl:with-param name="title" select="'&rdf;langString'"/>
+                <xsl:with-param name="label" select="'rdf:langString'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+
+        <xsl:apply-templates select="$value/@xml:lang" mode="ac:FormControl">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:about or @rdf:nodeID]/*/@rdf:nodeID[key('resources', .)[not(* except rdf:type[starts-with(@rdf:resource, '&xsd;')])]]" mode="ac:ValueAnnotations" priority="2">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'literal'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- @rdf:resource, @rdf:nodeID -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:apply-templates select="." mode="xhtml:Input">
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                </xsl:apply-templates>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'resource'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- @xml:lang: a narrow field beside the value it tags -->
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" select="'lang-field'" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <span>
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+            <xsl:attribute name="title">
+                <xsl:apply-templates select="key('resources', 'language-tag', ac:translations())" mode="ac:label"/>
+            </xsl:attribute>
+
+            <xsl:apply-templates select="." mode="ac:FieldShell">
+                <xsl:with-param name="type" select="$type"/>
+                <xsl:with-param name="adorn" as="item()*">
+                    <span class="ac-adorn"><span class="msi outline sm" aria-hidden="true">language</span></span>
+                </xsl:with-param>
+                <xsl:with-param name="control" as="item()*">
+                    <xsl:apply-templates select="." mode="xhtml:Input">
+                        <xsl:with-param name="type" select="$type"/>
+                        <xsl:with-param name="id" select="$id"/>
+                        <xsl:with-param name="disabled" select="$disabled"/>
+                    </xsl:apply-templates>
+                </xsl:with-param>
+            </xsl:apply-templates>
+        </span>
+    </xsl:template>
+
+    <xsl:template match="@xml:*[local-name() = 'lang']" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'language-tag'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- @rdf:datatype: hidden — the datatype rides the form encoding but the value-side xsd: tag is its visible face -->
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="ac:FormControl">
+        <xsl:param name="type" select="'hidden'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="xhtml:Input">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="id" select="$id"/>
+            <xsl:with-param name="class" select="$class"/>
+            <xsl:with-param name="disabled" select="$disabled"/>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="@rdf:*[local-name() = 'datatype']" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="title" select="."/>
+                <xsl:with-param name="label" select="if (starts-with(., '&xsd;')) then 'xsd:' || substring-after(., '&xsd;') else string(.)"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- LOOKUP -->
+
+    <!-- *[@rdf:about or @rdf:nodeID]/*/@rdf:* -->
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:FormControl" priority="1">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="disabled" select="false()" as="xs:boolean"/>
+        <xsl:param name="traversed-ids" as="xs:string*" tunnel="yes"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:variable name="resource" select="key('resources', .)"/>
+
+        <xsl:choose>
+            <xsl:when test="$resource and not(. = $traversed-ids)">
+                <xsl:apply-templates select="." mode="xhtml:Input">
+                    <xsl:with-param name="type" select="'hidden'"/>
+                </xsl:apply-templates>
+
+                <xsl:apply-templates select="$resource" mode="#current">
+                    <xsl:with-param name="traversed-ids" select="(., $traversed-ids)" tunnel="yes"/>
+                </xsl:apply-templates>
+
+                <!-- restore subject context -->
+                <xsl:apply-templates select="../../@rdf:about | ../../@rdf:nodeID" mode="#current">
+                    <xsl:with-param name="type" select="'hidden'"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="disabled" select="$disabled"/>
+                    <xsl:with-param name="type-label" select="$type-label"/>
+                </xsl:next-match>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="*[@rdf:*[local-name() = ('about', 'nodeID')]]/*/@rdf:*[local-name() = ('resource', 'nodeID')]" mode="ac:ValueAnnotations" priority="1">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'resource'"/>
+            </xsl:apply-templates>
+        </xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

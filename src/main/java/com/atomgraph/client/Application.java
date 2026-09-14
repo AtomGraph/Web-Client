@@ -30,14 +30,15 @@ import org.apache.jena.riot.RDFWriterRegistry;
 import com.atomgraph.client.mapper.ClientErrorExceptionMapper;
 import com.atomgraph.client.mapper.NotFoundExceptionMapper;
 import com.atomgraph.client.mapper.RiotExceptionMapper;
-import com.atomgraph.client.model.impl.ProxiedGraph;
+import com.atomgraph.client.filter.request.ProxyRequestFilter;
+import com.atomgraph.client.resource.Root;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
 import com.atomgraph.core.io.UpdateRequestProvider;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.writer.ModelXSLTWriter;
 import com.atomgraph.client.writer.ResultSetXSLTWriter;
-import com.atomgraph.client.writer.function.ConstructForClass;
+import com.atomgraph.client.interceptor.RDFPostMediaTypeInterceptor;
 import com.atomgraph.client.writer.function.UUID;
 import com.atomgraph.core.client.GraphStoreClient;
 import com.atomgraph.core.io.ModelProvider;
@@ -129,7 +130,6 @@ public class Application extends ResourceConfig
         RDFWriterRegistry.register(Lang.RDFXML, RDFFormat.RDFXML_PLAIN);
 
         xsltProc.registerExtensionFunction(new UUID());
-        xsltProc.registerExtensionFunction(new ConstructForClass(xsltProc, resolver.getRepository()));
 
         try
         {
@@ -150,9 +150,11 @@ public class Application extends ResourceConfig
     @PostConstruct
     public void init()
     {
-        register(ProxiedGraph.class);
+        register(Root.class);
+        register(ProxyRequestFilter.class);
         register(new HttpMethodOverrideFilter());
         
+        register(new RDFPostMediaTypeInterceptor()); // for application/x-www-form-urlencoded
         register(new ModelProvider());
         register(new ResultSetProvider());
         register(new QueryParamProvider());

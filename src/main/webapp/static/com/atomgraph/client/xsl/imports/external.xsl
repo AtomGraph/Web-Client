@@ -38,8 +38,17 @@ xmlns:xhtml="http://www.w3.org/1999/xhtml"
 xmlns:svg="http://www.w3.org/2000/svg"
 exclude-result-prefixes="#all">
 
+    <!-- an external resource is reached through the ?uri= proxy on this origin, carrying the display mode
+         when one is set; the three anchor modes below differ only in their other parameters -->
+    <xsl:function name="ac:proxied-href" as="xs:anyURI">
+        <xsl:param name="uri" as="node()"/>
+
+        <xsl:variable name="params" select="map{ 'uri': string(ac:document-uri($uri)) }" as="map(xs:string, xs:string*)"/>
+        <xsl:sequence select="xs:anyURI(ac:build-uri((), if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri($uri))"/>
+    </xsl:function>
+
     <xsl:template match="@rdf:about" mode="xhtml:Anchor">
-        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
+        <xsl:param name="href" select="ac:proxied-href(.)" as="xs:anyURI"/>
         <xsl:param name="id" select="encode-for-uri(.)" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -55,7 +64,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:resource | srx:uri">
-        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
+        <xsl:param name="href" select="ac:proxied-href(.)" as="xs:anyURI"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:param name="title" select="." as="xs:string?"/>
         <xsl:param name="class" as="xs:string?"/>
@@ -71,7 +80,7 @@ exclude-result-prefixes="#all">
     </xsl:template>
     
     <xsl:template match="@rdf:about | @rdf:resource" mode="svg:Anchor">
-        <xsl:param name="href" select="xs:anyURI(ac:build-uri((), let $params := map{ 'uri': string(ac:document-uri(.)) } return if ($ac:mode) then map:merge(($params, map{ 'mode': string($ac:mode) })) else $params) || '#' || encode-for-uri(.))" as="xs:anyURI"/>
+        <xsl:param name="href" select="ac:proxied-href(.)" as="xs:anyURI"/>
         <xsl:param name="id" select="encode-for-uri(.)" as="xs:string?"/>
         <xsl:param name="label" select="if (parent::rdf:Description) then ac:svg-label(..) else ac:svg-object-label(.)" as="xs:string"/>
         <xsl:param name="title" select="$label" as="xs:string"/>
