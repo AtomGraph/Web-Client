@@ -28,20 +28,32 @@ xmlns:rdf="&rdf;"
 xmlns:dct="&dct;"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[dct:title[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return dct:title[lang($lang)])[1]/text()"/>
-    </xsl:template>
-
     <xsl:template match="*[dct:title/text()]" mode="ac:label">
-        <xsl:sequence select="(dct:title[not(@xml:lang)], dct:title)[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[dct:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return dct:description[lang($lang)])[1]/text()"/>
+        <xsl:sequence select="ac:preferred-lang(dct:title)"/>
     </xsl:template>
 
     <xsl:template match="*[dct:description/text()]" mode="ac:description">
-        <xsl:sequence select="(dct:description[not(@xml:lang)], dct:description)[1]/text()"/>
+        <xsl:sequence select="ac:preferred-lang(dct:description)"/>
     </xsl:template>
     
+    <!-- FORM CONTROLS -->
+
+    <!-- a description is multi-line prose whatever its current length -->
+    <xsl:template match="dct:description/text()" mode="ac:FormControl">
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:param name="rows" select="3" as="xs:integer"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
+                <textarea name="ol" id="{generate-id()}" rows="{$rows}">
+                    <xsl:value-of select="."/>
+                </textarea>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
+        </xsl:if>
+    </xsl:template>
+
 </xsl:stylesheet>

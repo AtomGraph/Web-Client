@@ -65,8 +65,6 @@ public final class AC
     public static final Resource MapMode = m_model.createOntClass( NS + "MapMode" );
 
     public static final Resource ReadMode = m_model.createOntClass( NS + "ReadMode" );
-    
-    public static final Resource ConstructMode = m_model.createOntClass( NS + "ConstructMode" );
 
     public static final Property contextUri = m_model.createObjectProperty( NS + "contextUri" );
 
@@ -96,8 +94,6 @@ public final class AC
 
     /** The language the representation is composed in, as opposed to the languages the reader accepts. */
     public static final Property contentLang = m_model.createDataProperty( NS + "contentLang" );
-
-    public static final Property forClass = m_model.createObjectProperty( NS + "forClass" );
 
     public static final Property instance = m_model.createDataProperty( NS + "instance" );
 
