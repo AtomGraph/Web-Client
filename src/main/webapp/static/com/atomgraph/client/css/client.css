@@ -51,7 +51,7 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 .menu-list li.is-active a { background: var(--bg-selected); color: var(--fg-selected); }
 
 /* ---------- resource blocks ---------- */
-.block { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: var(--r-lg); padding: var(--sp-5); margin-bottom: var(--sp-4); min-width: 0; }
+.block { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: var(--r-lg); padding: var(--sp-5); margin-bottom: var(--sp-4); min-width: 0; container-type: inline-size; }
 .block-header { position: relative; }
 .block-header > .actions { position: absolute; top: 0; right: 0; display: flex; gap: var(--sp-2); }
 .block-header > .actions form { margin: 0; }
@@ -67,15 +67,26 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
    One dt can be followed by N dds (multi-valued property; the grouping pass suppresses the repeated
    terms), so this is float/clear column layout rather than a two-column grid: grid auto-placement
    cannot keep a run of dds in the value column without per-group wrappers the flat dl does not have */
-.properties { margin: var(--sp-4) 0 0; }
+/* Its own query container: the list lays out by the width IT has, which is not the viewport's. A
+   property list renders in the document column, in a sidebar and inside a nested resource, and at a
+   1440px desktop the 300px case left the value 100px against a 200px label. See RESPONSIVE.md in
+   the design system - the stop and the reasoning are shared with the app kit's statement grid. */
+.properties { margin: var(--sp-4) 0 0; container-type: inline-size; }
 .properties::after { content: ""; display: block; clear: both; }
 .properties dt { float: left; clear: left; width: 200px; padding-right: var(--sp-4); box-sizing: border-box; font-weight: var(--fw-medium); color: var(--fg-2); overflow-wrap: break-word; }
 .properties dd { margin: 0 0 var(--sp-1) 200px; min-width: 0; overflow-wrap: break-word; }
+/* Narrow, the label stops being a column and becomes a line above its value. The float has to be
+   released as well as the indent: a floated dt with the dd's margin removed would have the value
+   wrap around it rather than start beneath it. */
+@container (max-width: 520px) {
+  .properties dt { float: none; clear: none; width: auto; padding-right: 0; }
+  .properties dd { margin-left: 0; }
+}
 .properties dd .ac-tag { margin-right: var(--sp-1); }
 
 /* ---------- collections ---------- */
 .resource-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
-.resource-list > li { position: relative; background: var(--bg-card); border: 1px solid var(--border-default); border-radius: var(--r-lg); padding: var(--sp-5); min-width: 0; }
+.resource-list > li { position: relative; background: var(--bg-card); border: 1px solid var(--border-default); border-radius: var(--r-lg); padding: var(--sp-5); min-width: 0; container-type: inline-size; }
 .resource-list > li > .actions { position: absolute; top: var(--sp-4); right: var(--sp-4); display: flex; gap: var(--sp-2); }
 .resource-list > li > .actions form { margin: 0; }
 .resource-list h2 { margin: 0 0 var(--sp-1); font-size: var(--fs-lg); font-weight: var(--fw-semibold); }
@@ -100,13 +111,24 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 .results-table td img { max-height: 60px; border-radius: var(--r-xs); vertical-align: middle; }
 
 /* ---------- forms ---------- */
-fieldset { border: 0; padding: 0; margin: 0 0 var(--sp-5); min-inline-size: 0; }
+/* The fieldset is the statement rows' query container - a row cannot query itself, and the fieldset
+   is the one box always between a .statement and whatever surface holds the form. Nested fieldsets
+   (an inlined blank node sits in a value column) therefore give their own rows a narrower container
+   than the outer form's, which is exactly right. */
+fieldset { border: 0; padding: 0; margin: 0 0 var(--sp-5); min-inline-size: 0; container-type: inline-size; }
 legend { padding: 0; margin: 0 0 var(--sp-3); font-size: var(--fs-lg); font-weight: var(--fw-semibold); color: var(--fg-1); }
 fieldset .description { margin: 0 0 var(--sp-4); color: var(--fg-2); }
 
 /* one statement row: predicate label · value controls · term annotations */
 .statement { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; column-gap: var(--sp-4); align-items: start; padding: var(--sp-2) 0; border-bottom: 1px solid var(--border-default); }
 .statement:last-of-type { border-bottom: 0; }
+/* minmax(140px, 220px) resolves to its MAXIMUM next to a 1fr sibling - the flexible track is sized
+   last, so the label takes 220px and the value takes what is left: 106px in a phone's content column
+   and 64px in a 300px container, at any viewport. Narrow, the label takes its own line. */
+@container (max-width: 520px) {
+  .statement { grid-template-columns: minmax(0, 1fr); row-gap: var(--sp-1); }
+  .statement > .values { grid-column: 1; }
+}
 .statement > .ac-label { padding-top: 6px; overflow-wrap: break-word; min-width: 0; }
 /* nowrap keeps the type tag and the statement actions on the field's own line; the field shrinks instead */
 .statement > .values { grid-column: 2; display: flex; flex-wrap: nowrap; align-items: center; gap: var(--sp-2); min-width: 0; }
