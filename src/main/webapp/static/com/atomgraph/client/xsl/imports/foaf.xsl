@@ -26,10 +26,20 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
 xmlns:foaf="&foaf;"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
+    <!-- $href/$class compose with a proxying caller (the same contract as rdf:type/@rdf:resource): a layer
+         that routes external URIs through its Linked Data proxy passes the rewritten href and the 'external'
+         class, and the emitter must not undo that by hardcoding the raw URI -->
     <xsl:template match="foaf:page/@rdf:resource | foaf:homepage/@rdf:resource | foaf:workplaceHomepage/@rdf:resource | foaf:schoolHomepage/@rdf:resource | foaf:account/@rdf:resource">
-        <a href="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <a href="{$href}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
             <xsl:choose>
                 <xsl:when test="starts-with(., 'http://')">
                     <xsl:sequence select="substring-after(., 'http://')"/>
@@ -56,8 +66,16 @@ exclude-result-prefixes="#all">
         </a>
     </xsl:template>
 
+    <!-- the anchor navigates (proxied for external URIs via $href); the image bytes load from the raw URI -->
     <xsl:template match="foaf:img/@rdf:resource | foaf:logo/@rdf:resource | foaf:depiction/@rdf:resource">
-        <a href="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <a href="{$href}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
             <img src="{.}">
                 <xsl:attribute name="alt">
                     <xsl:value-of>
@@ -106,6 +124,73 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="*[foaf:lastName/text()]" mode="ac:label" priority="1">
         <xsl:sequence select="foaf:lastName/text()"/>
+    </xsl:template>
+
+    <!-- FORM CONTROLS -->
+
+    <!-- the mailbox is edited as a plain address whichever way it arrives: a mailto: resource loses its
+         scheme, a constructed node (nodeID) degrades to an empty value -->
+    <xsl:template match="foaf:mbox/@rdf:*" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="value" select="substring-after(., 'mailto:')"/>
+                </xsl:call-template>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- the submitted value is a literal whatever the object's term type, so the tag says so -->
+    <xsl:template match="foaf:mbox/@rdf:*" mode="ac:ValueAnnotations">
+        <xsl:param name="type" as="xs:string?"/>
+
+        <xsl:if test="not($type = 'hidden')">
+            <xsl:apply-templates select="." mode="ac:AnnotationTag">
+                <xsl:with-param name="key" select="'literal'"/>
+            </xsl:apply-templates>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="foaf:phone/@rdf:resource[starts-with(., 'tel:')]" mode="ac:FormControl">
+        <xsl:param name="type" select="'text'" as="xs:string"/>
+        <xsl:param name="id" select="generate-id()" as="xs:string"/>
+        <xsl:param name="class" as="xs:string?"/>
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="control" as="item()*">
+                <xsl:call-template name="xhtml:Input">
+                    <xsl:with-param name="name" select="'ol'"/>
+                    <xsl:with-param name="type" select="$type"/>
+                    <xsl:with-param name="id" select="$id"/>
+                    <xsl:with-param name="class" select="$class"/>
+                    <xsl:with-param name="value" select="substring-after(., 'tel:')"/>
+                </xsl:call-template>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations">
+                <xsl:with-param name="type" select="$type"/>
+            </xsl:apply-templates>
+        </xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>

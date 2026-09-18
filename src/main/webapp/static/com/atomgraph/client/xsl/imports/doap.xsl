@@ -28,24 +28,23 @@ xmlns:rdf="&rdf;"
 xmlns:doap="&doap;"
 exclude-result-prefixes="#all">
     
-    <xsl:template match="*[doap:name[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:label" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return doap:name[lang($lang)])[1]/text()"/>
-    </xsl:template>
-
     <xsl:template match="*[doap:name/text()]" mode="ac:label">
-        <xsl:sequence select="(doap:name[not(@xml:lang)], doap:name)[1]/text()"/>
-    </xsl:template>
-
-    <xsl:template match="*[doap:description[some $lang in ac:langs() satisfies lang($lang)]/text()]" mode="ac:description" priority="1">
-        <xsl:sequence select="(for $lang in ac:langs() return doap:description[lang($lang)])[1]/text()"/>
+        <xsl:sequence select="ac:preferred-lang(doap:name)"/>
     </xsl:template>
 
     <xsl:template match="*[doap:description/text()]" mode="ac:description">
-        <xsl:sequence select="(doap:description[not(@xml:lang)], doap:description)[1]/text()"/>
+        <xsl:sequence select="ac:preferred-lang(doap:description)"/>
     </xsl:template>
 
     <xsl:template match="doap:homepage/@rdf:resource | doap:browse/@rdf:resource | doap:location/@rdf:resource | doap:file-release/@rdf:resource">
-        <a href="{.}">
+        <xsl:param name="href" select="." as="xs:anyURI"/>
+        <xsl:param name="class" as="xs:string?"/>
+
+        <a href="{$href}">
+            <xsl:if test="$class">
+                <xsl:attribute name="class" select="$class"/>
+            </xsl:if>
+
             <xsl:sequence select="."/>
         </a>
     </xsl:template>

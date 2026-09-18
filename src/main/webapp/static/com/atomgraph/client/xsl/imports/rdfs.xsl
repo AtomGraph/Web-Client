@@ -44,4 +44,24 @@ exclude-result-prefixes="#all">
         <xsl:sequence select="(rdfs:comment[not(@xml:lang)], rdfs:comment)[1]/text()"/>
     </xsl:template>
     
+    <!-- FORM CONTROLS -->
+
+    <!-- a comment is multi-line prose whatever its current length -->
+    <xsl:template match="rdfs:comment/text()" mode="ac:FormControl">
+        <xsl:param name="type-label" select="true()" as="xs:boolean"/>
+        <xsl:param name="rows" select="3" as="xs:integer"/>
+
+        <xsl:apply-templates select="." mode="ac:FieldShell">
+            <xsl:with-param name="control" as="item()*">
+                <textarea name="ol" id="{generate-id()}" rows="{$rows}">
+                    <xsl:value-of select="."/>
+                </textarea>
+            </xsl:with-param>
+        </xsl:apply-templates>
+
+        <xsl:if test="$type-label">
+            <xsl:apply-templates select="." mode="ac:ValueAnnotations"/>
+        </xsl:if>
+    </xsl:template>
+
 </xsl:stylesheet>

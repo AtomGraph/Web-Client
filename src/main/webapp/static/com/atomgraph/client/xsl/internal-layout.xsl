@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2012 Martynas Jusevičius <martynas@atomgraph.com>
+Copyright 2020 Martynas Jusevičius <martynas@atomgraph.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!DOCTYPE xsl:stylesheet [
+    <!ENTITY java   "http://xml.apache.org/xalan/java/">
     <!ENTITY ac     "https://w3id.org/atomgraph/client#">
     <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <!ENTITY skos   "http://www.w3.org/2004/02/skos/core#">
+    <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+    <!ENTITY sparql "http://www.w3.org/2005/sparql-results#">
 ]>
 <xsl:stylesheet version="3.0"
 xmlns="http://www.w3.org/1999/xhtml"
@@ -25,11 +29,18 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:ac="&ac;"
 xmlns:rdf="&rdf;"
-xmlns:skos="&skos;"
+xmlns:rdfs="&rdfs;"
+xmlns:xsd="&xsd;"
+xmlns:owl="&owl;"
+xmlns:sparql="&sparql;"
+xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <xsl:template match="*[skos:prefLabel/text()]" mode="ac:label">
-        <xsl:sequence select="ac:preferred-lang(skos:prefLabel)"/>
-    </xsl:template>
-
+    <xsl:import href="converters/RDFXML2SVG.xsl"/>
+    <xsl:import href="common.xsl"/>
+    
+    <!-- the query editor is a mode this entry point offers, not part of the chrome -->
+    <xsl:include href="sparql.xsl"/>
+    <xsl:include href="layout.xsl"/>
+    
 </xsl:stylesheet>
