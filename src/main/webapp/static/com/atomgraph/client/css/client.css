@@ -64,23 +64,29 @@ pre { background: var(--surface-2); border: 1px solid var(--border-default); bor
 .types li { display: inline-flex; min-width: 0; }
 
 /* ---------- read-mode property list ----------
-   One dt can be followed by N dds (multi-valued property; the grouping pass suppresses the repeated
-   terms), so this is float/clear column layout rather than a two-column grid: grid auto-placement
-   cannot keep a run of dds in the value column without per-group wrappers the flat dl does not have */
+   A two-column grid with the columns pinned: a dt is always column 1, a dd always column 2. One dt
+   can be followed by N dds (multi-valued property; the grouping pass suppresses the repeated terms),
+   which plain auto-placement cannot keep in the value column - but with the column named, sparse
+   placement puts each further dd on its own row in column 2 and the next dt on a fresh row in
+   column 1, so the flat dl needs no per-group wrappers and every term shares a grid row with its
+   first value by construction. Floats did not give that: the term and value stacks advanced
+   independently, and the base dt margin-top (colors_and_type.css) let them drift apart 8px a row.
+   The dt keeps its own padding rather than a column-gap so the value column still starts at 200px. */
 /* Its own query container: the list lays out by the width IT has, which is not the viewport's. A
    property list renders in the document column, in a sidebar and inside a nested resource, and at a
    1440px desktop the 300px case left the value 100px against a 200px label. See RESPONSIVE.md in
    the design system - the stop and the reasoning are shared with the app kit's statement grid. */
-.properties { margin: var(--sp-4) 0 0; container-type: inline-size; }
-.properties::after { content: ""; display: block; clear: both; }
-.properties dt { float: left; clear: left; width: 200px; padding-right: var(--sp-4); box-sizing: border-box; font-weight: var(--fw-medium); color: var(--fg-2); overflow-wrap: break-word; }
-.properties dd { margin: 0 0 var(--sp-1) 200px; min-width: 0; overflow-wrap: break-word; }
-/* Narrow, the label stops being a column and becomes a line above its value. The float has to be
-   released as well as the indent: a floated dt with the dd's margin removed would have the value
-   wrap around it rather than start beneath it. */
+.properties { display: grid; grid-template-columns: 200px minmax(0, 1fr); row-gap: var(--sp-1); margin: var(--sp-4) 0 0; container-type: inline-size; }
+.properties dt { grid-column: 1; margin: 0; padding-right: var(--sp-4); font-weight: var(--fw-medium); color: var(--fg-2); overflow-wrap: break-word; }
+.properties dd { grid-column: 2; margin: 0; min-width: 0; overflow-wrap: break-word; }
+/* Narrow, the label stops being a column and becomes a line above its value: one column, every
+   item on its own row, and the base dt spacing back so a term reads as heading its value rather
+   than trailing the one before. */
 @container (max-width: 520px) {
-  .properties dt { float: none; clear: none; width: auto; padding-right: 0; }
-  .properties dd { margin-left: 0; }
+  .properties { grid-template-columns: minmax(0, 1fr); }
+  .properties dt, .properties dd { grid-column: 1; }
+  .properties dt:not(:first-child) { margin-top: var(--sp-3); }
+  .properties dt { padding-right: 0; }
 }
 .properties dd .ac-tag { margin-right: var(--sp-1); }
 
